@@ -1,14 +1,15 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-git-no-verify
+updated: "2026-09-04"
+action: "block"
 enabled: true
-event: bash
-pattern: git\s+commit\s+.*(--no-verify|-n\s+-m|-n\s+['"]|-n$)
-action: block
+event: "bash"
+name: "block-git-no-verify"
+pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

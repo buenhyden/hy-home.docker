@@ -1,15 +1,15 @@
 ---
-title: DAG Deployment Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "DAG Deployment Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0052
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0052"
 parent_ids:
-  - AD-0007
-created: 2026-03-25
-updated: 2026-08-11
+- "AD-0007"
+created: "2026-03-25"
 ---
 <!-- Target: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md -->
 

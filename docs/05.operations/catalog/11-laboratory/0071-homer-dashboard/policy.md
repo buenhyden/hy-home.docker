@@ -1,15 +1,15 @@
 ---
-title: Laboratory Dashboard Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Laboratory Dashboard Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0071
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0071"
 parent_ids:
-  - AD-0011
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0011"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/policy.md -->
 

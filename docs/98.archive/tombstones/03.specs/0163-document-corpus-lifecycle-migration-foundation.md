@@ -1,14 +1,15 @@
 ---
-title: Document Corpus Lifecycle Migration Foundation Technical Specification Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Document Corpus Lifecycle Migration Foundation Technical Specification Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0131
-parent_ids: [SPEC-0158]
-created: 2026-09-01
-updated: 2026-09-01
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0131"
+parent_ids:
+- "SPEC-0158"
+created: "2026-09-01"
 ---
 
 # Document Corpus Lifecycle Migration Foundation Technical Specification Tombstone

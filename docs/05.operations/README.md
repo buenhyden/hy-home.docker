@@ -1,10 +1,11 @@
 ---
-title: Operations
-version: 1.0.0
-type: common/readme
-layer: operations
-status: active
+title: "Operations"
+version: "1.1.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "operations"
 ---
 
 <!-- README Target: docs/05.operations/README.md -->
@@ -55,6 +56,23 @@ owner: "@buenhyden"
 각 domain `README.md`가 subject navigation을 소유하며, subject 폴더에는
 `README.md`를 만들지 않는다. subject의 기존 역할만
 `catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`에 둔다.
+
+### Artifact Boundaries
+
+- Guide는 정상 사용 맥락과 이해 중심의 안내를 소유한다.
+- Policy는 의무·금지·예외·검토 주기 같은 통제를 소유한다.
+- Runbook은 순서 있는 실행, 관찰 증거, rollback/recovery, escalation을 소유한다.
+- Incident는 특정 사건의 관찰·영향·대응 타임라인을, Postmortem은 원인·교훈·
+  재발 방지 조치를 소유한다.
+- Diátaxis의 explanation과 reference가 필요한 경우 Guide 안에서 독자 목적별
+  섹션으로 구분한다. 별도 Stage 05 문서 프로필을 만들지 않는다.
+
+### External Release Evidence
+
+이 저장소의 배포 모드는 `external-release-evidence`다. 릴리스 근거는 관련
+Runbook, `CHANGELOG.md`, Git tag 또는 CI 결과, 그리고 소유 Stage 03 Task의
+검증 행으로 결합한다. 독립 Release 문서 프로필은 현재 존재하지 않는다.
+그 권위가 실제로 필요해지면 새 ADR과 Registry 변경을 먼저 승인한다.
 
 ## How to Work in This Area
 

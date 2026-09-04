@@ -1,15 +1,15 @@
 ---
-title: 02-Auth Keycloak Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "02-Auth Keycloak Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0014
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0014"
 parent_ids:
-  - POL-0014
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0014"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/02-auth/0014-keycloak/guide.md -->
 

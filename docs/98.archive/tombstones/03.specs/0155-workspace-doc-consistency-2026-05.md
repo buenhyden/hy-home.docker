@@ -1,14 +1,15 @@
 ---
-title: Workspace Documentation Consistency 2026-05 Technical Specification Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Workspace Documentation Consistency 2026-05 Technical Specification Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0091
-parent_ids: [MIG-0003]
-created: 2026-08-29
-updated: 2026-08-29
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0091"
+parent_ids:
+- "MIG-0003"
+created: "2026-08-29"
 ---
 
 # Workspace Documentation Consistency 2026-05 Technical Specification Tombstone

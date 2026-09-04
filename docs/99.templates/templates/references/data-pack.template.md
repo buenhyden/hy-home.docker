@@ -1,47 +1,49 @@
 ---
-title: <title>
-version: "#.#.#"
-type: reference/data-pack
-layer: references
-status: draft
-owner: <owner>
-artifact_id: DATA-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "reference/data-pack"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "references"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-observed_at: YYYY-MM-DD
+created: "{{CREATED}}"
+observed_at: "{{OBSERVED_AT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{purpose}}
+{{PURPOSE}}
 
 ## Schema
 
-{{schema}}
+{{SCHEMA}}
 
 ## Provenance
 
-{{provenance}}
+{{PROVENANCE}}
 
 ## Inventory
 
-{{inventory}}
+{{INVENTORY}}
 
 ## Refresh
 
-{{refresh_process}}
+{{REFRESH_PROCESS}}
 
 ## Consumers
 
-{{consumers}}
+{{CONSUMERS}}
 
 ## Traceability
 
-{{current_authority_links}}
+{{CURRENT_AUTHORITY_LINKS}}
 
 ## Limitations
 
-{{limitations}}
+{{LIMITATIONS}}

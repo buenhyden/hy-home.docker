@@ -1,38 +1,41 @@
 ---
-title: <title>
-version: "#.#.#"
-type: archive/migration
-layer: archive
-status: draft
-owner: <owner>
-artifact_id: MIG-####
-parent_ids: [SPEC-####, ADR-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "archive/migration"
+status: "sealed"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "archive"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{purpose}}
+{{PURPOSE}}
 
 ## Authority Change
 
-{{authority_change}}
+{{AUTHORITY_CHANGE}}
 
 ## Path Mapping
 
-{{path_mapping}}
+{{PATH_MAPPING}}
 
 ## Recovery
 
-{{recovery}}
+{{RECOVERY}}
 
 ## Approval
 
-{{approval}}
+{{APPROVAL}}
 
 ## Traceability
 
-{{traceability_links}}
+{{TRACEABILITY_LINKS}}

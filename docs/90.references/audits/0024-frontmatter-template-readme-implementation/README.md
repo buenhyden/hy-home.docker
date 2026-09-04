@@ -1,17 +1,17 @@
 ---
 title: "Reference: Frontmatter, Template, and README Implementation Audit"
-version: 1.0.0
-type: reference/audit-pack
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/audit-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: AUD-0024
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "AUD-0024"
 parent_ids:
-- AUD-0026
-created: '2026-07-05'
-updated: '2026-08-23'
-observed_at: '2026-07-05'
-reviewed_at: 2026-07-12
+- "AUD-0026"
+created: "2026-07-05"
+observed_at: "2026-07-05"
+reviewed_at: "2026-07-12"
 ---
 
 # Reference: Frontmatter, Template, and README Implementation Audit

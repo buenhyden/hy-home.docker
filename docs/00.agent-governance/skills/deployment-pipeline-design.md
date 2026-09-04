@@ -1,12 +1,13 @@
 ---
-title: deployment-pipeline-design
-version: 1.0.0
-type: governance/skill
-status: active
+title: "deployment-pipeline-design"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: deployment-pipeline-design
-scope: ops
-owner_agent: ci-cd-engineer
+updated: "2026-09-04"
+function_id: "deployment-pipeline-design"
+scope: "ops"
+owner_agent: "ci-cd-engineer"
 ---
 
 # deployment-pipeline-design

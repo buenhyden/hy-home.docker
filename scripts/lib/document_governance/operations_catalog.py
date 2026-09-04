@@ -678,9 +678,9 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             )
         ]
     profile_ids = [
-        item.get("profile_id")
+        item.get("id")
         for item in profiles
-        if isinstance(item, Mapping) and isinstance(item.get("profile_id"), str)
+        if isinstance(item, Mapping) and isinstance(item.get("id"), str)
     ]
     release_template_present = any(
         isinstance(definition, Mapping)
@@ -718,9 +718,7 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
                 "registry-profile-duplicate", REGISTRY_PATH, str(sorted(duplicates))
             )
         )
-    by_id = {
-        item.get("profile_id"): item for item in profiles if isinstance(item, Mapping)
-    }
+    by_id = {item.get("id"): item for item in profiles if isinstance(item, Mapping)}
     lifecycles = registry.get("lifecycles")
     for profile_id in _OPERATIONS_PROFILE_IDS:
         profile = by_id.get(profile_id)
@@ -768,7 +766,10 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             )
         template_id = profile.get("template_id")
         role = roles.get(template_id) if isinstance(template_id, str) else None
-        if not isinstance(role, Mapping) or role.get("profile_id") != profile_id:
+        if (
+            not isinstance(role, Mapping)
+            or profile_id not in role.get("profiles", ())
+        ):
             findings.append(
                 _finding(
                     "registry-operations-profile-invalid",
@@ -799,9 +800,9 @@ def _registry_profiles(
     if not isinstance(profiles, list):
         return {}
     return {
-        str(profile["profile_id"]): profile
+        str(profile["id"]): profile
         for profile in profiles
-        if isinstance(profile, Mapping) and isinstance(profile.get("profile_id"), str)
+        if isinstance(profile, Mapping) and isinstance(profile.get("id"), str)
     }
 
 

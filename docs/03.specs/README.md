@@ -1,10 +1,11 @@
 ---
-title: 03.specs
-version: 1.0.0
-type: common/readme
-layer: specs
-status: active
+title: "03.specs"
+version: "1.0.1"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "specs"
 ---
 
 # 03.specs
@@ -62,6 +63,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0169 | [Document Lifecycle Convergence](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 | SPEC-0170 | [Archive Preservation Model](../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) and [Task](../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 | SPEC-0171 | [Compose Sibling Pair Resolution](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) and [Task](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) |
+| SPEC-0172 | [Document Contract Convergence](0172-document-contract-convergence/spec.md) | active with [Plan](0172-document-contract-convergence/plan.md) and [Task](0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) |
 
 ## How to Work in This Area
 

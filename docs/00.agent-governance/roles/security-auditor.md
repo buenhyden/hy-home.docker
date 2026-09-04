@@ -1,17 +1,18 @@
 ---
-title: security-auditor
-version: 1.0.0
-type: governance/role
-status: active
+title: "security-auditor"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: security-auditor
-scope: security
-tier: worker
-work_profile: adversarial-review
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "security-auditor"
+scope: "security"
+tier: "worker"
+work_profile: "adversarial-review"
+permission_profile: "read-only"
 skill_ids:
-- container-threat-modeling
-- security-audit
+- "container-threat-modeling"
+- "security-audit"
 ---
 
 # security-auditor

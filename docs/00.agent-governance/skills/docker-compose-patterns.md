@@ -1,12 +1,13 @@
 ---
-title: docker-compose-patterns
-version: 1.0.0
-type: governance/skill
-status: active
+title: "docker-compose-patterns"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: docker-compose-patterns
-scope: infra
-owner_agent: infra-implementer
+updated: "2026-09-04"
+function_id: "docker-compose-patterns"
+scope: "infra"
+owner_agent: "infra-implementer"
 ---
 
 # docker-compose-patterns

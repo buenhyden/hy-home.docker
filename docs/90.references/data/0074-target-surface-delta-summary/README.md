@@ -1,15 +1,15 @@
 ---
-title: Target Surface Delta Summary
-version: 1.0.0
-type: reference/data-pack
-layer: references
-status: active
+title: "Target Surface Delta Summary"
+version: "1.0.0"
+type: "reference/data-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: DATA-0074
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "DATA-0074"
 parent_ids: []
-created: '2026-08-23'
-updated: '2026-08-23'
-observed_at: '2026-08-23'
+created: "2026-08-23"
+observed_at: "2026-08-23"
 ---
 
 # Target Surface Delta Summary

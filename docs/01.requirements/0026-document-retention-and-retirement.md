@@ -1,14 +1,14 @@
 ---
-title: 문서 보존 및 은퇴 요구사항
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "문서 보존 및 은퇴 요구사항"
+version: "1.1.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0026
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0026"
 parent_ids: []
-created: 2026-09-01
-updated: 2026-09-01
+created: "2026-09-01"
 ---
 
 # 문서 보존 및 은퇴 요구사항
@@ -84,8 +84,9 @@ updated: 2026-09-01
 
 ## Constraints
 
-- Git이 내용 복구 경계로 남습니다. Stage 98은 pointer만 저장하며 은퇴한 본문의
-  복제본이나 redirect 문서를 저장하지 않습니다.
+- Stage 98의 처분별 하위 트리는 은퇴·완료·대체 당시 본문을 byte-identical
+  frozen copy로 보존합니다. Git object와 recovery commit은 그 복사본의 원본
+  동일성을 검증하고 독립 복구 경로를 제공하며 redirect 권위를 만들지 않습니다.
 - 변경의 비교 base는 그 변경의 분기 지점이므로, base에서 terminal이 아닌
   status는 그 문서를 은퇴시키는 동일한 변경이 terminal로 관측할 수 없습니다.
   따라서 terminal-status 의무는 base 대비 강제가 아니라 Tombstone에 기록됩니다.
@@ -93,8 +94,9 @@ updated: 2026-09-01
 ## Acceptance Criteria
 
 - Tombstone 없이 제거된 package는 등록된 check에서 실패합니다.
-- Tombstone과 함께 제거된 package는 통과하며, 그 Tombstone은 retired path와
-  정규 Git blob으로 해석됩니다.
+- Tombstone과 함께 제거된 package는 대응하는 `retired/` frozen copy가 있고,
+  Tombstone의 recovery commit이 정규 Git blob으로 해석되며, 두 기록의 원래
+  경로가 일치할 때만 통과합니다.
 - 보존 규칙은 Spec Package를 적재하지 않고 Stage 00에서 읽을 수 있습니다.
 - `completed` status를 가진 Spec Package 중 `plan.md` 또는 Task를 보유한
   package가 하나도 없습니다.

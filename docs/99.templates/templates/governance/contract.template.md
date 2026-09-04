@@ -1,27 +1,28 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/sdlc
-status: draft
-owner: <owner>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/sdlc"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{contract_purpose}}
+{{CONTRACT_PURPOSE}}
 
 ## Lifecycle
 
-{{stage_sequence_and_status_transitions}}
+{{STAGE_SEQUENCE_AND_STATUS_TRANSITIONS}}
 
 ## Authority Boundaries
 
-{{owned_and_not_owned_decisions}}
+{{OWNED_AND_NOT_OWNED_DECISIONS}}
 
 ## Related Documents
 
-{{policy_and_registry_links}}
+{{POLICY_AND_REGISTRY_LINKS}}

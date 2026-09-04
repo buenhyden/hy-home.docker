@@ -98,8 +98,8 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         cases = (
             (
                 "profile",
-                "type: sdlc/requirement",
-                "type: sdlc/spec",
+                'type: "sdlc/requirement"',
+                'type: "sdlc/spec"',
                 "template-artifact-type-mismatch",
             ),
             (

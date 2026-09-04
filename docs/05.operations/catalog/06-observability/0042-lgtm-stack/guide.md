@@ -1,14 +1,14 @@
 ---
-title: LGTM Stack Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "LGTM Stack Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0042
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0042"
 parent_ids: []
-created: 2026-03-25
-updated: 2026-08-11
+created: "2026-03-25"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md -->
 

@@ -1,15 +1,15 @@
 ---
-title: PostgreSQL Cluster Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "PostgreSQL Cluster Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0031
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0031"
 parent_ids:
-  - POL-0031
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0031"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md -->
 

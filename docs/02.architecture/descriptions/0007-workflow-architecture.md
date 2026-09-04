@@ -1,15 +1,15 @@
 ---
-title: Workflow Tier (07-workflow) Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Workflow Tier (07-workflow) Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0007
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0007"
 parent_ids:
-  - REQ-0008
-created: 2026-03-26
-updated: 2026-08-10
+- "REQ-0008"
+created: "2026-03-26"
 ---
 # Workflow Tier (07-workflow) Architecture Description
 

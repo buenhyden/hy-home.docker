@@ -1,12 +1,13 @@
 ---
-title: container-threat-modeling
-version: 1.0.0
-type: governance/skill
-status: active
+title: "container-threat-modeling"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: container-threat-modeling
-scope: security
-owner_agent: security-auditor
+updated: "2026-09-04"
+function_id: "container-threat-modeling"
+scope: "security"
+owner_agent: "security-auditor"
 ---
 
 # container-threat-modeling

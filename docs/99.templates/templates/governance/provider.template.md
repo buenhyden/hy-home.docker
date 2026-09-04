@@ -1,32 +1,32 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/provider
-status: draft
-owner: <owner>
-runtime: <runtime>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/provider"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{translation_purpose_for_this_runtime}}
+{{TRANSLATION_PURPOSE_FOR_THIS_RUNTIME}}
 
 ## Loading
 
-{{entry_shim_and_bootstrap_order}}
+{{ENTRY_SHIM_AND_BOOTSTRAP_ORDER}}
 
 ## Runtime Boundary
 
-{{generated_versus_native_surfaces}}
+{{GENERATED_VERSUS_NATIVE_SURFACES}}
 
 ## Verification
 
-{{registered_gate_command}}
+{{REGISTERED_GATE_COMMAND}}
 
 ## Related Documents
 
-{{registry_and_runtime_documentation_links}}
+{{REGISTRY_AND_RUNTIME_DOCUMENTATION_LINKS}}

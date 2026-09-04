@@ -1,15 +1,15 @@
 ---
-title: Gateway Tier Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Gateway Tier Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0001
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0001"
 parent_ids:
-  - REQ-0001
-created: 2026-03-26
-updated: 2026-09-01
+- "REQ-0001"
+created: "2026-03-26"
 ---
 # Gateway Tier Architecture Description
 

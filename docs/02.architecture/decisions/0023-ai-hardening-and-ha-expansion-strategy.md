@@ -1,15 +1,15 @@
 ---
-title: AI Hardening and HA Expansion Strategy
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "AI Hardening and HA Expansion Strategy"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0023
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0023"
 parent_ids:
-  - AD-0023
-created: 2026-03-28
-updated: 2026-09-01
+- "AD-0023"
+created: "2026-03-28"
 ---
 # ADR-0023: AI Hardening and HA Expansion Strategy
 

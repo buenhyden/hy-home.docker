@@ -1,15 +1,15 @@
 ---
-title: Laboratory Dashboard Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Laboratory Dashboard Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0071
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0071"
 parent_ids:
-  - POL-0071
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0071"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/guide.md -->
 

@@ -1,14 +1,15 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: require-logical-commits-before-stop
+updated: "2026-09-04"
+action: "block"
 enabled: true
-event: stop
-pattern: .*
-action: block
+event: "stop"
+name: "require-logical-commits-before-stop"
+pattern: ".*"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

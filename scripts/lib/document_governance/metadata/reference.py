@@ -1227,7 +1227,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
                 continue
             if template.suffix == ".md":
-                profile_id = definition["profile_id"]
+                profile_ids = definition["profiles"]
+                profile_id = profile_ids[0]
                 profile = registry.profiles.get(str(profile_id))
                 if not isinstance(profile, Mapping):
                     contract_findings.append(
@@ -1280,7 +1281,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     schema_values = resolve_template_placeholders(values)
                     schema_findings = validate_frontmatter(
                         schema_values,
-                        root / "docs/99.templates/contracts/frontmatter.schema.json",
+                        root
+                        / "docs/99.templates/contracts/document-frontmatter.schema.json",
                     )
                 except RegistryError:
                     contract_findings.append(
@@ -1503,6 +1505,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if args.mode == "check-changed"
                 else None
             ),
+            enforce_initial_status=args.mode == "check-changed",
         )
         for record in records
     }

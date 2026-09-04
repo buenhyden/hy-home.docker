@@ -1,15 +1,15 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0007
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0007"
 parent_ids:
-  - AD-0007
-created: 2026-03-26
-updated: 2026-08-10
+- "AD-0007"
+created: "2026-03-26"
 ---
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy
 

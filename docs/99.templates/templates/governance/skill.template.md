@@ -1,42 +1,43 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/skill
-status: draft
-owner: <owner>
-function_id: <function-id>
-scope: <scope>
-owner_agent: <owner-agent>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/skill"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+function_id: "{{FUNCTION_ID}}"
+scope: "{{SCOPE}}"
+owner_agent: "{{OWNER_AGENT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Preconditions
 
-{{when_this_procedure_is_valid}}
+{{WHEN_THIS_PROCEDURE_IS_VALID}}
 
 ## Inputs
 
-{{required_inputs}}
+{{REQUIRED_INPUTS}}
 
 ## Procedure
 
-{{ordered_single_action_steps}}
+{{ORDERED_SINGLE_ACTION_STEPS}}
 
 ## Outputs
 
-{{produced_artifacts_and_evidence}}
+{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
 
 ## Gates
 
-{{registered_checks_that_must_pass}}
+{{REGISTERED_CHECKS_THAT_MUST_PASS}}
 
 ## Failure Handling
 
-{{stop_conditions_and_recovery}}
+{{STOP_CONDITIONS_AND_RECOVERY}}
 
 ## Related Documents
 
-{{owning_role_and_policy_links}}
+{{OWNING_ROLE_AND_POLICY_LINKS}}

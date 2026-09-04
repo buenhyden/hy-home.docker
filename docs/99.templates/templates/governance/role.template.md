@@ -1,50 +1,51 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/role
-status: draft
-owner: <owner>
-agent_id: <agent-id>
-scope: <scope>
-tier: <tier>
-work_profile: <work-profile>
-permission_profile: <permission-profile>
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/role"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+agent_id: "{{AGENT_ID}}"
+scope: "{{SCOPE}}"
+tier: "{{TIER}}"
+work_profile: "{{WORK_PROFILE}}"
+permission_profile: "{{PERMISSION_PROFILE}}"
 skill_ids:
-- <skill-id>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+- "{{SKILL_ID}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{single_responsibility_of_this_role}}
+{{SINGLE_RESPONSIBILITY_OF_THIS_ROLE}}
 
 ## Use When
 
-{{invocation_conditions}}
+{{INVOCATION_CONDITIONS}}
 
 ## Inputs
 
-{{required_inputs}}
+{{REQUIRED_INPUTS}}
 
 ## Outputs
 
-{{produced_artifacts_and_evidence}}
+{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
 
 ## Permissions
 
-{{allowed_and_withheld_authority}}
+{{ALLOWED_AND_WITHHELD_AUTHORITY}}
 
 ## Success Criteria
 
-{{observable_completion_conditions}}
+{{OBSERVABLE_COMPLETION_CONDITIONS}}
 
 ## Failure and Escalation
 
-{{stop_conditions_and_escalation_target}}
+{{STOP_CONDITIONS_AND_ESCALATION_TARGET}}
 
 ## Related Documents
 
-{{policy_and_skill_links}}
+{{POLICY_AND_SKILL_LINKS}}

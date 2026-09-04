@@ -1,18 +1,19 @@
 ---
-title: doc-writer
-version: 1.0.0
-type: governance/role
-status: active
+title: "doc-writer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: doc-writer
-scope: docs
-tier: worker
-work_profile: evidence-research
-permission_profile: workspace-write
+updated: "2026-09-04"
+agent_id: "doc-writer"
+scope: "docs"
+tier: "worker"
+work_profile: "evidence-research"
+permission_profile: "workspace-write"
 skill_ids:
-- adr-writing
-- knowledge-map-agent
-- ops-runbook-agent
+- "adr-writing"
+- "knowledge-map-agent"
+- "ops-runbook-agent"
 ---
 
 # doc-writer

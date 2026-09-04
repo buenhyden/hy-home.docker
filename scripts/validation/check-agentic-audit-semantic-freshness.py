@@ -20,6 +20,7 @@ from audit_criterion_contract import (
     AuditCriterionContractError,
     validate_pack,
 )
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
 DEFAULT_CONTRACT = pathlib.Path(
@@ -316,18 +317,11 @@ def _validate_repository_input(
 
 
 def _frontmatter_status(text: str) -> str | None:
-    lines = text.splitlines()
-    if not lines or lines[0] != "---":
-        return None
     try:
-        end = lines.index("---", 1)
+        status = parse_frontmatter_text(text).get("status")
     except ValueError:
         return None
-    for line in lines[1:end]:
-        match = re.fullmatch(r"status:\s*(\S+)\s*", line)
-        if match:
-            return match.group(1)
-    return None
+    return status if isinstance(status, str) else None
 
 
 def _validate_tracked_contract_paths(
@@ -388,8 +382,8 @@ def _validate_lifecycle(repo_root: pathlib.Path, contract: dict[str, Any]) -> li
 
     canonical_readme = repo_root / EXPECTED_CANONICAL_README
     canonical_text = _read_required(canonical_readme, "canonical README", errors)
-    if canonical_text is not None and _frontmatter_status(canonical_text) != "active":
-        errors.append("canonical README: required frontmatter status: active")
+    if canonical_text is not None and _frontmatter_status(canonical_text) != "published":
+        errors.append("canonical README: required frontmatter status: published")
 
     superseded_readme = repo_root / SUPERSEDED_2026_07_07_README
     superseded_text = _read_required(superseded_readme, "2026-07-07 README", errors)

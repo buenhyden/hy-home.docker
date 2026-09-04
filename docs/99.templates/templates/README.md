@@ -1,9 +1,10 @@
 ---
-title: Template Catalog
-version: 1.0.0
-type: common/readme
-status: active
+title: "Template Catalog"
+version: "2.0.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Template Catalog
@@ -85,9 +86,9 @@ Replaced sources are recoverable through Git history.
 
 1. Resolve the role in [`../registry.json`](../registry.json) and copy its
    registered `source`.
-2. Replace every placeholder: `<name>` for free text, `####` for a four-digit
-   number, `YYYY-MM-DD` for a date, and `"#.#.#"` for a semantic version.
-   Machine contract sources use `__UPPER_SNAKE__` tokens instead.
+2. Replace every Markdown `{{UPPER_SNAKE_CASE}}` placeholder and remove its
+   template-only HTML authoring prompt. Native machine contract sources use
+   `__UPPER_SNAKE__` tokens instead.
 3. Keep the declared `type`; allocate an identity above the persisted
    high-water mark where the profile declares one.
 4. Run `python3 scripts/validation/run-ci-gate.py --profile full`.

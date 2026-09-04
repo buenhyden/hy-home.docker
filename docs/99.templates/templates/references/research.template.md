@@ -1,21 +1,23 @@
 ---
-title: <title>
-version: "#.#.#"
-type: reference/research
-layer: references
-status: draft
-owner: <owner>
-artifact_id: RES-####-m####
-parent_ids: [RES-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-observed_at: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "reference/research"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "references"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 
-{{member_body}}
+# {{TITLE}}
+
+{{MEMBER_BODY}}
 
 ## Related Documents
 
-{{package_index_link}}
+{{PACKAGE_INDEX_LINK}}

@@ -1,15 +1,15 @@
 ---
-title: k6 Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "k6 Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0061
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0061"
 parent_ids:
-  - POL-0061
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0061"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/09-tooling/0061-k6/guide.md -->
 

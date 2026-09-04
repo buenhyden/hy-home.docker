@@ -1,15 +1,15 @@
 ---
-title: 02-Auth Keycloak Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "02-Auth Keycloak Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0014
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0014"
 parent_ids:
-  - AD-0002
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0002"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/02-auth/0014-keycloak/policy.md -->
 

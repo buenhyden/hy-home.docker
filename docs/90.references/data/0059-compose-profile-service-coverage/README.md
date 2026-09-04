@@ -1,16 +1,16 @@
 ---
 title: "Reference: Docker Compose Profile Service Coverage"
-version: 1.0.0
-type: reference/data-pack
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/data-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: DATA-0059
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "DATA-0059"
 parent_ids: []
-created: '2026-08-23'
-updated: '2026-08-28'
-observed_at: '2026-08-28'
-generated_by: scripts/operations/generate-compose-profile-service-coverage.sh
+created: "2026-08-23"
+observed_at: "2026-08-28"
+generated_by: "scripts/operations/generate-compose-profile-service-coverage.sh"
 ---
 
 # Reference: Docker Compose Profile Service Coverage

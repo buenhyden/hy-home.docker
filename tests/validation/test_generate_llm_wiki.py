@@ -158,6 +158,18 @@ class LlmWikiGeneratorTests(unittest.TestCase):
                 "data/0076-llm-wiki-stage-category-coverage/README.md](", coverage
             )
             self.assertNotIn("data/0082-llm-wiki-index/README.md](", coverage)
+            self.assertEqual(
+                [
+                    "title",
+                    "version",
+                    "type",
+                    "status",
+                    "owner",
+                    "updated",
+                ],
+                [line.split(":", 1)[0] for line in index.splitlines()[1:7]],
+            )
+            self.assertIn('status: "published"', index)
 
     def test_exact_script_identity_excludes_transition_wrappers(self) -> None:
         generator = load_generator()

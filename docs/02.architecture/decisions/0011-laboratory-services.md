@@ -1,15 +1,15 @@
 ---
-title: Laboratory Services Selection and Configuration
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Laboratory Services Selection and Configuration"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0011
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0011"
 parent_ids:
-  - AD-0011
-created: 2026-03-26
-updated: 2026-08-10
+- "AD-0011"
+created: "2026-03-26"
 ---
 # ADR-0011: Laboratory Services Selection and Configuration
 

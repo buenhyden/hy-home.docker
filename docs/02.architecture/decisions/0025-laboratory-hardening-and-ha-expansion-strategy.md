@@ -1,15 +1,15 @@
 ---
-title: Laboratory Hardening and HA Expansion Strategy
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Laboratory Hardening and HA Expansion Strategy"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0025
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0025"
 parent_ids:
-  - AD-0025
-created: 2026-03-28
-updated: 2026-09-01
+- "AD-0025"
+created: "2026-03-28"
 ---
 # ADR-0025: Laboratory Hardening and HA Expansion Strategy
 

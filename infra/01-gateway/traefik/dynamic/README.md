@@ -1,10 +1,11 @@
 ---
-title: Traefik Dynamic Configuration
-version: 1.0.0
-type: common/package-readme
-layer: infra
-status: active
+title: "Traefik Dynamic Configuration"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "infra"
 ---
 
 # Traefik Dynamic Configuration

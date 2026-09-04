@@ -1,10 +1,11 @@
 ---
-title: Architecture Descriptions
-version: 1.0.0
-type: common/readme
-layer: architecture
-status: active
+title: "Architecture Descriptions"
+version: "1.1.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "architecture"
 ---
 
 # Architecture Descriptions
@@ -25,9 +26,17 @@ ADR을 기록한다.
 
 ## Scope
 
-이 디렉터리는 현재 25개의 Description을 보유한다. Description은 구현
+이 디렉터리는 현재 26개의 Description을 보유한다. Description은 구현
 계획이나 운영 절차를 소유하지 않고, 실제로 연결된 Requirement Package, ADR, Spec과
 Operations 문서의 역할을 대체하지 않는다.
+
+### C4 and arc42 Placement
+
+C4의 context, container, component view는 Description의 `Viewpoints and Views`
+안에서 필요한 수준까지만 사용한다. arc42의 context, building blocks, runtime,
+deployment, quality, risk 관점은 같은 Description의 등록 section에 배치한다.
+둘 다 별도 profile, 병렬 architecture 문서, 또는 자동으로 요구되는 전체
+template가 아니다. material choice와 대안·근거는 계속 별도 ADR이 소유한다.
 
 ## Structure
 
@@ -66,7 +75,7 @@ docs/02.architecture/descriptions/
 ### Documentation Standards
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
-  `artifact_type: architecture-description`을 일치시킨다.
+  `type: sdlc/architecture-description`을 일치시킨다.
 - `parent_ids`는 실제 상위 Requirement Package의 `REQ-####` ID만 포함한다.
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.

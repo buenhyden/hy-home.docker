@@ -1,11 +1,11 @@
 ---
-title: Dozzle
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Dozzle"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-03-27'
-updated: '2026-09-02'
+updated: "2026-09-04"
+created: "2026-03-27"
 ---
 
 # Dozzle

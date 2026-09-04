@@ -1,15 +1,15 @@
 ---
-title: 02-Auth OAuth2 Proxy Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "02-Auth OAuth2 Proxy Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0015
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0015"
 parent_ids:
-  - POL-0015
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0015"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md -->
 

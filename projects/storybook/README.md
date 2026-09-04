@@ -1,11 +1,11 @@
 ---
-title: Storybook Workspace
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Storybook Workspace"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-24'
-updated: '2026-09-02'
+updated: "2026-09-04"
+created: "2025-11-24"
 ---
 
 # Storybook Workspace

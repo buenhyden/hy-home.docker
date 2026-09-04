@@ -1,20 +1,21 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-plaintext-secret-compose
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "block"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: (docker-compose|compose)[^/]*\.ya?ml$|infra/[^/]*\.ya?ml$
-  - field: new_text
-    operator: regex_match
-    pattern: \b(PASSWORD|SECRET_KEY|API_KEY|ACCESS_TOKEN|PRIVATE_KEY|WEBHOOK_SECRET|DB_PASS(?:WORD)?|POSTGRES_PASSWORD|MYSQL_PASSWORD|REDIS_PASSWORD|GRAFANA_PASSWORD|MARIADB_PASSWORD)(?!_FILE)\s*[:=]\s*(?!\$\{|\$\(\(|/run/secrets/|["']?\$|\s*$|\s*["']{2})[^\s\n"']{6,}
-action: block
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "(docker-compose|compose)[^/]*\\.ya?ml$|infra/[^/]*\\.ya?ml$"
+- field: "new_text"
+  operator: "regex_match"
+  pattern: "\\b(PASSWORD|SECRET_KEY|API_KEY|ACCESS_TOKEN|PRIVATE_KEY|WEBHOOK_SECRET|DB_PASS(?:WORD)?|POSTGRES_PASSWORD|MYSQL_PASSWORD|REDIS_PASSWORD|GRAFANA_PASSWORD|MARIADB_PASSWORD)(?!_FILE)\\s*[:=]\\s*(?!\\$\\{|\\$\\(\\(|/run/secrets/|[\"']?\\$|\\s*$|\\s*[\"']{2})[^\\s\\n\"']{6,}"
+enabled: true
+event: "file"
+name: "block-plaintext-secret-compose"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

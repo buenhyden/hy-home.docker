@@ -1,15 +1,15 @@
 ---
-title: Operational Readiness Closure Architecture
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Operational Readiness Closure Architecture"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0028
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0028"
 parent_ids:
-  - REQ-0025
-created: 2026-07-19
-updated: 2026-09-01
+- "REQ-0025"
+created: "2026-07-19"
 ---
 # Operational Readiness Closure Architecture
 

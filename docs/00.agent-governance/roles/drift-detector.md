@@ -1,14 +1,15 @@
 ---
-title: drift-detector
-version: 1.0.0
-type: governance/role
-status: active
+title: "drift-detector"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: drift-detector
-scope: infra
-tier: worker
-work_profile: routine-validation
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "drift-detector"
+scope: "infra"
+tier: "worker"
+work_profile: "routine-validation"
+permission_profile: "read-only"
 skill_ids: []
 ---
 

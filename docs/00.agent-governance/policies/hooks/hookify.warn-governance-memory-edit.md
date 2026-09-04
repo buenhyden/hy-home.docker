@@ -1,17 +1,18 @@
 ---
 title: "WARNING: Stage 00 root authority edit"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-stage00-root-edit
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "warn"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: (^|/)docs/00\.agent-governance/(README|sdlc)\.md$
-action: warn
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "(^|/)docs/00\\.agent-governance/(README|sdlc)\\.md$"
+enabled: true
+event: "file"
+name: "warn-stage00-root-edit"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

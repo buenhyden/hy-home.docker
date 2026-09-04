@@ -27,6 +27,11 @@ from scripts.lib.document_governance.links import (
     parse_local_markdown_links,
 )
 from scripts.lib.document_governance.operations_catalog import read_bounded_regular
+from scripts.lib.document_governance.registry import (
+    RegistryError,
+    classify_path,
+    load_registry,
+)
 
 
 CATEGORIES = ("audits", "data", "research")
@@ -870,6 +875,17 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
     references_root = root / "docs/90.references"
 
     try:
+        registry = load_registry(root / "docs/99.templates/registry.json")
+    except RegistryError as exc:
+        return (
+            _finding(
+                "reference-registry-invalid",
+                "docs/99.templates/registry.json",
+                str(exc),
+            ),
+        )
+
+    try:
         generated_paths = frozenset(
             map(pathlib.PurePosixPath, generated_reference_owners(root))
         )
@@ -935,6 +951,15 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
         pathlib.PurePosixPath(item.relative_package) / DATA_PAYLOAD_NAME
         for item in corpus.packages
         if item.category == "data"
+    )
+    allowed_files.update(
+        relative
+        for relative in corpus.files
+        if classify_path(
+            pathlib.PurePosixPath("docs/90.references") / relative,
+            registry,
+        )
+        == "research-member"
     )
     for relative in corpus.files:
         if relative not in allowed_files:
@@ -1014,17 +1039,12 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
 
 
 def delegated_member_paths(root: pathlib.Path) -> frozenset[str]:
-    """Category indexes and current package payloads; package READMEs stay typed."""
+    """Category indexes stay delegated; typed package documents use Registry."""
 
     prefix = pathlib.PurePosixPath("docs/90.references")
     corpus = load_reference_packages(pathlib.Path(root) / prefix)
     return frozenset(
         {
             *((prefix / category / "README.md").as_posix() for category in CATEGORIES),
-            *(
-                (prefix / relative).as_posix()
-                for relative in corpus.files
-                if relative.suffix == ".md" and relative.name != "README.md"
-            ),
         }
     )

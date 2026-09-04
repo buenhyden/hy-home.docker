@@ -1,11 +1,11 @@
 ---
-title: Specialized Data Services (04-data/specialized)
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Specialized Data Services (04-data/specialized)"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-05-15'
-updated: '2026-08-23'
+updated: "2026-09-04"
+created: "2026-05-15"
 ---
 
 # Specialized Data Services (04-data/specialized)

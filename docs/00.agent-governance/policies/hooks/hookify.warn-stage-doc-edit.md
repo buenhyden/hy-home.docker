@@ -1,17 +1,18 @@
 ---
 title: "WARNING: Stage document edit"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-stage-doc-edit
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "warn"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: (^|/)docs/(0[1-9]|[1-9][0-9])\.
-action: warn
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "(^|/)docs/(0[1-9]|[1-9][0-9])\\."
+enabled: true
+event: "file"
+name: "warn-stage-doc-edit"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

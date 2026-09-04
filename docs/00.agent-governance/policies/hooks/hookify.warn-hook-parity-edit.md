@@ -1,17 +1,18 @@
 ---
 title: "WARNING: hook parity contract review required"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-hook-parity-edit
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "warn"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: (\.claude/settings\.json|\.codex/hooks\.json)$
-action: warn
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "(\\.claude/settings\\.json|\\.codex/hooks\\.json)$"
+enabled: true
+event: "file"
+name: "warn-hook-parity-edit"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

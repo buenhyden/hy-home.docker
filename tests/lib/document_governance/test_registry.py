@@ -19,6 +19,8 @@ from scripts.lib.document_governance.registry import (
     RegistryError,
     _path_patterns_overlap,
     classify_path,
+    declares_frozen_legacy_record,
+    declares_frozen_legacy_status,
     load_registry,
     _declares_provider_binding,
     resolve_template_placeholders,
@@ -32,6 +34,7 @@ from scripts.lib.document_governance.metadata_validator import (
     build_manifest,
     infer_artifact_type,
     load_profiles,
+    parse_frontmatter,
     validate_body_contract,
     validate_record,
 )
@@ -112,6 +115,244 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_required_markdown_profiles_share_the_canonical_common_six(self) -> None:
+        registry = load_registry()
+        common_six = ["title", "version", "type", "status", "owner", "updated"]
+
+        self.assertEqual(common_six, list(registry.common["frontmatter_order"][:6]))
+        for profile_id, profile in registry.profiles.items():
+            if profile.get("frontmatter_policy") != "required" or any(
+                item.get("kind") == "provider-owned-binding"
+                for item in profile.get("exceptions", ())
+            ):
+                continue
+            with self.subTest(profile_id=profile_id):
+                required = list(profile["required_frontmatter"])
+                optional = set(profile["optional_frontmatter"])
+                self.assertEqual(common_six, required[:6])
+                self.assertTrue(set(common_six).isdisjoint(optional))
+
+    def test_every_profile_frontmatter_key_has_canonical_order(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        adapted = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        adapted["common"]["frontmatter_order"].remove("identity_recovery")
+
+        findings = validate_registry(adapted)
+
+        self.assertIn(
+            "frontmatter-order-contract-invalid", {item.code for item in findings}
+        )
+        self.assertFalse(validate_registry(raw))
+
+    def test_profile_lifecycles_encode_semantic_entry_and_terminal_states(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        expected_profiles = {
+            "requirements-package": "requirement",
+            "architecture-description": "architecture-description",
+            "adr": "architecture-decision",
+            "spec": "spec",
+            "plan": "plan",
+            "task": "task",
+            "policy": "operational-policy",
+            "incident": "incident",
+            "postmortem": "postmortem",
+            "research": "publication",
+            "audit": "publication",
+            "data": "publication",
+            "migration": "sealed-record",
+            "tombstone": "sealed-record",
+        }
+
+        self.assertEqual(
+            expected_profiles,
+            {
+                profile_id: raw["transitions"][profile_id]
+                for profile_id in expected_profiles
+            },
+        )
+        for lifecycle_id, lifecycle in raw["lifecycles"].items():
+            with self.subTest(lifecycle_id=lifecycle_id):
+                statuses = set(lifecycle["statuses"])
+                self.assertIn(lifecycle["initial_status"], statuses)
+                self.assertEqual(statuses, set(lifecycle["transitions"]))
+                self.assertEqual(
+                    set(lifecycle["terminal_statuses"]),
+                    {
+                        status
+                        for status, targets in lifecycle["transitions"].items()
+                        if not targets
+                    },
+                )
+                reachable = {lifecycle["initial_status"]}
+                pending = [lifecycle["initial_status"]]
+                while pending:
+                    source = pending.pop()
+                    for target in lifecycle["transitions"][source]:
+                        if target not in reachable:
+                            reachable.add(target)
+                            pending.append(target)
+                self.assertEqual(statuses, reachable)
+
+        lifecycle_statuses = {
+            status
+            for lifecycle in raw["lifecycles"].values()
+            for status in lifecycle["statuses"]
+        }
+        self.assertEqual(
+            lifecycle_statuses,
+            set(raw["common"]["allowed_statuses"]),
+        )
+
+        orphan = json.loads(json.dumps(raw))
+        orphan["common"]["allowed_statuses"].append("orphan-status")
+        self.assertIn(
+            "lifecycle-status-union-invalid",
+            {finding.code for finding in validate_registry(orphan)},
+        )
+
+    def test_lifecycle_graph_rejects_incomplete_terminal_and_reachability(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+        missing_terminal = json.loads(json.dumps(raw))
+        missing_terminal["lifecycles"]["task"]["terminal_statuses"].remove(
+            "cancelled"
+        )
+        self.assertIn(
+            "lifecycle-terminal-set-invalid",
+            {finding.code for finding in validate_registry(missing_terminal)},
+        )
+
+        unreachable = json.loads(json.dumps(raw))
+        for targets in unreachable["lifecycles"]["task"]["transitions"].values():
+            if "cancelled" in targets:
+                targets.remove("cancelled")
+        self.assertIn(
+            "lifecycle-unreachable-status",
+            {finding.code for finding in validate_registry(unreachable)},
+        )
+
+    def test_semantic_transition_graphs_reject_lifecycle_shortcuts(self) -> None:
+        registry = load_registry()
+
+        self.assertEqual(
+            ("review",), registry.transitions["requirements-package"]["draft"]
+        )
+        self.assertEqual(
+            ("approved",), registry.transitions["requirements-package"]["review"]
+        )
+        self.assertNotIn(
+            "active", registry.transitions["requirements-package"]["approved"]
+        )
+        self.assertEqual(("ready",), registry.transitions["task"]["draft"])
+        self.assertIn("in-progress", registry.transitions["task"]["ready"])
+        self.assertIn("blocked", registry.transitions["task"]["in-progress"])
+        self.assertIn("in-progress", registry.transitions["task"]["blocked"])
+        self.assertNotIn("completed", registry.transitions["task"]["blocked"])
+        self.assertEqual(
+            ("investigating",), registry.transitions["incident"]["detected"]
+        )
+        self.assertEqual(
+            ("mitigated",), registry.transitions["incident"]["investigating"]
+        )
+        self.assertEqual(
+            ("resolved",), registry.transitions["incident"]["mitigated"]
+        )
+
+    def test_active_corpus_uses_migrated_statuses_and_common_six(self) -> None:
+        registry = load_registry()
+        common_six = ["title", "version", "type", "status", "owner", "updated"]
+        legacy_statuses = {
+            "requirements-package": {"active"},
+            "adr": {"draft", "active"},
+            "task": {"active"},
+            "incident": {"open", "closed"},
+            "postmortem": {"active"},
+            "research": {"active"},
+            "audit": {"active"},
+            "data": {"active"},
+            "research-member": {"active"},
+            "audit-member": {"active"},
+            "generated": {"active"},
+            "migration": {"completed"},
+            "tombstone": {"completed"},
+        }
+        listed = subprocess.run(
+            [
+                "git",
+                "ls-files",
+                "--cached",
+                "--others",
+                "--exclude-standard",
+                "--",
+                "*.md",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        checked = 0
+        for relative in listed.stdout.splitlines():
+            if relative.startswith(
+                (
+                    "docs/98.archive/completed/",
+                    "docs/98.archive/superseded/",
+                    "docs/98.archive/retired/",
+                    "docs/99.templates/templates/",
+                )
+            ):
+                continue
+            profile_id = classify_path(relative, registry)
+            if profile_id is None:
+                continue
+            profile = registry.profiles[profile_id]
+            if (
+                profile.get("frontmatter_policy") != "required"
+                or _declares_provider_binding(profile)
+            ):
+                continue
+            with self.subTest(path=relative, profile_id=profile_id):
+                values = parse_frontmatter(ROOT / relative)
+                if declares_frozen_legacy_status(
+                    profile, relative, values.get("status")
+                ):
+                    continue
+                self.assertEqual(common_six, list(values)[:6])
+                self.assertNotIn(
+                    values.get("status"), legacy_statuses.get(profile_id, set())
+                )
+            checked += 1
+
+        self.assertGreaterEqual(checked, 600)
+
+    def test_frozen_legacy_status_exception_is_exact(self) -> None:
+        registry = load_registry()
+        profile = registry.profiles["migration"]
+        paths = profile["exceptions"][0]["paths"]
+
+        self.assertEqual(3, len(paths))
+        for path in paths:
+            with self.subTest(path=path):
+                self.assertTrue(
+                    declares_frozen_legacy_status(profile, path, "completed")
+                )
+                self.assertTrue(declares_frozen_legacy_record(profile, path))
+                self.assertFalse(
+                    declares_frozen_legacy_status(profile, path, "sealed")
+                )
+        self.assertFalse(
+            declares_frozen_legacy_status(
+                profile, "docs/98.archive/migrations/0004-future.md", "completed"
+            )
+        )
+        self.assertFalse(
+            declares_frozen_legacy_record(
+                profile, "docs/98.archive/migrations/0004-future.md"
+            )
+        )
+
     def test_changed_generated_body_requires_exact_manifest_owner_and_output(
         self,
     ) -> None:
@@ -191,7 +432,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         for path in ("../outside.md", "docs/03.specs/0104-collision/spec.md"):
             raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
-            next(item for item in raw["profiles"] if item["profile_id"] == "readme")[
+            next(item for item in raw["profiles"] if item["id"] == "readme")[
                 "additional_paths"
             ] = [path]
             self.assertTrue(validate_registry(raw))
@@ -255,6 +496,106 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(DEFAULT_REGISTRY, ROOT / registry.source)
         self.assertNotIn("release", registry.profiles)
         self.assertGreater(registry.identity_spaces["requirement"].next_number, 0)
+
+    def test_registry_uses_one_internal_id_per_external_type(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        profiles = raw["profiles"]
+
+        self.assertTrue(profiles)
+        self.assertTrue(all("id" in profile for profile in profiles))
+        self.assertTrue(all("profile_id" not in profile for profile in profiles))
+        profile_ids = [profile["id"] for profile in profiles]
+        document_types = [profile["type"] for profile in profiles]
+        self.assertEqual(len(profile_ids), len(set(profile_ids)))
+        self.assertEqual(len(document_types), len(set(document_types)))
+
+        duplicate_type = json.loads(json.dumps(raw))
+        duplicate_type["profiles"][1]["type"] = duplicate_type["profiles"][0][
+            "type"
+        ]
+        self.assertIn(
+            "profile-type-duplicate",
+            {finding.code for finding in validate_registry(duplicate_type)},
+
+        )
+    def test_template_roles_declare_explicit_profile_lists(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        known_profiles = {profile["id"] for profile in raw["profiles"]}
+        sources: list[str] = []
+
+        for role, definition in raw["template_roles"].items():
+            with self.subTest(role=role):
+                self.assertEqual({"source", "profiles"}, set(definition))
+                profiles = definition["profiles"]
+                self.assertIsInstance(profiles, list)
+                self.assertEqual(1, len(profiles))
+                self.assertEqual(len(profiles), len(set(profiles)))
+                self.assertLessEqual(set(profiles), known_profiles)
+                sources.append(definition["source"])
+
+        self.assertEqual(len(sources), len(set(sources)))
+
+    def test_authored_frontmatter_schema_is_closed_and_unambiguous(self) -> None:
+        schema_path = (
+            ROOT
+            / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        )
+        self.assertTrue(schema_path.is_file())
+        self.assertFalse(
+            (schema_path.parent / "frontmatter.schema.json").exists(),
+            "the retired ambiguous schema name must not remain as a compatibility copy",
+        )
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            "https://hy-home.invalid/schemas/document-frontmatter.schema.json",
+            schema["$id"],
+        )
+        findings = validate_frontmatter(
+            {"version": "0.1.0", "unexpected_key": "value"}, schema_path
+        )
+        self.assertEqual(
+            {"frontmatter-schema-invalid"},
+            {finding.code for finding in findings},
+        )
+        self.assertIs(schema["additionalProperties"], False)
+        hook_values = _parse_frontmatter_text(
+            (
+                ROOT
+                / "docs/00.agent-governance/policies/hooks/"
+                "hookify.block-absolute-file-link.md"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual((), validate_frontmatter(hook_values, schema_path))
+
+    def test_registered_templates_use_one_placeholder_grammar(self) -> None:
+        registry = load_registry()
+
+        for role, definition in registry.template_roles.items():
+            source = ROOT / str(definition["source"])
+            text = source.read_text(encoding="utf-8")
+            with self.subTest(role=role):
+                if source.suffix == ".md":
+                    tokens = re.findall(r"{{([^{}]+)}}", text)
+                    self.assertTrue(tokens)
+                    self.assertTrue(
+                        all(re.fullmatch(r"[A-Z][A-Z0-9_]*", token) for token in tokens)
+                    )
+                    self.assertNotRegex(text, r"<[a-z][a-z0-9_ -]*>")
+                    self.assertNotIn("YYYY-MM-DD", text)
+                    self.assertNotIn('"#.#.#"', text)
+                    self.assertIn("<!-- Author prompt:", text)
+                    values = _parse_frontmatter_text(text)
+                    if "version" in values:
+                        self.assertEqual("0.1.0", values["version"])
+                else:
+                    native_tokens = re.findall(r"__([^_][A-Za-z0-9_]*)__", text)
+                    self.assertTrue(native_tokens)
+                    self.assertTrue(
+                        all(
+                            re.fullmatch(r"[A-Z][A-Z0-9_]*", token)
+                            for token in native_tokens
+                        )
+                    )
 
     def test_registry_is_deeply_immutable(self) -> None:
         registry = load_registry()
@@ -402,7 +743,7 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(role=role):
                 text = (ROOT / str(source)).read_text(encoding="utf-8")
                 values = _parse_frontmatter_text(text)
-                profile = registry.profiles[str(template["profile_id"])]
+                profile = registry.profiles[str(template["profiles"][0])]
                 if _declares_provider_binding(profile):
                     # A provider runtime owns this binding, so it declares no type.
                     self.assertIn("name:", text)
@@ -475,7 +816,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "release-profile": lambda value: value["profiles"].append(
                 {
                     **value["profiles"][0],
-                    "profile_id": "release",
+                    "id": "release",
                     "path_pattern": "docs/05.operations/releases/{number:4}-{slug}.md",
                 }
             ),
@@ -550,7 +891,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "markdown-frontmatter-policy-bypass": lambda value: next(
                 profile
                 for profile in value["profiles"]
-                if profile["profile_id"] == "guide"
+                if profile["id"] == "guide"
             ).update(
                 {
                     "frontmatter_policy": "absent",
@@ -970,7 +1311,7 @@ class DocumentRegistryTests(unittest.TestCase):
         duplicate = dict(raw["profiles"][0])
         duplicate.update(
             {
-                "profile_id": "requirements-duplicate",
+                "id": "requirements-duplicate",
                 "template_id": None,
             }
         )
@@ -987,11 +1328,11 @@ class DocumentRegistryTests(unittest.TestCase):
         generated = next(
             profile
             for profile in raw["profiles"]
-            if profile["profile_id"] == "generated"
+            if profile["id"] == "generated"
         )
         specialized = {
             **generated,
-            "profile_id": "generated-report",
+            "id": "generated-report",
             "path_pattern": (
                 "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-report.md"
             ),
@@ -1364,7 +1705,7 @@ class FreeFormProfileTests(unittest.TestCase):
             path
             for path in (ROOT / "docs/00.agent-governance").rglob("*.md")
             if re.search(
-                r"^type:\s*governance/policy\s*$",
+                r'^type:\s*"?governance/policy"?\s*$',
                 path.read_text(encoding="utf-8"),
                 re.M,
             )
@@ -1390,17 +1731,7 @@ class FreeFormProfileTests(unittest.TestCase):
 
 
 class ExecutionLifecycleTests(unittest.TestCase):
-    """A Task drafted and finished inside one change is the normal case.
-
-    `check-changed` compares the status at the merge base with the status at
-    HEAD. It does not walk the commits between them, so an intermediate
-    `active` commit is invisible to it: SPEC-0154's own spec.md passed through
-    draft, active, and completed in three commits and still reported
-    `draft -> completed`. Requiring `active` at the change boundary therefore
-    does not record that work was tracked; it forbids completing any document
-    that was drafted before the merge base, which is every Task an agent
-    writes and finishes in one branch.
-    """
+    """Execution records expose reviewable semantic progress without shortcuts."""
 
     def _transitions(self, profile_id: str) -> dict[str, list[str]]:
         registry = load_registry()
@@ -1409,24 +1740,80 @@ class ExecutionLifecycleTests(unittest.TestCase):
             for key, value in dict(registry.transitions[profile_id]).items()
         }
 
-    def test_execution_lifecycle_completes_from_draft(self) -> None:
-        for profile_id in ("task", "plan"):
-            with self.subTest(profile_id=profile_id):
-                self.assertIn("completed", self._transitions(profile_id)["draft"])
+    def _spec_record(self, status: str = "draft", **metadata: object) -> Record:
+        values: dict[str, object] = {
+            "title": "Fixture Specification",
+            "version": "0.1.0",
+            "type": "sdlc/spec",
+            "status": status,
+            "owner": "@buenhyden",
+            "updated": "2026-09-04",
+            "layer": "specs",
+            "artifact_id": "SPEC-0172",
+            "parent_ids": ["REQ-0024"],
+            "created": "2026-09-04",
+            **metadata,
+        }
+        return Record(
+            path=pathlib.Path("docs/03.specs/0172-fixture/spec.md"),
+            metadata=values,
+            artifact_type="spec",
+            frontmatter_present=True,
+        )
 
-    def test_execution_lifecycle_keeps_active_reachable(self) -> None:
+    def test_new_document_must_use_registered_initial_status(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        self.assertNotIn(
+            "invalid-initial-status",
+            {
+                finding.code
+                for finding in validate_record(
+                    self._spec_record(), profiles, {}, enforce_initial_status=True
+                )
+            },
+        )
+        self.assertIn(
+            "invalid-initial-status",
+            {
+                finding.code
+                for finding in validate_record(
+                    self._spec_record("active"),
+                    profiles,
+                    {},
+                    enforce_initial_status=True,
+                )
+            },
+        )
+
+    def test_authored_record_executes_frontmatter_value_schema(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        codes = {
+            finding.code
+            for finding in validate_record(
+                self._spec_record(version=123, owner=123), profiles, {}
+            )
+        }
+        self.assertIn("frontmatter-schema-invalid", codes)
+
+    def test_task_lifecycle_requires_ready_and_in_progress(self) -> None:
         transitions = self._transitions("task")
-        self.assertIn("active", transitions["draft"])
+        self.assertEqual(["ready"], transitions["draft"])
+        self.assertIn("in-progress", transitions["ready"])
+        self.assertIn("completed", transitions["in-progress"])
+
+    def test_plan_lifecycle_requires_approval_before_activation(self) -> None:
+        transitions = self._transitions("plan")
+        self.assertEqual(["approved"], transitions["draft"])
+        self.assertEqual(["active"], transitions["approved"])
         self.assertIn("completed", transitions["active"])
 
     def test_execution_lifecycle_still_refuses_to_reopen(self) -> None:
         self.assertEqual([], self._transitions("task")["completed"])
 
     def test_spec_package_lifecycle_stays_strict(self) -> None:
-        # A Spec Package is reviewed as `active` before it can complete. Only
-        # the Task lifecycle relaxes, because only a Task is routinely drafted
-        # and finished inside one change.
+        # A Spec Package is reviewed and approved before activation.
         self.assertNotIn("completed", self._transitions("spec")["draft"])
+        self.assertEqual(["review"], self._transitions("spec")["draft"])
 
 
 class InvalidPreviousStatusTests(unittest.TestCase):
@@ -1448,26 +1835,30 @@ class InvalidPreviousStatusTests(unittest.TestCase):
         record = Record(
             path=pathlib.Path("docs/98.archive/migrations/0001-fixture.md"),
             metadata={
-                "profile_id": "migration",
+                "title": "Fixture migration",
+                "version": "1.0.0",
+                "type": "archive/migration",
                 "status": status,
+                "owner": "@buenhyden",
+                "updated": "2026-09-04",
+                "layer": "archive",
                 "artifact_id": "MIG-0001",
-                "artifact_type": "migration",
                 "parent_ids": ["SPEC-0136"],
                 "created": "2026-08-29",
-                "updated": "2026-08-30",
             },
             artifact_type="migration",
             previous_status=previous_status,
+            frontmatter_present=True,
         )
         return {
             finding.code for finding in validate_record(record, self._profiles(), {})
         }
 
     def test_repair_from_an_undefined_status_is_not_a_transition(self) -> None:
-        self.assertNotIn("invalid-transition", self._codes("archived", "completed"))
+        self.assertNotIn("invalid-transition", self._codes("archived", "sealed"))
 
-    def test_move_between_defined_statuses_still_follows_the_lifecycle(self) -> None:
-        self.assertIn("invalid-transition", self._codes("superseded", "completed"))
+    def test_sealed_record_cannot_move_to_an_undefined_status(self) -> None:
+        self.assertIn("invalid-transition", self._codes("sealed", "completed"))
 
     def test_repair_must_land_on_a_defined_status(self) -> None:
         self.assertIn("invalid-transition", self._codes("archived", "archived-too"))

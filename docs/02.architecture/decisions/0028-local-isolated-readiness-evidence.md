@@ -1,15 +1,15 @@
 ---
-title: Local-Isolated Readiness Evidence
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Local-Isolated Readiness Evidence"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0028
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0028"
 parent_ids:
-  - AD-0028
-created: 2026-07-19
-updated: 2026-09-01
+- "AD-0028"
+created: "2026-07-19"
 ---
 # ADR-0028: Local-Isolated Readiness Evidence
 

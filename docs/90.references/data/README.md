@@ -1,12 +1,12 @@
 ---
-title: Data Packages
-version: 1.0.0
-type: reference/category-readme
-layer: references
-status: active
+title: "Data Packages"
+version: "1.0.0"
+type: "reference/category-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-07-02'
-updated: '2026-09-02'
+updated: "2026-09-04"
+layer: "references"
+created: "2026-07-02"
 ---
 
 # Data Packages

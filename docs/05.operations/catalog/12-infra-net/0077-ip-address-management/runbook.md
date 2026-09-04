@@ -1,15 +1,15 @@
 ---
-title: 0012 Standardize Infra Net Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "0012 Standardize Infra Net Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0077
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0077"
 parent_ids:
-  - GDE-0077
-created: 2026-05-10
-updated: 2026-09-01
+- "GDE-0077"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md -->
 

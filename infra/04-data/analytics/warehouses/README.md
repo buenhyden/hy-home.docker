@@ -1,11 +1,11 @@
 ---
-title: StarRocks (OLAP Warehouse)
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "StarRocks (OLAP Warehouse)"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-03-26'
-updated: '2026-08-28'
+updated: "2026-09-04"
+created: "2026-03-26"
 ---
 
 # StarRocks (OLAP Warehouse)

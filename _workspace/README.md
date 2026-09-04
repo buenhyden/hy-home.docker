@@ -1,11 +1,11 @@
 ---
-title: Workspace Staging Surface
-version: 1.0.0
-type: common/repository-readme
-status: active
+title: "Workspace Staging Surface"
+version: "1.0.0"
+type: "common/repository-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-03-05'
-updated: '2026-09-03'
+updated: "2026-09-04"
+created: "2026-03-05"
 ---
 
 # Workspace Staging Surface

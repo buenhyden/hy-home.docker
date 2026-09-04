@@ -1,14 +1,15 @@
 ---
-title: Target Surface Delta Convergence Specification Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Target Surface Delta Convergence Specification Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0135
-parent_ids: [SPEC-0158]
-created: 2026-09-01
-updated: 2026-09-01
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0135"
+parent_ids:
+- "SPEC-0158"
+created: "2026-09-01"
 ---
 
 # Target Surface Delta Convergence Specification Tombstone

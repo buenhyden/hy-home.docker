@@ -1,12 +1,13 @@
 ---
-title: style-validation
-version: 1.0.0
-type: governance/skill
-status: active
+title: "style-validation"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: style-validation
-scope: qa
-owner_agent: qa-engineer
+updated: "2026-09-04"
+function_id: "style-validation"
+scope: "qa"
+owner_agent: "qa-engineer"
 ---
 
 # style-validation

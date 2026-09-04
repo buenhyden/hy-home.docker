@@ -1,14 +1,15 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-branch-naming
+updated: "2026-09-04"
+action: "warn"
 enabled: true
-event: bash
-pattern: git\s+(checkout\s+-b|switch\s+-c)\s+(?!(feat|fix|hotfix|docs|style|refactor|perf|test|build|ci|chore|revert|dependabot|codex)/)
-action: warn
+event: "bash"
+name: "warn-branch-naming"
+pattern: "git\\s+(checkout\\s+-b|switch\\s+-c)\\s+(?!(feat|fix|hotfix|docs|style|refactor|perf|test|build|ci|chore|revert|dependabot|codex)/)"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

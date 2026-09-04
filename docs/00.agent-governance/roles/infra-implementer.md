@@ -1,18 +1,19 @@
 ---
-title: infra-implementer
-version: 1.0.0
-type: governance/role
-status: active
+title: "infra-implementer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: infra-implementer
-scope: infra
-tier: worker
-work_profile: complex-implementation
-permission_profile: workspace-write
+updated: "2026-09-04"
+agent_id: "infra-implementer"
+scope: "infra"
+tier: "worker"
+work_profile: "complex-implementation"
+permission_profile: "workspace-write"
 skill_ids:
-- compose-stack-agent
-- docker-compose-patterns
-- infra-validate
+- "compose-stack-agent"
+- "docker-compose-patterns"
+- "infra-validate"
 ---
 
 # infra-implementer

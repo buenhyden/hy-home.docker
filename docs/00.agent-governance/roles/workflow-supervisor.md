@@ -1,17 +1,18 @@
 ---
-title: workflow-supervisor
-version: 1.0.0
-type: governance/role
-status: active
+title: "workflow-supervisor"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: workflow-supervisor
-scope: agentic
-tier: supervisor
-work_profile: long-horizon-supervision
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "workflow-supervisor"
+scope: "agentic"
+tier: "supervisor"
+work_profile: "long-horizon-supervision"
+permission_profile: "read-only"
 skill_ids:
-- execution-plan-agent
-- task-breakdown-agent
+- "execution-plan-agent"
+- "task-breakdown-agent"
 ---
 
 # workflow-supervisor

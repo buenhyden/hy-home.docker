@@ -1,14 +1,14 @@
 ---
-title: Developer Environment Operations
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Developer Environment Operations"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0002
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0002"
 parent_ids: []
-created: 2026-06-04
-updated: 2026-08-14
+created: "2026-06-04"
 ---
 # Developer Environment Operations
 

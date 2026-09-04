@@ -1,14 +1,15 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-conventional-commit
+updated: "2026-09-04"
+action: "warn"
 enabled: true
-event: bash
-pattern: git\s+commit\s+(?!.*--amend|.*-C[\s=]).*-m\s+("|\')(?!(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]*\))?!?:[ \t]|Merge\s|Revert\s|Initial commit)
-action: warn
+event: "bash"
+name: "warn-conventional-commit"
+pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

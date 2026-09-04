@@ -1,15 +1,15 @@
 ---
-title: New Service Onboarding Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "New Service Onboarding Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0008
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0008"
 parent_ids:
-  - RUN-0009
-created: 2026-06-04
-updated: 2026-08-11
+- "RUN-0009"
+created: "2026-06-04"
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/0008-new-service-onboarding/guide.md -->

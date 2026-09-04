@@ -1,15 +1,15 @@
 ---
-title: RedisInsight Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "RedisInsight Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0076
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0076"
 parent_ids:
-  - POL-0076
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0076"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/11-laboratory/0076-redisinsight/guide.md -->
 

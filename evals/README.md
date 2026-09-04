@@ -1,11 +1,11 @@
 ---
-title: Agent Evaluation Harness
-version: 1.0.0
-type: common/repository-readme
-status: active
+title: "Agent Evaluation Harness"
+version: "1.0.0"
+type: "common/repository-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-09-03'
-updated: '2026-09-03'
+updated: "2026-09-04"
+created: "2026-09-03"
 ---
 
 # evals

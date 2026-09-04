@@ -1,9 +1,10 @@
 ---
-title: Software Development Lifecycle
-version: 1.0.0
-type: governance/sdlc
-status: active
+title: "Software Development Lifecycle"
+version: "1.0.0"
+type: "governance/sdlc"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Software Development Lifecycle

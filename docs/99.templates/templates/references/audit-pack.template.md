@@ -1,51 +1,53 @@
 ---
-title: <title>
-version: "#.#.#"
-type: reference/audit-pack
-layer: references
-status: draft
-owner: <owner>
-artifact_id: AUD-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "reference/audit-pack"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "references"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-observed_at: YYYY-MM-DD
+created: "{{CREATED}}"
+observed_at: "{{OBSERVED_AT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Objective
 
-{{objective}}
+{{OBJECTIVE}}
 
 ## Scope
 
-{{scope}}
+{{SCOPE}}
 
 ## Criteria
 
-{{criteria}}
+{{CRITERIA}}
 
 ## Evidence
 
-{{evidence}}
+{{EVIDENCE}}
 
 ## Findings
 
-{{findings}}
+{{FINDINGS}}
 
 ## Conformance
 
-{{conformance}}
+{{CONFORMANCE}}
 
 ## Actions
 
-{{actions}}
+{{ACTIONS}}
 
 ## Traceability
 
-{{current_authority_links}}
+{{CURRENT_AUTHORITY_LINKS}}
 
 ## Limitations
 
-{{limitations}}
+{{LIMITATIONS}}

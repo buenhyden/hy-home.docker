@@ -1,15 +1,15 @@
 ---
-title: Mail Recovery Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "Mail Recovery Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0070
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0070"
 parent_ids:
-  - GDE-0070
-created: 2026-05-17
-updated: 2026-09-01
+- "GDE-0070"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/10-communication/0070-mail/runbook.md -->
 

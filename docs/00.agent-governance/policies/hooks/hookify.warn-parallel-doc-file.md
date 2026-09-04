@@ -1,17 +1,18 @@
 ---
 title: "WARNING: parallel replacement document file"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-parallel-doc-file
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "warn"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: docs/.*(-new|-v\d+|-updated|-revised|-backup|-copy|-old|-draft|-temp|-tmp)\.md$
-action: warn
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "docs/.*(-new|-v\\d+|-updated|-revised|-backup|-copy|-old|-draft|-temp|-tmp)\\.md$"
+enabled: true
+event: "file"
+name: "warn-parallel-doc-file"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

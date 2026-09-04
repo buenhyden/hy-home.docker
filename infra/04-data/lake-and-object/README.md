@@ -1,11 +1,11 @@
 ---
-title: Lake & Object Storage (04-data/lake-and-object)
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Lake & Object Storage (04-data/lake-and-object)"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-05-15'
-updated: '2026-08-23'
+updated: "2026-09-04"
+created: "2026-05-15"
 ---
 
 # Lake & Object Storage (04-data/lake-and-object)

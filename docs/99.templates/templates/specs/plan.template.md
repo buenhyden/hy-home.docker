@@ -1,38 +1,41 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/plan
-layer: specs
-status: draft
-owner: <owner>
-artifact_id: SPEC-####-PLAN-####
-parent_ids: [SPEC-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/plan"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "specs"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Objective
 
-{{objective}}
+{{OBJECTIVE}}
 
 ## Dependencies
 
-{{dependencies}}
+{{DEPENDENCIES}}
 
 ## Execution Sequence
 
-{{tasks_and_order}}
+{{TASKS_AND_ORDER}}
 
 ## Risk and Rollback
 
-{{risk_and_rollback}}
+{{RISK_AND_ROLLBACK}}
 
 ## Verification
 
-{{verification}}
+{{VERIFICATION}}
 
 ## Rulings
 
-{{implementation_rulings}}
+{{IMPLEMENTATION_RULINGS}}

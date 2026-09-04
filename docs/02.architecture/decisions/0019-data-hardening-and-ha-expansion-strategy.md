@@ -1,15 +1,15 @@
 ---
-title: 04-Data Hardening and HA Expansion Strategy
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "04-Data Hardening and HA Expansion Strategy"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0019
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0019"
 parent_ids:
-  - AD-0019
-created: 2026-03-28
-updated: 2026-09-01
+- "AD-0019"
+created: "2026-03-28"
 ---
 # ADR-0019: 04-Data Hardening and HA Expansion Strategy
 

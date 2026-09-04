@@ -1,12 +1,12 @@
 ---
-title: Research Packages
-version: 1.0.0
-type: reference/category-readme
-layer: references
-status: active
+title: "Research Packages"
+version: "1.0.0"
+type: "reference/category-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-07-02'
-updated: '2026-09-04'
+updated: "2026-09-04"
+layer: "references"
+created: "2026-07-02"
 ---
 
 # Research Packages
@@ -28,6 +28,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 | [RES-0080](../../98.archive/superseded/90.references/research/0080-roadmap-v1/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
 | [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |
 | [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics | active |
+| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment | draft |
 
 ### Workspace Engineering Request Route
 
@@ -37,11 +38,12 @@ The workspace-engineering request is assessed against
 `buenhyden/hy-home.docker` at
 `main@db21aebf079fcc4e867779861b49c2283b7f8f01`.
 
-The request does not create a parallel `RES-0085` authority. Its research
-questions are already covered by RES-0002, RES-0084, and the current
-implementation audits. Repository-specific implementation truth remains in
-Stage 00 policies, provider adapters, Stage 03 contracts, Stage 05 operations,
-tracked runtime files, scripts, tests, and CI definitions.
+RES-0085 owns the repository-local baseline assessment and its binding request
+evidence. Its topical research inputs remain owned by RES-0002, RES-0084, and
+the current implementation audits; RES-0085 does not duplicate or replace
+those owners. Repository-specific implementation truth remains in Stage 00
+policies, provider adapters, Stage 03 contracts, Stage 05 operations, tracked
+runtime files, scripts, tests, and CI definitions.
 
 #### Design Decisions
 

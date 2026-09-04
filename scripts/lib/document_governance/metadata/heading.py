@@ -137,16 +137,10 @@ def _validate_template_source(
                 f"key is not declared for target {target_type}: {key}",
             )
         )
-    # A template source carries its lifecycle's initial status, which is
-    # `draft` for every profile that has one. The incident lifecycle is
-    # `open/mitigated/closed` and has no `draft`, so demanding it there
-    # contradicted the lifecycle-membership check on the same file.
     allowed_statuses = target_profile.get("allowed_statuses") or ()
-    initial_status = (
-        "draft"
-        if "draft" in allowed_statuses
-        else (allowed_statuses[0] if allowed_statuses else "draft")
-    )
+    initial_status = target_profile.get("initial_status")
+    if not isinstance(initial_status, str):
+        initial_status = allowed_statuses[0] if allowed_statuses else "draft"
     if record.metadata.get("status") != initial_status:
         findings.append(
             _finding(
@@ -224,8 +218,8 @@ def _validate_template_source(
         # and then only to be one the Registry actually registers.
         if (
             isinstance(value, str)
-            and value.startswith("<")
-            and value.endswith(">")
+            and value.startswith("{{")
+            and value.endswith("}}")
             and value not in registered_placeholder_values
         ):
             findings.append(

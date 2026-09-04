@@ -1,14 +1,14 @@
 ---
-title: Laboratory Tier (11-laboratory) Product Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Laboratory Tier (11-laboratory) Product Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0012
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0012"
 parent_ids: []
-created: 2026-03-26
-updated: 2026-08-13
+created: "2026-03-26"
 ---
 # Laboratory Tier (11-laboratory) Product Requirements
 

@@ -1,15 +1,15 @@
 ---
-title: Tooling Tier Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Tooling Tier Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0009
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0009"
 parent_ids:
-  - REQ-0010
-created: 2026-03-26
-updated: 2026-08-10
+- "REQ-0010"
+created: "2026-03-26"
 ---
 # Tooling Tier Architecture Description
 

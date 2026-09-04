@@ -1,15 +1,15 @@
 ---
-title: Mail Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Mail Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0070
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0070"
 parent_ids:
-  - AD-0010
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0010"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/10-communication/0070-mail/policy.md -->
 

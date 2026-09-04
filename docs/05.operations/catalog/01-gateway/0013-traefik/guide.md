@@ -1,15 +1,15 @@
 ---
-title: 01-Gateway Traefik Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "01-Gateway Traefik Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0013
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0013"
 parent_ids:
-  - POL-0013
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0013"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/01-gateway/0013-traefik/guide.md -->
 

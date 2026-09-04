@@ -1,16 +1,17 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: 1.0.0
-type: reference/research
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/research"
+status: "published"
 owner: "@buenhyden"
-artifact_id: RES-0002-m0003
-parent_ids: [RES-0002]
-created: 2026-08-23
-updated: 2026-08-31
-reviewed_at: 2026-08-28
-review_cycle: on-source-change
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "RES-0002-m0003"
+parent_ids:
+- "RES-0002"
+created: "2026-08-23"
+reviewed_at: "2026-08-28"
+review_cycle: "on-source-change"
 ---
 
 # Reference: External AI-Agent Catalogs and Local Intake

@@ -1,14 +1,14 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0003
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0003"
 parent_ids: []
-created: 2026-06-04
-updated: 2026-08-14
+created: "2026-06-04"
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md -->

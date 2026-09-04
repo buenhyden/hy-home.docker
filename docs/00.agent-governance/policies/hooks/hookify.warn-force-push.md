@@ -1,14 +1,15 @@
 ---
-title: Prefer --force-with-lease over --force.
-version: 1.0.0
-type: governance/hook-policy
-status: active
+title: "Prefer --force-with-lease over --force."
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-force-push
+updated: "2026-09-04"
+action: "warn"
 enabled: true
-event: bash
-pattern: git\s+push\s+.*(--force\b|--force-with-lease\b|-f\s|-f$)
-action: warn
+event: "bash"
+name: "warn-force-push"
+pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

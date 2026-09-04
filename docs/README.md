@@ -1,9 +1,10 @@
 ---
-title: Documentation Space
-version: 1.0.0
-type: common/documentation-readme
-status: active
+title: "Documentation Space"
+version: "1.1.0"
+type: "common/documentation-readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # docs
@@ -60,7 +61,7 @@ docs/
 │   ├── catalog/<domain>/####-<subject>/
 │   └── incidents/<year>/inc-####-<slug>/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
-├── 98.archive/                 # manifest-first validated tombstone result with full typed provenance and preservation
+├── 98.archive/                 # frozen preserved bodies plus migration/tombstone disposition records
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # This file
 ```
@@ -134,14 +135,18 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
 - Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [Stage 00 승인 경계](00.agent-governance/policies/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
-- 검증된 manifest-first validated tombstone result만 `98.archive/`에 기록합니다. Tombstone은 full typed provenance and preservation을 유지하고, `current_replacement` is disposition-conditional이며, exact relation/preservation 조건은 Stage 99 Registry로 라우팅합니다. Active 문서에서는 archive로 역링크하지 않습니다.
+- `completed/`와 `superseded/` 보존본은 역사적 증거로 직접 인용할 수 있지만,
+  같은 문맥에서 현재 Stage 00/01/02/05 소유자를 함께 연결해야 합니다.
+  `retired/`, Tombstone, Migration은 현재 권위의 의존성이 아니며 Stage 98
+  README를 통해 탐색합니다.
 
 ## Template Usage
 
 Select the role in the [Registry](99.templates/registry.json) and copy its source
 from the [template catalog](99.templates/templates/README.md). Spec, Plan, Task,
 and machine contracts are co-located in Stage 03. Requirement child identities
-are owned by their package; Stage 98 contains only minimal recovery records.
+are owned by their package; Stage 98 contains frozen preserved bodies and their
+separate migration or tombstone disposition records.
 
 ## Document Contract Validation
 
@@ -184,7 +189,6 @@ python3 scripts/validation/check-document-links.py --mode traceability
 - [90.references/README.md](90.references/README.md)
 - [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md)
 - [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md)
-- [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md)
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

@@ -1,55 +1,58 @@
 ---
-title: <title>
-version: "#.#.#"
-type: operation/postmortem
-layer: operations
-status: draft
-owner: <owner>
-artifact_id: inc-<year>-####-PM
-parent_ids: [inc-<year>-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-reviewed_at: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "operation/postmortem"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "operations"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
+reviewed_at: "{{REVIEWED_AT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Summary
 
-{{summary}}
+{{SUMMARY}}
 
 ## Impact
 
-{{impact}}
+{{IMPACT}}
 
 ## Timeline
 
-{{timeline}}
+{{TIMELINE}}
 
 ## Root Cause
 
-{{root_cause}}
+{{ROOT_CAUSE}}
 
 ## Contributing Factors
 
-{{contributing_factors}}
+{{CONTRIBUTING_FACTORS}}
 
 ## Detection and Response
 
-{{detection_and_response}}
+{{DETECTION_AND_RESPONSE}}
 
 ## Corrective Actions
 
-{{corrective_actions}}
+{{CORRECTIVE_ACTIONS}}
 
 ## Learning
 
-{{learning}}
+{{LEARNING}}
 
 ## Traceability
 
-{{incident_runbook_and_task_links}}
+{{INCIDENT_RUNBOOK_AND_TASK_LINKS}}
 
 ## Follow-up Review
 
-{{follow_up_review}}
+{{FOLLOW_UP_REVIEW}}

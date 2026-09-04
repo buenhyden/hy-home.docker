@@ -1,47 +1,49 @@
 ---
-title: <title>
-version: "#.#.#"
-type: reference/research-pack
-layer: references
-status: draft
-owner: <owner>
-artifact_id: RES-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "reference/research-pack"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "references"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-observed_at: YYYY-MM-DD
+created: "{{CREATED}}"
+observed_at: "{{OBSERVED_AT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Question
 
-{{research_question}}
+{{RESEARCH_QUESTION}}
 
 ## Scope
 
-{{scope}}
+{{SCOPE}}
 
 ## Method
 
-{{method}}
+{{METHOD}}
 
 ## Findings
 
-{{findings}}
+{{FINDINGS}}
 
 ## Sources
 
-{{primary_sources}}
+{{PRIMARY_SOURCES}}
 
 ## Implications
 
-{{implications}}
+{{IMPLICATIONS}}
 
 ## Traceability
 
-{{current_authority_links}}
+{{CURRENT_AUTHORITY_LINKS}}
 
 ## Limitations
 
-{{limitations}}
+{{LIMITATIONS}}

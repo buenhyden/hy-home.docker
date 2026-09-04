@@ -1,12 +1,13 @@
 ---
-title: execution-plan-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "execution-plan-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: execution-plan-agent
-scope: agentic
-owner_agent: workflow-supervisor
+updated: "2026-09-04"
+function_id: "execution-plan-agent"
+scope: "agentic"
+owner_agent: "workflow-supervisor"
 ---
 
 # execution-plan-agent

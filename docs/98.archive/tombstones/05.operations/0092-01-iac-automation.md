@@ -1,14 +1,15 @@
 ---
 title: "Archive Tombstone: 09-Tooling IaC Automation Guide"
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-GDE-0092
-parent_ids: [MIG-0001]
-created: 2026-06-05
-updated: 2026-08-23
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-GDE-0092"
+parent_ids:
+- "MIG-0001"
+created: "2026-06-05"
 ---
 
 # Archive Tombstone: 09-Tooling IaC Automation Guide

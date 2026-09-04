@@ -1,15 +1,15 @@
 ---
-title: infra_net Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "infra_net Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0026
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0026"
 parent_ids:
-  - REQ-0023
-created: 2026-04-01
-updated: 2026-09-01
+- "REQ-0023"
+created: "2026-04-01"
 ---
 # infra_net Architecture Description
 

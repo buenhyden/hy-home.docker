@@ -1,14 +1,14 @@
 ---
-title: Messaging Tier (05-messaging) Product Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Messaging Tier (05-messaging) Product Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0006
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0006"
 parent_ids: []
-created: 2026-03-26
-updated: 2026-08-13
+created: "2026-03-26"
 ---
 # Messaging Tier (05-messaging) Product Requirements
 

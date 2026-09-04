@@ -124,6 +124,226 @@ class IdentityHistoryTests(unittest.TestCase):
                 ),
             )
 
+    def test_deleted_package_identity_requires_exact_git_recovery(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            registry_path = root / "docs/99.templates/registry.json"
+            registry_path.parent.mkdir(parents=True)
+            registry_path.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            decision = (
+                root
+                / "docs/03.specs/0104-decision/tasks/tsk-0001-recovery.md"
+            )
+            decision.parent.mkdir(parents=True)
+            decision.write_text(
+                "---\nartifact_id: SPEC-0104-TSK-0001\n---\n", encoding="utf-8"
+            )
+            source = (
+                root
+                / "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
+            )
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "---\nartifact_id: RES-0085-SCOPE\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue incomplete package")
+            source_commit = self._git(root, "rev-parse", "HEAD").strip()
+            source.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete incomplete package")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            target_path = (
+                "docs/90.references/research/0085-workspace/"
+                "m0001-request-scope.md"
+            )
+            decision_path = decision.relative_to(root).as_posix()
+            current = {
+                target_path: "RES-0085-m0001",
+                decision_path: "SPEC-0104-TSK-0001",
+            }
+
+            findings = identity_history.validate_allocation_transition(
+                root, load_registry(), current, base
+            )
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+            recovery = {
+                target_path: {
+                    "source_commit": source_commit,
+                    "source_path": source.relative_to(root).as_posix(),
+                    "source_artifact_id": "RES-0085-SCOPE",
+                    "decision_path": decision_path,
+                    "decision_artifact_id": "SPEC-0104-TSK-0001",
+                    "disposition": "consolidated",
+                }
+            }
+            decision_evidence = {
+                decision_path: [
+                    {
+                        "source_commit": source_commit,
+                        "source_path": source.relative_to(root).as_posix(),
+                        "source_artifact_id": "RES-0085-SCOPE",
+                        "target_path": target_path,
+                        "target_artifact_id": "RES-0085-m0001",
+                        "disposition": "consolidated",
+                    }
+                ]
+            }
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root,
+                    load_registry(),
+                    current,
+                    base,
+                    recovery_evidence=recovery,
+                    decision_evidence=decision_evidence,
+                ),
+            )
+
+            target = root / target_path
+            target.write_text(
+                "---\nartifact_id: RES-0085-m0001\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "introduce recovered package")
+            target_base = self._git(root, "rev-parse", "HEAD").strip()
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root,
+                    load_registry(),
+                    current,
+                    target_base,
+                    recovery_evidence=recovery,
+                    decision_evidence=decision_evidence,
+                ),
+            )
+
+            recovery[target_path]["source_artifact_id"] = "RES-0084-SCOPE"
+            findings = identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                current,
+                base,
+                recovery_evidence=recovery,
+                decision_evidence=decision_evidence,
+            )
+            self.assertIn("identity-recovery-invalid", {item.code for item in findings})
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+            recovery[target_path]["source_artifact_id"] = "RES-0085-SCOPE"
+            findings = identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                current,
+                base,
+                recovery_evidence=recovery,
+                decision_evidence={},
+            )
+            self.assertIn("identity-recovery-invalid", {item.code for item in findings})
+
+            untyped_decision_path = (
+                "docs/03.specs/0104-decision/tasks/tsk-0001.md"
+            )
+            recovery[target_path]["decision_path"] = untyped_decision_path
+            current[untyped_decision_path] = "SPEC-0104-TSK-0001"
+            decision_evidence[untyped_decision_path] = decision_evidence[decision_path]
+            findings = identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                current,
+                base,
+                recovery_evidence=recovery,
+                decision_evidence=decision_evidence,
+            )
+            self.assertIn("identity-recovery-invalid", {item.code for item in findings})
+            recovery[target_path]["decision_path"] = decision_path
+            current.pop(untyped_decision_path)
+            decision_evidence.pop(untyped_decision_path)
+
+            canonical_source = (
+                root / "docs/90.references/research/0085-workspace/README.md"
+            )
+            canonical_source.write_text(
+                "---\nartifact_id: RES-0085\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue canonical package")
+            canonical_commit = self._git(root, "rev-parse", "HEAD").strip()
+            canonical_source.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete canonical package")
+            canonical_base = self._git(root, "rev-parse", "HEAD").strip()
+            recovery[target_path].update(
+                {
+                    "source_commit": canonical_commit,
+                    "source_path": canonical_source.relative_to(root).as_posix(),
+                    "source_artifact_id": "RES-0085",
+                }
+            )
+            decision_evidence[decision_path][0].update(
+                {
+                    "source_commit": canonical_commit,
+                    "source_path": canonical_source.relative_to(root).as_posix(),
+                    "source_artifact_id": "RES-0085",
+                }
+            )
+            findings = identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                current,
+                canonical_base,
+                recovery_evidence=recovery,
+                decision_evidence=decision_evidence,
+            )
+            self.assertIn("identity-recovery-invalid", {item.code for item in findings})
+
+            foreign_source = (
+                root
+                / "docs/90.references/research/0084-other/REQUEST-SCOPE.md"
+            )
+            foreign_source.parent.mkdir(parents=True)
+            foreign_source.write_text(
+                "---\nartifact_id: RES-0085-SCOPE\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue foreign legacy member")
+            foreign_commit = self._git(root, "rev-parse", "HEAD").strip()
+            foreign_source.unlink()
+            self._git(root, "add", "-u")
+            self._git(root, "commit", "-qm", "delete foreign legacy member")
+            foreign_base = self._git(root, "rev-parse", "HEAD").strip()
+            recovery[target_path].update(
+                {
+                    "source_commit": foreign_commit,
+                    "source_path": foreign_source.relative_to(root).as_posix(),
+                    "source_artifact_id": "RES-0085-SCOPE",
+                }
+            )
+            decision_evidence[decision_path][0].update(
+                {
+                    "source_commit": foreign_commit,
+                    "source_path": foreign_source.relative_to(root).as_posix(),
+                    "source_artifact_id": "RES-0085-SCOPE",
+                }
+            )
+            findings = identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                current,
+                foreign_base,
+                recovery_evidence=recovery,
+                decision_evidence=decision_evidence,
+            )
+            self.assertIn("identity-recovery-invalid", {item.code for item in findings})
+
     def test_missing_predecessor_registry_is_not_a_generic_bootstrap_exception(
         self,
     ) -> None:
@@ -433,6 +653,26 @@ class IdentityHistoryTests(unittest.TestCase):
             issued = collect_issued_identities(root)
 
         self.assertGreaterEqual(issued.high_water("requirement"), 99)
+
+    def test_deleted_worktree_source_is_history_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            source = root / "docs/90.references/research/0099-example/README.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "---\nartifact_id: RES-0099\n---\n",
+                encoding="utf-8",
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add identity source")
+            source.unlink()
+
+            issued = collect_issued_identities(root)
+
+        self.assertIn(99, issued.numbers["research"])
 
     def test_tracked_identity_source_symlink_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

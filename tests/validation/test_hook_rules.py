@@ -19,6 +19,8 @@ import tempfile
 import unittest
 from typing import Any
 
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE = ROOT / "scripts/hooks/hook_rules.py"
 DISPATCHER = ROOT / "scripts/hooks/agent-event-hook.sh"
@@ -57,7 +59,8 @@ class TrackedRuleTests(unittest.TestCase):
         stop_rules = [
             path
             for path in tracked
-            if "\nevent: stop\n" in path.read_text(encoding="utf-8")
+            if parse_frontmatter_text(path.read_text(encoding="utf-8")).get("event")
+            == "stop"
         ]
         # `event: stop` is excluded on purpose: both carry `pattern: .*`, so
         # evaluating `require-logical-commits-before-stop` generically would deny
@@ -69,13 +72,10 @@ class TrackedRuleTests(unittest.TestCase):
         loaded = {rule.name for rule in self.rules}
         for path in RULES.glob("hookify.*.md"):
             text = path.read_text(encoding="utf-8")
-            if "\nevent: stop\n" in text:
+            frontmatter = parse_frontmatter_text(text)
+            if frontmatter.get("event") == "stop":
                 continue
-            declared = next(
-                line.split(":", 1)[1].strip()
-                for line in text.splitlines()
-                if line.startswith("name:")
-            )
+            declared = str(frontmatter.get("name", ""))
             self.assertIn(declared, loaded, f"{path.name} parsed to nothing")
 
     def test_every_rule_carries_a_message(self) -> None:

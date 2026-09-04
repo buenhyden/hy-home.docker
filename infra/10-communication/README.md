@@ -1,11 +1,11 @@
 ---
-title: 10-communication - Communication Tier
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "10-communication - Communication Tier"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-12'
-updated: '2026-08-23'
+updated: "2026-09-04"
+created: "2025-11-12"
 ---
 
 # 10-communication - Communication Tier

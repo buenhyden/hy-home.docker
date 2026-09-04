@@ -1,17 +1,18 @@
 ---
-title: rules-engineer
-version: 1.0.0
-type: governance/role
-status: active
+title: "rules-engineer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: rules-engineer
-scope: agentic
-tier: worker
-work_profile: adversarial-review
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "rules-engineer"
+scope: "agentic"
+tier: "worker"
+work_profile: "adversarial-review"
+permission_profile: "read-only"
 skill_ids:
-- policy-gate-agent
-- requirements-to-design-agent
+- "policy-gate-agent"
+- "requirements-to-design-agent"
 ---
 
 # rules-engineer

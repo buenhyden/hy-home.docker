@@ -1,17 +1,17 @@
 ---
-title: 보존 기록으로서의 아카이브
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "보존 기록으로서의 아카이브"
+version: "1.1.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0031
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0031"
 parent_ids:
-  - AD-0030
-created: 2026-09-04
-updated: 2026-09-04
+- "AD-0030"
 supersedes:
-  - ADR-0030
+- "ADR-0030"
+created: "2026-09-04"
 ---
 
 # ADR-0031: 보존 기록으로서의 아카이브
@@ -80,8 +80,10 @@ link의 해석 가능성은 보존 기록에 적용되지 않습니다. 들어�
 - `validate_spec_package_lifecycle`은 `preserved_paths`를 함께 받아 완료에
   의한 이탈과 철회에 의한 이탈을 구분합니다. 완료에 Tombstone을 요구하면
   일어나지 않은 철회를 기록하게 됩니다.
-- 활성 문서는 보존 기록을 직접 link할 수 있습니다. 그 대상은 실재하는
-  파일이기 때문입니다. Tombstone 직접 link는 계속 금지됩니다.
+- 활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 link할
+  수 있지만 같은 문맥에서 현재 Stage 00/01/02/05 owner를 함께 가리킵니다.
+  `retired/` 보존본, Tombstone, Migration은 현재 권위의 의존성이 아니며 Stage 98
+  인덱스를 통해 탐색합니다.
 - ADR-0030이 금지했던 "두 번째 복제본"은 이제 의도된 결과입니다. 중복은
   Tombstone의 `Retired Path` 하나이며 그것은 두 기록을 잇는 조인 키입니다.
 

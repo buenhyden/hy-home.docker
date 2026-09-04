@@ -1,14 +1,15 @@
 ---
-title: Agentic Research Pack Consolidation Technical Specification Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Agentic Research Pack Consolidation Technical Specification Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0122
-parent_ids: [MIG-0001]
-created: 2026-08-08
-updated: 2026-08-23
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0122"
+parent_ids:
+- "MIG-0001"
+created: "2026-08-08"
 ---
 
 # Agentic Research Pack Consolidation Technical Specification Tombstone

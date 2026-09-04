@@ -1,15 +1,15 @@
 ---
-title: infra_net IP Management Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "infra_net IP Management Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0077
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0077"
 parent_ids:
-  - AD-0026
-created: 2026-04-01
-updated: 2026-09-01
+- "AD-0026"
+created: "2026-04-01"
 ---
 
 <!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md -->

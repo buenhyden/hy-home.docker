@@ -1,15 +1,15 @@
 ---
-title: Agent Governance Canonical Adapter Architecture
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Agent Governance Canonical Adapter Architecture"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0027
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0027"
 parent_ids:
-  - REQ-0024
-created: 2026-06-01
-updated: 2026-09-01
+- "REQ-0024"
+created: "2026-06-01"
 ---
 # Agent Governance Canonical Adapter Architecture
 

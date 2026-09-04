@@ -1,14 +1,14 @@
 ---
-title: Common Optimizations Template Exceptions Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Common Optimizations Template Exceptions Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0001
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0001"
 parent_ids: []
-created: 2026-06-04
-updated: 2026-08-11
+created: "2026-06-04"
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md -->

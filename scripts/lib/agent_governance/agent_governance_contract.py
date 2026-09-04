@@ -959,7 +959,7 @@ def _validate_stage99_governance_profiles(root: pathlib.Path) -> list[Finding]:
     try:
         stage99 = json.loads(_read_text(root, "docs/99.templates/registry.json"))
         profiles = {
-            item.get("profile_id")
+            item.get("id")
             for item in stage99.get("profiles", [])
             if isinstance(item, dict)
         }

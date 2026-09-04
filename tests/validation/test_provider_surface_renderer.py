@@ -102,8 +102,8 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             root = pathlib.Path(directory)
             copy_fixture(root)
             for relative, original in (
-                ("roles/code-reviewer.md", "scope: common"),
-                ("skills/adr-writing.md", "scope: architecture"),
+                ("roles/code-reviewer.md", 'scope: "common"'),
+                ("skills/adr-writing.md", 'scope: "architecture"'),
             ):
                 path = root / "docs/00.agent-governance" / relative
                 text = path.read_text(encoding="utf-8")
@@ -454,6 +454,17 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                     )
                 ):
                     self.assertIsInstance(parse_frontmatter(payload), dict)
+                elif relative in {
+                    ".agents/README.md",
+                    ".claude/README.md",
+                    ".codex/README.md",
+                }:
+                    metadata = parse_frontmatter(payload)
+                    self.assertEqual(
+                        ["title", "version", "type", "status", "owner", "updated"],
+                        list(metadata)[:6],
+                    )
+                    self.assertEqual("active", metadata["status"])
 
     def test_write_repairs_registered_projection_drift(self) -> None:
         renderer = load_renderer()

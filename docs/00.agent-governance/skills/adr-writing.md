@@ -1,12 +1,13 @@
 ---
-title: adr-writing
-version: 1.0.0
-type: governance/skill
-status: active
+title: "adr-writing"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: adr-writing
-scope: architecture
-owner_agent: doc-writer
+updated: "2026-09-04"
+function_id: "adr-writing"
+scope: "architecture"
+owner_agent: "doc-writer"
 ---
 
 # adr-writing

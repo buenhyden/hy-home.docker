@@ -1,14 +1,15 @@
 ---
-title: Compose Runtime Readiness Remediation Technical Specification (Spec) Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Compose Runtime Readiness Remediation Technical Specification (Spec) Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0124
-parent_ids: [MIG-0001]
-created: 2026-08-08
-updated: 2026-08-23
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0124"
+parent_ids:
+- "MIG-0001"
+created: "2026-08-08"
 ---
 
 # Compose Runtime Readiness Remediation Technical Specification (Spec) Tombstone

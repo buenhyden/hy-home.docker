@@ -1,15 +1,15 @@
 ---
-title: LLM Wiki Maintenance Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "LLM Wiki Maintenance Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0007
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0007"
 parent_ids:
-  - SPEC-0096
-created: 2026-07-04
-updated: 2026-08-14
+- "SPEC-0096"
+created: "2026-07-04"
 ---
 
 # LLM Wiki Maintenance Runbook

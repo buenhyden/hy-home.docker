@@ -1,14 +1,15 @@
 ---
 title: "Archive Tombstone: Airbyte Runbook"
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-RUN-0094
-parent_ids: [MIG-0001]
-created: 2026-06-02
-updated: 2026-08-23
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-RUN-0094"
+parent_ids:
+- "MIG-0001"
+created: "2026-06-02"
 ---
 
 # Archive Tombstone: Airbyte Runbook

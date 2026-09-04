@@ -1,15 +1,15 @@
 ---
-title: Analytics Tier Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Analytics Tier Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0012
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0012"
 parent_ids:
-  - REQ-0005
-created: 2026-03-26
-updated: 2026-08-10
+- "REQ-0005"
+created: "2026-03-26"
 ---
 # Analytics Tier Architecture Description
 

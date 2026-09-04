@@ -1,10 +1,11 @@
 ---
-title: References
-version: 1.0.0
-type: common/readme
-layer: references
-status: active
+title: "References"
+version: "1.0.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "references"
 ---
 
 # References

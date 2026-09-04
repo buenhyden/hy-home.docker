@@ -1,15 +1,15 @@
 ---
-title: Observability Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Observability Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0006
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0006"
 parent_ids:
-  - REQ-0007
-created: 2026-03-26
-updated: 2026-09-01
+- "REQ-0007"
+created: "2026-03-26"
 ---
 # Observability Architecture Description
 

@@ -1,12 +1,13 @@
 ---
-title: policy-gate-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "policy-gate-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: policy-gate-agent
-scope: agentic
-owner_agent: rules-engineer
+updated: "2026-09-04"
+function_id: "policy-gate-agent"
+scope: "agentic"
+owner_agent: "rules-engineer"
 ---
 
 # policy-gate-agent

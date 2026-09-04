@@ -1,52 +1,54 @@
 ---
-title: <title>
-version: "#.#.#"
-type: operation/incident
-layer: operations
-status: open
-owner: <owner>
-artifact_id: inc-<year>-####
-parent_ids: [RUN-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-occurred_at: "YYYY-MM-DDTHH:MM:SSZ"
-resolved_at: null
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "operation/incident"
+status: "detected"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "operations"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
+occurred_at: "{{OCCURRED_AT}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Summary
 
-{{summary}}
+{{SUMMARY}}
 
 ## Impact
 
-{{impact}}
+{{IMPACT}}
 
 ## Coordination
 
-{{roles_and_coordination}}
+{{ROLES_AND_COORDINATION}}
 
 ## Timeline
 
-{{timeline}}
+{{TIMELINE}}
 
 ## Mitigation
 
-{{mitigation}}
+{{MITIGATION}}
 
 ## Current Status
 
-{{current_status}}
+{{CURRENT_STATUS}}
 
 ## Corrective Actions
 
-{{corrective_actions}}
+{{CORRECTIVE_ACTIONS}}
 
 ## Traceability
 
-{{runbook_and_system_links}}
+{{RUNBOOK_AND_SYSTEM_LINKS}}
 
 ## Communications
 
-{{communications}}
+{{COMMUNICATIONS}}

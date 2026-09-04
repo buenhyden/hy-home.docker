@@ -1,15 +1,15 @@
 ---
-title: Security Optimization and Hardening Architecture
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Security Optimization and Hardening Architecture"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0018
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0018"
 parent_ids:
-  - REQ-0003
-created: 2026-03-28
-updated: 2026-09-01
+- "REQ-0003"
+created: "2026-03-28"
 ---
 # Security Optimization and Hardening Architecture
 
