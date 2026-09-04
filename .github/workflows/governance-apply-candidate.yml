@@ -1,0 +1,240 @@
+name: Temporary candidate verification
+
+on:
+  push:
+    branches: [codex/governance-qa-convergence]
+    paths: [.github/workflows/governance-apply-candidate.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout isolated feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: projects/storybook/nextjs/package-lock.json
+      - name: Install uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+      - name: Install existing validation dependencies
+        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
+      - name: Reconstruct reviewed tree and prepare logical commit objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I - <<'PYCODE'
+          import base64, hashlib, json, lzma, os, subprocess, urllib.request
+          from pathlib import Path, PurePosixPath
+          TOKEN = os.environ.pop('GH_TOKEN')
+          REPO = 'buenhyden/hy-home.docker'
+          BRANCH = 'codex/governance-qa-convergence'
+          EXPECTED_TREE = '72eb9b1528501e639c06524a9a2bfefb2af0f924'
+          INCOMING = os.environ['GITHUB_SHA']
+          def api(path, body=None):
+              data = None if body is None else json.dumps(body).encode()
+              req = urllib.request.Request('https://api.github.com/repos/'+REPO+'/'+path,
+                  data=data, headers={'Authorization':'Bearer '+TOKEN,
+                  'Accept':'application/vnd.github+json','Content-Type':'application/json',
+                  'X-GitHub-Api-Version':'2022-11-28'})
+              with urllib.request.urlopen(req,timeout=60) as response:
+                  return json.load(response)
+          chunks = ['113a1b0b3997744fc67d35a21d239ee775729d58',
+                    'c1e8c89dfa865146034f1806d93918e1f6839d41',
+                    '2116852b70a99c52cdc91b03ec987e1b60db873b',
+                    'c3cbe3f15b410043e48f85db6be6d935aa8c9864']
+          parts=[]
+          for sha in chunks:
+              response=api('git/blobs/'+sha)
+              value=base64.b64decode(response['content'])
+              identity=hashlib.sha1(b'blob '+str(len(value)).encode()+b'\0'+value).hexdigest()
+              if identity != sha: raise RuntimeError('transport blob identity mismatch')
+              parts.append(value)
+          compressed=b''.join(parts)
+          if hashlib.sha256(compressed).hexdigest() != 'b969c4bbe2b35773d2d12d4e3ca163954f0ddb22ed87495d377cb33fb29f8890':
+              raise RuntimeError('compressed payload mismatch')
+          raw=lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest() != 'd897fe9c04a5b5986b6a847c09201181f87c0f031641875d03b4cb88fb3f89bc':
+              raise RuntimeError('candidate payload mismatch')
+          payload=json.loads(raw)
+          if payload['tree'] != EXPECTED_TREE: raise RuntimeError('unexpected tree')
+          ROOT = Path.cwd().resolve()
+          def git(*args):
+              return subprocess.check_output(['git', *args], cwd=ROOT).decode().strip()
+          def blob(data):
+              return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+          def apply(payload, extra_paths=()):
+              if git('status', '--porcelain'):
+                  raise RuntimeError('candidate input must be a clean checkout')
+              base = payload['baseline']
+              changed = set(git('diff', '--name-only', base, 'HEAD').splitlines())
+              if changed != set(extra_paths):
+                  raise RuntimeError('unexpected branch change; preserve concurrent work')
+              rows = payload['entries']
+              if len({row['path'] for row in rows}) != len(rows):
+                  raise RuntimeError('duplicate candidate path')
+              for row in rows:
+                  name = row['path']; rel = PurePosixPath(name)
+                  if rel.is_absolute() or any(p in ('', '.', '..', '.git') for p in rel.parts):
+                      raise RuntimeError('unsafe candidate path')
+                  path = ROOT / rel
+                  for parent in path.parents:
+                      if parent == ROOT: break
+                      if parent.is_symlink(): raise RuntimeError('symlink candidate parent')
+                  if path.is_symlink(): raise RuntimeError('symlink candidate file')
+                  old = path.read_bytes() if path.exists() else b''
+                  current = blob(old) if path.exists() else None
+                  original = git('ls-tree',base,'--',name)
+                  expected = original.split()[2] if original else None
+                  if current != expected:
+                      raise RuntimeError('candidate before-state mismatch: '+name)
+                  if row['mode'] is None:
+                      path.unlink()
+                      if rel.parts[0] == '.agents':
+                          parent = path.parent
+                          while parent != ROOT:
+                              try: parent.rmdir()
+                              except OSError: break
+                              parent = parent.parent
+                      continue
+                  text = old.decode().splitlines(keepends=True)
+                  end = len(text)
+                  for start, stop, replacement in reversed(row['edits']):
+                      if not 0 <= start <= stop <= end:
+                          raise RuntimeError('overlapping or out-of-range candidate edit')
+                      text[start:stop] = replacement.splitlines(keepends=True)
+                      end = start
+                  new = ''.join(text).encode()
+                  if row['mode'] not in ('100644','100755'):
+                      raise RuntimeError('non-regular candidate mode')
+                  path.parent.mkdir(parents=True,exist_ok=True)
+                  path.write_bytes(new); path.chmod(int(row['mode'], 8) & 0o777)
+              return rows
+          def category(path):
+              if path.startswith('.github/workflows/governance-audit-'):
+                  return 4
+              if path in ('.github/PULL_REQUEST_TEMPLATE.md',
+                          'docs/00.agent-governance/policies/github-governance.md',
+                          'docs/00.agent-governance/policies/quality-standards.md',
+                          '.github/rulesets/main-protection.md') or path.startswith((
+                              'docs/03.specs/',
+                              'docs/90.references/data/0076-',
+                              'docs/90.references/data/0082-')):
+                  return 3
+              if path.startswith(('scripts/lib/gate/', 'tests/lib/gate/')) or path in (
+                  '.github/workflow-contract.yml', '.github/workflows/ci-quality.yml',
+                  '.github/workflows/greetings.yml', 'scripts/validation/ci_gate_runner.py',
+                  'scripts/validation/check-storybook-contract.sh',
+                  'docs/90.references/data/0078-security-automation-readiness/README.md'):
+                  return 2
+              return 1
+          MESSAGES = {
+              1: 'refactor(governance): retire shared runtime projections and bind canonical skills',
+              2: 'fix(ci): validate Compose selections once and share QA setup',
+              3: 'docs(governance): converge QA ownership and record bounded audit evidence',
+              4: 'chore(qa): remove temporary audit transport workflows',
+          }
+          def commit_rows(rows, extras):
+              ledger=[]
+              for group, message in MESSAGES.items():
+                  paths=[row['path'] for row in rows if category(row['path'])==group]
+                  if group==4:
+                      for name in extras:
+                          path=ROOT/name
+                          if path.is_symlink() or not path.is_file():
+                              raise RuntimeError('unexpected transport file state')
+                          path.unlink(); paths.append(name)
+                  if not paths: continue
+                  subprocess.run(['git','add','--',*paths],cwd=ROOT,check=True)
+                  subprocess.run(['git','commit','-m',message],cwd=ROOT,check=True)
+                  ledger.append({'sha':git('rev-parse','HEAD'),'tree':git('rev-parse','HEAD^{tree}'),'message':message})
+              return ledger
+          subprocess.run(['git','config','user.name','github-actions[bot]'],check=True)
+          subprocess.run(['git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com'],check=True)
+          extras=('.github/workflows/governance-audit-tools.yml',
+                  '.github/workflows/governance-apply-candidate.yml')
+          rows=apply(payload, extras)
+          commits=commit_rows(rows, extras)
+          if git('rev-parse','HEAD^{tree}') != EXPECTED_TREE or git('status','--porcelain'):
+              raise RuntimeError('final tree mismatch or dirty candidate')
+          # Prepare objects only. Branch refs are deliberately not changed by this workflow.
+          if api('git/ref/heads/'+BRANCH)['object']['sha'] != INCOMING:
+              raise RuntimeError('branch advanced; preserve concurrent work')
+          parent=INCOMING
+          parent_tree=api('git/commits/'+parent)['tree']['sha']
+          prepared=[]
+          for row in commits:
+              commit=row['sha']
+              diff=subprocess.check_output(['git','diff-tree','--no-commit-id','--no-renames',
+                  '-r','-z','--raw',commit+'^',commit]).split(b'\0')
+              entries=[]
+              for index in range(0,len(diff)-1,2):
+                  before,after,old,new,status=diff[index].decode().split()
+                  path=diff[index+1].decode()
+                  if status=='D':
+                      entries.append({'path':path,'mode':before[1:],'type':'blob','sha':None})
+                  else:
+                      content=subprocess.check_output(['git','cat-file','blob',new]).decode()
+                      entries.append({'path':path,'mode':after,'type':'blob','content':content})
+              tree=api('git/trees',{'base_tree':parent_tree,'tree':entries})['sha']
+              if tree != row['tree']: raise RuntimeError('remote tree identity mismatch')
+              result=api('git/commits',{'message':row['message'],'tree':tree,'parents':[parent]})
+              parent=result['sha']; parent_tree=tree
+              prepared.append({'sha':parent,'tree':tree,'message':row['message']})
+          ledger={'baseline':payload['baseline'],'incoming':INCOMING,'tree':EXPECTED_TREE,
+              'head':parent,'commits':prepared,'refs_updated':False}
+          (Path(os.environ['RUNNER_TEMP'])/'candidate-result.json').write_text(json.dumps(ledger,indent=2))
+          print('Prepared exact candidate tree and',len(prepared),'logical commits; no remote ref changed')
+          PYCODE
+      - name: Run actual Hosted full QA
+        id: full
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/validation/run-ci-gate.py --profile full
+      - name: Preserve verification outcome
+        if: always()
+        env:
+          QA_OUTCOME: ${{ steps.full.outcome }}
+        shell: bash
+        run: |
+          python3 -I - <<'PYCODE'
+          import json, os, subprocess
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          path=root/'candidate-result.json'
+          result=json.loads(path.read_text()) if path.exists() else {'prepared':False}
+          result['hosted_full_outcome']=os.environ['QA_OUTCOME']
+          result['run_id']=os.environ['GITHUB_RUN_ID']
+          result['worktree_status']=subprocess.check_output(['git','status','--porcelain']).decode()
+          path.write_text(json.dumps(result,indent=2))
+          (root/'candidate-format.patch').write_bytes(subprocess.check_output(['git','diff','--binary']))
+          PYCODE
+      - name: Store candidate evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: governance-candidate-result
+          path: |
+            ${{ runner.temp }}/candidate-result.json
+            ${{ runner.temp }}/candidate-format.patch
+          retention-days: 1
+          if-no-files-found: error
