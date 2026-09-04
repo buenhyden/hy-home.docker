@@ -61,24 +61,28 @@ List exact commands used and outcome.
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
 
-If any harness surface changed, list exact validation evidence:
+For affected surfaces, select checks from the
+[shared change-type verification matrix](../docs/00.agent-governance/policies/quality-standards.md#5-change-type-verification-matrix).
+Record the selected command, execution environment, result, and reason for any
+unexecuted check in Validation Evidence. This template adds no gate and does
+not require both public profiles for every harness change.
 
-```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/run-ci-gate.py --profile full
-```
+Report hosted evidence separately: head commit, workflow run, job conclusion,
+and any required review or branch-protection blocker. Local checks do not prove
+hosted acceptance; a skipped or unexecuted check is not passing evidence.
 
 Secret handling:
 
 - [ ] No secret values, tokens, private keys, or certificate contents are included
 - [ ] Secret-related changes record only path, ID, registry, and redacted evidence
 
-Agent-loop evidence:
+Agent-loop evidence (only when lifecycle or semantic-evaluation behavior is
+affected; otherwise record N/A and the reason in Validation Evidence):
 
 - [ ] Loop owner and independent reviewer differ
 - [ ] Retry, stop, escalation, permission, and controlled-wrapper bounds match the typed contract
 - [ ] Evidence contains only command, result, rollback, and skipped-check fields
-- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when agent-harness surfaces changed
+- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when lifecycle or semantic-evaluation behavior changed
 - [ ] Provider configuration is not presented as proof of live native-event execution
 
 See [Approval Boundaries](../docs/00.agent-governance/policies/approval-boundaries.md) for protected surfaces.
