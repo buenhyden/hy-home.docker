@@ -121,6 +121,11 @@ binds its evidence to a Task under `docs/03.specs/`, and completion preserves
 that Task under `docs/98.archive/completed/`, where it is a frozen record that
 must not take new evidence.
 
+An active stage may hold no package at all. Stage 03 is empty exactly when no
+change is in flight, which is a state to reach rather than avoid. A registered
+index still governs the packages preservation moved, so index membership counts
+a preserved member by the path it was moved from.
+
 ### Retirement preconditions
 
 Retire a package or a standalone document only when all of these hold.

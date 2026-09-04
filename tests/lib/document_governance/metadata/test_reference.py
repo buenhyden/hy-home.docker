@@ -22,6 +22,10 @@ from scripts.lib.document_governance.metadata.heading import (
 from scripts.lib.document_governance.metadata.profile import (
     classify_registered_path,
 )
+from scripts.lib.document_governance.registry import (
+    PRESERVED_DISPOSITIONS,
+    preserved_origin_path,
+)
 from tests.lib.document_governance.metadata._support import (
     ROOT,
     copy_registry_contract_fixture,
@@ -410,7 +414,39 @@ class IndexMembershipTests(unittest.TestCase):
                     )
                     == member_profile
                 ]
+                governed.extend(
+                    self._preserved_members(registry, index_path, member_profile)
+                )
                 self.assertTrue(governed, f"{index_path} governs no document")
+
+    @staticmethod
+    def _preserved_members(
+        registry: object, index_path: str, member_profile: str
+    ) -> list[pathlib.Path]:
+        """Members an index still governs after preservation moved their bodies.
+
+        An active stage empties out when its last package completes, which is a
+        real state and not a vacuous rule: Stage 03 holds no package exactly
+        when no change is in flight. Preservation moves the body without ending
+        the governance relation, so the index's own listing still routes to
+        every one of them. Count them by the path they were moved from.
+        """
+
+        stage_dir = pathlib.PurePosixPath(index_path).parent
+        found: list[pathlib.Path] = []
+        for disposition in PRESERVED_DISPOSITIONS:
+            root = ROOT / "docs/98.archive" / disposition
+            if not root.is_dir():
+                continue
+            for path in root.rglob("*.md"):
+                origin = preserved_origin_path(path.relative_to(ROOT).as_posix())
+                if origin is None:
+                    continue
+                if not origin.startswith(f"{stage_dir}/"):
+                    continue
+                if classify_registered_path(origin, registry) == member_profile:
+                    found.append(path)
+        return found
 
 
 class ReadmeSectionProfileTests(unittest.TestCase):

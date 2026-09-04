@@ -292,9 +292,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0028-operational-readiness-closure.md](../../../02.architecture/descriptions/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0030-document-lifecycle-governance.md](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Markdown reference |
 | [docs/02.architecture/descriptions/README.md](../../../02.architecture/descriptions/README.md) | folder index |
-| [docs/03.specs/0171-compose-sibling-pair-resolution/plan.md](../../../03.specs/0171-compose-sibling-pair-resolution/plan.md) | Markdown reference |
-| [docs/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
-| [docs/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md](../../../03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
@@ -977,6 +974,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/completed/03.specs/0170-archive-preservation-model/plan.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0170-archive-preservation-model/spec.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md](../../../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) | Markdown reference |
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |
