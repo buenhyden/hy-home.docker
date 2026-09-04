@@ -217,6 +217,11 @@ runtime, protection, review, deferral, and Git evidence.
   Storybook, then exited 1 only when Playwright's browser installer required an
   unavailable interactive `sudo` password; Hosted full remains the authority for
   that runner-specific final segment.
+- Corrected candidate PR run `33899619212`, changed job `101110351847`, executed
+  against `17a5564ca8527944b0da50a53e611e2093dbedc6` and passed in 12m51s.
+  Workflow-dispatch run `33899635117`, full job `101110407893`, executed against
+  the same SHA and passed in 19m57s, including the public suites and SARIF upload.
+  These two runs close the Hosted retry without bypassing or removing a gate.
 
 ### Gap matrix
 
@@ -246,7 +251,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | CHANGED PASS / FULL RETRY REQUIRED | final candidate `fe4e26bb` passed changed job `101087013309` in run `33892413865`; full run `33894450241` reproduced the job-level combined-profile collision and the exact override correction requires a rerun |
+| Hosted CI | PASS | corrected candidate `17a5564c` passed changed job `101110351847` in run `33899619212` and full job `101110407893` in workflow-dispatch run `33899635117` |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
