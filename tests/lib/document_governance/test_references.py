@@ -157,6 +157,21 @@ class ReferencePackageTests(unittest.TestCase):
         self.addCleanup(context.close)
         return context, root
 
+    def _mutable_research_package(
+        self, root: pathlib.Path, *, readme: bool = False
+    ) -> pathlib.Path:
+        research_root = root / "docs/90.references/research"
+        protected = root / self.references.PROTECTED_RESEARCH_PACKAGE
+        candidates = sorted(
+            path
+            for path in research_root.glob("[0-9][0-9][0-9][0-9]-*")
+            if path != protected
+        )
+        if not candidates:
+            self.fail("fixture requires an unprotected research package")
+        package = candidates[0]
+        return package / "README.md" if readme else package
+
     def finding_codes(self, root: pathlib.Path = ROOT) -> set[str]:
         return {
             finding.code
@@ -185,11 +200,7 @@ class ReferencePackageTests(unittest.TestCase):
             with self.subTest(invalid=invalid):
                 context, root = self._fixture()
                 with context:
-                    source = next(
-                        (root / "docs/90.references/research").glob(
-                            "[0-9][0-9][0-9][0-9]-*"
-                        )
-                    )
+                    source = self._mutable_research_package(root)
                     source.rename(source.with_name(invalid))
                     self.assertIn("package-path-invalid", self.finding_codes(root))
 
@@ -213,11 +224,7 @@ class ReferencePackageTests(unittest.TestCase):
 
         context, root = self._fixture()
         with context:
-            redirect = next(
-                (root / "docs/90.references/research").glob(
-                    "[0-9][0-9][0-9][0-9]-*/README.md"
-                )
-            )
+            redirect = self._mutable_research_package(root, readme=True)
             metadata, separator, _ = redirect.read_text(encoding="utf-8").partition(
                 "\n---\n"
             )
@@ -259,11 +266,7 @@ class ReferencePackageTests(unittest.TestCase):
     def test_stage90_cannot_override_normative_stages(self) -> None:
         context, root = self._fixture()
         with context:
-            package = next(
-                (root / "docs/90.references/research").glob(
-                    "[0-9][0-9][0-9][0-9]-*/README.md"
-                )
-            )
+            package = self._mutable_research_package(root, readme=True)
             package.write_text(
                 package.read_text(encoding="utf-8")
                 + "\nStage 90 overrides Stage 00 policy and takes precedence over Stage 03.\n",
@@ -285,9 +288,7 @@ class ReferencePackageTests(unittest.TestCase):
     def test_every_markdown_payload_uses_normalized_retired_link_targets(self) -> None:
         context, root = self._fixture()
         with context:
-            package = next(
-                (root / "docs/90.references/research").glob("[0-9][0-9][0-9][0-9]-*")
-            )
+            package = self._mutable_research_package(root)
             payload = package / "payload.md"
             payload.write_text(
                 "\n".join(
@@ -414,11 +415,7 @@ class ReferencePackageTests(unittest.TestCase):
     ) -> None:
         context, root = self._fixture()
         with context:
-            package = next(
-                (root / "docs/90.references/research").glob(
-                    "[0-9][0-9][0-9][0-9]-*/README.md"
-                )
-            )
+            package = self._mutable_research_package(root, readme=True)
             original = package.read_text(encoding="utf-8")
             package.write_text(
                 original
@@ -437,11 +434,7 @@ class ReferencePackageTests(unittest.TestCase):
 
         context, root = self._fixture()
         with context:
-            package = next(
-                (root / "docs/90.references/research").glob(
-                    "[0-9][0-9][0-9][0-9]-*/README.md"
-                )
-            )
+            package = self._mutable_research_package(root, readme=True)
             package.write_text(
                 "# Redirect\n\nMoved to [current](../0084-github-actions-platform/).\n"
                 + (" " * 8192)
