@@ -117,3 +117,4 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [07-workflow architecture](../../../../02.architecture/descriptions/0007-workflow-architecture.md)
+- [Open defect CDR-02](../../../../90.references/audits/0097-compose-domain-defect-register/README.md) - 이 subject가 소유한 미해결 결함

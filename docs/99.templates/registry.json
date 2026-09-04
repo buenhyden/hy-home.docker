@@ -3258,8 +3258,8 @@
     "audit": {
       "prefix": "AUD-",
       "width": 4,
-      "high_water": 96,
-      "next_number": 97,
+      "high_water": 97,
+      "next_number": 98,
       "child_spaces": {}
     },
     "data": {

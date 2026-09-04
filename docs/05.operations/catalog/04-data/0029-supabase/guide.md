@@ -106,3 +106,4 @@ updated: 2026-08-11
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infrastructure service README](../../../../../infra/04-data/operational/supabase/README.md)
+- [Open defect CDR-03](../../../../90.references/audits/0097-compose-domain-defect-register/README.md) - 이 subject가 소유한 미해결 결함

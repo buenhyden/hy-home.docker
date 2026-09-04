@@ -527,6 +527,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md](../../audits/0030-sdlc-quality-formatting-implementation/README.md) | folder index |
 | [docs/90.references/audits/0031-security-framework-maturity/README.md](../../audits/0031-security-framework-maturity/README.md) | folder index |
 | [docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md](../../audits/0032-workspace-rules-environment-implementation/README.md) | folder index |
+| [docs/90.references/audits/0097-compose-domain-defect-register/README.md](../../audits/0097-compose-domain-defect-register/README.md) | folder index |
 | [docs/90.references/audits/README.md](../../audits/README.md) | folder index |
 | [docs/90.references/data/0059-compose-profile-service-coverage/README.md](../0059-compose-profile-service-coverage/README.md) | folder index |
 | [docs/90.references/data/0060-image-version-interpretation/README.md](../0060-image-version-interpretation/README.md) | folder index |

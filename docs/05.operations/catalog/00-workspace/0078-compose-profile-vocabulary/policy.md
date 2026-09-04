@@ -140,7 +140,9 @@ profile 이름은 세 종류로 나뉜다.
   include가 불가능하다. 이 쌍의 topology selector는 SPEC-0171이 결정할 때까지
   등록하지 않는다.
 - 이미 함께 include된 두 파일 사이의 host port 충돌은 이 정책 이전부터
-  존재하는 결함으로, 발견 시 기록하고 별도 변경으로 처리한다.
+  존재하는 결함으로, 발견 시 기록하고 별도 변경으로 처리한다. 현재 미해결
+  항목은 [AUD-0097](../../../../90.references/audits/0097-compose-domain-defect-register/README.md)이
+  소유자와 함께 기록한다.
 
 ## Verification
 

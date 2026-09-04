@@ -86,3 +86,4 @@ updated: 2026-08-11
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
+- [Open defect CDR-01](../../../../90.references/audits/0097-compose-domain-defect-register/README.md) - 이 subject가 소유한 미해결 결함

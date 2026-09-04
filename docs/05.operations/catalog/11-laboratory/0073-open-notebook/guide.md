@@ -87,3 +87,4 @@ Open Notebook UI에 접속해 개인/로컬 노트북 작업을 수행하고, �
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
+- [Open defect CDR-03](../../../../90.references/audits/0097-compose-domain-defect-register/README.md) - 이 subject가 소유한 미해결 결함
