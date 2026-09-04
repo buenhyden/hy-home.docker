@@ -61,17 +61,23 @@ List exact commands used and outcome.
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
 
-For changed surfaces, follow the [QA scope matrix](../docs/00.agent-governance/policies/quality-standards.md#5-qa-scope-matrix).
-Record the selected profile, focused regression commands, results, and any
-unavailable checks. Do not run both public profiles solely because this box
-is checked. Local results do not replace hosted required checks.
+For affected surfaces, select checks from the
+[shared change-type verification matrix](../docs/00.agent-governance/policies/quality-standards.md#5-change-type-verification-matrix).
+Record the selected command, execution environment, result, and reason for any
+unexecuted check in Validation Evidence. This template adds no gate and does
+not require both public profiles for every harness change.
+
+Report hosted evidence separately: head commit, workflow run, job conclusion,
+and any required review or branch-protection blocker. Local checks do not prove
+hosted acceptance; a skipped or unexecuted check is not passing evidence.
 
 Secret handling:
 
 - [ ] No secret values, tokens, private keys, or certificate contents are included
 - [ ] Secret-related changes record only path, ID, registry, and redacted evidence
 
-Agent-loop evidence (when lifecycle, evaluator, hook, or gate behavior changes):
+Agent-loop evidence (only when lifecycle or semantic-evaluation behavior is
+affected; otherwise record N/A and the reason in Validation Evidence):
 
 - [ ] Loop owner and independent reviewer differ
 - [ ] Retry, stop, escalation, permission, and controlled-wrapper bounds match the typed contract

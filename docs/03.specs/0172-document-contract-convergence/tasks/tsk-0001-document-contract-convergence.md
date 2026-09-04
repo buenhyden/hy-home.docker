@@ -145,6 +145,93 @@ runtime, protection, review, deferral, and Git evidence.
   now provisions `uvx` in the changed job before dependencies and the public
   gate. No permission, event, validator, tool version, or SARIF upload behavior
   changes; removing that one step is the workflow rollback.
+- PR run `33876647221`, job `101035112333`, executed against exact candidate
+  `2aefde23d5853ca6a0e0de4e4dd1dbb72b06667f`. Both `Install uv` and dependency
+  bootstrap passed, proving the previous executable-availability failure was
+  removed. The public gate then failed after 17m52s when pinned
+  markdownlint-cli2 0.22.1 rewrote one duplicate blank line in the Stage 99
+  template README despite reporting zero lint errors, and Ruff 0.15.12 reported
+  12 Python files requiring deterministic formatting; 94 Python files were
+  already formatted. The full job `101035114121` was correctly skipped.
+- A write-free local `ruff format --check --diff .` reproduced the exact same
+  12-file set. Ruff mechanically normalized only those named Python files, and
+  the exact CI pre-commit path reproduced markdownlint-cli2's one Stage 99
+  README normalization. Validator and test behavior, hook versions, and all
+  other non-evidence surfaces remain unchanged.
+- Follow-up PR #140 run `33882334540`, job `101053733629`, executed against exact
+  candidate `8f0a34320a0a8598939dbb5ecab1dfb73c298d9b`. The formatter hooks passed,
+  proving their correction, and the public gate advanced through Storybook's
+  9 browser tests with 100% reported code coverage. It then failed after
+  18m15s at Hadolint v2.14.0 because
+  `examples/sample-web-service/Dockerfile` used shell-form `HEALTHCHECK CMD`,
+  producing exact finding `DL3025`; the full job `101053734881` was correctly
+  skipped for the PR event.
+- The sample healthcheck now uses Docker exec-form with the same `wget` command,
+  arguments, URL, and nonzero failure semantics. This removes the unnecessary
+  shell and redundant `|| exit 1` without changing the image, endpoint,
+  interval, timeout, start period, retries, port, service, or deployment state.
+  Reverting that one instruction is the correction rollback.
+- Follow-up PR #140 run `33886343534`, job `101066935299`, executed against exact
+  candidate `5ad8f0c094d50fba0e50b3f0e9a2c2fa632a50a0`. The sample healthcheck and
+  every preceding hook passed. Hadolint v2.14.0 then reported only five
+  `DL3066` findings: two n8n `USER` instructions, one OAuth2 Proxy instruction,
+  and two OpenSearch instructions. The full job `101066936793` was correctly
+  skipped for the PR event.
+- OpenSearch 3.7.0 image history declares UID/GID 1000 and final `USER 1000`.
+  Reproducing the OAuth2 Proxy account creation on exact Alpine 3.24.1 yielded
+  UID 100/GID 101. The Dockerfiles now use those numeric user identities; n8n
+  and OpenSearch assert their named account maps to UID 1000 and primary GID
+  1000 before switching by UID only, preserving group-resolution semantics.
+  Root is expressed as UID 0. The added commands are build-time identity guards;
+  no effective user identity, ownership target, base-image reference, runtime
+  command, service definition, hook, threshold, ignore, or deployed state
+  changes. The custom image config, history, and digest necessarily change.
+  The OAuth2 Proxy production identity is synchronized with the canonical
+  hardening consumer, its focused regression, and the active operator guide;
+  the root-active dev image retains its named-user contract. Reverting those
+  three consumer updates and the three Dockerfile patches is the correction
+  rollback.
+- Exact affected Dockerfiles are `infra/07-workflow/n8n/Dockerfile`,
+  `infra/02-auth/oauth2-proxy/Dockerfile`, and
+  `infra/04-data/analytics/opensearch/Dockerfile`. Repository-wide
+  `pre-commit run hadolint-docker --all-files`, BuildKit `--check` for all three
+  exact build contexts, all 11 hardening tiers, and the 19 focused tech-stack
+  contract tests pass. The OAuth-specific regression is
+  `test_oauth2_proxy_production_numeric_identity_contract`.
+- Follow-up PR #140 run `33890830204`, job `101081789784`, executed against
+  exact candidate `1a5de646224c51f9caa33219bfbbb825338617c1` and passed the
+  changed public suite in 13m0s. This proves the numeric-user correction reaches
+  and passes every Hosted leaf, including Hadolint v2.14.0. The full job
+  `101081791407` was correctly skipped for the PR event.
+- Final candidate PR run `33892413865`, changed job `101087013309`, executed
+  against `fe4e26bbe4cc699d678832f68bd765901e028fb7` and passed in 19m55s.
+  Workflow-dispatch run `33894450241` then executed full job `101093684400`
+  against that same SHA and failed after 12m25s. A local CI-context reproduction
+  proved the full job combined 21 mutually exclusive profiles into one named
+  selection, producing exact host-port conflicts on 80/443 and 8000. The full
+  job now leaves `HYHOME_COMPOSE_PROFILES` unset so the existing validator checks
+  all 28 declared selections and 232 services independently. Reintroducing the
+  workflow-level or job-level override is rejected by the semantic contract;
+  reverting the correction restores the known failure. The exact local CI-context
+  run passed both Compose validations, hardening, tests, frontend build, and
+  Storybook, then exited 1 only when Playwright's browser installer required an
+  unavailable interactive `sudo` password; Hosted full remains the authority for
+  that runner-specific final segment.
+- Corrected candidate PR run `33899619212`, changed job `101110351847`, executed
+  against `17a5564ca8527944b0da50a53e611e2093dbedc6` and passed in 12m51s.
+  Workflow-dispatch run `33899635117`, full job `101110407893`, executed against
+  the same SHA and passed in 19m57s, including the public suites and SARIF upload.
+  These two runs close the Hosted retry without bypassing or removing a gate.
+- On 2026-09-05 the user explicitly approved the remote mutation for
+  `buenhyden/hy-home.docker` `main` required status checks. The audited command
+  class was PATCH of `branches/main/protection/required_status_checks` only.
+  Before-state was `strict=true` with the exact 12 observed leaf checks; the
+  applied and read-back after-state is `strict=true` with only
+  `validation-changed` and `validation-full`, both bound to app ID 15368.
+  Pull-request review, CODEOWNERS, conversation resolution, admin, signature,
+  linear-history, force-push, deletion, creation, lock, and fork-sync settings
+  were read back unchanged. Rollback remains the exact captured 12-check state,
+  including unbound `frontend-quality`; no rollback was required.
 
 ### Gap matrix
 
@@ -174,11 +261,11 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | runs `33866474442`, `33869471269`, and `33873742953` advanced through hardening, audit, and browser coverage to the missing PR-job `uvx` provisioning; each exact failure is corrected locally and a new candidate rerun is required |
+| Hosted CI | PASS | corrected candidate `17a5564c` passed changed job `101110351847` in run `33899619212` and full job `101110407893` in workflow-dispatch run `33899635117` |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
-| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
-| Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
-| Hardening and tech-stack provenance | PASS | 11 tiers; 18 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
+| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
+| Remote protection | PASS | authenticated PATCH and full read-back applied strict aggregate checks `validation-changed` and `validation-full` with app ID 15368; non-check protections unchanged; exact 12-check rollback retained |
+| Hardening and tech-stack provenance | PASS | 11 tiers; 19 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
 | Storybook dependency security | PASS | clean install, exact high-severity audit with 0 vulnerabilities, lint, typecheck, and Storybook 10.6 production build |
 | Next production build | PASS / SANDBOX-LIMITED | webpack production build passed; default Turbopack reached bundling but local worker port binding was denied |
 
@@ -233,6 +320,18 @@ admitted by the References consumer and validated by the Registry metadata path.
 - Removed the Hosted runner-image dependency from the PR `zizmor` path by
   provisioning the same registered SHA-pinned `setup-uv` action in both public
   validation jobs, without broadening the PR job's read-only permission set.
+- Converged the exact Ruff 0.15.12 12-Python and markdownlint-cli2 0.22.1
+  one-Markdown drift reported only after Hosted CI reached the pre-commit leaf;
+  the mechanical normalization changes no behavior.
+- Replaced the exact sample-service shell-form healthcheck reported as
+  `DL3025` with equivalent exec-form arguments; no image, endpoint, timing,
+  service, deployment, hook, or validator behavior changed.
+- Replaced the five exact `DL3066` symbolic user instructions with their same
+  numeric user identities without changing group-resolution semantics, plus
+  fail-closed build assertions where the account comes from an upstream image;
+  synchronized the OAuth2 Proxy production hardening
+  consumer, focused regression, and operator guide while preserving its dev
+  identity contract; no global ignore or threshold was added.
 
 ## Review Evidence
 
@@ -256,6 +355,14 @@ peer graph, Spec and Plan own the narrow remediation, the Task says `prepared`,
 and the generated trace is removed. Both independent policy and code reviewers
 returned final PASS with no actionable finding on the resulting six-file diff.
 
+The numeric-user review initially blocked explicit `1000:1000` for n8n and
+OpenSearch because it could change supplementary-group resolution, and then
+blocked stale OAuth hardening ownership and overbroad image-invariance claims.
+The final UID-only instructions, exact OAuth production consumer/test/guide,
+and custom-image evidence boundary resolve those findings. Both independent
+reviewers returned final specification, quality, policy, and overall PASS with
+no actionable finding on the resulting nine-file diff.
+
 ## Commit Ledger
 
 - `be7e1388 feat(governance): converge document contracts` — initial reviewed
@@ -268,10 +375,18 @@ returned final PASS with no actionable finding on the resulting six-file diff.
   active Security trace, Dozzle Registry, and DATA-0061 generator closure.
 - `c9c09f1f fix(ci): secure Storybook validation path` — compatible Storybook,
   TypeScript, and Next build-tool closure plus exact review evidence.
+- `1a5de646 fix(ci): pin Dockerfile user identities` — exact numeric-user,
+  fail-closed identity proof, canonical hardening consumer, regression, and
+  operator-guide closure.
 
 The PR-job `uvx` provisioning correction plus this evidence update are prepared
-for one follow-up commit. Valid forward lifecycle transitions remain post-merge
-work; they are not compressed into the initial PR history.
+in `2aefde23`. The exact formatter normalization plus this new Hosted evidence
+were committed as `8f0a3432`. The exact Hadolint correction and its Hosted
+evidence were committed as `5ad8f0c0`. The exact numeric-user correction and
+consumer evidence were committed as `1a5de646`; its exact successful Hosted
+run evidence is prepared for one follow-up commit. Valid forward lifecycle
+transitions remain post-merge work; they are not compressed into the initial PR
+history.
 
 ## Rulings
 

@@ -452,8 +452,7 @@ def collect_issued_identities(
         _remaining_scan_seconds(deadline)
         if (
             relative in deleted_files
-            or
-            not relative.startswith(IDENTITY_SOURCE_PREFIXES)
+            or not relative.startswith(IDENTITY_SOURCE_PREFIXES)
             or pathlib.PurePosixPath(relative).suffix.casefold()
             not in IDENTITY_SOURCE_SUFFIXES
         ):
@@ -747,9 +746,7 @@ def validate_allocation_transition(
             continue
         try:
             require_ancestor(source_commit, base_commit, "identity recovery source")
-            source_listing = git(
-                "ls-tree", "-z", source_commit, "--", source_path
-            )
+            source_listing = git("ls-tree", "-z", source_commit, "--", source_path)
             source_rows = tuple(filter(None, source_listing.split("\0")))
             source_entry = (
                 re.fullmatch(
@@ -763,7 +760,12 @@ def validate_allocation_transition(
                 recovery_findings.append(finding)
                 continue
             source_metadata = parse_frontmatter_text(
-                git("cat-file", "blob", source_entry[2], maximum=MAX_IDENTITY_SOURCE_BYTES)
+                git(
+                    "cat-file",
+                    "blob",
+                    source_entry[2],
+                    maximum=MAX_IDENTITY_SOURCE_BYTES,
+                )
             )
             target_base_metadata = (
                 parse_frontmatter_text(
