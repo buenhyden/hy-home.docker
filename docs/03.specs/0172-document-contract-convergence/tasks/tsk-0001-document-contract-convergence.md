@@ -34,10 +34,10 @@ runtime, protection, review, deferral, and Git evidence.
   instructions on 2026-09-04 authorized the previously deferred RES-0085,
   Hosted CI, provider entitlement, runtime/deployment, branch protection,
   independent review, commit, push, PR, tag, and release categories.
-- Feature-branch commit, push, PR, Hosted CI observation, and bounded read-only
-  provider/runtime/protection inspection have exact targets. Deployment,
-  protection mutation, tag/release, and merge still require an exact target
-  state or explicit merge authority before execution.
+- Feature-branch commit, push, PR, Hosted CI observation, provider entitlement,
+  and branch-protection mutation have exact targets and rollback boundaries.
+  Deployment, tag/release, and merge still require an exact target state,
+  eligible merged commit, version, or explicit merge authority before execution.
 - REQ-0024, REQ-0026, AD-0027, AD-0030, ADR-0029, and ADR-0031.
 - Stage 00 policies, Stage 99 contracts, validators, formatter configuration,
   tests, and the current authored corpus.
@@ -76,13 +76,46 @@ runtime, protection, review, deferral, and Git evidence.
   evidence only, not acceptance of the current candidate.
 - Current `main` protection was observed as strict with one approving review,
   code-owner review, conversation resolution, and force-push/deletion disabled.
-  Its required contexts do not match the current CI Quality Gates job names;
-  no setting was changed.
-- The current Codex task had direct account access. Claude entitlement was not
-  observed and remains `needs_revalidation`.
+  Its 12 stale required contexts do not match the current CI Quality Gates job
+  names; no setting was changed before a replacement target and rollback were
+  proved.
+- The current Codex task had direct account access. A bounded Claude CLI probe
+  from `/tmp`, with safe/restricted mode, no tools, no session persistence, and
+  a USD 0.05 ceiling, returned exactly `ENTITLEMENT_OK` with exit 0. This proves
+  direct entitlement only, not model equivalence, performance, or acceptance.
 - Docker Engine and Compose were reachable with zero active Compose projects.
   Five `k3d-hyhome` containers were present but do not prove this repository's
   Compose deployment. No runtime mutation was performed.
+
+### Hosted CI and remote protection boundary (2026-09-04)
+
+- PR #139 run `33866474442`, job `101002368891`, executed against candidate
+  `401615481678bfedcbc3abbe64705e5a3cf40978`. `validation-changed` failed at
+  the hardening leaf after 15m31s; `validation-full` job `101002370024` was
+  skipped by the PR-event contract.
+- The failing leaf exposed pre-existing drift on `main`: stale Valkey,
+  redis-exporter, and RedisInsight image assertions; a retired Security Spec
+  path still treated as active; and a Dozzle Registry lookup with no Registry
+  entry. Fixes retain exact checks, point Security trace validation at active
+  REQ-0003, and add the missing Dozzle source tuple.
+- Regenerating DATA-0061 then exposed its generator's pre-migration
+  frontmatter. The generator now emits the ordered common six and the
+  `publication` lifecycle's `published` state before regenerating 19 components
+  and 22 images.
+- The corrected local `changed` profile passed with exit 0, including two
+  every-declared Compose passes at 28 selections and 232 services, 11-tier
+  hardening, 372 active metadata records, and 0 lifecycle/recovery violations.
+- Tracked policy `.github/rulesets/main-protection.md` defines the exact target:
+  strict `main` checks `validation-changed` and `validation-full`, both bound to
+  GitHub Actions app ID 15368. Reviews, CODEOWNERS, conversation resolution,
+  force-push, deletion, and admin settings remain unchanged.
+- The exact rollback is the observed strict 12-context set:
+  `docs-traceability`, `repo-contracts`, `git-flow-contract`,
+  `compose-validation`, `compose-all-profiles-validation`,
+  `infrastructure-hardening`, `template-security-baseline`,
+  `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, and
+  `storybook-coverage`; restore app ID 15368 except the observed unbound
+  `frontend-quality` context.
 
 ### Gap matrix
 
@@ -112,8 +145,11 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | PENDING | run on the feature-branch PR after local gates and reviews pass |
-| Provider, runtime, remote protection | OBSERVED | bounded read-only evidence recorded above; no acceptance or mutation claim |
+| Hosted CI | FAIL / RETRY REQUIRED | run `33866474442`; hardening drift reproduced and corrected locally; final candidate rerun required |
+| Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
+| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
+| Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
+| Hardening and tech-stack provenance | PASS | 11 tiers; 18 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
 
 The merged `RES-0085` request-scope file did not satisfy the Stage 90 package
 envelope. The candidate adds the substantive canonical `README.md`, normalizes
@@ -155,6 +191,10 @@ admitted by the References consumer and validated by the Registry metadata path.
   same research package, an exact `research-member` target, and one reciprocal
   `task` decision tuple; every allowed frontmatter key now has a canonical
   serialization position.
+- Closed the Hosted hardening drift without weakening a validator: synchronized
+  three image assertions, moved the Security trace check from retired SPEC-0003
+  to active REQ-0003, registered Dozzle, and made DATA-0061 generation preserve
+  the `data` profile lifecycle and common-six order.
 
 ## Review Evidence
 
@@ -176,10 +216,12 @@ specification, quality, and overall PASS after correction.
   contract, lifecycle, corpus, template, and RES-0085 candidate.
 - `787cafd2 merge(main): integrate latest research routing` — non-fast-forward
   integration of current `main` while preserving both sides' owned behavior.
+- `40161548 fix(governance): prove research identity recovery` — exact
+  RES-0085 member/Task reciprocal recovery proof and regression closure.
 
-The final recovery correction and this evidence update are staged for one
-follow-up commit. Valid forward lifecycle transitions remain post-merge work;
-they are not compressed into the initial PR history.
+The Hosted drift closure and this evidence update are staged for one follow-up
+commit. Valid forward lifecycle transitions remain post-merge work; they are
+not compressed into the initial PR history.
 
 ## Rulings
 
@@ -196,12 +238,8 @@ they are not compressed into the initial PR history.
 
 ## Deferred Items
 
-- Claude entitlement and cross-provider runtime acceptance remain
-  `needs_revalidation`; only current Codex access was directly observed.
 - Live deployment is blocked on a named stack/target, change set, observation
   plan, and rollback. Runtime reachability is not deployment acceptance.
-- Branch-protection mutation is blocked on the exact replacement context set
-  and recovery plan after the feature PR exposes Hosted CI context names.
 - Tag and release are blocked on an exact version, release scope, and eligible
   merged commit. Merge itself requires explicit user authorization.
 

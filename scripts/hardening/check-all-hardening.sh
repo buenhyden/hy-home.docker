@@ -336,8 +336,8 @@ check_02_auth() {
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
   check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
-  check_contains "$oauth_full_compose" "image: valkey/valkey:9.1.0-alpine" "oauth2-proxy valkey image tag mismatch"
-  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.86.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
+  check_contains "$oauth_full_compose" "image: valkey/valkey:9.1.1-alpine" "oauth2-proxy valkey image tag mismatch"
+  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.90.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
 
@@ -371,12 +371,12 @@ check_03_security() {
   local vault_hcl="infra/03-security/vault/config/vault.hcl"
   local agent_hcl="infra/03-security/vault/config/vault-agent.hcl"
   local templates_dir="infra/03-security/vault/config/templates"
-  local spec_file="docs/03.specs/003-security/spec.md"
+  local requirement_file="docs/01.requirements/0003-security.md"
 
   check_file "$compose_file"
   check_file "$vault_hcl"
   check_file "$agent_hcl"
-  check_file "$spec_file"
+  check_file "$requirement_file"
 
   check_contains "$compose_file" "service: template-stateful-med" "vault compose template inheritance missing"
   check_contains "$compose_file" "image: hashicorp/vault:2.0.3" "vault image tag mismatch"
@@ -397,7 +397,7 @@ check_03_security() {
   check_contains "$agent_hcl" "destination = \"/vault/out" "vault-agent output destination missing"
   check_contains "$agent_hcl" "static_secret_render_interval = \"5m\"" "vault-agent static secret render interval mismatch"
   check_not_contains "$agent_hcl" "secret/data/example" "vault-agent placeholder secret path"
-  check_contains "$spec_file" "../../01.requirements/015-security-optimization-hardening.md" "tier 03 spec trace link missing"
+  check_contains "$requirement_file" "../02.architecture/descriptions/0003-security-architecture.md" "tier 03 requirement trace link missing"
 
   local template_file
   for template_file in "$templates_dir"/*.ctmpl; do
@@ -557,7 +557,7 @@ check_11_laboratory() {
   check_contains "$portainer_compose" "image: portainer/portainer-ce:sts" "portainer image tag mismatch"
   check_contains "$portainer_compose" "ipv4_address: 172.19.0.220" "portainer infra_net IP mismatch"
 
-  check_contains "$redisinsight_compose" "image: redis/redisinsight:3.6.0" "redisinsight image tag mismatch"
+  check_contains "$redisinsight_compose" "image: redis/redisinsight:3.8.0" "redisinsight image tag mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
   check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"

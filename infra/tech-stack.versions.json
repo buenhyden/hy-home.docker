@@ -116,6 +116,12 @@
       "compose_files": ["infra/08-ai/open-webui/docker-compose.yml"]
     },
     {
+      "component": "Dozzle",
+      "tier": "11-laboratory",
+      "images": ["amir20/dozzle:v10.8.0"],
+      "compose_files": ["infra/11-laboratory/dozzle/docker-compose.yml"]
+    },
+    {
       "component": "RedisInsight",
       "tier": "11-laboratory",
       "images": ["redis/redisinsight:3.8.0"],
