@@ -292,9 +292,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0028-operational-readiness-closure.md](../../../02.architecture/descriptions/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0030-document-lifecycle-governance.md](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Markdown reference |
 | [docs/02.architecture/descriptions/README.md](../../../02.architecture/descriptions/README.md) | folder index |
-| [docs/03.specs/0156-compose-enablement-model-convergence/plan.md](../../../03.specs/0156-compose-enablement-model-convergence/plan.md) | Markdown reference |
-| [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
-| [docs/03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md](../../../03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) | Markdown reference |
 | [docs/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
@@ -963,6 +960,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/completed/03.specs/0098-standardize-infra-net/spec.md](../../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0154-governance-consistency-convergence/spec.md](../../../98.archive/completed/03.specs/0154-governance-consistency-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0155-validation-surface-reduction/spec.md](../../../98.archive/completed/03.specs/0155-validation-surface-reduction/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0156-compose-enablement-model-convergence/plan.md](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/plan.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md](../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0157-script-surface-ownership-convergence/spec.md](../../../98.archive/completed/03.specs/0157-script-surface-ownership-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0159-document-taxonomy-identity-convergence/spec.md](../../../98.archive/completed/03.specs/0159-document-taxonomy-identity-convergence/spec.md) | Markdown reference |

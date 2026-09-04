@@ -159,7 +159,7 @@ bash scripts/operations/generate-compose-profile-service-coverage.sh --check
 ## Traceability
 
 - **Subject**: [00-workspace](../README.md)
-- **Authority**: [SPEC-0156](../../../../03.specs/0156-compose-enablement-model-convergence/spec.md)
+- **Authority**: [SPEC-0156](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
 - **Deferred pairs**: [SPEC-0171](../../../../03.specs/0171-compose-sibling-pair-resolution/spec.md)
 - **Generated evidence**: [Compose profile service coverage](../../../../90.references/data/0059-compose-profile-service-coverage/README.md)
 

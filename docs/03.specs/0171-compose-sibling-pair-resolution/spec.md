@@ -124,6 +124,6 @@ Spec defers to its Plan.
 
 ## Related Documents
 
-- [Compose enablement model convergence](../0156-compose-enablement-model-convergence/spec.md)
+- [Compose enablement model convergence](../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
 - [Compose profile vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)
 - [Compose profile service coverage](../../90.references/data/0059-compose-profile-service-coverage/README.md)
