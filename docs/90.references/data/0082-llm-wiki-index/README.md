@@ -292,7 +292,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0028-operational-readiness-closure.md](../../../02.architecture/descriptions/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0030-document-lifecycle-governance.md](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Markdown reference |
 | [docs/02.architecture/descriptions/README.md](../../../02.architecture/descriptions/README.md) | folder index |
+| [docs/03.specs/0171-compose-sibling-pair-resolution/plan.md](../../../03.specs/0171-compose-sibling-pair-resolution/plan.md) | Markdown reference |
 | [docs/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
+| [docs/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md](../../../03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

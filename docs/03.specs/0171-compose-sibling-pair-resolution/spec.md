@@ -3,7 +3,7 @@ title: Compose Sibling Pair Resolution Specification
 version: 1.0.0
 type: sdlc/spec
 layer: specs
-status: draft
+status: completed
 owner: "@buenhyden"
 artifact_id: SPEC-0171
 parent_ids: [REQ-0023, REQ-0025, ADR-0026]
