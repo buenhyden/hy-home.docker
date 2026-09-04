@@ -196,7 +196,10 @@ class ReferencePackageTests(unittest.TestCase):
         )
 
     def test_generic_research_member_uses_registry_metadata_authority(self) -> None:
-        from scripts.lib.document_governance.registry import classify_path, load_registry
+        from scripts.lib.document_governance.registry import (
+            classify_path,
+            load_registry,
+        )
 
         member = pathlib.PurePosixPath(
             "docs/90.references/research/"

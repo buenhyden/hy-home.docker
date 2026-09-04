@@ -343,7 +343,9 @@ check_02_auth() {
 
   check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy source image tag mismatch"
   check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy dev source image tag mismatch"
-  check_contains "$oauth_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy non-root user missing"
+  check_contains "$oauth_dockerfile" "addgroup -S -g 101 oauth2proxy" "oauth2-proxy production group identity mismatch"
+  check_contains "$oauth_dockerfile" "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy" "oauth2-proxy production user identity mismatch"
+  check_contains "$oauth_dockerfile" "USER 100:101" "oauth2-proxy production non-root identity mismatch"
   check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy" "oauth2-proxy dev non-root user missing"
   check_contains "$oauth_entrypoint" "/run/secrets/oauth2_valkey_password" "oauth2-proxy local/full valkey secret injection mismatch"
   check_contains "$oauth_dev_entrypoint" "/run/secrets/mng_valkey_password" "oauth2-proxy root-active valkey secret injection mismatch"

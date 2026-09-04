@@ -195,9 +195,7 @@ def declares_frozen_legacy_status(
     )
 
 
-def declares_frozen_legacy_record(
-    profile: Mapping[str, object], path: str
-) -> bool:
+def declares_frozen_legacy_record(profile: Mapping[str, object], path: str) -> bool:
     """Return whether Registry identifies one exact byte-frozen legacy record."""
 
     exceptions = profile.get("exceptions")
@@ -814,9 +812,10 @@ def validate_registry(
                         "initial_status must be a registered lifecycle status",
                     )
                 )
-            if not isinstance(terminal_statuses, list) or not set(
-                terminal_statuses
-            ) <= status_set:
+            if (
+                not isinstance(terminal_statuses, list)
+                or not set(terminal_statuses) <= status_set
+            ):
                 findings.append(
                     RegistryFinding(
                         "lifecycle-terminal-status-invalid",

@@ -382,7 +382,10 @@ def _validate_lifecycle(repo_root: pathlib.Path, contract: dict[str, Any]) -> li
 
     canonical_readme = repo_root / EXPECTED_CANONICAL_README
     canonical_text = _read_required(canonical_readme, "canonical README", errors)
-    if canonical_text is not None and _frontmatter_status(canonical_text) != "published":
+    if (
+        canonical_text is not None
+        and _frontmatter_status(canonical_text) != "published"
+    ):
         errors.append("canonical README: required frontmatter status: published")
 
     superseded_readme = repo_root / SUPERSEDED_2026_07_07_README

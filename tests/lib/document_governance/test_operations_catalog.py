@@ -160,9 +160,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
                     guide = next(
-                        item
-                        for item in registry["profiles"]
-                        if item["id"] == "guide"
+                        item for item in registry["profiles"] if item["id"] == "guide"
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -174,9 +172,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(
-                item for item in registry["profiles"] if item["id"] == "guide"
-            )
+            guide = next(item for item in registry["profiles"] if item["id"] == "guide")
             registry["profiles"].append(dict(guide))
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("registry-profile-duplicate", finding_codes(root))
@@ -199,9 +195,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(
-                item for item in registry["profiles"] if item["id"] == "guide"
-            )
+            guide = next(item for item in registry["profiles"] if item["id"] == "guide")
             guide["required_sections"].append("New Contract")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
             self.assertIn("role-sections-invalid", finding_codes(root))
@@ -213,9 +207,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            guide = next(
-                item for item in registry["profiles"] if item["id"] == "guide"
-            )
+            guide = next(item for item in registry["profiles"] if item["id"] == "guide")
             guide["optional_frontmatter"].append("generated_by")
             guide["optional_sections"].append("Operator Notes")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -236,9 +228,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
                     guide = next(
-                        item
-                        for item in registry["profiles"]
-                        if item["id"] == "guide"
+                        item for item in registry["profiles"] if item["id"] == "guide"
                     )
                     if mutation == "missing-artifact-pattern":
                         del guide["artifact_id_pattern"]
@@ -290,9 +280,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     registry_path = root / REGISTRY_PATH
                     registry = json.loads(registry_path.read_text(encoding="utf-8"))
                     guide = next(
-                        item
-                        for item in registry["profiles"]
-                        if item["id"] == "guide"
+                        item for item in registry["profiles"] if item["id"] == "guide"
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")

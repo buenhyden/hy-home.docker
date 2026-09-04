@@ -161,7 +161,6 @@ double quotes. Provider-owned runtime projections retain their native envelope.
 - A lifecycle transition is valid only when registered for the profile's
   lifecycle. Terminal states have no outgoing transition.
 
-
 The semantic flows are profile-specific: Requirements approve, ADRs accept or
 reject, Specs review and approve before activation, Plans approve before
 activation, Tasks become ready and then in progress, Incidents progress from

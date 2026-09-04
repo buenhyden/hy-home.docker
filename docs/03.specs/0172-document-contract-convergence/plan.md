@@ -46,9 +46,11 @@ archive-body mutation.
 9. Commit the initial lifecycle entry, push the feature branch, open a PR, and
    observe Hosted CI without bypassing checks. If an existing public gate fails,
    reproduce it and apply only the minimum dependency, lockfile, build-time
-   compiler-path, or registered CI-tool provisioning correction before rerunning
-   the same gate. Preserve the entry state through the first merge; record
-   forward transitions in post-merge follow-up changes.
+   compiler-path, registered CI-tool provisioning, or pinned format-hook
+   normalization, exact lint-conformance correction, or execution-context
+   override correction before rerunning the same gate. Preserve the entry state
+   through the first merge; record forward transitions in post-merge follow-up
+   changes.
 10. Record provider, runtime, and branch-protection observations separately from
     acceptance. Stop before any mutation whose target, desired state, recovery,
     tag version, release scope, or merge authority is not exact.
@@ -79,6 +81,21 @@ archive-body mutation.
   typecheck, and production build; Hosted default build and browser coverage.
 - Required-job `setup-uv` parity, immutable action provenance, and Hosted
   `zizmor` completion without PR-job permission expansion.
+- Ruff 0.15.12 and markdownlint-cli2 0.22.1 checks plus focused behavior tests
+  for the exact 12-Python and one-Markdown format-hook set reported by Hosted
+  CI.
+- Hadolint v2.14.0 on the exact sample-service Dockerfile reported by Hosted CI;
+  verify the healthcheck command and arguments remain equivalent. Verify the
+  five exact reported user instructions resolve to the same numeric user
+  identities without changing group-resolution semantics or adding a global
+  lint ignore or threshold change. Verify the OAuth2 Proxy
+  production identity is synchronized across its Dockerfile, canonical
+  hardening consumer, focused regression, and guide while its dev identity
+  contract remains distinct.
+- Workflow-dispatch full-profile reproduction with the canonical
+  `HYHOME_COMPOSE_PROFILES` override absent; verify all 28 declared selections
+  and 232 services independently, reject inherited workflow-level and job-level
+  selection overrides, and keep host-port collision detection intact.
 
 ## Rulings
 

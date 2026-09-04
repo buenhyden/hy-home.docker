@@ -485,13 +485,9 @@ def _validate_execution_states(
         if task.status not in {"in-progress", "blocked"}:
             continue
         if spec.status != "active":
-            raise SpecPackageError(
-                f"{task.path} current Task requires active Spec"
-            )
+            raise SpecPackageError(f"{task.path} current Task requires active Spec")
         if plan is not None and plan.status != "active":
-            raise SpecPackageError(
-                f"{task.path} current Task requires active Plan"
-            )
+            raise SpecPackageError(f"{task.path} current Task requires active Plan")
     if plan is not None and plan.status == "active" and spec.status != "active":
         raise SpecPackageError(f"{plan.path} active Plan requires active Spec")
 
