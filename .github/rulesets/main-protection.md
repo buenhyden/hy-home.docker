@@ -6,14 +6,19 @@ itself.
 
 ## Observation Boundary
 
-- The dated public snapshot lives in
+- The dated public snapshot remains unchanged at
   `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`.
-- Authenticated current ruleset, branch-protection, required-check, review,
-  environment, and repository-setting readback is unavailable.
-- Control-plane verification is `unverified`; this proposal does not infer
-  applied remote state from tracked files or public workflow metadata.
-- A future verification pass records new evidence separately instead of
-  rewriting the approved snapshot without source support.
+- Authenticated `GET /repos/buenhyden/hy-home.docker/branches/main` was read on
+  2026-09-05 (Asia/Seoul), at code SHA
+  `591e3c607f97aa34739f41288b5243f0cd4f0aac`. It reported `protected: true`,
+  `validation-changed` and `validation-full`, both bound to App `15368`, and
+  enforcement level `non_admins`.
+- This is a branch-summary observation, not full protection verification.
+  The detailed `/branches/main/protection` read returned HTTP 403. Strict mode,
+  review requirements, administrator enforcement, bypasses, rulesets, and
+  environment settings therefore remain unverified.
+- No remote setting was changed. New observation evidence belongs to the
+  SPEC-0174 Task; it does not rewrite the frozen public snapshot.
 
 ## Target Ruleset
 
@@ -48,5 +53,6 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
 
-Until that separately approved readback succeeds, both checks above remain
-tracked desired state rather than evidence of remote enforcement.
+The two required-check names were observed in the authenticated branch summary
+above. The remaining target settings are desired state until detailed readback
+confirms them; the partial observation must not be presented as full enforcement.

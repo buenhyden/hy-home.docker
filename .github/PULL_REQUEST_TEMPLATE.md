@@ -56,29 +56,27 @@ List exact commands used and outcome.
 - [ ] `.env.example` changed
 - [ ] `scripts/**` validation, hardening, hook, or operation command changed
 - [ ] `.github/workflows/**` changed
-- [ ] Root shims or `.agents/**`, `.claude/**`, `.codex/**` changed
+- [ ] Root shims or `.claude/**`, `.codex/**` changed
 - [ ] `docs/00.agent-governance/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
 
-If any harness surface changed, list exact validation evidence:
-
-```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/run-ci-gate.py --profile full
-```
+For changed surfaces, follow the [QA scope matrix](../docs/00.agent-governance/policies/quality-standards.md#5-qa-scope-matrix).
+Record the selected profile, focused regression commands, results, and any
+unavailable checks. Do not run both public profiles solely because this box
+is checked. Local results do not replace hosted required checks.
 
 Secret handling:
 
 - [ ] No secret values, tokens, private keys, or certificate contents are included
 - [ ] Secret-related changes record only path, ID, registry, and redacted evidence
 
-Agent-loop evidence:
+Agent-loop evidence (when lifecycle, evaluator, hook, or gate behavior changes):
 
 - [ ] Loop owner and independent reviewer differ
 - [ ] Retry, stop, escalation, permission, and controlled-wrapper bounds match the typed contract
 - [ ] Evidence contains only command, result, rollback, and skipped-check fields
-- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when agent-harness surfaces changed
+- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when lifecycle or semantic-evaluation behavior changed
 - [ ] Provider configuration is not presented as proof of live native-event execution
 
 See [Approval Boundaries](../docs/00.agent-governance/policies/approval-boundaries.md) for protected surfaces.

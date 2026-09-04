@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Agent Quality and Security Standards
@@ -86,10 +86,35 @@ Quality dimensions:
   for a second reason: the gate invokes the runner, so running them from inside
   it would make the two orchestrators call each other without end.
 
+### Local QA Environment
+
+Use a Linux host, Linux VM, or WSL2 with `/proc` and pidfd support, Git, Bash,
+Python 3.12 or later, and the Docker Compose CLI. Create a clean virtual
+environment and install `scripts/requirements.txt` before the public command;
+the gate must not install local dependencies or inherit unrelated Python startup
+hooks. Run `python3 scripts/validation/run-ci-gate.py --profile changed` for the
+selected scope and `--profile full` for every locally admitted suite.
+
+A containerized QA workspace must provide an init process that promptly reaps
+orphaned descendants, for example Docker's `--init` option. A zombie remaining in
+`/proc` is not evidence of a still-running command, but it must not be ignored to
+make the process-group cleanup gate pass. Fix the execution environment rather
+than increasing the cleanup deadline or skipping the lifecycle regression.
+See [Docker init behavior](https://docs.docker.com/reference/cli/docker/container/run/#specify-an-init-process)
+and the [Linux child-subreaper contract](https://man7.org/linux/man-pages/man2/PR_SET_CHILD_SUBREAPER.2const.html).
+
+Local success covers only local roots. Hosted dependency installation, browser
+execution, GitHub event identity, pre-commit, security scanning, and SARIF upload
+still require their real GitHub Actions evidence; setting `GITHUB_ACTIONS=true`
+locally is not a supported substitute.
+
 ## 5. Change-Type Verification Matrix
 
-Use the smallest meaningful checks for the touched layer. When a listed check is
-not applicable, record the skipped-check rationale in the task evidence.
+This is the sole change-type verification matrix for all providers and GitHub
+workflows. Provider adapters and GitHub policy route here rather than copying
+or extending the matrix. Use the smallest meaningful checks for the touched
+layer. When a listed check is not applicable, record the skipped-check rationale
+in the task evidence.
 
 | Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -138,12 +163,37 @@ components, so docs-only changes that mention service versions must keep those
 literals aligned with current compose declarations and
 `infra/tech-stack.versions.json`.
 
-The local runner validates `.github/workflow-contract.yml` and all seven
-tracked workflow definitions through
+Local and hosted QA use the same public entrypoint and suite manifest, while
+execution-context ownership determines which leaves can run. A local `full`
+result is not proof of a hosted `full` result. Do not fake GitHub environment
+variables to invoke CI-only wrappers locally. Record missing tools and
+unexecuted checks explicitly; neither absence nor a skipped check is a PASS.
+
+The local runner validates `.github/workflow-contract.yml` and the registered
+workflow definitions through
 `scripts/validation/check-github-workflow-contract.py`. It lists
 `tech-stack-version-sync.yml` as non-gating remote automation, never runs real
 pre-commit through the CI-only entry point, and exercises that wrapper only
 with the fake-binary regression.
+
+### Gate and Fixture Ownership
+
+A gate owns one current invariant, not a historical document count, a copied
+command list, or a Task's observed commit. The workflow manifest owns composition;
+Stage 00 owns approval and completion policy; Stage 99 owns document structure.
+A provider adapter and a PR template refer to these owners rather than adding
+another unconditional full run or independent checklist.
+
+Both public profiles use one Compose leaf. With no inherited profile override,
+it validates every declared selection independently, including port-collision
+checks. An explicit operator-selected combination belongs to the standalone
+Compose validator, not a second required leaf with the same command.
+
+Fixtures are required when lifecycle, evaluator, parser, hook, or gate behavior
+changes. Reuse focused valid/invalid cases for the changed invariant; do not
+require model execution or a second all-files sweep for wording-only edits.
+Retain negative cases for authorization, ownership, symlinks, and fail-closed
+execution. A smaller suite must not mean missing behavioral coverage.
 
 ## 8. Workflow and Language Routing
 
