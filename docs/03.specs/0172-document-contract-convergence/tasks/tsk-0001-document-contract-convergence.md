@@ -222,6 +222,16 @@ runtime, protection, review, deferral, and Git evidence.
   Workflow-dispatch run `33899635117`, full job `101110407893`, executed against
   the same SHA and passed in 19m57s, including the public suites and SARIF upload.
   These two runs close the Hosted retry without bypassing or removing a gate.
+- On 2026-09-05 the user explicitly approved the remote mutation for
+  `buenhyden/hy-home.docker` `main` required status checks. The audited command
+  class was PATCH of `branches/main/protection/required_status_checks` only.
+  Before-state was `strict=true` with the exact 12 observed leaf checks; the
+  applied and read-back after-state is `strict=true` with only
+  `validation-changed` and `validation-full`, both bound to app ID 15368.
+  Pull-request review, CODEOWNERS, conversation resolution, admin, signature,
+  linear-history, force-push, deletion, creation, lock, and fork-sync settings
+  were read back unchanged. Rollback remains the exact captured 12-check state,
+  including unbound `frontend-quality`; no rollback was required.
 
 ### Gap matrix
 
@@ -254,7 +264,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Hosted CI | PASS | corrected candidate `17a5564c` passed changed job `101110351847` in run `33899619212` and full job `101110407893` in workflow-dispatch run `33899635117` |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
-| Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
+| Remote protection | PASS | authenticated PATCH and full read-back applied strict aggregate checks `validation-changed` and `validation-full` with app ID 15368; non-check protections unchanged; exact 12-check rollback retained |
 | Hardening and tech-stack provenance | PASS | 11 tiers; 19 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
 | Storybook dependency security | PASS | clean install, exact high-severity audit with 0 vulnerabilities, lint, typecheck, and Storybook 10.6 production build |
 | Next production build | PASS / SANDBOX-LIMITED | webpack production build passed; default Turbopack reached bundling but local worker port binding was denied |
