@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 providers:
   - provider_id: claude
     capability_status: supported
@@ -14,18 +14,13 @@ providers:
     runtime_acceptance: needs_revalidation
     adapter_path: docs/00.agent-governance/providers/codex.md
     native_agent_pattern: .codex/agents/{agent_id}.toml
-    native_skill_pattern: .agents/skills/{skill_id}/SKILL.md
+    # No native skill projection: Codex reads canonical Stage 00 procedures.
+    native_skill_pattern: null
     native_config_path: .codex/hooks.json
-compatibility:
-  agent_pattern: .agents/agents/{agent_id}.md
-  skill_pattern: .agents/skills/{skill_id}/SKILL.md
 canonical_sources:
   role_pattern: docs/00.agent-governance/roles/{agent_id}.md
   skill_pattern: docs/00.agent-governance/skills/{skill_id}.md
 projections:
-  - provider_id: shared
-    path: .agents/README.md
-    source: docs/00.agent-governance/README.md
   - provider_id: claude
     path: .claude/CLAUDE.md
     source: docs/00.agent-governance/providers/claude.md
@@ -134,4 +129,4 @@ agent_output_eval:
     AOE-ADAPTER-001: 0.50
     AOE-MODEL-001: 0.50
     AOE-LOOP-001: 0.50
-generated_roots: [.agents/agents, .agents/skills, .claude/agents, .claude/skills, .codex/agents]
+generated_roots: [.claude/agents, .claude/skills, .codex/agents]

@@ -82,6 +82,7 @@ repos:
         args: ['--config=.gitleaks.toml']
 
   # --- 7. Local Project Specific ---
+  # The retired .agents path stays in selectors solely to reject reintroduction.
   - repo: local
     hooks:
       - id: public-validation-changed

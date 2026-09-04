@@ -834,7 +834,6 @@ This paragraph explains how verification evidence will be interpreted.
                 "ls-files",
                 "docs/00.agent-governance",
                 "docs/99.templates",
-                ".agents/skills",
                 ".claude/skills",
             ],
             cwd=ROOT,

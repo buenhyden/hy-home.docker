@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render deterministic Claude, Codex, and shared Stage 00 projections."""
+"""Render deterministic Claude and Codex adapters from canonical Stage 00 sources."""
 
 from __future__ import annotations
 
@@ -181,17 +181,6 @@ def _marker(source: pathlib.PurePosixPath, *, comment: str = "html") -> str:
     return f"<!-- {text} -->" if comment == "html" else f"# {text}"
 
 
-def _shared_agent(role: RoleRecord, output: pathlib.PurePosixPath) -> bytes:
-    body = _rebase_links(_body(role.source_text), role.source_path, output)
-    return (
-        "---\n"
-        f"name: {_yaml_scalar(role.agent_id)}\n"
-        f"description: {_yaml_scalar(_description(role))}\n"
-        "---\n\n"
-        f"{_marker(role.source_path)}\n\n{body}"
-    ).encode()
-
-
 def _claude_agent(
     state: AgentGovernanceState, role: RoleRecord, output: pathlib.PurePosixPath
 ) -> bytes:
@@ -230,7 +219,17 @@ def _codex_agent(
 ) -> bytes:
     selection = _selection(state, role, "codex")
     body = _rebase_links(_body(role.source_text), role.source_path, output)
-    instructions = f"{_marker(role.source_path, comment='hash')}\n\n{body}".rstrip()
+    procedures = "\n".join(
+        f"- `docs/00.agent-governance/skills/{skill_id}.md`"
+        for skill_id in role.skill_ids
+    )
+    instructions = (
+        f"{_marker(role.source_path, comment='hash')}\n\n{body}"
+        "\n## Required Procedures\n\n"
+        "Read the following canonical files explicitly before applying the role. "
+        "These are repository-relative source paths, not native skill-picker registrations.\n\n"
+        f"{procedures}\n"
+    ).rstrip()
     values = {
         "name": role.agent_id,
         "description": _description(role),
@@ -296,12 +295,6 @@ def render_all(
     records: list[RenderRecord] = []
     providers_by_id = {item.provider_id: item for item in state.provider_records}
     for role in state.roles:
-        shared_path = pathlib.PurePosixPath(
-            state.compatibility.agent_pattern.format(agent_id=role.agent_id)
-        )
-        records.append(
-            RenderRecord("shared", shared_path, _shared_agent(role, shared_path))
-        )
         for provider_id in SUPPORTED_PROVIDERS:
             provider = providers_by_id[provider_id]
             native_path = pathlib.PurePosixPath(
@@ -314,19 +307,13 @@ def render_all(
             )
             records.append(RenderRecord(provider_id, native_path, content))
     for skill in state.skills:
-        shared_path = pathlib.PurePosixPath(
-            state.compatibility.skill_pattern.format(skill_id=skill.skill_id)
-        )
-        records.append(RenderRecord("shared", shared_path, _skill(skill, shared_path)))
-        seen = {shared_path}
         for provider_id in SUPPORTED_PROVIDERS:
             provider = providers_by_id[provider_id]
+            if provider.skill_pattern is None:
+                continue
             native_path = pathlib.PurePosixPath(
                 provider.skill_pattern.format(skill_id=skill.skill_id)
             )
-            if native_path in seen:
-                continue
-            seen.add(native_path)
             records.append(
                 RenderRecord(provider_id, native_path, _skill(skill, native_path))
             )
@@ -339,11 +326,7 @@ def render_all(
         provider = str(projection["provider_id"])
         path = pathlib.PurePosixPath(str(projection["path"]))
         source = pathlib.PurePosixPath(str(projection["source"]))
-        title = (
-            "Shared Runtime Route"
-            if provider == "shared"
-            else f"{provider.title()} Runtime Route"
-        )
+        title = f"{provider.title()} Runtime Route"
         records.append(RenderRecord(provider, path, _pointer(title, source, path)))
     return tuple(sorted(records, key=lambda item: item.path.as_posix()))
 
@@ -357,19 +340,12 @@ def expected_native_projection(root: pathlib.Path) -> Mapping[pathlib.Path, byte
 def expected_projection(
     root: pathlib.Path, provider: str
 ) -> Mapping[pathlib.Path, bytes]:
-    aliases = {
-        "agents-md": "shared",
-        "shared": "shared",
-        "claude": "claude",
-        "codex": "codex",
-    }
-    selected = aliases.get(provider)
-    if selected is None:
+    if provider not in SUPPORTED_PROVIDERS:
         raise ValueError(f"unsupported provider: {provider}")
     return {
         pathlib.Path(item.path.as_posix()): item.content
         for item in render_all(root)
-        if item.provider == selected
+        if item.provider == provider
     }
 
 
@@ -383,7 +359,7 @@ def _managed_roots(state: AgentGovernanceState) -> tuple[pathlib.PurePosixPath, 
     if len(roots) != len(set(roots)) or any(
         item.is_absolute()
         or len(item.parts) < 2
-        or item.parts[0] not in {".agents", ".claude", ".codex"}
+        or item.parts[0] not in {".claude", ".codex"}
         or any(part in {"", ".", ".."} for part in item.parts)
         for item in roots
     ):
@@ -395,10 +371,12 @@ def _projection_namespaces(
     state: AgentGovernanceState,
 ) -> tuple[pathlib.PurePosixPath, ...]:
     patterns = (
-        state.compatibility.agent_pattern,
-        state.compatibility.skill_pattern,
         *(record.agent_pattern for record in state.provider_records),
-        *(record.skill_pattern for record in state.provider_records),
+        *(
+            record.skill_pattern
+            for record in state.provider_records
+            if record.skill_pattern is not None
+        ),
     )
     return tuple(
         sorted(

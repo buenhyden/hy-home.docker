@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Approval Boundaries
@@ -56,7 +56,7 @@ It never expands through delegation or provider handoff.
 | `secrets/**` and real environment values | path-only redacted evidence | revert mapping; rotate only with approval |
 | `.github/workflows/**` | workflow contract and security review | revert logical commit |
 | `scripts/**` | focused tests and harness validation | revert logical commit |
-| `.agents/**`, `.claude/**`, `.codex/**` | Stage 00 contract and renderer parity | regenerate from canonical source |
+| `.claude/**`, `.codex/**` | Stage 00 contract and renderer parity | regenerate from canonical source |
 | `docs/00.agent-governance/**` | Stage 00 contract, links, and Task evidence | revert logical commit |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
 

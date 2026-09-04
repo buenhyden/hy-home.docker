@@ -42,7 +42,7 @@ def copy_fixture(root: pathlib.Path) -> None:
     shutil.copytree(
         ROOT / "docs/00.agent-governance", root / "docs/00.agent-governance"
     )
-    for directory in (".agents", ".claude", ".codex"):
+    for directory in (".claude", ".codex"):
         shutil.copytree(ROOT / directory, root / directory)
     hook = root / "scripts/hooks/agent-event-hook.sh"
     hook.parent.mkdir(parents=True)
@@ -84,15 +84,15 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
             registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             self.assertIn("projections", registry)
-            registry["projections"][0]["path"] = ".agents/ROUTE.md"
+            registry["projections"][2]["path"] = ".codex/ROUTE.md"
             registry_path.write_text(
                 yaml.safe_dump(registry, sort_keys=False), encoding="utf-8"
             )
 
             projection = renderer.expected_native_projection(root)
 
-            self.assertIn(pathlib.Path(".agents/ROUTE.md"), projection)
-            self.assertNotIn(pathlib.Path(".agents/README.md"), projection)
+            self.assertIn(pathlib.Path(".codex/ROUTE.md"), projection)
+            self.assertNotIn(pathlib.Path(".codex/README.md"), projection)
 
     def test_dynamic_yaml_scalars_are_quoted_in_role_and_skill_projections(
         self,
@@ -132,26 +132,16 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
 
             mutate_registry(root, unsafe_but_valid_scalars)
             projection = renderer.expected_native_projection(root)
-            shared_role = parse_frontmatter(
-                projection[pathlib.Path(".agents/agents/code-reviewer.md")]
-            )
             claude_role = parse_frontmatter(
                 projection[pathlib.Path(".claude/agents/code-reviewer.md")]
-            )
-            shared_skill = parse_frontmatter(
-                projection[pathlib.Path(".agents/skills/adr-writing/SKILL.md")]
             )
             claude_skill = parse_frontmatter(
                 projection[pathlib.Path(".claude/skills/adr-writing/SKILL.md")]
             )
 
-            self.assertIn("Canonical x: injected role", shared_role["description"])
             self.assertIn("Canonical x: injected role", claude_role["description"])
             self.assertEqual("evil: true", claude_role["model"])
             self.assertEqual("high: injected", claude_role["effort"])
-            self.assertIn(
-                "Canonical x: injected procedure", shared_skill["description"]
-            )
             self.assertIn(
                 "Canonical x: injected procedure", claude_skill["description"]
             )
@@ -183,20 +173,20 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_fixture(root)
-                old_path = root / ".agents/README.md"
+                old_path = root / ".codex/README.md"
                 if case == "change":
                     mutate_registry(
                         root,
-                        lambda data: data["projections"][0].update(
-                            {"path": ".agents/ROUTE.md"}
+                        lambda data: data["projections"][2].update(
+                            {"path": ".codex/ROUTE.md"}
                         ),
                     )
                 else:
-                    mutate_registry(root, lambda data: data["projections"].pop(0))
+                    mutate_registry(root, lambda data: data["projections"].pop(2))
 
                 self.assertIn(
                     renderer.Finding(
-                        pathlib.PurePosixPath(".agents/README.md"),
+                        pathlib.PurePosixPath(".codex/README.md"),
                         "stale-generated",
                     ),
                     renderer.find_native_projection_drift(root),
@@ -208,7 +198,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                 renderer.write_native_projection(root)
                 self.assertEqual([], renderer.find_native_projection_drift(root))
                 if case == "change":
-                    self.assertTrue((root / ".agents/ROUTE.md").is_file())
+                    self.assertTrue((root / ".codex/ROUTE.md").is_file())
 
     def test_removed_codex_role_projection_converges(self) -> None:
         renderer = load_renderer()
@@ -274,14 +264,14 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            target = root / ".agents/README.md"
+            target = root / ".codex/README.md"
             outside = root / "outside-generated.md"
             outside.write_bytes(target.read_bytes())
             target.unlink()
             target.symlink_to(outside)
 
             self.assertIn(
-                renderer.Finding(pathlib.PurePosixPath(".agents/README.md"), "unsafe"),
+                renderer.Finding(pathlib.PurePosixPath(".codex/README.md"), "unsafe"),
                 renderer.find_native_projection_drift(root),
             )
 
@@ -290,7 +280,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            oversized = pathlib.PurePosixPath(".agents/unowned-large.bin")
+            oversized = pathlib.PurePosixPath(".codex/unowned-large.bin")
             (root / oversized).write_bytes(b"x" * 16_384)
             real_identity = renderer._owned_projection_identity_at
 
@@ -342,7 +332,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            stale = pathlib.PurePosixPath(".agents/STALE.md")
+            stale = pathlib.PurePosixPath(".codex/STALE.md")
             (root / stale).write_bytes(
                 b"<!-- Generated by scripts/operations/provider_surface_renderer.py; "
                 b"source: docs/00.agent-governance/providers/claude.md -->\n"
@@ -380,7 +370,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            stale = pathlib.PurePosixPath(".agents/CORRUPTED.md")
+            stale = pathlib.PurePosixPath(".codex/CORRUPTED.md")
             (root / stale).write_bytes(
                 b"<!-- Generated by scripts/operations/provider_surface_renderer.py; "
                 b"source: docs/00.agent-governance/providers/claude.md -->\n"
@@ -447,15 +437,12 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                     self.assertIsInstance(parsed, dict)
                 elif relative.startswith(
                     (
-                        ".agents/agents/",
-                        ".agents/skills/",
                         ".claude/agents/",
                         ".claude/skills/",
                     )
                 ):
                     self.assertIsInstance(parse_frontmatter(payload), dict)
                 elif relative in {
-                    ".agents/README.md",
                     ".claude/README.md",
                     ".codex/README.md",
                 }:
@@ -471,7 +458,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            target = root / ".agents/agents/code-reviewer.md"
+            target = root / ".claude/agents/code-reviewer.md"
             target.write_text("drift\n")
             self.assertTrue(renderer.find_native_projection_drift(root))
             renderer.write_native_projection(root)
@@ -482,7 +469,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            stale = root / ".agents/skills/stale/SKILL.md"
+            stale = root / ".claude/skills/stale/SKILL.md"
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "---\nname: stale\n---\n\n"
@@ -507,7 +494,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            unowned = root / ".agents/skills/local/SKILL.md"
+            unowned = root / ".claude/skills/local/SKILL.md"
             unowned.parent.mkdir(parents=True)
             unowned.write_text("# local\n")
             with self.assertRaisesRegex(ValueError, "unowned"):
@@ -519,7 +506,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         mutations = {
             "absolute": lambda data: data.update({"generated_roots": ["/tmp"]}),
             "parent": lambda data: data.update({"generated_roots": ["../outside"]}),
-            "unexpected": lambda data: data["generated_roots"].append(".agents/other"),
+            "unexpected": lambda data: data["generated_roots"].append(".codex/other"),
             "missing": lambda data: data.update(
                 {"generated_roots": data["generated_roots"][:-1]}
             ),
@@ -537,7 +524,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            managed = root / ".agents/agents"
+            managed = root / ".claude/agents"
             outside = root / "outside"
             shutil.rmtree(managed)
             outside.mkdir()
@@ -550,7 +537,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            unowned = root / ".agents/skills/local/SKILL.md"
+            unowned = root / ".claude/skills/local/SKILL.md"
             unowned.parent.mkdir(parents=True)
             unowned.write_text(
                 "# local file\n\n"
@@ -567,7 +554,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            relative = pathlib.PurePosixPath(".agents/skills/stale/SKILL.md")
+            relative = pathlib.PurePosixPath(".claude/skills/stale/SKILL.md")
             stale = root / relative
             stale.parent.mkdir(parents=True)
             stale.write_text(
@@ -587,7 +574,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            relative = pathlib.PurePosixPath(".agents/skills/stale/SKILL.md")
+            relative = pathlib.PurePosixPath(".claude/skills/stale/SKILL.md")
             stale = root / relative
             stale.parent.mkdir(parents=True)
             stale.write_text(
@@ -630,7 +617,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            relative = pathlib.PurePosixPath(".agents/skills/stale/SKILL.md")
+            relative = pathlib.PurePosixPath(".claude/skills/stale/SKILL.md")
             stale = root / relative
             stale.parent.mkdir(parents=True)
             stale.write_text(
@@ -681,7 +668,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            relative = pathlib.PurePosixPath(".agents/skills/stale/SKILL.md")
+            relative = pathlib.PurePosixPath(".claude/skills/stale/SKILL.md")
             stale = root / relative
             stale.parent.mkdir(parents=True)
             stale.write_text(
@@ -737,7 +724,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            managed = root / ".agents/skills"
+            managed = root / ".claude/skills"
             displaced = root / "displaced-skills"
             outside = root / "outside"
             outside_child = outside / "must-survive"
@@ -769,7 +756,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            relative = pathlib.PurePosixPath(".agents/skills/stale/SKILL.md")
+            relative = pathlib.PurePosixPath(".claude/skills/stale/SKILL.md")
             stale = root / relative
             stale.parent.mkdir(parents=True)
             stale.write_text(

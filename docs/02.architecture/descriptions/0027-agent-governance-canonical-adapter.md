@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -26,7 +26,7 @@ Agent는 provider adapter를 통해 동일한 규범을 native runtime 형식으
   소유한다.
 - Stage 99는 docs profile, path, identity, lifecycle, template의 typed contract를
   소유한다.
-- `.claude/`, `.codex/`, `.agents/`는 projection 또는 runtime mechanics를
+- `.claude/`, `.codex/`는 projection 또는 runtime mechanics를
   소유하지만 정책을 정의하지 않는다.
 - Current Task는 실행 결과를, Git은 diff와 삭제 본문의 recovery를 소유한다.
 - User-global configuration, credential, provider availability, deployment

@@ -98,7 +98,7 @@ approval rules.
 
 | Field | Value |
 | --- | --- |
-| Surface | .claude/**, .codex/**, and .agents/** |
+| Surface | docs/00.agent-governance/**, .claude/**, and .codex/** |
 | Input Scenario | User asks to align Claude, Codex, or provider-neutral agent surfaces. |
 | Required Context | `docs/00.agent-governance/policies/provider-capability-matrix.md`, `docs/00.agent-governance/providers/registry.yaml`, `scripts/operations/provider_surface_renderer.py` |
 | Expected Output | Preserves Stage 00 as the governance source of truth, keeps provider-specific files as adapters, and distinguishes native capability from behavioral parity. |

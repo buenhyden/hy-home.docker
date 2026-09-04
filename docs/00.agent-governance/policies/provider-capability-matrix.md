@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Provider Capability Matrix
@@ -24,7 +24,7 @@ provider support, repository adoption, and observed runtime acceptance.
 | Capability | Canonical owner | Claude adapter | Codex adapter |
 | --- | --- | --- | --- |
 | Role intent | `roles/*.md` | `.claude/agents/*.md` | `.codex/agents/*.toml` |
-| Procedures | `skills/*.md` | `.claude/skills/*/SKILL.md` | `.agents/skills/*/SKILL.md` |
+| Procedures | `skills/*.md` | `.claude/skills/*/SKILL.md` | explicit reads of canonical `skills/*.md`; no native projection |
 | Model and effort | provider registry | native model and effort | native model and reasoning |
 | Permissions | role plus provider registry | permission mode | sandbox mode |
 | Semantic events | registry plus hook config | Claude adapter | Codex adapter |

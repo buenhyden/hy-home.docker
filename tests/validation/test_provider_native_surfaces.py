@@ -28,14 +28,9 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         renderer = load_renderer()
         records = renderer.render_all(ROOT, providers=("claude", "codex"))
         self.assertIsInstance(records, tuple)
-        self.assertEqual(
-            {"claude", "codex", "shared"}, {item.provider for item in records}
-        )
+        self.assertEqual({"claude", "codex"}, {item.provider for item in records})
         self.assertTrue(
-            all(
-                item.path.parts[0] in {".agents", ".claude", ".codex"}
-                for item in records
-            )
+            all(item.path.parts[0] in {".claude", ".codex"} for item in records)
         )
 
     def test_native_agents_preserve_provider_controls(self) -> None:
@@ -54,7 +49,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         self.assertEqual("gpt-5.6-sol", codex["model"])
         self.assertEqual("xhigh", codex["model_reasoning_effort"])
 
-    def test_shared_skills_have_exact_canonical_name_set(self) -> None:
+    def test_claude_skills_have_exact_canonical_name_set(self) -> None:
         renderer = load_renderer()
         catalog = renderer.load_catalog(ROOT)
         projection = renderer.expected_native_projection(ROOT)
@@ -62,9 +57,26 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         actual = {
             path.parent.name
             for path in projection
-            if path.parts[:2] == (".agents", "skills") and path.name == "SKILL.md"
+            if path.parts[:2] == (".claude", "skills") and path.name == "SKILL.md"
         }
         self.assertEqual(expected, actual)
+
+    def test_codex_roles_load_canonical_procedures_without_shared_projection(
+        self,
+    ) -> None:
+        renderer = load_renderer()
+        catalog = renderer.load_catalog(ROOT)
+        projection = renderer.expected_native_projection(ROOT)
+        self.assertFalse(any(path.parts[0] == ".agents" for path in projection))
+        for role in catalog.roles:
+            payload = tomllib.loads(
+                projection[pathlib.Path(f".codex/agents/{role.agent_id}.toml")].decode()
+            )
+            for skill_id in role.skill_ids:
+                self.assertIn(
+                    f"docs/00.agent-governance/skills/{skill_id}.md",
+                    payload["developer_instructions"],
+                )
 
     def test_unknown_provider_fails_closed(self) -> None:
         renderer = load_renderer()
