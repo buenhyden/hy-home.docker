@@ -64,7 +64,6 @@ jobs:
     env:
       EVENT_NAME: ${{ github.event_name }}
       PUSH_BEFORE_SHA: ${{ github.event.before }}
-      HYHOME_COMPOSE_PROFILES: core data obs workflow ai tooling messaging security communication service storage admin iac registry sast sync testing graph mng ksql nginx
     steps:
       - *checkout
       - name: Set up Python
