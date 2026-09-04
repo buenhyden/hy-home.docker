@@ -255,6 +255,48 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(on_disk, {document.path for document in workflows})
         self.assertEqual((), self.module.validate_workflows(ROOT, contract))
 
+    def test_full_job_preserves_every_declared_compose_selection(self) -> None:
+        workflows = {
+            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
+        }
+        full_env = workflows[".github/workflows/ci-quality.yml"].data["jobs"][
+            "validation-full"
+        ]["env"]
+
+        self.assertEqual(
+            {
+                "EVENT_NAME": "${{ github.event_name }}",
+                "PUSH_BEFORE_SHA": "${{ github.event.before }}",
+            },
+            full_env,
+        )
+        self.assertNotIn("HYHOME_COMPOSE_PROFILES", full_env)
+
+    def test_required_workflow_rejects_inherited_compose_selection(self) -> None:
+        contract = self.module.load_workflow_contract(ROOT)
+        documents = self.module.load_workflows(ROOT)
+        document = next(
+            item
+            for item in documents
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        data = copy.deepcopy(document.data)
+        data["env"] = {"HYHOME_COMPOSE_PROFILES": "core data obs workflow"}
+        changed = dataclasses.replace(document, data=data)
+
+        with mock.patch.object(
+            self.module,
+            "load_workflows",
+            return_value=tuple(
+                changed if item.path == document.path else item for item in documents
+            ),
+        ):
+            codes = {
+                finding.code
+                for finding in self.module.validate_workflows(ROOT, contract)
+            }
+        self.assertIn("workflow-gate-environment-invalid", codes)
+
     def test_canonical_schema_v2_registry_is_complete_and_expandable(
         self,
     ) -> None:

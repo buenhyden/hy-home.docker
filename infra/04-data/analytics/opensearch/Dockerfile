@@ -9,7 +9,7 @@ LABEL version="0.1" description="OpenSearch 3.5 with custom plugins and secret-b
 SHELL ["/bin/bash", "-c"]
 
 # 시스템 경로 수정, 플러그인 설치, entrypoint 복사를 위해 root 사용
-USER root
+USER 0
 
 # Build-time plugin installation
 # ordered to leverage cache if plugins don't change
@@ -28,4 +28,7 @@ RUN /usr/share/opensearch/bin/opensearch-plugin install \
 COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh
 RUN chmod 755 /usr/local/bin/opensearch-entrypoint.sh
 
-USER opensearch
+RUN test "$(id -u opensearch)" = "1000" && \
+  test "$(id -g opensearch)" = "1000"
+
+USER 1000

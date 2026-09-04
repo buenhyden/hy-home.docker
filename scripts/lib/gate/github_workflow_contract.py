@@ -980,6 +980,14 @@ def _workflow_projection_findings(
     contract: WorkflowContract,
 ) -> tuple[WorkflowFinding, ...]:
     findings: list[WorkflowFinding] = []
+    if "env" in raw_workflow:
+        findings.append(
+            _finding(
+                "workflow-gate-environment-invalid",
+                path,
+                "required workflow top-level environment is forbidden",
+            )
+        )
     workflow_defaults = raw_workflow.get("defaults")
     if isinstance(workflow_defaults, dict) and "run" in workflow_defaults:
         findings.append(
@@ -1006,11 +1014,6 @@ def _workflow_projection_findings(
             {
                 "EVENT_NAME": "${{ github.event_name }}",
                 "PUSH_BEFORE_SHA": "${{ github.event.before }}",
-                "HYHOME_COMPOSE_PROFILES": (
-                    "core data obs workflow ai tooling messaging security "
-                    "communication service storage admin iac registry sast "
-                    "sync testing graph mng ksql nginx"
-                ),
             },
         ),
     }

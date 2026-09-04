@@ -45,9 +45,14 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
   runtime inventory observation, and remote branch-protection inspection.
 - In scope when an exact Hosted public gate fails: the minimum Storybook
   development dependency, lockfile, build-time Next compiler selection, or
-  registered CI-tool provisioning required to execute that existing gate.
-  Application behavior, validator relaxation, workflow permission expansion,
-  and deployment configuration remain out of scope.
+  registered CI-tool provisioning, deterministic format-hook normalization, or
+  exact lint-conformance correction required to execute that existing gate.
+  Application behavior, validator
+  relaxation, workflow permission expansion, deployed stack configuration, and
+  runtime state mutation remain out of scope. The only admitted Dockerfile
+  corrections are the exact equivalent sample healthcheck, numeric user
+  representations, and fail-closed identity assertions reported by the existing
+  gate.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -87,6 +92,16 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
 12. Every required job that selects the `zizmor` leaf must provision its pinned
     `uvx` runtime through the registered immutable `setup-uv` action before the
     public gate starts; the PR job gains no permission or upload side effect.
+13. A Hosted format-hook failure may normalize only files actually rewritten by
+    that pinned hook. Evidence-only Spec, Plan, and Task updates may accompany
+    the remediation; every format diff must remain mechanical and
+    behavior-preserving.
+14. A Hosted lint finding may change the exact reported instruction plus the
+    minimum fail-closed proof and stale canonical-consumer synchronization
+    needed to preserve its effective runtime contract. Command, argument, exit,
+    identity, permission, and runtime-target semantics must remain equivalent;
+    no ignore, threshold, hook, or validator relaxation is allowed. The finding,
+    affected files, verifier, and rollback must be recorded.
 
 ## Technical Approach
 
@@ -144,10 +159,28 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 7. Both Hosted required jobs provision the same immutable `setup-uv` action,
    and the changed public gate advances through the registered `zizmor` leaf
    without relying on runner-image tool availability.
-8. The final diff changes no frozen archive body and contains no secret,
-   credential, certificate, or deployment/runtime service payload. Any
-   build-time Next setting is limited to the compiler path proved by the failed
-   Hosted gate.
+8. Ruff 0.15.12 reports every tracked Python file formatted,
+   markdownlint-cli2 0.22.1 reports zero errors and no rewrites, and focused
+   behavior tests pass after the exact 12-Python plus one-Markdown mechanical
+   normalization reported by Hosted CI. Hadolint v2.14.0 reports no finding for
+   the exact sample-service healthcheck and five user instructions corrected
+   after the next Hosted runs reached that leaf. The OAuth2 Proxy production
+   identity is also enforced by the canonical hardening consumer and a focused
+   contract regression; the distinct dev image retains its named-user contract.
+9. The final diff changes no frozen archive body and contains no secret,
+   credential, certificate, deployed stack, or runtime-state payload. Its
+   Dockerfile changes are limited to the equivalent sample-service healthcheck,
+   exact numeric user representations that preserve group resolution,
+   fail-closed build assertions, and the
+   corresponding hardening/test/guide synchronization required by Hosted lint
+   findings. Any build-time Next setting is limited to the compiler path proved
+   by the failed Hosted gate.
+10. The Hosted full job leaves `HYHOME_COMPOSE_PROFILES` unset so the canonical
+    Compose validator checks every declared profile as an independent selection.
+    The workflow semantic contract and focused regression reject any inherited
+    workflow-level or job-level override that recombines mutually exclusive
+    stacks; no profile, collision check, validator, threshold, or required job
+    is removed.
 
 ## Traceability
 
@@ -158,11 +191,16 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 
 ## Operational Impact
 
-The candidate diff has no deployment or runtime service payload. Its scoped
-Next setting selects the build-time TypeScript compiler API only. Read-only
-runtime and remote observations are evidence only. Deployment, provider,
-protection, tag, release, and merge mutations remain stopped until their exact
-execution contract is approved.
+The candidate diff changes no deployed stack, runtime state, or service
+behavior. Its Dockerfile changes are the equivalent sample-service healthcheck,
+numeric user representations that preserve group resolution, and fail-closed
+build assertions. The OAuth2
+Proxy hardening consumer, regression, and guide now enforce that same production
+identity while retaining the separate dev contract; its scoped Next setting
+selects the build-time TypeScript compiler API only. Read-only runtime and remote
+observations are evidence only. Deployment, provider, protection, tag, release,
+and merge mutations remain stopped until their exact execution contract is
+approved.
 
 ## Related Documents
 

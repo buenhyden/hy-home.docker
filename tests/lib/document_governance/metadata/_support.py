@@ -88,9 +88,7 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         pathlib.Path("docs/05.operations/incidents/README.md"),
         pathlib.Path("docs/99.templates/registry.json"),
         pathlib.Path("docs/99.templates/contracts/document-profile.schema.json"),
-        pathlib.Path(
-            "docs/99.templates/contracts/document-frontmatter.schema.json"
-        ),
+        pathlib.Path("docs/99.templates/contracts/document-frontmatter.schema.json"),
         # The catalog is a registered contract surface, so a fixture that holds
         # template sources without it is not a valid Stage 99 tree.
         pathlib.Path(values["template_catalog"]),

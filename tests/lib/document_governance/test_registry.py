@@ -216,9 +216,7 @@ class DocumentRegistryTests(unittest.TestCase):
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
 
         missing_terminal = json.loads(json.dumps(raw))
-        missing_terminal["lifecycles"]["task"]["terminal_statuses"].remove(
-            "cancelled"
-        )
+        missing_terminal["lifecycles"]["task"]["terminal_statuses"].remove("cancelled")
         self.assertIn(
             "lifecycle-terminal-set-invalid",
             {finding.code for finding in validate_registry(missing_terminal)},
@@ -256,9 +254,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             ("mitigated",), registry.transitions["incident"]["investigating"]
         )
-        self.assertEqual(
-            ("resolved",), registry.transitions["incident"]["mitigated"]
-        )
+        self.assertEqual(("resolved",), registry.transitions["incident"]["mitigated"])
 
     def test_active_corpus_uses_migrated_statuses_and_common_six(self) -> None:
         registry = load_registry()
@@ -308,10 +304,9 @@ class DocumentRegistryTests(unittest.TestCase):
             if profile_id is None:
                 continue
             profile = registry.profiles[profile_id]
-            if (
-                profile.get("frontmatter_policy") != "required"
-                or _declares_provider_binding(profile)
-            ):
+            if profile.get(
+                "frontmatter_policy"
+            ) != "required" or _declares_provider_binding(profile):
                 continue
             with self.subTest(path=relative, profile_id=profile_id):
                 values = parse_frontmatter(ROOT / relative)
@@ -339,9 +334,7 @@ class DocumentRegistryTests(unittest.TestCase):
                     declares_frozen_legacy_status(profile, path, "completed")
                 )
                 self.assertTrue(declares_frozen_legacy_record(profile, path))
-                self.assertFalse(
-                    declares_frozen_legacy_status(profile, path, "sealed")
-                )
+                self.assertFalse(declares_frozen_legacy_status(profile, path, "sealed"))
         self.assertFalse(
             declares_frozen_legacy_status(
                 profile, "docs/98.archive/migrations/0004-future.md", "completed"
@@ -510,14 +503,12 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(len(document_types), len(set(document_types)))
 
         duplicate_type = json.loads(json.dumps(raw))
-        duplicate_type["profiles"][1]["type"] = duplicate_type["profiles"][0][
-            "type"
-        ]
+        duplicate_type["profiles"][1]["type"] = duplicate_type["profiles"][0]["type"]
         self.assertIn(
             "profile-type-duplicate",
             {finding.code for finding in validate_registry(duplicate_type)},
-
         )
+
     def test_template_roles_declare_explicit_profile_lists(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         known_profiles = {profile["id"] for profile in raw["profiles"]}
@@ -537,8 +528,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_authored_frontmatter_schema_is_closed_and_unambiguous(self) -> None:
         schema_path = (
-            ROOT
-            / "docs/99.templates/contracts/document-frontmatter.schema.json"
+            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
         )
         self.assertTrue(schema_path.is_file())
         self.assertFalse(
@@ -560,8 +550,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIs(schema["additionalProperties"], False)
         hook_values = _parse_frontmatter_text(
             (
-                ROOT
-                / "docs/00.agent-governance/policies/hooks/"
+                ROOT / "docs/00.agent-governance/policies/hooks/"
                 "hookify.block-absolute-file-link.md"
             ).read_text(encoding="utf-8")
         )
@@ -889,9 +878,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 {"path_pattern": "docs/01.requirements/\u200b{number:4}-{slug}.md"}
             ),
             "markdown-frontmatter-policy-bypass": lambda value: next(
-                profile
-                for profile in value["profiles"]
-                if profile["id"] == "guide"
+                profile for profile in value["profiles"] if profile["id"] == "guide"
             ).update(
                 {
                     "frontmatter_policy": "absent",
@@ -1326,9 +1313,7 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_registry_rejects_nonidentical_path_language_overlap(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         generated = next(
-            profile
-            for profile in raw["profiles"]
-            if profile["id"] == "generated"
+            profile for profile in raw["profiles"] if profile["id"] == "generated"
         )
         specialized = {
             **generated,

@@ -430,9 +430,7 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         path = self.repo / self.contract["canonical_pack"] / "0019-readme/README.md"
         text = path.read_text(encoding="utf-8")
         path.write_text(
-            text.replace(
-                'status: "published"', 'status: "superseded"', 1
-            ),
+            text.replace('status: "published"', 'status: "superseded"', 1),
             encoding="utf-8",
         )
         self.assert_failure("canonical README", "status: published")

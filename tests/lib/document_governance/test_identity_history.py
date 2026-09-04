@@ -135,17 +135,13 @@ class IdentityHistoryTests(unittest.TestCase):
             registry_path = root / "docs/99.templates/registry.json"
             registry_path.parent.mkdir(parents=True)
             registry_path.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
-            decision = (
-                root
-                / "docs/03.specs/0104-decision/tasks/tsk-0001-recovery.md"
-            )
+            decision = root / "docs/03.specs/0104-decision/tasks/tsk-0001-recovery.md"
             decision.parent.mkdir(parents=True)
             decision.write_text(
                 "---\nartifact_id: SPEC-0104-TSK-0001\n---\n", encoding="utf-8"
             )
             source = (
-                root
-                / "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
+                root / "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
             )
             source.parent.mkdir(parents=True)
             source.write_text(
@@ -159,8 +155,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "commit", "-qm", "delete incomplete package")
             base = self._git(root, "rev-parse", "HEAD").strip()
             target_path = (
-                "docs/90.references/research/0085-workspace/"
-                "m0001-request-scope.md"
+                "docs/90.references/research/0085-workspace/m0001-request-scope.md"
             )
             decision_path = decision.relative_to(root).as_posix()
             current = {
@@ -249,9 +244,7 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             self.assertIn("identity-recovery-invalid", {item.code for item in findings})
 
-            untyped_decision_path = (
-                "docs/03.specs/0104-decision/tasks/tsk-0001.md"
-            )
+            untyped_decision_path = "docs/03.specs/0104-decision/tasks/tsk-0001.md"
             recovery[target_path]["decision_path"] = untyped_decision_path
             current[untyped_decision_path] = "SPEC-0104-TSK-0001"
             decision_evidence[untyped_decision_path] = decision_evidence[decision_path]
@@ -306,8 +299,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self.assertIn("identity-recovery-invalid", {item.code for item in findings})
 
             foreign_source = (
-                root
-                / "docs/90.references/research/0084-other/REQUEST-SCOPE.md"
+                root / "docs/90.references/research/0084-other/REQUEST-SCOPE.md"
             )
             foreign_source.parent.mkdir(parents=True)
             foreign_source.write_text(
