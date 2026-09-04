@@ -45,10 +45,13 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
   runtime inventory observation, and remote branch-protection inspection.
 - In scope when an exact Hosted public gate fails: the minimum Storybook
   development dependency, lockfile, build-time Next compiler selection, or
-  registered CI-tool provisioning and deterministic format-hook normalization
-  required to execute that existing gate. Application behavior, validator
-  relaxation, workflow permission expansion, and deployment configuration
-  remain out of scope.
+  registered CI-tool provisioning, deterministic format-hook normalization, or
+  exact lint-conformance correction required to execute that existing gate.
+  Application behavior, validator
+  relaxation, workflow permission expansion, deployed stack configuration, and
+  runtime state mutation remain out of scope. The only admitted runtime-metadata
+  text correction is the exact equivalent sample healthcheck reported by the
+  existing gate.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -92,6 +95,9 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
     that pinned hook. Evidence-only Spec, Plan, and Task updates may accompany
     the remediation; every format diff must remain mechanical and
     behavior-preserving.
+14. A Hosted lint finding may change only the exact reported instruction when
+    its command, arguments, exit semantics, and runtime target remain
+    equivalent. The finding, file, verifier, and rollback must be recorded.
 
 ## Technical Approach
 
@@ -152,11 +158,15 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 8. Ruff 0.15.12 reports every tracked Python file formatted,
    markdownlint-cli2 0.22.1 reports zero errors and no rewrites, and focused
    behavior tests pass after the exact 12-Python plus one-Markdown mechanical
-   normalization reported by Hosted CI.
+   normalization reported by Hosted CI. Hadolint v2.14.0 reports no finding for
+   the exact sample-service healthcheck instruction corrected after the next
+   Hosted run reached that leaf.
 9. The final diff changes no frozen archive body and contains no secret,
-   credential, certificate, or deployment/runtime service payload. Any
-   build-time Next setting is limited to the compiler path proved by the failed
-   Hosted gate.
+   credential, certificate, deployed stack, or runtime-state payload. Its sole
+   runtime-metadata text change is the equivalent sample-service healthcheck
+   representation required by the exact Hosted lint finding. Any build-time
+   Next setting is limited to the compiler path proved by the failed Hosted
+   gate.
 
 ## Traceability
 
@@ -167,11 +177,12 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 
 ## Operational Impact
 
-The candidate diff has no deployment or runtime service payload. Its scoped
-Next setting selects the build-time TypeScript compiler API only. Read-only
-runtime and remote observations are evidence only. Deployment, provider,
-protection, tag, release, and merge mutations remain stopped until their exact
-execution contract is approved.
+The candidate diff changes no deployed stack, runtime state, or service
+behavior. Its sole runtime-metadata text change is the equivalent sample-service
+healthcheck representation, and its scoped Next setting selects the build-time
+TypeScript compiler API only. Read-only runtime and remote observations are
+evidence only. Deployment, provider, protection, tag, release, and merge
+mutations remain stopped until their exact execution contract is approved.
 
 ## Related Documents
 

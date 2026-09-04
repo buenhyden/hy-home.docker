@@ -47,7 +47,8 @@ archive-body mutation.
    observe Hosted CI without bypassing checks. If an existing public gate fails,
    reproduce it and apply only the minimum dependency, lockfile, build-time
    compiler-path, registered CI-tool provisioning, or pinned format-hook
-   normalization before rerunning the same gate. Preserve the entry state
+   normalization or exact lint-conformance correction before rerunning the same
+   gate. Preserve the entry state
    through the first merge; record forward transitions in post-merge follow-up
    changes.
 10. Record provider, runtime, and branch-protection observations separately from
@@ -83,6 +84,8 @@ archive-body mutation.
 - Ruff 0.15.12 and markdownlint-cli2 0.22.1 checks plus focused behavior tests
   for the exact 12-Python and one-Markdown format-hook set reported by Hosted
   CI.
+- Hadolint v2.14.0 on the exact sample-service Dockerfile reported by Hosted CI;
+  verify the healthcheck command and arguments remain equivalent.
 
 ## Rulings
 

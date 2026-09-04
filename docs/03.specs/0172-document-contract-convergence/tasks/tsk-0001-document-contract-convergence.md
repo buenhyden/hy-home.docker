@@ -158,6 +158,19 @@ runtime, protection, review, deferral, and Git evidence.
   the exact CI pre-commit path reproduced markdownlint-cli2's one Stage 99
   README normalization. Validator and test behavior, hook versions, and all
   other non-evidence surfaces remain unchanged.
+- Follow-up PR #140 run `33882334540`, job `101053733629`, executed against exact
+  candidate `8f0a34320a0a8598939dbb5ecab1dfb73c298d9b`. The formatter hooks passed,
+  proving their correction, and the public gate advanced through Storybook's
+  9 browser tests with 100% reported code coverage. It then failed after
+  18m15s at Hadolint v2.14.0 because
+  `examples/sample-web-service/Dockerfile` used shell-form `HEALTHCHECK CMD`,
+  producing exact finding `DL3025`; the full job `101053734881` was correctly
+  skipped for the PR event.
+- The sample healthcheck now uses Docker exec-form with the same `wget` command,
+  arguments, URL, and nonzero failure semantics. This removes the unnecessary
+  shell and redundant `|| exit 1` without changing the image, endpoint,
+  interval, timeout, start period, retries, port, service, or deployment state.
+  Reverting that one instruction is the correction rollback.
 
 ### Gap matrix
 
@@ -187,9 +200,9 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | four runs advanced through hardening, audit, browser coverage, uv provisioning, and finally the pinned Markdown and Python format hooks; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
+| Hosted CI | FAIL / RETRY REQUIRED | five runs advanced through hardening, audit, browser coverage, uv provisioning, format hooks, and then exact Hadolint finding `DL3025`; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
-| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
+| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; the sample Dockerfile has one equivalent healthcheck metadata-text correction |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
 | Hardening and tech-stack provenance | PASS | 11 tiers; 18 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
 | Storybook dependency security | PASS | clean install, exact high-severity audit with 0 vulnerabilities, lint, typecheck, and Storybook 10.6 production build |
@@ -249,6 +262,9 @@ admitted by the References consumer and validated by the Registry metadata path.
 - Converged the exact Ruff 0.15.12 12-Python and markdownlint-cli2 0.22.1
   one-Markdown drift reported only after Hosted CI reached the pre-commit leaf;
   the mechanical normalization changes no behavior.
+- Replaced the exact sample-service shell-form healthcheck reported as
+  `DL3025` with equivalent exec-form arguments; no image, endpoint, timing,
+  service, deployment, hook, or validator behavior changed.
 
 ## Review Evidence
 
@@ -287,8 +303,10 @@ returned final PASS with no actionable finding on the resulting six-file diff.
 
 The PR-job `uvx` provisioning correction plus this evidence update are prepared
 in `2aefde23`. The exact formatter normalization plus this new Hosted evidence
-are prepared for one follow-up commit. Valid forward lifecycle transitions
-remain post-merge work; they are not compressed into the initial PR history.
+were committed as `8f0a3432`. The exact Hadolint correction and its Hosted
+evidence are prepared for one follow-up commit. Valid forward lifecycle
+transitions remain post-merge work; they are not compressed into the initial PR
+history.
 
 ## Rulings
 
