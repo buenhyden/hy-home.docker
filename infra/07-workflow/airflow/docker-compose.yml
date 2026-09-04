@@ -9,7 +9,7 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
     /usr/bin/env bash -c "printf '%s' \"db+postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
   AIRFLOW__CELERY__BROKER_URL_CMD: >-
-    /usr/bin/env bash -c "printf '%s' \"redis://:$(tr -d '\r\n' < /run/secrets/airflow_valkey_password)@airflow-valkey:6379/0\""
+    /usr/bin/env bash -c "printf '%s' \"redis://:$(tr -d '\r\n' < /run/secrets/${AIRFLOW_VALKEY_SECRET:-mng_valkey_password})@${AIRFLOW_VALKEY_HOST:-mng-valkey}:6379/0\""
   AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
   AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
@@ -27,6 +27,7 @@ x-airflow-common-env: &airflow-common-env
 x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
+    - dev
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.1}
   environment: *airflow-common-env
   volumes:
@@ -39,6 +40,7 @@ x-airflow-common: &airflow-common
     - airflow_db_password
     - airflow_fernet_key
     - airflow_www_password
+    - mng_valkey_password
     - airflow_valkey_password
 
 volumes:
@@ -98,6 +100,7 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+        required: false
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -129,6 +132,7 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+        required: false
   airflow-dag-processor:
     extends:
       file: ../../common-optimizations.yml
@@ -152,6 +156,7 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+        required: false
   airflow-worker:
     extends:
       file: ../../common-optimizations.yml
@@ -184,6 +189,7 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+        required: false
   airflow-triggerer:
     extends:
       file: ../../common-optimizations.yml
@@ -207,10 +213,12 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+        required: false
 
   airflow-init:
     profiles:
       - workflow
+      - dev
     container_name: airflow-init
     extends:
       file: ../../common-optimizations.yml
@@ -323,6 +331,7 @@ services:
   flower:
     profiles:
       - workflow
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -347,6 +356,7 @@ services:
         condition: service_healthy
       airflow-valkey:
         condition: service_healthy
+        required: false
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -357,7 +367,7 @@ services:
       traefik.http.routers.flower.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
   airflow-valkey:
     profiles:
-      - 'workflow'
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -391,7 +401,7 @@ services:
       start_period: 15s
   airflow-valkey-exporter:
     profiles:
-      - 'workflow'
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -421,9 +431,11 @@ services:
     depends_on:
       airflow-valkey:
         condition: service_healthy
+        required: false
   airflow-statsd-exporter:
     profiles:
       - 'workflow'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

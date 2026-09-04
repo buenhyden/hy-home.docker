@@ -22,7 +22,6 @@ updated: 2026-08-11
 ## Policy Scope
 
 - `infra/02-auth/oauth2-proxy/docker-compose.yml`
-- `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`
 - `infra/02-auth/oauth2-proxy/Dockerfile`

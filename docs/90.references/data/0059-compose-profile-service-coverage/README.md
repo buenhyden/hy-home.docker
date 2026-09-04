@@ -62,12 +62,12 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 
 | Metric | Value |
 | --- | ---: |
-| Compose files scanned | 47 |
-| Compose files with services | 46 |
-| Services discovered | 159 |
-| Distinct profiles including `default` | 26 |
+| Compose files scanned | 44 |
+| Compose files with services | 43 |
+| Services discovered | 146 |
+| Distinct profiles including `default` | 27 |
 | Default services | 4 |
-| Profile-gated service entries | 155 |
+| Profile-gated service entries | 142 |
 
 ## Profile Coverage
 
@@ -75,12 +75,13 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | --- | ---: | --- |
 | `admin` | 6 | `homer` (infra/11-laboratory/dashboard/docker-compose.yml), `dozzle` (infra/11-laboratory/dozzle/docker-compose.yml), `open_notebook` (infra/11-laboratory/open-notebook/docker-compose.yml), `surrealdb` (infra/11-laboratory/open-notebook/docker-compose.yml), `portainer` (infra/11-laboratory/portainer/docker-compose.yml), `redisinsight` (infra/11-laboratory/redisinsight/docker-compose.yml) |
 | `ai` | 4 | `qdrant` (infra/04-data/specialized/qdrant/docker-compose.yml), `ollama` (infra/08-ai/ollama/docker-compose.yml), `ollama-exporter` (infra/08-ai/ollama/docker-compose.yml), `open-webui` (infra/08-ai/open-webui/docker-compose.yml) |
-| `auth` | 5 | `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.dev.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey-exporter` (infra/02-auth/oauth2-proxy/docker-compose.yml) |
+| `auth` | 2 | `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml) |
 | `communication` | 2 | `mailhog` (infra/10-communication/mail/docker-compose.yml), `stalwart` (infra/10-communication/mail/docker-compose.yml) |
-| `core` | 8 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.dev.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey-exporter` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml) |
+| `core` | 5 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml) |
 | `data` | 58 | `influxdb` (infra/04-data/analytics/influxdb/docker-compose.yml), `ksqldb-server` (infra/04-data/analytics/ksql/docker-compose.yml), `opensearch` (infra/04-data/analytics/opensearch/docker-compose.yml), `opensearch-dashboards` (infra/04-data/analytics/opensearch/docker-compose.yml), `starrocks-be` (infra/04-data/analytics/warehouses/docker-compose.yml), `starrocks-fe` (infra/04-data/analytics/warehouses/docker-compose.yml), `valkey-cluster-exporter` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-cluster-init` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-0` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-1` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-2` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-3` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-4` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `valkey-node-5` (infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml), `seaweedfs-filer` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-master` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-mount` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), `seaweedfs-s3` (infra/04-data/lake-and-object/seaweedfs/docker-compose.yml), ... +40 more |
+| `dedicated-valkey` | 6 | `oauth2-proxy-valkey` (infra/02-auth/oauth2-proxy/docker-compose.yml), `oauth2-proxy-valkey-exporter` (infra/02-auth/oauth2-proxy/docker-compose.yml), `airflow-valkey` (infra/07-workflow/airflow/docker-compose.yml), `airflow-valkey-exporter` (infra/07-workflow/airflow/docker-compose.yml), `n8n-valkey` (infra/07-workflow/n8n/docker-compose.yml), `n8n-valkey-exporter` (infra/07-workflow/n8n/docker-compose.yml) |
 | `default` | 4 | `opensearch-dashboards` (infra/04-data/analytics/opensearch/docker-compose.cluster.yml), `opensearch-node1` (infra/04-data/analytics/opensearch/docker-compose.cluster.yml), `opensearch-node2` (infra/04-data/analytics/opensearch/docker-compose.cluster.yml), `opensearch-node3` (infra/04-data/analytics/opensearch/docker-compose.cluster.yml) |
-| `dev` | 48 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.dev.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `qdrant` (infra/04-data/specialized/qdrant/docker-compose.yml), `kafbat-ui` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.dev.yml), ... +30 more |
+| `dev` | 47 | `traefik` (infra/01-gateway/traefik/docker-compose.yml), `keycloak` (infra/02-auth/keycloak/docker-compose.yml), `oauth2-proxy` (infra/02-auth/oauth2-proxy/docker-compose.yml), `vault` (infra/03-security/vault/docker-compose.yml), `vault-agent` (infra/03-security/vault/docker-compose.yml), `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml), `mng-pg` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-pg-init` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey` (infra/04-data/operational/mng-db/docker-compose.yml), `mng-valkey-exporter` (infra/04-data/operational/mng-db/docker-compose.yml), `qdrant` (infra/04-data/specialized/qdrant/docker-compose.yml), `kafbat-ui` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-1` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-connect` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-exporter` (infra/05-messaging/kafka/docker-compose.dev.yml), `kafka-init` (infra/05-messaging/kafka/docker-compose.dev.yml), ... +29 more |
 | `graph` | 1 | `neo4j` (infra/04-data/specialized/neo4j/docker-compose.yml) |
 | `iac` | 4 | `terraform` (infra/09-tooling/terraform/docker-compose.yml), `terrakube-api` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-executor` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-ui` (infra/09-tooling/terrakube/docker-compose.yml) |
 | `ksql` | 3 | `ksql-datagen` (infra/04-data/analytics/ksql/docker-compose.yml), `ksqldb-cli` (infra/04-data/analytics/ksql/docker-compose.yml), `ksqldb-server` (infra/04-data/analytics/ksql/docker-compose.yml) |
@@ -98,19 +99,19 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `sync` | 1 | `syncthing` (infra/09-tooling/syncthing/docker-compose.yml) |
 | `testing` | 2 | `k6-master` (infra/09-tooling/k6/docker-compose.yml), `locust-master` (infra/09-tooling/locust/docker-compose.yml) |
 | `tooling` | 10 | `k6-master` (infra/09-tooling/k6/docker-compose.yml), `locust-master` (infra/09-tooling/locust/docker-compose.yml), `locust-worker` (infra/09-tooling/locust/docker-compose.yml), `registry` (infra/09-tooling/registry/docker-compose.yml), `sonarqube` (infra/09-tooling/sonarqube/docker-compose.yml), `syncthing` (infra/09-tooling/syncthing/docker-compose.yml), `terraform` (infra/09-tooling/terraform/docker-compose.yml), `terrakube-api` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-executor` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-ui` (infra/09-tooling/terrakube/docker-compose.yml) |
-| `workflow` | 28 | `airflow-apiserver` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-dag-processor` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-init` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-scheduler` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-statsd-exporter` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-triggerer` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-worker` (infra/07-workflow/airflow/docker-compose.dev.yml), `flower` (infra/07-workflow/airflow/docker-compose.dev.yml), `airflow-apiserver` (infra/07-workflow/airflow/docker-compose.yml), `airflow-dag-processor` (infra/07-workflow/airflow/docker-compose.yml), `airflow-init` (infra/07-workflow/airflow/docker-compose.yml), `airflow-scheduler` (infra/07-workflow/airflow/docker-compose.yml), `airflow-statsd-exporter` (infra/07-workflow/airflow/docker-compose.yml), `airflow-triggerer` (infra/07-workflow/airflow/docker-compose.yml), `airflow-valkey` (infra/07-workflow/airflow/docker-compose.yml), `airflow-valkey-exporter` (infra/07-workflow/airflow/docker-compose.yml), `airflow-worker` (infra/07-workflow/airflow/docker-compose.yml), `flower` (infra/07-workflow/airflow/docker-compose.yml), ... +10 more |
+| `workflow` | 12 | `airflow-apiserver` (infra/07-workflow/airflow/docker-compose.yml), `airflow-dag-processor` (infra/07-workflow/airflow/docker-compose.yml), `airflow-init` (infra/07-workflow/airflow/docker-compose.yml), `airflow-scheduler` (infra/07-workflow/airflow/docker-compose.yml), `airflow-statsd-exporter` (infra/07-workflow/airflow/docker-compose.yml), `airflow-triggerer` (infra/07-workflow/airflow/docker-compose.yml), `airflow-worker` (infra/07-workflow/airflow/docker-compose.yml), `flower` (infra/07-workflow/airflow/docker-compose.yml), `n8n` (infra/07-workflow/n8n/docker-compose.yml), `n8n-task-runner` (infra/07-workflow/n8n/docker-compose.yml), `n8n-task-runner-worker` (infra/07-workflow/n8n/docker-compose.yml), `n8n-worker` (infra/07-workflow/n8n/docker-compose.yml) |
 
 ## Stage Coverage
 
 | Stage | Service Count | Profiles Seen |
 | --- | ---: | --- |
 | `01-gateway` | 2 | `core`, `dev`, `nginx` |
-| `02-auth` | 5 | `auth`, `core`, `dev` |
+| `02-auth` | 4 | `auth`, `core`, `dedicated-valkey`, `dev` |
 | `03-security` | 2 | `core`, `dev`, `security` |
 | `04-data` | 75 | `ai`, `data`, `default`, `dev`, `graph`, `ksql`, `mng`, `nginx`, `obs`, `service`, `storage`, `storage-cluster` |
 | `05-messaging` | 17 | `dev`, `messaging`, `messaging-option` |
 | `06-observability` | 9 | `dev`, `obs` |
-| `07-workflow` | 28 | `dev`, `workflow` |
+| `07-workflow` | 16 | `dedicated-valkey`, `dev`, `workflow` |
 | `08-ai` | 3 | `ai`, `dev` |
 | `09-tooling` | 10 | `iac`, `registry`, `sast`, `sync`, `testing`, `tooling` |
 | `10-communication` | 2 | `communication` |
@@ -123,8 +124,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `infra/01-gateway/nginx/docker-compose.yml` | 1 | `nginx` |
 | `infra/01-gateway/traefik/docker-compose.yml` | 1 | `core`, `dev` |
 | `infra/02-auth/keycloak/docker-compose.yml` | 1 | `auth`, `core`, `dev` |
-| `infra/02-auth/oauth2-proxy/docker-compose.dev.yml` | 1 | `auth`, `core`, `dev` |
-| `infra/02-auth/oauth2-proxy/docker-compose.yml` | 3 | `auth`, `core`, `dev` |
+| `infra/02-auth/oauth2-proxy/docker-compose.yml` | 3 | `auth`, `core`, `dedicated-valkey`, `dev` |
 | `infra/03-security/vault/docker-compose.yml` | 2 | `core`, `dev`, `security` |
 | `infra/04-data/analytics/influxdb/docker-compose.yml` | 1 | `data` |
 | `infra/04-data/analytics/ksql/docker-compose.yml` | 3 | `data`, `ksql` |
@@ -147,10 +147,8 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `infra/05-messaging/kafka/docker-compose.yml` | 9 | `messaging` |
 | `infra/05-messaging/rabbitmq/docker-compose.yml` | 1 | `messaging`, `messaging-option` |
 | `infra/06-observability/docker-compose.yml` | 9 | `dev`, `obs` |
-| `infra/07-workflow/airflow/docker-compose.dev.yml` | 8 | `dev`, `workflow` |
-| `infra/07-workflow/airflow/docker-compose.yml` | 10 | `workflow` |
-| `infra/07-workflow/n8n/docker-compose.dev.yml` | 4 | `dev`, `workflow` |
-| `infra/07-workflow/n8n/docker-compose.yml` | 6 | `workflow` |
+| `infra/07-workflow/airflow/docker-compose.yml` | 10 | `dedicated-valkey`, `dev`, `workflow` |
+| `infra/07-workflow/n8n/docker-compose.yml` | 6 | `dedicated-valkey`, `dev`, `workflow` |
 | `infra/08-ai/ollama/docker-compose.yml` | 2 | `ai`, `dev` |
 | `infra/08-ai/open-webui/docker-compose.yml` | 1 | `ai` |
 | `infra/09-tooling/k6/docker-compose.yml` | 1 | `testing`, `tooling` |

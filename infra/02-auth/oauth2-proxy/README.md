@@ -57,7 +57,7 @@ oauth2-proxy/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OAuth2 Proxy service leaf in `02-auth`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`; local/full leaf: `docker-compose.yml` |
+| Purpose | OAuth2 Proxy service leaf in `02-auth`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.yml`; local/full leaf: `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml`, `Dockerfile`, `dev.Dockerfile`, `docker-entrypoint.sh`, `docker-entrypoint.dev.sh`, `config/oauth2-proxy.cfg` |
 | Config values | env keys: `SSL_CERT_FILE`, `OAUTH2_PROXY_SESSION_STORE_TYPE`, `OAUTH2_PROXY_REDIS_CONNECTION_URL`, `OAUTH2_PROXY_CLIENT_ID`, `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`; profiles: `core`, `auth`, `dev` |
 | Compose linkage | root-active dev leaf uses `mng-valkey`; local/full leaf includes `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` |

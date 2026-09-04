@@ -52,10 +52,10 @@ airflow/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.dev.yml`; service-local production-like compose is `docker-compose.yml` |
+| Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; service-local production-like compose is `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
 | Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__CORE__FERNET_KEY_CMD`, `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`, `AIRFLOW__CORE__LOAD_EXAMPLES`, plus 15 more; profiles: `workflow`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `airflow-dags:/opt/airflow/dags`, `airflow-plugins:/opt/airflow/plugins`, `airflow-logs:/opt/airflow/logs`, `airflow-config:/opt/airflow/config`, `./config/statsd_mapping.yml:/tmp/mappings.yml:ro`, `airflow-dags`, `airflow-logs`, `airflow-config`, plus 3 more |
 | Ports | `${STATSD_PROMETHEUS_PORT:-9102}`, `${STATSD_AIRFLOW_PORT:-9125}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |

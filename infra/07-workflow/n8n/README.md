@@ -53,10 +53,10 @@ n8n/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | n8n Low-code Automation service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.dev.yml`; service-local production-like compose is `docker-compose.yml` |
+| Purpose | n8n Low-code Automation service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml`; service-local production-like compose is `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
 | Config values | env keys: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE`, plus 31 more; profiles: `workflow`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:rw`, `n8n-task-runner-worker-data:/home/node/.n8n:rw`, `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `n8n-valkey-data:/data:rw`, `n8n-valkey-data` |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |

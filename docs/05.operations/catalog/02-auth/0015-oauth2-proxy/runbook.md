@@ -79,7 +79,6 @@ updated: 2026-08-11
 ### Safe Rollback or Recovery Procedure
 
 - [ ] 아래 파일을 직전 정상 커밋으로 복원
-  - `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`
   - `infra/02-auth/oauth2-proxy/docker-compose.yml`
   - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
   - `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`

@@ -645,7 +645,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/02-auth/keycloak/docker-compose.yml](../../../../infra/02-auth/keycloak/docker-compose.yml) | YAML config |
 | [infra/02-auth/oauth2-proxy/Dockerfile](../../../../infra/02-auth/oauth2-proxy/Dockerfile) | source path |
 | [infra/02-auth/oauth2-proxy/README.md](../../../../infra/02-auth/oauth2-proxy/README.md) | folder index |
-| [infra/02-auth/oauth2-proxy/docker-compose.dev.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.dev.yml) | YAML config |
 | [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../../infra/02-auth/oauth2-proxy/docker-compose.yml) | YAML config |
 | [infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh](../../../../infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh) | script |
 | [infra/02-auth/oauth2-proxy/docker-entrypoint.sh](../../../../infra/02-auth/oauth2-proxy/docker-entrypoint.sh) | script |
@@ -816,11 +815,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/07-workflow/README.md](../../../../infra/07-workflow/README.md) | folder index |
 | [infra/07-workflow/airflow/README.md](../../../../infra/07-workflow/airflow/README.md) | folder index |
 | [infra/07-workflow/airflow/config/statsd_mapping.yml](../../../../infra/07-workflow/airflow/config/statsd_mapping.yml) | YAML config |
-| [infra/07-workflow/airflow/docker-compose.dev.yml](../../../../infra/07-workflow/airflow/docker-compose.dev.yml) | YAML config |
 | [infra/07-workflow/airflow/docker-compose.yml](../../../../infra/07-workflow/airflow/docker-compose.yml) | YAML config |
 | [infra/07-workflow/n8n/Dockerfile](../../../../infra/07-workflow/n8n/Dockerfile) | source path |
 | [infra/07-workflow/n8n/README.md](../../../../infra/07-workflow/n8n/README.md) | folder index |
-| [infra/07-workflow/n8n/docker-compose.dev.yml](../../../../infra/07-workflow/n8n/docker-compose.dev.yml) | YAML config |
 | [infra/07-workflow/n8n/docker-compose.yml](../../../../infra/07-workflow/n8n/docker-compose.yml) | YAML config |
 | [infra/07-workflow/n8n/docker-entrypoint.dev.sh](../../../../infra/07-workflow/n8n/docker-entrypoint.dev.sh) | script |
 | [infra/07-workflow/n8n/docker-entrypoint.sh](../../../../infra/07-workflow/n8n/docker-entrypoint.sh) | script |

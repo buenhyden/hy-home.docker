@@ -15,17 +15,18 @@ services:
       - core
       - auth
       - dev
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}
     container_name: oauth2-proxy
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
-      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
       - OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
       - OAUTH2_PROXY_REDIRECT_URL=https://auth.${DEFAULT_URL}/oauth2/callback
@@ -35,6 +36,7 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     secrets:
+      - mng_valkey_password
       - oauth2_valkey_password
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
@@ -67,8 +69,7 @@ services:
 
   oauth2-proxy-valkey:
     profiles:
-      - core
-      - auth
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -109,8 +110,7 @@ services:
 
   oauth2-proxy-valkey-exporter:
     profiles:
-      - core
-      - auth
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low

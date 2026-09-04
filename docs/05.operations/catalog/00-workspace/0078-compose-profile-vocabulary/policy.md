@@ -77,6 +77,7 @@ profile 이름은 세 종류로 나뉜다.
 | `messaging-option` | messaging 선택 구성 요소 | 1 |
 | `ksql` | analytics 선택 구성 요소 | 3 |
 | `storage-cluster` | 단일 노드 minio 대신 4노드 minio 클러스터 | 4 |
+| `dedicated-valkey` | oauth2-proxy, n8n, airflow가 공유 `mng-valkey` 대신 각자의 broker를 사용 | 6 |
 
 ### Role selector
 
@@ -103,6 +104,9 @@ profile 이름은 세 종류로 나뉜다.
   - `depends_on` 대상은 출발 서비스의 모든 profile을 함께 선언한다. 이 규칙이
     깨지면 해당 profile은 `depends on undefined service`로 렌더링 자체가
     실패한다. 규칙은 전이적이므로 의존 그래프의 폐포까지 닫아야 한다.
+  - 선택 여부가 갈리는 topology selector를 향한 `depends_on`은 `required: false`를
+    붙인다. 대상이 선택되면 `condition`은 그대로 적용되고, 선택되지 않으면
+    렌더링이 실패하는 대신 건너뛴다.
 - **Allowed**:
   - 한 서비스가 여러 profile을 선언하는 것. 예로 `k6-master`는 `tooling`과
     `testing`을 함께 선언한다.
@@ -117,6 +121,7 @@ profile 이름은 세 종류로 나뉜다.
 | 쌍 | 충돌 | 근거 |
 | --- | --- | --- |
 | `nginx` ↔ `core`, `nginx` ↔ `dev` | host port 80, 443 | nginx와 traefik은 같은 역할의 대체재이며 동시에 gateway가 될 수 없다 |
+| `dedicated-valkey` + HOST/SECRET 변수 | 없음 | profile은 broker를 띄울 뿐이고 앱이 어디를 바라보는지는 환경변수가 정한다. Compose가 둘을 묶어주지 못하므로 함께 설정해야 하며, profile만 켜면 쓰이지 않는 broker가 하나 더 뜬다 |
 | `storage-cluster` ↔ `storage` | host port 충돌 없음 | 두 minio 토폴로지는 대체재다. 두 파일이 서비스 이름을 공유하지 않아 host port는 부딪히지 않지만, 동시에 띄우면 같은 network에 독립된 object store가 둘 생긴다 |
 
 `testing`은 `k6-master`와 `locust-master`를 함께 선택한다. 두 서비스는 원래

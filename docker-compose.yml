@@ -213,7 +213,7 @@ include:
   - infra/01-gateway/traefik/docker-compose.yml
   # 02-auth
   - infra/02-auth/keycloak/docker-compose.yml
-  - infra/02-auth/oauth2-proxy/docker-compose.dev.yml
+  - infra/02-auth/oauth2-proxy/docker-compose.yml
   # 03-security
   - infra/03-security/vault/docker-compose.yml
   # 04-data
@@ -239,8 +239,8 @@ include:
   # 06-observability
   - infra/06-observability/docker-compose.yml
   # 07-workflow
-  - infra/07-workflow/airflow/docker-compose.dev.yml
-  - infra/07-workflow/n8n/docker-compose.dev.yml
+  - infra/07-workflow/airflow/docker-compose.yml
+  - infra/07-workflow/n8n/docker-compose.yml
   # 08-ai
   - infra/08-ai/ollama/docker-compose.yml
   - infra/08-ai/open-webui/docker-compose.yml

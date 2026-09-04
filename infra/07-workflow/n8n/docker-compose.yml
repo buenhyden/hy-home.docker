@@ -11,10 +11,10 @@ x-n8n-common-env: &n8n-common-env
   DB_POSTGRESDB_USER: ${N8N_DB_USER}
   DB_POSTGRESDB_PASSWORD_FILE: /run/secrets/n8n_db_password
   EXECUTIONS_MODE: queue
-  QUEUE_BULL_REDIS_HOST: n8n-valkey
+  QUEUE_BULL_REDIS_HOST: ${N8N_VALKEY_HOST:-mng-valkey}
   QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT:-6379}
   QUEUE_BULL_PREFIX: n8n
-  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/n8n_valkey_password
+  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_password}
 
   N8N_RUNNERS_ENABLED: true
   N8N_RUNNERS_MODE: external
@@ -57,12 +57,13 @@ services:
   n8n:
     profiles:
       - 'workflow'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ${N8N_DOCKERFILE:-dev.Dockerfile}
       args:
         N8N_VERSION: 2.29.5
     image: hyhome/n8n:2.29.5-local
@@ -72,6 +73,7 @@ services:
       - ${N8N_PORT:-5678}
       - ${N8N_BROKER_PORT:-5679}
     secrets:
+      - mng_valkey_password
       - n8n_valkey_password
       - n8n_db_password
       - n8n_encryption_key
@@ -119,12 +121,13 @@ services:
   n8n-worker:
     profiles:
       - 'workflow'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ${N8N_DOCKERFILE:-dev.Dockerfile}
       args:
         N8N_VERSION: 2.29.5
     image: hyhome/n8n:2.29.5-local
@@ -135,13 +138,14 @@ services:
       - ${N8N_BROKER_PORT:-5679}
     depends_on:
       n8n: { condition: service_healthy }
-      n8n-valkey: { condition: service_healthy }
+      n8n-valkey: { condition: service_healthy, required: false }
     volumes:
       - n8n-data:/home/node/.n8n:rw
       - ./custom:/home/node/.n8n/custom:rw
     environment:
       <<: *n8n-common-env
     secrets:
+      - mng_valkey_password
       - n8n_valkey_password
       - n8n_db_password
       - n8n_encryption_key
@@ -166,6 +170,7 @@ services:
   n8n-task-runner:
     profiles:
       - 'workflow'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -174,7 +179,7 @@ services:
     read_only: false
     depends_on:
       n8n: { condition: service_healthy }
-      n8n-valkey: { condition: service_healthy }
+      n8n-valkey: { condition: service_healthy, required: false }
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n:${N8N_BROKER_PORT:-5679}
       N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
@@ -203,6 +208,7 @@ services:
   n8n-task-runner-worker:
     profiles:
       - 'workflow'
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -238,7 +244,7 @@ services:
 
   n8n-valkey:
     profiles:
-      - 'workflow'
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -274,7 +280,7 @@ services:
 
   n8n-valkey-exporter:
     profiles:
-      - 'workflow'
+      - dedicated-valkey
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -302,6 +308,6 @@ services:
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
-      n8n-valkey: { condition: service_healthy }
+      n8n-valkey: { condition: service_healthy, required: false }
     labels:
       <<: *tier-label

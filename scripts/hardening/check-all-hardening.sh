@@ -297,7 +297,6 @@ check_02_auth() {
   start_tier "$tier"
 
   local keycloak_compose="infra/02-auth/keycloak/docker-compose.yml"
-  local oauth_dev_compose="infra/02-auth/oauth2-proxy/docker-compose.dev.yml"
   local oauth_full_compose="infra/02-auth/oauth2-proxy/docker-compose.yml"
   local oauth_dockerfile="infra/02-auth/oauth2-proxy/Dockerfile"
   local oauth_dev_dockerfile="infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -309,7 +308,6 @@ check_02_auth() {
 
   check_file "$TECH_STACK_REGISTRY"
   check_file "$keycloak_compose"
-  check_file "$oauth_dev_compose"
   check_file "$oauth_full_compose"
   check_file "$oauth_dockerfile"
   check_file "$oauth_dev_dockerfile"
@@ -329,24 +327,19 @@ check_02_auth() {
   check_contains "$keycloak_compose" "traefik.http.routers.keycloak.middlewares: gateway-standard-chain@file" "keycloak gateway chain mismatch"
   check_contains "$keycloak_compose" "ipv4_address: 172.19.0.3" "keycloak infra_net IP mismatch"
 
-  check_contains "$oauth_dev_compose" "service: template-infra-readonly-med" "root-active oauth2-proxy compose template mismatch"
-  check_contains "$oauth_dev_compose" "dockerfile: dev.Dockerfile" "root-active oauth2-proxy must build dev Dockerfile"
-  check_contains "$oauth_dev_compose" "OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379" "root-active oauth2-proxy session store mismatch"
-  check_contains "$oauth_dev_compose" "- mng_valkey_password" "root-active oauth2-proxy mng valkey secret missing"
-  check_contains "$oauth_dev_compose" "traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file" "root-active oauth2-proxy gateway chain mismatch"
-  check_contains "$oauth_dev_compose" "ipv4_address: 172.19.0.4" "root-active oauth2-proxy infra_net IP mismatch"
-  check_not_contains "$oauth_dev_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
+  check_contains "$oauth_full_compose" "service: template-infra-readonly-med" "root-active oauth2-proxy compose template mismatch"
+  check_contains "$oauth_full_compose" 'dockerfile: ${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}' "root-active oauth2-proxy must default to the dev Dockerfile"
+  check_contains "$oauth_full_compose" 'OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379' "root-active oauth2-proxy must default to the shared valkey"
+  check_contains "$oauth_full_compose" "- mng_valkey_password" "root-active oauth2-proxy mng valkey secret missing"
+  check_contains "$oauth_full_compose" "traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file" "root-active oauth2-proxy gateway chain mismatch"
+  check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.4" "root-active oauth2-proxy infra_net IP mismatch"
+  check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
-  check_contains "$oauth_full_compose" "service: template-infra-readonly-med" "local/full oauth2-proxy compose template mismatch"
-  check_contains "$oauth_full_compose" "dockerfile: Dockerfile" "local/full oauth2-proxy must build production Dockerfile"
-  check_contains "$oauth_full_compose" "OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379" "local/full oauth2-proxy session store mismatch"
-  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "local/full oauth2-proxy valkey secret missing"
+  check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
   check_contains "$oauth_full_compose" "image: valkey/valkey:9.1.0-alpine" "oauth2-proxy valkey image tag mismatch"
   check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.86.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
-  check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.4" "local/full oauth2-proxy infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
-  check_not_contains "$oauth_full_compose" "v7.14.2" "local/full oauth2-proxy stale image reference"
 
   check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy source image tag mismatch"
   check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy dev source image tag mismatch"
@@ -364,7 +357,7 @@ check_02_auth() {
   check_contains "$oauth_cfg" "cookie_secret_file = \"/run/secrets/oauth2_proxy_cookie_secret\"" "oauth2-proxy cookie secret file missing"
 
   check_service_healthcheck "$keycloak_compose" "keycloak"
-  check_service_healthcheck "$oauth_dev_compose" "oauth2-proxy"
+  check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy-valkey"
 }
