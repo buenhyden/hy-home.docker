@@ -54,5 +54,16 @@ ignores:
   # of the `.claude/` projection is linted, exactly like its `.agents/` twin.
   - ".claude/output-styles/"
 
+  # Preserved bodies under Stage 98. A record moved here is frozen: it is the
+  # document as it stood when it left an active stage, and its value is that it
+  # still reads exactly that way. With `fix: true` the linter rewrote five of
+  # them on the first all-files run, which is the one thing the preservation
+  # model forbids. The disposition records that are authored rather than
+  # preserved -- `migrations/` and `tombstones/` -- stay linted, because their
+  # shape is a current contract.
+  - "docs/98.archive/completed/"
+  - "docs/98.archive/superseded/"
+  - "docs/98.archive/retired/"
+
 # Markdown auto-fix remains the canonical document formatter in pre-commit.
 fix: true
