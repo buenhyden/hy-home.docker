@@ -14,7 +14,11 @@ import time
 from collections.abc import Mapping
 from types import MappingProxyType
 
-from scripts.lib.document_governance.registry import DocumentRegistry, RegistryFinding
+from scripts.lib.document_governance.registry import (
+    DocumentRegistry,
+    RegistryFinding,
+    classify_path,
+)
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
@@ -513,6 +517,9 @@ def validate_allocation_transition(
     registry: DocumentRegistry,
     current: Mapping[str, str],
     base_commit: str,
+    *,
+    recovery_evidence: Mapping[str, object] | None = None,
+    decision_evidence: Mapping[str, object] | None = None,
 ) -> tuple[RegistryFinding, ...]:
     """Compare stable package issuance with one pinned, regular Git predecessor."""
 
@@ -667,11 +674,135 @@ def validate_allocation_transition(
             raise IdentityHistoryError(
                 "allocation predecessor Registry is invalid"
             ) from error
+    recovery_findings: list[RegistryFinding] = []
+    for target_path, raw in sorted((recovery_evidence or {}).items()):
+        finding = RegistryFinding(
+            "identity-recovery-invalid",
+            target_path,
+            "identity recovery must prove one deleted regular predecessor blob",
+        )
+        if not isinstance(raw, Mapping) or set(raw) != {
+            "source_commit",
+            "source_path",
+            "source_artifact_id",
+            "decision_path",
+            "decision_artifact_id",
+            "disposition",
+        }:
+            recovery_findings.append(finding)
+            continue
+        source_commit = raw.get("source_commit")
+        source_path = raw.get("source_path")
+        source_artifact_id = raw.get("source_artifact_id")
+        decision_path = raw.get("decision_path")
+        decision_artifact_id = raw.get("decision_artifact_id")
+        target_artifact_id = current.get(target_path)
+        decision_rows = (decision_evidence or {}).get(decision_path)
+        expected_decision = {
+            "source_commit": source_commit,
+            "source_path": source_path,
+            "source_artifact_id": source_artifact_id,
+            "target_path": target_path,
+            "target_artifact_id": target_artifact_id,
+            "disposition": "consolidated",
+        }
+        matching_decisions = (
+            [
+                row
+                for row in decision_rows
+                if isinstance(row, Mapping) and dict(row) == expected_decision
+            ]
+            if isinstance(decision_rows, (list, tuple))
+            else []
+        )
+        if (
+            not isinstance(source_commit, str)
+            or re.fullmatch(r"[0-9a-f]{40}", source_commit) is None
+            or not isinstance(source_path, str)
+            or pathlib.PurePosixPath(source_path).as_posix() != source_path
+            or pathlib.PurePosixPath(source_path).is_absolute()
+            or any(part in {"", ".", ".."} for part in source_path.split("/"))
+            or not source_path.startswith(IDENTITY_SOURCE_PREFIXES)
+            or not isinstance(source_artifact_id, str)
+            or not isinstance(decision_path, str)
+            or pathlib.PurePosixPath(decision_path).as_posix() != decision_path
+            or pathlib.PurePosixPath(decision_path).is_absolute()
+            or any(part in {"", ".", ".."} for part in decision_path.split("/"))
+            or not decision_path.startswith(IDENTITY_SOURCE_PREFIXES)
+            or not isinstance(decision_artifact_id, str)
+            or current.get(decision_path) != decision_artifact_id
+            or classify_path(decision_path, registry) != "task"
+            or not _path_accepts_identity(decision_path, decision_artifact_id)
+            or not isinstance(target_artifact_id, str)
+            or classify_path(target_path, registry) != "research-member"
+            or classify_path(source_path, registry) is not None
+            or pathlib.PurePosixPath(source_path).parent
+            != pathlib.PurePosixPath(target_path).parent
+            or source_artifact_id == target_artifact_id
+            or len(matching_decisions) != 1
+            or raw.get("disposition") != "consolidated"
+            or source_path in entries
+        ):
+            recovery_findings.append(finding)
+            continue
+        try:
+            require_ancestor(source_commit, base_commit, "identity recovery source")
+            source_listing = git(
+                "ls-tree", "-z", source_commit, "--", source_path
+            )
+            source_rows = tuple(filter(None, source_listing.split("\0")))
+            source_entry = (
+                re.fullmatch(
+                    r"(100644|100755) blob ([0-9a-f]{40,64})\t([^\0]+)",
+                    source_rows[0],
+                )
+                if len(source_rows) == 1
+                else None
+            )
+            if source_entry is None or source_entry[3] != source_path:
+                recovery_findings.append(finding)
+                continue
+            source_metadata = parse_frontmatter_text(
+                git("cat-file", "blob", source_entry[2], maximum=MAX_IDENTITY_SOURCE_BYTES)
+            )
+            target_base_metadata = (
+                parse_frontmatter_text(
+                    git(
+                        "cat-file",
+                        "blob",
+                        entries[target_path],
+                        maximum=MAX_IDENTITY_SOURCE_BYTES,
+                    )
+                )
+                if target_path in entries
+                else None
+            )
+        except (IdentityHistoryError, ValueError):
+            recovery_findings.append(finding)
+            continue
+        source_slots: dict[str, set[int]] = {}
+        target_slots: dict[str, set[int]] = {}
+        _record(source_artifact_id, source_slots)
+        _record(target_artifact_id, target_slots)
+        if (
+            source_metadata.get("artifact_id") != source_artifact_id
+            or target_base_metadata is not None
+            and target_base_metadata.get("artifact_id") != target_artifact_id
+            or not _path_accepts_identity(source_path, source_artifact_id)
+            or not _path_accepts_identity(target_path, target_artifact_id)
+            or not source_slots
+            or source_slots != target_slots
+        ):
+            recovery_findings.append(finding)
+            continue
+        for name, numbers in source_slots.items():
+            previous.setdefault(name, set()).update(numbers)
+
     observed: dict[str, set[int]] = {}
     for path, identity in current.items():
         if _path_accepts_identity(path, identity):
             _record(identity, observed)
-    findings: list[RegistryFinding] = []
+    findings: list[RegistryFinding] = list(recovery_findings)
     for name, space in registry.identity_spaces.items():
         mark = high_water[name]
         if space.high_water < mark:

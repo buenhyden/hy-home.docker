@@ -7,8 +7,11 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.metadata import identity as identity_module
+from scripts.lib.document_governance.metadata.lifecycle import collect_records
 from tests.lib.document_governance.metadata._support import (
     current_profiles,
+    git,
+    init_git,
     metadata,
     run_checker,
     write_doc,
@@ -16,6 +19,84 @@ from tests.lib.document_governance.metadata._support import (
 
 
 class CheckerCliTests(unittest.TestCase):
+    def test_changed_carrier_keeps_unchanged_reciprocal_task_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            task_path = pathlib.Path(
+                "docs/03.specs/0172-recovery/tasks/tsk-0001-recovery.md"
+            )
+            carrier_path = pathlib.Path(
+                "docs/90.references/research/0085-workspace/"
+                "m0001-request-scope.md"
+            )
+            decision = {
+                "source_commit": "0" * 40,
+                "source_path": (
+                    "docs/90.references/research/0085-workspace/REQUEST-SCOPE.md"
+                ),
+                "source_artifact_id": "RES-0085-SCOPE",
+                "target_path": carrier_path.as_posix(),
+                "target_artifact_id": "RES-0085-m0001",
+                "disposition": "consolidated",
+            }
+            write_doc(
+                root / task_path,
+                {
+                    "artifact_id": "SPEC-0172-TSK-0001",
+                    "identity_recovery_decisions": [decision],
+                },
+            )
+            write_doc(
+                root / carrier_path,
+                {
+                    "artifact_id": "RES-0085-m0001",
+                    "identity_recovery": {
+                        "source_commit": "0" * 40,
+                        "source_path": decision["source_path"],
+                        "source_artifact_id": "RES-0085-SCOPE",
+                        "decision_path": task_path.as_posix(),
+                        "decision_artifact_id": "SPEC-0172-TSK-0001",
+                        "disposition": "consolidated",
+                    },
+                },
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(
+                0, git(root, "commit", "-qm", "recovery evidence fixture").returncode
+            )
+            write_doc(
+                root / carrier_path,
+                {
+                    "artifact_id": "RES-0085-m0001",
+                    "identity_recovery": {
+                        "source_commit": "0" * 40,
+                        "source_path": decision["source_path"],
+                        "source_artifact_id": "RES-0085-SCOPE",
+                        "decision_path": task_path.as_posix(),
+                        "decision_artifact_id": "SPEC-0172-TSK-0001",
+                        "disposition": "consolidated",
+                    },
+                },
+                body="# Changed carrier only\n",
+            )
+
+            changed = git(root, "diff", "--name-only").stdout.splitlines()
+            records = collect_records(
+                root,
+                current_profiles(),
+                selected_paths=[carrier_path.as_posix()],
+                require_git=True,
+            )
+            by_path = {record.path.as_posix(): record for record in records}
+
+            self.assertEqual([carrier_path.as_posix()], changed)
+            self.assertEqual(
+                [decision], by_path[task_path.as_posix()].metadata[
+                    "identity_recovery_decisions"
+                ]
+            )
+
     def test_duplicate_artifact_id_is_reported(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

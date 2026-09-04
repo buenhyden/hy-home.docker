@@ -132,6 +132,18 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertEqual(common_six, required[:6])
                 self.assertTrue(set(common_six).isdisjoint(optional))
 
+    def test_every_profile_frontmatter_key_has_canonical_order(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        adapted = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        adapted["common"]["frontmatter_order"].remove("identity_recovery")
+
+        findings = validate_registry(adapted)
+
+        self.assertIn(
+            "frontmatter-order-contract-invalid", {item.code for item in findings}
+        )
+        self.assertFalse(validate_registry(raw))
+
     def test_profile_lifecycles_encode_semantic_entry_and_terminal_states(
         self,
     ) -> None:

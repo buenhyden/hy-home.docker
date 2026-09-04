@@ -411,6 +411,16 @@ def _allocation_findings(
                 not in profiles.get("_delegated_reference_paths", ())
             },
             base,
+            recovery_evidence={
+                record.path.as_posix(): record.metadata["identity_recovery"]
+                for record in records
+                if "identity_recovery" in record.metadata
+            },
+            decision_evidence={
+                record.path.as_posix(): record.metadata["identity_recovery_decisions"]
+                for record in records
+                if "identity_recovery_decisions" in record.metadata
+            },
         )
     except (IdentityHistoryError, SpecPackageError) as error:
         raise ProfileError(str(error)) from error

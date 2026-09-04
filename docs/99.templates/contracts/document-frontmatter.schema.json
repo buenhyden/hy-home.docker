@@ -24,6 +24,8 @@
     "superseded_by": {"type": ["string", "null"]},
     "created": {"type": "string", "format": "date"},
     "observed_at": {"type": "string", "format": "date"},
+    "identity_recovery": {"$ref": "#/$defs/identityRecovery"},
+    "identity_recovery_decisions": {"$ref": "#/$defs/identityRecoveryDecisions"},
     "reviewed_at": {"type": "string", "format": "date"},
     "next_review_at": {"type": "string", "format": "date"},
     "occurred_at": {"type": "string", "format": "date-time"},
@@ -62,6 +64,38 @@
     "tools": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
   },
   "$defs": {
+    "identityRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "source_path", "source_artifact_id", "decision_path", "decision_artifact_id", "disposition"],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
+        "source_artifact_id": {"type": "string", "minLength": 1},
+        "decision_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
+        "decision_artifact_id": {"type": "string", "minLength": 1},
+        "disposition": {"const": "consolidated"}
+      }
+    },
+    "identityRecoveryDecisions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identityRecoveryDecision"}
+    },
+    "identityRecoveryDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "source_path", "source_artifact_id", "target_path", "target_artifact_id", "disposition"],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "source_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
+        "source_artifact_id": {"type": "string", "minLength": 1},
+        "target_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
+        "target_artifact_id": {"type": "string", "minLength": 1},
+        "disposition": {"const": "consolidated"}
+      }
+    },
     "hookConditions": {
       "type": "array",
       "minItems": 1,

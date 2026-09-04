@@ -57,7 +57,32 @@
       "current_replacement",
       "snapshot_path",
       "content_sha256",
-      "snapshot_reason"
+      "snapshot_reason",
+      "review_cycle",
+      "runtime",
+      "identity_recovery",
+      "identity_recovery_decisions",
+      "action",
+      "conditions",
+      "enabled",
+      "event",
+      "agent_id",
+      "function_id",
+      "scope",
+      "tier",
+      "work_profile",
+      "permission_profile",
+      "skill_ids",
+      "owner_agent",
+      "name",
+      "pattern",
+      "description",
+      "effort",
+      "model",
+      "model_reasoning_effort",
+      "permissionMode",
+      "skills",
+      "tools"
     ],
     "generated_outputs": {
       "docs/90.references/data/0066-foundation-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py",
@@ -507,7 +532,8 @@
         "created"
       ],
       "optional_frontmatter": [
-        "completed_at"
+        "completed_at",
+        "identity_recovery_decisions"
       ],
       "required_sections": [
         "Objective",
@@ -1037,6 +1063,7 @@
         "supersedes",
         "superseded_by",
         "observed_at",
+        "identity_recovery",
         "reviewed_at",
         "next_review_at",
         "review_cycle"

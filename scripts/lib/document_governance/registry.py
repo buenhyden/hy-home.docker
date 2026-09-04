@@ -647,6 +647,29 @@ def validate_registry(
         frontmatter_policy = profile.get("frontmatter_policy")
         required_frontmatter = profile.get("required_frontmatter")
         optional_frontmatter = profile.get("optional_frontmatter")
+        common_contract = raw.get("common")
+        frontmatter_order = (
+            common_contract.get("frontmatter_order")
+            if isinstance(common_contract, Mapping)
+            else None
+        )
+        if isinstance(required_frontmatter, list) and isinstance(
+            optional_frontmatter, list
+        ):
+            ordered_keys = (
+                set(frontmatter_order) if isinstance(frontmatter_order, list) else set()
+            )
+            missing_order = (
+                set(required_frontmatter) | set(optional_frontmatter)
+            ) - ordered_keys
+            if missing_order:
+                findings.append(
+                    RegistryFinding(
+                        "frontmatter-order-contract-invalid",
+                        f"profiles.{index}",
+                        ",".join(sorted(missing_order)),
+                    )
+                )
         if (
             isinstance(path_pattern, str)
             and path_pattern.endswith(".md")
