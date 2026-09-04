@@ -198,6 +198,11 @@ runtime, protection, review, deferral, and Git evidence.
   exact build contexts, all 11 hardening tiers, and the 19 focused tech-stack
   contract tests pass. The OAuth-specific regression is
   `test_oauth2_proxy_production_numeric_identity_contract`.
+- Follow-up PR #140 run `33890830204`, job `101081789784`, executed against
+  exact candidate `1a5de646224c51f9caa33219bfbbb825338617c1` and passed the
+  changed public suite in 13m0s. This proves the numeric-user correction reaches
+  and passes every Hosted leaf, including Hadolint v2.14.0. The full job
+  `101081791407` was correctly skipped for the PR event.
 
 ### Gap matrix
 
@@ -227,7 +232,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | six runs advanced through hardening, audit, browser coverage, uv provisioning, format hooks, `DL3025`, and then five exact `DL3066` findings; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
+| Hosted CI | PASS | seven runs progressively reached hardening, audit, browser coverage, uv provisioning, format hooks, `DL3025`, and five exact `DL3066` findings; exact candidate `1a5de646` then passed changed job `101081789784` in run `33890830204` |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
@@ -321,6 +326,14 @@ peer graph, Spec and Plan own the narrow remediation, the Task says `prepared`,
 and the generated trace is removed. Both independent policy and code reviewers
 returned final PASS with no actionable finding on the resulting six-file diff.
 
+The numeric-user review initially blocked explicit `1000:1000` for n8n and
+OpenSearch because it could change supplementary-group resolution, and then
+blocked stale OAuth hardening ownership and overbroad image-invariance claims.
+The final UID-only instructions, exact OAuth production consumer/test/guide,
+and custom-image evidence boundary resolve those findings. Both independent
+reviewers returned final specification, quality, policy, and overall PASS with
+no actionable finding on the resulting nine-file diff.
+
 ## Commit Ledger
 
 - `be7e1388 feat(governance): converge document contracts` — initial reviewed
@@ -333,14 +346,18 @@ returned final PASS with no actionable finding on the resulting six-file diff.
   active Security trace, Dozzle Registry, and DATA-0061 generator closure.
 - `c9c09f1f fix(ci): secure Storybook validation path` — compatible Storybook,
   TypeScript, and Next build-tool closure plus exact review evidence.
+- `1a5de646 fix(ci): pin Dockerfile user identities` — exact numeric-user,
+  fail-closed identity proof, canonical hardening consumer, regression, and
+  operator-guide closure.
 
 The PR-job `uvx` provisioning correction plus this evidence update are prepared
 in `2aefde23`. The exact formatter normalization plus this new Hosted evidence
 were committed as `8f0a3432`. The exact Hadolint correction and its Hosted
 evidence were committed as `5ad8f0c0`. The exact numeric-user correction and
-its Hosted evidence are prepared for one follow-up commit. Valid forward
-lifecycle transitions remain post-merge work; they are not compressed into the
-initial PR history.
+consumer evidence were committed as `1a5de646`; its exact successful Hosted
+run evidence is prepared for one follow-up commit. Valid forward lifecycle
+transitions remain post-merge work; they are not compressed into the initial PR
+history.
 
 ## Rulings
 
