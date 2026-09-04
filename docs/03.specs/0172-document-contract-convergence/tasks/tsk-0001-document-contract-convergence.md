@@ -134,6 +134,17 @@ runtime, protection, review, deferral, and Git evidence.
   `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, and
   `storybook-coverage`; restore app ID 15368 except the observed unbound
   `frontend-quality` context.
+- PR run `33873742953`, job `101025625795`, executed against exact candidate
+  `c9c09f1fff050f4a01b0220b86aab67902179b04`. The corrected dependency,
+  peer, lint, typecheck, build, and Storybook browser coverage paths passed,
+  including 9 tests and 100% reported code coverage. The final registered
+  `zizmor` leaf then failed with `ci-gate-adapter-child-exec` because the PR job
+  did not provision `uvx`; the full job `101025627829` was correctly skipped.
+- The workflow already registered immutable `astral-sh/setup-uv` commit
+  `20cfd1bf945f4377ade1205e4dbc17946fc9a30d` for the full job. The same action
+  now provisions `uvx` in the changed job before dependencies and the public
+  gate. No permission, event, validator, tool version, or SARIF upload behavior
+  changes; removing that one step is the workflow rollback.
 
 ### Gap matrix
 
@@ -163,7 +174,7 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | runs `33866474442` and `33869471269` advanced through hardening to npm audit; both failures reproduced and corrected locally; final candidate rerun required |
+| Hosted CI | FAIL / RETRY REQUIRED | runs `33866474442`, `33869471269`, and `33873742953` advanced through hardening, audit, and browser coverage to the missing PR-job `uvx` provisioning; each exact failure is corrected locally and a new candidate rerun is required |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
@@ -219,6 +230,9 @@ admitted by the References consumer and validated by the Registry metadata path.
   selecting the 10.6.0 adapter family, restored the supported TypeScript 5.9.3
   toolchain, and made Next use its compiler API for deterministic configuration
   loading.
+- Removed the Hosted runner-image dependency from the PR `zizmor` path by
+  provisioning the same registered SHA-pinned `setup-uv` action in both public
+  validation jobs, without broadening the PR job's read-only permission set.
 
 ## Review Evidence
 
@@ -252,10 +266,12 @@ returned final PASS with no actionable finding on the resulting six-file diff.
   RES-0085 member/Task reciprocal recovery proof and regression closure.
 - `38e6b35a fix(ci): restore hosted validation contract` — hardening image,
   active Security trace, Dozzle Registry, and DATA-0061 generator closure.
+- `c9c09f1f fix(ci): secure Storybook validation path` — compatible Storybook,
+  TypeScript, and Next build-tool closure plus exact review evidence.
 
-The Storybook audit and TypeScript/Next compatibility closure plus this evidence
-update are prepared for one follow-up commit. Valid forward lifecycle transitions
-remain post-merge work; they are not compressed into the initial PR history.
+The PR-job `uvx` provisioning correction plus this evidence update are prepared
+for one follow-up commit. Valid forward lifecycle transitions remain post-merge
+work; they are not compressed into the initial PR history.
 
 ## Rulings
 

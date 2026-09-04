@@ -44,9 +44,10 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
   push, pull request, Hosted CI observation, provider entitlement observation,
   runtime inventory observation, and remote branch-protection inspection.
 - In scope when an exact Hosted public gate fails: the minimum Storybook
-  development dependency, lockfile, and build-time Next compiler-selection
-  remediation required to execute that existing gate. Application behavior,
-  validator relaxation, and deployment configuration remain out of scope.
+  development dependency, lockfile, build-time Next compiler selection, or
+  registered CI-tool provisioning required to execute that existing gate.
+  Application behavior, validator relaxation, workflow permission expansion,
+  and deployment configuration remain out of scope.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -83,6 +84,9 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
 11. Hosted remediation must remove the reproduced dependency or build failure,
     preserve the public gate, and leave no invalid peer or audit finding. It may
     not convert a CI tool correction into application or deployment behavior.
+12. Every required job that selects the `zizmor` leaf must provision its pinned
+    `uvx` runtime through the registered immutable `setup-uv` action before the
+    public gate starts; the PR job gains no permission or upload side effect.
 
 ## Technical Approach
 
@@ -137,7 +141,10 @@ Keep legacy archive payloads on unmanaged preservation profiles.
    the tracked audit threshold, and passing lint, typecheck, and production
    Storybook build. Hosted CI owns the default sandbox-independent build and
    browser-coverage verdicts.
-7. The final diff changes no frozen archive body and contains no secret,
+7. Both Hosted required jobs provision the same immutable `setup-uv` action,
+   and the changed public gate advances through the registered `zizmor` leaf
+   without relying on runner-image tool availability.
+8. The final diff changes no frozen archive body and contains no secret,
    credential, certificate, or deployment/runtime service payload. Any
    build-time Next setting is limited to the compiler path proved by the failed
    Hosted gate.

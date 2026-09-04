@@ -45,10 +45,10 @@ archive-body mutation.
    repeat the affected gates and reviews.
 9. Commit the initial lifecycle entry, push the feature branch, open a PR, and
    observe Hosted CI without bypassing checks. If an existing public gate fails,
-   reproduce it and apply only the minimum dependency, lockfile, or build-time
-   compiler-path correction before rerunning the same gate. Preserve the entry
-   state through the first merge; record forward transitions in post-merge
-   follow-up changes.
+   reproduce it and apply only the minimum dependency, lockfile, build-time
+   compiler-path, or registered CI-tool provisioning correction before rerunning
+   the same gate. Preserve the entry state through the first merge; record
+   forward transitions in post-merge follow-up changes.
 10. Record provider, runtime, and branch-protection observations separately from
     acceptance. Stop before any mutation whose target, desired state, recovery,
     tag version, release scope, or merge authority is not exact.
@@ -77,6 +77,8 @@ archive-body mutation.
 - Feature-branch Hosted CI and current branch-protection context comparison.
 - Storybook clean install, `npm ls --all`, tracked high-severity audit, lint,
   typecheck, and production build; Hosted default build and browser coverage.
+- Required-job `setup-uv` parity, immutable action provenance, and Hosted
+  `zizmor` completion without PR-job permission expansion.
 
 ## Rulings
 
