@@ -85,7 +85,13 @@ archive-body mutation.
   for the exact 12-Python and one-Markdown format-hook set reported by Hosted
   CI.
 - Hadolint v2.14.0 on the exact sample-service Dockerfile reported by Hosted CI;
-  verify the healthcheck command and arguments remain equivalent.
+  verify the healthcheck command and arguments remain equivalent. Verify the
+  five exact reported user instructions resolve to the same numeric user
+  identities without changing group-resolution semantics or adding a global
+  lint ignore or threshold change. Verify the OAuth2 Proxy
+  production identity is synchronized across its Dockerfile, canonical
+  hardening consumer, focused regression, and guide while its dev identity
+  contract remains distinct.
 
 ## Rulings
 

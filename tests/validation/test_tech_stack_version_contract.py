@@ -14,6 +14,8 @@ from tests.lib.gate.subprocess_support import gate_root_pass_fds
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
+OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
+OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
 MANIFEST_PATH = ROOT / "scripts/manifest.yaml"
 SUPPLY_CHAIN_SUMMARY_GENERATOR = (
     ROOT / "scripts/security/generate-supply-chain-sample-service-summary.sh"
@@ -269,6 +271,25 @@ class TechStackVersionContractTests(unittest.TestCase):
         self.assertNotIn(
             'check_contains "$keycloak_compose" "image: ${keycloak_image}"',
             text,
+        )
+
+    def test_oauth2_proxy_production_numeric_identity_contract(self) -> None:
+        dockerfile = OAUTH_DOCKERFILE.read_text(encoding="utf-8")
+        dev_dockerfile = OAUTH_DEV_DOCKERFILE.read_text(encoding="utf-8")
+        checker = HARDENING_CHECKER.read_text(encoding="utf-8")
+
+        for expected in (
+            "addgroup -S -g 101 oauth2proxy",
+            "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy",
+            "USER 100:101",
+        ):
+            self.assertIn(expected, dockerfile)
+            self.assertIn(expected, checker)
+        self.assertNotIn("USER oauth2proxy:oauth2proxy", dockerfile)
+        self.assertIn("USER oauth2proxy:oauth2proxy", dev_dockerfile)
+        self.assertIn(
+            'check_contains "$oauth_dev_dockerfile" "USER oauth2proxy:oauth2proxy"',
+            checker,
         )
 
     def test_hardening_checker_derives_dozzle_image_from_compose(self) -> None:

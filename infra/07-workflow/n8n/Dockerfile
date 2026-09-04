@@ -12,7 +12,7 @@ RUN apk add --no-cache \
 
 FROM n8nio/n8n:${N8N_VERSION}
 
-USER root
+USER 0
 
 COPY --from=font-builder /usr/share/fonts /usr/share/fonts
 COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig
@@ -21,7 +21,10 @@ COPY --from=font-builder /etc/fonts /etc/fonts
 RUN mkdir -p /var/cache/fontconfig && \
   (if command -v fc-cache >/dev/null 2>&1; then fc-cache -f; fi || true)
 
-USER node
+RUN test "$(id -u node)" = "1000" && \
+  test "$(id -g node)" = "1000"
+
+USER 1000
 
 ENV NODE_ENV=production
 ENV GENERIC_TIMEZONE=Asia/Seoul

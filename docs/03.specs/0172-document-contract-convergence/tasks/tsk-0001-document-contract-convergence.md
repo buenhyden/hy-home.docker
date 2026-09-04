@@ -171,6 +171,33 @@ runtime, protection, review, deferral, and Git evidence.
   shell and redundant `|| exit 1` without changing the image, endpoint,
   interval, timeout, start period, retries, port, service, or deployment state.
   Reverting that one instruction is the correction rollback.
+- Follow-up PR #140 run `33886343534`, job `101066935299`, executed against exact
+  candidate `5ad8f0c094d50fba0e50b3f0e9a2c2fa632a50a0`. The sample healthcheck and
+  every preceding hook passed. Hadolint v2.14.0 then reported only five
+  `DL3066` findings: two n8n `USER` instructions, one OAuth2 Proxy instruction,
+  and two OpenSearch instructions. The full job `101066936793` was correctly
+  skipped for the PR event.
+- OpenSearch 3.7.0 image history declares UID/GID 1000 and final `USER 1000`.
+  Reproducing the OAuth2 Proxy account creation on exact Alpine 3.24.1 yielded
+  UID 100/GID 101. The Dockerfiles now use those numeric user identities; n8n
+  and OpenSearch assert their named account maps to UID 1000 and primary GID
+  1000 before switching by UID only, preserving group-resolution semantics.
+  Root is expressed as UID 0. The added commands are build-time identity guards;
+  no effective user identity, ownership target, base-image reference, runtime
+  command, service definition, hook, threshold, ignore, or deployed state
+  changes. The custom image config, history, and digest necessarily change.
+  The OAuth2 Proxy production identity is synchronized with the canonical
+  hardening consumer, its focused regression, and the active operator guide;
+  the root-active dev image retains its named-user contract. Reverting those
+  three consumer updates and the three Dockerfile patches is the correction
+  rollback.
+- Exact affected Dockerfiles are `infra/07-workflow/n8n/Dockerfile`,
+  `infra/02-auth/oauth2-proxy/Dockerfile`, and
+  `infra/04-data/analytics/opensearch/Dockerfile`. Repository-wide
+  `pre-commit run hadolint-docker --all-files`, BuildKit `--check` for all three
+  exact build contexts, all 11 hardening tiers, and the 19 focused tech-stack
+  contract tests pass. The OAuth-specific regression is
+  `test_oauth2_proxy_production_numeric_identity_contract`.
 
 ### Gap matrix
 
@@ -200,11 +227,11 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | five runs advanced through hardening, audit, browser coverage, uv provisioning, format hooks, and then exact Hadolint finding `DL3025`; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
+| Hosted CI | FAIL / RETRY REQUIRED | six runs advanced through hardening, audit, browser coverage, uv provisioning, format hooks, `DL3025`, and then five exact `DL3066` findings; each exact failure is reproduced and corrected locally and a new candidate rerun is required |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
-| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; the sample Dockerfile has one equivalent healthcheck metadata-text correction |
+| Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime-state mutation; four Dockerfiles have bounded equivalent instruction corrections plus build-time identity assertions |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
-| Hardening and tech-stack provenance | PASS | 11 tiers; 18 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
+| Hardening and tech-stack provenance | PASS | 11 tiers; 19 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
 | Storybook dependency security | PASS | clean install, exact high-severity audit with 0 vulnerabilities, lint, typecheck, and Storybook 10.6 production build |
 | Next production build | PASS / SANDBOX-LIMITED | webpack production build passed; default Turbopack reached bundling but local worker port binding was denied |
 
@@ -265,6 +292,12 @@ admitted by the References consumer and validated by the Registry metadata path.
 - Replaced the exact sample-service shell-form healthcheck reported as
   `DL3025` with equivalent exec-form arguments; no image, endpoint, timing,
   service, deployment, hook, or validator behavior changed.
+- Replaced the five exact `DL3066` symbolic user instructions with their same
+  numeric user identities without changing group-resolution semantics, plus
+  fail-closed build assertions where the account comes from an upstream image;
+  synchronized the OAuth2 Proxy production hardening
+  consumer, focused regression, and operator guide while preserving its dev
+  identity contract; no global ignore or threshold was added.
 
 ## Review Evidence
 
@@ -304,9 +337,10 @@ returned final PASS with no actionable finding on the resulting six-file diff.
 The PR-job `uvx` provisioning correction plus this evidence update are prepared
 in `2aefde23`. The exact formatter normalization plus this new Hosted evidence
 were committed as `8f0a3432`. The exact Hadolint correction and its Hosted
-evidence are prepared for one follow-up commit. Valid forward lifecycle
-transitions remain post-merge work; they are not compressed into the initial PR
-history.
+evidence were committed as `5ad8f0c0`. The exact numeric-user correction and
+its Hosted evidence are prepared for one follow-up commit. Valid forward
+lifecycle transitions remain post-merge work; they are not compressed into the
+initial PR history.
 
 ## Rulings
 

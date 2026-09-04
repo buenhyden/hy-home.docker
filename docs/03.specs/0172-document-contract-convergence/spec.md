@@ -49,9 +49,10 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
   exact lint-conformance correction required to execute that existing gate.
   Application behavior, validator
   relaxation, workflow permission expansion, deployed stack configuration, and
-  runtime state mutation remain out of scope. The only admitted runtime-metadata
-  text correction is the exact equivalent sample healthcheck reported by the
-  existing gate.
+  runtime state mutation remain out of scope. The only admitted Dockerfile
+  corrections are the exact equivalent sample healthcheck, numeric user
+  representations, and fail-closed identity assertions reported by the existing
+  gate.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -95,9 +96,12 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
     that pinned hook. Evidence-only Spec, Plan, and Task updates may accompany
     the remediation; every format diff must remain mechanical and
     behavior-preserving.
-14. A Hosted lint finding may change only the exact reported instruction when
-    its command, arguments, exit semantics, and runtime target remain
-    equivalent. The finding, file, verifier, and rollback must be recorded.
+14. A Hosted lint finding may change the exact reported instruction plus the
+    minimum fail-closed proof and stale canonical-consumer synchronization
+    needed to preserve its effective runtime contract. Command, argument, exit,
+    identity, permission, and runtime-target semantics must remain equivalent;
+    no ignore, threshold, hook, or validator relaxation is allowed. The finding,
+    affected files, verifier, and rollback must be recorded.
 
 ## Technical Approach
 
@@ -159,14 +163,18 @@ Keep legacy archive payloads on unmanaged preservation profiles.
    markdownlint-cli2 0.22.1 reports zero errors and no rewrites, and focused
    behavior tests pass after the exact 12-Python plus one-Markdown mechanical
    normalization reported by Hosted CI. Hadolint v2.14.0 reports no finding for
-   the exact sample-service healthcheck instruction corrected after the next
-   Hosted run reached that leaf.
+   the exact sample-service healthcheck and five user instructions corrected
+   after the next Hosted runs reached that leaf. The OAuth2 Proxy production
+   identity is also enforced by the canonical hardening consumer and a focused
+   contract regression; the distinct dev image retains its named-user contract.
 9. The final diff changes no frozen archive body and contains no secret,
-   credential, certificate, deployed stack, or runtime-state payload. Its sole
-   runtime-metadata text change is the equivalent sample-service healthcheck
-   representation required by the exact Hosted lint finding. Any build-time
-   Next setting is limited to the compiler path proved by the failed Hosted
-   gate.
+   credential, certificate, deployed stack, or runtime-state payload. Its
+   Dockerfile changes are limited to the equivalent sample-service healthcheck,
+   exact numeric user representations that preserve group resolution,
+   fail-closed build assertions, and the
+   corresponding hardening/test/guide synchronization required by Hosted lint
+   findings. Any build-time Next setting is limited to the compiler path proved
+   by the failed Hosted gate.
 
 ## Traceability
 
@@ -178,11 +186,15 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 ## Operational Impact
 
 The candidate diff changes no deployed stack, runtime state, or service
-behavior. Its sole runtime-metadata text change is the equivalent sample-service
-healthcheck representation, and its scoped Next setting selects the build-time
-TypeScript compiler API only. Read-only runtime and remote observations are
-evidence only. Deployment, provider, protection, tag, release, and merge
-mutations remain stopped until their exact execution contract is approved.
+behavior. Its Dockerfile changes are the equivalent sample-service healthcheck,
+numeric user representations that preserve group resolution, and fail-closed
+build assertions. The OAuth2
+Proxy hardening consumer, regression, and guide now enforce that same production
+identity while retaining the separate dev contract; its scoped Next setting
+selects the build-time TypeScript compiler API only. Read-only runtime and remote
+observations are evidence only. Deployment, provider, protection, tag, release,
+and merge mutations remain stopped until their exact execution contract is
+approved.
 
 ## Related Documents
 
