@@ -73,7 +73,6 @@ updated: 2026-08-11
 ## Common Checks
 
 - `test -f infra/04-data/analytics/opensearch/docker-compose.yml`
-- `test -f infra/04-data/analytics/opensearch/docker-compose.cluster.yml`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff

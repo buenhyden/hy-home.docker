@@ -249,7 +249,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   - Compose 파일 기준: **43/43 (100%)**
 - 미적용 서비스(서비스 기준): **없음 (0건)**
 - 보조 Compose 적용 상태(서비스 수 미산입):
-  - [opensearch cluster compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml): **적용 완료**
+  - opensearch cluster 노드는 [opensearch compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)의 `data-cluster` profile로 통합됨: **적용 완료**
 - 의도된 템플릿 예외:
   - SSoT: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
   - 운영 정책: [common-optimizations-template-exceptions.md](../0001-common-optimizations-template-exceptions/policy.md)

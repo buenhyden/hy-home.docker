@@ -41,7 +41,6 @@ Temporary index settings, cluster variant experiments, or security config change
 ## Verification
 
 - `test -f infra/04-data/analytics/opensearch/docker-compose.yml`
-- `test -f infra/04-data/analytics/opensearch/docker-compose.cluster.yml`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence

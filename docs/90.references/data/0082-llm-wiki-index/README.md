@@ -659,7 +659,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/analytics/ksql/docker-compose.yml](../../../../infra/04-data/analytics/ksql/docker-compose.yml) | YAML config |
 | [infra/04-data/analytics/opensearch/Dockerfile](../../../../infra/04-data/analytics/opensearch/Dockerfile) | source path |
 | [infra/04-data/analytics/opensearch/README.md](../../../../infra/04-data/analytics/opensearch/README.md) | folder index |
-| [infra/04-data/analytics/opensearch/docker-compose.cluster.yml](../../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml) | YAML config |
 | [infra/04-data/analytics/opensearch/docker-compose.yml](../../../../infra/04-data/analytics/opensearch/docker-compose.yml) | YAML config |
 | [infra/04-data/analytics/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml](../../../../infra/04-data/analytics/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml) | YAML config |
 | [infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/action_groups.yml](../../../../infra/04-data/analytics/opensearch/opensearch/config/opensearch-security/action_groups.yml) | YAML config |

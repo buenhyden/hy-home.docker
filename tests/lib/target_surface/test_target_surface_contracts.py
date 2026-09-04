@@ -936,7 +936,6 @@ class DeprecatedRuntimeContractTests(unittest.TestCase):
 
         compose_paths = (
             ROOT / "infra/04-data/analytics/opensearch/docker-compose.yml",
-            ROOT / "infra/04-data/analytics/opensearch/docker-compose.cluster.yml",
         )
         for path in compose_paths:
             text = path.read_text(encoding="utf-8")

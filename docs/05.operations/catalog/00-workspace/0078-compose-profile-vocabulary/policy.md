@@ -78,6 +78,7 @@ profile 이름은 세 종류로 나뉜다.
 | `ksql` | analytics 선택 구성 요소 | 3 |
 | `storage-cluster` | 단일 노드 minio 대신 4노드 minio 클러스터 | 4 |
 | `dedicated-valkey` | oauth2-proxy, n8n, airflow가 공유 `mng-valkey` 대신 각자의 broker를 사용 | 6 |
+| `data-cluster` | 단일 노드 opensearch 대신 3노드 클러스터 | 4 |
 
 ### Role selector
 
@@ -122,6 +123,7 @@ profile 이름은 세 종류로 나뉜다.
 | --- | --- | --- |
 | `nginx` ↔ `core`, `nginx` ↔ `dev` | host port 80, 443 | nginx와 traefik은 같은 역할의 대체재이며 동시에 gateway가 될 수 없다 |
 | `dedicated-valkey` + HOST/SECRET 변수 | 없음 | profile은 broker를 띄울 뿐이고 앱이 어디를 바라보는지는 환경변수가 정한다. Compose가 둘을 묶어주지 못하므로 함께 설정해야 하며, profile만 켜면 쓰이지 않는 broker가 하나 더 뜬다 |
+| `data-cluster` ↔ `data` | host port 9600 | 두 opensearch 토폴로지는 대체재다. `data-cluster`의 node1이 performance analyzer 포트를 공개하며, 두 배포를 동시에 띄울 이유가 없다. dashboards는 양쪽 모두에 속하고 `OPENSEARCH_HOSTS`가 어디를 보는지 정한다 |
 | `storage-cluster` ↔ `storage` | host port 충돌 없음 | 두 minio 토폴로지는 대체재다. 두 파일이 서비스 이름을 공유하지 않아 host port는 부딪히지 않지만, 동시에 띄우면 같은 network에 독립된 object store가 둘 생긴다 |
 
 `testing`은 `k6-master`와 `locust-master`를 함께 선택한다. 두 서비스는 원래

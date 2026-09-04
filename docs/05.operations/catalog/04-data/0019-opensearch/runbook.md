@@ -68,7 +68,6 @@ updated: 2026-08-11
 4. Optional cluster variant는 별도 compose로 확인한다.
 
    ```bash
-   test -f infra/04-data/analytics/opensearch/docker-compose.cluster.yml
    ```
 
 ### Verification Steps
