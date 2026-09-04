@@ -141,7 +141,7 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 bash scripts/validation/validate-docker-compose.sh
 ```
 
-이 검증은 기본 `core` profile을 기준으로 `docker compose config`가 성공하는지 확인하고, resolved service count가 0이면 실패합니다. 필요한 경우 `HYHOME_COMPOSE_PROFILES="core dev"`처럼 검증 profile을 명시할 수 있습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
+이 검증은 선언된 모든 profile을 하나씩 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 한 profile이 선택하는 두 서비스가 같은 host port를 공개하지 않는지 확인합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 [Compose profile vocabulary](docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 
