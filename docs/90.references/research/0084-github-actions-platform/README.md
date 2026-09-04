@@ -99,7 +99,9 @@ The member owns the detailed source inventory and claim-by-claim analysis.
   [quality](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md),
   [security](../0002-agentic-engineering-research-pack/m0017-security-governance.md), and
   [verification](../0002-agentic-engineering-research-pack/m0019-verification-validation.md).
-- Current baseline: [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
+- Current baseline: [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md).
+- Dated baseline/recovery evidence:
+  [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
 - Governance: [Stage 00](../../../00.agent-governance/README.md).
 - Requirement/Architecture: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and

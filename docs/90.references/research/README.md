@@ -1,6 +1,6 @@
 ---
 title: "Research Packages"
-version: "1.1.0"
+version: "1.2.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
@@ -28,23 +28,23 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 | [RES-0080](../../98.archive/superseded/90.references/research/0080-roadmap-v1/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
 | [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |
 | [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics | active |
-| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment | draft |
+| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment | review — dated evidence; any later transition requires separate approval |
 
 ### Workspace Engineering Request Route
 
 #### Re-review Baseline
 
-The workspace-engineering request is assessed against
-`buenhyden/hy-home.docker` at
-`main@4c6d211129615eab372d720ebd209b6c27618c86`, observed on
-2026-09-05.
+The current workspace baseline is consolidated in
+[RES-0002-m0020](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
+against `main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b`, observed on
+2026-09-05. RES-0085 preserves the earlier assessment boundary at
+`main@4c6d211129615eab372d720ebd209b6c27618c86` and its binding request and
+identity-recovery evidence while moving through publication review.
 
-RES-0085 owns the repository-local baseline assessment and its binding request
-evidence. Its topical research inputs remain owned by RES-0002, RES-0084, and
-the current implementation audits; RES-0085 does not duplicate or replace
-those owners. Repository-specific implementation truth remains in Stage 00
-policies, provider adapters, Stage 03 contracts, Stage 05 operations, tracked
-runtime files, scripts, tests, and CI definitions.
+Topical research remains owned by RES-0002 and RES-0084. Repository-specific
+implementation truth remains in Stage 00 policies, provider adapters, Stage 03
+contracts, Stage 05 operations, tracked runtime files, scripts, tests, and CI
+definitions.
 
 #### Design Decisions
 
@@ -135,6 +135,7 @@ already covered.
 - [References index](../README.md)
 - [Agentic engineering research](./0002-agentic-engineering-research-pack/README.md)
 - [GitHub Actions platform mechanics](./0084-github-actions-platform/README.md)
+- [Dated workspace-baseline evidence](./0085-workspace-engineering-main-baseline-assessment/README.md)
 - [Implementation overview](../audits/0026-implementation-overview/README.md)
 - [Stage 00 governance](../../00.agent-governance/README.md)
 - [Stage 99 Registry](../../99.templates/registry.json)

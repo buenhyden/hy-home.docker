@@ -1,8 +1,8 @@
 ---
 title: "Workspace Engineering Main Baseline Request Scope"
-version: "0.2.0"
+version: "0.3.0"
 type: "reference/research"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "references"
@@ -24,9 +24,10 @@ identity_recovery:
 
 ## Overview
 
-This member records the binding repository target, comparison baseline, and
-evidence boundaries for RES-0085. It does not duplicate the topical findings
-owned by RES-0002 or the GitHub Actions platform findings owned by RES-0084.
+This member preserves the binding repository target, comparison baseline,
+evidence boundaries, and recovered request identity for the dated RES-0085
+assessment. Current workspace-baseline conclusions are consolidated into
+RES-0002-m0020; GitHub Actions platform findings remain in RES-0084.
 
 ## Research Questions
 
@@ -37,15 +38,16 @@ owned by RES-0002 or the GitHub Actions platform findings owned by RES-0084.
 
 ## Purpose
 
-Prevent generic guidance, historical observations, or configuration-only
+Prevent the original request, historical observations, or configuration-only
 evidence from being mistaken for the current `main` implementation or live
-runtime state.
+runtime state, while keeping the exact recovery provenance available.
 
 ## Repository Role
 
-RES-0085 owns the dated baseline interpretation. RES-0002 owns the cross-domain
-agentic-engineering research, RES-0084 owns GitHub Actions platform mechanics,
-Stage 00 owns policy, and the current Task owns execution evidence.
+RES-0085 owns the dated request and recovery evidence. RES-0002-m0020 owns
+current baseline interpretation, RES-0002 owns cross-domain research, RES-0084
+owns GitHub Actions platform mechanics, Stage 00 owns policy, and the current
+Task owns execution evidence.
 
 ## Scope
 
@@ -75,14 +77,14 @@ Stage 00 owns policy, and the current Task owns execution evidence.
 - **Remote evidence** requires authenticated read-back from the remote control
   plane and remains point-in-time.
 
-## Current Repository State
+## Dated Repository State
 
 All harness engineering, loop engineering, Claude Code and Codex governance,
 spec-driven development, Docker Compose, infrastructure, SDLC, operations,
 documentation, architecture, CI/CD, QA, security, verification and validation,
 agent organization, memory, cost control, editor integration, context sharing,
-and README analyses in this research request must be interpreted against the
-actual files and executable behavior of this repository's `main` branch.
+and README analyses in the recovered request were assessed against
+`main@4c6d211129615eab372d720ebd209b6c27618c86`.
 
 Generic guidance is informative only. Repository-local instructions,
 architecture decisions, policies, security controls, and verification evidence
@@ -92,8 +94,10 @@ have precedence.
 
 - The requested comparison target is `main` at
   `4c6d211129615eab372d720ebd209b6c27618c86`, observed 2026-09-05.
-- RES-0002 and RES-0084 remain topical research owners; RES-0085 records the
-  repository-local baseline and does not replace them.
+- RES-0002 and RES-0084 remain topical research owners; RES-0002-m0020 now owns
+  current repository-local baseline conclusions.
+- RES-0085 records the dated assessment boundary and exact recovered request;
+  it does not compete with the current baseline owner.
 - Local, hosted, provider, runtime, and remote evidence are separate. The
   latest remote protection evidence is the approved 2026-09-05 read-back in
   SPEC-0172; live deployment, tag, and release remain outside this observation.
@@ -104,23 +108,24 @@ have precedence.
 | Capability | Repository implementation | Evidence depth | Gap | Verification route |
 | --- | --- | --- | --- | --- |
 | Baseline identity | Exact `main` SHA recorded by RES-0085 | Defined, Local-executed | Later commits require a new observation | `git rev-parse main` |
-| Research ownership | RES-0002 and RES-0084 remain topical owners | Repository-enforced | Semantic duplication still needs review | reference contract tests and link check |
+| Research ownership | RES-0002-m0020 owns the current baseline; RES-0084 owns GitHub mechanics | Repository-enforced | Any later RES-0085 lifecycle transition requires separate approval | reference contract, lifecycle, and link checks |
 | Hosted CI | Exact aggregate job runs recorded by SPEC-0172 | Hosted-executed | Future runs are mutable | owning Task plus GitHub run |
 | Main protection | Exact approved read-back recorded by SPEC-0172 | Remote-verified on 2026-09-05 | Later drift is possible | authenticated full read-back |
 | Deployment and release | No named target or current event | Unverified / not adopted | Acceptance and rollback target absent | separate approved Requirement-to-Task chain |
 
 ## Gaps and Risks
 
-- A later `main` revision can make this baseline stale without changing this
-  document automatically.
+- This evidence is intentionally fixed to the named baseline and must not be
+  presented as current after later `main` revisions.
 - Local validation cannot prove Hosted runner, provider entitlement, deployed
   service, or remote GitHub state.
-- Copying topical findings into this member would create a competing research
-  authority.
+- Copying current or topical findings into this member would recreate the
+  authority duplication removed by consolidation.
 
 ## Recommendations
 
-- Re-observe the baseline when the assessed `main` revision changes materially.
+- Re-observe current repository state in RES-0002-m0020 when `main` changes
+  materially; do not refresh this dated scope carrier in place.
 - Keep mutable Hosted, provider, runtime, and remote claims dated and tied to
   their owning evidence.
 - Route implementation work through Research → Requirement → Architecture/ADR
@@ -151,7 +156,8 @@ separate owner and the repository SDLC chain.
 
 ## Related Documents
 
-- [Baseline assessment](README.md)
+- [Dated baseline assessment package](README.md)
+- [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
 - [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
 - [GitHub Actions platform research](../0084-github-actions-platform/README.md)
 - [SPEC-0172 execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md)

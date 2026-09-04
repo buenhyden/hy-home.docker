@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.0.0"
+version: "2.1.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -58,10 +58,12 @@ risk on behalf of their current owners.
 - Evidence boundary: configuration is not execution; local execution is not
   Hosted CI; Hosted CI is not deployment; point-in-time entitlement is not a
   future guarantee; tracked protection intent is not remote enforcement.
-- [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
-  owns the repository-local baseline. [RES-0084](../0084-github-actions-platform/README.md)
-  owns detailed GitHub Actions platform mechanics. This package owns topical
-  research and their cross-category navigation.
+- [m0020](m0020-workspace-baseline.md) owns the current repository-local
+  baseline. [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
+  preserves the dated 2026-09-05 assessment scope and identity-recovery
+  evidence. [RES-0084](../0084-github-actions-platform/README.md) owns detailed
+  GitHub Actions platform mechanics. This package owns topical research and
+  their cross-category navigation.
 
 ## Method
 
@@ -94,7 +96,7 @@ risk on behalf of their current owners.
 | RES-0002 README | A–G navigation and cross-category summary | Detailed claims, sources, and historical routing duplicated member content | Rewrite as question/scope/method/router/traceability owner | RES-0002 README, same identity |
 | RES-0002-m0001–m0020 | All topical categories | Strong historical analysis but observation metadata and several current routes were stale | Preserve IDs and content; add current revalidation evidence | Same 20 members |
 | RES-0084 | GitHub Actions, CI, remote enforcement | Platform analysis predated the aggregate-check rollout | Update adoption and evidence boundary in place | RES-0084 |
-| RES-0085 | Current `main` baseline | Pre-integration failures were presented as current | Rewrite current findings while preserving draft lifecycle and identity | RES-0085 |
+| RES-0085 | Current `main` baseline | Its question duplicated the current-baseline purpose already owned by m0020 | Consolidate current ownership into m0020; preserve RES-0085 as dated recovery evidence in `review` | RES-0002-m0020 and RES-0085 evidence |
 | New RES-0096 candidate | Same question set | Would duplicate existing owners and observation cycle | Do not create | None |
 
 ## Findings
@@ -122,7 +124,7 @@ risk on behalf of their current owners.
 | Security | [m0017](m0017-security-governance.md) | Which controls are local, remote, runtime, or missing? | Static and supply-chain controls are strong; production posture is unverified | Repository-enforced, point-in-time Remote-verified | High |
 | Spec-driven SDLC | [m0018](m0018-spec-driven-sdlc.md) | How does intent flow into verified work? | Current package form is enforced; intended-use acceptance remains owner-bound | Repository-enforced | High |
 | Verification and validation | [m0019](m0019-verification-validation.md) | Does evidence prove conformance and intended use? | Conformance gates exist; deployment acceptance is absent | Local-executed, Repository-enforced | High |
-| Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline is routed to RES-0085 and canonical owners | Configured, Local-executed | High |
+| Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
 
 ### Complete Requested Category Routing
 
@@ -224,10 +226,11 @@ risk on behalf of their current owners.
 
 No requested category is missing. The principal conclusion changes since the
 prior research are the merged document-contract lifecycle/common-six corpus,
-the repaired RES-0085 package, Hosted acceptance of both aggregate CI routes,
-and the 2026-09-05 remote protection read-back. Those changes strengthen
-repository evidence but do not close live deployment, persistent-memory,
-editor-integration, cost, or provider-outcome gaps.
+the consolidation of current baseline ownership into m0020 while RES-0085
+preserves dated recovery evidence, Hosted acceptance of both aggregate CI
+routes, and the 2026-09-05 remote protection read-back. Those changes
+strengthen repository evidence but do not close live deployment,
+persistent-memory, editor-integration, cost, or provider-outcome gaps.
 
 ## Sources
 
@@ -314,6 +317,7 @@ list contains only sources shared across categories.
   [m0019](m0019-verification-validation.md), and
   [m0020](m0020-workspace-baseline.md).
 - Related research: [RES-0084](../0084-github-actions-platform/README.md) and
+  dated baseline/recovery evidence in
   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
 - Policy: [Stage 00](../../../00.agent-governance/README.md) and
   [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md).
@@ -370,9 +374,10 @@ this declaration atomically.
 
 Historical continuity is retained: the canonical pack was rebuilt under
 SPEC-0158 in August 2026, all members received source refresh and deepening,
-the loop coverage gap was repaired on 2026-08-17, and the present 2026-09-05
-renewal preserves all identities and the exact member set while updating the
-router and current evidence.
+the loop coverage gap was repaired on 2026-08-17, and the 2026-09-05 renewal
+preserves all identities and the exact member set. The subsequent baseline
+consolidation changes no protected path and makes m0020 the single current
+workspace-baseline owner.
 
 ## Limitations
 
