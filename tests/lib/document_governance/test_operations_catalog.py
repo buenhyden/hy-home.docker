@@ -114,8 +114,8 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             )["artifact_id"]
             second_path.write_text(
                 second_path.read_text(encoding="utf-8").replace(
-                    f"artifact_id: {second_id}",
-                    f"artifact_id: {first_id}",
+                    f'artifact_id: "{second_id}"',
+                    f'artifact_id: "{first_id}"',
                     1,
                 ),
                 encoding="utf-8",
@@ -141,7 +141,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path.write_text(
                 registry.replace(
                     '"profiles": [',
-                    '"profiles": [{"profile_id":"release","path_pattern":"docs/05.operations/releases/{slug}.md"},',
+                    '"profiles": [{"id":"release","path_pattern":"docs/05.operations/releases/{slug}.md"},',
                     1,
                 ),
                 encoding="utf-8",
@@ -150,7 +150,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
 
     def test_registry_operations_profiles_and_template_roles_are_present(self) -> None:
         mutations = (
-            ("profile_id", "guide-copy"),
+            ("id", "guide-copy"),
             ("template_id", "operation/policy"),
         )
         for key, value in mutations:
@@ -162,7 +162,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     guide = next(
                         item
                         for item in registry["profiles"]
-                        if item["profile_id"] == "guide"
+                        if item["id"] == "guide"
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -175,7 +175,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
             guide = next(
-                item for item in registry["profiles"] if item["profile_id"] == "guide"
+                item for item in registry["profiles"] if item["id"] == "guide"
             )
             registry["profiles"].append(dict(guide))
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -200,7 +200,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
             guide = next(
-                item for item in registry["profiles"] if item["profile_id"] == "guide"
+                item for item in registry["profiles"] if item["id"] == "guide"
             )
             guide["required_sections"].append("New Contract")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -214,7 +214,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
             guide = next(
-                item for item in registry["profiles"] if item["profile_id"] == "guide"
+                item for item in registry["profiles"] if item["id"] == "guide"
             )
             guide["optional_frontmatter"].append("generated_by")
             guide["optional_sections"].append("Operator Notes")
@@ -238,14 +238,14 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     guide = next(
                         item
                         for item in registry["profiles"]
-                        if item["profile_id"] == "guide"
+                        if item["id"] == "guide"
                     )
                     if mutation == "missing-artifact-pattern":
                         del guide["artifact_id_pattern"]
                     elif mutation == "object-frontmatter-member":
                         guide["required_frontmatter"] = [{"bad": "shape"}]
                     elif mutation == "object-profile-id":
-                        guide["profile_id"] = {"bad": "shape"}
+                        guide["id"] = {"bad": "shape"}
                     else:
                         guide["lifecycle_id"] = {"bad": "shape"}
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -292,7 +292,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     guide = next(
                         item
                         for item in registry["profiles"]
-                        if item["profile_id"] == "guide"
+                        if item["id"] == "guide"
                     )
                     guide[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -321,7 +321,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     incident = next(
                         item
                         for item in registry["profiles"]
-                        if item["profile_id"] == "incident"
+                        if item["id"] == "incident"
                     )
                     incident[key] = value
                     registry_path.write_text(json.dumps(registry), encoding="utf-8")
@@ -332,7 +332,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             registry_path = root / REGISTRY_PATH
             registry = json.loads(registry_path.read_text(encoding="utf-8"))
-            profiles = {item["profile_id"]: item for item in registry["profiles"]}
+            profiles = {item["id"]: item for item in registry["profiles"]}
             profiles["policy"]["required_sections"] = list(
                 profiles["guide"]["required_sections"]
             )
@@ -353,7 +353,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             )
             self.assertIn("role-sections-invalid", finding_codes(root))
 
-    def test_role_profile_id_is_required_even_when_all_other_metadata_is_valid(
+    def test_role_type_is_required_even_when_all_other_metadata_is_valid(
         self,
     ) -> None:
         context, root = self._fixture()
@@ -362,12 +362,12 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role_name = role.stem
             role.write_text(
-                text.replace(f"type: operation/{role_name}\n", "", 1),
+                text.replace(f'type: "operation/{role_name}"\n', "", 1),
                 encoding="utf-8",
             )
             self.assertIn("role-profile-invalid", finding_codes(root))
 
-    def test_role_frontmatter_rejects_duplicate_same_value_profile_id(self) -> None:
+    def test_role_frontmatter_rejects_duplicate_same_value_type(self) -> None:
         context, root = self._fixture()
         with context:
             role = root / next(path for path in self.role_paths)
@@ -375,8 +375,8 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             text = role.read_text(encoding="utf-8")
             role.write_text(
                 text.replace(
-                    f"type: operation/{role_name}\n",
-                    f"type: operation/{role_name}\ntype: operation/{role_name}\n",
+                    f'type: "operation/{role_name}"\n',
+                    f'type: "operation/{role_name}"\ntype: "operation/{role_name}"\n',
                     1,
                 ),
                 encoding="utf-8",
@@ -396,7 +396,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
     ) -> pathlib.Path:
         registry = json.loads((root / REGISTRY_PATH).read_text(encoding="utf-8"))
         profile = next(
-            item for item in registry["profiles"] if item["profile_id"] == "incident"
+            item for item in registry["profiles"] if item["id"] == "incident"
         )
         packet = root / f"docs/05.operations/incidents/{year}/inc-0001-fixture"
         packet.mkdir(parents=True)

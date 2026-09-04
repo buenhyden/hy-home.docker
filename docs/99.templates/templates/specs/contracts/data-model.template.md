@@ -1,41 +1,44 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/data-model
-layer: specs
-status: draft
-owner: <owner>
-parent_ids: [SPEC-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/data-model"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "specs"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{data_model_purpose}}
+{{DATA_MODEL_PURPOSE}}
 
 ## Entities
 
-{{entity_definitions}}
+{{ENTITY_DEFINITIONS}}
 
 ## Attributes
 
-{{attribute_types_and_nullability}}
+{{ATTRIBUTE_TYPES_AND_NULLABILITY}}
 
 ## Relationships
 
-{{cardinality_and_ownership}}
+{{CARDINALITY_AND_OWNERSHIP}}
 
 ## Constraints
 
-{{keys_uniqueness_and_referential_rules}}
+{{KEYS_UNIQUENESS_AND_REFERENTIAL_RULES}}
 
 ## Lifecycle
 
-{{creation_mutation_and_retention_rules}}
+{{CREATION_MUTATION_AND_RETENTION_RULES}}
 
 ## Traceability
 
-{{spec_and_interface_contract_links}}
+{{SPEC_AND_INTERFACE_CONTRACT_LINKS}}

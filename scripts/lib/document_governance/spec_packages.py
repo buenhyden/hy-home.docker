@@ -53,19 +53,19 @@ _EXPECTED_PROFILES = {
         "docs/03.specs/{number:4}-{slug}/spec.md",
         "SPEC-{number:4}",
         "direct",
-        "spec-package",
+        "spec",
     ),
     "plan": (
         "docs/03.specs/{package_number:4}-{slug}/plan.md",
         "SPEC-{package_number:4}-PLAN-{member_number:4}",
         "package-member",
-        "execution",
+        "plan",
     ),
     "task": (
         "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
         "SPEC-{package_number:4}-TSK-{task_number:4}",
         "package-member",
-        "execution",
+        "task",
     ),
 }
 
@@ -482,12 +482,16 @@ def _validate_execution_states(
     tasks: tuple[SpecDocument, ...],
 ) -> None:
     for task in tasks:
-        if task.status != "active":
+        if task.status not in {"in-progress", "blocked"}:
             continue
         if spec.status != "active":
-            raise SpecPackageError(f"{task.path} active Task requires active Spec")
+            raise SpecPackageError(
+                f"{task.path} current Task requires active Spec"
+            )
         if plan is not None and plan.status != "active":
-            raise SpecPackageError(f"{task.path} active Task requires active Plan")
+            raise SpecPackageError(
+                f"{task.path} current Task requires active Plan"
+            )
     if plan is not None and plan.status == "active" and spec.status != "active":
         raise SpecPackageError(f"{plan.path} active Plan requires active Spec")
 

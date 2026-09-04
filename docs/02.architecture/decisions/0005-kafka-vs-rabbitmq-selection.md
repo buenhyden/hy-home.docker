@@ -1,15 +1,15 @@
 ---
 title: "Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)"
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0005
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0005"
 parent_ids:
-  - AD-0005
-created: 2026-03-26
-updated: 2026-09-01
+- "AD-0005"
+created: "2026-03-26"
 ---
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 

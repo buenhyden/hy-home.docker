@@ -1,15 +1,15 @@
 ---
-title: Observability Hardening and HA Expansion Strategy
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Observability Hardening and HA Expansion Strategy"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0021
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0021"
 parent_ids:
-  - AD-0021
-created: 2026-03-28
-updated: 2026-09-01
+- "AD-0021"
+created: "2026-03-28"
 ---
 # ADR-0021: Observability Hardening and HA Expansion Strategy
 

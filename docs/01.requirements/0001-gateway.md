@@ -1,14 +1,14 @@
 ---
-title: Gateway Tier (01-gateway) Product Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Gateway Tier (01-gateway) Product Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0001
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0001"
 parent_ids: []
-created: 2026-03-26
-updated: 2026-08-13
+created: "2026-03-26"
 ---
 # Gateway Tier (01-gateway) Product Requirements
 

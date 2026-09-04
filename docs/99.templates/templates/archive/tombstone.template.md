@@ -1,34 +1,37 @@
 ---
-title: <title>
-version: "#.#.#"
-type: archive/tombstone
-layer: archive
-status: draft
-owner: <owner>
-artifact_id: tomb-<retired artifact_id>
-parent_ids: [MIG-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "archive/tombstone"
+status: "sealed"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "archive"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Retired Path
 
-{{retired_path}}
+{{RETIRED_PATH}}
 
 ## Replacement
 
-{{replacement_or_none}}
+{{REPLACEMENT_OR_NONE}}
 
 ## Reason
 
-{{reason}}
+{{REASON}}
 
 ## Recovery Commit
 
-{{recovery_commit}}
+{{RECOVERY_COMMIT}}
 
 ## Traceability
 
-{{archive_index_or_current_owner_link}}
+{{ARCHIVE_INDEX_OR_CURRENT_OWNER_LINK}}

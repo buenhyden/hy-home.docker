@@ -1,15 +1,15 @@
 ---
-title: Data Tier (04-data) Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Data Tier (04-data) Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0004
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0004"
 parent_ids:
-  - REQ-0004
-created: 2026-03-26
-updated: 2026-09-01
+- "REQ-0004"
+created: "2026-03-26"
 ---
 # Data Tier (04-data) Architecture Description
 

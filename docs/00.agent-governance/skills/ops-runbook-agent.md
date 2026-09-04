@@ -1,12 +1,13 @@
 ---
-title: ops-runbook-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "ops-runbook-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: ops-runbook-agent
-scope: ops
-owner_agent: doc-writer
+updated: "2026-09-04"
+function_id: "ops-runbook-agent"
+scope: "ops"
+owner_agent: "doc-writer"
 ---
 
 # ops-runbook-agent

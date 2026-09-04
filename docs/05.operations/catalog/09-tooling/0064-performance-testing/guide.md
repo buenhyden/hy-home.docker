@@ -1,15 +1,15 @@
 ---
-title: Performance Testing Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Performance Testing Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0064
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0064"
 parent_ids:
-  - POL-0064
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0064"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/09-tooling/0064-performance-testing/guide.md -->
 

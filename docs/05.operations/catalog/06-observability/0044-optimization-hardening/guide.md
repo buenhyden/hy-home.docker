@@ -1,15 +1,15 @@
 ---
-title: 06-Observability Optimization Hardening Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "06-Observability Optimization Hardening Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0044
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0044"
 parent_ids:
-  - POL-0044
-created: 2026-05-17
-updated: 2026-08-11
+- "POL-0044"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0044-optimization-hardening/guide.md -->
 

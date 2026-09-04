@@ -1,17 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Implementation Audit References"
-version: 1.0.0
-type: reference/audit-pack
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/audit-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: AUD-0019
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "AUD-0019"
 parent_ids: []
-created: '2026-07-05'
-updated: '2026-08-23'
-observed_at: '2026-07-05'
 supersedes:
-- AUD-0033
+- "AUD-0033"
+created: "2026-07-05"
+observed_at: "2026-07-05"
 ---
 
 # Reference: Agentic Engineering Implementation Audit References

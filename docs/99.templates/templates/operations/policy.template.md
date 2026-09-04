@@ -1,48 +1,48 @@
 ---
-title: <title>
-version: "#.#.#"
-type: operation/policy
-layer: operations
-status: draft
-owner: <owner>
-artifact_id: POL-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "operation/policy"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "operations"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-reviewed_at: YYYY-MM-DD
-next_review_at: YYYY-MM-DD
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Overview
 
-{{overview}}
+{{OVERVIEW}}
 
 ## Policy Scope
 
-{{policy_scope}}
+{{POLICY_SCOPE}}
 
 ## Controls
 
-{{controls}}
+{{CONTROLS}}
 
 ## Exceptions
 
-{{exceptions}}
+{{EXCEPTIONS}}
 
 ## Verification
 
-{{verification}}
+{{VERIFICATION}}
 
 ## Review Cadence
 
-{{review_cadence}}
+{{REVIEW_CADENCE}}
 
 ## Traceability
 
-{{subject_and_authority_links}}
+{{SUBJECT_AND_AUTHORITY_LINKS}}
 
 ## Related Documents
 
-{{related_documents}}
+{{RELATED_DOCUMENTS}}

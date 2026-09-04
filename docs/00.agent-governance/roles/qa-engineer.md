@@ -1,18 +1,19 @@
 ---
-title: qa-engineer
-version: 1.0.0
-type: governance/role
-status: active
+title: "qa-engineer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: qa-engineer
-scope: qa
-tier: worker
-work_profile: complex-implementation
-permission_profile: workspace-write
+updated: "2026-09-04"
+agent_id: "qa-engineer"
+scope: "qa"
+tier: "worker"
+work_profile: "complex-implementation"
+permission_profile: "workspace-write"
 skill_ids:
-- e2e-testing
-- style-validation
-- test-authoring
+- "e2e-testing"
+- "style-validation"
+- "test-authoring"
 ---
 
 # qa-engineer

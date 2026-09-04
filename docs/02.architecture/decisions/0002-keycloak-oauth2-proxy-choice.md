@@ -1,15 +1,15 @@
 ---
-title: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Choice of Keycloak and OAuth2 Proxy for IAM and SSO"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0002
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0002"
 parent_ids:
-  - AD-0002
-created: 2026-03-26
-updated: 2026-09-01
+- "AD-0002"
+created: "2026-03-26"
 ---
 # ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
 

@@ -1,10 +1,11 @@
 ---
-title: Operations Catalog
-version: 1.0.0
-type: common/readme
-layer: operations
-status: active
+title: "Operations Catalog"
+version: "1.0.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "operations"
 ---
 
 <!-- README Target: docs/05.operations/catalog/README.md -->

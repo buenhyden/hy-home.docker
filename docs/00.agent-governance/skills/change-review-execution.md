@@ -1,12 +1,13 @@
 ---
-title: change-review-execution
-version: 1.0.0
-type: governance/skill
-status: active
+title: "change-review-execution"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: change-review-execution
-scope: common
-owner_agent: code-reviewer
+updated: "2026-09-04"
+function_id: "change-review-execution"
+scope: "common"
+owner_agent: "code-reviewer"
 ---
 
 # change-review-execution

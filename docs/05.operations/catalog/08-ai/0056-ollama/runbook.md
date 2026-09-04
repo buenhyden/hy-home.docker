@@ -1,15 +1,15 @@
 ---
-title: Ollama Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "Ollama Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0056
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0056"
 parent_ids:
-  - GDE-0056
-created: 2026-05-17
-updated: 2026-09-01
+- "GDE-0056"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/08-ai/0056-ollama/runbook.md -->
 

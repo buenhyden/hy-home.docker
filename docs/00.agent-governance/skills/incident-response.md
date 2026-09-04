@@ -1,12 +1,13 @@
 ---
-title: incident-response
-version: 1.0.0
-type: governance/skill
-status: active
+title: "incident-response"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: incident-response
-scope: ops
-owner_agent: incident-responder
+updated: "2026-09-04"
+function_id: "incident-response"
+scope: "ops"
+owner_agent: "incident-responder"
 ---
 
 # incident-response

@@ -36,15 +36,16 @@ def _document_text(
     parents = "\n".join(f"  - {parent}" for parent in parent_ids)
     return f"""---
 title: Fixture {profile_id}
+version: 1.0.0
 type: sdlc/{profile_id}
-layer: specification
 status: {status}
 owner: "@buenhyden"
+updated: 2026-08-22
+layer: specification
 artifact_id: {artifact_id}
 parent_ids:
 {parents}
 created: 2026-08-22
-updated: 2026-08-22
 ---
 
 # Fixture {profile_id}
@@ -85,7 +86,7 @@ def _write_package(
     plan: bool = False,
     plan_status: str = "active",
     task: bool = False,
-    task_status: str = "active",
+    task_status: str = "in-progress",
     task_parent_ids: tuple[str, ...] | None = None,
 ) -> pathlib.Path:
     package = stage / f"{number}-{slug}"
@@ -424,8 +425,8 @@ class SpecPackageTests(unittest.TestCase):
     def test_current_execution_states_require_consistent_parents(self) -> None:
         spec_packages = _spec_packages_module()
         cases = (
-            ("completed", "active", "active", "active Task requires active Spec"),
-            ("active", "completed", "active", "active Task requires active Plan"),
+            ("completed", "active", "in-progress", "current Task requires active Spec"),
+            ("active", "completed", "blocked", "current Task requires active Plan"),
             ("completed", "active", "completed", "active Plan requires active Spec"),
         )
         for spec_status, plan_status, task_status, message in cases:
@@ -495,10 +496,10 @@ class SpecPackageTests(unittest.TestCase):
     def test_retained_package_keeps_non_terminal_execution_evidence(self) -> None:
         spec_packages = _spec_packages_module()
         for plan_status, task_status, removed in (
-            ("active", "active", "docs/03.specs/0001-example/plan.md"),
+            ("active", "in-progress", "docs/03.specs/0001-example/plan.md"),
             (
                 "active",
-                "active",
+                "in-progress",
                 "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
             ),
         ):

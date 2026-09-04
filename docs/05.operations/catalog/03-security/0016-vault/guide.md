@@ -1,15 +1,15 @@
 ---
-title: 03-Security Vault Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "03-Security Vault Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0016
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0016"
 parent_ids:
-  - POL-0016
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0016"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/03-security/0016-vault/guide.md -->
 

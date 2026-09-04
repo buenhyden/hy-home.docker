@@ -86,7 +86,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "profile_id",
+        "id",
         "frontmatter_policy",
         "path_pattern",
         "type",
@@ -102,7 +102,7 @@
         "exceptions"
       ],
       "properties": {
-        "profile_id": {
+        "id": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*$"
         },
@@ -198,16 +198,17 @@
       "additionalProperties": false,
       "required": [
         "source",
-        "profile_id"
+        "profiles"
       ],
       "properties": {
         "source": {
           "type": "string",
           "pattern": "^docs/99\\.templates/templates/"
         },
-        "profile_id": {
-          "type": "string",
-          "minLength": 1
+        "profiles": {
+          "$ref": "#/$defs/stringList",
+          "minItems": 1,
+          "maxItems": 1
         }
       }
     },
@@ -215,10 +216,19 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "initial_status",
+        "terminal_statuses",
         "statuses",
         "transitions"
       ],
       "properties": {
+        "initial_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "terminal_statuses": {
+          "$ref": "#/$defs/stringList"
+        },
         "statuses": {
           "$ref": "#/$defs/stringList"
         },

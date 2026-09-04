@@ -436,10 +436,19 @@ def collect_issued_identities(
         ("ls-files", "-z"),
         timeout_seconds=_remaining_scan_seconds(deadline),
     ).text.split("\0")
+    deleted_files = frozenset(
+        _run_git(
+            root,
+            ("ls-files", "-z", "--deleted"),
+            timeout_seconds=_remaining_scan_seconds(deadline),
+        ).text.split("\0")
+    )
     collected: dict[str, set[int]] = {}
     for relative in current_files if include_current else ():
         _remaining_scan_seconds(deadline)
         if (
+            relative in deleted_files
+            or
             not relative.startswith(IDENTITY_SOURCE_PREFIXES)
             or pathlib.PurePosixPath(relative).suffix.casefold()
             not in IDENTITY_SOURCE_SUFFIXES

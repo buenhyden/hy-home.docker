@@ -1,16 +1,17 @@
 ---
-title: incident-responder
-version: 1.0.0
-type: governance/role
-status: active
+title: "incident-responder"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: incident-responder
-scope: ops
-tier: worker
-work_profile: complex-implementation
-permission_profile: workspace-write
+updated: "2026-09-04"
+agent_id: "incident-responder"
+scope: "ops"
+tier: "worker"
+work_profile: "complex-implementation"
+permission_profile: "workspace-write"
 skill_ids:
-- incident-response
+- "incident-response"
 ---
 
 # incident-responder

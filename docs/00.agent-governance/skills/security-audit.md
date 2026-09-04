@@ -1,12 +1,13 @@
 ---
-title: security-audit
-version: 1.0.0
-type: governance/skill
-status: active
+title: "security-audit"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: security-audit
-scope: security
-owner_agent: security-auditor
+updated: "2026-09-04"
+function_id: "security-audit"
+scope: "security"
+owner_agent: "security-auditor"
 ---
 
 # security-audit

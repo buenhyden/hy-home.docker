@@ -1,14 +1,14 @@
 ---
-title: Standardize infra_net Network Product Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Standardize infra_net Network Product Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0023
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0023"
 parent_ids: []
-created: 2026-04-01
-updated: 2026-08-13
+created: "2026-04-01"
 ---
 # Standardize infra_net Network Product Requirements
 

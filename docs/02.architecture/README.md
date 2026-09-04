@@ -1,10 +1,11 @@
 ---
-title: Architecture
-version: 1.0.0
-type: common/readme
-layer: architecture
-status: active
+title: "Architecture"
+version: "1.0.1"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "architecture"
 ---
 
 # Architecture
@@ -25,7 +26,7 @@ Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안,
 
 ## Scope
 
-이 stage는 현재 25개의 Architecture Description과 26개의 ADR을 보유한다.
+이 stage는 현재 26개의 Architecture Description과 26개의 ADR을 보유한다.
 구현 세부와 검증 계약은 Stage 03, 실행 상태는 현재 변경 패킷, 운영 절차는
 Stage 05가 소유한다.
 
@@ -36,11 +37,11 @@ docs/02.architecture/
 ├── descriptions/
 │   ├── 0001-gateway-architecture.md
 │   ├── ...
-│   └── 0028-operational-readiness-closure.md
+│   └── 0030-document-lifecycle-governance.md
 ├── decisions/
 │   ├── 0001-traefik-nginx-hybrid.md
 │   ├── ...
-│   └── 0029-workspace-governance-authority.md
+│   └── 0031-preserved-archive-record.md
 └── README.md
 ```
 
@@ -65,9 +66,9 @@ docs/02.architecture/
 ### Documentation Standards
 
 - Description은 `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
-  `artifact_type: architecture-description`을 일치시킨다.
+  `type: sdlc/architecture-description`을 일치시킨다.
 - ADR은 `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
-  `artifact_type: adr`을 일치시킨다.
+  `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
 

@@ -797,7 +797,7 @@ def _parse_tombstone_text(
     minimal = bool(
         set(metadata) == _TOMBSTONE_FIELDS
         and metadata.get("type") == "archive/tombstone"
-        and metadata.get("status") == "completed"
+        and metadata.get("status") == "sealed"
         and metadata.get("artifact_id")
         == tombstone_identity(retired.as_posix() if retired is not None else "", number)
         and isinstance(metadata.get("parent_ids"), list)

@@ -1,11 +1,11 @@
 ---
-title: Security Tier (03-security)
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Security Tier (03-security)"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-12'
-updated: '2026-08-23'
+updated: "2026-09-04"
+created: "2025-11-12"
 ---
 
 # Security Tier (03-security)

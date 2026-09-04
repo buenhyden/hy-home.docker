@@ -1,15 +1,15 @@
 ---
-title: Choice of Spilo/Patroni for PostgreSQL HA
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Choice of Spilo/Patroni for PostgreSQL HA"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0004
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0004"
 parent_ids:
-  - AD-0004
-created: 2026-03-26
-updated: 2026-09-01
+- "AD-0004"
+created: "2026-03-26"
 ---
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA
 

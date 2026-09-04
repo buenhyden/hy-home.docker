@@ -1,12 +1,13 @@
 ---
-title: e2e-testing
-version: 1.0.0
-type: governance/skill
-status: active
+title: "e2e-testing"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: e2e-testing
-scope: qa
-owner_agent: qa-engineer
+updated: "2026-09-04"
+function_id: "e2e-testing"
+scope: "qa"
+owner_agent: "qa-engineer"
 ---
 
 # e2e-testing

@@ -1,15 +1,15 @@
 ---
-title: 04-Data Backup Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "04-Data Backup Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0021
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0021"
 parent_ids:
-  - AD-0004
-created: 2026-06-04
-updated: 2026-08-11
+- "AD-0004"
+created: "2026-06-04"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0021-backup-and-restore/policy.md -->
 

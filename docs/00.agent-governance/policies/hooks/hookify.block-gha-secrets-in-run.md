@@ -1,20 +1,21 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-gha-secrets-in-run
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "block"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: \.github/workflows/.*\.ya?ml$
-  - field: new_text
-    operator: regex_match
-    pattern: (echo|print)\s+.*\$\{\{\s*secrets\.|run:\s+env\s*$|\$\{\{\s*secrets\.[^}]+\}\}\s*>>\s*\$GITHUB_(OUTPUT|ENV|STEP_SUMMARY)
-action: block
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "\\.github/workflows/.*\\.ya?ml$"
+- field: "new_text"
+  operator: "regex_match"
+  pattern: "(echo|print)\\s+.*\\$\\{\\{\\s*secrets\\.|run:\\s+env\\s*$|\\$\\{\\{\\s*secrets\\.[^}]+\\}\\}\\s*>>\\s*\\$GITHUB_(OUTPUT|ENV|STEP_SUMMARY)"
+enabled: true
+event: "file"
+name: "block-gha-secrets-in-run"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

@@ -1,15 +1,15 @@
 ---
-title: 04-Data Optimization Hardening Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "04-Data Optimization Hardening Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0030
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0030"
 parent_ids:
-  - AD-0004
-created: 2026-05-10
-updated: 2026-08-11
+- "AD-0004"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0030-optimization-hardening/policy.md -->
 

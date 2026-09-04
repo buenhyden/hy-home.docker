@@ -1,15 +1,15 @@
 ---
-title: 문서 Lifecycle 거버넌스 아키텍처
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "문서 Lifecycle 거버넌스 아키텍처"
+version: "1.1.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0030
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0030"
 parent_ids:
-  - REQ-0026
-created: 2026-09-01
-updated: 2026-09-01
+- "REQ-0026"
+created: "2026-09-01"
 ---
 
 # 문서 Lifecycle 거버넌스 아키텍처
@@ -25,12 +25,12 @@ description은 그 규정을 관측하고 강제하는 구조를 기록합니다
 ## System Boundaries
 
 경계 안: profile, lifecycle, identity space를 정의하는 Stage 99 registry,
-은퇴를 기록하는 Stage 98 archive, 문서를 담는 현재 stage tree, 그리고
-`scripts/lib/document_governance/` library와 등록된 validator들.
+처분 기록과 frozen body를 분리해 보존하는 Stage 98 archive, 문서를 담는 현재
+stage tree, 그리고 `scripts/lib/document_governance/` library와 등록된 validator들.
 
-경계 밖: 은퇴한 내용을 보관하는 Git object storage — 추적되는 복제본이 아니라
-recovery commit으로 도달합니다. 그리고 비교 base를 선택하지만 보존 결과를
-판단하지는 않는 CI orchestration.
+경계 밖: preserved body의 원본 동일성과 복구 경로를 제공하는 Git object
+storage, 그리고 비교 base를 선택하지만 보존 결과를 판단하지는 않는 CI
+orchestration.
 
 ## Components
 
@@ -40,8 +40,9 @@ recovery commit으로 도달합니다. 그리고 비교 base를 선택하지만 
 - `scripts/lib/document_governance/spec_packages.py`는 현재 tree와 비교 base의
   bounded Git snapshot에서 Stage 03 package를 적재하고 제거의 합법성을
   판단합니다.
-- `scripts/lib/document_governance/archive.py`는 Stage 98을 적재하고, 은퇴가
-  기록되었음을 증명하는 Tombstone record를 노출합니다.
+- `scripts/lib/document_governance/archive.py`는 Stage 98을 적재하고, Tombstone
+  disposition과 `completed/`, `superseded/`, `retired/` frozen path를 분리해
+  노출하며 recovery blob과 원래 경로의 일치를 검증합니다.
 - `scripts/lib/document_governance/references.py`는 현재 tree에서 Stage 90
   package 집합을 도출하고, 보호 대상 package 자신이 담고 있는 보존 선언을
   강제합니다.
@@ -67,11 +68,12 @@ bounded snapshot으로 Git에서 적재합니다. base에 존재하고 현재 tr
 문서는 두 갈래로 분류됩니다. 유지된 package에서 빠진 member는 그 member의 base
 status로 판단하고, 통째로 사라진 package는 Stage 98을 근거로 판단합니다.
 
-`validate_spec_package_lifecycle`은 `_recorded_retirements`가 Stage 98
-Tombstone에서 읽은 retired-path 집합을 받습니다. 대응하는 Tombstone이 없는
-package 전체 제거는 `package-retirement-unrecorded`를 산출합니다. archive
-record는 어떤 문서가 존재하는지를 판단하지 않으며, 오직 제거가 기록되었는지만
-판단합니다.
+`validate_spec_package_lifecycle`은 Stage 98에서 분리해 읽은 Tombstone
+retired-path와 frozen preserved-path 집합을 받습니다. 대응하는 Tombstone이
+없는 retirement는 `package-retirement-unrecorded`를 산출하고, terminal
+disposition에 맞는 frozen path가 없으면 preservation 위반을 산출합니다.
+Tombstone은 처분을, preserved path는 본문 존재를, recovery blob은 원본 동일성을
+각각 증명하며 어느 한 기록이 다른 기록을 대신하지 않습니다.
 
 link validator와 metadata validator는 결과 tree 위에서 독립적으로 실행됩니다.
 따라서 은퇴한 경로를 여전히 가리키는 잔존 문서는 lifecycle 술어를 거치지 않고

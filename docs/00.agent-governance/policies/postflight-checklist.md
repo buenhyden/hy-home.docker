@@ -1,9 +1,10 @@
 ---
-title: Postflight Routing
-version: 1.0.0
-type: governance/policy
-status: active
+title: "Postflight Routing"
+version: "1.0.0"
+type: "governance/policy"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Postflight Routing

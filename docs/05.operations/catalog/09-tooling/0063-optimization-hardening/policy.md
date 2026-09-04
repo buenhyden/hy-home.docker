@@ -1,15 +1,15 @@
 ---
-title: 09-Tooling Optimization Hardening Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "09-Tooling Optimization Hardening Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0063
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0063"
 parent_ids:
-  - AD-0009
-created: 2026-05-10
-updated: 2026-08-11
+- "AD-0009"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md -->
 

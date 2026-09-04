@@ -1,15 +1,15 @@
 ---
-title: Communication Services Selection and Configuration
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Communication Services Selection and Configuration"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0010
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0010"
 parent_ids:
-  - AD-0010
-created: 2026-03-26
-updated: 2026-08-10
+- "AD-0010"
+created: "2026-03-26"
 ---
 # ADR-0010: Communication Services Selection and Configuration
 

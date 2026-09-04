@@ -1,16 +1,16 @@
 ---
 title: "Reference: Frontmatter Semantic Inventory"
-version: 1.0.0
-type: reference/audit-pack
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/audit-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: AUD-0023
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "AUD-0023"
 parent_ids: []
-created: '2026-07-05'
-updated: '2026-08-23'
-observed_at: '2026-07-05'
-generated_by: scripts/validation/check-document-metadata.py
+created: "2026-07-05"
+observed_at: "2026-07-05"
+generated_by: "scripts/validation/check-document-metadata.py"
 ---
 
 # Reference: Frontmatter Semantic Inventory

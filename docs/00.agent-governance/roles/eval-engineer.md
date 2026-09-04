@@ -1,17 +1,18 @@
 ---
-title: eval-engineer
-version: 1.0.0
-type: governance/role
-status: active
+title: "eval-engineer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: eval-engineer
-scope: qa
-tier: worker
-work_profile: adversarial-review
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "eval-engineer"
+scope: "qa"
+tier: "worker"
+work_profile: "adversarial-review"
+permission_profile: "read-only"
 skill_ids:
-- provider-model-evaluation
-- workspace-audit-revalidation
+- "provider-model-evaluation"
+- "workspace-audit-revalidation"
 ---
 
 # eval-engineer

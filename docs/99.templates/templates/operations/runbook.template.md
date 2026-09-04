@@ -1,44 +1,44 @@
 ---
-title: <title>
-version: "#.#.#"
-type: operation/runbook
-layer: operations
-status: draft
-owner: <owner>
-artifact_id: RUN-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "operation/runbook"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "operations"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-reviewed_at: YYYY-MM-DD
-next_review_at: YYYY-MM-DD
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## When to Use
 
-{{when_to_use}}
+{{WHEN_TO_USE}}
 
 ## Procedure
 
-{{procedure}}
+{{PROCEDURE}}
 
 ## Evidence
 
-{{evidence}}
+{{EVIDENCE}}
 
 ## Rollback or Recovery
 
-{{rollback_or_recovery}}
+{{ROLLBACK_OR_RECOVERY}}
 
 ## Escalation
 
-{{escalation}}
+{{ESCALATION}}
 
 ## Traceability
 
-{{subject_and_authority_links}}
+{{SUBJECT_AND_AUTHORITY_LINKS}}
 
 ## Related Documents
 
-{{related_documents}}
+{{RELATED_DOCUMENTS}}

@@ -1,9 +1,10 @@
 ---
-title: Stage 99 Document Contracts and Templates
-version: 1.0.0
-type: common/readme
-status: active
+title: "Stage 99 Document Contracts and Templates"
+version: "2.0.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Stage 99 Document Contracts and Templates
@@ -26,8 +27,8 @@ Stage 99 owns:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
-- the Research, Audit, Data, and Tombstone profiles plus a transition-only
-  Migration profile for the temporary records being retired by SPEC-0158;
+- the Research, Audit, Data, and Tombstone profiles plus the transition-only
+  Migration profile;
 - canonical path and stable-ID patterns;
 - profile-specific frontmatter and section contracts;
 - lifecycle states and allowed forward transitions;
@@ -47,7 +48,7 @@ docs/99.templates/
 ├── README.md
 ├── registry.json
 ├── contracts/
-│   ├── frontmatter.schema.json
+│   ├── document-frontmatter.schema.json
 │   └── document-profile.schema.json
 └── templates/
     ├── governance/
@@ -65,7 +66,7 @@ docs/99.templates/
 ## How to Work in This Area
 
 1. Select a registered profile and template role.
-2. Copy the registered source without changing its `profile_id` contract.
+2. Copy the registered source without changing its declared `type` contract.
 3. Allocate an ID above the persisted high-water mark.
 4. Replace placeholders and add full traceability IDs.
 5. Run the document-contract validator and the owning stage gate.
@@ -78,7 +79,7 @@ docs/99.templates/
 | :--- | :--- | :--- |
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
-| [`contracts/frontmatter.schema.json`](./contracts/frontmatter.schema.json) | machine | typed frontmatter value shape |
+| [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
 Consumers must load the Registry through
@@ -105,8 +106,13 @@ those fields express, not the fields themselves.
 
 A profile's `required_frontmatter` and `optional_frontmatter` state which keys a
 document declares; `common.frontmatter_order` states the order;
-[`contracts/frontmatter.schema.json`](./contracts/frontmatter.schema.json)
+[`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)
 states each value's shape. The reasons behind that envelope are:
+Every authored Markdown profile requires the common six fields `title`,
+`version`, `type`, `status`, `owner`, and `updated` in that order.
+Profile-specific identity, relation, supersession, and provenance fields follow
+them. String, date, version, identifier, and placeholder scalar values use
+double quotes. Provider-owned runtime projections retain their native envelope.
 
 - `type` carries the `family/kind` document role, so a reader learns a
   document's family without resolving its path.
@@ -114,9 +120,15 @@ states each value's shape. The reasons behind that envelope are:
   a field.
 - `layer` names the owning stage without its numeric prefix, and is omitted
   wherever the canonical path already states the authority.
+- `parent_ids` records the structural owner or container relation required by
+  identity composition. Broader evidence, decision, consumer, and operational
+  connections belong in the document's `Traceability` or `Related Documents`
+  links and are not duplicated into `parent_ids`.
 - `owner` is sourced from `.github/CODEOWNERS`, so accountability has one home.
-- `version` starts at `1.0.0`, so a first revision is distinguishable from an
-  unset value.
+- `version` starts at `0.1.0`; approval of the first stable contract promotes it
+  to `1.0.0`. Patch, minor, and major increments represent compatible correction,
+  compatible meaning growth, and incompatible contract change. Lifecycle status
+  is independent from this content version.
 - A profile without an identity declares no `artifact_id`, and no domain alias
   duplicates one that exists.
 - A provider-owned runtime projection is exempt from the envelope entirely,
@@ -125,8 +137,9 @@ states each value's shape. The reasons behind that envelope are:
 - Standalone package paths use four numeric digits and omit semantic prefixes.
 - A member identity is its container's identity plus that container's own
   internal sequence, so the same member number may recur under two containers.
-- Stage 90 package members are named `m####-<slug>.md`;
-  `scripts/lib/document_governance/references.py` owns that rule.
+- Stage 90 package members are named `m####-<slug>.md`; the Registry profile
+  path owns that rule and `scripts/lib/document_governance/references.py`
+  executes the resulting classification.
 - Tombstones use `identity_relation: inherited` and reuse the retired
   document's identity, so the `tombstone` space no longer issues numbers;
   `scripts/lib/document_governance/archive.py` derives the exact value.
@@ -148,6 +161,13 @@ states each value's shape. The reasons behind that envelope are:
 - A lifecycle transition is valid only when registered for the profile's
   lifecycle. Terminal states have no outgoing transition.
 
+
+The semantic flows are profile-specific: Requirements approve, ADRs accept or
+reject, Specs review and approve before activation, Plans approve before
+activation, Tasks become ready and then in progress, Incidents progress from
+detection through resolution, Postmortems and references publish, and Migration
+and Tombstone records are sealed. `registry.json` remains the exact authority
+for every entry state, edge, and terminal state.
 Full Git-history allocation validation belongs to the full document-contract
 profile. Changed validation uses the persisted Registry allocation state.
 
@@ -156,9 +176,9 @@ profile. Changed validation uses the persisted Registry allocation state.
 - Copy the source registered by `template_id`/template role.
 - Markdown template frontmatter declares the profile's `type` and contains no
   concrete target path.
-- Placeholders are literal: `<name>` for free text, `####` for a four-digit
-  number, `YYYY-MM-DD` for a date, and `"#.#.#"` for a semantic version.
-  Machine contract templates use `__UPPER_SNAKE__` tokens instead.
+- Markdown placeholders use `{{UPPER_SNAKE_CASE}}`. Template-only authoring
+  prompts may appear in HTML comments but must not survive promotion. Native
+  machine contract templates use `__UPPER_SNAKE__` tokens instead.
 - Replace every placeholder before promotion to a target document.
 - Executable OpenAPI, GraphQL, and Proto contracts belong to the owning Stage 03
   Spec package. Their deterministic filenames and media types are Registry

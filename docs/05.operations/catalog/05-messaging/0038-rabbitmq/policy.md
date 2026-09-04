@@ -1,15 +1,15 @@
 ---
-title: RabbitMQ Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "RabbitMQ Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0038
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0038"
 parent_ids:
-  - AD-0005
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0005"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/05-messaging/0038-rabbitmq/policy.md -->
 

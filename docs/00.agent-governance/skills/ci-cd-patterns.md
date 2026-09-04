@@ -1,12 +1,13 @@
 ---
-title: ci-cd-patterns
-version: 1.0.0
-type: governance/skill
-status: active
+title: "ci-cd-patterns"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: ci-cd-patterns
-scope: ops
-owner_agent: ci-cd-engineer
+updated: "2026-09-04"
+function_id: "ci-cd-patterns"
+scope: "ops"
+owner_agent: "ci-cd-engineer"
 ---
 
 # ci-cd-patterns

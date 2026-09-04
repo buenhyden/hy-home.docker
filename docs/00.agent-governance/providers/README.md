@@ -1,9 +1,10 @@
 ---
-title: Provider Adapters
-version: 1.0.0
-type: governance/provider-index
-status: active
+title: "Provider Adapters"
+version: "1.0.0"
+type: "governance/provider-index"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Provider Adapters

@@ -1,15 +1,15 @@
 ---
-title: Security Tier Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Security Tier Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0003
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0003"
 parent_ids:
-  - REQ-0003
-created: 2026-03-26
-updated: 2026-08-10
+- "REQ-0003"
+created: "2026-03-26"
 ---
 # Security Tier Architecture Description
 

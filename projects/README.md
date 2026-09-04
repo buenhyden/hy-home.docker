@@ -1,11 +1,11 @@
 ---
-title: Projects Surface
-version: 1.0.0
-type: common/repository-readme
-status: active
+title: "Projects Surface"
+version: "1.0.0"
+type: "common/repository-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-01-12'
-updated: '2026-09-02'
+updated: "2026-09-04"
+created: "2026-01-12"
 ---
 
 # projects

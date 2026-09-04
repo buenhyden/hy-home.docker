@@ -1,12 +1,13 @@
 ---
-title: infra-cross-validate
-version: 1.0.0
-type: governance/skill
-status: active
+title: "infra-cross-validate"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: infra-cross-validate
-scope: infra
-owner_agent: iac-reviewer
+updated: "2026-09-04"
+function_id: "infra-cross-validate"
+scope: "infra"
+owner_agent: "iac-reviewer"
 ---
 
 # infra-cross-validate

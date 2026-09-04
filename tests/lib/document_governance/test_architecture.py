@@ -45,13 +45,16 @@ def _document_text(
     number: str,
     *,
     artifact_id: str | None = None,
-    status: str = "active",
+    status: str | None = None,
     parent_ids: tuple[str, ...] | None = None,
     supersedes: tuple[str, ...] = (),
     superseded_by: str | None = None,
 ) -> str:
     prefix = "AD" if profile_id == "architecture-description" else "ADR"
     artifact_id = artifact_id or f"{prefix}-{number}"
+    status = status or (
+        "active" if profile_id == "architecture-description" else "accepted"
+    )
     if parent_ids is None:
         parent_ids = (
             ("REQ-0001",) if profile_id == "architecture-description" else ("AD-0001",)
@@ -65,15 +68,16 @@ def _document_text(
     superseded_by_value = "null" if superseded_by is None else superseded_by
     return f"""---
 title: Fixture {artifact_id}
+version: 1.0.0
 type: {"sdlc/architecture-description" if profile_id == "architecture-description" else "sdlc/architecture-decision"}
-layer: architecture
 status: {status}
 owner: "@buenhyden"
+updated: 2026-08-22
+layer: architecture
 artifact_id: {artifact_id}
 parent_ids:
 {parent_lines}
 created: 2026-08-22
-updated: 2026-08-22
 {supersedes_lines}
 superseded_by: {superseded_by_value}
 ---
@@ -387,18 +391,18 @@ class ArchitectureDocumentTests(unittest.TestCase):
                     {item.code for item in findings},
                 )
 
-        active_predecessor = dataclasses.replace(predecessor, status="active")
-        active_successor = architecture.ArchitectureDocument(
+        accepted_predecessor = dataclasses.replace(predecessor, status="accepted")
+        accepted_successor = architecture.ArchitectureDocument(
             pathlib.PurePosixPath("docs/02.architecture/decisions/0029-successor.md"),
             "ADR-0029",
             "adr",
-            "active",
+            "accepted",
             ("AD-0001",),
             ("ADR-0027",),
             None,
         )
         findings = architecture.validate_supersession_graph(
-            (active_predecessor, active_successor)
+            (accepted_predecessor, accepted_successor)
         )
         self.assertIn(
             "supersession-predecessor-not-superseded",
@@ -430,7 +434,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
                 pathlib.PurePosixPath("docs/02.architecture/decisions/0029-current.md"),
                 "ADR-0029",
                 "adr",
-                "active",
+                "accepted",
                 ("AD-0001",),
                 ("ADR-0028",),
                 None,
@@ -501,7 +505,7 @@ class ArchitectureDocumentTests(unittest.TestCase):
             pathlib.PurePosixPath("docs/02.architecture/decisions/0029-successor.md"),
             "ADR-0029",
             "adr",
-            "active",
+            "accepted",
             ("AD-0001",),
             ("ADR-0027",),
             None,

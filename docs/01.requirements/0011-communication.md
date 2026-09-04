@@ -1,14 +1,14 @@
 ---
-title: Communication Tier (10-communication) Product Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Communication Tier (10-communication) Product Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0011
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0011"
 parent_ids: []
-created: 2026-03-26
-updated: 2026-08-13
+created: "2026-03-26"
 ---
 # Communication Tier (10-communication) Product Requirements
 

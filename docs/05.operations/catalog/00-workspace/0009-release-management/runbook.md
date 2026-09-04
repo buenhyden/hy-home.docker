@@ -1,15 +1,15 @@
 ---
-title: Release Management Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "Release Management Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0009
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0009"
 parent_ids:
-  - SPEC-0097
-created: 2026-06-04
-updated: 2026-08-14
+- "SPEC-0097"
+created: "2026-06-04"
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md -->
 

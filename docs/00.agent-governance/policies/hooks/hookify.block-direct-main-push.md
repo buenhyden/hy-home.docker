@@ -1,14 +1,15 @@
 ---
 title: "BLOCKED: direct push to main"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-direct-main-push
+updated: "2026-09-04"
+action: "block"
 enabled: true
-event: bash
-pattern: git\s+push\s+\w[\w.-]*\s+(HEAD:)?main\s*$
-action: block
+event: "bash"
+name: "block-direct-main-push"
+pattern: "git\\s+push\\s+\\w[\\w.-]*\\s+(HEAD:)?main\\s*$"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

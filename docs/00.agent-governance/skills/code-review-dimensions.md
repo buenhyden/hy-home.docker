@@ -1,12 +1,13 @@
 ---
-title: code-review-dimensions
-version: 1.0.0
-type: governance/skill
-status: active
+title: "code-review-dimensions"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: code-review-dimensions
-scope: common
-owner_agent: code-reviewer
+updated: "2026-09-04"
+function_id: "code-review-dimensions"
+scope: "common"
+owner_agent: "code-reviewer"
 ---
 
 # code-review-dimensions

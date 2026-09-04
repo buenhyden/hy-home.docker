@@ -1,12 +1,13 @@
 ---
-title: workspace-audit-revalidation
-version: 1.0.0
-type: governance/skill
-status: active
+title: "workspace-audit-revalidation"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: workspace-audit-revalidation
-scope: agentic
-owner_agent: eval-engineer
+updated: "2026-09-04"
+function_id: "workspace-audit-revalidation"
+scope: "agentic"
+owner_agent: "eval-engineer"
 ---
 
 # workspace-audit-revalidation

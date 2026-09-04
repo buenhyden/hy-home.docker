@@ -1,11 +1,11 @@
 ---
-title: Data Tier (04-data)
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Data Tier (04-data)"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-12'
-updated: '2026-07-28'
+updated: "2026-09-04"
+created: "2025-11-12"
 ---
 
 # Data Tier (04-data)

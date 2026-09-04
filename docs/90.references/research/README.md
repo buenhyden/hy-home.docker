@@ -1,12 +1,12 @@
 ---
-title: Research Packages
-version: 1.0.0
-type: reference/category-readme
-layer: references
-status: active
+title: "Research Packages"
+version: "1.0.0"
+type: "reference/category-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-07-02'
-updated: '2026-09-02'
+updated: "2026-09-04"
+layer: "references"
+created: "2026-07-02"
 ---
 
 # Research Packages
@@ -26,6 +26,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 | [RES-0080](../../98.archive/superseded/90.references/research/0080-roadmap-v1/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
 | [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |
 | [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics | active |
+| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment | published |
 
 ## Authoring
 

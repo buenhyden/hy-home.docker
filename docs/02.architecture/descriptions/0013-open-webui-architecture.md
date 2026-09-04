@@ -1,15 +1,15 @@
 ---
-title: Open WebUI Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "Open WebUI Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0013
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0013"
 parent_ids:
-  - REQ-0013
-created: 2026-03-27
-updated: 2026-09-01
+- "REQ-0013"
+created: "2026-03-27"
 ---
 # Open WebUI Architecture Description
 

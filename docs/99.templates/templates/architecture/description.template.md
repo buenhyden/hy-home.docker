@@ -1,50 +1,53 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/architecture-description
-layer: architecture
-status: draft
-owner: <owner>
-artifact_id: AD-####
-parent_ids: [REQ-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/architecture-description"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "architecture"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Context and Stakeholders
 
-{{context_and_stakeholders}}
+{{CONTEXT_AND_STAKEHOLDERS}}
 
 ## System Boundaries
 
-{{system_boundaries}}
+{{SYSTEM_BOUNDARIES}}
 
 ## Components
 
-{{components}}
+{{COMPONENTS}}
 
 ## Data Flow
 
-{{data_flow}}
+{{DATA_FLOW}}
 
 ## Deployment View
 
-{{deployment_view}}
+{{DEPLOYMENT_VIEW}}
 
 ## Quality Attributes
 
-{{quality_attributes}}
+{{QUALITY_ATTRIBUTES}}
 
 ## Traceability
 
-{{requirements_decisions_and_specs}}
+{{REQUIREMENTS_DECISIONS_AND_SPECS}}
 
 ## Risks
 
-{{risks}}
+{{RISKS}}
 
 ## Evolution
 
-{{evolution}}
+{{EVOLUTION}}

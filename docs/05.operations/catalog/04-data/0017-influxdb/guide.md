@@ -1,15 +1,15 @@
 ---
-title: InfluxDB Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "InfluxDB Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0017
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0017"
 parent_ids:
-  - POL-0017
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0017"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0017-influxdb/guide.md -->
 

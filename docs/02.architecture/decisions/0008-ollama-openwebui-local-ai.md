@@ -1,15 +1,15 @@
 ---
-title: Ollama and Open WebUI for Local AI Infrastructure
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Ollama and Open WebUI for Local AI Infrastructure"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0008
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0008"
 parent_ids:
-  - AD-0008
-created: 2026-03-26
-updated: 2026-08-10
+- "AD-0008"
+created: "2026-03-26"
 ---
 # ADR-0008: Ollama and Open WebUI for Local AI Infrastructure
 

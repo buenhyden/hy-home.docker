@@ -1,15 +1,15 @@
 ---
-title: 02-Auth Optimization Hardening Architecture Description
-version: 1.0.0
-type: sdlc/architecture-description
-layer: architecture
-status: active
+title: "02-Auth Optimization Hardening Architecture Description"
+version: "1.0.0"
+type: "sdlc/architecture-description"
+status: "active"
 owner: "@buenhyden"
-artifact_id: AD-0014
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "AD-0014"
 parent_ids:
-  - REQ-0002
-created: 2026-03-28
-updated: 2026-09-01
+- "REQ-0002"
+created: "2026-03-28"
 ---
 # 02-Auth Optimization Hardening Architecture Description
 

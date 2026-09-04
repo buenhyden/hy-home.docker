@@ -54,30 +54,30 @@ class CurrentBodyContractTests(unittest.TestCase):
         )
 
     def test_identical_body_deficit_multiset_is_preserved(self) -> None:
-        body = REQUIREMENT_TARGET_BODY + "\n{{existing_token}}\n"
+        body = REQUIREMENT_TARGET_BODY + "\n{{EXISTING_TOKEN}}\n"
         self.assertEqual([], self.introduced(body + "\nEditorial text.\n", body))
 
     def test_additional_body_token_is_blocked_without_value_leakage(self) -> None:
-        base = REQUIREMENT_TARGET_BODY + "\n{{existing_token}}\n"
-        findings = self.introduced(base + "\n{{additional_token}}\n", base)
+        base = REQUIREMENT_TARGET_BODY + "\n{{EXISTING_TOKEN}}\n"
+        findings = self.introduced(base + "\n{{ADDITIONAL_TOKEN}}\n", base)
         self.assertEqual(
             ["template-body-token-in-target"], [item.code for item in findings]
         )
         rendered = "\n".join(item.message for item in findings)
-        self.assertNotIn("existing_token", rendered)
-        self.assertNotIn("additional_token", rendered)
+        self.assertNotIn("EXISTING_TOKEN", rendered)
+        self.assertNotIn("ADDITIONAL_TOKEN", rendered)
 
     def test_replaced_body_token_is_a_new_private_deficit(self) -> None:
         findings = self.introduced(
-            REQUIREMENT_TARGET_BODY + "\n{{replacement_token}}\n",
-            REQUIREMENT_TARGET_BODY + "\n{{original_token}}\n",
+            REQUIREMENT_TARGET_BODY + "\n{{REPLACEMENT_TOKEN}}\n",
+            REQUIREMENT_TARGET_BODY + "\n{{ORIGINAL_TOKEN}}\n",
         )
         self.assertEqual(
             ["template-body-token-in-target"], [item.code for item in findings]
         )
         rendered = "\n".join(item.message for item in findings)
-        self.assertNotIn("original_token", rendered)
-        self.assertNotIn("replacement_token", rendered)
+        self.assertNotIn("ORIGINAL_TOKEN", rendered)
+        self.assertNotIn("REPLACEMENT_TOKEN", rendered)
 
     def test_new_instruction_is_blocked_without_literal_echo(self) -> None:
         findings = self.introduced(
@@ -91,7 +91,7 @@ class CurrentBodyContractTests(unittest.TestCase):
 
     def test_new_file_body_deficit_is_blocked(self) -> None:
         findings = self.introduced(
-            REQUIREMENT_TARGET_BODY + "\n{{new_file_token}}\n",
+            REQUIREMENT_TARGET_BODY + "\n{{NEW_FILE_TOKEN}}\n",
             None,
         )
         self.assertEqual(
@@ -135,13 +135,13 @@ class CurrentBodyContractTests(unittest.TestCase):
             "title": "Common Optimizations Template Exceptions",
             "version": "1.0.0",
             "type": "operation/policy",
-            "layer": "operations",
             "status": "active",
             "owner": "@buenhyden",
+            "updated": "2026-08-01",
+            "layer": "operations",
             "artifact_id": "POL-0001",
             "parent_ids": [],
             "created": "2026-08-01",
-            "updated": "2026-08-01",
         }
 
         def findings(extra: dict[str, object]) -> list[object]:
@@ -168,10 +168,10 @@ class CurrentBodyContractTests(unittest.TestCase):
 
     def test_commonmark_code_hides_template_residue(self) -> None:
         cases = (
-            "```markdown\n> Rules:\n{{fenced_token}}\n```\n",
-            "~~~markdown\n> Rules:\n{{fenced_token}}\n~~~\n",
-            "```markdown\n> Rules:\n{{fenced_token}}\n",
-            "Document `> Rules:` and `{{inline_token}}`.\n",
+            "```markdown\n> Rules:\n{{FENCED_TOKEN}}\n```\n",
+            "~~~markdown\n> Rules:\n{{FENCED_TOKEN}}\n~~~\n",
+            "```markdown\n> Rules:\n{{FENCED_TOKEN}}\n",
+            "Document `> Rules:` and `{{INLINE_TOKEN}}`.\n",
         )
         for example in cases:
             with self.subTest(example=example.splitlines()[0]):
@@ -186,9 +186,9 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_residue_outside_commonmark_code_is_blocked(self) -> None:
         body = (
             REQUIREMENT_TARGET_BODY
-            + "\n```markdown\n{{fenced_token}}\n```\n"
-            + "Document `{{inline_token}}`.\n"
-            + "{{outside_token}}\n"
+            + "\n```markdown\n{{FENCED_TOKEN}}\n```\n"
+            + "Document `{{INLINE_TOKEN}}`.\n"
+            + "{{OUTSIDE_TOKEN}}\n"
         )
         self.assertEqual(
             ["template-body-token-in-target"],

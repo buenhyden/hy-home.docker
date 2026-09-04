@@ -1,15 +1,15 @@
 ---
-title: MinIO Object Storage Health Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "MinIO Object Storage Health Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0023
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0023"
 parent_ids:
-  - GDE-0023
-created: 2026-05-17
-updated: 2026-08-11
+- "GDE-0023"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0023-minio/runbook.md -->
 

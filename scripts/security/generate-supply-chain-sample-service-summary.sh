@@ -44,17 +44,17 @@ for tool in registry["tools"]:
 lines = [
     "---",
     'title: "Reference: Sample-service Local Supply-chain Verification"',
-    "version: 1.0.0",
-    "type: reference/data-pack",
-    "layer: references",
-    "status: active",
+    'version: "1.0.0"',
+    'type: "reference/data-pack"',
+    'status: "published"',
     "owner: \"@buenhyden\"",
+    'updated: "2026-09-04"',
+    'layer: "references"',
     "artifact_id: DATA-0079",
     "parent_ids: []",
-    "created: 2026-07-19",
-    "updated: 2026-08-23",
-    "observed_at: 2026-08-23",
-    "generated_by: scripts/security/generate-supply-chain-sample-service-summary.sh",
+    'created: "2026-07-19"',
+    'observed_at: "2026-08-23"',
+    'generated_by: "scripts/security/generate-supply-chain-sample-service-summary.sh"',
     "---",
     "",
     "# Reference: Sample-service Local Supply-chain Verification",
@@ -163,7 +163,7 @@ lines = [
     "## Refresh",
     "",
     "- **Owner**: Security Auditor / CI-CD Engineer.",
-    "- **Refresh**: run `bash scripts/security/generate-supply-chain-sample-service-summary.sh`",
+    "- **Refresh**: run `bash scripts/security/generate-supply-chain-sample-service-summary.sh --write`",
     "  after changing the fixture contract, policy, tool registry, or wrapper.",
     "- **Freshness**: run `bash scripts/security/generate-supply-chain-sample-service-summary.sh --check`.",
     "",
@@ -180,7 +180,7 @@ PY
 if [[ "$MODE" == "--check" ]]; then
   if [[ ! -f "$OUTPUT" || "$(<"$OUTPUT")" != "$generated" ]]; then
     printf 'FAIL: stale generated supply-chain summary: %s\n' "$OUTPUT" >&2
-    printf 'Run: bash scripts/security/generate-supply-chain-sample-service-summary.sh\n' >&2
+    printf 'Run: bash scripts/security/generate-supply-chain-sample-service-summary.sh --write\n' >&2
     exit 1
   fi
   printf 'PASS: generated supply-chain summary is fresh: %s\n' "$OUTPUT"

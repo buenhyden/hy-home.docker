@@ -1,12 +1,13 @@
 ---
-title: requirements-to-design-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "requirements-to-design-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: requirements-to-design-agent
-scope: architecture
-owner_agent: rules-engineer
+updated: "2026-09-04"
+function_id: "requirements-to-design-agent"
+scope: "architecture"
+owner_agent: "rules-engineer"
 ---
 
 # requirements-to-design-agent

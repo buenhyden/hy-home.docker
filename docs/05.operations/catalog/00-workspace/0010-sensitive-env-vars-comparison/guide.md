@@ -1,14 +1,14 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0010
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0010"
 parent_ids: []
-created: 2026-06-04
-updated: 2026-08-14
+created: "2026-06-04"
 ---
 
 <!-- Target: docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md -->

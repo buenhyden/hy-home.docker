@@ -1,10 +1,11 @@
 ---
-title: Codex Provider Adapter
-version: 1.0.0
-type: governance/provider
-status: active
+title: "Codex Provider Adapter"
+version: "1.0.0"
+type: "governance/provider"
+status: "active"
 owner: "@buenhyden"
-runtime: codex
+updated: "2026-09-04"
+runtime: "codex"
 ---
 
 # Codex Provider Adapter

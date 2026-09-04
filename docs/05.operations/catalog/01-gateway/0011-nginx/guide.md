@@ -1,15 +1,15 @@
 ---
-title: 01-Gateway Nginx Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "01-Gateway Nginx Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0011
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0011"
 parent_ids:
-  - POL-0011
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0011"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/01-gateway/0011-nginx/guide.md -->
 

@@ -1,15 +1,15 @@
 ---
-title: RedisInsight Recovery Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "RedisInsight Recovery Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0076
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0076"
 parent_ids:
-  - GDE-0076
-created: 2026-05-17
-updated: 2026-08-11
+- "GDE-0076"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md -->
 

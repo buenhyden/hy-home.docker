@@ -1,20 +1,21 @@
 ---
 title: "WARNING: Korean text in governance documentation"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-korean-in-governance
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "warn"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: docs/00\.agent-governance/.*\.md$
-  - field: new_text
-    operator: regex_match
-    pattern: '[\uac00-\ud7a3\u3131-\u318e]'
-action: warn
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "docs/00\\.agent-governance/.*\\.md$"
+- field: "new_text"
+  operator: "regex_match"
+  pattern: "[\\uac00-\\ud7a3\\u3131-\\u318e]"
+enabled: true
+event: "file"
+name: "warn-korean-in-governance"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

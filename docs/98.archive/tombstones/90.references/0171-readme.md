@@ -1,14 +1,15 @@
 ---
 title: "Reference: Document Contract Audit References Tombstone"
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-AUD-0001
-parent_ids: [SPEC-0158]
-created: 2026-09-01
-updated: 2026-09-01
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-AUD-0001"
+parent_ids:
+- "SPEC-0158"
+created: "2026-09-01"
 ---
 
 # Reference: Document Contract Audit References Tombstone

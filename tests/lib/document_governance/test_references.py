@@ -180,6 +180,37 @@ class ReferencePackageTests(unittest.TestCase):
             any(item.overrides_normative_stage for item in corpus.packages)
         )
 
+    def test_generic_research_member_uses_registry_metadata_authority(self) -> None:
+        from scripts.lib.document_governance.registry import classify_path, load_registry
+
+        member = pathlib.PurePosixPath(
+            "docs/90.references/research/"
+            "0085-workspace-engineering-main-baseline-assessment/"
+            "m0001-request-scope.md"
+        )
+        self.assertNotIn("unregistered-reference-file", self.finding_codes(ROOT))
+        self.assertNotIn(
+            member.as_posix(), self.references.delegated_member_paths(ROOT)
+        )
+        self.assertEqual(
+            "research-member",
+            classify_path(member, load_registry()),
+        )
+
+        context, root = self._fixture()
+        with context:
+            registry_path = root / "docs/99.templates/registry.json"
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            profile = next(
+                item for item in registry["profiles"] if item["id"] == "research-member"
+            )
+            profile["path_pattern"] = (
+                "docs/90.references/research/{number:4}-{slug}/"
+                "x{member_number:4}-{slug}.md"
+            )
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            self.assertIn("unregistered-reference-file", self.finding_codes(root))
+
     def test_dated_or_prefixed_package_is_rejected(self) -> None:
         for invalid in ("2026-08-08-dated", "res-0099-prefixed", "aud-0099-prefixed"):
             with self.subTest(invalid=invalid):
@@ -250,7 +281,7 @@ class ReferencePackageTests(unittest.TestCase):
             )
             package.write_text(
                 package.read_text(encoding="utf-8").replace(
-                    "artifact_id: AUD-", "artifact_id: RES-", 1
+                    'artifact_id: "AUD-', 'artifact_id: "RES-', 1
                 ),
                 encoding="utf-8",
             )

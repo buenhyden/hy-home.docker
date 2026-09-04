@@ -1,36 +1,36 @@
 ---
-title: <title>
-version: "#.#.#"
-type: operation/domain-readme
-layer: operations
-status: draft
-owner: <owner>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "operation/domain-readme"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Overview
 
-{{domain_overview}}
+{{DOMAIN_OVERVIEW}}
 
 ## Audience
 
-{{audience}}
+{{AUDIENCE}}
 
 ## Scope
 
-{{owned_subjects_and_boundaries}}
+{{OWNED_SUBJECTS_AND_BOUNDARIES}}
 
 ## Structure
 
-{{subject_directory_table}}
+{{SUBJECT_DIRECTORY_TABLE}}
 
 ## How to Work in This Area
 
-{{subject_authoring_and_validation_steps}}
+{{SUBJECT_AUTHORING_AND_VALIDATION_STEPS}}
 
 ## Related Documents
 
-{{catalog_and_authority_links}}
+{{CATALOG_AND_AUTHORITY_LINKS}}

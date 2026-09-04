@@ -1,14 +1,15 @@
 ---
 title: "WARNING: Docker infrastructure completion routing"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-docker-infra-stop
+updated: "2026-09-04"
+action: "warn"
 enabled: true
-event: stop
-pattern: .*
-action: warn
+event: "stop"
+name: "warn-docker-infra-stop"
+pattern: ".*"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

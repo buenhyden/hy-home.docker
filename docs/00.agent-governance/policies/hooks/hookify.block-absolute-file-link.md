@@ -1,20 +1,21 @@
 ---
 title: "BLOCKED: absolute file:// link"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-absolute-file-link
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "block"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: \.md$
-  - field: new_text
-    operator: regex_match
-    pattern: \]\(file://|href=["']file://
-action: block
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "\\.md$"
+- field: "new_text"
+  operator: "regex_match"
+  pattern: "\\]\\(file://|href=[\"']file://"
+enabled: true
+event: "file"
+name: "block-absolute-file-link"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

@@ -1,14 +1,15 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: warn-pre-commit-manual
+updated: "2026-09-04"
+action: "warn"
 enabled: true
-event: bash
-pattern: pre-commit\s+run
-action: warn
+event: "bash"
+name: "warn-pre-commit-manual"
+pattern: "pre-commit\\s+run"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

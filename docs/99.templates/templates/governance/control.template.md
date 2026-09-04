@@ -1,31 +1,32 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/policy
-status: draft
-owner: <owner>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/policy"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{control_purpose}}
+{{CONTROL_PURPOSE}}
 
 ## Scope
 
-{{surfaces_and_actors_under_control}}
+{{SURFACES_AND_ACTORS_UNDER_CONTROL}}
 
 ## Rules
 
-{{normative_rules}}
+{{NORMATIVE_RULES}}
 
 ## Enforcement
 
-{{gates_scripts_and_review_points}}
+{{GATES_SCRIPTS_AND_REVIEW_POINTS}}
 
 ## Related Documents
 
-{{bootstrap_and_owning_policy_links}}
+{{BOOTSTRAP_AND_OWNING_POLICY_LINKS}}

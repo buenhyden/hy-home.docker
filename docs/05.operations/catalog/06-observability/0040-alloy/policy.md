@@ -1,15 +1,15 @@
 ---
-title: Alloy Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Alloy Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0040
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0040"
 parent_ids:
-  - AD-0006
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0006"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0040-alloy/policy.md -->
 

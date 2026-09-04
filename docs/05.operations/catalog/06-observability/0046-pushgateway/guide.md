@@ -1,15 +1,15 @@
 ---
-title: Pushgateway Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Pushgateway Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0046
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0046"
 parent_ids:
-  - POL-0046
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0046"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0046-pushgateway/guide.md -->
 

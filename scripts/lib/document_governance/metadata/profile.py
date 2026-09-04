@@ -686,7 +686,7 @@ APPROVED_MIGRATION_PATHS = frozenset(
 LEGACY_EXCEPTION_CODES = frozenset(
     {"missing-required-key", "replacement-free-supersession", "stale-active"}
 )
-MARKDOWN_BODY_TOKEN = re.compile(r"{{[a-z][a-z0-9_]*}}")
+MARKDOWN_BODY_TOKEN = re.compile(r"{{[A-Z][A-Z0-9_]*}}")
 MACHINE_TEMPLATE_TOKEN = re.compile(r"__[A-Z][A-Z0-9_]*__")
 TARGET_TEMPLATE_LITERALS = ("<!-- Target:", "> Rules:", "## Template Usage")
 MACHINE_TEMPLATE_SUFFIXES = (
@@ -1608,7 +1608,7 @@ def _template_angle_tokens(profiles: dict[str, object]) -> set[str]:
     return {
         token
         for value in _template_placeholder_values(profiles).values()
-        for token in re.findall(r"<[^<>]+>", value)
+        for token in re.findall(r"{{[A-Z][A-Z0-9_]*}}", value)
     }
 
 
@@ -2265,6 +2265,16 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             if isinstance(lifecycle_id, str) and lifecycle_id in registry.lifecycles
             else []
         )
+        initial_status = (
+            registry.lifecycle_initial_statuses.get(lifecycle_id)
+            if isinstance(lifecycle_id, str)
+            else None
+        )
+        terminal_statuses = (
+            list(registry.lifecycle_terminal_statuses.get(lifecycle_id, ()))
+            if isinstance(lifecycle_id, str)
+            else []
+        )
         traceability = profile.get("traceability")
         parents = (
             list(traceability.get("allowed_parent_profiles", ()))
@@ -2285,6 +2295,8 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             "optional": list(profile.get("optional_frontmatter", ())),
             "forbidden": [],
             "allowed_statuses": statuses,
+            "initial_status": initial_status,
+            "terminal_statuses": terminal_statuses,
             "allowed_parent_types": parents,
             "allow_empty_parents": (
                 profile_id in {"research", "audit", "data"}
@@ -2306,7 +2318,14 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
     adapted["profiles"] = translated
     projected_roles: dict[str, object] = {}
     for role_id, role in registry.template_roles.items():
-        profile_id = role.get("profile_id")
+        profile_ids = role.get("profiles")
+        profile_id = (
+            profile_ids[0]
+            if isinstance(profile_ids, Sequence)
+            and not isinstance(profile_ids, (str, bytes, bytearray))
+            and profile_ids
+            else None
+        )
         profile = registry.profiles.get(str(profile_id))
         path_pattern = (
             profile.get("path_pattern") if isinstance(profile, Mapping) else None

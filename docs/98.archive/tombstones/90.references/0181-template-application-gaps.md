@@ -1,14 +1,15 @@
 ---
-title: Template Application Gaps Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Template Application Gaps Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-AUD-0011
-parent_ids: [SPEC-0158]
-created: 2026-09-01
-updated: 2026-09-01
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-AUD-0011"
+parent_ids:
+- "SPEC-0158"
+created: "2026-09-01"
 ---
 
 # Template Application Gaps Tombstone

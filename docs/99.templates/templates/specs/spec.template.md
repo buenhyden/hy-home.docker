@@ -1,54 +1,57 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/spec
-layer: specs
-status: draft
-owner: <owner>
-artifact_id: SPEC-####
-parent_ids: [REQ-####, AD-####, ADR-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/spec"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "specs"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Overview
 
-{{overview}}
+{{OVERVIEW}}
 
 ## Boundaries and Inputs
 
-{{boundaries_and_inputs}}
+{{BOUNDARIES_AND_INPUTS}}
 
 ## Behavior Contract
 
-{{observable_behavior}}
+{{OBSERVABLE_BEHAVIOR}}
 
 ## Technical Approach
 
-{{change_scoped_design}}
+{{CHANGE_SCOPED_DESIGN}}
 
 ## Interfaces and Data
 
-{{interfaces_and_data}}
+{{INTERFACES_AND_DATA}}
 
 ## Failure Modes and Guardrails
 
-{{failure_modes_and_guardrails}}
+{{FAILURE_MODES_AND_GUARDRAILS}}
 
 ## Acceptance Contract
 
-{{acceptance_contract}}
+{{ACCEPTANCE_CONTRACT}}
 
 ## Traceability
 
-{{full_requirement_and_architecture_ids}}
+{{FULL_REQUIREMENT_AND_ARCHITECTURE_IDS}}
 
 ## Open Questions
 
-{{open_questions}}
+{{OPEN_QUESTIONS}}
 
 ## Operational Impact
 
-{{operational_impact}}
+{{OPERATIONAL_IMPACT}}

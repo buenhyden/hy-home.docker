@@ -3,10 +3,25 @@
   "common": {
     "allowed_statuses": [
       "draft",
+      "review",
+      "approved",
       "active",
+      "proposed",
+      "accepted",
+      "rejected",
+      "ready",
+      "in-progress",
+      "blocked",
+      "detected",
+      "investigating",
+      "mitigated",
+      "resolved",
+      "published",
       "completed",
+      "cancelled",
       "superseded",
-      "archived"
+      "retired",
+      "sealed"
     ],
     "archive_source_prefixes": [
       "docs/",
@@ -16,15 +31,16 @@
       "title",
       "version",
       "type",
-      "layer",
       "status",
       "owner",
+      "updated",
+      "layer",
       "artifact_id",
       "parent_ids",
-      "created",
-      "updated",
-      "observed_at",
       "supersedes",
+      "superseded_by",
+      "created",
+      "observed_at",
       "completed_at",
       "reviewed_at",
       "next_review_at",
@@ -60,30 +76,33 @@
       "docs/03.specs/0123-agentic-engineering-audit-remediation/spec.md": "Cross-cutting umbrella spec approved without a manufactured PRD, Architecture Description, or ADR parent."
     },
     "template_placeholders": {
-      "agent-id": "<agent-id>",
-      "description": "<description>",
-      "event": "<event>",
-      "function-id": "<function-id>",
-      "hook-slug": "<hook-slug>",
-      "layer": "<layer>",
-      "match-pattern": "<match-pattern>",
-      "model": "<model>",
-      "model_reasoning_effort": "<model_reasoning_effort>",
-      "name": "<name>",
-      "owner-agent": "<owner-agent>",
-      "owner": "<owner>",
-      "permission-profile": "<permission-profile>",
-      "runtime": "<runtime>",
-      "scope": "<scope>",
-      "skill-id": "<skill-id>",
-      "tier": "<tier>",
-      "title": "<title>",
-      "work-profile": "<work-profile>",
-      "year": "<year>"
+      "agent_id": "{{AGENT_ID}}",
+      "description": "{{DESCRIPTION}}",
+      "event": "{{EVENT}}",
+      "function_id": "{{FUNCTION_ID}}",
+      "hook_slug": "{{HOOK_SLUG}}",
+      "layer": "{{LAYER}}",
+      "match_pattern": "{{MATCH_PATTERN}}",
+      "model": "{{MODEL}}",
+      "model_reasoning_effort": "{{MODEL_REASONING_EFFORT}}",
+      "name": "{{NAME}}",
+      "owner_agent": "{{OWNER_AGENT}}",
+      "owner": "{{OWNER}}",
+      "parent_id": "{{PARENT_ID}}",
+      "permission_profile": "{{PERMISSION_PROFILE}}",
+      "runtime": "{{RUNTIME}}",
+      "scope": "{{SCOPE}}",
+      "skill_id": "{{SKILL_ID}}",
+      "tier": "{{TIER}}",
+      "title": "{{TITLE}}",
+      "work_profile": "{{WORK_PROFILE}}",
+      "year": "{{YEAR}}",
+      "updated": "{{UPDATED}}"
     },
     "template_required_placeholders": [
       "title",
-      "owner"
+      "owner",
+      "updated"
     ],
     "terminal_statuses": [
       "superseded",
@@ -121,7 +140,7 @@
   },
   "profiles": [
     {
-      "profile_id": "requirements-package",
+      "id": "requirements-package",
       "type": "sdlc/requirement",
       "frontmatter_policy": "required",
       "path_pattern": "docs/01.requirements/{number:4}-{slug}.md",
@@ -130,19 +149,19 @@
       "template_id": "sdlc/requirement",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "superseded_by",
-        "supersedes"
+        "supersedes",
+        "superseded_by"
       ],
       "required_sections": [
         "Problem and Goals",
@@ -159,7 +178,7 @@
         "Risks",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "requirement",
       "traceability": {
         "allowed_parent_profiles": [],
         "internal_id_spaces": [
@@ -171,7 +190,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "architecture-description",
+      "id": "architecture-description",
       "type": "sdlc/architecture-description",
       "frontmatter_policy": "required",
       "path_pattern": "docs/02.architecture/descriptions/{number:4}-{slug}.md",
@@ -180,19 +199,19 @@
       "template_id": "sdlc/architecture-description",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "superseded_by",
-        "supersedes"
+        "supersedes",
+        "superseded_by"
       ],
       "required_sections": [
         "Context and Stakeholders",
@@ -208,7 +227,7 @@
         "Evolution",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "architecture-description",
       "traceability": {
         "allowed_parent_profiles": [
           "requirements-package"
@@ -217,7 +236,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "adr",
+      "id": "adr",
       "type": "sdlc/architecture-decision",
       "frontmatter_policy": "required",
       "path_pattern": "docs/02.architecture/decisions/{number:4}-{slug}.md",
@@ -226,19 +245,19 @@
       "template_id": "sdlc/architecture-decision",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "superseded_by",
-        "supersedes"
+        "supersedes",
+        "superseded_by"
       ],
       "required_sections": [
         "Context",
@@ -253,7 +272,7 @@
         "Follow-up",
         "Related Documents"
       ],
-      "lifecycle_id": "adr",
+      "lifecycle_id": "architecture-decision",
       "traceability": {
         "allowed_parent_profiles": [
           "requirements-package",
@@ -267,7 +286,7 @@
       ]
     },
     {
-      "profile_id": "spec",
+      "id": "spec",
       "type": "sdlc/spec",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{number:4}-{slug}/spec.md",
@@ -276,21 +295,21 @@
       "template_id": "sdlc/spec",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at"
       ],
       "required_sections": [
         "Overview",
@@ -307,7 +326,7 @@
         "Operational Impact",
         "Related Documents"
       ],
-      "lifecycle_id": "spec-package",
+      "lifecycle_id": "spec",
       "traceability": {
         "allowed_parent_profiles": [
           "requirements-package",
@@ -319,7 +338,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "data-model-contract",
+      "id": "data-model-contract",
       "type": "sdlc/data-model",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/data-model.md",
@@ -328,14 +347,14 @@
       "template_id": "sdlc/data-model",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
-        "parent_ids",
-        "created",
         "updated",
-        "version"
+        "layer",
+        "parent_ids",
+        "created"
       ],
       "optional_frontmatter": [],
       "required_sections": [
@@ -350,7 +369,7 @@
       "optional_sections": [
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "contract",
       "traceability": {
         "allowed_parent_profiles": [
           "spec"
@@ -359,7 +378,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "openapi-contract",
+      "id": "openapi-contract",
       "type": "sdlc/openapi",
       "frontmatter_policy": "absent",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/openapi.yaml",
@@ -380,7 +399,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "graphql-contract",
+      "id": "graphql-contract",
       "type": "sdlc/graphql",
       "frontmatter_policy": "absent",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/schema.graphql",
@@ -401,7 +420,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "proto-contract",
+      "id": "proto-contract",
       "type": "sdlc/proto",
       "frontmatter_policy": "absent",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/service.proto",
@@ -422,7 +441,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "plan",
+      "id": "plan",
       "type": "sdlc/plan",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/plan.md",
@@ -431,15 +450,15 @@
       "template_id": "sdlc/plan",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
         "completed_at"
@@ -455,7 +474,7 @@
         "Rulings",
         "Related Documents"
       ],
-      "lifecycle_id": "execution",
+      "lifecycle_id": "plan",
       "traceability": {
         "allowed_parent_profiles": [
           "spec"
@@ -468,7 +487,7 @@
       ]
     },
     {
-      "profile_id": "task",
+      "id": "task",
       "type": "sdlc/task",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
@@ -477,15 +496,15 @@
       "template_id": "sdlc/task",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
         "completed_at"
@@ -503,7 +522,7 @@
         "Deferred Items",
         "Related Documents"
       ],
-      "lifecycle_id": "execution",
+      "lifecycle_id": "task",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -518,7 +537,7 @@
       ]
     },
     {
-      "profile_id": "operations-domain-readme",
+      "id": "operations-domain-readme",
       "type": "operation/domain-readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/catalog/{domain}/README.md",
@@ -526,17 +545,17 @@
       "identity_relation": "none",
       "template_id": "operation/domain-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [
         "Overview",
@@ -553,7 +572,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "guide",
+      "id": "guide",
       "type": "operation/guide",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/guide.md",
@@ -562,21 +581,21 @@
       "template_id": "operation/guide",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at"
       ],
       "required_sections": [
         "Usage",
@@ -600,7 +619,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "policy",
+      "id": "policy",
       "type": "operation/policy",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/policy.md",
@@ -609,21 +628,21 @@
       "template_id": "operation/policy",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at"
       ],
       "required_sections": [
         "Overview",
@@ -638,7 +657,7 @@
       "optional_sections": [
         "Definitions"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
           "requirements-package",
@@ -650,7 +669,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "runbook",
+      "id": "runbook",
       "type": "operation/runbook",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/runbook.md",
@@ -659,21 +678,21 @@
       "template_id": "operation/runbook",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at"
       ],
       "required_sections": [
         "When to Use",
@@ -701,7 +720,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "incident",
+      "id": "incident",
       "type": "operation/incident",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
@@ -710,16 +729,16 @@
       "template_id": "operation/incident",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
         "created",
-        "updated",
-        "occurred_at",
-        "version"
+        "occurred_at"
       ],
       "optional_frontmatter": [
         "resolved_at"
@@ -751,7 +770,7 @@
       ]
     },
     {
-      "profile_id": "postmortem",
+      "id": "postmortem",
       "type": "operation/postmortem",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
@@ -760,20 +779,20 @@
       "template_id": "operation/postmortem",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
         "created",
-        "updated",
-        "reviewed_at",
-        "version"
+        "reviewed_at"
       ],
       "optional_frontmatter": [
-        "superseded_by",
-        "supersedes"
+        "supersedes",
+        "superseded_by"
       ],
       "required_sections": [
         "Summary",
@@ -790,7 +809,7 @@
         "Follow-up Review",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "postmortem",
       "traceability": {
         "allowed_parent_profiles": [
           "incident"
@@ -803,7 +822,7 @@
       ]
     },
     {
-      "profile_id": "reference-category-readme",
+      "id": "reference-category-readme",
       "type": "reference/category-readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/{category}/README.md",
@@ -811,17 +830,17 @@
       "identity_relation": "none",
       "template_id": "reference/category-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [
         "Overview",
@@ -839,7 +858,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "research",
+      "id": "research",
       "type": "reference/research-pack",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/research/{number:4}-{slug}/README.md",
@@ -848,22 +867,22 @@
       "template_id": "reference/research-pack",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
         "created",
-        "updated",
-        "observed_at",
-        "version"
+        "observed_at"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at"
       ],
       "required_sections": [
         "Question",
@@ -878,7 +897,7 @@
         "Limitations",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
           "requirements-package",
@@ -891,7 +910,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "audit",
+      "id": "audit",
       "type": "reference/audit-pack",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/audits/{number:4}-{slug}/README.md",
@@ -900,22 +919,22 @@
       "template_id": "reference/audit-pack",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
         "created",
-        "updated",
-        "observed_at",
-        "version"
+        "observed_at"
       ],
       "optional_frontmatter": [
-        "generated_by",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "generated_by"
       ],
       "required_sections": [
         "Objective",
@@ -931,7 +950,7 @@
         "Limitations",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -943,7 +962,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "data",
+      "id": "data",
       "type": "reference/data-pack",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/data/{number:4}-{slug}/README.md",
@@ -952,23 +971,23 @@
       "template_id": "reference/data-pack",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
         "created",
-        "updated",
-        "observed_at",
-        "version"
+        "observed_at"
       ],
       "optional_frontmatter": [
-        "generated_by",
-        "next_review_at",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "reviewed_at",
+        "next_review_at",
+        "generated_by"
       ],
       "required_sections": [
         "Purpose",
@@ -983,7 +1002,7 @@
         "Limitations",
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
           "research",
@@ -995,7 +1014,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "research-member",
+      "id": "research-member",
       "type": "reference/research",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/research/{number:4}-{slug}/m{member_number:4}-{slug}.md",
@@ -1004,43 +1023,40 @@
       "template_id": "reference/research",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "observed_at",
-        "review_cycle",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "observed_at",
+        "reviewed_at",
+        "next_review_at",
+        "review_cycle"
       ],
       "required_sections": [],
       "optional_sections": [
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "free_form_sections": true,
+      "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
           "research"
         ]
       },
       "exceptions": [
-        {
-          "kind": "delegate-reference-members",
-          "owner": "scripts/lib/document_governance/references.py"
-        }
       ]
     },
     {
-      "profile_id": "audit-member",
+      "id": "audit-member",
       "type": "reference/audit",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/audits/{number:4}-{slug}/m{member_number:4}-{slug}.md",
@@ -1049,29 +1065,29 @@
       "template_id": "reference/audit",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "next_review_at",
-        "observed_at",
-        "review_cycle",
-        "reviewed_at",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "observed_at",
+        "reviewed_at",
+        "next_review_at",
+        "review_cycle"
       ],
       "required_sections": [],
       "optional_sections": [
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
           "audit"
@@ -1085,7 +1101,7 @@
       ]
     },
     {
-      "profile_id": "migration",
+      "id": "migration",
       "type": "archive/migration",
       "frontmatter_policy": "required",
       "path_pattern": "docs/98.archive/migrations/{number:4}-{slug}.md",
@@ -1094,26 +1110,26 @@
       "template_id": "archive/migration",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "archive_disposition",
-        "archive_reason",
-        "archived_at",
-        "archived_blob",
-        "archived_commit",
-        "archived_from",
-        "preservation_class",
+        "supersedes",
         "superseded_by",
-        "supersedes"
+        "archived_from",
+        "archived_at",
+        "archive_reason",
+        "archive_disposition",
+        "archived_commit",
+        "archived_blob",
+        "preservation_class"
       ],
       "required_sections": [
         "Purpose",
@@ -1127,7 +1143,7 @@
         "Execution Evidence",
         "Related Documents"
       ],
-      "lifecycle_id": "historical",
+      "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -1135,10 +1151,20 @@
           "migration"
         ]
       },
-      "exceptions": []
+      "exceptions": [
+        {
+          "kind": "frozen-legacy-status",
+          "status": "completed",
+          "paths": [
+            "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md",
+            "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
+            "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+          ]
+        }
+      ]
     },
     {
-      "profile_id": "tombstone",
+      "id": "tombstone",
       "type": "archive/tombstone",
       "frontmatter_policy": "required",
       "path_pattern": "docs/98.archive/tombstones/{stage}/{number:4}-{slug}.md",
@@ -1147,19 +1173,19 @@
       "template_id": "archive/tombstone",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "superseded_by",
-        "supersedes"
+        "supersedes",
+        "superseded_by"
       ],
       "required_sections": [
         "Retired Path",
@@ -1171,14 +1197,14 @@
       "optional_sections": [
         "Related Documents"
       ],
-      "lifecycle_id": "historical",
+      "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": []
       },
       "exceptions": []
     },
     {
-      "profile_id": "documentation-readme",
+      "id": "documentation-readme",
       "type": "common/documentation-readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/README.md",
@@ -1186,17 +1212,17 @@
       "identity_relation": "none",
       "template_id": "common/documentation-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [
         "Overview",
@@ -1224,7 +1250,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "repository-readme",
+      "id": "repository-readme",
       "type": "common/repository-readme",
       "frontmatter_policy": "required",
       "path_pattern": "README.md",
@@ -1243,17 +1269,17 @@
       "identity_relation": "none",
       "template_id": "common/repository-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [
         "Overview",
@@ -1276,7 +1302,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "package-readme",
+      "id": "package-readme",
       "type": "common/package-readme",
       "frontmatter_policy": "required",
       "path_pattern": "infra/{subpath}/README.md",
@@ -1289,17 +1315,17 @@
       "identity_relation": "none",
       "template_id": "common/package-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [
         "Overview",
@@ -1348,7 +1374,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "runtime-governance-readme",
+      "id": "runtime-governance-readme",
       "type": "common/runtime-governance-readme",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/README.md",
@@ -1360,17 +1386,17 @@
       "identity_relation": "none",
       "template_id": "common/runtime-governance-readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "generated_by",
         "layer",
-        "owner",
-        "title",
-        "updated"
+        "created",
+        "generated_by"
       ],
       "required_sections": [],
       "optional_sections": [],
@@ -1379,7 +1405,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "readme",
+      "id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
       "path_pattern": "docs/{stage}/README.md",
@@ -1394,18 +1420,18 @@
       "identity_relation": "none",
       "template_id": "common/readme",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
+        "layer",
         "created",
         "generated_by",
-        "layer",
-        "owner",
-        "runtime",
-        "title",
-        "updated"
+        "runtime"
       ],
       "required_sections": [
         "Overview",
@@ -1427,7 +1453,7 @@
       ]
     },
     {
-      "profile_id": "governance-policy",
+      "id": "governance-policy",
       "type": "governance/policy",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/policies/{slug}.md",
@@ -1435,16 +1461,16 @@
       "identity_relation": "none",
       "template_id": "governance/policy",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
         "created",
-        "owner",
-        "runtime",
-        "title",
-        "updated"
+        "runtime"
       ],
       "free_form_sections": true,
       "required_sections": [
@@ -1461,7 +1487,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-hook-policy",
+      "id": "governance-hook-policy",
       "type": "governance/hook-policy",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/policies/hooks/{hook_slug}.md",
@@ -1469,21 +1495,21 @@
       "identity_relation": "none",
       "template_id": "governance/hook-policy",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
+        "created",
         "action",
         "conditions",
-        "created",
         "enabled",
         "event",
         "name",
-        "owner",
-        "pattern",
-        "title",
-        "updated"
+        "pattern"
       ],
       "required_sections": [],
       "optional_sections": [
@@ -1498,7 +1524,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-role",
+      "id": "governance-role",
       "type": "governance/role",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/roles/{slug}.md",
@@ -1506,21 +1532,21 @@
       "identity_relation": "none",
       "template_id": "governance/role",
       "required_frontmatter": [
+        "title",
+        "version",
         "type",
+        "status",
+        "owner",
+        "updated",
         "agent_id",
         "scope",
         "tier",
-        "status",
         "work_profile",
         "permission_profile",
-        "skill_ids",
-        "version"
+        "skill_ids"
       ],
       "optional_frontmatter": [
-        "created",
-        "owner",
-        "title",
-        "updated"
+        "created"
       ],
       "required_sections": [
         "Purpose",
@@ -1538,7 +1564,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-skill",
+      "id": "governance-skill",
       "type": "governance/skill",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/skills/{slug}.md",
@@ -1546,18 +1572,18 @@
       "identity_relation": "none",
       "template_id": "governance/skill",
       "required_frontmatter": [
+        "title",
+        "version",
         "type",
+        "status",
+        "owner",
+        "updated",
         "function_id",
         "scope",
-        "status",
-        "owner_agent",
-        "version"
+        "owner_agent"
       ],
       "optional_frontmatter": [
-        "created",
-        "owner",
-        "title",
-        "updated"
+        "created"
       ],
       "required_sections": [
         "Preconditions",
@@ -1574,7 +1600,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-provider",
+      "id": "governance-provider",
       "type": "governance/provider",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/providers/{slug}.md",
@@ -1582,16 +1608,16 @@
       "identity_relation": "none",
       "template_id": "governance/provider",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
         "created",
-        "owner",
-        "runtime",
-        "title",
-        "updated"
+        "runtime"
       ],
       "required_sections": [
         "Purpose",
@@ -1606,7 +1632,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-provider-index",
+      "id": "governance-provider-index",
       "type": "governance/provider-index",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/providers/README.md",
@@ -1614,14 +1640,14 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
-      ],
-      "optional_frontmatter": [
+        "status",
         "owner",
-        "title"
+        "updated"
       ],
+      "optional_frontmatter": [],
       "required_sections": [
         "Overview",
         "Scope",
@@ -1635,7 +1661,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "governance-sdlc",
+      "id": "governance-sdlc",
       "type": "governance/sdlc",
       "frontmatter_policy": "required",
       "path_pattern": "docs/00.agent-governance/sdlc.md",
@@ -1643,15 +1669,15 @@
       "identity_relation": "none",
       "template_id": "governance/sdlc",
       "required_frontmatter": [
+        "title",
         "version",
         "type",
-        "status"
+        "status",
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "created",
-        "owner",
-        "title",
-        "updated"
+        "created"
       ],
       "required_sections": [
         "Purpose",
@@ -1665,7 +1691,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "runtime-projection-claude",
+      "id": "runtime-projection-claude",
       "type": "governance/claude-agent",
       "frontmatter_policy": "required",
       "path_pattern": "docs/99.templates/templates/runtime/claude-agent.template.md",
@@ -1697,7 +1723,7 @@
       ]
     },
     {
-      "profile_id": "runtime-projection-codex",
+      "id": "runtime-projection-codex",
       "type": "governance/codex-agent",
       "frontmatter_policy": "required",
       "path_pattern": "docs/99.templates/templates/runtime/codex-agent.template.toml",
@@ -1730,7 +1756,7 @@
       "media_type": "application/toml"
     },
     {
-      "profile_id": "template-source",
+      "id": "template-source",
       "type": "common/template-source",
       "frontmatter_policy": "required",
       "path_pattern": "docs/99.templates/templates/{domain}/{slug}.template.md",
@@ -1738,14 +1764,15 @@
       "identity_relation": "none",
       "template_id": null,
       "required_frontmatter": [
+        "title",
+        "version",
         "type",
         "status",
-        "version"
+        "owner",
+        "updated"
       ],
       "optional_frontmatter": [
-        "layer",
-        "owner",
-        "title"
+        "layer"
       ],
       "required_sections": [],
       "optional_sections": [],
@@ -1758,7 +1785,7 @@
       ]
     },
     {
-      "profile_id": "generated",
+      "id": "generated",
       "type": "reference/data",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md",
@@ -1767,34 +1794,34 @@
       "template_id": "reference/data",
       "required_frontmatter": [
         "title",
+        "version",
         "type",
-        "layer",
         "status",
         "owner",
+        "updated",
+        "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "updated",
-        "version"
+        "created"
       ],
       "optional_frontmatter": [
-        "generated_by",
-        "next_review_at",
+        "supersedes",
+        "superseded_by",
         "observed_at",
         "reviewed_at",
-        "superseded_by",
-        "supersedes"
+        "next_review_at",
+        "generated_by"
       ],
       "required_sections": [],
       "optional_sections": [
         "Related Documents"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "publication",
       "traceability": {},
       "exceptions": []
     },
     {
-      "profile_id": "unsupported",
+      "id": "unsupported",
       "type": "common/unsupported",
       "frontmatter_policy": "unmanaged",
       "path_pattern": "docs/{domain}/{slug}.md",
@@ -1815,7 +1842,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "archive-record-completed",
+      "id": "archive-record-completed",
       "type": "archive/record-completed",
       "frontmatter_policy": "unmanaged",
       "path_pattern": "docs/98.archive/completed/{archived_subpath}.md",
@@ -1832,7 +1859,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "archive-record-superseded",
+      "id": "archive-record-superseded",
       "type": "archive/record-superseded",
       "frontmatter_policy": "unmanaged",
       "path_pattern": "docs/98.archive/superseded/{archived_subpath}.md",
@@ -1849,7 +1876,7 @@
       "exceptions": []
     },
     {
-      "profile_id": "archive-record-retired",
+      "id": "archive-record-retired",
       "type": "archive/record-retired",
       "frontmatter_policy": "unmanaged",
       "path_pattern": "docs/98.archive/retired/{archived_subpath}.md",
@@ -1869,169 +1896,253 @@
   "template_roles": {
     "archive/migration": {
       "source": "docs/99.templates/templates/archive/migration.template.md",
-      "profile_id": "migration"
+      "profiles": [
+        "migration"
+      ]
     },
     "archive/tombstone": {
       "source": "docs/99.templates/templates/archive/tombstone.template.md",
-      "profile_id": "tombstone"
+      "profiles": [
+        "tombstone"
+      ]
     },
     "common/documentation-readme": {
       "source": "docs/99.templates/templates/common/readme-documentation.template.md",
-      "profile_id": "documentation-readme"
+      "profiles": [
+        "documentation-readme"
+      ]
     },
     "common/package-readme": {
       "source": "docs/99.templates/templates/common/readme-package.template.md",
-      "profile_id": "package-readme"
+      "profiles": [
+        "package-readme"
+      ]
     },
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",
-      "profile_id": "readme"
+      "profiles": [
+        "readme"
+      ]
     },
     "common/repository-readme": {
       "source": "docs/99.templates/templates/common/readme-repository.template.md",
-      "profile_id": "repository-readme"
+      "profiles": [
+        "repository-readme"
+      ]
     },
     "common/runtime-governance-readme": {
       "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
-      "profile_id": "runtime-governance-readme"
+      "profiles": [
+        "runtime-governance-readme"
+      ]
     },
     "governance/claude-agent": {
       "source": "docs/99.templates/templates/runtime/claude-agent.template.md",
-      "profile_id": "runtime-projection-claude"
+      "profiles": [
+        "runtime-projection-claude"
+      ]
     },
     "governance/codex-agent": {
       "source": "docs/99.templates/templates/runtime/codex-agent.template.toml",
-      "profile_id": "runtime-projection-codex"
+      "profiles": [
+        "runtime-projection-codex"
+      ]
     },
     "governance/hook-policy": {
       "source": "docs/99.templates/templates/governance/rule.template.md",
-      "profile_id": "governance-hook-policy"
+      "profiles": [
+        "governance-hook-policy"
+      ]
     },
     "governance/policy": {
       "source": "docs/99.templates/templates/governance/control.template.md",
-      "profile_id": "governance-policy"
+      "profiles": [
+        "governance-policy"
+      ]
     },
     "governance/provider": {
       "source": "docs/99.templates/templates/governance/provider.template.md",
-      "profile_id": "governance-provider"
+      "profiles": [
+        "governance-provider"
+      ]
     },
     "governance/role": {
       "source": "docs/99.templates/templates/governance/role.template.md",
-      "profile_id": "governance-role"
+      "profiles": [
+        "governance-role"
+      ]
     },
     "governance/sdlc": {
       "source": "docs/99.templates/templates/governance/contract.template.md",
-      "profile_id": "governance-sdlc"
+      "profiles": [
+        "governance-sdlc"
+      ]
     },
     "governance/skill": {
       "source": "docs/99.templates/templates/governance/skill.template.md",
-      "profile_id": "governance-skill"
+      "profiles": [
+        "governance-skill"
+      ]
     },
     "operation/domain-readme": {
       "source": "docs/99.templates/templates/common/readme-domain.template.md",
-      "profile_id": "operations-domain-readme"
+      "profiles": [
+        "operations-domain-readme"
+      ]
     },
     "operation/guide": {
       "source": "docs/99.templates/templates/operations/guide.template.md",
-      "profile_id": "guide"
+      "profiles": [
+        "guide"
+      ]
     },
     "operation/incident": {
       "source": "docs/99.templates/templates/operations/incident.template.md",
-      "profile_id": "incident"
+      "profiles": [
+        "incident"
+      ]
     },
     "operation/policy": {
       "source": "docs/99.templates/templates/operations/policy.template.md",
-      "profile_id": "policy"
+      "profiles": [
+        "policy"
+      ]
     },
     "operation/postmortem": {
       "source": "docs/99.templates/templates/operations/postmortem.template.md",
-      "profile_id": "postmortem"
+      "profiles": [
+        "postmortem"
+      ]
     },
     "operation/runbook": {
       "source": "docs/99.templates/templates/operations/runbook.template.md",
-      "profile_id": "runbook"
+      "profiles": [
+        "runbook"
+      ]
     },
     "reference/audit": {
       "source": "docs/99.templates/templates/references/audit.template.md",
-      "profile_id": "audit-member"
+      "profiles": [
+        "audit-member"
+      ]
     },
     "reference/audit-pack": {
       "source": "docs/99.templates/templates/references/audit-pack.template.md",
-      "profile_id": "audit"
+      "profiles": [
+        "audit"
+      ]
     },
     "reference/category-readme": {
       "source": "docs/99.templates/templates/common/readme-category.template.md",
-      "profile_id": "reference-category-readme"
+      "profiles": [
+        "reference-category-readme"
+      ]
     },
     "reference/data": {
       "source": "docs/99.templates/templates/references/data.template.md",
-      "profile_id": "generated"
+      "profiles": [
+        "generated"
+      ]
     },
     "reference/data-pack": {
       "source": "docs/99.templates/templates/references/data-pack.template.md",
-      "profile_id": "data"
+      "profiles": [
+        "data"
+      ]
     },
     "reference/research": {
       "source": "docs/99.templates/templates/references/research.template.md",
-      "profile_id": "research-member"
+      "profiles": [
+        "research-member"
+      ]
     },
     "reference/research-pack": {
       "source": "docs/99.templates/templates/references/research-pack.template.md",
-      "profile_id": "research"
+      "profiles": [
+        "research"
+      ]
     },
     "sdlc/architecture-decision": {
       "source": "docs/99.templates/templates/architecture/decision.template.md",
-      "profile_id": "adr"
+      "profiles": [
+        "adr"
+      ]
     },
     "sdlc/architecture-description": {
       "source": "docs/99.templates/templates/architecture/description.template.md",
-      "profile_id": "architecture-description"
+      "profiles": [
+        "architecture-description"
+      ]
     },
     "sdlc/data-model": {
       "source": "docs/99.templates/templates/specs/contracts/data-model.template.md",
-      "profile_id": "data-model-contract"
+      "profiles": [
+        "data-model-contract"
+      ]
     },
     "sdlc/graphql": {
       "source": "docs/99.templates/templates/specs/contracts/schema.template.graphql",
-      "profile_id": "graphql-contract"
+      "profiles": [
+        "graphql-contract"
+      ]
     },
     "sdlc/openapi": {
       "source": "docs/99.templates/templates/specs/contracts/openapi.template.yaml",
-      "profile_id": "openapi-contract"
+      "profiles": [
+        "openapi-contract"
+      ]
     },
     "sdlc/plan": {
       "source": "docs/99.templates/templates/specs/plan.template.md",
-      "profile_id": "plan"
+      "profiles": [
+        "plan"
+      ]
     },
     "sdlc/proto": {
       "source": "docs/99.templates/templates/specs/contracts/service.template.proto",
-      "profile_id": "proto-contract"
+      "profiles": [
+        "proto-contract"
+      ]
     },
     "sdlc/requirement": {
       "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
-      "profile_id": "requirements-package"
+      "profiles": [
+        "requirements-package"
+      ]
     },
     "sdlc/spec": {
       "source": "docs/99.templates/templates/specs/spec.template.md",
-      "profile_id": "spec"
+      "profiles": [
+        "spec"
+      ]
     },
     "sdlc/task": {
       "source": "docs/99.templates/templates/specs/task.template.md",
-      "profile_id": "task"
+      "profiles": [
+        "task"
+      ]
     }
   },
   "lifecycles": {
     "living": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
       "statuses": [
         "draft",
+        "review",
         "active",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "active",
-          "retired"
+          "review"
+        ],
+        "review": [
+          "active"
         ],
         "active": [
           "superseded",
@@ -2041,120 +2152,350 @@
         "retired": []
       }
     },
-    "adr": {
+    "requirement": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
       "statuses": [
         "draft",
-        "active",
+        "review",
+        "approved",
         "superseded",
-        "retired",
-        "rejected"
+        "retired"
       ],
       "transitions": {
         "draft": [
-          "active",
-          "rejected",
+          "review"
+        ],
+        "review": [
+          "approved"
+        ],
+        "approved": [
+          "superseded",
           "retired"
+        ],
+        "superseded": [],
+        "retired": []
+      }
+    },
+    "architecture-description": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
+      "statuses": [
+        "draft",
+        "review",
+        "active",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "review"
+        ],
+        "review": [
+          "active"
         ],
         "active": [
           "superseded",
           "retired"
         ],
         "superseded": [],
-        "retired": [],
-        "rejected": []
+        "retired": []
       }
     },
-    "execution": {
+    "architecture-decision": {
+      "initial_status": "proposed",
+      "terminal_statuses": [
+        "rejected",
+        "superseded",
+        "retired"
+      ],
+      "statuses": [
+        "proposed",
+        "accepted",
+        "rejected",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "proposed": [
+          "accepted",
+          "rejected"
+        ],
+        "accepted": [
+          "superseded",
+          "retired"
+        ],
+        "rejected": [],
+        "superseded": [],
+        "retired": []
+      }
+    },
+    "spec": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "completed",
+        "cancelled",
+        "superseded"
+      ],
       "statuses": [
         "draft",
+        "review",
+        "approved",
         "active",
-        "blocked",
+        "completed",
+        "cancelled",
+        "superseded"
+      ],
+      "transitions": {
+        "draft": [
+          "review"
+        ],
+        "review": [
+          "approved",
+          "cancelled",
+          "superseded"
+        ],
+        "approved": [
+          "active",
+          "cancelled",
+          "superseded"
+        ],
+        "active": [
+          "completed",
+          "cancelled",
+          "superseded"
+        ],
+        "completed": [],
+        "cancelled": [],
+        "superseded": []
+      }
+    },
+    "plan": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "completed",
+        "cancelled"
+      ],
+      "statuses": [
+        "draft",
+        "approved",
+        "active",
         "completed",
         "cancelled"
       ],
       "transitions": {
         "draft": [
-          "active",
-          "completed",
-          "cancelled"
+          "approved"
+        ],
+        "approved": [
+          "active"
         ],
         "active": [
-          "blocked",
           "completed",
-          "cancelled"
-        ],
-        "blocked": [
-          "active",
           "cancelled"
         ],
         "completed": [],
         "cancelled": []
       }
     },
-    "incident": {
-      "statuses": [
-        "open",
-        "mitigated",
-        "closed"
+    "task": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "completed",
+        "cancelled"
       ],
-      "transitions": {
-        "open": [
-          "mitigated",
-          "closed"
-        ],
-        "mitigated": [
-          "closed"
-        ],
-        "closed": []
-      }
-    },
-    "historical": {
       "statuses": [
         "draft",
+        "ready",
+        "in-progress",
+        "blocked",
         "completed",
-        "superseded"
+        "cancelled"
       ],
       "transitions": {
         "draft": [
-          "completed"
+          "ready"
         ],
-        "completed": [
-          "superseded"
+        "ready": [
+          "in-progress"
         ],
-        "superseded": []
+        "in-progress": [
+          "blocked",
+          "completed",
+          "cancelled"
+        ],
+        "blocked": [
+          "in-progress",
+          "cancelled"
+        ],
+        "completed": [],
+        "cancelled": []
       }
     },
-    "spec-package": {
+    "operational-policy": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
       "statuses": [
         "draft",
+        "review",
+        "approved",
         "active",
-        "completed",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "active",
-          "retired"
+          "review"
+        ],
+        "review": [
+          "approved"
+        ],
+        "approved": [
+          "active"
         ],
         "active": [
-          "completed",
           "superseded",
           "retired"
         ],
-        "completed": [],
+        "superseded": [],
+        "retired": []
+      }
+    },
+    "incident": {
+      "initial_status": "detected",
+      "terminal_statuses": [
+        "resolved"
+      ],
+      "statuses": [
+        "detected",
+        "investigating",
+        "mitigated",
+        "resolved"
+      ],
+      "transitions": {
+        "detected": [
+          "investigating"
+        ],
+        "investigating": [
+          "mitigated"
+        ],
+        "mitigated": [
+          "resolved"
+        ],
+        "resolved": []
+      }
+    },
+    "postmortem": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "published"
+      ],
+      "statuses": [
+        "draft",
+        "review",
+        "published"
+      ],
+      "transitions": {
+        "draft": [
+          "review"
+        ],
+        "review": [
+          "published"
+        ],
+        "published": []
+      }
+    },
+    "publication": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
+      "statuses": [
+        "draft",
+        "review",
+        "published",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "review"
+        ],
+        "review": [
+          "published"
+        ],
+        "published": [
+          "superseded",
+          "retired"
+        ],
+        "superseded": [],
+        "retired": []
+      }
+    },
+    "sealed-record": {
+      "initial_status": "sealed",
+      "terminal_statuses": [
+        "sealed"
+      ],
+      "statuses": [
+        "sealed"
+      ],
+      "transitions": {
+        "sealed": []
+      }
+    },
+    "contract": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "superseded",
+        "retired"
+      ],
+      "statuses": [
+        "draft",
+        "review",
+        "approved",
+        "active",
+        "superseded",
+        "retired"
+      ],
+      "transitions": {
+        "draft": [
+          "review"
+        ],
+        "review": [
+          "approved"
+        ],
+        "approved": [
+          "active"
+        ],
+        "active": [
+          "superseded",
+          "retired"
+        ],
         "superseded": [],
         "retired": []
       }
     },
     "template": {
+      "initial_status": "draft",
+      "terminal_statuses": [
+        "draft"
+      ],
       "statuses": [
-        "draft",
-        "open"
+        "draft"
       ],
       "transitions": {
-        "draft": [],
-        "open": []
+        "draft": []
       }
     }
   },
@@ -3230,8 +3571,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 171,
-      "next_number": 172,
+      "high_water": 172,
+      "next_number": 173,
       "child_spaces": {}
     },
     "operations-subject": {
@@ -3285,14 +3626,14 @@
     }
   },
   "transitions": {
-    "adr": "adr",
-    "architecture-description": "living",
-    "audit": "living",
-    "audit-member": "living",
-    "data": "living",
-    "data-model-contract": "living",
+    "adr": "architecture-decision",
+    "architecture-description": "architecture-description",
+    "audit": "publication",
+    "audit-member": "publication",
+    "data": "publication",
+    "data-model-contract": "contract",
     "documentation-readme": "living",
-    "generated": "living",
+    "generated": "publication",
     "governance-hook-policy": "living",
     "governance-policy": "living",
     "governance-provider": "living",
@@ -3302,23 +3643,23 @@
     "governance-skill": "living",
     "guide": "living",
     "incident": "incident",
-    "migration": "historical",
+    "migration": "sealed-record",
     "operations-domain-readme": "living",
     "package-readme": "living",
-    "plan": "execution",
-    "policy": "living",
-    "postmortem": "living",
+    "plan": "plan",
+    "policy": "operational-policy",
+    "postmortem": "postmortem",
     "readme": "living",
     "reference-category-readme": "living",
     "repository-readme": "living",
-    "requirements-package": "living",
-    "research": "living",
-    "research-member": "living",
+    "requirements-package": "requirement",
+    "research": "publication",
+    "research-member": "publication",
     "runbook": "living",
     "runtime-governance-readme": "living",
-    "spec": "spec-package",
-    "task": "execution",
-    "tombstone": "historical",
+    "spec": "spec",
+    "task": "task",
+    "tombstone": "sealed-record",
     "template-source": "template"
   },
   "indexes": {

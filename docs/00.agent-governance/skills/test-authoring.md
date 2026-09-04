@@ -1,12 +1,13 @@
 ---
-title: test-authoring
-version: 1.0.0
-type: governance/skill
-status: active
+title: "test-authoring"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: test-authoring
-scope: qa
-owner_agent: qa-engineer
+updated: "2026-09-04"
+function_id: "test-authoring"
+scope: "qa"
+owner_agent: "qa-engineer"
 ---
 
 # test-authoring

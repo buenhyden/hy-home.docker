@@ -1,15 +1,15 @@
 ---
-title: Tooling Services Selection and Configuration
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Tooling Services Selection and Configuration"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0009
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0009"
 parent_ids:
-  - AD-0009
-created: 2026-03-26
-updated: 2026-08-10
+- "AD-0009"
+created: "2026-03-26"
 ---
 # ADR-0009: Tooling Services Selection and Configuration
 

@@ -32,13 +32,17 @@ _EXPECTED_PROFILE_CONTRACTS = {
     "architecture-description": (
         "docs/02.architecture/descriptions/{number:4}-{slug}.md",
         "AD-{number:4}",
-        "living",
+        "architecture-description",
     ),
     "adr": (
         "docs/02.architecture/decisions/{number:4}-{slug}.md",
         "ADR-{number:4}",
-        "adr",
+        "architecture-decision",
     ),
+}
+_EFFECTIVE_SUPERSESSION_STATUSES = {
+    "architecture-description": frozenset({"active", "superseded"}),
+    "adr": frozenset({"accepted", "superseded"}),
 }
 
 
@@ -460,12 +464,15 @@ def validate_supersession_graph(
 
     edges = {document.artifact_id: document.supersedes for document in corpus}
     for document in corpus:
-        if document.supersedes and document.status not in {"active", "superseded"}:
+        effective_statuses = _EFFECTIVE_SUPERSESSION_STATUSES.get(
+            document.artifact_type, frozenset()
+        )
+        if document.supersedes and document.status not in effective_statuses:
             findings.add(
                 ArchitectureFinding(
                     "supersession-successor-not-effective",
                     document.path.as_posix(),
-                    "a superseding document must be active or itself superseded",
+                    "a superseding document must be effective or itself superseded",
                 )
             )
         for predecessor_id in document.supersedes:

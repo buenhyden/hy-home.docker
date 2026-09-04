@@ -1,15 +1,15 @@
 ---
-title: Alloy Readiness and Pipeline Recovery Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "Alloy Readiness and Pipeline Recovery Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0040
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0040"
 parent_ids:
-  - GDE-0040
-created: 2026-05-17
-updated: 2026-08-11
+- "GDE-0040"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0040-alloy/runbook.md -->
 

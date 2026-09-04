@@ -1,12 +1,13 @@
 ---
-title: knowledge-map-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "knowledge-map-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: knowledge-map-agent
-scope: docs
-owner_agent: doc-writer
+updated: "2026-09-04"
+function_id: "knowledge-map-agent"
+scope: "docs"
+owner_agent: "doc-writer"
 ---
 
 # knowledge-map-agent

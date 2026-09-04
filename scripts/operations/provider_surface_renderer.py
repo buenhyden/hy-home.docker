@@ -268,11 +268,12 @@ def _pointer(
         envelope = (
             "---\n"
             f'title: "{title}"\n'
-            "version: 1.0.0\n"
-            "type: common/runtime-governance-readme\n"
-            "status: active\n"
+            'version: "1.0.0"\n'
+            'type: "common/runtime-governance-readme"\n'
+            'status: "active"\n'
             'owner: "@buenhyden"\n'
-            "generated_by: scripts/operations/provider_surface_renderer.py\n"
+            'updated: "2026-09-04"\n'
+            'generated_by: "scripts/operations/provider_surface_renderer.py"\n'
             "---\n\n"
         )
     return f"{envelope}{_marker(source)}\n\n# {title}\n\nThis generated adapter routes to `{source}`.\n".encode()

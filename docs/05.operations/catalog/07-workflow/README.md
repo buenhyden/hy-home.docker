@@ -1,10 +1,11 @@
 ---
-title: Operations — 07 Workflow
-version: 1.0.0
-type: operation/domain-readme
-layer: operations
-status: active
+title: "Operations — 07 Workflow"
+version: "1.0.0"
+type: "operation/domain-readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "operations"
 ---
 
 # Operations — 07 Workflow

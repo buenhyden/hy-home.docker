@@ -1,14 +1,14 @@
 ---
-title: Compose Profile Vocabulary Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Compose Profile Vocabulary Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0078
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0078"
 parent_ids: []
-created: 2026-09-04
-updated: 2026-09-04
+created: "2026-09-04"
 ---
 
 # Compose Profile Vocabulary Policy

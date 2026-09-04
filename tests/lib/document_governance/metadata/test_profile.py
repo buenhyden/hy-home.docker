@@ -117,7 +117,7 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             )
 
         for role_name, role in self.registry.template_roles.items():
-            profile_id = str(role["profile_id"])
+            profile_id = str(role["profiles"][0])
             path_text = witness(str(self.registry.profiles[profile_id]["path_pattern"]))
             with self.subTest(role=role_name, path=path_text):
                 self.assertEqual(
@@ -183,7 +183,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 source = ROOT / str(role["source"])
                 if source.suffix != ".md":
                     continue
-                profile = self.registry.profiles[str(role["profile_id"])]
+                profile = self.registry.profiles[str(role["profiles"][0])]
                 text = source.read_text(encoding="utf-8")
                 headings = [
                     line for line in text.splitlines() if line.startswith("## ")
@@ -195,7 +195,7 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_audit_has_a_distinct_registered_form(self) -> None:
         role = self.registry.template_roles["reference/audit-pack"]
-        self.assertEqual("audit", role["profile_id"])
+        self.assertEqual(("audit",), role["profiles"])
         self.assertTrue((ROOT / role["source"]).read_bytes())
 
     def test_retired_governance_forms_have_no_active_registry_role(self) -> None:
@@ -206,7 +206,7 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_task_has_one_source_and_no_harness_competitor(self) -> None:
         roles = self.registry.template_roles
         task_sources = [
-            role["source"] for role in roles.values() if role["profile_id"] == "task"
+            role["source"] for role in roles.values() if "task" in role["profiles"]
         ]
         self.assertEqual(
             ["docs/99.templates/templates/specs/task.template.md"],
@@ -303,7 +303,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 self.assertTrue(source.is_file())
                 if source.suffix != ".md":
                     continue
-                profile = self.registry.profiles[str(role["profile_id"])]
+                profile = self.registry.profiles[str(role["profiles"][0])]
                 values = metadata.parse_frontmatter(source)
                 if _declares_provider_binding(profile):
                     # A provider runtime owns this binding, so it carries no type.
@@ -312,7 +312,7 @@ class TemplateMetadataTests(unittest.TestCase):
                     self.assertIsNone(values.get("type"))
                     continue
                 self.assertEqual(
-                    document_type(str(role["profile_id"])), values.get("type")
+                    document_type(str(role["profiles"][0])), values.get("type")
                 )
                 text = source.read_text(encoding="utf-8")
                 for target_prefix in (
@@ -332,7 +332,7 @@ class TemplateMetadataTests(unittest.TestCase):
             source = ROOT / str(role["source"])
             if source.suffix != ".md":
                 continue
-            profile = self.registry.profiles[str(role["profile_id"])]
+            profile = self.registry.profiles[str(role["profiles"][0])]
             text = source.read_text(encoding="utf-8")
             headings = {
                 line.removeprefix("## ")
@@ -357,19 +357,17 @@ class TemplateMetadataTests(unittest.TestCase):
         )
         self.assertFalse((ROOT / "docs/05.operations/releases").exists())
 
-    def test_readme_template_remains_a_readme_exception_source(self) -> None:
+    def test_readme_template_uses_registered_minimum_envelope(self) -> None:
         path_text = "docs/99.templates/templates/common/readme-stage.template.md"
         values = metadata.parse_frontmatter(ROOT / path_text)
         self.assertEqual(
             {
-                "title": "<title>",
-                "version": "#.#.#",
+                "title": "{{TITLE}}",
+                "version": "0.1.0",
                 "type": "common/readme",
-                "layer": "<layer>",
                 "status": "draft",
-                "owner": "<owner>",
-                "created": "YYYY-MM-DD",
-                "updated": "YYYY-MM-DD",
+                "owner": "{{OWNER}}",
+                "updated": "{{UPDATED}}",
             },
             values,
         )

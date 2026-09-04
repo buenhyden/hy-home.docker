@@ -1,14 +1,14 @@
 ---
-title: Agent Governance Standardization Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Agent Governance Standardization Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0024
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0024"
 parent_ids: []
-created: 2026-06-01
-updated: 2026-09-01
+created: "2026-06-01"
 ---
 # Agent Governance Standardization Requirements
 

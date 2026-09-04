@@ -1,20 +1,21 @@
 ---
 title: "BLOCKED: floating reference"
-version: 1.0.0
-type: governance/hook-policy
-status: active
+version: "1.0.0"
+type: "governance/hook-policy"
+status: "active"
 owner: "@buenhyden"
-name: block-unpinned-gha-action
-enabled: true
-event: file
+updated: "2026-09-04"
+action: "block"
 conditions:
-  - field: file_path
-    operator: regex_match
-    pattern: \.github/workflows/.*\.ya?ml$
-  - field: new_text
-    operator: regex_match
-    pattern: uses:\s+\S+@(latest|main|master|develop|dev)\b
-action: block
+- field: "file_path"
+  operator: "regex_match"
+  pattern: "\\.github/workflows/.*\\.ya?ml$"
+- field: "new_text"
+  operator: "regex_match"
+  pattern: "uses:\\s+\\S+@(latest|main|master|develop|dev)\\b"
+enabled: true
+event: "file"
+name: "block-unpinned-gha-action"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->

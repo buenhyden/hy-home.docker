@@ -1,14 +1,14 @@
 ---
-title: PostgreSQL Logical Upgrade and Restore Rehearsal Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0032
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0032"
 parent_ids: []
-created: 2026-07-22
-updated: 2026-08-11
+created: "2026-07-22"
 ---
 
 # PostgreSQL Logical Upgrade and Restore Rehearsal Runbook

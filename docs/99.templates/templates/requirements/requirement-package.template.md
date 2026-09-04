@@ -1,54 +1,56 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/requirement
-layer: requirements
-status: draft
-owner: <owner>
-artifact_id: REQ-####
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/requirement"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "requirements"
+artifact_id: "{{ARTIFACT_ID}}"
 parent_ids: []
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Problem and Goals
 
-{{problem_and_goals}}
+{{PROBLEM_AND_GOALS}}
 
 ## Stakeholders and User Needs
 
-{{stakeholders_and_user_needs}}
+{{STAKEHOLDERS_AND_USER_NEEDS}}
 
 ## Functional Requirements
 
-- **REQ-####-FR-####**: {{functional_requirement}}
+- **REQ-####-FR-####**: {{FUNCTIONAL_REQUIREMENT}}
 
 ## Non-functional Requirements
 
-- **REQ-####-NFR-####**: {{non_functional_requirement}}
+- **REQ-####-NFR-####**: {{NON_FUNCTIONAL_REQUIREMENT}}
 
 ## Interface Requirements
 
-- **REQ-####-IF-####**: {{solution_independent_interface_requirement}}
+- **REQ-####-IF-####**: {{SOLUTION_INDEPENDENT_INTERFACE_REQUIREMENT}}
 
 ## Constraints
 
-{{constraints}}
+{{CONSTRAINTS}}
 
 ## Acceptance Criteria
 
-{{acceptance_criteria}}
+{{ACCEPTANCE_CRITERIA}}
 
 ## Traceability
 
-{{architecture_and_spec_links}}
+{{ARCHITECTURE_AND_SPEC_LINKS}}
 
 ## Assumptions
 
-{{assumptions}}
+{{ASSUMPTIONS}}
 
 ## Risks
 
-{{risks}}
+{{RISKS}}

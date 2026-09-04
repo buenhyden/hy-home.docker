@@ -1,14 +1,14 @@
 ---
-title: Operational Readiness Closure Requirements
-version: 1.0.0
-type: sdlc/requirement
-layer: requirements
-status: active
+title: "Operational Readiness Closure Requirements"
+version: "1.0.0"
+type: "sdlc/requirement"
+status: "approved"
 owner: "@buenhyden"
-artifact_id: REQ-0025
+updated: "2026-09-04"
+layer: "requirements"
+artifact_id: "REQ-0025"
 parent_ids: []
-created: 2026-07-19
-updated: 2026-09-01
+created: "2026-07-19"
 ---
 # Operational Readiness Closure Requirements
 

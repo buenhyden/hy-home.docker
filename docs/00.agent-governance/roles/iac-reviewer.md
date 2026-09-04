@@ -1,16 +1,17 @@
 ---
-title: iac-reviewer
-version: 1.0.0
-type: governance/role
-status: active
+title: "iac-reviewer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: iac-reviewer
-scope: infra
-tier: worker
-work_profile: adversarial-review
-permission_profile: read-only
+updated: "2026-09-04"
+agent_id: "iac-reviewer"
+scope: "infra"
+tier: "worker"
+work_profile: "adversarial-review"
+permission_profile: "read-only"
 skill_ids:
-- infra-cross-validate
+- "infra-cross-validate"
 ---
 
 # iac-reviewer

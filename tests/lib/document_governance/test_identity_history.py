@@ -434,6 +434,26 @@ class IdentityHistoryTests(unittest.TestCase):
 
         self.assertGreaterEqual(issued.high_water("requirement"), 99)
 
+    def test_deleted_worktree_source_is_history_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            source = root / "docs/90.references/research/0099-example/README.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "---\nartifact_id: RES-0099\n---\n",
+                encoding="utf-8",
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "add identity source")
+            source.unlink()
+
+            issued = collect_issued_identities(root)
+
+        self.assertIn(99, issued.numbers["research"])
+
     def test_tracked_identity_source_symlink_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

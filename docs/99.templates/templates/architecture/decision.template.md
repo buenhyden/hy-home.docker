@@ -1,48 +1,49 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/architecture-decision
-layer: architecture
-status: draft
-owner: <owner>
-artifact_id: ADR-####
-parent_ids: [AD-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-supersedes: []
-superseded_by: null
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/architecture-decision"
+status: "proposed"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "architecture"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Context
 
-{{context}}
+{{CONTEXT}}
 
 ## Decision Drivers
 
-{{decision_drivers}}
+{{DECISION_DRIVERS}}
 
 ## Options Considered
 
-{{options}}
+{{OPTIONS}}
 
 ## Decision
 
-{{decision}}
+{{DECISION}}
 
 ## Consequences
 
-{{consequences}}
+{{CONSEQUENCES}}
 
 ## Traceability
 
-{{requirements_architecture_and_specs}}
+{{REQUIREMENTS_ARCHITECTURE_AND_SPECS}}
 
 ## Compliance
 
-{{compliance}}
+{{COMPLIANCE}}
 
 ## Follow-up
 
-{{follow_up}}
+{{FOLLOW_UP}}

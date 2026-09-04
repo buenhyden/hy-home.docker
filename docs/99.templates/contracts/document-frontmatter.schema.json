@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hy-home.invalid/schemas/document-frontmatter.schema.json",
+  "title": "Governed authored document frontmatter values",
+  "description": "Value grammar only. Registry profiles own required, optional, forbidden, order, const, and enum rules.",
+  "type": "object",
+  "properties": {
+    "title": {"type": "string", "minLength": 1},
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^(common|governance|sdlc|operation|reference|archive)/[a-z][a-z0-9-]*$"
+    },
+    "status": {"type": "string", "minLength": 1},
+    "owner": {"type": "string", "minLength": 1},
+    "updated": {"type": "string", "format": "date"},
+    "layer": {"type": "string", "minLength": 1},
+    "artifact_id": {"type": "string", "minLength": 1},
+    "parent_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+    "supersedes": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+    "superseded_by": {"type": ["string", "null"]},
+    "created": {"type": "string", "format": "date"},
+    "observed_at": {"type": "string", "format": "date"},
+    "reviewed_at": {"type": "string", "format": "date"},
+    "next_review_at": {"type": "string", "format": "date"},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "resolved_at": {"type": ["string", "null"], "format": "date-time"},
+    "completed_at": {"type": "string", "format": "date-time"},
+    "generated_by": {"type": "string", "minLength": 1},
+    "runtime": {"type": "string", "minLength": 1},
+    "archive_disposition": {"type": "string", "minLength": 1},
+    "archive_reason": {"type": "string", "minLength": 1},
+    "archived_at": {"type": "string", "format": "date-time"},
+    "archived_blob": {"type": "string", "minLength": 1},
+    "archived_commit": {"type": "string", "minLength": 1},
+    "archived_from": {"type": "string", "minLength": 1},
+    "preservation_class": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
+    "action": {"type": "string", "minLength": 1},
+    "conditions": {"$ref": "#/$defs/hookConditions"},
+    "enabled": {"type": "boolean"},
+    "event": {"type": "string", "minLength": 1},
+    "pattern": {"type": "string", "minLength": 1},
+    "agent_id": {"type": "string", "minLength": 1},
+    "scope": {"type": "string", "minLength": 1},
+    "tier": {"type": "string", "minLength": 1},
+    "work_profile": {"type": "string", "minLength": 1},
+    "permission_profile": {"type": "string", "minLength": 1},
+    "skill_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+    "function_id": {"type": "string", "minLength": 1},
+    "owner_agent": {"type": "string", "minLength": 1},
+    "review_cycle": {"type": "string", "minLength": 1},
+    "model": {"type": "string", "minLength": 1},
+    "model_reasoning_effort": {"type": "string", "minLength": 1},
+    "effort": {"type": "string", "minLength": 1},
+    "permissionMode": {"type": "string", "minLength": 1},
+    "skills": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+    "tools": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
+  },
+  "$defs": {
+    "hookConditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "operator", "pattern"],
+        "properties": {
+          "field": {"type": "string", "minLength": 1},
+          "operator": {"type": "string", "minLength": 1},
+          "pattern": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}

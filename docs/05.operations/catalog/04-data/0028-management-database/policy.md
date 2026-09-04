@@ -1,15 +1,15 @@
 ---
-title: Management Database Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Management Database Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0028
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0028"
 parent_ids:
-  - AD-0004
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0004"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0028-management-database/policy.md -->
 

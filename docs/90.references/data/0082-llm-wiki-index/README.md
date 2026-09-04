@@ -1,16 +1,16 @@
 ---
-title: LLM Wiki Generated Index
-version: 1.0.0
-type: reference/data-pack
-layer: references
-status: active
+title: "LLM Wiki Generated Index"
+version: "1.0.0"
+type: "reference/data-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: DATA-0082
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "DATA-0082"
 parent_ids: []
-created: 2026-08-19
-updated: 2026-08-23
-observed_at: 2026-08-23
-generated_by: scripts/knowledge/generate-llm-wiki.py
+created: "2026-08-19"
+observed_at: "2026-08-23"
+generated_by: "scripts/knowledge/generate-llm-wiki.py"
 ---
 
 # LLM Wiki Generated Index
@@ -292,6 +292,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0028-operational-readiness-closure.md](../../../02.architecture/descriptions/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0030-document-lifecycle-governance.md](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Markdown reference |
 | [docs/02.architecture/descriptions/README.md](../../../02.architecture/descriptions/README.md) | folder index |
+| [docs/03.specs/0172-document-contract-convergence/plan.md](../../../03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0172-document-contract-convergence/spec.md](../../../03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
@@ -573,10 +576,12 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md](../../research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/0081-roadmap/README.md](../../research/0081-roadmap/README.md) | folder index |
 | [docs/90.references/research/0084-github-actions-platform/README.md](../../research/0084-github-actions-platform/README.md) | folder index |
+| [docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/README.md](../../research/0085-workspace-engineering-main-baseline-assessment/README.md) | folder index |
+| [docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md](../../research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md) | Markdown reference |
 | [docs/90.references/research/README.md](../../research/README.md) | folder index |
 | [docs/99.templates/README.md](../../../99.templates/README.md) | folder index |
+| [docs/99.templates/contracts/document-frontmatter.schema.json](../../../99.templates/contracts/document-frontmatter.schema.json) | JSON registry |
 | [docs/99.templates/contracts/document-profile.schema.json](../../../99.templates/contracts/document-profile.schema.json) | JSON registry |
-| [docs/99.templates/contracts/frontmatter.schema.json](../../../99.templates/contracts/frontmatter.schema.json) | JSON registry |
 | [docs/99.templates/registry.json](../../../99.templates/registry.json) | JSON registry |
 | [docs/99.templates/templates/README.md](../../../99.templates/templates/README.md) | folder index |
 | [docs/99.templates/templates/architecture/decision.template.md](../../../99.templates/templates/architecture/decision.template.md) | Markdown reference |

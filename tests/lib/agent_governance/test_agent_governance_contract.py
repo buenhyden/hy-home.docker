@@ -263,26 +263,26 @@ class AgentGovernanceContractTests(unittest.TestCase):
             "role-id": (
                 "docs/00.agent-governance/roles/code-reviewer.md",
                 "docs/00.agent-governance/roles/evil: true.md",
-                "agent_id: code-reviewer",
-                "agent_id: 'evil: true'",
+                'agent_id: "code-reviewer"',
+                'agent_id: "evil: true"',
             ),
             "skill-id": (
                 "docs/00.agent-governance/skills/code-review-dimensions.md",
                 "docs/00.agent-governance/skills/evil: true.md",
-                "function_id: code-review-dimensions",
-                "function_id: 'evil: true'",
+                'function_id: "code-review-dimensions"',
+                'function_id: "evil: true"',
             ),
             "owner-id": (
                 "docs/00.agent-governance/skills/code-review-dimensions.md",
                 "docs/00.agent-governance/skills/code-review-dimensions.md",
-                "owner_agent: code-reviewer",
-                "owner_agent: 'evil: true'",
+                'owner_agent: "code-reviewer"',
+                'owner_agent: "evil: true"',
             ),
             "skill-reference": (
                 "docs/00.agent-governance/roles/code-reviewer.md",
                 "docs/00.agent-governance/roles/code-reviewer.md",
-                "- code-review-dimensions",
-                "- 'evil: true'",
+                '- "code-review-dimensions"',
+                '- "evil: true"',
             ),
         }
         for name, (source_name, target_name, before, after) in cases.items():
@@ -291,7 +291,9 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 copy_governance_fixture(root)
                 source = root / source_name
                 target = root / target_name
-                text = source.read_text(encoding="utf-8").replace(before, after, 1)
+                original = source.read_text(encoding="utf-8")
+                text = original.replace(before, after, 1)
+                self.assertNotEqual(original, text)
                 if target != source:
                     source.unlink()
                 target.write_text(text, encoding="utf-8")

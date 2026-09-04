@@ -1,14 +1,14 @@
 ---
-title: AI GPU Recovery Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "AI GPU Recovery Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0055
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0055"
 parent_ids: []
-created: 2026-03-25
-updated: 2026-08-11
+created: "2026-03-25"
 ---
 <!-- Target: docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md -->
 

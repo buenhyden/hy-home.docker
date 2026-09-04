@@ -1,9 +1,10 @@
 ---
-title: Documentation Protocol
-version: 1.0.0
-type: governance/policy
-status: active
+title: "Documentation Protocol"
+version: "2.0.0"
+type: "governance/policy"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 # Documentation Protocol
@@ -22,7 +23,8 @@ authoring behavior and `scripts/` owns executable validation.
   and executable interface contracts.
 - Stage 05 owns operator guidance, policies, runbooks, and incidents.
 - Stage 90 owns non-normative research, audits, and reference data.
-- Stage 98 owns minimal migration and tombstone navigation; Git stores history.
+- Stage 98 owns frozen preserved bodies plus minimal migration and tombstone
+  records; Git proves the preserved source and supplies recovery history.
 - Stage 99 owns profiles, schemas, and copyable templates.
 
 Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
@@ -45,14 +47,21 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
    instead of allocating a new number.
 9. Declare the frontmatter its registry profile requires, in the registry's
    `common.frontmatter_order`. The registry owns which keys a profile requires
-   and permits; `contracts/frontmatter.schema.json` owns their value shapes.
+   and permits; `contracts/document-frontmatter.schema.json` owns their value shapes.
+   Every authored Markdown profile begins with `title`, `version`, `type`,
+   `status`, `owner`, and `updated` in that exact order. String, date,
+   version, and identifier scalars are double-quoted. Profile-specific fields
+   follow the common six in Registry order.
    The reasons behind that envelope are the part this policy owns. `type`
    carries the `family/kind` document role, so a reader learns a document's
    family without resolving its path. `title` never repeats the artifact
    identity, because the identity is already a field. A new document starts its
-   `version` at `1.0.0`, so a first revision is distinguishable from an unset
-   value. `layer` names the owning stage without its numeric prefix and is
-   omitted wherever the canonical path already states the authority. A profile
+   `version` at `0.1.0`; approval of its first stable contract promotes it to
+   `1.0.0`. Patch, minor, and major increments communicate compatible correction,
+   compatible meaning growth, and incompatible contract change respectively.
+   Lifecycle status is independent of this content version. `layer` names the
+   owning stage without its numeric prefix and is omitted wherever the canonical
+   path already states the authority. A profile
    without an identity declares no `artifact_id` and never invents one. A
    provider-owned runtime projection is exempt from this envelope entirely,
    because its shape belongs to the runtime that reads it.
@@ -108,13 +117,19 @@ and its still-current meaning has moved to a canonical owner.
 
 ### Retention by status
 
-| Status | Stage 03 Spec Package | Stage 01 / Stage 02 document |
+| Profile family | Current-bearing flow | Terminal or disposition state |
 | --- | --- | --- |
-| `draft` | keep every member | keep |
-| `active` | keep every member | keep |
-| `completed` | mark every member `completed` and preserve the whole package under `docs/98.archive/completed/` in the same change | not reachable in the `living` lifecycle |
-| `superseded` | preserve the package under `docs/98.archive/superseded/`, keeping `superseded_by` | preserve under `docs/98.archive/superseded/` with `superseded_by` |
-| `retired` | preserve the package under `docs/98.archive/retired/` and record one Tombstone | preserve under `docs/98.archive/retired/` and record one Tombstone |
+| Requirement | `draft → review → approved` | `superseded`, `retired` |
+| Architecture Description, Guide, Runbook | `draft → review → active` | `superseded`, `retired` |
+| ADR | `proposed → accepted` or `rejected` | `rejected`, `superseded`, `retired` |
+| Spec | `draft → review → approved → active` | `completed`, `cancelled`, `superseded` |
+| Plan | `draft → approved → active` | `completed`, `cancelled` |
+| Task | `draft → ready → in-progress`; `blocked` returns to `in-progress` | `completed`, `cancelled` |
+| Policy | `draft → review → approved → active` | `superseded`, `retired` |
+| Incident | `detected → investigating → mitigated` | `resolved` |
+| Postmortem | `draft → review` | `published` |
+| Reference publication | `draft → review → published` | `superseded`, `retired` |
+| Migration or Tombstone | none; the record is immutable when created | `sealed` |
 
 Run the all-files QA wrapper before the change that completes a package. It
 binds its evidence to a Task under `docs/03.specs/`, and completion preserves
@@ -153,8 +168,9 @@ Age may trigger a disposition review. It never triggers a deletion.
 
 One Tombstone records one retired package or one retired standalone document,
 never one per member. It carries the retired path, the replacement or `none`,
-the reason, and the recovery commit. Git stores the content; the Tombstone is
-the tracked pointer that keeps the content findable.
+the reason, and the recovery commit. The matching Stage 98 preserved copy stores
+the frozen body; Git proves its source and provides recovery history. The
+Tombstone is the tracked disposition record that keeps the content findable.
 
 A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
 namespace of the document it retires. Every stage that can retire a document has

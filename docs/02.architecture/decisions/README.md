@@ -1,10 +1,11 @@
 ---
-title: Architecture Decision Records
-version: 1.0.0
-type: common/readme
-layer: architecture
-status: active
+title: "Architecture Decision Records"
+version: "1.0.1"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "architecture"
 ---
 
 # Architecture Decision Records
@@ -36,6 +37,7 @@ docs/02.architecture/decisions/
 ├── ...
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0029-workspace-governance-authority.md
+├── 0031-preserved-archive-record.md
 └── README.md
 ```
 
@@ -50,7 +52,9 @@ docs/02.architecture/decisions/
 - [`ADR-0029`](./0029-workspace-governance-authority.md):
   active workspace governance authority decision; ADR-0027을 supersede한다.
 - [`ADR-0030`](../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md):
-  은퇴 기록으로서의 Tombstone decision.
+  ADR-0031이 supersede한 Tombstone-only preservation decision.
+- [`ADR-0031`](./0031-preserved-archive-record.md):
+  frozen body와 disposition record를 분리하는 active archive preservation decision.
 
 ## How to Work in This Area
 
@@ -64,7 +68,7 @@ docs/02.architecture/decisions/
 ### Documentation Standards
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: ADR-<4-digit-id>`,
-  `artifact_type: adr`을 일치시킨다.
+  `type: sdlc/architecture-decision`을 일치시킨다.
 - `parent_ids`는 실제 Architecture Description만 포함한다.
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
 - 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.

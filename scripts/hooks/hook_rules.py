@@ -22,6 +22,7 @@ real conditions are contextual and already live in the dispatcher's
 
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 from dataclasses import dataclass
@@ -45,8 +46,14 @@ class Rule:
 
 def _unquote(value: str) -> str:
     value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-        return value[1:-1]
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        try:
+            decoded = json.loads(value)
+        except json.JSONDecodeError:
+            return value[1:-1]
+        return decoded if isinstance(decoded, str) else value
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
     return value
 
 
@@ -80,12 +87,13 @@ def _parse_rule(path: pathlib.Path) -> Rule | None:
         if line == "conditions:":
             in_conditions = True
             continue
-        if in_conditions and line.startswith("  - "):
+        if in_conditions and (line.startswith("- ") or line.startswith("  - ")):
             conditions.append({})
-            key, _, value = line[4:].partition(":")
+            item = line[2:] if line.startswith("- ") else line[4:]
+            key, _, value = item.partition(":")
             conditions[-1][key.strip()] = _unquote(value)
             continue
-        if in_conditions and line.startswith("    ") and conditions:
+        if in_conditions and line.startswith("  ") and conditions:
             key, _, value = line.strip().partition(":")
             conditions[-1][key.strip()] = _unquote(value)
             continue

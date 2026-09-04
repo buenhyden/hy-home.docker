@@ -1,16 +1,16 @@
 ---
-title: Agentic Engineering Research Pack
-version: 1.0.0
-type: reference/research-pack
-layer: references
-status: active
+title: "Agentic Engineering Research Pack"
+version: "1.0.0"
+type: "reference/research-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: RES-0002
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "RES-0002"
 parent_ids:
-  - SPEC-0158
-created: 2026-08-28
-updated: 2026-08-30
-observed_at: 2026-08-28
+- "SPEC-0158"
+created: "2026-08-28"
+observed_at: "2026-08-28"
 ---
 
 # Agentic Engineering Research Pack

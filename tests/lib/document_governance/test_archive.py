@@ -726,8 +726,8 @@ class ArchiveMinimizationTests(unittest.TestCase):
 
         tombstone = next((ROOT / "docs/98.archive/tombstones").rglob("*.md"))
         tombstone_text = tombstone.read_text(encoding="utf-8").replace(
-            "status: completed\n",
-            "status: completed\nunexpected: true\n",
+            'status: "sealed"\n',
+            'status: "sealed"\nunexpected: true\n',
             1,
         )
         with self.assertRaisesRegex(ValueError, "minimal contract"):

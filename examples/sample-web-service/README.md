@@ -1,5 +1,10 @@
 ---
-status: active
+title: "sample-web-service"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-04"
 ---
 
 <!-- Target: examples/sample-web-service/README.md -->

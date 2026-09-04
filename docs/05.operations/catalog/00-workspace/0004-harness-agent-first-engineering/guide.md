@@ -1,15 +1,15 @@
 ---
-title: Harness / Agent-first Engineering Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Harness / Agent-first Engineering Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0004
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0004"
 parent_ids:
-  - SPEC-0094
-created: 2026-06-04
-updated: 2026-08-21
+- "SPEC-0094"
+created: "2026-06-04"
 ---
 
 # Harness / Agent-first Engineering Usage Guide

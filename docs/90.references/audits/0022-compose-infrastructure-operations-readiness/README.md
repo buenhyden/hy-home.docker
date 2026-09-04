@@ -1,17 +1,17 @@
 ---
 title: "Reference: Compose, Infrastructure, and Operations Readiness"
-version: 1.0.0
-type: reference/audit-pack
-layer: references
-status: active
+version: "1.0.0"
+type: "reference/audit-pack"
+status: "published"
 owner: "@buenhyden"
-artifact_id: AUD-0022
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "AUD-0022"
 parent_ids:
-- AUD-0026
-created: '2026-07-05'
-updated: '2026-08-23'
-observed_at: '2026-07-05'
-reviewed_at: 2026-07-22
+- "AUD-0026"
+created: "2026-07-05"
+observed_at: "2026-07-05"
+reviewed_at: "2026-07-22"
 ---
 
 # Reference: Compose, Infrastructure, and Operations Readiness

@@ -1,12 +1,13 @@
 ---
-title: infra-validate
-version: 1.0.0
-type: governance/skill
-status: active
+title: "infra-validate"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: infra-validate
-scope: infra
-owner_agent: infra-implementer
+updated: "2026-09-04"
+function_id: "infra-validate"
+scope: "infra"
+owner_agent: "infra-implementer"
 ---
 
 # infra-validate

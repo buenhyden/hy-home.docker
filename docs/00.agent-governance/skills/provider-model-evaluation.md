@@ -1,12 +1,13 @@
 ---
-title: provider-model-evaluation
-version: 1.0.0
-type: governance/skill
-status: active
+title: "provider-model-evaluation"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: provider-model-evaluation
-scope: qa
-owner_agent: eval-engineer
+updated: "2026-09-04"
+function_id: "provider-model-evaluation"
+scope: "qa"
+owner_agent: "eval-engineer"
 ---
 
 # provider-model-evaluation

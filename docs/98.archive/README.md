@@ -1,10 +1,11 @@
 ---
-title: 98.archive
-version: 1.0.0
-type: common/readme
-layer: archive
-status: active
+title: "98.archive"
+version: "1.1.0"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
+updated: "2026-09-04"
+layer: "archive"
 ---
 
 # 98.archive
@@ -95,12 +96,14 @@ frontmatter가 이미 말합니다.
 4. 대규모 이동은 해당
    [Migration](migrations/0003-workspace-governance-simplification.md)의
    source/target mapping으로 찾습니다.
-5. `python3 scripts/validation/check-document-corpus-lifecycle.py --mode check-recovery`
-   로 모든 `commit:path`가 regular Git blob인지 다시 증명합니다.
+5. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,
+   tombstone, frozen preserved body, decision link, recovery blob을 한 번에
+   검증합니다. 이 CLI는 별도 `--mode`를 제공하지 않습니다.
 
-활성 문서는 보존 기록을 직접 링크할 수 있습니다. 그 기록은 실재하는 파일이기
-때문입니다. Tombstone은 직접 링크하지 않고 이 README 또는 관련 Migration을
-통해 조회합니다.
+활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 링크할
+수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 Stage 00/01/02/05
+문서를 함께 연결해야 합니다. `retired/` 보존본, Tombstone, Migration은 현재
+권위의 의존성이 아니며 이 README 또는 관련 Migration을 통해 탐색합니다.
 
 ## Related Documents
 

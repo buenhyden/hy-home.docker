@@ -1,15 +1,15 @@
 ---
-title: 07-Workflow Optimization Hardening Runbook
-version: 1.0.0
-type: operation/runbook
-layer: operations
-status: active
+title: "07-Workflow Optimization Hardening Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
 owner: "@buenhyden"
-artifact_id: RUN-0054
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "RUN-0054"
 parent_ids:
-  - GDE-0054
-created: 2026-05-17
-updated: 2026-08-11
+- "GDE-0054"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md -->
 

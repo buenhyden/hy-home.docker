@@ -1,15 +1,15 @@
 ---
-title: Retention and Performance Policies
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "Retention and Performance Policies"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0048
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0048"
 parent_ids:
-  - AD-0006
-created: 2026-03-25
-updated: 2026-09-01
+- "AD-0006"
+created: "2026-03-25"
 ---
 <!-- Target: docs/05.operations/catalog/06-observability/0048-telemetry-retention/policy.md -->
 

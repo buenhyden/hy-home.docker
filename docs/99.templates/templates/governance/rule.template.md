@@ -1,36 +1,32 @@
 ---
-title: <title>
-version: "#.#.#"
-type: governance/hook-policy
-status: draft
-owner: <owner>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
-name: <hook-slug>
-enabled: true
-event: <event>
-pattern: <match-pattern>
-action: warn
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "governance/hook-policy"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Purpose
 
-{{why_this_runtime_rule_exists}}
+{{WHY_THIS_RUNTIME_RULE_EXISTS}}
 
 ## Trigger
 
-{{event_and_pattern_explanation}}
+{{EVENT_AND_PATTERN_EXPLANATION}}
 
 ## Operator Message
 
-{{message_shown_when_the_rule_fires}}
+{{MESSAGE_SHOWN_WHEN_THE_RULE_FIRES}}
 
 ## Remediation
 
-{{approved_alternative_action}}
+{{APPROVED_ALTERNATIVE_ACTION}}
 
 ## Related Documents
 
-{{owning_policy_and_parity_links}}
+{{OWNING_POLICY_AND_PARITY_LINKS}}

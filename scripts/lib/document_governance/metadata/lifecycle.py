@@ -21,7 +21,10 @@ from scripts.lib.document_governance.registry import (
     RegistryError,
     preserved_origin_path,
     classify_path as classify_registered_path,
+    declares_frozen_legacy_record,
+    declares_frozen_legacy_status,
     document_type,
+    validate_frontmatter,
 )
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 from scripts.lib.document_governance.metadata.heading import _validate_template_source
@@ -87,6 +90,7 @@ def validate_record(
     transition_overrides: Mapping[tuple[str, str, str], TransitionOverride]
     | None = None,
     migration_compaction_witness: Record | None = None,
+    enforce_initial_status: bool = False,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -136,6 +140,21 @@ def validate_record(
     template_findings = _validate_template_source(record, profiles)
     if template_findings is not None:
         return template_findings
+    try:
+        schema_findings = validate_frontmatter(record.metadata)
+    except RegistryError:
+        findings.append(
+            _finding(
+                record,
+                "frontmatter-schema-unavailable",
+                "frontmatter value schema cannot be trusted",
+            )
+        )
+    else:
+        findings.extend(
+            _finding(record, finding.code, finding.message)
+            for finding in schema_findings
+        )
     if record.path.as_posix() == TYPED_EXAMPLE_FIXTURE_PATH:
         if record.metadata.get("status") != TYPED_EXAMPLE_FIXTURE_STATUS:
             findings.append(
@@ -174,7 +193,9 @@ def validate_record(
         and isinstance(legacy_map, Mapping)
         and isinstance(legacy_map.get(record.artifact_type), dict)
     )
-    if record.artifact_type in _typed_target_types(profiles):
+    if record.artifact_type in _typed_target_types(
+        profiles
+    ) and not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
         frontmatter_order = common.get("frontmatter_order", [])
         if isinstance(frontmatter_order, list):
             order_index = {key: index for index, key in enumerate(frontmatter_order)}
@@ -276,7 +297,12 @@ def validate_record(
     status = record.metadata.get("status")
     allowed_statuses = raw_profile.get("allowed_statuses", [])
     if status is not None:
-        if not isinstance(status, str) or status not in allowed_statuses:
+        frozen_legacy_status = declares_frozen_legacy_status(
+            raw_profile, record.path.as_posix(), status
+        )
+        if (not isinstance(status, str) or status not in allowed_statuses) and not (
+            frozen_legacy_status
+        ):
             findings.append(
                 _finding(
                     record,
@@ -293,6 +319,21 @@ def validate_record(
                 )
             )
     previous_status = record.previous_status
+    initial_status = raw_profile.get("initial_status")
+    if (
+        enforce_initial_status
+        and isinstance(status, str)
+        and previous_status is None
+        and isinstance(initial_status, str)
+        and status != initial_status
+    ):
+        findings.append(
+            _finding(
+                record,
+                "invalid-initial-status",
+                f"new {profile_label} documents must start at {initial_status}",
+            )
+        )
     if isinstance(status, str) and previous_status and status != previous_status:
         transitions = raw_profile.get("transitions", common.get("transitions", {}))
         allowed_next = (

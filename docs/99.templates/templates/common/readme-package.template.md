@@ -1,47 +1,48 @@
 ---
-title: <title>
-version: "#.#.#"
-type: common/package-readme
-status: draft
-owner: <owner>
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "common/package-readme"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Overview
 
-{{overview}}
+{{OVERVIEW}}
 
 ## Audience
 
-{{audience}}
+{{AUDIENCE}}
 
 ## Scope
 
-{{scope}}
+{{SCOPE}}
 
 ## Structure
 
-{{structure}}
+{{STRUCTURE}}
 
 ## Tech Stack
 
-{{tech_stack}}
+{{TECH_STACK}}
 
 ## Configuration
 
-{{configuration}}
+{{CONFIGURATION}}
 
 ## Validation
 
-{{validation}}
+{{VALIDATION}}
 
 ## How to Work in This Area
 
-{{work_instructions}}
+{{WORK_INSTRUCTIONS}}
 
 ## Related Documents
 
-{{related_documents}}
+{{RELATED_DOCUMENTS}}

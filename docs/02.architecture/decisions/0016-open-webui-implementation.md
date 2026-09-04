@@ -1,15 +1,15 @@
 ---
-title: Open WebUI as Primary AI/RAG Interface
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Open WebUI as Primary AI/RAG Interface"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0016
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0016"
 parent_ids:
-  - AD-0013
-created: 2026-03-27
-updated: 2026-09-01
+- "AD-0013"
+created: "2026-03-27"
 ---
 # ADR-0016: Open WebUI as Primary AI/RAG Interface
 

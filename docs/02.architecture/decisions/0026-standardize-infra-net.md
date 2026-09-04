@@ -1,15 +1,15 @@
 ---
-title: Standardize infra_net Subnet and Static IP Assignment
-version: 1.0.0
-type: sdlc/architecture-decision
-layer: architecture
-status: active
+title: "Standardize infra_net Subnet and Static IP Assignment"
+version: "1.0.0"
+type: "sdlc/architecture-decision"
+status: "accepted"
 owner: "@buenhyden"
-artifact_id: ADR-0026
+updated: "2026-09-04"
+layer: "architecture"
+artifact_id: "ADR-0026"
 parent_ids:
-  - AD-0026
-created: 2026-04-01
-updated: 2026-08-10
+- "AD-0026"
+created: "2026-04-01"
 ---
 # ADR-0026: Standardize infra_net Subnet and Static IP Assignment
 

@@ -1,14 +1,15 @@
 ---
-title: Agentic Research Pack Refresh Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Agentic Research Pack Refresh Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-RES-0001
-parent_ids: [MIG-0003]
-created: 2026-08-30
-updated: 2026-08-30
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-RES-0001"
+parent_ids:
+- "MIG-0003"
+created: "2026-08-30"
 ---
 
 # Agentic Research Pack Refresh Tombstone

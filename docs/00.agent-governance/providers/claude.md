@@ -1,10 +1,11 @@
 ---
-title: Claude Provider Adapter
-version: 1.0.0
-type: governance/provider
-status: active
+title: "Claude Provider Adapter"
+version: "1.0.0"
+type: "governance/provider"
+status: "active"
 owner: "@buenhyden"
-runtime: claude
+updated: "2026-09-04"
+runtime: "claude"
 ---
 
 # Claude Provider Adapter

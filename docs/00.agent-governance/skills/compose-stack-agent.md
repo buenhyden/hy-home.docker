@@ -1,12 +1,13 @@
 ---
-title: compose-stack-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "compose-stack-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: compose-stack-agent
-scope: infra
-owner_agent: infra-implementer
+updated: "2026-09-04"
+function_id: "compose-stack-agent"
+scope: "infra"
+owner_agent: "infra-implementer"
 ---
 
 # compose-stack-agent

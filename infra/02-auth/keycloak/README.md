@@ -1,11 +1,11 @@
 ---
-title: Keycloak IAM
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Keycloak IAM"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-12'
-updated: '2026-09-02'
+updated: "2026-09-04"
+created: "2025-11-12"
 ---
 
 # Keycloak IAM

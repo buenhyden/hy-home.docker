@@ -1,14 +1,15 @@
 ---
 title: "Archive Tombstone: 08-ai LLM Inference Guide"
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-GDE-0090
-parent_ids: [MIG-0001]
-created: 2026-06-04
-updated: 2026-08-23
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-GDE-0090"
+parent_ids:
+- "MIG-0001"
+created: "2026-06-04"
 ---
 
 # Archive Tombstone: 08-ai LLM Inference Guide

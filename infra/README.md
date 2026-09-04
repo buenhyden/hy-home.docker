@@ -1,11 +1,11 @@
 ---
-title: Infrastructure Surface
-version: 1.0.0
-type: common/repository-readme
-status: active
+title: "Infrastructure Surface"
+version: "1.0.0"
+type: "common/repository-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2025-11-24'
-updated: '2026-08-30'
+updated: "2026-09-04"
+created: "2025-11-24"
 ---
 
 # Hy-Home Infrastructure (infra/)

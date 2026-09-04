@@ -1,46 +1,49 @@
 ---
-title: <title>
-version: "#.#.#"
-type: sdlc/task
-layer: specs
-status: draft
-owner: <owner>
-artifact_id: SPEC-####-TSK-####
-parent_ids: [SPEC-####, SPEC-####-PLAN-####]
-created: YYYY-MM-DD
-updated: YYYY-MM-DD
+title: "{{TITLE}}"
+version: "0.1.0"
+type: "sdlc/task"
+status: "draft"
+owner: "{{OWNER}}"
+updated: "{{UPDATED}}"
+layer: "specs"
+artifact_id: "{{ARTIFACT_ID}}"
+parent_ids:
+- "{{PARENT_ID}}"
+created: "{{CREATED}}"
 ---
 
-# {{title}}
+<!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+
+# {{TITLE}}
 
 ## Objective
 
-{{objective}}
+{{OBJECTIVE}}
 
 ## Inputs
 
-{{inputs}}
+{{INPUTS}}
 
 ## Work Log
 
-{{work_log}}
+{{WORK_LOG}}
 
 ## Verification Evidence
 
-{{red_green_and_gate_evidence}}
+{{RED_GREEN_AND_GATE_EVIDENCE}}
 
 ## Review Evidence
 
-{{review_evidence}}
+{{REVIEW_EVIDENCE}}
 
 ## Commit Ledger
 
-{{commit_ledger}}
+{{COMMIT_LEDGER}}
 
 ## Rulings
 
-{{rulings}}
+{{RULINGS}}
 
 ## Deferred Items
 
-{{deferred_items}}
+{{DEFERRED_ITEMS}}

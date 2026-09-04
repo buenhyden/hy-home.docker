@@ -1,17 +1,18 @@
 ---
-title: ci-cd-engineer
-version: 1.0.0
-type: governance/role
-status: active
+title: "ci-cd-engineer"
+version: "1.0.0"
+type: "governance/role"
+status: "active"
 owner: "@buenhyden"
-agent_id: ci-cd-engineer
-scope: ops
-tier: worker
-work_profile: complex-implementation
-permission_profile: workspace-write
+updated: "2026-09-04"
+agent_id: "ci-cd-engineer"
+scope: "ops"
+tier: "worker"
+work_profile: "complex-implementation"
+permission_profile: "workspace-write"
 skill_ids:
-- ci-cd-patterns
-- deployment-pipeline-design
+- "ci-cd-patterns"
+- "deployment-pipeline-design"
 ---
 
 # ci-cd-engineer

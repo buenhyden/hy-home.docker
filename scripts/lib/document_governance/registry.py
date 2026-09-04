@@ -29,7 +29,7 @@ DEFAULT_PROFILE_SCHEMA = (
     ROOT / "docs/99.templates/contracts/document-profile.schema.json"
 )
 DEFAULT_FRONTMATTER_SCHEMA = (
-    ROOT / "docs/99.templates/contracts/frontmatter.schema.json"
+    ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
 )
 MAX_REGISTRY_BYTES = 1024 * 1024
 MAX_SCHEMA_BYTES = 256 * 1024
@@ -138,6 +138,8 @@ class DocumentRegistry:
     profiles: Mapping[str, Mapping[str, object]]
     template_roles: Mapping[str, Mapping[str, object]]
     lifecycles: Mapping[str, tuple[str, ...]]
+    lifecycle_initial_statuses: Mapping[str, str]
+    lifecycle_terminal_statuses: Mapping[str, tuple[str, ...]]
     identity_spaces: Mapping[str, IdentitySpace]
     transitions: Mapping[str, Mapping[str, tuple[str, ...]]]
     indexes: Mapping[str, str]
@@ -171,6 +173,41 @@ def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
     # The registry freeze turns declared lists into tuples, so accept both.
     return isinstance(exceptions, (list, tuple)) and any(
         isinstance(item, Mapping) and item.get("kind") == "provider-owned-binding"
+        for item in exceptions
+    )
+
+
+def declares_frozen_legacy_status(
+    profile: Mapping[str, object], path: str, status: object
+) -> bool:
+    """Return whether Registry preserves one exact frozen legacy status."""
+
+    exceptions = profile.get("exceptions")
+    if not isinstance(exceptions, (list, tuple)):
+        return False
+    return any(
+        isinstance(item, Mapping)
+        and item.get("kind") == "frozen-legacy-status"
+        and item.get("status") == status
+        and isinstance(item.get("paths"), (list, tuple))
+        and path in item["paths"]
+        for item in exceptions
+    )
+
+
+def declares_frozen_legacy_record(
+    profile: Mapping[str, object], path: str
+) -> bool:
+    """Return whether Registry identifies one exact byte-frozen legacy record."""
+
+    exceptions = profile.get("exceptions")
+    if not isinstance(exceptions, (list, tuple)):
+        return False
+    return any(
+        isinstance(item, Mapping)
+        and item.get("kind") == "frozen-legacy-status"
+        and isinstance(item.get("paths"), (list, tuple))
+        and path in item["paths"]
         for item in exceptions
     )
 
@@ -353,6 +390,7 @@ def validate_registry(
         return tuple(sorted(set(findings)))
     profiles = raw.get("profiles")
     profile_ids: list[str] = []
+    profile_types: list[str] = []
     profile_lifecycles: dict[str, object] = {}
     profile_entries: list[tuple[int, Mapping[str, object]]] = []
     if isinstance(profiles, list):
@@ -360,7 +398,10 @@ def validate_registry(
             if not isinstance(profile, Mapping):
                 continue
             profile_entries.append((index, profile))
-            profile_id = profile.get("profile_id")
+            profile_id = profile.get("id")
+            profile_type = profile.get("type")
+            if isinstance(profile_type, str):
+                profile_types.append(profile_type)
             if isinstance(profile_id, str):
                 profile_ids.append(profile_id)
                 profile_lifecycles[profile_id] = profile.get("lifecycle_id")
@@ -393,8 +434,13 @@ def validate_registry(
     duplicates = sorted({name for name in profile_ids if profile_ids.count(name) > 1})
     for name in duplicates:
         findings.append(RegistryFinding("profile-duplicate", "profiles", name))
+    duplicate_types = sorted(
+        {name for name in profile_types if profile_types.count(name) > 1}
+    )
+    for name in duplicate_types:
+        findings.append(RegistryFinding("profile-type-duplicate", "profiles", name))
     for left_offset, (left_index, left) in enumerate(profile_entries):
-        left_id = left.get("profile_id")
+        left_id = left.get("id")
         left_pattern = left.get("path_pattern")
         if (
             not isinstance(left_id, str)
@@ -403,7 +449,7 @@ def validate_registry(
         ):
             continue
         for right_index, right in profile_entries[left_offset + 1 :]:
-            right_id = right.get("profile_id")
+            right_id = right.get("id")
             right_pattern = right.get("path_pattern")
             if (
                 not isinstance(right_id, str)
@@ -447,10 +493,10 @@ def validate_registry(
                 )
                 continue
             owners = [
-                other.get("profile_id")
+                other.get("id")
                 for _, other in profile_entries
                 if other is not profile
-                and other.get("profile_id") != "unsupported"
+                and other.get("id") != "unsupported"
                 and isinstance(other.get("path_pattern"), str)
                 and _path_regex(other["path_pattern"]).fullmatch(path)
             ]
@@ -458,7 +504,7 @@ def validate_registry(
                 findings.append(
                     RegistryFinding("profile-path-overlap", f"profiles.{index}", path)
                 )
-            additional_owners[path] = str(profile.get("profile_id"))
+            additional_owners[path] = str(profile.get("id"))
     roles = raw.get("template_roles")
     known_roles = set(roles) if isinstance(roles, Mapping) else set()
     role_sources: list[str] = []
@@ -466,7 +512,7 @@ def validate_registry(
         for role, definition in roles.items():
             if not isinstance(definition, Mapping):
                 continue
-            extra = set(definition) - {"source", "profile_id"}
+            extra = set(definition) - {"source", "profiles"}
             if extra:
                 findings.append(
                     RegistryFinding(
@@ -475,14 +521,17 @@ def validate_registry(
                         ",".join(sorted(extra)),
                     )
                 )
-            if definition.get("profile_id") not in known_profiles:
-                findings.append(
-                    RegistryFinding(
-                        "template-profile-unknown",
-                        f"template_roles.{role}",
-                        str(definition.get("profile_id")),
-                    )
-                )
+            role_profile_ids = definition.get("profiles")
+            if isinstance(role_profile_ids, list):
+                for profile_id in role_profile_ids:
+                    if profile_id not in known_profiles:
+                        findings.append(
+                            RegistryFinding(
+                                "template-profile-unknown",
+                                f"template_roles.{role}",
+                                str(profile_id),
+                            )
+                        )
             source = definition.get("source")
             if isinstance(source, str):
                 role_sources.append(source)
@@ -501,7 +550,7 @@ def validate_registry(
             RegistryFinding("template-source-duplicate", "template_roles", source)
         )
     for index, profile in profile_entries:
-        profile_id = profile.get("profile_id")
+        profile_id = profile.get("id")
         template_id = profile.get("template_id")
         if template_id is not None:
             definition = roles.get(template_id) if isinstance(roles, Mapping) else None
@@ -513,7 +562,7 @@ def validate_registry(
                         str(template_id),
                     )
                 )
-            elif definition.get("profile_id") != profile_id:
+            elif profile_id not in definition.get("profiles", ()):
                 findings.append(
                     RegistryFinding(
                         "profile-template-mismatch",
@@ -553,6 +602,45 @@ def validate_registry(
                             str(parent),
                         )
                     )
+        exceptions = profile.get("exceptions")
+        if isinstance(exceptions, list):
+            for exception_index, exception in enumerate(exceptions):
+                if (
+                    not isinstance(exception, Mapping)
+                    or exception.get("kind") != "frozen-legacy-status"
+                ):
+                    continue
+                exception_path = f"profiles.{index}.exceptions.{exception_index}"
+                paths = exception.get("paths")
+                status = exception.get("status")
+                path_pattern = profile.get("path_pattern")
+                valid_paths = (
+                    isinstance(paths, list)
+                    and bool(paths)
+                    and len(paths) == len(set(paths))
+                    and isinstance(path_pattern, str)
+                    and all(
+                        isinstance(path, str)
+                        and _registry_owned_root(path)
+                        and _safe_path_pattern(path)
+                        and "{" not in path
+                        and "}" not in path
+                        and _path_regex(path_pattern).fullmatch(path) is not None
+                        for path in paths
+                    )
+                )
+                if (
+                    set(exception) != {"kind", "status", "paths"}
+                    or not isinstance(status, str)
+                    or not valid_paths
+                ):
+                    findings.append(
+                        RegistryFinding(
+                            "frozen-status-exception-invalid",
+                            exception_path,
+                            "frozen legacy status exceptions require one status and exact owned paths",
+                        )
+                    )
         path_pattern = profile.get("path_pattern")
         artifact_pattern = profile.get("artifact_id_pattern")
         identity_relation = profile.get("identity_relation")
@@ -585,6 +673,20 @@ def validate_registry(
                         "type-contract-invalid",
                         f"profiles.{index}",
                         "frontmatter-required profiles must require exact type",
+                    )
+                )
+            common_six = ["title", "version", "type", "status", "owner", "updated"]
+            if (
+                not isinstance(required_frontmatter, list)
+                or required_frontmatter[: len(common_six)] != common_six
+                or not isinstance(optional_frontmatter, list)
+                or set(common_six) & set(optional_frontmatter)
+            ):
+                findings.append(
+                    RegistryFinding(
+                        "common-frontmatter-contract-invalid",
+                        f"profiles.{index}",
+                        "authored Markdown profiles must require the canonical common six first",
                     )
                 )
         elif frontmatter_policy == "absent" and (
@@ -670,6 +772,7 @@ def validate_registry(
                         )
                     )
     lifecycles = raw.get("lifecycles")
+    lifecycle_status_union: set[object] = set()
     if isinstance(lifecycles, Mapping):
         for lifecycle_id, lifecycle in lifecycles.items():
             if not isinstance(lifecycle, Mapping):
@@ -677,6 +780,27 @@ def validate_registry(
             statuses = lifecycle.get("statuses")
             transitions = lifecycle.get("transitions")
             status_set = set(statuses) if isinstance(statuses, list) else set()
+            lifecycle_status_union.update(status_set)
+            initial_status = lifecycle.get("initial_status")
+            terminal_statuses = lifecycle.get("terminal_statuses")
+            if initial_status not in status_set:
+                findings.append(
+                    RegistryFinding(
+                        "lifecycle-initial-status-invalid",
+                        f"lifecycles.{lifecycle_id}",
+                        "initial_status must be a registered lifecycle status",
+                    )
+                )
+            if not isinstance(terminal_statuses, list) or not set(
+                terminal_statuses
+            ) <= status_set:
+                findings.append(
+                    RegistryFinding(
+                        "lifecycle-terminal-status-invalid",
+                        f"lifecycles.{lifecycle_id}",
+                        "terminal_statuses must be registered lifecycle statuses",
+                    )
+                )
             if isinstance(transitions, Mapping):
                 if set(transitions) != status_set:
                     findings.append(
@@ -695,6 +819,51 @@ def validate_registry(
                                 "transition target is not a registered status",
                             )
                         )
+                if set(transitions) == status_set and all(
+                    isinstance(targets, list) for targets in transitions.values()
+                ):
+                    actual_terminal_statuses = {
+                        source for source, targets in transitions.items() if not targets
+                    }
+                    if set(terminal_statuses or ()) != actual_terminal_statuses:
+                        findings.append(
+                            RegistryFinding(
+                                "lifecycle-terminal-set-invalid",
+                                f"lifecycles.{lifecycle_id}",
+                                "terminal_statuses must exactly match statuses without outgoing transitions",
+                            )
+                        )
+                    if initial_status in status_set:
+                        reachable = {initial_status}
+                        pending = [initial_status]
+                        while pending:
+                            source = pending.pop()
+                            for target in transitions.get(source, []):
+                                if target not in reachable:
+                                    reachable.add(target)
+                                    pending.append(target)
+                        if reachable != status_set:
+                            findings.append(
+                                RegistryFinding(
+                                    "lifecycle-unreachable-status",
+                                    f"lifecycles.{lifecycle_id}",
+                                    "every lifecycle status must be reachable from initial_status",
+                                )
+                            )
+    common = raw.get("common")
+    common_statuses = (
+        set(common.get("allowed_statuses", ()))
+        if isinstance(common, Mapping)
+        else set()
+    )
+    if common_statuses != lifecycle_status_union:
+        findings.append(
+            RegistryFinding(
+                "lifecycle-status-union-invalid",
+                "common.allowed_statuses",
+                "allowed_statuses must exactly equal the lifecycle status union",
+            )
+        )
     spaces = raw.get("identity_spaces")
     if isinstance(spaces, Mapping):
         allocation_bounds_valid = _validate_identity_space_bounds(
@@ -758,27 +927,45 @@ def validate_registry(
     return tuple(sorted(set(findings)))
 
 
-TEMPLATE_PLACEHOLDER_SENTINELS: Mapping[str, str] = MappingProxyType(
-    {
-        "YYYY-MM-DDTHH:MM:SSZ": "2000-01-01T00:00:00Z",
-        "YYYY-MM-DD": "2000-01-01",
-        "#.#.#": "0.0.0",
-    }
+TEMPLATE_PLACEHOLDER = re.compile(r"^{{[A-Z][A-Z0-9_]*}}$")
+TEMPLATE_DATE_KEYS = frozenset(
+    {"created", "updated", "observed_at", "reviewed_at", "next_review_at"}
+)
+TEMPLATE_TIMESTAMP_KEYS = frozenset(
+    {"occurred_at", "resolved_at", "completed_at", "archived_at"}
 )
 
 
-def resolve_template_placeholders(values: Mapping[str, object]) -> dict[str, object]:
-    """Replace Stage 99 template placeholders with schema-valid sentinel values.
+def _template_sentinel(key: str) -> str:
+    if key in TEMPLATE_DATE_KEYS:
+        return "2000-01-01"
+    if key in TEMPLATE_TIMESTAMP_KEYS:
+        return "2000-01-01T00:00:00Z"
+    if key == "artifact_id":
+        return "EXAMPLE-0001"
+    if key in {"parent_ids", "supersedes"}:
+        return "PARENT-0001"
+    return "example"
 
-    A template source carries a readable placeholder where an authored document
-    carries a typed value. One shared table keeps the schema strict for authored
-    documents while every template consumer substitutes identically.
-    """
+
+def _resolve_template_value(key: str, value: object) -> object:
+    if isinstance(value, str) and TEMPLATE_PLACEHOLDER.fullmatch(value):
+        return _template_sentinel(key)
+    if isinstance(value, list):
+        return [_resolve_template_value(key, item) for item in value]
+    if isinstance(value, Mapping):
+        return {
+            str(nested_key): _resolve_template_value(str(nested_key), nested_value)
+            for nested_key, nested_value in value.items()
+        }
+    return value
+
+
+def resolve_template_placeholders(values: Mapping[str, object]) -> dict[str, object]:
+    """Replace uppercase template placeholders with schema-valid sentinels."""
 
     return {
-        key: TEMPLATE_PLACEHOLDER_SENTINELS.get(value, value)
-        if isinstance(value, str)
-        else value
+        str(key): _resolve_template_value(str(key), value)
         for key, value in values.items()
     }
 
@@ -1824,7 +2011,7 @@ def load_registry(
         raise RegistryError("registry members have invalid shapes")
     profiles = MappingProxyType(
         {
-            str(profile["profile_id"]): _freeze(profile)
+            str(profile["id"]): _freeze(profile)
             for profile in profiles_raw
             if isinstance(profile, Mapping)
         }
@@ -1834,6 +2021,22 @@ def load_registry(
             str(name): tuple(str(item) for item in value["statuses"])
             for name, value in lifecycles_raw.items()
             if isinstance(value, Mapping) and isinstance(value.get("statuses"), list)
+        }
+    )
+    lifecycle_initial_statuses = MappingProxyType(
+        {
+            str(name): str(value["initial_status"])
+            for name, value in lifecycles_raw.items()
+            if isinstance(value, Mapping)
+            and isinstance(value.get("initial_status"), str)
+        }
+    )
+    lifecycle_terminal_statuses = MappingProxyType(
+        {
+            str(name): tuple(str(item) for item in value["terminal_statuses"])
+            for name, value in lifecycles_raw.items()
+            if isinstance(value, Mapping)
+            and isinstance(value.get("terminal_statuses"), list)
         }
     )
     lifecycle_transitions = {
@@ -1859,6 +2062,8 @@ def load_registry(
         if path.is_absolute() and path.is_relative_to(ROOT)
         else pathlib.PurePosixPath(path.as_posix()),
         profiles=profiles,
+        lifecycle_initial_statuses=lifecycle_initial_statuses,
+        lifecycle_terminal_statuses=lifecycle_terminal_statuses,
         template_roles=_freeze(roles_raw),  # type: ignore[arg-type]
         lifecycles=lifecycles,
         identity_spaces=MappingProxyType(

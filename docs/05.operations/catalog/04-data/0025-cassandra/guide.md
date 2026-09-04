@@ -1,15 +1,15 @@
 ---
-title: Cassandra Usage Guide
-version: 1.0.0
-type: operation/guide
-layer: operations
-status: active
+title: "Cassandra Usage Guide"
+version: "1.0.0"
+type: "operation/guide"
+status: "active"
 owner: "@buenhyden"
-artifact_id: GDE-0025
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "GDE-0025"
 parent_ids:
-  - POL-0025
-created: 2026-05-10
-updated: 2026-08-11
+- "POL-0025"
+created: "2026-05-10"
 ---
 <!-- Target: docs/05.operations/catalog/04-data/0025-cassandra/guide.md -->
 

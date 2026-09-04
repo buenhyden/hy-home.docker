@@ -1,17 +1,20 @@
 ---
-title: "RES-0085 Request Scope"
-type: reference/research-evidence
-status: active
+title: "Workspace Engineering Main Baseline Request Scope"
+version: "0.1.0"
+type: "reference/research"
+status: "draft"
 owner: "@buenhyden"
-artifact_id: RES-0085-SCOPE
-parent_ids: [RES-0085]
-created: 2026-09-04
-updated: 2026-09-04
+updated: "2026-09-04"
+layer: "references"
+artifact_id: "RES-0085-m0001"
+parent_ids:
+- "RES-0085"
+created: "2026-09-04"
 ---
 
-# RES-0085 Request Scope
+# Workspace Engineering Main Baseline Request Scope
 
-## Binding target
+## Binding Target
 
 - Repository: `buenhyden/hy-home.docker`
 - Target and comparison branch: `main`
@@ -28,3 +31,7 @@ actual files and executable behavior of this repository's `main` branch.
 Generic guidance is informative only. Repository-local instructions,
 architecture decisions, policies, security controls, and verification evidence
 have precedence.
+
+## Related Documents
+
+- [Baseline assessment](README.md)

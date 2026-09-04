@@ -1,15 +1,15 @@
 ---
-title: 03-Security Vault Operations Policy
-version: 1.0.0
-type: operation/policy
-layer: operations
-status: active
+title: "03-Security Vault Operations Policy"
+version: "1.0.0"
+type: "operation/policy"
+status: "active"
 owner: "@buenhyden"
-artifact_id: POL-0016
+updated: "2026-09-04"
+layer: "operations"
+artifact_id: "POL-0016"
 parent_ids:
-  - AD-0003
-created: 2026-05-17
-updated: 2026-08-11
+- "AD-0003"
+created: "2026-05-17"
 ---
 <!-- Target: docs/05.operations/catalog/03-security/0016-vault/policy.md -->
 

@@ -1,11 +1,11 @@
 ---
-title: Storybook Next.js Workspace
-version: 1.0.0
-type: common/package-readme
-status: active
+title: "Storybook Next.js Workspace"
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-02-01'
-updated: '2026-09-02'
+updated: "2026-09-04"
+created: "2026-02-01"
 ---
 
 # Storybook Next.js Workspace

@@ -1,12 +1,13 @@
 ---
-title: task-breakdown-agent
-version: 1.0.0
-type: governance/skill
-status: active
+title: "task-breakdown-agent"
+version: "1.0.0"
+type: "governance/skill"
+status: "active"
 owner: "@buenhyden"
-function_id: task-breakdown-agent
-scope: agentic
-owner_agent: workflow-supervisor
+updated: "2026-09-04"
+function_id: "task-breakdown-agent"
+scope: "agentic"
+owner_agent: "workflow-supervisor"
 ---
 
 # task-breakdown-agent

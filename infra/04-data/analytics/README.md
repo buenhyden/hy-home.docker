@@ -1,11 +1,11 @@
 ---
 title: "Analytics Tier (04-Data: Analytics)"
-version: 1.0.0
-type: common/package-readme
-status: active
+version: "1.0.0"
+type: "common/package-readme"
+status: "active"
 owner: "@buenhyden"
-created: '2026-03-27'
-updated: '2026-08-23'
+updated: "2026-09-04"
+created: "2026-03-27"
 ---
 
 # Analytics Tier (04-Data: Analytics)

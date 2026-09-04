@@ -1,14 +1,15 @@
 ---
-title: Agentic Engineering Audit and Remediation Technical Specification Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "Agentic Engineering Audit and Remediation Technical Specification Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-SPEC-0123
-parent_ids: [SPEC-0158]
-created: 2026-09-01
-updated: 2026-09-01
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-SPEC-0123"
+parent_ids:
+- "SPEC-0158"
+created: "2026-09-01"
 ---
 
 # Agentic Engineering Audit and Remediation Technical Specification Tombstone

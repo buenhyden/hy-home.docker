@@ -1,14 +1,15 @@
 ---
-title: 0015-security Optimization Hardening Requirements Tombstone
-version: 1.0.0
-type: archive/tombstone
-layer: archive
-status: completed
+title: "0015-security Optimization Hardening Requirements Tombstone"
+version: "1.0.0"
+type: "archive/tombstone"
+status: "sealed"
 owner: "@buenhyden"
-artifact_id: tomb-REQ-0015
-parent_ids: [SPEC-0169]
-created: 2026-09-03
-updated: 2026-09-03
+updated: "2026-09-04"
+layer: "archive"
+artifact_id: "tomb-REQ-0015"
+parent_ids:
+- "SPEC-0169"
+created: "2026-09-03"
 ---
 
 # 0015-security Optimization Hardening Requirements Tombstone
