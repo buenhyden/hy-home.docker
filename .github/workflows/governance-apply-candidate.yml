@@ -83,8 +83,9 @@ jobs:
                 'commits':commits,'refs_updated':False,'tree':EXPECTED}
         (TEMP/'candidate-result.json').write_text(json.dumps(ledger,indent=2))
         # Preserve all newly merged upstream work; never move or write the remote main ref.
-        upstream=git('rev-parse','origin/main')
-        subprocess.run(['git','merge','--no-edit','origin/main'],check=True)
+        merger={'__name__':'reviewed_merge_helper'}
+        exec(compile(read_blob('56f10129d55ba9a4cba947ac4aa3e4fb7b15f0d2'),'<reviewed-merge>','exec'),merger)
+        upstream=merger['integrate'](git)
         if git('rev-parse','HEAD')!=commits[-1]['sha']:
             commits.append({'sha':git('rev-parse','HEAD'),'tree':git('rev-parse','HEAD^{tree}'),
                             'message':git('show','-s','--format=%B','HEAD')})
@@ -116,6 +117,13 @@ jobs:
         (TEMP/'candidate-result.json').write_text(json.dumps(ledger,indent=2))
         print('Verified tree:',ledger['tree'],'; logical units:',len(commits),'; remote refs unchanged')
         PYCODE
+    - name: Store prepared object ledger
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: governance-prepared-objects
+        path: ${{ runner.temp }}/candidate-result.json
+        retention-days: 1
+        if-no-files-found: error
     - name: Run actual Hosted full QA
       id: full
       env:
