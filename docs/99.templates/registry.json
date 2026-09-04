@@ -3230,15 +3230,15 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 170,
-      "next_number": 171,
+      "high_water": 171,
+      "next_number": 172,
       "child_spaces": {}
     },
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 77,
-      "next_number": 78,
+      "high_water": 78,
+      "next_number": 79,
       "child_spaces": {}
     },
     "incident": {

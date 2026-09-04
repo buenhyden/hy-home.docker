@@ -295,6 +295,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0156-compose-enablement-model-convergence/plan.md](../../../03.specs/0156-compose-enablement-model-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/spec.md](../../../03.specs/0156-compose-enablement-model-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md](../../../03.specs/0156-compose-enablement-model-convergence/tasks/tsk-0001-compose-enablement.md) | Markdown reference |
+| [docs/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs

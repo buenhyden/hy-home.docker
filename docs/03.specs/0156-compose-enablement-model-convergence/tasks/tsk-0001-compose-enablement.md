@@ -8,7 +8,7 @@ owner: "@buenhyden"
 artifact_id: SPEC-0156-TSK-0001
 parent_ids: [SPEC-0156, SPEC-0156-PLAN-0001]
 created: 2026-09-02
-updated: 2026-09-02
+updated: 2026-09-04
 ---
 
 # Converge Compose Enablement onto Profiles
