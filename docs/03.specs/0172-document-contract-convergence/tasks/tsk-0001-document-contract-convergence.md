@@ -105,6 +105,24 @@ runtime, protection, review, deferral, and Git evidence.
 - The corrected local `changed` profile passed with exit 0, including two
   every-declared Compose passes at 28 selections and 232 services, 11-tier
   hardening, 372 active metadata records, and 0 lifecycle/recovery violations.
+- Follow-up PR run `33869471269`, job `101011775275`, executed against exact
+  candidate `38e6b35a9990e736b34f04f42d90f387750d0013`. It passed the corrected
+  hardening path and then failed after 15m45s at the scoped Storybook npm audit;
+  `validation-full` job `101011776577` remained skipped by the PR-event
+  contract.
+- The audit failure resolved through
+  `@storybook/nextjs-vite@10.5.10 -> vite-plugin-storybook-nextjs@3.3.0 ->
+  image-size@2.0.2`. The lock now selects the compatible Storybook 10.6.0
+  family, whose adapter replaces `image-size` with `probe-image-size`; the
+  exact high-severity audit reports zero vulnerabilities.
+- Advancing past audit exposed the pre-existing TypeScript 7.0.2 and
+  `typescript-eslint@8.65.0` incompatibility. TypeScript is pinned to 5.9.3,
+  inside both the declared `<6.1.0` and `tsconfck@3.1.6` `^5.0.0` peer ranges,
+  and Next explicitly uses the compiler API because its CLI output capture
+  returns empty in the local sandbox. The complete npm peer graph, lint,
+  typecheck, Storybook production build, and Next webpack production build
+  pass. Default Turbopack and browser coverage require local port binding and
+  therefore remain Hosted-run evidence.
 - Tracked policy `.github/rulesets/main-protection.md` defines the exact target:
   strict `main` checks `validation-changed` and `validation-full`, both bound to
   GitHub Actions app ID 15368. Reviews, CODEOWNERS, conversation resolution,
@@ -145,11 +163,13 @@ runtime, protection, review, deferral, and Git evidence.
 | Identity recovery regressions | PASS | exact member/Task reciprocal proof plus canonical, foreign-package, untyped-Task, and carrier-only-change cases |
 | Changed gate | PASS | final staged snapshot, exit 0 after correcting RES-0085, identity deletion handling, hook parsing, security/audit/supply-chain generators, and authored lifecycle/schema findings |
 | Full gate | PASS | local public `full` profile, exit 0 after final policy corrections |
-| Hosted CI | FAIL / RETRY REQUIRED | run `33866474442`; hardening drift reproduced and corrected locally; final candidate rerun required |
+| Hosted CI | FAIL / RETRY REQUIRED | runs `33866474442` and `33869471269` advanced through hardening to npm audit; both failures reproduced and corrected locally; final candidate rerun required |
 | Provider entitlement | PASS | current Codex access plus bounded no-tool Claude `ENTITLEMENT_OK`, exit 0 |
 | Runtime | OBSERVED | Docker/Compose reachable; no named deployment target and no runtime mutation |
 | Remote protection | READY | exact 2-check target and exact 12-check rollback proved; mutate only after final candidate Hosted green |
 | Hardening and tech-stack provenance | PASS | 11 tiers; 18 tech-stack contract tests; DATA-0061 freshness; 19 components and 22 images |
+| Storybook dependency security | PASS | clean install, exact high-severity audit with 0 vulnerabilities, lint, typecheck, and Storybook 10.6 production build |
+| Next production build | PASS / SANDBOX-LIMITED | webpack production build passed; default Turbopack reached bundling but local worker port binding was denied |
 
 The merged `RES-0085` request-scope file did not satisfy the Stage 90 package
 envelope. The candidate adds the substantive canonical `README.md`, normalizes
@@ -195,6 +215,10 @@ admitted by the References consumer and validated by the Registry metadata path.
   three image assertions, moved the Security trace check from retired SPEC-0003
   to active REQ-0003, registered Dozzle, and made DATA-0061 generation preserve
   the `data` profile lifecycle and common-six order.
+- Removed the vulnerable Storybook transitive path without an override by
+  selecting the 10.6.0 adapter family, restored the supported TypeScript 5.9.3
+  toolchain, and made Next use its compiler API for deterministic configuration
+  loading.
 
 ## Review Evidence
 
@@ -210,6 +234,14 @@ reviewer's final verdict is PASS with no actionable finding. The independent
 code reviewer independently reproduced the recovery gaps and returned final
 specification, quality, and overall PASS after correction.
 
+The follow-up Storybook review initially blocked TypeScript 6.0.3 because it
+missed `tsconfck`'s optional TypeScript 5 peer, the active Spec did not yet admit
+build-only Hosted remediation, the Task said `staged` before staging, and a
+root build trace remained untracked. TypeScript 5.9.3 now satisfies the complete
+peer graph, Spec and Plan own the narrow remediation, the Task says `prepared`,
+and the generated trace is removed. Both independent policy and code reviewers
+returned final PASS with no actionable finding on the resulting six-file diff.
+
 ## Commit Ledger
 
 - `be7e1388 feat(governance): converge document contracts` — initial reviewed
@@ -218,10 +250,12 @@ specification, quality, and overall PASS after correction.
   integration of current `main` while preserving both sides' owned behavior.
 - `40161548 fix(governance): prove research identity recovery` — exact
   RES-0085 member/Task reciprocal recovery proof and regression closure.
+- `38e6b35a fix(ci): restore hosted validation contract` — hardening image,
+  active Security trace, Dozzle Registry, and DATA-0061 generator closure.
 
-The Hosted drift closure and this evidence update are staged for one follow-up
-commit. Valid forward lifecycle transitions remain post-merge work; they are
-not compressed into the initial PR history.
+The Storybook audit and TypeScript/Next compatibility closure plus this evidence
+update are prepared for one follow-up commit. Valid forward lifecycle transitions
+remain post-merge work; they are not compressed into the initial PR history.
 
 ## Rulings
 

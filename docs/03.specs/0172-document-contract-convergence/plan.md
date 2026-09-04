@@ -44,8 +44,11 @@ archive-body mutation.
 8. Run independent policy and exact-diff reviews; correct blocking findings and
    repeat the affected gates and reviews.
 9. Commit the initial lifecycle entry, push the feature branch, open a PR, and
-   observe Hosted CI without bypassing checks. Preserve that entry state through
-   the first merge; record forward transitions in post-merge follow-up changes.
+   observe Hosted CI without bypassing checks. If an existing public gate fails,
+   reproduce it and apply only the minimum dependency, lockfile, or build-time
+   compiler-path correction before rerunning the same gate. Preserve the entry
+   state through the first merge; record forward transitions in post-merge
+   follow-up changes.
 10. Record provider, runtime, and branch-protection observations separately from
     acceptance. Stop before any mutation whose target, desired state, recovery,
     tag version, release scope, or merge authority is not exact.
@@ -72,6 +75,8 @@ archive-body mutation.
 - `git diff --check`, unstaged diff, staged diff, and status.
 - Independent rules-engineer and code-reviewer verdicts.
 - Feature-branch Hosted CI and current branch-protection context comparison.
+- Storybook clean install, `npm ls --all`, tracked high-severity audit, lint,
+  typecheck, and production build; Hosted default build and browser coverage.
 
 ## Rulings
 

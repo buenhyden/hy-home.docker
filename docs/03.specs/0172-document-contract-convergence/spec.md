@@ -43,6 +43,10 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
 - In scope after the 2026-09-04 follow-up authorization: feature-branch commits,
   push, pull request, Hosted CI observation, provider entitlement observation,
   runtime inventory observation, and remote branch-protection inspection.
+- In scope when an exact Hosted public gate fails: the minimum Storybook
+  development dependency, lockfile, and build-time Next compiler-selection
+  remediation required to execute that existing gate. Application behavior,
+  validator relaxation, and deployment configuration remain out of scope.
 - Conditional and not executable without an exact target contract: deployment,
   provider mutation, branch-protection mutation, tag, release, and merge. Each
   needs a named target, intended before/after state, verification, and rollback;
@@ -76,6 +80,9 @@ Hosted CI, and bounded read-only provider, runtime, and repository observations.
 10. A new governed document starts at its lifecycle `initial_status`; every
     declared state is reachable from it, and terminal states are exactly those
     with no outgoing transition.
+11. Hosted remediation must remove the reproduced dependency or build failure,
+    preserve the public gate, and leave no invalid peer or audit finding. It may
+    not convert a CI tool correction into application or deployment behavior.
 
 ## Technical Approach
 
@@ -126,8 +133,14 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 5. Changed/full gates, traceability, current lifecycle CLI, diff checks, Hosted
    CI, provider entitlement, runtime inventory, and branch protection report
    exact observed outcomes without converting observation into acceptance.
-6. The final diff changes no frozen archive body and contains no secret,
-   credential, certificate, or runtime configuration payload.
+6. A clean Storybook install has a valid complete peer graph, zero findings at
+   the tracked audit threshold, and passing lint, typecheck, and production
+   Storybook build. Hosted CI owns the default sandbox-independent build and
+   browser-coverage verdicts.
+7. The final diff changes no frozen archive body and contains no secret,
+   credential, certificate, or deployment/runtime service payload. Any
+   build-time Next setting is limited to the compiler path proved by the failed
+   Hosted gate.
 
 ## Traceability
 
@@ -138,10 +151,11 @@ Keep legacy archive payloads on unmanaged preservation profiles.
 
 ## Operational Impact
 
-The candidate diff has no runtime payload. Read-only runtime and remote
-observations are evidence only. Deployment, provider, protection, tag, release,
-and merge mutations remain stopped until their exact execution contract is
-approved.
+The candidate diff has no deployment or runtime service payload. Its scoped
+Next setting selects the build-time TypeScript compiler API only. Read-only
+runtime and remote observations are evidence only. Deployment, provider,
+protection, tag, release, and merge mutations remain stopped until their exact
+execution contract is approved.
 
 ## Related Documents
 
