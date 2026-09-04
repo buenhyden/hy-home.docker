@@ -1,16 +1,17 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0006"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -321,6 +322,24 @@ and, where it matters more, what it does not.
 | ops | applies | Use incident and runbook lifecycle profiles. | Inspect registry entries. | No live operation claim. |
 | qa | applies | Check metadata before publication. | Record check result in Task. | Check does not establish content correctness. |
 | security | applies | Avoid secret values in metadata. | Inspect scoped diff. | No security-control test. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The active corpus now uses the Registry's common-six metadata order and
+profile-specific lifecycle graphs. Plan and Task are co-located with their Spec
+under Stage 03; terminal evidence is preserved under Stage 98 rather than
+returning to a retired Stage 04 authority.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Metadata grammar | Registry plus closed frontmatter schema | Repository-enforced | None for active registered corpus | metadata repository contracts |
+| Lifecycle | Initial, transition, and terminal states are profile-owned | Repository-enforced | Human approval evidence remains artifact-specific | lifecycle check plus reciprocal Task evidence |
+| Retention/retirement | Stage 98 records and exact identity recovery | Repository-enforced | Historical prose can retain dated routes | archive and identity-history tests |
+
+Recommendation: preserve `created`, update `updated` for edits, update
+`observed_at` only after re-observation, and never treat status prose as a
+substitute for the Registry transition graph.
 
 ## Maintenance
 

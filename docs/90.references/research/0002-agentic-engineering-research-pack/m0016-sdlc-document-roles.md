@@ -1,16 +1,17 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0016"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -107,7 +108,15 @@ contracted, planned, and evidenced; a Guide or Runbook with no upstream
 Spec/Plan/Task to link is describing a service this workspace has not
 actually built through its own lifecycle.
 
-#### SDLC lifecycle roles (PRD, ARD, ADR, Spec/child contract, Plan, Task)
+#### Historical SDLC lifecycle role matrix
+
+**Superseded taxonomy notice (2026-09-05).** The table below is retained as the
+2026-08-14 research state. Its Stage 04 Plan/Task routes, `artifact_type`
+classifier, three-digit examples, independent Release profile, and generic
+PRD/ARD role paths are not current repository authority. Current roles and
+paths come from the Stage 99 Registry; the revalidation section near the end of
+this member summarizes the present Requirement, Architecture/ADR, co-located
+Spec/Plan/Task, and Operations model.
 
 | Role                  | Purpose                                                                                                                                                | Question owned                                                                                                                | Trigger                                                                                                      | Owner                                                           | Consumer                                                 | Stage / path                                                                                                                             | Template                                                                                                            | Lifecycle                                                                                                                           | Relations                                                                                                          | Forbidden substitutions                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
@@ -332,6 +341,26 @@ and, where it matters more, what it does not.
 
 - [Documentation architecture](./m0007-documentation-architecture.md)
 - [Scope application matrix](./m0015-scope-application-matrix.md)
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Current execution evidence is co-located as Plan and Task inside its Stage 03
+Spec package. Stage 05 registers Guide, Policy, Runbook, Incident, and
+Postmortem. It intentionally has no independent Release profile: release
+evidence is composed from the owning Task, changelog/tag, CI, and applicable
+Runbook evidence.
+
+| Artifact role | Current owner | Evidence depth | Non-substitution rule |
+| --- | --- | --- | --- |
+| Requirement/PRD/SRS/interface perspective | Stage 01 package | Repository-enforced | Does not become architecture or implementation |
+| Architecture Description/ADR | Stage 02 | Repository-enforced | Description is current design; ADR preserves decision |
+| Spec/Plan/Task | Stage 03 package | Repository-enforced | Behavior, prospective sequence, and executed evidence stay separate |
+| Guide/Policy/Runbook/Incident/Postmortem | Stage 05 | Repository-enforced | Reader help, control, procedure, event, and learning stay separate |
+| Release/deployment evidence | Task + tag/changelog + CI + Runbook as applicable | Defined | A document title cannot prove deployment |
+
+Recommendation: add or change a role only through Registry, template,
+consumer, validator, and lifecycle evidence as one contract slice.
 
 ## Maintenance
 

@@ -1,16 +1,17 @@
 ---
 title: "Reference: Agent Memory Hierarchy and Lifecycle"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0011"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -113,7 +114,13 @@ facts`, `Evidence links`, `Next handoff`). The durable-note count stayed at
 8 files; only `ignored-sdd-scratch-deletion.md` changed content within its
 existing file.
 
-### Current-memory validator: exact bounds and forbidden-material patterns
+### Historical current-memory validator bounds and patterns
+
+**Superseded implementation notice (2026-09-05).** This section preserves the
+former `memory/current.md` contract as dated research. The active bootstrap now
+rejects that retired handoff route, and current durable execution evidence is
+owned by the active Task under `docs/03.specs/####-<slug>/tasks/`. None of the
+constants or Stage 04 path rules below are current authority.
 
 `scripts/lib/agent_governance/agent_governance_contract.py` implements the current-
 handoff checks this leaf's lifecycle matrix references only qualitatively.
@@ -390,6 +397,26 @@ before this process can be treated as an operating control.
 | ops | applies | `incident-responder` keeps operational chronology in its owned record. | Inspect an incident record when applicable. | No incident memory imported. |
 | qa | applies | `qa-engineer` would verify expiry/deletion evidence for an adopted process. | Require a typed test plan. | No lifecycle process executed. |
 | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Current Claude documentation distinguishes project instructions, auto-memory,
+and subagent memory scopes. Current Codex configuration also exposes optional
+memory controls. This repository intentionally relies on Stage 00 instructions
+and Task-owned evidence rather than claiming a provider-neutral durable
+semantic-memory store.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Short-term context | Provider sessions plus compaction hooks | Configured | Semantic retention quality unmeasured | bounded compaction/handoff exercise |
+| Durable evidence | Active Task records verified state and links | Repository-enforced | Evidence is not learned memory | Task schema and traceability checks |
+| Promotion/expiry/privacy/deletion | Secret/PII boundaries exist | Defined | Cross-provider memory lifecycle is incomplete | Requirement and privacy threat model |
+
+Recommendation: define data class, owner, promotion trigger, retention period,
+deletion path, and audit evidence before enabling shared durable memory.
+Official basis: [Claude memory](https://code.claude.com/docs/en/memory) and
+[subagent memory](https://code.claude.com/docs/en/sub-agents).
 
 ## Maintenance
 

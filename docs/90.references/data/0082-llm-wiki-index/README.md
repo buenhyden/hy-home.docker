@@ -576,6 +576,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md](../../research/0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Markdown reference |
 | [docs/90.references/research/0081-roadmap/README.md](../../research/0081-roadmap/README.md) | folder index |
 | [docs/90.references/research/0084-github-actions-platform/README.md](../../research/0084-github-actions-platform/README.md) | folder index |
+| [docs/90.references/research/0084-github-actions-platform/m0001-platform-mechanics.md](../../research/0084-github-actions-platform/m0001-platform-mechanics.md) | Markdown reference |
 | [docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/README.md](../../research/0085-workspace-engineering-main-baseline-assessment/README.md) | folder index |
 | [docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md](../../research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md) | Markdown reference |
 | [docs/90.references/research/README.md](../../research/README.md) | folder index |

@@ -1,16 +1,17 @@
 ---
 title: "Reference: Docker Compose and Infrastructure"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0005"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -504,6 +505,26 @@ that a secret exists, was mounted, or was withheld from logs.
 | ops | applies | A runtime change has a separately approved operator, rollback, and observation plan. | Inspect approved runbook and event evidence. | No runtime plan or observation is supplied. |
 | qa | applies | A static composition check is selected before a future runtime check. | Record the exact check and target. | No Docker command was run by this leaf. |
 | security | applies | Secret references and exposure paths are reviewed without accessing secret values. | Inspect only declaration paths and ownership. | A reference does not prove secure storage, injection, or redaction. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The clean full gate rendered all 28 declared profile selections and reported
+232 selected-service instances in aggregate. DATA-0059 owns the service/profile
+inventory; AUD-0097 separately preserves four domain defects that static
+rendering does not expose.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Profiles and service boundaries | Root includes service-local Compose files; POL-0078 owns vocabulary | Configured, Repository-enforced | Four domain defects remain | all-profile render plus AUD-0097 owner actions |
+| Network/volume/secret/healthcheck | Declarations and security baselines are tracked | Configured, Repository-enforced | Live connectivity, persistence, and secret delivery unverified | isolated runtime rehearsal without value capture |
+| Runtime/deployment | SPEC-0172 observed Docker reachability but no repository deployment | Unverified for this stack | No exact live target | approved target, health, recovery, rollback evidence |
+
+Recommendation: do not convert a successful `docker compose config` into an
+operational-readiness claim. Route AUD-0097 defects through their service-domain
+owners. Official basis: [Compose services](https://docs.docker.com/reference/compose-file/services/),
+[profiles](https://docs.docker.com/compose/how-tos/profiles/), and
+[secrets](https://docs.docker.com/reference/compose-file/secrets/).
 
 ## Maintenance
 

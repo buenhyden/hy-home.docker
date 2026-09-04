@@ -1,16 +1,17 @@
 ---
 title: "Reference: Security Governance and Secure Delivery"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0017"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -450,6 +451,29 @@ observation was retained for this draft; any OCI-specific proposition is
 | ops | applies | Disclosure, incident, rollback, and recovery have approved operational evidence. | Inspect policy/runbook and event record. | A policy declaration is not an exercised response. |
 | qa | applies | A security check states its threat class, target, oracle, and result. | Record exact scanner/test evidence. | Configured scanning is not a clean result. |
 | security | applies | A risk acceptance names asset, control, residual risk, owner, and review date. | Inspect signed or approved decision evidence. | No acceptance, compliance, or certification is claimed. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The repository enforces document safety, least-privilege workflow permissions,
+full-SHA action pins, static workflow analysis, Compose security baselines,
+and a sample-service supply-chain contract. GitHub's current guidance still
+recommends least privilege, untrusted-input isolation, and immutable action
+pins; NIST SSDF 1.1 and SLSA 1.2 remain suitable external vocabularies.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Secrets/credentials | Policies forbid value capture; Compose grants are explicit | Defined, Repository-enforced | Live stores and rotation uninspected | separate authorized security audit |
+| Supply chain | Pins, dependency audit, fixtures, SBOM/provenance rehearsal | Repository-enforced | Broad fleet provenance incomplete | expand only with owned consumer contracts |
+| Static analysis | Zizmor, CodeQL/SARIF route, lint and template gates | Repository-enforced, Hosted-executed | Runtime compromise detection separate | Hosted run plus runtime monitoring owner |
+| Remote protection | Aggregate checks and strict mode read back 2026-09-05 | Remote-verified at cutoff | Later drift possible | authenticated read-back |
+| Runtime posture | No repository deployment observed in this renewal | Unverified | Health, identity, network, recovery acceptance absent | named target threat model and rehearsal |
+
+Recommendation: route AUD-0097 defects and production controls through
+Requirement/Architecture/Spec rather than presenting a green static gate as
+security readiness. Official sources: [GitHub secure use](https://docs.github.com/en/actions/reference/security/secure-use),
+[NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), and
+[SLSA 1.2](https://slsa.dev/spec/v1.2/).
 
 ## Maintenance
 

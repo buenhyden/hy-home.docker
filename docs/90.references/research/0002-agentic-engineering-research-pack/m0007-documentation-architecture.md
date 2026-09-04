@@ -1,16 +1,17 @@
 ---
 title: "Reference: Documentation Architecture and Diataxis Reader Modes"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0007"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -324,6 +325,25 @@ and, where it matters more, what it does not.
 
 - [SDLC document roles](./m0016-sdlc-document-roles.md)
 - [Scope application matrix](./m0015-scope-application-matrix.md)
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Official Diátaxis still separates tutorial, how-to, reference, and explanation;
+C4 still provides hierarchical system/container/component/code views; arc42
+still provides a twelve-section architecture communication structure. The
+repository uses these as reader/viewpoint practices inside existing stages,
+not as competing directory or lifecycle taxonomies.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Reader modes | Guide and reference roles distinguish use from evidence | Defined, Configured | Not every page needs a quadrant label | document-role review |
+| Architecture views | Stage 02 descriptions and decisions own current design | Defined, Repository-enforced | C4 view coverage is demand-driven | architecture links and stakeholder review |
+| README hierarchy | Repository, stage, category, package, and service routers have distinct profiles | Repository-enforced | Legacy prose can drift | metadata, index, and link checks |
+
+Recommendation: apply only the view needed by the decision and link to the
+canonical owner. Official sources re-opened: [Diátaxis](https://diataxis.fr/),
+[C4](https://c4model.com/), and [arc42](https://arc42.org/documentation/).
 
 ## Maintenance
 

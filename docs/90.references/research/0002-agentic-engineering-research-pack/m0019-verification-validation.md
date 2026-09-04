@@ -1,16 +1,17 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -414,6 +415,25 @@ superseded by Revision B and is not cited as current NASA policy.
 | ops | applies | Bind release and incident evidence to named operational authority. | Inspect runbook and event records. | No release or incident result is claimed. |
 | qa | applies | Use risk-based methods and preserve oracle/defect evidence. | Inspect test/review results and disposition. | Tests alone do not accept residual risk. |
 | security | applies | Include threat, control, scan, exception, and acceptance evidence. | Inspect security owner decision. | Scanner output is not certification. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+ISO's public 29148 terminology continues to distinguish verification against
+required characteristics from validation for intended use. The clean baseline
+full gate provides current verification evidence; it does not validate live
+deployment, provider quality, cost, or operator outcomes.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Verification | Focused, changed, full, link, lifecycle, metadata, and generated checks | Local-executed, Repository-enforced | Evidence expires after change | rerun exact owner command |
+| Validation | Acceptance clauses and Task evidence | Defined | Intended-use evidence varies by target | stakeholder/operator acceptance |
+| Residual risk | Task and audit findings preserve gaps/deferments | Defined | No universal acceptor | named owner ruling |
+| Monitoring/revalidation | Source cadence and generated freshness checks | Configured | Provider/runtime/remote observations are mutable | dated observation and comparison |
+
+Recommendation: every acceptance claim needs a named intended use, target,
+observer, command or evidence, date, and residual risk owner. Official basis:
+[ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en).
 
 ## Maintenance
 

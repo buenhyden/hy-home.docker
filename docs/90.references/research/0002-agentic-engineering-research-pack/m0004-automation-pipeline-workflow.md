@@ -1,22 +1,29 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
 # Reference: Automation Pipeline and Workflow Topology
 
 ## Overview
+
+**Historical baseline notice.** The counts and remote-state conclusion in this
+section describe the named Task 7 and 2026-08-14 observations. They are
+preserved evidence, not current topology. The 2026-09-05 revalidation near the
+end of this member owns the current two-job aggregate CI and remote-protection
+conclusion.
 
 At Task 7 baseline `c57d33f37843802f7692261c50801f0dd966d7cb`,
 the tracked GitHub automation surface contains 7 workflow files and 23 jobs.
@@ -443,6 +450,25 @@ permission to mutate a remote target.
 | ops | applies | Assign release/rollback ownership before remote mutation. | Inspect an approved runbook and event record. | No release event is claimed. |
 | qa | applies | Select a named CI gate for the stated oracle. | Inspect gate contract and result. | CI configuration alone is not a pass. |
 | security | applies | Review actions, permissions, secrets, provenance, and approvals. | Inspect pinned action and permission declarations. | OIDC, attestations, and protection remain unobserved. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The current CI contract projects registered leaves through two aggregate jobs:
+`validation-changed` for pull requests and `validation-full` for push/manual
+full execution. SPEC-0172 records Hosted success for both routes and the
+approved 2026-09-05 `main` protection read-back.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Local/Hosted CI | Typed gate DAG and two aggregate workflow jobs | Repository-enforced, Hosted-executed | Future runs remain mutable | public gate plus Actions run evidence |
+| Required checks | `strict=true`; both aggregate checks bound to app ID 15368 | Remote-verified on 2026-09-05 | Later control-plane drift possible | authenticated protection read-back |
+| CD/promotion | Sample delivery rehearsal and rollback contracts exist | Defined, Configured rehearsal | No named live target, tag, or release | separate deployment Spec and acceptance |
+
+Recommendation: keep CI and CD as separate control planes. A future mismatch
+routes through the exact 12-check rollback recorded in the protection document.
+Official basis:
+[GitHub ruleset checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 
 ## Maintenance
 
