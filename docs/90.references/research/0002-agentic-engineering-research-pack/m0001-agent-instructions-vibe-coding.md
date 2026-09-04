@@ -1,16 +1,17 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0001"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -301,6 +302,27 @@ do not establish that this repository loaded either file in a live session.
 | ops | applies | Hand off operational generation to ops. | Preserve sanitized evidence. | No runbook execution. |
 | qa | applies | Require independent review after checks. | Inspect exact diff, named validation gate, and reviewer evidence. | No self-acceptance. |
 | security | applies | Reject prompts seeking secrets or bypasses. | Confirm excluded-material boundary. | No security execution. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Claude's current feature guide still separates always-loaded instructions,
+on-demand skills, and deterministic hooks; OpenAI's current Codex material
+likewise treats repository instructions, sandboxing, and approvals as distinct
+control surfaces. The repository maps those ideas through root `AGENTS.md` and
+`CLAUDE.md` into Stage 00 and provider adapters.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Instruction priority | Root entrypoints load bootstrap plus provider adapter | Configured, Repository-enforced | Provider system prompts remain external | provider-surface and agent-governance checks |
+| Command safety | Approval policy and pre-tool hooks constrain selected actions | Defined, Configured | Native enforcement differs by provider | hook parity report plus bounded provider acceptance |
+| Bounded vibe coding | Spec/Task and quality gates separate intent from edits | Repository-enforced | Adherence quality is not a static property | exact-diff review and Task evidence |
+
+Recommendation: keep durable policy in Stage 00, enforcement in hooks/sandbox,
+and task-specific intent in the active Task; do not copy provider system prompts
+into this repository. Re-opened official sources:
+[Claude features](https://code.claude.com/docs/en/features-overview) and
+[Codex safety](https://openai.com/index/running-codex-safely/).
 
 ## Maintenance
 

@@ -1,16 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0015"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -546,6 +547,24 @@ separately approved evidence exists.
 
 - [Documentation architecture](./m0007-documentation-architecture.md)
 - [SDLC document roles](./m0016-sdlc-document-roles.md)
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The package README now maps all 93 requested category items to exactly one
+topical member, while allowing related audits, data packages, RES-0084, and
+RES-0085 to supply non-competing evidence. No category requires a new research
+identity or a member split.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
+| Canonical ownership | Stage 00/01/02/03/05/99 remain normative | Repository-enforced | Semantic duplication still needs review | exact-diff review |
+| Baseline evidence | RES-0085 records current `main`; RES-0084 owns GitHub mechanics | Defined, Local/Remote evidence by source | Mutable observations expire | dated revalidation |
+
+Recommendation: extend an existing member when its question and lifecycle fit;
+allocate a new package only for a distinct question, owner, observation cycle,
+and navigational boundary.
 
 ## Maintenance
 

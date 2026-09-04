@@ -1,16 +1,17 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0009"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -291,6 +292,24 @@ and, where it matters more, what it does not.
 | ops | applies | Treat old operation links as pointers requiring validation. | Resolve current catalog target. | No operation is inferred. |
 | qa | applies | Pair byte checks with semantic/link review. | Record separate checks. | `--check` is narrow. |
 | security | applies | Retain safe-path exclusions. | Inspect tracked exclusions. | No security testing. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The LLM Wiki remains a generated navigation projection owned by
+`scripts/knowledge/generate-llm-wiki.py`; it is not policy or semantic
+authority. The new RES-0084 member changes the tracked path set, so the owner
+generator must refresh its declared outputs before `--check` can pass. The older
+Graphify report is stale and noisy and therefore advisory only.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Generated route | DATA-0082 and repository map are manifest-owned outputs | Repository-enforced | Semantic quality is not guaranteed by path freshness | generator `--check` plus link checks |
+| Authored/generated boundary | Registry rejects unowned generated changes | Repository-enforced | None for current ownership model | generated-ownership contract tests |
+| Knowledge graph | Graphify snapshot exists | Unverified currentness | Snapshot predates baseline and has high isolation noise | refresh only through graph owner command |
+
+Recommendation: run `--write` only when the check reports path-set staleness;
+never hand-edit generated outputs or treat graph ranking as canonical truth.
 
 ## Maintenance
 

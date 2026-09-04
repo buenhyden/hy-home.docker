@@ -1,15 +1,15 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.1.0"
+version: "0.2.0"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0085"
 parent_ids: []
 created: "2026-09-04"
-observed_at: "2026-09-04"
+observed_at: "2026-09-05"
 ---
 
 # Workspace Engineering Main Baseline Assessment
@@ -21,109 +21,136 @@ engineering, agent governance, spec-driven delivery, infrastructure, CI/CD,
 quality, security, documentation, provider integration, context handling, and
 runtime operation, and which claims still require direct external evidence?
 
+The package also asks whether the 2026-09-04 pre-integration gaps remain true
+after SPEC-0172 reached `main`, and whether repository configuration, local
+execution, hosted execution, provider acceptance, runtime acceptance, and
+remote enforcement are being kept as distinct evidence classes.
+
 ## Scope
 
-- Repository baseline: `main` at merge commit
-  `db21aebf079fcc4e867779861b49c2283b7f8f01`.
-- Integration boundary: feature branch and pull request; direct writes to
-  `main` are prohibited by the [PR #138 binding request](https://github.com/buenhyden/hy-home.docker/pull/138).
-- Repository evidence: tracked policies, contracts, workflows, validators,
-  generated provider surfaces, architecture, operations, and README indexes.
-- External observations: GitHub repository metadata, PR #138 checks, current
-  `main` branch protection, Codex account availability, and local Docker daemon
-  metadata observed on 2026-09-04.
-- Candidate changes in the SPEC-0172 worktree are evaluated separately from
-  the committed `main` baseline and are not presented as merged behavior.
+- Repository baseline: `buenhyden/hy-home.docker`
+  `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+- Repository observation date: 2026-09-05; external-source confirmation date:
+  2026-09-05.
+- Included: tracked policies, provider adapters, Registry and templates,
+  Requirement/Architecture/Spec/Operations owners, workflows, validators,
+  generated navigation, Compose declarations, prior hosted results, and the
+  approved remote protection read-back recorded by SPEC-0172.
+- Excluded: secret or credential values, user-global Claude/Codex settings,
+  shell history, raw logs, new provider calls, new runtime mutation, live
+  deployment, tag, and release.
+- RES-0085 owns only this repository-local baseline. Topic research remains in
+  [RES-0002](../0002-agentic-engineering-research-pack/README.md), with GitHub
+  Actions mechanics in [RES-0084](../0084-github-actions-platform/README.md).
 
 ## Method
 
-1. Bound repository claims to the committed `main` tree and record the exact
-   baseline commit.
-2. Inspect canonical Stage 00 policy, Stage 99 contracts, workflow contracts,
-   validators, and current Requirement/Architecture/Spec/Operations owners.
-3. Query GitHub through authenticated read-only repository, pull-request,
-   Actions, and branch-protection endpoints without reading credential values.
-4. Observe Docker engine, Compose project inventory, and container identity
-   metadata without reading environment values, logs, secrets, or mutating the
-   runtime.
-5. Separate tracked adoption, hosted acceptance, provider entitlement, local
-   runtime observation, and deployment acceptance. Missing direct evidence is
-   recorded as `needs_revalidation`, not inferred as a pass.
+1. Inventory existing research by path, identity, parent relation, headings,
+   incoming links, preservation boundary, and observation date before editing.
+2. Read current Stage 00, Stage 99, Requirement, Architecture, Spec,
+   Operations, workflow, validator, audit, data, infrastructure, and test
+   owners at the exact baseline commit.
+3. Re-open official provider, GitHub, Docker, documentation-architecture,
+   spec-driven development, verification, and security sources on 2026-09-05.
+4. Classify each claim as Defined, Configured, Local-executed,
+   Repository-enforced, Runtime-verified, Remote-verified, or Unverified; never
+   promote evidence by implication.
+5. Run the canonical full gate on the clean baseline and record the exact exit
+   result separately from hosted, runtime, and remote observations.
 
 ## Findings
 
-| Area | Main-baseline evidence | Observed disposition |
-| --- | --- | --- |
-| Binding and integration | PR #138 added the request scope and was merged as `db21aebf`; the scope requires a feature branch and PR | adopted; direct `main` write prohibited |
-| Agent and harness governance | Root adapters route to Stage 00; the committed tree contains 14 canonical roles, 23 canonical skills, provider projections, hooks, and typed provider mappings | tracked adoption; provider runtime acceptance remains separately observed |
-| Loop and stop control | Stage 00 workflows define discovery, approval, execution, review, bounded retry, stop, and Task-owned handoff evidence | adopted policy; effectiveness depends on the active provider runtime |
-| Spec-driven development | Requirement, Architecture Description, ADR, Spec, Plan, Task, lifecycle, traceability, and archive contracts have executable validators | adopted; candidate semantic convergence is not yet merged |
-| Documentation contract | `main` contains `RES-0085/REQUEST-SCOPE.md` without the required package `README.md`; PR #138 `validation-changed` failed on that incomplete package | blocked on `main`; this package supplies the missing canonical envelope on the feature branch |
-| CI/CD and QA | Six tracked workflow files and a typed workflow contract exist; PR #138 CodeQL checks passed but `validation-changed` failed and `validation-full` was skipped | hosted CI observed; current branch cannot claim a green quality gate |
-| Branch protection | `main` requires strict status checks, one approving review, code-owner review, conversation resolution, and disallows force-push and deletion | observed enabled; configured required contexts must be rechecked against the current workflow job names |
-| Security | SHA-pinning, workflow, template, supply-chain, secret-pattern, CodeQL, and governance checks have tracked owners and validators | tracked adoption; no secret value or live security-control mutation was inspected |
-| Compose and infrastructure | Compose validation and operations contracts are tracked; Docker Engine 29.7.2 and Compose v5.4.0 were reachable locally | runtime reachable; zero active Compose projects observed |
-| Live runtime and deployment | Five `k3d-hyhome` containers were running, but they are not evidence that this repository's Compose stack was deployed or accepted | observed unrelated runtime; repository deployment acceptance remains unverified |
-| Provider models | Registry marks Claude and Codex as adopted but `needs_revalidation`; this Codex task had direct account access while no Claude runtime call was made | Codex entitlement observed for this task; Claude entitlement and cross-provider acceptance remain `needs_revalidation` |
-| Context, memory, and handoff | Provider hooks include `PreCompact`; Task records own progress and handoff; no separate durable memory authority is defined | bounded context handling adopted; no claim of cross-session semantic memory |
-| Cost control | Work profiles select model classes and reasoning effort, while the evaluation contract forbids inferring cost or latency without direct evidence | policy-level control only; cost effectiveness unverified |
-| Editor integration | No tracked `.vscode`, `.idea`, or `.devcontainer` authority exists at the baseline commit | not adopted as a repository contract |
-| README navigation | Stage and category README files route to canonical owners; generated LLM Wiki outputs provide navigation rather than policy | adopted, subject to freshness and link gates |
+| Area | Current `main` evidence | Evidence depth | Disposition |
+| --- | --- | --- | --- |
+| Research ownership | RES-0002 has 20 protected topical members; RES-0084 owns platform mechanics; RES-0085 owns this baseline | Repository-enforced | Reuse existing packages; no RES-0096 allocation |
+| Agent governance | 14 canonical roles and 23 canonical skills project through Claude/Codex adapters | Defined, Configured, Repository-enforced | Shared authority is implemented; native behavior remains provider-specific |
+| Provider runtime | Registry keeps both providers `adopted` with `runtime_acceptance: needs_revalidation`; SPEC-0172 records bounded Codex and Claude entitlement observations | Configured, Runtime-verified at 2026-09-04 only | No future entitlement, model quality, latency, or cost claim |
+| Loop, context, and handoff | Stage 00 owns bounded retry, stop, context loading, compaction, and Task evidence; native hook sets differ | Defined, Configured, Repository-enforced | Structural parity exists; outcome parity is unverified |
+| Document contract | Common-six metadata, profile-specific lifecycle graphs, current-corpus migration, and RES-0085 identity recovery are on `main` | Repository-enforced | The former missing-README blocker is closed |
+| SDLC | Requirement → Architecture/ADR → Spec/Plan/Task → Verification → review is registered and validated | Defined, Repository-enforced | Research remains advisory; intended-use acceptance stays owner-bound |
+| Operations roles | Guide, Policy, Runbook, Incident, and Postmortem are registered; release evidence is composed from Task, changelog/tag, CI, and runbook evidence | Defined, Repository-enforced | Do not create an independent Release profile without a consumer contract |
+| CI quality plane | Six workflows are tracked; `validation-changed` and `validation-full` project the registered CI gate graph | Configured, Repository-enforced, Hosted-executed in SPEC-0172 | CI is implemented; CD and production promotion are not implied |
+| Main protection | 2026-09-05 approved read-back kept `strict=true` and replaced 12 leaf contexts with two app-bound aggregate checks | Remote-verified at 2026-09-05 | Exact 12-check rollback is retained; later state needs a new read-back |
+| Compose | 40 included Compose files plus one explicitly excluded YAML variant expose 28 declared profile selections; the clean baseline statically rendered all selections | Configured, Local-executed, Repository-enforced | Static validity is not service health or deployment acceptance |
+| Compose defects | AUD-0097 retains four owner-routed defects not caught by static rendering | Defined, Local-executed historical evidence | Fixes require domain decisions and separate SDLC work |
+| Security | Least-privilege workflow permissions, SHA-pinned actions, supply-chain fixtures, document safety, Compose baselines, and static gates are tracked | Configured, Repository-enforced | Live production controls, secrets, and deployment posture remain unverified |
+| Documentation architecture | Stage/category/package/subject indexes and generated LLM Wiki outputs route readers to canonical owners | Configured, Repository-enforced | Diátaxis/C4/arc42 are selectively composed, not parallel taxonomies |
+| Local quality baseline | Clean `main` full profile completed with exit 0 on 2026-09-05 | Local-executed | Point-in-time local verification only |
+| Editor integration | No repository-wide `.vscode`, `.idea`, or `.devcontainer` authority is tracked | Unverified / gap | Add only through a permission- and command-bounded owner contract |
+
+Changed conclusions since the 2026-09-04 observation are: RES-0085 now has a
+canonical package envelope; the document-contract migration is merged; hosted
+changed/full acceptance exists for the merged candidate; and remote `main`
+protection now requires the two aggregate checks. Live deployment and release
+remain unverified because no exact target/version was supplied.
 
 ## Sources
 
-- [Agent bootstrap policy](../../../00.agent-governance/policies/bootstrap.md)
-- [Agentic engineering policy](../../../00.agent-governance/policies/agentic.md)
-- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
-- [Provider registry](../../../00.agent-governance/providers/registry.yaml)
-- [Document Registry](../../../99.templates/registry.json)
-- [CI Quality Gates workflow](../../../../.github/workflows/ci-quality.yml)
-- [Workflow contract](../../../../.github/workflow-contract.yml)
-- [Infrastructure index](../../../../infra/README.md)
-- [Operations index](../../../05.operations/README.md)
-- [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md)
-- [SPEC-0172 execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md)
-- [PR #138](https://github.com/buenhyden/hy-home.docker/pull/138)
-- [PR #138 CI run](https://github.com/buenhyden/hy-home.docker/actions/runs/33842556330)
+- Repository baseline: Git commit
+  `4c6d211129615eab372d720ebd209b6c27618c86`.
+- [Stage 00 governance](../../../00.agent-governance/README.md) and
+  [provider registry](../../../00.agent-governance/providers/registry.yaml).
+- [Stage 99 Registry](../../../99.templates/registry.json),
+  [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
+  and [research-member template](../../../99.templates/templates/references/research.template.md).
+- [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md) and
+  its [execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- [CI workflow](../../../../.github/workflows/ci-quality.yml),
+  [workflow contract](../../../../.github/workflow-contract.yml), and
+  [main protection record](../../../../.github/rulesets/main-protection.md).
+- [GitHub ruleset status-check rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets),
+  [Docker Compose specification](https://docs.docker.com/compose/compose-file/),
+  [Claude Code feature model](https://code.claude.com/docs/en/features-overview),
+  and [Codex sandbox and approval controls](https://openai.com/index/running-codex-safely/),
+  re-opened 2026-09-05.
+- Detailed topical sources remain with the corresponding RES-0002 member and
+  RES-0084; this baseline does not duplicate their source inventories.
 
 ## Implications
 
-- Completing this package removes the known reference-corpus configuration
-  blocker but does not by itself make the candidate change mergeable; local and
-  hosted gates must be rerun against the feature branch.
-- The required status-check names on `main` are not the same names exposed by
-  the current `CI Quality Gates` jobs. Protection should be changed only after
-  the current workflow contract identifies the exact replacement contexts and
-  a recovery path is recorded.
-- A reachable Docker daemon and running k3d cluster do not authorize or prove a
-  Compose deployment. A deployment needs an explicit target, change set,
-  observation plan, and rollback.
-- Codex availability in this task is direct evidence for this account and time
-  only. It does not validate Claude entitlement, provider quality equivalence,
-  cost, latency, or future availability.
+- Preserve the Stage 00 → provider adapter projection and Stage 99 → validator
+  contract split; it gives policy and enforcement distinct owners.
+- Route actionable gaps as Research → Requirement → Architecture/ADR → Spec →
+  Plan → Task → Verification → Independent Review. This research package does
+  not authorize their implementation.
+- Keep the two aggregate required checks and `strict=true` while they match
+  authenticated read-back. On mismatch, use the recorded 12-check rollback
+  rather than inventing a replacement.
+- Treat live deployment, release, provider quality/cost, persistent memory, and
+  editor automation as separate acceptance problems, not as consequences of a
+  green documentation or CI gate.
 
 ## Traceability
 
+- Topical members and preservation declaration:
+  [RES-0002](../0002-agentic-engineering-research-pack/README.md).
+- GitHub Actions mechanics: [RES-0084](../0084-github-actions-platform/README.md).
+- Binding scope: [RES-0085-m0001](m0001-request-scope.md).
 - Governance authority: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and
   [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md).
-- Preservation authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
+- Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md), and
   [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
-- Candidate implementation and evidence: [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md)
-  and its [Task](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
-- Operational execution remains owned by [Stage 05](../../../05.operations/README.md)
-  and its subject-level runbooks.
+- Current work/evidence owner: [SPEC-0172 Task](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- Operations authority: [Stage 05](../../../05.operations/README.md).
+- Audit/data evidence: [implementation overview](../../audits/0026-implementation-overview/README.md),
+  [Compose defects](../../audits/0097-compose-domain-defect-register/README.md),
+  [LLM Wiki index](../../data/0082-llm-wiki-index/README.md), and
+  [repository map](../../data/0083-repository-map/README.md).
+- Package registry: [Research index](../README.md) and
+  [Stage 99 Registry](../../../99.templates/registry.json).
 
 ## Limitations
 
-- No secret, credential value, private key, environment value, raw log, or
-  shell history was inspected.
-- No Compose mutation, k3d mutation, deployment, restart, rollout, or recovery
-  action was performed.
-- No branch-protection, required-check, environment, provider, or repository
-  setting was changed.
-- No Claude model call was made, and no cross-provider quality or cost
-  comparison is claimed.
-- Hosted results are point-in-time observations and must be rerun for the
-  feature branch and final commit.
+- No secret, credential value, private key, environment value, raw log, shell
+  history, or user-global provider setting was inspected.
+- This pass made no provider call, Compose service start, deployment, restart,
+  rollout, recovery, tag, or release mutation.
+- The 2026-09-04 provider/runtime and 2026-09-05 GitHub control-plane evidence
+  are point-in-time records from SPEC-0172, not perpetual guarantees.
+- Static Compose rendering does not settle the four AUD-0097 domain defects or
+  prove service health, durability, recovery, performance, or production fit.
+- Mutable external sources may change after 2026-09-05; paid ISO text was not
+  accessed and public catalog/definition material is used only within its
+  visible boundary.

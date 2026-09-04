@@ -1,16 +1,17 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0018"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -281,6 +282,26 @@ and, where it matters more, what it does not.
 | ops | applies | Feed operational incidents and learning back to their owner. | Confirm catalog or incident-packet path. | No operation is inferred. |
 | qa | applies | Capture checks against the Task. | Inspect recorded check evidence. | A record is not a green suite. |
 | security | applies | Retain approval and source boundaries. | Review cited local sources. | No control effectiveness is evaluated. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The current repository route is Requirement → Architecture/ADR → Spec → Plan
+→ Task → Verification → Independent Review, with Plan and Task co-located in
+the Spec package. GitHub Spec Kit's current public workflow likewise separates
+Spec, Plan, Tasks, and Implement, but this repository's Registry and SDLC are
+the local authority.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Intent decomposition | Registered Stage 01–03 roles and internal IDs | Repository-enforced | Product acceptance remains owner-specific | coverage and traceability checks |
+| Lifecycle | Profile-specific initial/transition/terminal graphs | Repository-enforced | No shortcut from draft to terminal | lifecycle transition validation |
+| Review boundary | Protected-surface and independent exact-diff review policy | Defined | Review quality is contextual | recorded verdict and rerun evidence |
+| Operations handoff | Stage 05 owns procedures and incidents | Repository-enforced | Live deployment target absent | Runbook and Task acceptance |
+
+Recommendation: use external SDD tools as comparative evidence, not as a
+replacement for the repository's identities or lifecycle. Official comparison:
+[GitHub Spec Kit](https://github.github.com/spec-kit/).
 
 ## Maintenance
 

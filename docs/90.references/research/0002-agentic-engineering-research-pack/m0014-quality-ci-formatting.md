@@ -1,16 +1,17 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -398,6 +399,24 @@ is configuration, not formatting enforcement.
 | ops | applies | Require operational acceptance and recovery evidence for release work. | Inspect runbook/event evidence. | CI does not establish release readiness. |
 | qa | applies | Preserve the taxonomy from formatter through independent review. | Map each result to its actual oracle. | Coverage is not validation. |
 | security | applies | Use the relevant scanner/control and security review. | Record target, version, result, and disposition. | A named scanner is not an absence-of-vulnerabilities claim. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The clean baseline full profile passed locally on 2026-09-05. SPEC-0172 also
+records Hosted success for the changed aggregate job and the workflow-dispatch
+full aggregate job at the integrated candidate. These are conformance results,
+not live-service validation.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Format/lint/syntax/static | Manifest-owned tools and immutable CI actions | Repository-enforced, Hosted-executed | Tool drift remains mutable | changed/full gates |
+| Unit/contract/regression | Public suites and negative fixtures | Repository-enforced | Domain coverage is uneven | focused suite plus manifest parity |
+| Integration/coverage | Compose render, build, Storybook browser coverage | Local/Hosted-executed | No repository-wide coverage threshold | domain-specific acceptance |
+| Pre-commit | Tracked hooks execute inside CI gate | Configured, Repository-enforced | Developer installation is not guaranteed | `pre-commit run --all-files` through owner route |
+
+Recommendation: add a new gate only with a named owner, deterministic input,
+failure semantics, false-positive policy, and exact public-suite route.
 
 ## Maintenance
 

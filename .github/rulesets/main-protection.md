@@ -1,19 +1,25 @@
-# Main Branch Protection Ruleset Proposal
+# Main Branch Protection Tracked State and Recovery
 
-This file is a local GitHub settings proposal only. It is not an agent
-instruction surface, and it does not apply remote repository settings by
-itself.
+This file is a local record of the intended and last verified GitHub settings.
+It is not an agent instruction surface and does not apply remote repository
+settings by itself.
 
 ## Observation Boundary
 
-- The dated public snapshot lives in
-  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`.
-- Authenticated current ruleset, branch-protection, required-check, review,
-  environment, and repository-setting readback is unavailable.
-- Control-plane verification is `unverified`; this proposal does not infer
-  applied remote state from tracked files or public workflow metadata.
-- A future verification pass records new evidence separately instead of
-  rewriting the approved snapshot without source support.
+- The dated public snapshot remains at
+  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`;
+  it is historical evidence and is not rewritten as current state.
+- On 2026-09-05, the repository owner approved a PATCH limited to
+  `branches/main/protection/required_status_checks`. The applied state and full
+  protection read-back are recorded in
+  `docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md`.
+- That read-back verified `strict=true`, required contexts
+  `validation-changed` and `validation-full`, and GitHub Actions app ID 15368.
+  Review, CODEOWNERS, conversation-resolution, admin, signature,
+  linear-history, force-push, deletion, creation, lock, and fork-sync settings
+  were unchanged.
+- Environment, deployment, release, and later control-plane state remain
+  `unverified` unless a newer approved observation records them.
 
 ## Target Ruleset
 
@@ -40,6 +46,30 @@ registered root DAG exactly once through static typed-gate invocations.
 - `validation-changed`
 - `validation-full`
 
+Both checks were bound to GitHub Actions app ID 15368 in the 2026-09-05
+read-back. `strict=true` remains required.
+
+## Rollback State
+
+If a later authenticated read-back does not match the two aggregate checks,
+restore the exact pre-change state captured on 2026-09-05:
+
+- `docs-traceability`
+- `repo-contracts`
+- `git-flow-contract`
+- `compose-validation`
+- `compose-all-profiles-validation`
+- `infrastructure-hardening`
+- `template-security-baseline`
+- `quickwin-baseline`
+- `pre-commit`
+- `zizmor`
+- `frontend-quality`
+- `storybook-coverage`
+
+Keep `strict=true`. Bind every restored context to app ID 15368 except
+`frontend-quality`, whose captured before-state was unbound.
+
 ## Application Boundary
 
 Apply future changes only after explicit owner approval. Remote changes should
@@ -48,5 +78,6 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
 
-Until that separately approved readback succeeds, both checks above remain
-tracked desired state rather than evidence of remote enforcement.
+The 2026-09-05 read-back is point-in-time evidence, not a perpetual guarantee.
+Any later claim of remote enforcement requires a new authenticated read-back;
+tracked workflow or policy files alone prove only repository configuration.

@@ -1,16 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0020"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -607,6 +608,27 @@ It is held outside the table only so one long URL does not widen every row.
 | ops | applies | Route operational evidence to its owner and inspect tracked records before use. | Confirm the record path and scoped diff; seek separate approval for live operation. | No operational result is claimed. |
 | qa | applies | Run only the scoped metadata, path, census, and whitespace checks. | Record exact commands and exits in Task 0004; seek separate approval for execution-environment checks. | Broad acceptance suites remain Not Run. |
 | security | applies | Preserve the approval boundary and avoid secrets or credential access. | Confirm sources are tracked paths only; seek separate approval for control testing. | No security control effectiveness is claimed. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+RES-0085 now owns the current repository-local assessment. At this baseline,
+the document-contract convergence and RES-0085 repair are integrated, the
+local full gate passes, Hosted aggregate evidence is recorded, and `main`
+protection has a 2026-09-05 authenticated read-back. Live deployment, release,
+persistent memory, and repository-wide editor integration remain open.
+
+| Surface | Current evidence | Evidence depth | Remaining boundary |
+| --- | --- | --- | --- |
+| Governance | 14 roles, 23 skills, provider adapters and hooks | Repository-enforced | Native outcome parity unverified |
+| Documents | Common-six, lifecycle, current Stage 03/05/90/99 routes | Repository-enforced | Historical prose needs dated interpretation |
+| CI/remote | Two aggregate jobs; strict app-bound checks read back | Hosted-executed, Remote-verified at cutoff | Future state can drift |
+| Compose/runtime | 28 profile selections render; four defects retained | Local-executed, Repository-enforced | No live stack acceptance |
+| Editor/memory/cost | Partial policies or no repository contract | Defined / gap | Requires separate owner decisions |
+
+Recommendation: use [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
+for current-state claims and this member for topical workspace interpretation;
+do not duplicate mutable baseline tables in both places.
 
 ## Maintenance
 
