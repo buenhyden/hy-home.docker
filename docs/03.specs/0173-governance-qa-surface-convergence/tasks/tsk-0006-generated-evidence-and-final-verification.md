@@ -267,6 +267,11 @@ No remote query, push, PR, deployment, secret access, or global mutation occurre
 
 ### Approved correction execution
 
+The first integrated full profile at `276f8ba98` stopped with exit 1 at the
+document-link leaf: acceptance row 11 linked a directory instead of a regular
+file. Metadata contracts had zero violations. The link now names the actual
+Spec-package validator; this is a receipt-link correction, not a waived check.
+
 The lifecycle correction is committed at `2d45f5cbd`: only the Plan sequence
 and its existing generic execution-state regression changed. The focused
 method passed in 0.390 seconds; policy/Python review passed with no actionable
@@ -325,7 +330,7 @@ post-gate review are recorded.
 | 8 | W3 | PASS: residue scan found no production `scripts/` reference to `tests/` or `tests/fixtures/`. | [Surface-ownership test](../../../../tests/lib/test_surface_ownership.py) |
 | 9 | W3 | PASS: focused library/validation discovery and full-profile reachability regression passed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 10 | W3 | PASS: retained supply-chain fixture and validation boundary evidence is recorded in the focused suites. | [Supply-chain tests](../../../../tests/lib/supply_chain/test_supply_chain_policy.py) |
-| 11 | W1 | PASS: current-path grammar and full-history recovery remain separately enforced by the focused document-governance checks. | [Document-governance package](../../../../scripts/lib/document_governance/) |
+| 11 | W1 | PASS: current-path grammar and full-history recovery remain separately enforced by the focused document-governance checks. | [Spec package validator](../../../../scripts/lib/document_governance/spec_packages.py) |
 | 12 | W1 | PASS: the exact SPEC-0172 source receipt and superseded full-packet mirror are recorded on this Task; ordinary SPEC-0174 disposition remains a registered lifecycle route. | [Branch-integration receipt](tsk-0006-generated-evidence-and-final-verification.md) |
 | 13 | W5 | PASS: DATA-0068, DATA-0069, DATA-0073, and DATA-0074 disposition evidence retains byte-preserved bodies and paired Tombstones. | [Archive records](../../../98.archive/) |
 | 14 | W2 | PASS: main W2 keeps direct canonical skills and the bounded empty-root rule; retired shared projections remain rejected. | [Codex provider adapter](../../../00.agent-governance/providers/codex.md) |
