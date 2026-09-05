@@ -112,8 +112,8 @@ Then record these valid Registry transitions as three reviewable commits:
 
 ```text
 Commit A: Spec draft→review; Plan draft→approved; Task 1 draft→ready
-Commit B: Spec review→approved; Plan approved→active
-Commit C: Spec approved→active; Task 1 ready→in-progress
+Commit B: Spec review→approved; Plan remains approved
+Commit C: Spec approved→active; Plan approved→active; Task 1 ready→in-progress
 ```
 
 Use these commit subjects:
