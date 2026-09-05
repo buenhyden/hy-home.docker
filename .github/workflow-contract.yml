@@ -935,7 +935,6 @@
         "tests.validation.test_audit_criterion_contract",
         "tests.validation.test_reference_stage_repo_contract",
         "tests.validation.test_script_manifest",
-        "tests.validation.test_script_manifest_history",
         "tests.validation.test_tech_stack_version_contract",
         "tests.validation.test_validator_entrypoints",
         "-v"

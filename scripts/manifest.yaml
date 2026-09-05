@@ -300,7 +300,6 @@ files:
   consumers:
   - scripts/lib/document_governance/metadata/lifecycle.py
   - scripts/lib/document_governance/metadata/reference.py
-  - scripts/lib/document_governance/metadata_validator.py
   disposition: retain
   successor: null
   tests:

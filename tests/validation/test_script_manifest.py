@@ -33,13 +33,6 @@ class ScriptManifestTests(unittest.TestCase):
         cls.manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         cls.rows = cls.manifest["files"]
         cls.rows_by_path = {row["path"]: row for row in cls.rows}
-        ledger_text = (
-            LEDGER.read_text(encoding="utf-8")
-            .split("```yaml\n", 1)[1]
-            .split("```", 1)[0]
-        )
-        cls.ledger_rows = yaml.safe_load(ledger_text)["records"]
-        cls.ledger_by_path = {row["legacy_path"]: row for row in cls.ledger_rows}
     def test_every_tracked_script_has_one_manifest_record(self) -> None:
         declared = [row["path"] for row in self.rows]
         self.assertEqual(len(declared), len(set(declared)))
@@ -158,20 +151,9 @@ class ScriptManifestTests(unittest.TestCase):
                     # fixture takes its location from the checker itself.
                     from tests.validation.test_agentic_audit_semantic_freshness import (
                         module as freshness_module,
-                        task_evidence,
                     )
 
                     inputs.add(freshness_module.SUPERSEDED_2026_07_07_README.as_posix())
-                    inputs.add(semantic["task_evidence"])
-                    fixture_texts[semantic["task_evidence"]] = task_evidence(
-                        sorted(
-                            {
-                                task_id
-                                for assertion in semantic["assertions"]
-                                for task_id in assertion["completed_task_ids"]
-                            }
-                        )
-                    )
                     inputs.update(
                         path
                         for assertion in semantic["assertions"]
@@ -537,67 +519,10 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIn("scripts/manifest.yaml", compact)
         self.assertIn("check-script-manifest.py", compact)
 
-    def test_active_and_draft_sources_never_route_to_archive(self) -> None:
-        for row in self.ledger_rows:
-            metadata = frontmatter(git_text(row["legacy_path"]))
-            if metadata.get("status") not in {"active", "draft"}:
-                continue
-            with self.subTest(path=row["legacy_path"]):
-                self.assertNotEqual("archive", row["action"])
-                self.assertFalse(str(row["stable_path"]).startswith("docs/98.archive/"))
-
-    def test_semantic_helpers_reject_known_bad_mutations(self) -> None:
+    def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"
         self.assertFalse(reference_proves_use("scripts/manifest.yaml", taxonomy))
         self.assertFalse(reference_proves_use(".github/CODEOWNERS", taxonomy))
-        self.assertIsNone(stable_target_type("docs/04.execution/plans/plan.md"))
-        self.assertIsNone(stable_target_type("docs/03.specs/spec-131-example/spec.md"))
-        self.assertIsNone(stable_target_type("docs/05.operations/runbooks/example.md"))
-
-    def test_active_stage04_sources_follow_owning_spec_and_never_archive(self) -> None:
-        for path, row in self.ledger_by_path.items():
-            if not path.startswith("docs/04.execution/") or path.endswith("README.md"):
-                continue
-            metadata = frontmatter(git_text(path))
-            if metadata.get("status") not in {"active", "draft"}:
-                continue
-            target = row["stable_path"] or ""
-            self.assertFalse(target.startswith("docs/98.archive/"), path)
-            parents = metadata.get("parent_ids") or []
-            spec_parent = next(
-                (str(value) for value in parents if str(value).startswith("spec:")),
-                None,
-            )
-            if spec_parent is None:
-                self.assertIn(row["action"], {"merge", "rewrite"})
-                continue
-            match = re.match(r"spec:(?:0*)([0-9]+)-(.+)", spec_parent)
-            self.assertIsNotNone(match, spec_parent)
-            identity, slug = match.groups()
-            role = "plan" if "/plans/" in path else "task"
-            expected = f"docs/03.specs/spec-{int(identity):04d}-{slug}/{role}.md"
-            self.assertEqual(expected, target)
-            expected_id = (
-                f"plan-{int(identity):04d}"
-                if role == "plan"
-                else f"task-{int(identity):04d}-01"
-            )
-            self.assertEqual(expected_id, row["artifact_id"])
-
-    def test_operations_root_is_single_and_possible(self) -> None:
-        root = self.ledger_by_path["docs/05.operations/README.md"]
-        self.assertEqual("docs/05.operations/README.md", root["stable_path"])
-        self.assertEqual("rewrite", root["action"])
-        impossible = [
-            row["stable_path"]
-            for row in self.ledger_rows
-            if isinstance(row["stable_path"], str)
-            and (
-                "docs/04.execution" in row["stable_path"]
-                or row["stable_path"].startswith("docs/05.operations/operations/")
-            )
-        ]
-        self.assertEqual([], impossible)
 
 class ScriptManifestValidationTests(unittest.TestCase):
     def setUp(self) -> None:

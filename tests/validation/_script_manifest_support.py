@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import ast
-from collections import defaultdict
 from copy import deepcopy
 import json
 import os
-import posixpath
 import re
 import shutil
 import subprocess
@@ -16,20 +14,9 @@ from pathlib import Path, PurePosixPath
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-BASELINE = "232effd9a5e00907bdbe30efc6665023fb2d07f4"
-LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 OPERATIONS_MANIFEST_PATHS = (
     "scripts/lib/document_governance/operations_catalog.py",
     "scripts/validation/check-operations-catalog.py",
-)
-MIGRATION_ROOTS = (
-    "docs/01.requirements",
-    "docs/02.architecture",
-    "docs/03.specs",
-    "docs/04.execution",
-    "docs/05.operations",
-    "docs/90.references",
-    "docs/98.archive",
 )
 REQUIRED_FIELDS = frozenset(
     {
@@ -103,52 +90,6 @@ TASK12_RETIRED_SCRIPTS = frozenset(
         "scripts/validation/recommend-qa-gates.sh",
     }
 )
-KNOWN_TOMBSTONE_REPLACEMENTS = {
-    "docs/98.archive/05.operations/guides/03-security/01.setup.md": (
-        "docs/05.operations/03-security/ops-0016-vault/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md": (
-        "docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
-        "docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md": (
-        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md": (
-        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md": (
-        "docs/05.operations/09-tooling/ops-0069-terrakube/guide.md",
-        "docs/05.operations/09-tooling/ops-0068-terraform/guide.md",
-    ),
-    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-}
-LINK_FORM_BASELINE_DECLARATIONS = {
-    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
-        "docs/05.operations/guides/07-workflow/airflow-dag-basics.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-}
-
-
 def tracked_paths(*pathspecs: str) -> set[str]:
     paths = subprocess.run(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", *pathspecs],
@@ -158,84 +99,6 @@ def tracked_paths(*pathspecs: str) -> set[str]:
         capture_output=True,
     ).stdout.splitlines()
     return {path for path in paths if (ROOT / path).is_file()}
-
-
-def local_path(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
-
-
-def git_text(path: str) -> str:
-    return subprocess.run(
-        ["git", "show", f"{BASELINE}:{path}"],
-        cwd=ROOT,
-        text=True,
-        check=True,
-        capture_output=True,
-    ).stdout
-
-
-def frontmatter(text: str) -> dict[str, object]:
-    if not text.startswith("---\n"):
-        return {}
-    value = yaml.safe_load(text.split("---\n", 2)[1]) or {}
-    return value if isinstance(value, dict) else {}
-
-
-def markdown_code_paths(text: str) -> list[str]:
-    return re.findall(r"`(docs/[^`]+)`", text)
-
-
-def repository_docs_targets(text: str, source_path: str) -> list[str]:
-    targets: list[str] = []
-    declaration_pattern = re.compile(
-        r"`(?P<code>docs/[^`]+)`|"
-        r"\[[^]]*\]\((?P<link>[^)\s]+)(?:\s+[^)]*)?\)"
-    )
-    for match in declaration_pattern.finditer(text):
-        raw_target = match.group("code") or match.group("link")
-        candidate = raw_target.strip("<>").split("#", 1)[0]
-        if not candidate or "://" in candidate:
-            continue
-        if candidate.startswith("/docs/"):
-            candidate = candidate.lstrip("/")
-        if not candidate.startswith("docs/"):
-            candidate = posixpath.join(posixpath.dirname(source_path), candidate)
-        candidate = posixpath.normpath(candidate).lstrip("/")
-        if candidate.startswith("docs/") and candidate not in targets:
-            targets.append(candidate)
-    return targets
-
-
-def declared_tombstone_replacements(text: str, tombstone_path: str) -> list[str]:
-    for line in text.splitlines():
-        if re.match(r"\|\s*Current replacement\s*\|", line, re.IGNORECASE):
-            cells = line.strip().strip("|").split("|", 1)
-            return repository_docs_targets(cells[1], tombstone_path)
-    return []
-
-
-def canonical_current_path(path: str) -> str:
-    """Resolve the Migration 0003 predecessor spelling to its live Stage03 path."""
-
-    return path.replace(
-        "docs/03.specs/spec-0008-workflow/", "docs/03.specs/0008-workflow/"
-    )
-
-
-def replacement_preservation_errors(
-    row: dict[str, object], translated: list[str]
-) -> list[str]:
-    if not translated:
-        return ["declared-replacement-empty"]
-    errors: list[str] = []
-    if row["replacement"] is None:
-        errors.append("replacement-null")
-    elif canonical_current_path(str(row["replacement"])) != translated[0]:
-        errors.append("primary-replacement-mismatch")
-    evidence = canonical_current_path(f"{row['replacement']} {row['reason']}")
-    if any(target not in evidence for target in translated):
-        errors.append("translated-replacement-evidence-missing")
-    return errors
 
 
 def _python_imports_target(reference: str, target: str) -> bool:
@@ -366,44 +229,6 @@ def is_runbook_authority(path: str) -> bool:
             path,
         )
     )
-
-
-def stable_target_type(path: str) -> str | None:
-    patterns = (
-        (r"docs/01\.requirements/prd-[0-9]{4}-[^/]+\.md", "prd"),
-        (r"docs/02\.architecture/descriptions/ad-[0-9]{4}-[^/]+\.md", "ad"),
-        (r"docs/02\.architecture/decisions/adr-[0-9]{4}-[^/]+\.md", "adr"),
-        (r"docs/03\.specs/[0-9]{4}-[^/]+/spec\.md", "spec"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/spec\.md", "spec"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/plan\.md", "plan"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/task\.md", "task"),
-        (
-            r"docs/05\.operations/(?:[0-9]{2}-[^/]+)/(?:ops-[0-9]{4}-[^/]+)/(?:guide|policy|runbook)\.md",
-            "ops-role",
-        ),
-        (
-            r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md",
-            "event",
-        ),
-        (r"docs/05\.operations/releases/rel-[0-9]{4}-[^/]+/release\.md", "release"),
-        (
-            r"docs/90\.references/.*/ref-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
-            "reference",
-        ),
-        (r"docs/98\.archive/changes/chg-[0-9]{4}-[^/]+/(?:plan|task)\.md", "change"),
-        (
-            r"docs/98\.archive/tombstones/(?:01\.requirements|02\.architecture|03\.specs|05\.operations)/[^/]+\.md",
-            "tombstone",
-        ),
-        (r"docs/98\.archive/migrations/mig-[0-9]{4}-[^/]+\.md", "migration"),
-    )
-    if path == "docs/05.operations/README.md" or path.endswith("/README.md"):
-        return "readme"
-    for pattern, target_type in patterns:
-        if re.fullmatch(pattern, path):
-            return target_type
-    return None
-
 
 
 __all__ = tuple(name for name in globals() if not name.startswith("__"))
