@@ -1,16 +1,17 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0003"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -343,6 +344,24 @@ still be checked against the canonical role and its scoped permission profile.
 | ops | applies | `ci-cd-engineer` owns a rollout/rollback runbook for any projected agent distribution. | Inspect approved rollout evidence. | No agent was activated. |
 | qa | applies | `qa-engineer` defines acceptance cases for a proposed projection. | Inspect evaluation before adoption. | No projection evaluated. |
 | security | applies | `security-auditor` reviews projected permissions and supply-chain pin. | Review license/pin and permission mapping. | Persona text grants no permissions. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The repository currently has 14 canonical roles and 23 canonical skills under
+Stage 00, with generated provider projections. The upstream agency-agents
+catalog now declares its division set in `divisions.json`; that moving catalog
+is an intake source, not a repository role authority.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Canonical role catalog | Stage 00 role files with generated native adapters | Repository-enforced | Runtime tool effectiveness varies | provider-surface renderer and contract checks |
+| Skill catalog | Stage 00 skill sources project to `.agents/skills` and `.claude/skills` | Repository-enforced | No outcome benchmark for every skill | task-specific eval and review |
+| External intake | Research compares upstream roles before admission | Defined | No automatic trust or sync | fixed-commit review, threat model, separate Spec |
+
+Recommendation: admit an external role only when it fills a proved capability
+gap and can be expressed with existing permissions and ownership. Re-opened
+upstream authority: [agency-agents divisions](https://github.com/msitarzewski/agency-agents/blob/main/divisions.json).
 
 ## Maintenance
 

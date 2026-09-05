@@ -1,16 +1,17 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "1.0.0"
+version: "2.0.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0020"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -28,9 +29,11 @@ commits remain valid historical provenance for counts that did not change
 between measurements; where a count moved, this document states the delta and
 its cause rather than silently replacing the number.
 
-The baseline is Stage 90 analysis. It supports later research leaves but does
-not become policy, runtime truth, remote-enforcement proof, or execution
-evidence merely because another document cites it.
+The baseline is Stage 90 analysis. This member is the single current
+repository-local baseline owner for RES-0002; RES-0085 preserves the binding
+2026-09-05 request scope and identity-recovery provenance. This member does not
+become policy, runtime truth, remote-enforcement proof, or execution evidence
+merely because another document cites it.
 
 ## Purpose
 
@@ -47,9 +50,10 @@ exists at all.
 ## Repository Role
 
 This Stage 90 reference preserves dated source-backed facts and explanatory
-context. Current policy remains in Stage 00 and Stage 05, lifecycle intent and
-execution remain in Stages 01-04, runtime truth remains in tracked runtime
-owners, and remote state requires separate control-plane evidence.
+context and owns current baseline interpretation within the research pack.
+Current policy remains in Stage 00 and Stage 05, lifecycle intent and execution
+remain in Stages 01-04, runtime truth remains in tracked runtime owners, and
+remote state requires separate control-plane evidence.
 
 ## Scope
 
@@ -602,11 +606,35 @@ It is held outside the table only so one long URL does not widen every row.
 | agentic | applies | Use the Stage 00 authority sequence before agentic changes. | Read cited policy at the literal baseline. | No runtime activity observed. |
 | architecture | applies | Before architecture use, compare a tracked architecture artifact with its canonical owner. | Confirm the artifact and scoped diff; seek separate approval for runtime observation. | Baseline evidence does not select an architecture. |
 | common | applies | Preserve shared-worktree ownership and declared boundaries. | Inspect the scoped diff and Task ledger. | Shared rules are configuration, not enforcement proof. |
-| docs | applies | Use the approved research profile and reference contract. | Check metadata and required sections. | Draft identity reconciliation remains deferred. |
+| docs | applies | Use the approved research profile and reference contract. | Check metadata and required sections. | RES-0085 recovery evidence remains in lifecycle review. |
 | infra | applies | Inspect tracked infrastructure configuration only; seek separate approval for runtime observation. | Confirm the cited configuration revision and scoped diff. | Compose configuration is not runtime proof. |
 | ops | applies | Route operational evidence to its owner and inspect tracked records before use. | Confirm the record path and scoped diff; seek separate approval for live operation. | No operational result is claimed. |
 | qa | applies | Run only the scoped metadata, path, census, and whitespace checks. | Record exact commands and exits in Task 0004; seek separate approval for execution-environment checks. | Broad acceptance suites remain Not Run. |
 | security | applies | Preserve the approval boundary and avoid secrets or credential access. | Confirm sources are tracked paths only; seek separate approval for control testing. | No security control effectiveness is claimed. |
+
+## 2026-09-05 Consolidated Current Baseline
+
+Consolidation baseline:
+`main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b`. The earlier assessed baseline
+`main@4c6d211129615eab372d720ebd209b6c27618c86` remains preserved in RES-0085
+as dated request and recovery evidence. Current baseline interpretation now
+belongs here rather than being split between two research packages.
+
+| Surface | Current repository evidence | Evidence depth | Disposition / remaining boundary |
+| --- | --- | --- | --- |
+| Research ownership | RES-0002 has 20 protected topical members; m0020 owns the current baseline; RES-0084 owns platform mechanics | Repository-enforced | RES-0085 remains dated recovery evidence during lifecycle review |
+| Governance and providers | 14 roles and 23 skills project through Claude/Codex adapters; bounded provider observations are recorded by SPEC-0172 | Defined, Configured, Repository-enforced, point-in-time Runtime-verified | Native outcome, future entitlement, latency, quality, and cost remain unverified |
+| Documents and SDLC | Common-six metadata, profile lifecycles, current-corpus migration, recovery, and Requirement-to-Task routing are active | Repository-enforced | Intended-use acceptance remains owner-bound |
+| Operations | Guide, Policy, Runbook, Incident, and Postmortem profiles are registered; release evidence is composed | Defined, Repository-enforced | No current release target or independent Release profile |
+| CI and remote protection | Two aggregate jobs are Hosted-observed; strict app-bound checks were read back on 2026-09-05 | Hosted-executed, Remote-verified at cutoff | Future runner and control-plane state can drift |
+| Compose and runtime | 28 profile selections render; four AUD-0097 defects remain | Local-executed, Repository-enforced | No live stack, service-health, recovery, or production acceptance |
+| Security | Least-privilege permissions, SHA pins, static and supply-chain checks are tracked | Configured, Repository-enforced | Secrets, live production controls, and runtime posture were not inspected |
+| Documentation architecture | Authored indexes and generated LLM Wiki outputs route to canonical owners | Configured, Repository-enforced | Generated output must remain owner-generated and non-authoritative |
+| Editor, memory, and cost | Partial policy or no repository-wide contract | Defined / gap | Requires separate owner decisions and acceptance evidence |
+
+This consolidation changes research ownership only. It does not reclassify
+configuration as runtime evidence, refresh mutable external claims, or
+authorize provider, deployment, release, or remote mutation.
 
 ## Maintenance
 
@@ -628,4 +656,5 @@ unit.
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 - [Agent governance hub](../../../00.agent-governance/README.md)
+- [Dated RES-0085 assessment and recovery evidence](../0085-workspace-engineering-main-baseline-assessment/README.md)
 - [Research category router](../README.md)

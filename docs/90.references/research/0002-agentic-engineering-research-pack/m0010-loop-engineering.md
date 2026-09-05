@@ -1,16 +1,17 @@
 ---
 title: "Reference: Loop Engineering"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0010"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -403,6 +404,23 @@ future arXiv version.
 | ops | applies | Hand off operational failure to ops owner. | Record sanitized evidence. | No operational result. |
 | qa | applies | Use focused gates before review. | Inspect the registered gate and record its actual exit status. | Broad gates remain separate. |
 | security | applies | Escalate sensitive or protected failures. | Verify redaction boundary. | No security test. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Stage 00 defines a bounded loop from discovery and planning through approval,
+execution, verification, review, correction, completion, or handoff. The
+repository now has a concrete example in SPEC-0172: repeated Hosted failures
+were fixed without removing gates, followed by exact remote read-back.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Retry and stop | Bounded retry, blocker, and handoff policies | Defined, Repository-enforced | Provider adherence is not deterministic | Task evidence and stop-hook tests |
+| Review loop | Exact-diff independent review is required for material changes | Defined | Reviewer quality varies | recorded verdict and corrected rerun |
+| Evidence handoff | Current Task owns verified state, blockers, and next action | Repository-enforced | Cross-session semantic loss remains possible | Task and compaction contract checks |
+
+Recommendation: terminate loops on verified completion, an explicit approval
+boundary, or a durable blocker; do not equate additional turns with progress.
 
 ## Maintenance
 

@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "specs"
 artifact_id: "SPEC-0172-TSK-0001"
 parent_ids:
@@ -233,6 +233,70 @@ runtime, protection, review, deferral, and Git evidence.
   were read back unchanged. Rollback remains the exact captured 12-check state,
   including unbound `frontend-quality`; no rollback was required.
 
+### Research architecture renewal (2026-09-05)
+
+- Started from clean `main@4c6d211129615eab372d720ebd209b6c27618c86`
+  on feature branch `codex/0002-agentic-research-renewal`; repository and
+  external-source observation date is 2026-09-05.
+- Inventoried the existing Stage 90 research roots before editing. RES-0002,
+  RES-0084, and RES-0085 already own the requested questions, so no competing
+  research package or package identity was created.
+- Rebuilt the RES-0002 package README as the question, scope, method, summary,
+  navigation, traceability, and limitation owner; preserved its exact README
+  plus 20-member protection set, every member identity and `created` value, and
+  mapped all 93 A1-G11 requested categories to one owning member each.
+- Split the detailed GitHub Actions analysis out of the RES-0084 package README
+  into new draft member `RES-0084-m0001`, retained the historical analysis with
+  explicit 2026-07-05 initial-observation and 2026-08-10 source-refresh dates,
+  and kept the package README as a concise router.
+- Normalized the RES-0085 package and request-scope member around the current
+  baseline and evidence classes without changing its approved identity-recovery
+  tuple. Updated the research index and tracked main-protection record to the
+  approved aggregate-check read-back.
+- Re-opened official provider, GitHub, Docker Compose, Diátaxis, C4, arc42,
+  Spec Kit, ISO/IEC/IEEE 29148, NIST SSDF, SLSA, and agency-agents sources. No
+  secret, user-global setting, raw log, deployment, release, tag, or new remote
+  mutation was used as research evidence.
+- The first staged metadata check correctly rejected the new member at
+  `published`; it was repaired to the registered `draft` initial state and
+  `0.1.0` initial version. Independent review also found generated-index
+  staleness and a historical cutoff ambiguity; both were corrected without
+  weakening a validator.
+- The owner generator refreshed only DATA-0076 and DATA-0082. Focused reference
+  tests passed 24/24, metadata changed selected 28 paths with zero violations,
+  all-link validation covered 683 documents and 5,705 links with zero failures,
+  and the staged candidate full profile exited 0. Independent policy review
+  returned final PASS with no actionable finding after revalidation.
+
+### Research baseline consolidation (2026-09-05)
+
+- Reassessed RES-0002, RES-0084, and RES-0085 by question, scope, lifecycle,
+  inbound links, and canonical ownership before editing. RES-0084 remains the
+  independent GitHub Actions platform-mechanics authority because its external
+  observation cadence differs from repository adoption evidence in RES-0002.
+- Consolidated mutable workspace-baseline ownership into `RES-0002-m0020` at
+  `main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b`. RES-0085 now preserves the
+  dated `main@4c6d211129615eab372d720ebd209b6c27618c86` assessment, approved
+  request boundary, and recovery provenance without competing current-state
+  conclusions.
+- Preserved the RES-0085 package and member paths, artifact identifiers,
+  `created` values, and exact `identity_recovery` tuple. The package and member
+  each make only the registered publication-lifecycle transition from `draft`
+  to `review`; `review -> published` and any later terminal transition would
+  require separate approval and validation units if pursued.
+- The RES-0002 protected path set did not change, so its exact README plus
+  20-member Preservation Declaration remains unchanged. No generated document
+  was edited because LLM Wiki freshness remained valid after the ownership-only
+  consolidation.
+- Pre-edit focused reference tests passed 24/24, traceability covered 683
+  documents and 5,705 links with zero failures, LLM Wiki freshness passed, and
+  `git diff --check` passed. Post-edit metadata selected eight paths with zero
+  violations; lifecycle and recovery checks reported zero violations; and
+  traceability covered 683 documents and 5,712 links with zero failures.
+- After the independent review findings were corrected, the `changed` and
+  canonical local `full` public profiles each exited 0. The final independent
+  spec-compliance and quality verdicts were PASS with no actionable finding.
+
 ### Gap matrix
 
 | Current state | Target state | Affected files | Migration | Validator | Test |
@@ -251,8 +315,9 @@ runtime, protection, review, deferral, and Git evidence.
 | --- | --- | --- |
 | Registry, operations, and placeholder unit tests | PASS | 107 tests, exit 0 |
 | Focused placeholder/type/catalog regressions | PASS | 11 tests, exit 0 |
-| Generated LLM Wiki freshness | PASS | both tracked outputs fresh |
-| Traceability | PASS | 682 documents, 5,753 links, 51 archive direct links, 0 failures |
+| Generated LLM Wiki freshness | PASS | both tracked outputs fresh after owner regeneration for the RES-0084 member path |
+| Traceability | PASS | 683 documents, 5,705 links, 51 archive direct links, 0 failures |
+| Research package contract | PASS | 24 focused tests; RES-0002 declaration exact; 93 requested category keys unique; independent review PASS |
 | Corpus lifecycle and recovery | PASS | 0 lifecycle violations; 3 frozen legacy migrations, 104 sealed tombstones, 140 preserved disposition paths, 250 decisions, 338 recovery rows |
 | Diff whitespace | PASS | `git diff --check`, exit 0 |
 | Frozen archive body diff | PASS | no changed path under `completed/`, `superseded/`, or `retired/` |

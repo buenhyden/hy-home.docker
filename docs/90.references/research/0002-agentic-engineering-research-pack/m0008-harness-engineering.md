@@ -1,16 +1,17 @@
 ---
 title: "Reference: Harness Engineering"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0008"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -408,6 +409,26 @@ Gemini event-count note above).
 | ops | applies | Escalate operational proof to its owner. | Review sanitized handoff. | No incident or telemetry. |
 | qa | applies | Use the smallest registered gate. | Inspect the registry gate and record the scoped command/exit. | CI configuration is not CI execution. |
 | security | applies | Keep sensitive evidence excluded. | Inspect evidence fields. | Control effectiveness unverified. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Current OpenAI material describes harness engineering as making repository
+state, tests, UI, logs, and metrics legible to agents while using isolated
+worktrees and repeated review. Claude's current hook reference exposes more
+native events than this repository adopts. External breadth is not automatic
+local adoption.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Legibility | Stage indexes, Tasks, scripts, tests, audits, and generated routes | Repository-enforced | Runtime UI/metrics legibility is service-dependent | task-specific acceptance |
+| Control | Sandbox/permissions, hooks, bounded retry, and review policy | Defined, Configured | Provider-native events differ | provider hook parity report |
+| Isolation | Feature branches/worktrees plus task-owned boundaries | Configured | Not every external side effect is isolated | approval and rollback evidence |
+
+Recommendation: expand harness capability only when a concrete task cannot
+observe or verify its target safely. Official sources:
+[OpenAI harness engineering](https://openai.com/index/harness-engineering/) and
+[Claude hooks](https://code.claude.com/docs/en/hooks).
 
 ## Maintenance
 

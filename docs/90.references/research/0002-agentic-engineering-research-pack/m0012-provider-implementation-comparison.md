@@ -1,16 +1,17 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0012"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -328,6 +329,24 @@ stable revision identifier; every vendor row is external mutable.
 | ops | applies | Route outage/telemetry proof to ops. | Use approved operational evidence. | No availability claim. |
 | qa | applies | Compare tracked contracts first. | Run registered check when authorized. | Static parity is limited. |
 | security | applies | Respect native permission boundaries. | Review redacted plan. | No control effectiveness claim. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+Stage 00 remains the single shared control plane. Claude has seven configured
+semantic hook events including `SessionEnd`; Codex has six and routes them
+through one shared hook adapter. Current provider documentation exposes
+additional native capabilities, but only tracked mappings count as adopted.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Shared policy | Root adapters route into Stage 00 | Repository-enforced | None for ownership split | provider-surface contract |
+| Native events | Claude and Codex mappings are explicit and unequal | Configured, Repository-enforced | Native breadth and semantics differ | generated hook parity report |
+| Context/handoff | Task evidence is provider-neutral; sessions are native | Defined, Configured | Outcome equivalence unverified | bounded dual-provider scenario |
+| Entitlement | SPEC-0172 records direct bounded access on 2026-09-04 | Runtime-verified at cutoff | Future access and model parity unknown | new approved no-secret probe |
+
+Recommendation: preserve semantic intent across adapters without pretending
+that event names, memory, system prompts, or permission engines are identical.
 
 ## Maintenance
 

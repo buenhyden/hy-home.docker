@@ -1,16 +1,17 @@
 ---
 title: "Reference: Task-Aware Agent Model Selection"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0002"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -386,6 +387,24 @@ does not evidence that an environment override was set here.
 | ops | applies | `incident-responder` owns any availability or fallback policy for operations. | Inspect an approved runbook or incident record. | No fallback graph exists. |
 | qa | applies | `qa-engineer` owns the comparative-evaluation proposal. | Inspect frozen task/rubric before promotion. | No evaluation executed. |
 | security | applies | `security-auditor` assesses sensitivity and entitlement evidence. | Review sanitized approval evidence. | No account/organization state read. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The Stage 00 provider registry owns five task-aware work profiles and keeps
+entitlement/runtime acceptance at `needs_revalidation`. Current provider
+documentation confirms that supported model and effort values are mutable and
+model-dependent, so a tracked name is configuration rather than entitlement.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Task-class routing | Work profiles bind provider, model, control, and value | Configured, Repository-enforced | No measured quality/cost outcome | controlled eval with Task-owned acceptance |
+| Fallback | No silent cross-provider fallback authority | Defined | Availability behavior is unverified | bounded provider failure exercise |
+| Entitlement | SPEC-0172 records point-in-time Claude and Codex probes | Runtime-verified on 2026-09-04 only | Future/account-wide availability unknown | new bounded probe without credential inspection |
+
+Recommendation: retain explicit `needs_revalidation`; update the Registry only
+after official-source, entitlement, and runtime checks agree. Do not infer rate,
+price, or context capacity from a model identifier.
 
 ## Maintenance
 

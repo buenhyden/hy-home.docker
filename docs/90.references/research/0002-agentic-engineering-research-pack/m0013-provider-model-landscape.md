@@ -1,16 +1,17 @@
 ---
 title: "Reference: Provider Model Landscape at the Evidence Cutoff"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "RES-0002-m0013"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-reviewed_at: "2026-08-28"
+observed_at: "2026-09-05"
+reviewed_at: "2026-09-05"
 review_cycle: "on-source-change"
 ---
 
@@ -426,6 +427,26 @@ all provider offerings.
 | ops | applies | `incident-responder` owns availability/fallback policy evidence for an operational provider use. | Inspect an approved runbook or incident record. | No fallback graph is configured. |
 | qa | applies | `qa-engineer` defines representative evaluation before default promotion. | Inspect an approved evaluation record. | No live comparison was run. |
 | security | applies | `security-auditor` checks entitlement-sensitive promotion evidence. | Review value-free approval evidence. | Account state was not inspected. |
+
+## 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The current Registry activates only models used by five work profiles and keeps
+every entitlement/runtime field at `needs_revalidation`. Provider catalogs and
+effort enumerations are mutable; public documentation can lag or lead a runtime
+surface, so disagreements are research findings rather than silent Registry
+changes.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Active model set | Registry lists only selected profile models | Configured, Repository-enforced | Mutable upstream lifecycle | official-source plus runtime revalidation |
+| Effort control | Provider-specific control/value mappings | Configured | Values can be model/surface dependent | schema check followed by bounded invocation |
+| Fallback | No implicit provider fallback is authorized | Defined | Failure behavior untested | explicit failure-mode acceptance |
+| Rate/cost/context | Bounded-context policy exists | Defined | Direct account rates, prices, and usage absent | owner-approved measurement without credential capture |
+
+Recommendation: do not update active rows from marketing availability alone;
+require official-source, entitlement, and runtime agreement, then evaluate
+quality/cost separately.
 
 ## Maintenance
 
