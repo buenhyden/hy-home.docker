@@ -1,6 +1,6 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,6 +33,11 @@ Provider-native files may narrow behavior to actual capabilities. They may not
 invent policy, roles, skills, approvals, or unsupported parity. A configured
 event is tracked adoption, not proof that a live event ran. Runtime acceptance
 remains distinct from configured repository support.
+
+An absent or empty real `.agents/` root is an allowed non-authoritative physical
+container. It contains no shared roles, skills, generated README, or native
+picker route; unknown or nonempty contents fail closed and are preserved without
+automatic deletion.
 
 ## Related Documents
 

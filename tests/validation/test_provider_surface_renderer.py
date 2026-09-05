@@ -76,6 +76,57 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_cli_preserves_empty_read_only_agent_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            optional = root / ".agents"
+            optional.mkdir(mode=0o555)
+            for mode in ("--check", "--write"):
+                with self.subTest(mode=mode):
+                    result = subprocess.run(
+                        [sys.executable, str(RENDERER), mode, "--root", str(root)],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=15,
+                        env=_child_env(),
+                    )
+                    self.assertEqual(
+                        0, result.returncode, result.stdout + result.stderr
+                    )
+                    self.assertEqual([], list(optional.iterdir()))
+                    self.assertEqual(0o555, optional.stat().st_mode & 0o777)
+                    self.assertFalse((root / ".codex/skills").exists())
+
+    def test_cli_rejects_nonempty_agent_directory_before_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            unowned = root / ".agents/unowned.md"
+            unowned.parent.mkdir()
+            unowned.write_bytes(b"user-owned content\n")
+            projection = root / ".codex/agents/code-reviewer.toml"
+            original = projection.read_bytes() + b"\n# local drift\n"
+            projection.write_bytes(original)
+            for mode in ("--check", "--write"):
+                with self.subTest(mode=mode):
+                    result = subprocess.run(
+                        [sys.executable, str(RENDERER), mode, "--root", str(root)],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=15,
+                        env=_child_env(),
+                    )
+                    self.assertEqual(
+                        1, result.returncode, result.stdout + result.stderr
+                    )
+                    self.assertIn("AGC-RETIRED-SURFACE", result.stderr)
+                    self.assertEqual(b"user-owned content\n", unowned.read_bytes())
+                    self.assertEqual(original, projection.read_bytes())
+                    self.assertFalse((root / ".provider-surface-quarantine").exists())
+
     def test_static_projection_routes_follow_registry_data(self) -> None:
         renderer = load_renderer()
         with tempfile.TemporaryDirectory() as directory:

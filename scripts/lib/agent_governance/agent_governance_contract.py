@@ -1099,25 +1099,52 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
     return False
 
 
+def validate_optional_agent_directory(root: pathlib.Path) -> list[Finding]:
+    """Allow only absence or an empty real directory, without reading children."""
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    try:
+        root_descriptor = os.open(root.absolute(), flags)
+        try:
+            try:
+                descriptor = os.open(".agents", flags, dir_fd=root_descriptor)
+            except FileNotFoundError:
+                return []
+            try:
+                before = os.fstat(descriptor)
+                with os.scandir(descriptor) as entries:
+                    empty = next(entries, None) is None
+                after = os.stat(
+                    ".agents", dir_fd=root_descriptor, follow_symlinks=False
+                )
+                if empty and stat.S_ISDIR(after.st_mode) and (
+                    before.st_dev, before.st_ino
+                ) == (after.st_dev, after.st_ino):
+                    return []
+            finally:
+                os.close(descriptor)
+        finally:
+            os.close(root_descriptor)
+    except OSError:
+        pass
+    return [
+        _finding(
+            ".agents",
+            "AGC-RETIRED-SURFACE",
+            "only an absent or verifiably empty real directory is allowed; "
+            "preserve existing contents for manual disposition",
+        )
+    ]
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
     if section not in {"catalog", "providers", "harness", "all"}:
         raise ValueError(f"unsupported section: {section}")
     root = root.absolute()
-    findings: list[Finding] = []
+    findings = validate_optional_agent_directory(root)
     roles = {item.agent_id for item in bundle.state.roles}
     skills = {item.skill_id for item in bundle.state.skills}
-    # A retired root is never traversed or removed by validation, including a
-    # broken symlink or user-owned content. A read-only gate reports it instead.
-    if os.path.lexists(root / ".agents"):
-        findings.append(
-            _finding(
-                ".agents",
-                "AGC-RETIRED-SURFACE",
-                "retired shared runtime directory is forbidden",
-            )
-        )
     if section == "all":
         findings.extend(_validate_stage99_governance_profiles(root))
     if section in {"catalog", "providers", "all"}:

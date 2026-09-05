@@ -7,6 +7,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -45,6 +46,24 @@ def copy_governance_fixture(root: pathlib.Path) -> None:
 
 
 class AgentGovernanceContractTests(unittest.TestCase):
+    def test_empty_shared_directory_is_allowed_including_read_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            optional = root / ".agents"
+            for mode in (None, 0o755, 0o555):
+                with self.subTest(mode=mode):
+                    if mode is not None:
+                        optional.mkdir(exist_ok=True)
+                        optional.chmod(mode)
+                    findings = contract.validate_repository(
+                        root, contract.load_contract_bundle(root), "providers"
+                    )
+                    self.assertFalse(
+                        any(item.path.startswith(".agents") for item in findings),
+                        findings,
+                    )
+
     def test_provider_registry_does_not_restate_neutral_workflow_policy(self) -> None:
         registry = yaml.safe_load(
             (ROOT / "docs/00.agent-governance/providers/registry.yaml").read_text()
@@ -61,16 +80,26 @@ class AgentGovernanceContractTests(unittest.TestCase):
     def test_retired_shared_directory_is_rejected_without_reading_or_deleting_it(
         self,
     ) -> None:
-        for kind in ("directory", "broken-symlink"):
+        for kind in (
+            "directory", "agents", "skills", "file", "symlink", "broken-symlink", "fifo"
+        ):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_governance_fixture(root)
                 retired = root / ".agents"
-                if retired.exists():
-                    shutil.rmtree(retired)
                 if kind == "directory":
                     retired.mkdir()
                     (retired / "unowned.md").write_text("user-owned content\n")
+                elif kind in {"agents", "skills"}:
+                    (retired / kind).mkdir(parents=True)
+                elif kind == "file":
+                    retired.write_text("user-owned content\n")
+                elif kind == "fifo":
+                    os.mkfifo(retired)
+                elif kind == "symlink":
+                    outside = root / "outside"
+                    outside.mkdir()
+                    retired.symlink_to(outside, target_is_directory=True)
                 else:
                     retired.symlink_to(
                         root / "does-not-exist", target_is_directory=True
@@ -84,6 +113,16 @@ class AgentGovernanceContractTests(unittest.TestCase):
                     self.assertEqual(
                         "user-owned content\n", (retired / "unowned.md").read_text()
                     )
+
+    def test_optional_shared_directory_enumeration_failure_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            optional = root / ".agents"
+            optional.mkdir()
+            with mock.patch.object(contract.os, "scandir", side_effect=PermissionError):
+                findings = contract.validate_optional_agent_directory(root)
+            self.assertEqual(["AGC-RETIRED-SURFACE"], [item.code for item in findings])
+            self.assertTrue(optional.is_dir())
 
     def test_read_only_review_roles_remain_read_only(self) -> None:
         state = contract.load_agent_governance(ROOT)

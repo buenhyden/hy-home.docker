@@ -181,11 +181,13 @@ if not tool_name or tool_name in edit_tools:
         short_path = short_path.removeprefix("./")
         if short_path.startswith(".agents/"):
             system_messages.append(
-                "Retired .agents surface edit detected.\n\n"
+                "Non-authoritative .agents container edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "The `.agents/` directory is retired and must remain absent. "
+                "An absent or empty real `.agents/` directory is allowed, but it has no shared "
+                "roles, skills, generated README, or native picker route. Unknown or nonempty "
+                "contents fail closed and must be preserved; do not regenerate or delete them. "
                 "Load common policies, roles, and procedures from `docs/00.agent-governance/`; "
-                "do not regenerate a compatibility directory. "
+                "do not infer a compatibility projection. "
                 "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break

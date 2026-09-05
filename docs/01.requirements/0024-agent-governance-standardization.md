@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -38,9 +38,12 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 - **REQ-0024-FR-0003**: `.claude/`, `.codex/`는 Stage 00 정본을
   provider 또는 runtime 형식으로 투영하는 adapter여야 하며 별도 정책,
   lifecycle, 완료 기준을 정의해서는 안 된다.
-  공통 호환 디렉터리는 폐기한다. Claude는 기본 스킬 투영을 사용하고,
-  Codex는 Stage 00의 스킬 원문을 명시적으로 읽는다. 자동 검색과 원문 로딩을
-  같은 기능으로 주장하지 않는다.
+  공통 호환 투영은 폐기한다. 다만 비어 있는 실제 `.agents/` 물리 컨테이너는
+  비권위적으로 허용되며 shared role/skill, generated README, native picker를
+  제공하지 않는다. 알 수 없거나 비어 있지 않은 내용은 fail closed로 보존하며
+  자동 삭제하지 않는다. Claude는 기본 스킬 투영을 사용하고, Codex는 Stage 00의
+  스킬 원문을 명시적으로 읽는다. 자동 검색과 원문 로딩을 같은 기능으로 주장하지
+  않는다.
 - **REQ-0024-FR-0004**: canonical role과 skill은 Stage 00에 한 번만 정의되고,
   생성·추적되는 provider surface는 이름, 역할, scope, source 관계를 보존해야
   한다.

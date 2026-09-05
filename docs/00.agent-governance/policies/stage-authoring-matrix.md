@@ -1,6 +1,6 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -46,6 +46,11 @@ Claude discovers its generated `.claude/skills/` projection. Codex reads the
 canonical Stage 00 `skills/` files explicitly through its adapter and role
 instructions. Native discovery and canonical instruction loading are distinct;
 neither makes a provider projection a second policy source.
+
+An absent or empty real `.agents/` root is an allowed non-authoritative physical
+container, not a shared role/skill projection, generated README, or native
+picker route. Unknown or nonempty contents fail closed and are preserved without
+automatic deletion.
 
 ## Related Documents
 

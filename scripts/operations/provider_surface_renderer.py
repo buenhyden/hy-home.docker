@@ -30,7 +30,9 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
     RoleRecord,
     SkillRecord,
     load_agent_governance,
+    render_findings,
     validate_contract_bundle,
+    validate_optional_agent_directory,
     ContractBundle,
 )
 
@@ -983,6 +985,10 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
     findings = [
         Finding(path, "pending-cleanup") for path in _pending_quarantine_paths(root)
     ]
+    findings.extend(
+        Finding(pathlib.PurePosixPath(item.path), item.code)
+        for item in validate_optional_agent_directory(root)
+    )
     for path, content in expected.items():
         relative = pathlib.PurePosixPath(path.as_posix())
         try:
@@ -1053,6 +1059,9 @@ def _atomic_write(
 
 def write_native_projection(root: pathlib.Path) -> None:
     root = root.absolute()
+    directory_findings = validate_optional_agent_directory(root)
+    if directory_findings:
+        raise ValueError(render_findings(directory_findings))
     state = load_agent_governance(root)
     expected = expected_native_projection(root)
     pending = _pending_quarantine_paths(root)

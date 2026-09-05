@@ -1,6 +1,6 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -30,8 +30,11 @@ Spec Package and current Task when repository state changes.
 - The registry declares `native_skill_pattern: null` for Codex. No shared skill
   projection or `.codex/skills/` substitute is generated. This intentionally does
   not provide native `$skill` picker discovery; explicit canonical loading is
-  the supported repository route. Do not recreate the retired `.agents/` tree,
-  install global copies, or claim runtime acceptance from static configuration.
+  the supported repository route. An absent or empty real `.agents/` root is an
+  allowed non-authoritative physical container, not a shared role/skill
+  projection, generated README, or native picker source. Unknown or nonempty
+  contents fail closed and are preserved; do not regenerate, delete, install
+  global copies, or claim runtime acceptance from static configuration.
 - `.codex/hooks.json` and repository-local Codex configuration provide runtime
   mechanics only.
 - Provider/model selections, reasoning controls, and sandbox translations come
