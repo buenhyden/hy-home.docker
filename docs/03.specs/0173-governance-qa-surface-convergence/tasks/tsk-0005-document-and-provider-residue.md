@@ -2,7 +2,7 @@
 title: "Document and Provider Residue Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -32,10 +32,12 @@ interfaces backed by one Stage 00 authority.
 
 ## Work Log
 
-This planning artifact was created on 2026-09-05. No document family, data
-package, provider projection, renderer, or hook has been changed. During an
-authorized execution, update every current inbound link and generated owner in
-the same logical change as its source transition.
+Task 4 converged test and fixture ownership at `85b0fc13`, enabled recursive
+discovery at `e8a59d9c`, and recorded focused evidence at `74a6190e`. Task 5
+became ready at `0213b0ee` and now starts from a clean worktree. No Task 5
+document family, data package, provider projection, renderer, or hook has been
+changed; every current inbound link and generated owner must move in the same
+logical change as its source transition.
 
 ## Verification Evidence
 
