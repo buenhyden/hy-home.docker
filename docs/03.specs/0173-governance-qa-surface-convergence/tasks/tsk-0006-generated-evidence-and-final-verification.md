@@ -2,7 +2,7 @@
 title: "Generated Evidence and Final Verification Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -42,7 +42,9 @@ counts. DATA-0065 must preserve the corrected source audits' historical
 designation in derived tables. Correct these reproduced generator defects at
 their existing source owners with RED/GREEN tests before regeneration; never
 hand-edit generated output or weaken validators. No Task 6 write or aggregate
-has run at this ready checkpoint.
+had run at the ready checkpoint `f99508d4`. Execution starts from that commit.
+The separate main worktree has user-owned WIP; the user will commit it directly.
+This Task will not stage, stash, reset, or otherwise change that WIP.
 
 ## Verification Evidence
 
@@ -53,14 +55,17 @@ tree.
 
 ## Review Evidence
 
-No implementation review has occurred. The final reviewer must receive the
+Read-only `task5_policy_review` accepted the ready transition and bounded
+generator correction scope: PASS, quality A, 0 Critical, 0 Important, 0 Minor.
+The final reviewer must receive the
 exact commit and verification evidence and must be independent of the
 implementation work.
 
 ## Commit Ledger
 
-No implementation commit exists. The planning-package changes are not
-implementation or acceptance evidence.
+| Commit | Scope |
+| --- | --- |
+| `f99508d4` | Accept Task 5 corrections and prepare Task 6 after authority review |
 
 ## Rulings
 
