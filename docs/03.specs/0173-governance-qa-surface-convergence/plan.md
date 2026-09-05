@@ -769,7 +769,7 @@ rg -n 'spec126|T-AER-' tests examples scripts docs/05.operations
 Expected: tests PASS; both searches return no current production or fixture
 identity residue.
 
-- [ ] **Step 10: Commit the test and fixture convergence**
+- [x] **Step 10: Commit the test and fixture convergence**
 
 ```bash
 git add tests examples scripts docs/05.operations .github/workflow-contract.yml
