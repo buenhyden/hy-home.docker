@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -15,7 +14,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from audit_criterion_contract import (
+from audit_criterion_contract import (  # noqa: E402
     EXPECTED_PACK_FILES,
     AuditCriterionContractError,
     validate_pack,
@@ -28,7 +27,9 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     _run_git as run_bounded_git,
 )
-from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+from scripts.lib.document_governance.frontmatter import (  # noqa: E402
+    parse_frontmatter_text,
+)
 
 
 DEFAULT_CONTRACT = pathlib.Path(

@@ -4,9 +4,7 @@ import ast
 import dataclasses
 import importlib.util
 import io
-import os
 import pathlib
-import shutil
 import subprocess
 import sys
 import tempfile

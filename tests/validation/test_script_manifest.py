@@ -1,18 +1,37 @@
 import datetime as dt
 import importlib.util
-from pathlib import Path, PurePosixPath
+import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from copy import deepcopy
+from pathlib import Path, PurePosixPath
 from unittest import mock
 
 import scripts.lib.document_governance as document_governance
 import yaml
 
-from tests.validation._script_manifest_support import *
-from tests.validation._script_manifest_support import ROOT
+from tests.validation._script_manifest_support import (
+    DISPOSITIONS,
+    FORBIDDEN_EVIDENCE_PREFIXES,
+    KINDS,
+    LIFECYCLES,
+    MANDATORY_DISPOSITIONS,
+    MUTATIONS,
+    MUTATION_OVERRIDES,
+    OPERATIONS_MANIFEST_PATHS,
+    REQUIRED_FIELDS,
+    ROOT,
+    TASK12_RETIRED_SCRIPTS,
+    _python_imports_target,
+    is_runbook_authority,
+    reference_proves_use,
+    tracked_paths,
+)
 
 MANIFEST = ROOT / "scripts/manifest.yaml"
 MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"

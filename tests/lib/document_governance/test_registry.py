@@ -33,7 +33,6 @@ from scripts.lib.document_governance.metadata_validator import (
     build_registry_profiles,
     build_manifest,
     infer_artifact_type,
-    load_profiles,
     parse_frontmatter,
     validate_body_contract,
     validate_record,

@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -45,7 +45,10 @@ historical outcomes rather than becoming current relocation evidence.
   routes, issued-ID high-water and all existing frozen archive bytes.
 - The subsequent user instruction authorizes local commits of the reviewed
   relocation and continued review/execution of safe follow-up verification.
-- Out of scope: push, merge, PR, fetch/pull, deployment, live
+- The next instruction authorizes integrating the existing reviewed tip
+  `a8c6ede82` into local main before remaining work. Subsequent implementation
+  continues on the work branch and does not imply further integration approval.
+- Out of scope: additional integration, push, PR, fetch/pull, deployment, live
   Compose/service actions, credentials/environment contents, certificates,
   global settings, new servers/plugins, model entitlement and hook trust changes.
 

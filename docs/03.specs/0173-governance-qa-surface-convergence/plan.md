@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -25,8 +25,10 @@ Completed Tasks and their evidence are not reopened or re-executed.
 The latest user request authorizes local source, consumer, generator, test and
 policy changes, a local work branch, and normal scoped approval for protected
 writes. The subsequent user instruction authorizes local commits and safe
-follow-up verification. Push, merge, PR, deployment, secret access, global
-settings and installation remain outside scope. The requested target supersedes earlier
+follow-up verification. The next explicit instruction authorizes integrating
+the reviewed tip `a8c6ede82` into local main before further work. Additional
+integration, push, PR, deployment, secret access, global settings and installation
+remain outside scope. The requested target supersedes earlier
 `.agents` removal/empty-container direction. No additional permission follows
 from a role, skill, external reference or historical Task.
 
@@ -233,7 +235,8 @@ manifest, semantic contract, workflow/labeler/CODEOWNERS and active navigation.
 - [ ] Obtain independent policy/Python review of the exact final diff and record
   each correction and verification. Commit the verified coupled source/consumer
   transition using explicit task-owned paths. Keep the branch/workspace, with no
-  push, merge, PR, deployment or cleanup of historical working artifacts.
+  push, PR, deployment or cleanup of historical working artifacts. Only the
+  explicitly named local-main checkpoint is authorized for integration.
 
 ### Follow-up after local commit
 
@@ -257,6 +260,29 @@ manifest, semantic contract, workflow/labeler/CODEOWNERS and active navigation.
    ownership checks together; an empty or cache-only directory is not a repair.
 5. Record actual follow-up results and remaining boundaries in Task 0006, then
    commit that evidence separately. No remote integration is authorized.
+
+### Remaining static diagnostics after local integration
+
+1. Integrate the already reviewed `a8c6ede82` tip into local main without rewriting
+   history or changing user files. Confirm the committed source/output tree,
+   then continue on the existing work branch at the same tip. Retain both
+   worktrees. Task 0006 owns the actual receipt and remaining acceptance state.
+2. Check all 46 Python files touched since the original e568 baseline using the
+   installed Ruff rules. Classify each finding before editing: remove unused
+   bindings only when they are not public facade exports, replace star imports
+   with exact dependencies, and preserve observable validation calls and errors.
+   Preserve existing deferred bootstrap imports with narrow documented E402
+   annotations; no blanket lint suppression, gate change or unsafe autofix.
+3. Preserve every existing test body and its discovery/registration. Run the
+   relevant document, Manifest, routing and semantic suites for changed import
+   consumers; compare exported facade identities and failure behavior. New
+   behavior is not intended, so use the existing behavior tests and the lint
+   failure as the regression evidence rather than duplicating them.
+4. Independently review the bounded diff, run Ruff check/format on the final
+   affected scope, inspect public changed selection and execute it only with
+   the previously reviewed isolated example inputs. Commit verified local
+   changes. Keep PostgreSQL, native discovery and remote/installer blockers
+   separate; source cleanup cannot establish those observations.
 
 ## Risk and Rollback
 

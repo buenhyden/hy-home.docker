@@ -184,11 +184,8 @@ def validate_record(
             )
         )
 
-    registry_classification = (
+    if isinstance(registry, DocumentRegistry):
         classify_registered_path(record.path.as_posix(), registry)
-        if isinstance(registry, DocumentRegistry)
-        else None
-    )
     uses_archive_parent_contract = record.artifact_type == "archive"
     if record.artifact_type in _typed_target_types(
         profiles

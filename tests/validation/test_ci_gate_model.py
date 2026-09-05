@@ -1,24 +1,13 @@
 from __future__ import annotations
 
-import contextlib
 import dataclasses
-import io
-import os
 import pathlib
-import select
-import shutil
-import signal
 import subprocess
-import tempfile
-import threading
-import traceback
 import unittest
-from unittest import mock
 
 import yaml
 
 from scripts.lib.gate import ci_gate_contract as contract
-from scripts.lib.gate import ci_gate_adapters as adapters
 from scripts.validation import ci_gate_runner as runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]

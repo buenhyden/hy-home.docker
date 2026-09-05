@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.3"
+version: "0.4.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -39,6 +39,134 @@ remote delivery and operational actions remain outside scope.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Main integration and remaining static work (2026-09-06)
+
+The user requested a remaining-work review, then explicitly required the
+already completed work to enter local main before further implementation.
+Both worktrees and the index were clean at
+`a8c6ede82a4118fadab6c991880999905c0586e1`. Main was still
+`e5685b42c92039618ae86cca8736b6a425630221` and was an ancestor of that tip.
+No active pre-merge, post-merge or post-checkout hook existed in the configured
+hook directory. `git switch main` and
+`git merge --ff-only codex/0173-agent-governance-home` each exited 0: main
+advanced to a8c6ede82 without conflict, history rewrite or a new merge commit.
+Renderer and Wiki `--check` each exited 0 on main, and Git status was clean.
+The agent returned normally to `codex/0173-agent-governance-home` at the same
+tip for the requested remaining work. This agent performed no fetch, push,
+remote operation, branch deletion, worktree removal or operating-input access.
+
+The installed Python is 3.12.3 and Ruff is 0.15.12. `ruff check --output-format
+json` over the 46 existing Python paths changed from the original e568 baseline
+to a8c6ede82 exited 1 with 59 diagnostics. This wider path set includes the
+later ownership repair, so its count is distinct from the earlier 41-file/47
+and five-file/12 checkpoints. The selected failures concern unused bindings,
+an overshadowed import, delayed bootstrap imports and star-import ambiguity.
+Native and PostgreSQL operating evidence remain outside current authorization;
+the local integration does not promote their status.
+
+Ruling: close the recorded static diagnostics within those affected authored
+files while preserving public exports, executed validation calls, existing test
+bodies, gate composition and error behavior. The Plan now contains this bounded
+follow-up. Ruling: retain this Task as the sole execution ledger rather than
+creating a second skill workspace/status authority. Root owns Spec/Plan/Task
+updates and commits; one fresh implementation agent owns only the lint-affected
+Python files, followed by independent read-only Python review.
+
+| Preflight interface | Preserved contract | Review decision |
+| --- | --- | --- |
+| Metadata imports and public facade consumers | Explicit exports and called validation/error behavior | Remove unused bindings only; preserve validation calls and verified facade symbols |
+| Test imports and public gate discovery | Existing test method bodies, module registration and assertion strength | Exact imports replace star imports; no test or gate removal |
+| Local integration and remaining work | Only the already reviewed tip enters main | Continue changes on the same work branch; no additional integration implied |
+| Current evidence and dated checkpoints | Task owns actual results; prior failures remain history | Add measured follow-up outcomes, then update current Deferred state only |
+
+Read-only environment recheck exited 0: Linux
+6.18.33.2-microsoft-standard-WSL2 x86_64, `/proc` and pidfd available, Codex
+0.140.0 and Claude 2.1.261 unchanged. Codex again emitted the read-only
+PATH-alias warning. No native startup/discovery or auth/global-state access was
+retried; unchanged installed versions provide no new resolution of that blocker.
+
+#### Static cleanup implementation and verification
+
+Ten Python files changed: four metadata/semantic implementation files and six
+test modules. The 59 original diagnostics were E402=2, F401=23, F403=1,
+F405=30, F811=1 and F841=2. Unused imports/bindings were removed, and Manifest
+tests now import their exact support dependencies plus their own standard-library
+dependencies. The two required post-bootstrap imports use the existing narrow
+E402 annotation convention; no rule set, exclusion, fixture, threshold, gate
+registration or public facade definition changed. The conditional registry
+classification call remains executed even though its unused result is removed.
+
+The six affected test modules preserve all test/helper function ASTs and their
+discovery counts, 40/87/8/18/7/54 (214 total, zero loader errors).
+`metadata_validator` and `metadata_contract` retain their 39 and 31 explicit
+exports and representative object origins. A direct probe observed exactly one
+conditional classification call and propagation of its sentinel exception.
+The implementation agent's targeted Manifest/model tests passed 44 cases in
+9.307 seconds; semantic/metadata tests passed 57 in 16.723 seconds, both exit 0.
+Root independently ran `ruff check` and `ruff format --check` on all 46 Python
+paths changed since e568: both exit 0, zero diagnostics, all 46 already formatted.
+This closes the recorded lint failure for that scope; it is not a whole-repository
+lint claim. Independent final Python review approved code and specification
+compliance with zero Critical/Important findings; its evidence-wording item is
+resolved by the current Deferred update below.
+
+The retained clean QA worktree at a8c6ede82 received only the owned 13-file diff
+(ten Python files plus Spec/Plan/Task), with patch SHA-256
+`71226cb4bf342efaded3cffacf66e766ce2107db956d2f526459d0e94a51973e`.
+`python3 scripts/validation/run-ci-gate.py --profile changed --explain` exited 0
+and selected 16 validators, including the actual PostgreSQL operation.
+The public aggregate was therefore NOT_RUN/BLOCKED under the existing operating
+boundary. No selector or execution context was altered to hide that leaf.
+Instead, the following existing owner commands ran directly in the same
+previously reviewed isolated example-input environment. Each exited 0; these
+separate results are not an aggregate PASS.
+
+| Direct QA command | Exit / state | Command wall seconds |
+| --- | --- | ---: |
+| `python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` | 0 / PASS | 0.833 |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --transition-override-file /tmp/agent-home-transition-evidence.yaml` | 0 / PASS | 18.225 |
+| `python3 scripts/validation/check-document-links.py --mode all` | 0 / PASS | 4.526 |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | 0 / PASS | 13.345 |
+| `python3 scripts/validation/check-operations-catalog.py` | 0 / PASS | 0.808 |
+| `python3 scripts/validation/check-supply-chain-policy.py --check` | 0 / PASS | 0.058 |
+| `bash scripts/validation/check-template-security-baseline.sh` | 0 / PASS | 0.773 |
+| `bash scripts/validation/check-quickwin-baseline.sh` | 0 / PASS | 0.613 |
+| `python3 scripts/validation/check-script-manifest.py` | 0 / PASS | 3.724 |
+| `python3 scripts/validation/check-github-workflow-contract.py` | 0 / PASS | 0.138 |
+| `python3 evals/agent_output_eval.py --check-fixtures --check-regressions` | 0 / PASS | 0.081 |
+| `python3 scripts/validation/audit_criterion_contract.py` | 0 / PASS | 0.044 |
+| `python3 scripts/validation/check-agentic-audit-semantic-freshness.py` | 0 / PASS | 0.080 |
+| `bash scripts/validation/check-storybook-contract.sh` | 0 / PASS | 0.123 |
+| `bash scripts/validation/report-provider-hook-parity.sh --check` | 0 / PASS | 0.050 |
+
+The isolated metadata command selected three documents against its own local
+origin/main a8c6ede82 comparison base. Final read-only inspection observed that
+tracking ref at a8c6ede82 with reflog message `update by push` at
+`2026-09-06T08:04:36+09:00`. This agent issued no remote command and did not
+update that ref; its actor and remote/hosted result are not inferred. Main and
+the work-branch HEAD remained a8c6ede82, and lint/input comparisons stayed pinned
+to their recorded commit IDs. The explicit ADR transition evidence remains the
+same actual approval recorded by this Task.
+`python3 -m unittest tests.validation.test_script_manifest
+tests.validation.test_ci_gate_model tests.validation.test_agent_governance_ci_routing
+tests.validation.test_agentic_audit_semantic_freshness tests.lib.test_surface_ownership -v`
+exited 0 in QA: 124 tests, 13.068 seconds (13.215 seconds command wall time).
+`python3 -m unittest discover -s tests/lib/document_governance -t .` also
+exited 0 in QA: 439 tests, 255.841 seconds (256.153 seconds command wall time).
+Thus the affected document and CLI/contract suites recorded 563 test executions
+without changing their case set. These measurements establish execution scope
+and cost, not a performance improvement or the blocked aggregate's success.
+
+All 13 QA file hashes still matched the recorded input snapshot after execution;
+the ten Python files also matched the original worktree. The final Task adds
+these observed results afterward and receives focused document checks rather
+than claiming it was part of that earlier snapshot. The exact owned QA patch
+passed `git apply --reverse --check` and was reversed; the retained QA worktree
+is clean, its isolated Docker config is empty, and no real `.env` was created.
+The local main integration remains at a8c6ede82; the verified follow-up belongs
+to the existing work branch. No further merge, remote delivery, installation,
+global-state change or operational action is implied.
 
 ### Local commit authorization and follow-up (2026-09-06)
 
@@ -1154,7 +1282,8 @@ No completed archive packet or new Spec/Plan/Task was created.
 - Push, pull request, Hosted CI, branch protection, deployment, tag, and release
   remain outside scope. The earlier cleanup instruction is historical; this
   follow-up retains the work branch/workspace and authorizes reviewed local
-  commits only. It does not authorize remote integration or cleanup.
+  commits and the completed a8c6ede82 local-main checkpoint only. It does not
+  authorize subsequent integration, remote delivery or cleanup.
 - Runtime and remote observations remain explicitly unverified.
 - The whole-migration aggregate remains BLOCKED by the PostgreSQL operating/image
   leaf. QuickWin and template-security have isolated example-input PASS evidence;
@@ -1163,8 +1292,9 @@ No completed archive packet or new Spec/Plan/Task was created.
   delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
   change, model call or installation is authorized by this follow-up.
 - The all-files wrapper remains NOT_RUN because it can install hook environments
-  and invoke container linters. Whole-file Ruff retains inherited diagnostics
-  (FAIL); the reviewed changed-file comparison found no new diagnostics.
+  and invoke container linters. Ruff check and format now PASS on all 46 Python
+  files changed since the original baseline; the historical lint failures above
+  retain their dated scope and are not current unresolved findings.
 
 ## Related Documents
 

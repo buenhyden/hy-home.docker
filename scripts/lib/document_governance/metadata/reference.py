@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import collections
-import dataclasses
 import pathlib
 import posixpath
 import re
@@ -103,7 +102,6 @@ from scripts.lib.document_governance.metadata.profile import (
     build_current_manifest,
     build_manifest,
     build_registry_profiles,
-    infer_artifact_type,
     registered_generated_owner,
 )
 
@@ -354,7 +352,6 @@ def validate_repository_contracts(
             )
         )
 
-    classified_readmes: list[Record] = []
     readme_registry = profiles.get("_registry") if registry_native else None
     for path in tracked_markdown:
         # `.github/repository-surface.md` carries the repository README form

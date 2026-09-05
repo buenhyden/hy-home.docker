@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import collections
-import copy
 import dataclasses
 import datetime as dt
 import fnmatch
@@ -14,9 +13,6 @@ import re
 import stat
 import sys
 from collections.abc import Mapping, Sequence
-
-import yaml
-
 
 _ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
 
@@ -53,10 +49,6 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     parse_frontmatter_text as _parse_frontmatter_text,
     read_frontmatter_values,
-    safe_load_unique as _safe_load_unique,
-)
-from scripts.lib.document_governance.git_provenance import (  # noqa: E402
-    HistoricalDocument,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DEFAULT_REGISTRY,
