@@ -272,6 +272,152 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             check=False,
         )
 
+    def test_held_descriptor_resolves_relocated_root_without_running_main(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(prefix="ior-held-source-", dir="/tmp") as tmp:
+            root = Path(tmp) / "repo"
+            script = root / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+            script.parent.mkdir(parents=True)
+            shutil.copy2(SCRIPT, script)
+            environment = os.environ.copy()
+            environment.update(
+                {
+                    "IOR_SOURCE_ONLY": "1",
+                    "IOR_TEST_SOURCE_ONLY": "postgres-logical-upgrade-rehearsal-tests",
+                }
+            )
+            with script.open("rb") as held:
+                result = subprocess.run(
+                    [
+                        "bash",
+                        "-c",
+                        'source "$1"\nprintf "root=%s\\nsourced=%s\\nboundary=%s\\n" '
+                        '"$ROOT_DIR" "$SCRIPT_IS_SOURCED" "$TEST_SOURCE_BOUNDARY"',
+                        "held-source",
+                        f"/proc/self/fd/{held.fileno()}",
+                    ],
+                    cwd=root,
+                    env=environment,
+                    pass_fds=(held.fileno(),),
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=False,
+                )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(
+                f"root={root.resolve()}\nsourced=true\nboundary=true\n",
+                result.stdout,
+            )
+
+    def test_descriptor_runner_executes_check_config_from_held_entrypoint(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory(prefix="ior-runner-", dir="/tmp") as tmp:
+            root = Path(tmp) / "repo"
+            script = root / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+            script.parent.mkdir(parents=True)
+            source = SCRIPT.read_text(encoding="utf-8")
+            marker = 'if [ "$SCRIPT_IS_SOURCED" = false ]; then\n'
+            observer = (
+                "observe_local_image_config_digest() {\n"
+                '  case "$1" in\n'
+                f"  \"$SOURCE_IMAGE\") printf '%s\\n' '{SOURCE_CONFIG_ID}' ;;\n"
+                f"  \"$TARGET_IMAGE\"|\"$DUMP_CLIENT_IMAGE\") printf '%s\\n' '{TARGET_CONFIG_ID}' ;;\n"
+                "  *) return 10 ;;\n"
+                "  esac\n"
+                "}\n\n"
+            )
+            self.assertIn(marker, source)
+            script.write_text(source.replace(marker, observer + marker, 1))
+            script.chmod(0o755)
+            checker = root / "scripts/validation" / IMAGE_IDENTITY_CHECKER.name
+            checker.parent.mkdir(parents=True)
+            shutil.copy2(IMAGE_IDENTITY_CHECKER, checker)
+            shutil.copytree(
+                FIXTURE,
+                root / "examples/operations/postgres-logical-upgrade",
+            )
+            (root / "_workspace/repo-support").mkdir(parents=True, mode=0o700)
+
+            fake_bin = Path(tmp) / "bin"
+            fake_bin.mkdir()
+            rendered = valid_rendered_topology_json("__PROJECT__", "__PASSWORD__")
+            docker = fake_bin / "docker"
+            docker.write_text(
+                textwrap.dedent(
+                    f"""\
+                    #!/bin/sh
+                    case "$*" in
+                      "image inspect --format {{{{json .}}}} {SOURCE_IMAGE}")
+                        printf '%s\n' {SOURCE_INSPECT_OUTPUT!r}
+                        ;;
+                      "image inspect --format {{{{json .}}}} {TARGET_IMAGE}")
+                        printf '%s\n' {TARGET_INSPECT_OUTPUT!r}
+                        ;;
+                      "compose version") exit 0 ;;
+                      *"config --format json")
+                        printf '%s\n' {rendered!r} | sed \
+                          -e "s/__PROJECT__/$3/g" \
+                          -e "s/__PASSWORD__/$IOR_POSTGRES_PASSWORD/g"
+                        ;;
+                      *) exit 0 ;;
+                    esac
+                    """
+                ),
+                encoding="utf-8",
+            )
+            docker.chmod(0o755)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+
+            controller = textwrap.dedent(
+                """\
+                import pathlib
+                import sys
+                from scripts.validation import ci_gate_runner
+
+                root = pathlib.Path(sys.argv[1])
+                invocation = ci_gate_runner.GateInvocation(
+                    gate_id="leaf.postgres-logical-upgrade-config",
+                    entrypoint=pathlib.PurePosixPath(
+                        "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+                    ),
+                    argv=("--check-config-only",),
+                    cwd=pathlib.PurePosixPath("."),
+                    allowed_env_keys=(),
+                    timeout_seconds=30,
+                )
+                raise SystemExit(
+                    ci_gate_runner.execute_execution_plan(
+                        root, (invocation,), {"PATH": sys.argv[2]}
+                    )
+                )
+                """
+            )
+            environment = os.environ.copy()
+            environment["PYTHONPATH"] = str(ROOT)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    controller,
+                    str(root),
+                    f"{fake_bin}:/usr/bin:/bin",
+                ],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=30,
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertIn("status=check-passed", result.stdout)
+            self.assertIn("cleanup_status=passed", result.stdout)
+
     def test_evidence_directory_is_exclusively_owned_and_identity_bound(self) -> None:
         run_id = str(time.time_ns())
         evidence = Path(f"/tmp/hyhome-ior-evidence.{run_id}")

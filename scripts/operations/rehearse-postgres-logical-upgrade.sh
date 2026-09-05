@@ -21,8 +21,9 @@ CLEANUP_COMMAND_CAP_SECONDS=8
 TIMEOUT_NEGATIVE_TOTAL_SECONDS=20
 TIMEOUT_NEGATIVE_CLEANUP_RESERVE_SECONDS=8
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+SCRIPT_PATH="$(readlink -f -- "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd -P)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd -P)"
 FIXTURE_DIR="${ROOT_DIR}/examples/operations/postgres-logical-upgrade"
 COMPOSE_FILE="${FIXTURE_DIR}/docker-compose.yml"
 SEED_SQL="${FIXTURE_DIR}/sql/001_schema_and_seed.sql"
