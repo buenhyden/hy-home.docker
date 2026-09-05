@@ -1,6 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "2.0.0"
+version: "2.1.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -635,6 +635,40 @@ belongs here rather than being split between two research packages.
 This consolidation changes research ownership only. It does not reclassify
 configuration as runtime evidence, refresh mutable external claims, or
 authorize provider, deployment, release, or remote mutation.
+
+## 2026-09-05 Dated Baseline Revalidation at 71da6654
+
+Observed research baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. The
+consolidation baseline `main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b` and the
+assessed baseline `main@4c6d211129615eab372d720ebd209b6c27618c86` above stay as
+recorded; this section preserves that dated observation, not the current main
+tip, without rewriting either record. RES-0085 continues to preserve the `4c6d2111` request and
+recovery evidence.
+
+Three commits separate `4c6d2111` from this baseline: `6201fa04`, the merge
+`a89c600c`, and `71da6654`. Their combined effect on tracked surfaces:
+
+| Surface changed in the delta | What changed | Effect on the baseline table above |
+| --- | --- | --- |
+| Stage 90 research | RES-0002 members, RES-0084, RES-0085, and the research index were renewed and reallocated | Ownership rows already reflect the result |
+| `.github/rulesets/main-protection.md` | Advanced from a proposal to a tracked record of the approved 2026-09-05 protection read-back | Strengthens the CI and remote-protection row from intent to dated read-back |
+| SPEC-0172 Task | Recorded the Hosted runs and the approved protection PATCH | Execution evidence stays with the Task, not with this member |
+| Generated LLM Wiki data packages | Regenerated index and coverage outputs | Generated outputs remain owner-generated and non-authoritative |
+
+No governance policy, role, skill, script, workflow, template, or Compose owner
+changed in the delta, so every capability row in the consolidated table above
+carries forward unchanged at this baseline.
+
+One boundary is new and belongs on the record. A local full-profile run is
+reproducible only with its checkout identity: at this same commit the profile
+passes in an isolated `main`-only clone and fails in a developer clone that can
+reach the unmerged `codex/0173-governance-qa-surface-convergence` branch.
+[Verification and validation](./m0019-verification-validation.md) owns that
+analysis together with the identity-space observation behind it.
+
+This revalidation preserves dated evidence only. It does
+not reclassify configuration as runtime evidence, refresh mutable external
+claims, or authorize provider, deployment, release, or remote mutation.
 
 ## Maintenance
 

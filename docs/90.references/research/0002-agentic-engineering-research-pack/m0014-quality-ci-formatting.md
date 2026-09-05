@@ -1,6 +1,6 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.1.0"
+version: "1.2.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -417,6 +417,36 @@ not live-service validation.
 
 Recommendation: add a new gate only with a named owner, deterministic input,
 failure semantics, false-positive policy, and exact public-suite route.
+
+## 2026-09-05 Gate Verdict Reproduction Revalidation
+
+Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. The full profile
+still passes at this baseline, reproduced on 2026-09-05 as exit `0` in an
+isolated `main`-only clone. That result confirms the earlier `4c6d2111`
+observation above rather than replacing it.
+
+The same command produced two different verdicts on the same commit depending
+on the checkout, so a gate result is quotable only with its checkout identity.
+[Verification and validation](./m0019-verification-validation.md) owns the
+determinism analysis and the three-environment comparison; this member records
+only what it changes for the quality layers.
+
+| Quality layer | Effect of checkout scope | Evidence depth | Practical rule |
+| --- | --- | --- | --- |
+| Format, lint, syntax, static analysis | None observed; inputs are tracked files | Local-executed, Repository-enforced | A failure here is a real content defect |
+| Unit, contract, regression suites | Identity-history suites read `--all` refs | Local-executed | Reproduce a failure in an isolated clone before routing it |
+| Pre-commit hooks | Run against the working tree, not the committed baseline | Configured, Repository-enforced | Report working-tree and baseline runs as separate evidence |
+| Aggregate CI jobs | Hosted checkout carries a narrower ref set | Hosted-executed at cutoff | Compare Hosted and local verdicts only at equal ref scope |
+
+At the time of this observation the working tree also carried 48 uncommitted
+SPEC-0172 files whose registry-schema suites are written test-first, so the
+working-tree profile reported 7 failures. That state is in-flight
+implementation evidence owned by the SPEC-0172 Task, not drift in the quality
+system, and it is recorded here only so the two runs are not conflated.
+
+Recommendation: state commit and reachable-ref scope with every quoted gate
+verdict, and keep committed-baseline runs separate from working-tree runs in
+any completion evidence.
 
 ## Maintenance
 
