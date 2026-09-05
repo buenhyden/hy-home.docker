@@ -454,6 +454,29 @@ requests push-ready state without an actual push, and minimizes checks: reuse
 unchanged focused evidence and execute the final mandatory gate once on final
 content. Cleanup remains conditional on complete preservation and verification.
 
+### Local integration cleanup and outstanding acceptance
+
+After being informed of the Docker access failure, the user explicitly requested
+completion handling and branch/worktree cleanup. Local integration is finished:
+`124a86477` preserves the research branch and `eb36be1c1` preserves the governance
+feature. Both former branch tips remain ancestors of main at `6e9005fbb`.
+The clean feature worktree contained only reproducible Python/Ruff caches beyond
+tracked files. The exact worktree and both merged local branches were removed
+with ordinary `git worktree remove` and `git branch -d`, without force or push.
+Recovery tips are `1668027e515148311c3265afe6e7e168dadac3bc` for the governance
+feature and `a3fdb13ef004282f77862c71b88138428fc8eec0` for the research branch.
+
+The full profile at `6e9005fbb` passed the earlier metadata/schema boundary,
+345 document-governance tests, 235 operations/supply-chain tests and Compose
+configuration validation (28 selections). It then exited 10 at
+`leaf.postgres-logical-upgrade-config` with `source-image-not-local` and
+`cleanup_status=passed`. A direct read-only image inspection exposed the actual
+Docker socket permission denial; image absence was not established. No image
+download, database startup, elevated Docker access or unchanged full retry
+followed. Branch cleanup does not waive acceptance criterion 15: the Spec and
+Plan remain active and this Task remains in-progress until verified acceptance.
+No completed archive packet or new Spec/Plan/Task was created.
+
 ## Rulings
 
 - Generated output changes are accepted only when their canonical source set
