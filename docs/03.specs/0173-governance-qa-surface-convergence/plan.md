@@ -2,7 +2,7 @@
 title: "Governance and QA Surface Convergence Implementation Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
