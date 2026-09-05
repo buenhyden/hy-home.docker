@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Automation Candidates"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0021"
 parent_ids:
@@ -78,6 +78,7 @@ treated as execution evidence.
 
 ## Criterion Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AUT-01 | Orchestrate locally safe, deterministic validation without duplicating every CI responsibility. | The local runner executes 20 script-backed steps, supports an 18-step harness subset, and lists CI/remote-only work separately. The controlled all-files wrapper is an explicit final-gate exception, not a duplicate default runner. | Implemented | 3 | Retain | Local QA runner owner | Existing orchestration; preserve one runner and the bounded wrapper exception. | Inspect direct and nested `run_step` calls and `--list` output. | High. |
@@ -94,6 +95,7 @@ treated as execution evidence.
 
 ## Implementation Status Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Automation Area | Current Status | Evidence | Candidate |
 | --- | --- | --- | --- |
 | Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-ci-gate.py`, `scripts/validation/recommend-qa-gates.sh`, `.github/workflows/ci-quality.yml` | Typed full/changed profiles and changed-path recommendations are available locally; the recommendation is also published to GitHub Step Summary in CI. |
@@ -126,8 +128,9 @@ treated as execution evidence.
   The remaining highest-value gaps are live comparative model-quality eval, SBOM
   generation, provenance/attestation automation, Scorecard, and broader
   ecosystem/container vulnerability scanning.
-- Native Gemini agents, settings, and hook wrappers are tracked and validated;
-  live runtime acceptance and interception remain unproved.
+> Historical evidence (not current authority; source: Git history):
+> Native Gemini agents, settings, and hook wrappers were tracked and validated;
+> live runtime acceptance and interception were unproved.
 - Public remote workflow metadata is current only to the dated 2026-07-26
   observation. It records a failed 15-job run with unverified root cause;
   authenticated protection/ruleset/environment state and any enforcement
@@ -135,6 +138,7 @@ treated as execution evidence.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Candidate ID | Candidate | Suggested Future Stage |
 | --- | --- | --- |
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Implemented by QA gate recommendation CI summary spec, task evidence, `.github/workflows/ci-quality.yml`, and `scripts/validation/check-repo-contracts.sh`. |
@@ -150,6 +154,16 @@ treated as execution evidence.
 | AEA-AUTO-011 | Exact synthetic agent-output eval runner and CI gate | Implemented by Agent output eval runner spec, Agent output eval CI gate spec, runner task evidence, CI gate task evidence, [fixture reference](../../data/0064-agent-output-eval-fixtures/README.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, repo-contract fixture/regression checks, and `.github/workflows/ci-quality.yml`; exact `11/11` fixture and `16/16` regression markers are required, while live comparative model scoring remains future work. |
 | AEA-AUTO-012 | Security automation readiness snapshot and scoped dependency vulnerability gate | Readiness snapshot implemented by Security automation readiness snapshot spec, task evidence, [generated security readiness data](../../data/0078-security-automation-readiness/README.md), `scripts/validation/generate-security-automation-readiness.sh`, and repo-contract freshness coverage; scoped npm vulnerability gate implemented by Dependency vulnerability audit gate spec, task evidence, and `.github/workflows/ci-quality.yml`. The scoped gate satisfies only `SEC-AUTO-008`; `SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap` and route to draft Spec 126, together with SBOM, signing/provenance attestation, and Scorecard automation. |
 | AEA-AUTO-013 | Audit implementation matrix snapshot | Implemented by Audit implementation matrix snapshot spec, task evidence, [generated audit implementation matrix](../../data/0065-audit-implementation-matrix/README.md), `scripts/validation/generate-audit-implementation-matrix.sh`, and repo-contract freshness coverage; live comparative model evaluation and security tooling remain future work. |
+
+**Current local correction.**
+
+The current tracked provider projection has two providers, Claude and Codex.
+Run the sole renderer directly with
+`python3 scripts/operations/provider_surface_renderer.py --check` or
+`python3 scripts/operations/provider_surface_renderer.py --write`.
+The shared `.agents/skills` projection is retained; the former shared
+`.agents/agents` compatibility projection is retired. These repository-local
+facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
 

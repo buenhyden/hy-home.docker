@@ -1,10 +1,10 @@
 ---
 title: "Reference: Harness Engineering Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0025"
 parent_ids:
@@ -52,14 +52,15 @@ scripts, CI, and runtime configuration remain authoritative for behavior.
   `Needs Revalidation` exactly.
 - Enforcement depth is `0` absent, `1` documented, `2` partially applied,
   `3` automated/enforced, and `4` measured with a closed feedback loop.
-- The tracked tree contains 14 canonical roles (one supervisor and thirteen
-  workers), 24 functions, and 14 generated role adapters on each of the
-  Claude, Codex, Gemini, and shared compatibility surfaces. Function skills
-  intentionally project to 24 Claude and 24 shared `.agents` directories;
-  Gemini consumes the canonical functions through generated agents rather than
-  a duplicate `.gemini/skills` tree. `sync-provider-surfaces.sh --check`
-  reports three providers and zero drift; this does not prove native runtime
-  acceptance or account entitlement.
+> Historical evidence (not current authority; source: Git history):
+> The tracked tree contained 14 canonical roles (one supervisor and thirteen
+> workers), 24 functions, and 14 generated role adapters on each of the
+> Claude, Codex, Gemini, and shared compatibility surfaces. Function skills
+> intentionally projected to 24 Claude and 24 shared `.agents` directories;
+> Gemini consumed the canonical functions through generated agents rather than
+> a duplicate `.gemini/skills` tree. `sync-provider-surfaces.sh --check`
+> reported three providers and zero drift; this did not prove native runtime
+> acceptance or account entitlement.
 
 ## Assessment Method
 
@@ -71,6 +72,7 @@ below is corroborated by tracked source.
 
 ## Audit Criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | HAR-01 | Discover hierarchical provider instructions with explicit precedence. | Thin `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` shims route to `docs/00.agent-governance/rules/bootstrap.md`; provider sync validates projections. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts; add no parallel instruction layer. | `bash scripts/operations/sync-provider-surfaces.sh --check`; inspect root shims. | High: direct tracked evidence; loading still does not prove compliance. |
@@ -87,18 +89,30 @@ below is corroborated by tracked source.
   evaluator now close a measured depth-4 repository loop. Native compatibility,
   live permission evidence, entitlement, and comparative model quality remain
   separate unverified surfaces.
-- Provider facts in the research pack do not change Stage 00 policy. In
-  particular, native Gemini CLI agents/hooks do not make `.agents` a native
-  `.gemini` implementation.
+> Historical evidence (not current authority; source: Git history):
+> Provider facts in the research pack did not change Stage 00 policy. In
+> particular, native Gemini CLI agents/hooks did not make `.agents` a native
+> `.gemini` implementation.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap | Owner | Follow-up boundary |
 | --- | --- | --- |
 | Native agent-schema acceptance and tracked/live hook-event compatibility | Separate provider/runtime verification | Current Stage 00, generator, adapter, validator, and parity evidence is synchronized; retain Partial until native/live acceptance is observed. |
 | Gemini CLI native adoption versus Antigravity pointer behavior | Future approved provider task | Decide explicitly; do not relabel pointers as native adoption. |
 | Live or comparative model-quality scoring | QA/eval follow-up | The deterministic synthetic scorer is implemented; define a separate versioned dataset, privacy boundary, and provider-runtime contract before any live comparison. |
 | Runtime sandbox, entitlement, MCP, and egress facts | Executing task/provider owner | Record scoped observations only; leave unobserved global state unknown. |
+
+**Current local correction.**
+
+The current tracked provider projection has two providers, Claude and Codex.
+Run the sole renderer directly with
+`python3 scripts/operations/provider_surface_renderer.py --check` or
+`python3 scripts/operations/provider_surface_renderer.py --write`.
+The shared `.agents/skills` projection is retained; the former shared
+`.agents/agents` compatibility projection is retired. These repository-local
+facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
 
