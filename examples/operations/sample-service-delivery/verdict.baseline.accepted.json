@@ -7,7 +7,7 @@
   "oci_archive_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "oci_manifest_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
   "policy_id": "sample-service-local-v1",
-  "producer_spec": "spec:126-security-supply-chain-remediation",
+  "producer_spec": "contract:sample-service-supply-chain-v2",
   "redaction_status": "passed",
   "role": "baseline",
   "runtime_identity_kind": "config-digest",

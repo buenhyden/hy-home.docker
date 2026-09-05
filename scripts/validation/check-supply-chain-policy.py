@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import datetime as dt
 import fnmatch
 import hashlib
@@ -46,7 +47,7 @@ def _repository_root() -> pathlib.Path:
 
 
 ROOT = _repository_root()
-FIXTURES = ROOT / "tests/fixtures/supply-chain"
+FIXTURES = ROOT / "examples/operations/supply-chain"
 TOOL_REGISTRY_PATH = ROOT / "infra/supply-chain.tool-images.json"
 POLICY_PATH = ROOT / "infra/supply-chain.sample-service-policy.json"
 EXCEPTIONS_PATH = ROOT / "infra/supply-chain.vulnerability-exceptions.json"
@@ -826,7 +827,7 @@ def publish_verdict_pair(
             or payload.get("build_context_sha256") != build_context_sha256
             or payload.get("policy_id") != "sample-service-local-v1"
             or payload.get("producer_spec")
-            != "spec:126-security-supply-chain-remediation"
+            != "contract:sample-service-supply-chain-v2"
             or payload.get("redaction_status") != "passed"
             or not re.fullmatch(
                 r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z",
@@ -2305,43 +2306,59 @@ def check() -> list[str]:
             ]
         )
     )
-    errors.extend(
-        validate_sbom_subject(
-            load_json(FIXTURES / "sample-service-sbom.valid.cdx.json"), subject
-        )
+    sbom = load_json(FIXTURES / "sample-service-sbom.valid.cdx.json")
+    errors.extend(validate_sbom_subject(sbom, subject))
+    mismatched_sbom = copy.deepcopy(sbom)
+    mismatched_sbom["metadata"]["component"]["properties"][0]["value"] = (
+        "sha256:" + "a" * 64
     )
-    if not validate_sbom_subject(
-        load_json(FIXTURES / "sample-service-sbom.subject-mismatch.cdx.json"), subject
-    ):
+    if not validate_sbom_subject(mismatched_sbom, subject):
         errors.append("negative-sbom-fixture-not-rejected")
-    for name, expected in (
-        ("grype.clean.json", "accepted"),
-        ("grype.high-without-exception.json", "rejected"),
-        ("grype.high-with-valid-exception.json", "accepted"),
-        ("grype.expired-exception.json", "rejected"),
-        ("grype.valid-exception-then-critical.json", "rejected"),
+    clean_grype = load_json(FIXTURES / "grype.clean.json")
+    high_match = {
+        "artifact": {"name": "openssl-libs"},
+        "vulnerability": {"id": "CVE-2099-0001", "severity": "High"},
+    }
+    high_without_exception = copy.deepcopy(clean_grype)
+    high_without_exception["matches"] = [high_match]
+    high_with_exception = copy.deepcopy(high_without_exception)
+    high_with_exception["exception_id"] = "EXC-SSC-0001"
+    expired_exception = copy.deepcopy(high_without_exception)
+    expired_exception["exception"] = {
+        **copy.deepcopy(exceptions["exceptions"][0]),
+        "expires_on": "1970-01-01",
+    }
+    critical_after_exception = copy.deepcopy(high_with_exception)
+    critical_after_exception["matches"].append(
+        {
+            "artifact": {"name": "critical-runtime-package"},
+            "vulnerability": {"id": "CVE-2099-0002", "severity": "Critical"},
+        }
+    )
+    for fixture, expected in (
+        (clean_grype, "accepted"),
+        (high_without_exception, "rejected"),
+        (high_with_exception, "accepted"),
+        (expired_exception, "rejected"),
+        (critical_after_exception, "rejected"),
     ):
-        result = evaluate_grype_fixture(
-            load_json(FIXTURES / name), policy, exceptions, subject
-        )
+        result = evaluate_grype_fixture(fixture, policy, exceptions, subject)
         if result["verdict"] != expected:
             errors.append("grype-fixture-verdict-invalid")
-    errors.extend(
-        validate_provenance_subject(
-            load_json(FIXTURES / "provenance.valid.intoto.json"), subject
-        )
-    )
-    if not validate_provenance_subject(
-        load_json(FIXTURES / "provenance.subject-mismatch.intoto.json"), subject
-    ):
+    provenance = load_json(FIXTURES / "provenance.valid.intoto.json")
+    errors.extend(validate_provenance_subject(provenance, subject))
+    mismatched_provenance = copy.deepcopy(provenance)
+    mismatched_provenance["subject"][0]["digest"]["sha256"] = "b" * 64
+    if not validate_provenance_subject(mismatched_provenance, subject):
         errors.append("negative-provenance-fixture-not-rejected")
-    errors.extend(
-        validate_signature_fixture(
-            load_json(FIXTURES / "cosign.verify.valid.json"), subject
-        )
-    )
-    for name in ("cosign.verify.tampered.json", "cosign.verify.wrong-subject.json"):
-        if not validate_signature_fixture(load_json(FIXTURES / name), subject):
+    signature = load_json(FIXTURES / "cosign.verify.valid.json")
+    errors.extend(validate_signature_fixture(signature, subject))
+    tampered_signature = copy.deepcopy(signature)
+    tampered_signature["verified"] = False
+    wrong_signature_subject = copy.deepcopy(signature)
+    wrong_signature_subject["oci_archive_sha256"] = "sha256:" + "b" * 64
+    for invalid_signature in (tampered_signature, wrong_signature_subject):
+        if not validate_signature_fixture(invalid_signature, subject):
             errors.append("negative-signature-fixture-not-rejected")
     errors.extend(
         validate_scorecard_advisory(load_json(FIXTURES / "scorecard.advisory.json"))
@@ -2506,7 +2523,7 @@ def main(argv: list[str] | None = None) -> int:
     if errors:
         print(f"supply_chain_policy=fail errors={','.join(errors)}", file=sys.stderr)
         return 1
-    print("supply_chain_policy=pass fixtures=13")
+    print("supply_chain_policy=pass external_contracts=5 cases=13")
     return 0
 
 

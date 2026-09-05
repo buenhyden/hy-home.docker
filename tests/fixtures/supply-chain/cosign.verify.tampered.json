@@ -1,7 +1,0 @@
-{
-  "mode": "cosign-sign-blob",
-  "oci_archive_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-  "role": "candidate",
-  "schema_version": 1,
-  "verified": false
-}

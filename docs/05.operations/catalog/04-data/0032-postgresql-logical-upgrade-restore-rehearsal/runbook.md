@@ -17,7 +17,7 @@ created: "2026-07-22"
 
 이 런북은 repository-owned synthetic fixture를 PostgreSQL 17.6에서 custom-format logical backup으로 캡처하고 PostgreSQL 18.4 isolated target에 복원한 뒤 metadata-only oracle을 비교하는 로컬 rehearsal 절차다. 이 결과는 rollback boundary evidence이며 production recovery, live Supabase/Spilo data, physical backup, PITR, HA, retention, remote storage 또는 조직 RTO/RPO를 증명하지 않는다.
 
-이 문서는 `infra/04-data/relational`의 새 service를 설명하지 않는다. 실제 구현은 repository validation wrapper와 `tests/fixtures/postgres-logical-upgrade/`에 있는 task-scoped non-service harness이며, 문서 구현 정렬 validator도 이 정확한 stem 하나만 `NON_SERVICE_STEMS`로 분류한다.
+이 문서는 `infra/04-data/relational`의 새 service를 설명하지 않는다. 실제 구현은 repository operation entrypoint와 `examples/operations/postgres-logical-upgrade/`에 있는 reusable non-service harness이며, 문서 구현 정렬 validator도 이 정확한 stem 하나만 `NON_SERVICE_STEMS`로 분류한다.
 
 ## When to Use
 
@@ -80,6 +80,6 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 - Infrastructure Plan
 - Infrastructure Task
 - [Rehearsal operation](../../../../../scripts/operations/rehearse-postgres-logical-upgrade.sh)
-- [Synthetic Compose fixture](../../../../../tests/fixtures/postgres-logical-upgrade/docker-compose.yml)
+- [Synthetic Compose example](../../../../../examples/operations/postgres-logical-upgrade/docker-compose.yml)
 - [Relational runbook index](../README.md)
 - [HA cluster triage runbook](../0031-postgresql-cluster/runbook.md)

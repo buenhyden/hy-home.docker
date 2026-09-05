@@ -11,10 +11,10 @@ DRE_OWNER_LABEL="task:2026-07-19-deployment-release-engineering-remediation"
 DRE_SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 DRE_ROOT="$(cd -- "$DRE_SCRIPT_DIR/../.." && pwd -P)"
 DRE_COMPOSE_PATH="$DRE_ROOT/examples/sample-web-service/docker-compose.yml"
-DRE_OVERRIDE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/compose.delivery.override.yml"
-DRE_FIXTURE_BASELINE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json"
-DRE_FIXTURE_CANDIDATE_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json"
-DRE_FIXTURE_PAIR_PATH="$DRE_ROOT/tests/fixtures/sample-service-delivery/verification-verdict.pair.json"
+DRE_OVERRIDE_PATH="$DRE_ROOT/examples/operations/sample-service-delivery/compose.delivery.override.yml"
+DRE_FIXTURE_BASELINE_PATH="$DRE_ROOT/examples/operations/sample-service-delivery/verdict.baseline.accepted.json"
+DRE_FIXTURE_CANDIDATE_PATH="$DRE_ROOT/examples/operations/sample-service-delivery/verdict.candidate.accepted.json"
+DRE_FIXTURE_PAIR_PATH="$DRE_ROOT/examples/operations/sample-service-delivery/verification-verdict.pair.json"
 DRE_REAL_BASELINE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json"
 DRE_REAL_CANDIDATE_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json"
 DRE_REAL_PAIR_PATH="$DRE_ROOT/_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json"
@@ -236,7 +236,7 @@ if not isinstance(value, dict) or set(value) != expected_keys:
     raise SystemExit(1)
 if type(value["schema_version"]) is not int or value["schema_version"] != 2:
     raise SystemExit(1)
-if value["producer_spec"] != "spec:126-security-supply-chain-remediation":
+if value["producer_spec"] != "contract:sample-service-supply-chain-v2":
     raise SystemExit(1)
 if value["role"] != expected_role:
     raise SystemExit(1)

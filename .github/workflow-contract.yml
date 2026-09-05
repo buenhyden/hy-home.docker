@@ -458,7 +458,9 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_ci_gate_runner",
+        "tests.validation.test_ci_gate_model",
+        "tests.validation.test_ci_gate_plan",
+        "tests.validation.test_ci_gate_execution_context",
         "-v"
       ],
       "cwd": ".",
@@ -761,6 +763,7 @@
         "tests.lib.document_governance.metadata.test_lifecycle",
         "tests.lib.document_governance.metadata.test_profile",
         "tests.lib.document_governance.metadata.test_reference",
+        "tests.validation.test_document_metadata_identity_cli",
         "-v"
       ],
       "cwd": ".",
@@ -776,7 +779,6 @@
       "argv": [
         "run-unittest",
         "tests.validation.lifecycle.test_contract",
-        "tests.validation.lifecycle.test_promoted",
         "tests.validation.lifecycle.test_equivalence",
         "tests.validation.lifecycle.test_public",
         "tests.validation.lifecycle.test_recovery",
@@ -933,6 +935,7 @@
         "tests.validation.test_audit_criterion_contract",
         "tests.validation.test_reference_stage_repo_contract",
         "tests.validation.test_script_manifest",
+        "tests.validation.test_script_manifest_history",
         "tests.validation.test_tech_stack_version_contract",
         "tests.validation.test_validator_entrypoints",
         "-v"
@@ -1037,9 +1040,11 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_compose_core_readiness",
-        "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
+        "tests.validation.test_postgres_logical_upgrade_rehearsal",
         "tests.lib.supply_chain.test_grype_db_seed",
-        "tests.validation.test_supply_chain_policy",
+        "tests.lib.supply_chain.test_supply_chain_policy",
+        "tests.validation.test_supply_chain_wrapper",
+        "tests.validation.test_supply_chain_secure_output",
         "tests.validation.test_sample_service_delivery_rehearsal",
         "-v"
       ],

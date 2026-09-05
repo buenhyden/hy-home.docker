@@ -17,9 +17,9 @@ import unittest
 import yaml
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-FIXTURE = ROOT / "tests/fixtures/postgres-logical-upgrade"
+FIXTURE = ROOT / "examples/operations/postgres-logical-upgrade"
 COMPOSE = FIXTURE / "docker-compose.yml"
 SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
 ORACLE_SQL = FIXTURE / "sql/010_integrity_oracle.sql"
@@ -235,7 +235,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 )
             shutil.copytree(
                 FIXTURE,
-                root / "tests/fixtures/postgres-logical-upgrade",
+                root / "examples/operations/postgres-logical-upgrade",
             )
             (root / "_workspace/repo-support").mkdir(parents=True, mode=0o700)
             env = os.environ.copy()

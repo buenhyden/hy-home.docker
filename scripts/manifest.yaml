@@ -242,7 +242,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_metadata_validator.py
-  - tests/validation/lifecycle/test_promoted.py
 - path: scripts/lib/document_governance/lifecycle/public.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -610,7 +609,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py
+  - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
@@ -718,7 +717,7 @@ files:
   successor: null
   tests:
   - tests/lib/supply_chain/test_grype_db_seed.py
-  - tests/validation/test_supply_chain_policy.py
+  - tests/validation/test_supply_chain_wrapper.py
 - path: scripts/validation/agentic-audit-semantic-contract.json
   kind: contract
   authority: .github/workflow-contract.yml
@@ -867,7 +866,8 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_supply_chain_policy.py
+  - tests/lib/supply_chain/test_supply_chain_policy.py
+  - tests/validation/test_supply_chain_secure_output.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-template-security-baseline.sh
   kind: validator
@@ -887,11 +887,15 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_ci_gate_execution_context.py
+  - tests/validation/test_ci_gate_model.py
+  - tests/validation/test_ci_gate_plan.py
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_ci_gate_runner.py
+  - tests/validation/test_ci_gate_execution_context.py
+  - tests/validation/test_ci_gate_model.py
+  - tests/validation/test_ci_gate_plan.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/generate-audit-implementation-matrix.sh
   kind: generator

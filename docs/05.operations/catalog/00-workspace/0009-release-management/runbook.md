@@ -104,7 +104,7 @@ created: "2026-06-04"
    Docker를 시작하지 않는 fixture-only preflight를 실행한다.
 
    ```bash
-   bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+   bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id sample-delivery --baseline-verdict examples/operations/sample-service-delivery/verdict.baseline.accepted.json --candidate-verdict examples/operations/sample-service-delivery/verdict.candidate.accepted.json
    ```
 
    `evidence=fixture-contract-only`, `readiness=passed`,

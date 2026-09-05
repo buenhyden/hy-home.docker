@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 LIBRARY = ROOT / "scripts/lib/ops/compose-core-readiness.sh"
 RUNNER = ROOT / "scripts/operations/check-compose-core-readiness.sh"
 OVERRIDE = (
-    ROOT / "tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml"
+    ROOT
+    / "examples/operations/compose-core-readiness/compose.core-runtime.override.yml"
 )
 
 EXPECTED_SERVICES = {

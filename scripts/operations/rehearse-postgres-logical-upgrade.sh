@@ -23,7 +23,7 @@ TIMEOUT_NEGATIVE_CLEANUP_RESERVE_SECONDS=8
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-FIXTURE_DIR="${ROOT_DIR}/tests/fixtures/postgres-logical-upgrade"
+FIXTURE_DIR="${ROOT_DIR}/examples/operations/postgres-logical-upgrade"
 COMPOSE_FILE="${FIXTURE_DIR}/docker-compose.yml"
 SEED_SQL="${FIXTURE_DIR}/sql/001_schema_and_seed.sql"
 ORACLE_SQL="${FIXTURE_DIR}/sql/010_integrity_oracle.sql"
@@ -870,7 +870,7 @@ assert_safe_images_paths_and_project() {
     print_failure preflight unsafe-evidence-path
     return 10
   }
-  [ "$FIXTURE_DIR" = "${ROOT_DIR}/tests/fixtures/postgres-logical-upgrade" ] || {
+  [ "$FIXTURE_DIR" = "${ROOT_DIR}/examples/operations/postgres-logical-upgrade" ] || {
     print_failure preflight unsafe-fixture-path
     return 10
   }

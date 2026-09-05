@@ -7,7 +7,7 @@
   "oci_archive_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
   "oci_manifest_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
   "policy_id": "sample-service-local-v1",
-  "producer_spec": "spec:126-security-supply-chain-remediation",
+  "producer_spec": "contract:sample-service-supply-chain-v2",
   "redaction_status": "passed",
   "role": "candidate",
   "runtime_identity_kind": "docker-target-digest",
@@ -15,5 +15,5 @@
   "schema_version": 2,
   "source_revision": "0123456789abcdef0123456789abcdef01234567",
   "verified_at": "2026-07-19T00:00:01Z",
-  "verdict": "rejected"
+  "verdict": "accepted"
 }

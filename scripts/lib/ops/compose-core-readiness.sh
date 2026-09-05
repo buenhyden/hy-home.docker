@@ -471,9 +471,9 @@ crr_compose() {
   : "${CRR_ROOT:?CRR_ROOT is required}"
   : "${CRR_PROJECT_NAME:?CRR_PROJECT_NAME is required}"
   docker compose \
-    --env-file "${CRR_ROOT}/tests/fixtures/compose-core-readiness/env.runtime.example" \
+    --env-file "${CRR_ROOT}/examples/operations/compose-core-readiness/env.runtime.example" \
     -f "${CRR_ROOT}/docker-compose.yml" \
-    -f "${CRR_ROOT}/tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml" \
+    -f "${CRR_ROOT}/examples/operations/compose-core-readiness/compose.core-runtime.override.yml" \
     --project-name "$CRR_PROJECT_NAME" \
     --profile core \
     "$@"

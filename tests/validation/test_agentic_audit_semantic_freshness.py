@@ -16,7 +16,6 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
 CONTRACT = pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json")
-TASK_EVIDENCE_FIXTURE = ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
 sys.path.insert(0, str(SCRIPT.parent))
 
 spec = importlib.util.spec_from_file_location(
@@ -27,6 +26,16 @@ if spec is None or spec.loader is None:
 module = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = module
 spec.loader.exec_module(module)
+
+
+def task_evidence(task_ids: list[str]) -> str:
+    rows = "\n".join(f"| {task_id} | Synthetic evidence | Done |" for task_id in task_ids)
+    return (
+        "# Synthetic Task Evidence\n\n"
+        "| Task ID | Scope | Status |\n"
+        "| :--- | :--- | :--- |\n"
+        f"{rows}\n"
+    )
 
 
 def _assert_task5_integration_contract(
@@ -149,9 +158,16 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / relative_path, destination)
 
-        task_evidence = self.repo / contract["task_evidence"]
-        task_evidence.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(TASK_EVIDENCE_FIXTURE, task_evidence)
+        task_path = self.repo / contract["task_evidence"]
+        task_path.parent.mkdir(parents=True, exist_ok=True)
+        required_task_ids = sorted(
+            {
+                task_id
+                for assertion in contract["assertions"]
+                for task_id in assertion["completed_task_ids"]
+            }
+        )
+        task_path.write_text(task_evidence(required_task_ids), encoding="utf-8")
 
         self.contract = json.loads(self.contract_path.read_text(encoding="utf-8"))
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
@@ -375,8 +391,11 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
     def test_missing_completed_task_id_fails(self) -> None:
         task_path = self.repo / self.contract["task_evidence"]
         text = task_path.read_text(encoding="utf-8")
-        task_path.write_text(text.replace("T-AER-009", "T-AER-X09"), encoding="utf-8")
-        self.assert_failure("QAF-12", "completed task T-AER-009")
+        task_id = self.contract["assertions"][-2]["completed_task_ids"][0]
+        task_path.write_text(
+            text.replace(task_id, f"{task_id}-missing"), encoding="utf-8"
+        )
+        self.assert_failure("QAF-12", f"completed task {task_id}")
 
     def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(
         self,

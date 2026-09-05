@@ -684,7 +684,7 @@ payload = {
     "oci_archive_sha256": sys.argv[6],
     "oci_manifest_digest": sys.argv[4],
     "policy_id": "sample-service-local-v1",
-    "producer_spec": "spec:126-security-supply-chain-remediation",
+    "producer_spec": "contract:sample-service-supply-chain-v2",
     "redaction_status": "passed",
     "role": sys.argv[2],
     "runtime_identity_kind": sys.argv[10],
