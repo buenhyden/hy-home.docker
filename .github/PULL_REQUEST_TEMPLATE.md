@@ -56,7 +56,7 @@ List exact commands used and outcome.
 - [ ] `.env.example` changed
 - [ ] `scripts/**` validation, hardening, hook, or operation command changed
 - [ ] `.github/workflows/**` changed
-- [ ] Root shims or `.agents/**`, `.claude/**`, `.codex/**` changed
+- [ ] Root shims or `.claude/**`, `.codex/**` changed
 - [ ] `docs/00.agent-governance/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed

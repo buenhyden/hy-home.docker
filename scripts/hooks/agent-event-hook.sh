@@ -181,11 +181,11 @@ if not tool_name or tool_name in edit_tools:
         short_path = short_path.removeprefix("./")
         if short_path.startswith(".agents/"):
             system_messages.append(
-                ".agents compatibility surface edit detected.\n\n"
+                "Retired .agents surface edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "Keep `.agents/` aligned with `docs/00.agent-governance/` and the "
-                "canonical `.claude/` runtime catalog. It must not introduce a "
-                "parallel policy source, unknown skills, or stale runtime paths. "
+                "The `.agents/` directory is retired and must remain absent. "
+                "Load common policies, roles, and procedures from `docs/00.agent-governance/`; "
+                "do not regenerate a compatibility directory. "
                 "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break

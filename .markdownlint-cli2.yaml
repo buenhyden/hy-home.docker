@@ -51,7 +51,7 @@ ignores:
 
   # Claude Code fixes this file's shape as frontmatter followed by prose, so
   # MD041 cannot be satisfied without breaking the runtime contract. The rest
-  # of the `.claude/` projection is linted, exactly like its `.agents/` twin.
+  # of the `.claude/` projection is linted as a provider-native adapter.
   - ".claude/output-styles/"
 
   # Preserved bodies under Stage 98. A record moved here is frozen: it is the

@@ -150,11 +150,19 @@ _WORKFLOW_PERMISSION_BASELINES: Final = (
             jobs=(
                 (
                     "issue-greeting",
-                    (("contents", "read"), ("issues", "write")),
+                    (
+                        ("contents", "read"),
+                        ("issues", "write"),
+                        ("pull-requests", "read"),
+                    ),
                 ),
                 (
                     "pull-request-greeting",
-                    (("contents", "read"), ("issues", "write")),
+                    (
+                        ("contents", "read"),
+                        ("issues", "read"),
+                        ("pull-requests", "write"),
+                    ),
                 ),
             ),
         ),

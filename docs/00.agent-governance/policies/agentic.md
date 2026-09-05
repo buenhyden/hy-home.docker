@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Agentic Engineering Policy
@@ -19,7 +19,7 @@ selection and permission mappings live in `providers/registry.yaml`.
 - Keep one primary owner for each logical unit and independent review separate.
 - Delegation cannot broaden approval, mutation scope, runtime access, or permissions.
 - Record commands, results, recovery, skipped checks, and blockers in the Task.
-- Generated `.agents/`, `.claude/`, and `.codex/` files are adapters and never
+- Generated `.claude/` and `.codex/` files are adapters and never
   own policy, role intent, or procedure content.
 - The shared PostToolUse hook normalizes changed Markdown, shell, YAML, and JSON
   text, runs `shfmt`, `shellcheck`, and `yamllint` on changed files where those

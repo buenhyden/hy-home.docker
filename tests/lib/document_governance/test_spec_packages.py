@@ -147,7 +147,6 @@ class SpecPackageTests(unittest.TestCase):
         ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
         ROOT / "docs/00.agent-governance/policies/quality-standards.md",
         ROOT / "docs/00.agent-governance/skills/execution-plan-agent.md",
-        ROOT / ".agents/skills/execution-plan-agent/SKILL.md",
         ROOT / ".claude/skills/execution-plan-agent/SKILL.md",
         ROOT / "README.md",
         ROOT / ".github/ISSUE_TEMPLATE/bug_report.yml",

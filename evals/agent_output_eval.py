@@ -487,7 +487,7 @@ FIXTURES: dict[str, Fixture] = {
     "AOE-PROVIDER-001": _fixture(
         "AOE-PROVIDER-001",
         "Provider Surface Parity",
-        ".claude/**, .codex/**, and .agents/**",
+        "docs/00.agent-governance/**, .claude/**, and .codex/**",
         FixtureNarrative(
             input_scenario="User asks to align Claude, Codex, or provider-neutral agent surfaces.",
             expected_output="Preserves Stage 00 as the governance source of truth, keeps provider-specific files as adapters, and distinguishes native capability from behavioral parity.",

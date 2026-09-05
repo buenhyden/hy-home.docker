@@ -37,7 +37,7 @@ def copy_governance_fixture(root: pathlib.Path) -> None:
     shutil.copy2(ROOT / "docs/99.templates/registry.json", registry)
     for path in ("AGENTS.md", "CLAUDE.md"):
         shutil.copy2(ROOT / path, root / path)
-    for directory in (".agents", ".claude", ".codex"):
+    for directory in (".claude", ".codex"):
         shutil.copytree(ROOT / directory, root / directory)
     hook = root / "scripts/hooks/agent-event-hook.sh"
     hook.parent.mkdir(parents=True)
@@ -57,6 +57,33 @@ class AgentGovernanceContractTests(unittest.TestCase):
             "prohibited_evidence",
         }
         self.assertEqual(set(), neutral_keys & set(registry))
+
+    def test_retired_shared_directory_is_rejected_without_reading_or_deleting_it(
+        self,
+    ) -> None:
+        for kind in ("directory", "broken-symlink"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                retired = root / ".agents"
+                if retired.exists():
+                    shutil.rmtree(retired)
+                if kind == "directory":
+                    retired.mkdir()
+                    (retired / "unowned.md").write_text("user-owned content\n")
+                else:
+                    retired.symlink_to(
+                        root / "does-not-exist", target_is_directory=True
+                    )
+                findings = contract.validate_repository(
+                    root, contract.load_contract_bundle(root), "harness"
+                )
+                self.assertIn("AGC-RETIRED-SURFACE", {item.code for item in findings})
+                self.assertTrue(os.path.lexists(retired))
+                if kind == "directory":
+                    self.assertEqual(
+                        "user-owned content\n", (retired / "unowned.md").read_text()
+                    )
 
     def test_read_only_review_roles_remain_read_only(self) -> None:
         state = contract.load_agent_governance(ROOT)
@@ -120,7 +147,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            generated = root / ".agents/agents/code-reviewer.md"
+            generated = root / ".claude/agents/code-reviewer.md"
             generated.write_text(
                 generated.read_text()
                 + "\nThis generated file is the policy source of truth.\n"
@@ -130,17 +157,17 @@ class AgentGovernanceContractTests(unittest.TestCase):
             )
             self.assertIn("AGC-GENERATED-AUTHORITY", {item.code for item in findings})
 
-    def test_orphan_compatibility_skill_is_rejected(self) -> None:
+    def test_orphan_native_skill_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            orphan = root / ".agents/skills/orphan/SKILL.md"
+            orphan = root / ".claude/skills/orphan/SKILL.md"
             orphan.parent.mkdir(parents=True)
             orphan.write_text("# orphan\n")
             findings = contract.validate_repository(
                 root, contract.load_contract_bundle(root), "catalog"
             )
-            self.assertIn("AGC-ORPHAN-SKILL", {item.code for item in findings})
+            self.assertIn("AGC-SKILL-PROJECTION", {item.code for item in findings})
 
     def test_bootstrap_reference_to_removed_handoff_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -548,13 +575,13 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 dict(data["projections"][0])
             ),
             "projection-managed-collision": lambda data: data["projections"][0].update(
-                {"path": ".agents/agents/code-reviewer.md"}
+                {"path": ".claude/agents/code-reviewer.md"}
             ),
             "projection-native-config": lambda data: data["projections"][1].update(
                 {"path": ".claude/settings.json"}
             ),
             "managed-root-extra": lambda data: data["generated_roots"].append(
-                ".agents/other"
+                ".claude/other"
             ),
             "managed-root-missing": lambda data: data["generated_roots"].pop(),
         }

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-06-04"
 2. Read environment and docs maps: `docs/README.md`, `infra/README.md`, `scripts/README.md`.
 3. Check Graphify health with `bash scripts/knowledge/report-graphify-health.sh`; if it reports `status=advisory`, use Graphify only for navigation and corroborate claims against tracked files and canonical docs.
 4. Read governance policy: `docs/00.agent-governance/README.md`, `policies/agentic.md`, `policies/documentation-protocol.md`, and `policies/stage-authoring-matrix.md`.
-5. Inspect provider-native runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`; `.codex/agents/*.toml`, `.codex/hooks.json`; and `docs/00.agent-governance/providers/README.md`, `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/providers/codex.md`, `scripts/hooks/agent-event-hook.sh`. Inspect `.agents/agents/*.md` and `.agents/skills/*/SKILL.md` separately as the provider-neutral compatibility and shared-skill projection.
+5. Inspect provider-native runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`; `.codex/agents/*.toml`, `.codex/hooks.json`; and `docs/00.agent-governance/providers/README.md`, `docs/00.agent-governance/providers/registry.yaml`, `docs/00.agent-governance/providers/codex.md`, `scripts/hooks/agent-event-hook.sh`. Codex reads the canonical Stage 00 skill paths named by its role instructions; no shared compatibility directory is generated.
 6. Compare runtime projections against `docs/00.agent-governance/roles/**`, `docs/00.agent-governance/skills/**`, and `providers/registry.yaml`.
 7. Review validators: `scripts/validation/run-ci-gate.py`, `scripts/validation/check-document-links.py --mode traceability`, `scripts/validation/validate-docker-compose.sh`.
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
@@ -59,7 +59,7 @@ How-to / audit guide.
 ## Troubleshooting
 
 - Treating `.codex/agents/*.toml` or `.claude/agents/*.md` as canonical role catalogs instead of provider-native adapters to the Stage 00 catalog.
-- Treating `.agents/` as a provider-native runtime surface instead of the provider-neutral compatibility and shared-skill projection.
+- Recreating the retired shared runtime directory or treating explicit Codex canonical-skill reads as native picker discovery.
 - Editing root shims instead of the governance hub.
 - Treating contaminated Graphify output as authoritative architecture evidence.
 - Treating `status=advisory` Graphify health as a failure or as architecture authority; it is downgraded navigation context only.

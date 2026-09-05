@@ -89,7 +89,6 @@ FOUNDATION_EVIDENCE_OWNER_PATHS = (
 )
 ACTIVE_CONSUMER_PATHS = (
     ":(top,glob)*",
-    ":(top,glob).agents/**",
     ":(top,glob).claude/**",
     ":(top,glob).codex/**",
     ":(top,glob).github/**",

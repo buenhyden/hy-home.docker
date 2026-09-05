@@ -33,7 +33,6 @@ GOVERNANCE_PROFILES = {
 REGISTRY_KEYS = {
     "schema_version",
     "providers",
-    "compatibility",
     "canonical_sources",
     "work_profiles",
     "models",
@@ -135,21 +134,14 @@ class ProviderRecord:
     runtime_acceptance: str
     adapter_path: pathlib.PurePosixPath
     agent_pattern: str
-    skill_pattern: str
+    skill_pattern: str | None
     config_path: pathlib.PurePosixPath
-
-
-@dataclass(frozen=True)
-class CompatibilityRecord:
-    agent_pattern: str
-    skill_pattern: str
 
 
 @dataclass(frozen=True)
 class AgentGovernanceState:
     providers: tuple[str, ...]
     provider_records: tuple[ProviderRecord, ...]
-    compatibility: CompatibilityRecord
     root_entries: tuple[str, ...]
     provider_entries: tuple[str, ...]
     roles: tuple[RoleRecord, ...]
@@ -376,9 +368,9 @@ def _hook_command_matches_registration(
 def _validate_registry(
     root: pathlib.Path,
     registry: Mapping[str, object],
-) -> tuple[tuple[ProviderRecord, ...], CompatibilityRecord]:
+) -> tuple[ProviderRecord, ...]:
     _exact_keys(registry, REGISTRY_KEYS, field="root")
-    if registry.get("schema_version") != 1:
+    if registry.get("schema_version") != 2:
         raise ContractLoadError("AGC-PROVIDER-REGISTRY-VERSION")
     raw_providers = registry.get("providers")
     if not isinstance(raw_providers, list) or len(raw_providers) != 2:
@@ -402,7 +394,7 @@ def _validate_registry(
         },
         "codex": {
             "native_agent_pattern": ".codex/agents/{agent_id}.toml",
-            "native_skill_pattern": ".agents/skills/{skill_id}/SKILL.md",
+            "native_skill_pattern": None,
             "native_config_path": ".codex/hooks.json",
         },
     }
@@ -449,33 +441,12 @@ def _validate_registry(
                     values.get("native_skill_pattern"),
                     token="skill_id",
                     field="native_skill_pattern",
-                ),
+                )
+                if values.get("native_skill_pattern") is not None
+                else None,
                 config_path=config,
             )
         )
-    compatibility_values = _mapping(
-        registry.get("compatibility"), field="compatibility"
-    )
-    _exact_keys(
-        compatibility_values, {"agent_pattern", "skill_pattern"}, field="compatibility"
-    )
-    compatibility = CompatibilityRecord(
-        agent_pattern=_projection_pattern(
-            compatibility_values.get("agent_pattern"),
-            token="agent_id",
-            field="compatibility.agent_pattern",
-        ),
-        skill_pattern=_projection_pattern(
-            compatibility_values.get("skill_pattern"),
-            token="skill_id",
-            field="compatibility.skill_pattern",
-        ),
-    )
-    if compatibility != CompatibilityRecord(
-        agent_pattern=".agents/agents/{agent_id}.md",
-        skill_pattern=".agents/skills/{skill_id}/SKILL.md",
-    ):
-        raise ContractLoadError("AGC-COMPATIBILITY-PROJECTION-CROSS-REFERENCE")
     canonical = _mapping(registry.get("canonical_sources"), field="canonical_sources")
     _exact_keys(canonical, {"role_pattern", "skill_pattern"}, field="canonical_sources")
     if canonical != {
@@ -496,11 +467,11 @@ def _validate_registry(
             field=f"projections[{index}]",
         )
         provider_id = projection.get("provider_id")
-        if provider_id not in {*providers, "shared"}:
+        if provider_id not in providers:
             raise ContractLoadError(f"AGC-PROJECTION-PROVIDER field={index}")
         path = _safe_relative(str(projection.get("path", "")))
         source = _safe_relative(str(projection.get("source", "")))
-        expected_prefix = ".agents" if provider_id == "shared" else f".{provider_id}"
+        expected_prefix = f".{provider_id}"
         if (
             len(path.parts) != 2
             or path.parts[0] != expected_prefix
@@ -715,17 +686,15 @@ def _validate_registry(
     ):
         raise ContractLoadError("AGC-GENERATED-ROOTS")
     generated_roots = {_safe_relative(item) for item in generated}
-    required_roots = {
-        _projection_root(compatibility.agent_pattern, token="agent_id"),
-        _projection_root(compatibility.skill_pattern, token="skill_id"),
-    }
+    required_roots: set[pathlib.PurePosixPath] = set()
     for record in records:
         required_roots.add(_projection_root(record.agent_pattern, token="agent_id"))
-        required_roots.add(_projection_root(record.skill_pattern, token="skill_id"))
+        if record.skill_pattern is not None:
+            required_roots.add(_projection_root(record.skill_pattern, token="skill_id"))
     if (
         generated_roots != required_roots
         or any(
-            len(path.parts) < 2 or path.parts[0] not in {".agents", ".claude", ".codex"}
+            len(path.parts) < 2 or path.parts[0] not in {".claude", ".codex"}
             for path in generated_roots
         )
         or any(
@@ -735,7 +704,7 @@ def _validate_registry(
         )
     ):
         raise ContractLoadError("AGC-GENERATED-ROOTS")
-    return tuple(records), compatibility
+    return tuple(records)
 
 
 def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
@@ -796,7 +765,7 @@ def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     roles = _load_roles(root)
     skills = _load_skills(root)
     registry = _load_yaml(root, REGISTRY)
-    provider_records, compatibility = _validate_registry(root, registry)
+    provider_records = _validate_registry(root, registry)
     provider_ids = tuple(item.provider_id for item in provider_records)
     governance_root = root / GOVERNANCE
     root_entries = tuple(sorted(path.name for path in governance_root.iterdir()))
@@ -806,7 +775,6 @@ def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     return AgentGovernanceState(
         providers=provider_ids,
         provider_records=provider_records,
-        compatibility=compatibility,
         root_entries=root_entries,
         provider_entries=provider_entries,
         roles=roles,
@@ -1005,7 +973,6 @@ ACTIVE_TEXT_ROOTS = (
     "docs/05.operations",
     "docs/99.templates",
     "scripts",
-    ".agents",
     ".claude",
     ".codex",
 )
@@ -1141,14 +1108,22 @@ def validate_repository(
     findings: list[Finding] = []
     roles = {item.agent_id for item in bundle.state.roles}
     skills = {item.skill_id for item in bundle.state.skills}
+    # A retired root is never traversed or removed by validation, including a
+    # broken symlink or user-owned content. A read-only gate reports it instead.
+    if os.path.lexists(root / ".agents"):
+        findings.append(
+            _finding(
+                ".agents",
+                "AGC-RETIRED-SURFACE",
+                "retired shared runtime directory is forbidden",
+            )
+        )
     if section == "all":
         findings.extend(_validate_stage99_governance_profiles(root))
     if section in {"catalog", "providers", "all"}:
         for directory, suffix, expected, code in (
-            (".agents/agents", ".md", roles, "AGC-AGENT-PROJECTION"),
             (".claude/agents", ".md", roles, "AGC-AGENT-PROJECTION"),
             (".codex/agents", ".toml", roles, "AGC-AGENT-PROJECTION"),
-            (".agents/skills", "SKILL.md", skills, "AGC-ORPHAN-SKILL"),
             (".claude/skills", "SKILL.md", skills, "AGC-SKILL-PROJECTION"),
         ):
             actual = _projection_ids(root, directory, suffix)
@@ -1193,7 +1168,7 @@ def validate_repository(
                     )
                 )
             if relative.startswith(
-                (".agents/", ".claude/", ".codex/")
+                (".claude/", ".codex/")
             ) and GENERATED_AUTHORITY.search(text):
                 findings.append(
                     _finding(

@@ -68,7 +68,6 @@ _ADMITTED_ENV_KEYS = frozenset(
         "CI",
         "GITHUB_ACTIONS",
         "HEAD_REF",
-        "HYHOME_COMPOSE_PROFILES",
         "PR_TITLE",
         "TEMPLATE_GATE_BASE",
     }
