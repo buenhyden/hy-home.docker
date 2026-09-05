@@ -788,72 +788,13 @@ class DocumentGraphTests(unittest.TestCase):
 
 
 class DocumentLinksCliTests(unittest.TestCase):
-    def test_transition_shells_delegate_exact_modes_direct_and_held(self) -> None:
-        env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
-        env["PYTHONSAFEPATH"] = "1"
-        for name, mode in (
-            ("check-doc-traceability.sh", "traceability"),
-            ("check-doc-implementation-alignment.sh", "alignment"),
-        ):
-            script = ROOT / "scripts/validation" / name
-            with script.open("rb") as held:
-                for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
-                    with self.subTest(mode=mode, path=path):
-                        result = subprocess.run(
-                            ["bash", path],
-                            cwd=ROOT,
-                            env=env,
-                            pass_fds=(held.fileno(),),
-                            capture_output=True,
-                            text=True,
-                            check=False,
-                        )
-                        self.assertEqual(0, result.returncode, result.stderr)
-                        self.assertIn(f"mode={mode}", result.stdout)
-
-    def test_transition_shells_preserve_canonical_failures_and_reject_extra_argv(
-        self,
-    ) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            subprocess.run(["git", "init", "-q", str(root)], check=True)
-            (root / "scripts/validation").mkdir(parents=True)
-            shutil.copy2(CLI, root / "scripts/validation" / CLI.name)
-            shutil.copytree(ROOT / "scripts/lib", root / "scripts/lib")
-            source = root / "docs/03.specs/README.md"
-            source.parent.mkdir(parents=True)
-            source.write_text("[missing](missing.md)\n", encoding="utf-8")
-            for name, expected in (
-                ("check-doc-traceability.sh", "traceability-file-missing"),
-                ("check-doc-implementation-alignment.sh", "missing-link-target"),
-            ):
-                script = ROOT / "scripts/validation" / name
-                with self.subTest(name=name):
-                    result = subprocess.run(
-                        ["bash", str(script)],
-                        cwd=root,
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-                    self.assertEqual(1, result.returncode, result.stderr)
-                    self.assertIn(expected, result.stderr)
-                    rejected = subprocess.run(
-                        ["bash", str(script), "--mode", "all"],
-                        cwd=ROOT,
-                        capture_output=True,
-                        text=True,
-                        check=False,
-                    )
-                    self.assertEqual(2, rejected.returncode)
-
     def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
         from scripts.lib.agent_governance.agent_governance_contract import (
             HISTORICAL_TABLE_MARKER,
             current_markdown_authority,
         )
 
-        command = "bash scripts/validation/check-doc-traceability.sh"
+        command = "python3 scripts/validation/check-document-links.py --mode all"
         table = f"{HISTORICAL_TABLE_MARKER}\n| Command | Result |\n| --- | --- |\n| `{command}` | observed PASS |\n"
         self.assertNotIn(command, current_markdown_authority(table))
         self.assertIn(command, current_markdown_authority(table + f"\n{command}\n"))
@@ -882,6 +823,10 @@ class DocumentLinksCliTests(unittest.TestCase):
         ):
             candidates.extend(root.rglob("*.md"))
         failures: list[str] = []
+        retired_names = (
+            "check-doc-" + "traceability.sh",
+            "check-doc-" + "implementation-alignment.sh",
+        )
         for path in sorted(set(candidates)):
             if path.name in {"plan.md", "task.md"}:
                 continue
@@ -894,10 +839,7 @@ class DocumentLinksCliTests(unittest.TestCase):
             }:
                 continue
             text = current_markdown_authority(path.read_text(encoding="utf-8"))
-            if (
-                "check-doc-traceability.sh" in text
-                or "check-doc-implementation-alignment.sh" in text
-            ):
+            if any(name in text for name in retired_names):
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)
 

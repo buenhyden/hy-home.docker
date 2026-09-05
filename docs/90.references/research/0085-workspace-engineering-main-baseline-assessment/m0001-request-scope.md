@@ -15,8 +15,8 @@ identity_recovery:
   source_commit: "db21aebf079fcc4e867779861b49c2283b7f8f01"
   source_path: "docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/REQUEST-SCOPE.md"
   source_artifact_id: "RES-0085-SCOPE"
-  decision_path: "docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md"
-  decision_artifact_id: "SPEC-0172-TSK-0001"
+  decision_path: "docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md"
+  decision_artifact_id: "SPEC-0173-TSK-0001"
   disposition: "consolidated"
 ---
 
@@ -109,7 +109,7 @@ have precedence.
 | --- | --- | --- | --- | --- |
 | Baseline identity | Exact `main` SHA recorded by RES-0085 | Defined, Local-executed | Later commits require a new observation | `git rev-parse main` |
 | Research ownership | RES-0002-m0020 owns the current baseline; RES-0084 owns GitHub mechanics | Repository-enforced | Any later RES-0085 lifecycle transition requires separate approval | reference contract, lifecycle, and link checks |
-| Hosted CI | Exact aggregate job runs recorded by SPEC-0172 | Hosted-executed | Future runs are mutable | owning Task plus GitHub run |
+| Hosted CI | Exact aggregate job runs recorded by SPEC-0172 | Hosted-executed | Future runs are mutable | completed Spec plus GitHub run |
 | Main protection | Exact approved read-back recorded by SPEC-0172 | Remote-verified on 2026-09-05 | Later drift is possible | authenticated full read-back |
 | Deployment and release | No named target or current event | Unverified / not adopted | Acceptance and rollback target absent | separate approved Requirement-to-Task chain |
 
@@ -145,7 +145,7 @@ have precedence.
 - [Stage 00 governance](../../../00.agent-governance/README.md).
 - [Registry](../../../99.templates/registry.json) and the
   [research member template](../../../99.templates/templates/references/research.template.md).
-- [SPEC-0172 Task evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).
 
 ## Scope Implications
 
@@ -160,4 +160,4 @@ separate owner and the repository SDLC chain.
 - [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
 - [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
 - [GitHub Actions platform research](../0084-github-actions-platform/README.md)
-- [SPEC-0172 execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md)
+- [Current identity-recovery decision](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)

@@ -14,8 +14,6 @@ from scripts.lib.document_governance import metadata_contract
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
     validate_repository_contracts,
-    validate_prd_internal_id_contract,
-    validate_requirement_internal_id_contract,
 )
 from scripts.lib.document_governance.taxonomy import (
     is_valid_incident_path,
@@ -25,7 +23,6 @@ from scripts.lib.document_governance.taxonomy import (
 )
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
-    load_public_suite_registry,
     parse_public_gate_contract,
     select_public_suites,
 )
@@ -62,11 +59,11 @@ class ResponsibilityModuleTests(unittest.TestCase):
         responsibilities = (
             (profile, "load_profiles"),
             (heading, "validate_body_contract"),
-            (identity, "validate_requirement_internal_id_contract"),
+            (identity, "_allocation_findings"),
             (lifecycle, "validate_record"),
             (reference, "validate_repository_contracts"),
             (contract, "load_migration_manifest"),
-            (promoted, "validate_migration_manifest"),
+            (promoted, "_historical_promoted_findings"),
             (public, "_spec_package_lifecycle_findings"),
             (recovery, "run"),
         )
@@ -560,193 +557,6 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertTrue(paths)
         self.assertTrue(all(identity is not None for identity in identities))
         self.assertEqual(len(paths), len(set(identities)))
-        self.assertIsNone(
-            requirement_package_identity(
-                pathlib.PurePosixPath("docs/01.requirements/prd-0001-legacy.md")
-            )
-        )
-
-    def test_prd_internal_id_validator_fails_closed(self) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        valid = """## Requirements
-
-- **PRD-0001-R0001**: requirement
-
-## Non-functional Requirements
-
-- **PRD-0001-R0002 — Quality**: requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-"""
-        self.assertEqual([], validate_prd_internal_id_contract(path, valid))
-
-        invalid = valid.replace("PRD-0001-R0001", "REQ-PRD-FUN-01").replace(
-            "- **PRD-0001-AC0001**: acceptance",
-            "- acceptance without an ID",
-        )
-        self.assertEqual(
-            {"internal-id-invalid", "internal-id-legacy", "internal-id-missing"},
-            {
-                finding.code
-                for finding in validate_prd_internal_id_contract(path, invalid)
-            },
-        )
-
-    def test_prd_internal_id_validator_rejects_ids_in_adversarial_contexts(
-        self,
-    ) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        canonical = """## Requirements
-
-- **PRD-0001-R0001**: requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-"""
-        adversarial = {
-            "numbered-legacy": canonical + "\n1. REQ-PRD-FUN-01: hidden legacy ID\n",
-            "lowercase-bypass": canonical + "\nprd-001-r001: malformed ID\n",
-            "unsupported-kind": canonical + "\n1. PRD-0001-X0001: invalid kind\n",
-            "indented-extra": canonical + "\n   - PRD-0001-R0002: undeclared ID\n",
-            "blockquote-owner": canonical + "\n> PRD-9999-R0001: wrong owner\n",
-            "list-acceptance": canonical + "\n* PRD-0001-AC0002: undeclared ID\n",
-            "table-legacy": canonical + "\n| VAL-ORC-001 | hidden legacy ID |\n",
-        }
-        for context, document in adversarial.items():
-            with self.subTest(context=context):
-                self.assertTrue(
-                    validate_prd_internal_id_contract(path, document),
-                    context,
-                )
-
-    def test_requirement_sections_reject_idless_list_entries(self) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        document = """## Requirements
-
-- **PRD-0001-R0001**: requirement
-1. missing typed id
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-* another missing typed id
-"""
-        missing = [
-            finding
-            for finding in validate_prd_internal_id_contract(path, document)
-            if finding.code == "internal-id-missing"
-        ]
-        self.assertEqual(2, len(missing))
-
-    def test_requirement_sections_allow_ordinary_prose(self) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        document = """## Requirements
-
-This paragraph explains the requirement scope without declaring an entry.
-
-- **PRD-0001-R0001**: requirement
-
-## Acceptance and Verification
-
-This paragraph explains how verification evidence will be interpreted.
-
-- **PRD-0001-AC0001**: acceptance
-"""
-        self.assertEqual([], validate_prd_internal_id_contract(path, document))
-
-    def test_prd_internal_id_validator_allows_declared_id_references(self) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        document = """## Requirements
-
-- **PRD-0001-R0001**: requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-
-## Traceability
-
-`PRD-0001-R0001` is verified by PRD-0001-AC0001.
-"""
-        self.assertEqual([], validate_prd_internal_id_contract(path, document))
-
-    def test_prd_internal_id_validator_enforces_owner_and_uniqueness(self) -> None:
-        path = pathlib.Path("docs/01.requirements/prd-0001-example.md")
-        wrong_owner = """## Requirements
-
-- **PRD-0002-R0001**: requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-"""
-        duplicate = """## Requirements
-
-- **PRD-0001-R0001**: requirement
-- **PRD-0001-R0001**: duplicate requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: acceptance
-"""
-        self.assertIn(
-            "internal-id-invalid",
-            {
-                finding.code
-                for finding in validate_prd_internal_id_contract(path, wrong_owner)
-            },
-        )
-        self.assertIn(
-            "internal-id-duplicate",
-            {
-                finding.code
-                for finding in validate_prd_internal_id_contract(path, duplicate)
-            },
-        )
-
-    def test_srs_and_interface_internal_ids_are_repository_contracts(self) -> None:
-        fixtures = {
-            pathlib.Path("docs/01.requirements/srs-0001-example.md"): (
-                """## System Behavior
-
-- **SRS-0001-R0001**: behavior
-
-## Quality Requirements
-
-- **SRS-0001-R0002**: quality
-""",
-                "SRS-0001-R0001",
-            ),
-            pathlib.Path("docs/01.requirements/interface-0001-example.md"): (
-                """## Information Semantics
-
-- **IFR-0001-R0001**: semantics
-
-## Constraints and Compatibility
-
-- **IFR-0001-R0002**: compatibility
-""",
-                "IFR-0001-R0001",
-            ),
-        }
-        for path, (valid, first_identity) in fixtures.items():
-            with self.subTest(path=path, state="valid"):
-                self.assertEqual(
-                    [], validate_requirement_internal_id_contract(path, valid)
-                )
-            adversarial = valid + (
-                f"\n> {first_identity.lower()}: lowercase bypass\n"
-                "1. REQ-LEGACY-01: legacy namespace\n"
-                "- **SRS-9999-R0001**: foreign owner\n"
-            )
-            with self.subTest(path=path, state="adversarial"):
-                self.assertTrue(
-                    validate_requirement_internal_id_contract(path, adversarial)
-                )
-
     def test_requirement_template_publishes_all_owned_child_id_patterns(self) -> None:
         text = (
             ROOT
@@ -755,36 +565,6 @@ This paragraph explains how verification evidence will be interpreted.
         for kind in ("FR", "NFR", "IF"):
             with self.subTest(kind=kind):
                 self.assertIn(f"REQ-####-{kind}-####", text)
-
-    def test_requirement_repository_contract_rejects_symlink_sources(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-            requirement_root = root / "docs/01.requirements"
-            requirement_root.mkdir(parents=True)
-            outside = root.parent / f"{root.name}-outside-prd.md"
-            outside.write_text(
-                """## Requirements
-
-- **PRD-0001-R0001**: external requirement
-
-## Acceptance and Verification
-
-- **PRD-0001-AC0001**: external acceptance
-""",
-                encoding="utf-8",
-            )
-            linked = requirement_root / "prd-0001-linked.md"
-            linked.symlink_to(outside)
-            subprocess.run(["git", "add", "docs"], cwd=root, check=True)
-            try:
-                findings = validate_repository_contracts(root, {})
-            finally:
-                outside.unlink(missing_ok=True)
-        self.assertIn(
-            "requirement-source-symlink",
-            {finding.code for finding in findings},
-        )
 
     def test_metadata_validator_write_and_check_modes_are_explicit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -796,18 +576,22 @@ This paragraph explains how verification evidence will be interpreted.
             self.assertEqual("current\n", output.read_text(encoding="utf-8"))
 
     def test_public_gate_routes_incident_packets_through_operations(self) -> None:
-        suite_registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-        operations = next(
-            suite for suite in suite_registry.suites if suite.name == "operations"
+        contract = parse_public_gate_contract(load_contract_document(ROOT))
+        operations = tuple(
+            item.entrypoint
+            for item in contract.validators
+            if item.suite == "operations"
         )
         self.assertEqual(
-            1,
-            operations.validators.count(
-                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py")
+            (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-operations-catalog.py"
+                ),
+                pathlib.PurePosixPath(
+                    "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+                ),
             ),
-        )
-        contract = parse_public_gate_contract(
-            load_contract_document(ROOT), suite_registry
+            operations,
         )
         self.assertEqual(
             (

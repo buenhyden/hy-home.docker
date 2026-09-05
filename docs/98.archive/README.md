@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "1.1.1"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -41,8 +41,8 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
 
 | 폴더 | 보존 사유 | 짝이 되는 결정 기록 |
 | --- | --- | --- |
-| `completed/` | 변경 패키지가 완료됨 | 없음 — 완료는 철회가 아니며 현재 Task가 완료 근거를 기록 |
-| `superseded/` | 더 새로운 문서로 대체됨 | 없음 — 현재 successor가 대체 관계를 기록 |
+| `completed/` | 변경 패키지가 완료됨 | 없음 — 완료는 철회가 아니며 보존된 Task가 완료 근거를 기록 |
+| `superseded/` | 더 새로운 문서로 대체됨 | 없음 — current successor 또는 승인된 branch-handoff Task receipt가 대체 관계를 기록하며, receipt는 completed target Task에서 동결됨 |
 | `retired/` | 철회됨 | `tombstones/`의 해당 Tombstone |
 
 철회만 Tombstone을 따로 요구합니다. 완료와 대체를 철회로 기록하지 않습니다.
@@ -92,6 +92,11 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
    동작하므로 `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에
    두어야 하며, 그러지 않으면 all-files 실행이 보존 본문을 조용히 다시
    씁니다. 저작 기록인 `migrations/`와 `tombstones/`는 계속 lint 대상입니다.
+   다만 Registry가 frozen legacy status로 등록한 다음 세 migration은
+   보존된 예외이며 lint에서 제외합니다:
+   `migrations/0001-sdlc-taxonomy-convergence.md`,
+   `migrations/0002-operations-catalog-convergence.md`,
+   `migrations/0003-workspace-governance-simplification.md`.
 3. **철회는 두 기록이 짝을 이룹니다.** Tombstone 하나와 보존본 하나가 서로를
    가리키며, 한쪽만으로는 근거가 되지 않습니다. 짝은 Tombstone의
    `Retired Path`와 보존본의 원래 경로가 일치하는지로 확인합니다.

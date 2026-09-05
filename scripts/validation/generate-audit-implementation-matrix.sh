@@ -268,7 +268,7 @@ def build_output() -> tuple[str, list[str]]:
     gap_signals = extract_gap_signals()
 
     expected_generated_surfaces = [
-        ("Audit-pack coverage report", "AEA-AUTO-007", pathlib.Path("scripts/validation/report-audit-pack-coverage.sh"), None),
+        ("Audit-pack coverage check", "AEA-AUTO-007", pathlib.Path("scripts/validation/generate-audit-implementation-matrix.sh"), OUTPUT),
         ("LLM Wiki stage/category coverage", "AEA-AUTO-008", pathlib.Path("scripts/knowledge/generate-llm-wiki.py"), pathlib.Path("docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md")),
         ("Tech-stack version provenance", "AEA-AUTO-009", pathlib.Path("scripts/operations/generate-tech-stack-version-provenance.sh"), pathlib.Path("docs/90.references/data/0061-tech-stack-version-provenance/README.md")),
         ("Provider governance contract", "AEA-AUTO-010", pathlib.Path("scripts/validation/check-agent-governance-contract.py"), None),
@@ -280,11 +280,11 @@ def build_output() -> tuple[str, list[str]]:
     lines: list[str] = [
         "---",
         'title: "Reference: Audit Implementation Matrix"',
-        'version: "1.0.0"',
+        'version: "1.0.1"',
         'type: "reference/data-pack"',
         'status: "published"',
         "owner: \"@buenhyden\"",
-        'updated: "2026-09-04"',
+        'updated: "2026-09-05"',
         'layer: "references"',
         'artifact_id: "DATA-0065"',
         "parent_ids: []",
@@ -332,7 +332,7 @@ def build_output() -> tuple[str, list[str]]:
         "- Rewriting audit findings or changing implementation-status conclusions.",
         "- Running security scanners, SBOM tools, Scorecard, signing, attestation, model calls, remote jobs, or CI gates.",
         "- Mutating provider runtime, Docker Compose runtime, branch protection, release assets, secrets, credentials, tokens, raw logs, shell history, or `.env` values.",
-        "- Replacing `scripts/validation/report-audit-pack-coverage.sh`; this snapshot complements it with candidate and generated-surface context.",
+        "- Rewriting audit findings or creating a second audit-coverage output owner.",
         "",
         "## Definitions / Facts",
         "",
@@ -403,6 +403,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Complete Criterion Matrix",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Report | Criterion ID | External criterion | Workspace evidence | Status | Depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |",
             "| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |",
         ]
@@ -455,6 +456,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Normalized Status Counts",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Normalized Status | Count |",
             "| --- | ---: |",
         ]
@@ -467,6 +469,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Raw Status Counts",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Raw Status | Count |",
             "| --- | ---: |",
         ]
@@ -479,6 +482,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Automation Candidate Closure Matrix",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Candidate ID | Candidate | Disposition |",
             "| --- | --- | --- |",
         ]
@@ -537,9 +541,8 @@ def build_output() -> tuple[str, list[str]]:
             f"- {link(OVERVIEW, 'implementation overview')} - overview categories and residual cross-category gaps.",
             f"- {link(AUTOMATION_CANDIDATES, 'automation candidates')} - `AEA-AUTO-*` candidate rows and closure evidence.",
             f"- {link(SECURITY_MATURITY, 'security framework maturity')} - residual security automation gap signals.",
-            f"- {link(pathlib.Path('scripts/validation/report-audit-pack-coverage.sh'), 'audit pack coverage report')} - existing implementation-status coverage parser.",
-            f"- {link(pathlib.Path('scripts/validation/audit_criterion_contract.py'), 'audit criterion completeness contract')} - shared exact report/ID/schema/cardinality parser used by both audit scripts.",
-            f"- {link(pathlib.Path('scripts/validation/generate-audit-implementation-matrix.sh'), 'audit implementation matrix generator')} - generator for this snapshot.",
+            f"- {link(pathlib.Path('scripts/validation/audit_criterion_contract.py'), 'audit criterion completeness contract')} - exact report/ID/schema/cardinality parser used by the generator check.",
+            f"- {link(pathlib.Path('scripts/validation/generate-audit-implementation-matrix.sh'), 'audit implementation matrix generator and coverage check')} - single generator and freshness owner for this snapshot.",
             "",
             "## Refresh",
             "",

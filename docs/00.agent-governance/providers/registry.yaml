@@ -106,7 +106,7 @@ hook_contracts:
     SessionStart: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"', timeout: 15, matcher: '*', executable: .claude/hooks/session-start.sh}
     PreToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"', timeout: 10, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/docker-compose-pre.sh}
     PostToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"', timeout: 30, matcher: 'Write|Edit|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/post-tool-validate.sh}
-    Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 30, matcher: '*', executable: .claude/hooks/stop.sh}
+    Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 600, matcher: '*', executable: .claude/hooks/stop.sh}
     SessionEnd: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/session-end.sh}
     PreCompact: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/pre-compact.sh}
     UserPromptSubmit: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/user-prompt-submit.sh}

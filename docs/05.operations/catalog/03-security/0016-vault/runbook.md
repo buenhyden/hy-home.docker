@@ -93,7 +93,7 @@ created: "2026-05-17"
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: CI `infrastructure-hardening` 임시 비활성은 승인 후만 수행
-- **Eval Re-run**: `check-all-hardening.sh 03-security`, root profile validation, `check-doc-traceability`
+- **Eval Re-run**: `check-all-hardening.sh 03-security`, root profile validation, `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI job logs + container logs
 
 ## Evidence

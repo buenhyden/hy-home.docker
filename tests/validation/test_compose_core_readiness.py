@@ -13,10 +13,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-LIBRARY = ROOT / "scripts/validation/compose-core-readiness.lib.sh"
-RUNNER = ROOT / "scripts/validation/run-compose-core-readiness.sh"
+LIBRARY = ROOT / "scripts/lib/ops/compose-core-readiness.sh"
+RUNNER = ROOT / "scripts/operations/check-compose-core-readiness.sh"
 OVERRIDE = (
-    ROOT / "tests/fixtures/compose-core-readiness/compose.core-runtime.override.yml"
+    ROOT
+    / "examples/operations/compose-core-readiness/compose.core-runtime.override.yml"
 )
 
 EXPECTED_SERVICES = {
@@ -359,7 +360,7 @@ main --scenario {scenario}
                 self.assertNotEqual(0, result.returncode)
 
     def test_runtime_identity_is_collision_resistant_and_symlink_safe(self) -> None:
-        wrapper = (ROOT / "scripts/validation/run-compose-core-readiness.sh").read_text(
+        wrapper = (ROOT / "scripts/operations/check-compose-core-readiness.sh").read_text(
             encoding="utf-8"
         )
         self.assertIn("allocate_runtime_identity", wrapper)
@@ -1287,7 +1288,7 @@ on_exit
         )
 
     def test_vault_agent_output_preparation_order_and_identity(self) -> None:
-        wrapper = (ROOT / "scripts/validation/run-compose-core-readiness.sh").read_text(
+        wrapper = (ROOT / "scripts/operations/check-compose-core-readiness.sh").read_text(
             encoding="utf-8"
         )
         self.assertLess(

@@ -117,17 +117,16 @@ class AuditCriterionContractTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn("missing criterion IDs: QAF-16", result.stderr)
 
-    def test_coverage_check_rejects_blank_field_in_temp_pack(self) -> None:
+    def test_matrix_check_rejects_blank_field_in_temp_pack(self) -> None:
         self._rewrite_criterion("QAF-01", lambda cells: cells.__setitem__(1, ""))
         result = subprocess.run(
             [
                 "bash",
-                "scripts/validation/report-audit-pack-coverage.sh",
-                "--pack",
-                str(self.pack),
-                "--check",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "--dry-run",
             ],
             cwd=ROOT,
+            env={**os.environ, "AUDIT_PACK_DIR": str(self.pack)},
             capture_output=True,
             text=True,
             check=False,
@@ -135,15 +134,16 @@ class AuditCriterionContractTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn("empty criterion fields: external criterion", result.stderr)
 
-    def test_coverage_reads_current_overview_direct_and_held(self) -> None:
-        script = ROOT / "scripts/validation/report-audit-pack-coverage.sh"
+    def test_matrix_check_reads_current_overview_direct_and_held(self) -> None:
+        script = ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
         env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
         env["PYTHONSAFEPATH"] = "1"
         with script.open("rb") as held:
             for path in (str(script), f"/proc/self/fd/{held.fileno()}"):
                 with self.subTest(path=path):
+                    env["AUDIT_PACK_DIR"] = str(self.pack)
                     result = subprocess.run(
-                        ["bash", path, "--pack", str(self.pack), "--check"],
+                        ["bash", path, "--dry-run"],
                         cwd=ROOT,
                         env=env,
                         pass_fds=(held.fileno(),),
@@ -152,11 +152,46 @@ class AuditCriterionContractTests(unittest.TestCase):
                         check=False,
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertIn("criterion_rows_total=161", result.stdout)
-                    self.assertIn("overview_categories_found=15", result.stdout)
-                    self.assertIn("coverage_check=pass", result.stdout)
+                    self.assertIn("| Criterion rows parsed | 161 |", result.stdout)
+                    self.assertIn("| Overview categories found | 15 |", result.stdout)
 
-    def test_coverage_rejects_missing_current_overview_category(self) -> None:
+    def test_matrix_designates_only_historical_source_derived_tables(self) -> None:
+        result = subprocess.run(
+            [
+                "bash",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "--dry-run",
+            ],
+            cwd=ROOT,
+            env={**os.environ, "AUDIT_PACK_DIR": str(self.pack)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        marker = (
+            "<!-- Historical evidence table (not current authority; "
+            "source: Git history). -->"
+        )
+        historical_headers = (
+            "| Report | Criterion ID | External criterion |",
+            "| Normalized Status | Count |",
+            "| Raw Status | Count |",
+            "| Candidate ID | Candidate | Disposition |",
+        )
+        self.assertEqual(len(historical_headers), result.stdout.count(marker))
+        for header in historical_headers:
+            self.assertIn(f"{marker}\n{header}", result.stdout)
+        for current_header in (
+            "| Metric | Value |",
+            "| Category | Status |",
+            "| Criterion Report | File State | Criterion Rows |",
+            "| Surface | Candidate | Script | Output / Evidence |",
+            "| Signal | Canonical Routing |",
+        ):
+            self.assertNotIn(f"{marker}\n{current_header}", result.stdout)
+
+    def test_matrix_check_rejects_missing_current_overview_category(self) -> None:
         overview = self.pack / "0026-implementation-overview/README.md"
         source = overview.read_text(encoding="utf-8")
         self.assertEqual(1, source.count("| Harness engineering |"))
@@ -172,18 +207,16 @@ class AuditCriterionContractTests(unittest.TestCase):
         result = subprocess.run(
             [
                 "bash",
-                "scripts/validation/report-audit-pack-coverage.sh",
-                "--pack",
-                str(self.pack),
-                "--check",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "--dry-run",
             ],
             cwd=ROOT,
+            env={**os.environ, "AUDIT_PACK_DIR": str(self.pack)},
             capture_output=True,
             text=True,
             check=False,
         )
         self.assertEqual(1, result.returncode)
-        self.assertIn("overview_categories_found=14", result.stdout)
         self.assertIn(
             "missing implementation-overview category: Harness engineering",
             result.stderr,

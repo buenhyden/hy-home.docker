@@ -162,17 +162,17 @@ def compact_refs(items: list[dict[str, object]], limit: int = 18) -> str:
 lines: list[str] = [
     "---",
     'title: "Reference: Docker Compose Profile Service Coverage"',
-    "version: 1.0.0",
-    "type: reference/data-pack",
-    "layer: references",
-    "status: active",
+    'version: "1.0.0"',
+    'type: "reference/data-pack"',
+    'status: "published"',
     "owner: \"@buenhyden\"",
-    "artifact_id: DATA-0059",
+    'updated: "2026-09-04"',
+    'layer: "references"',
+    'artifact_id: "DATA-0059"',
     "parent_ids: []",
-    "created: '2026-08-23'",
-    "updated: '2026-08-28'",
-    "observed_at: '2026-08-28'",
-    "generated_by: scripts/operations/generate-compose-profile-service-coverage.sh",
+    'created: "2026-08-23"',
+    'observed_at: "2026-08-28"',
+    'generated_by: "scripts/operations/generate-compose-profile-service-coverage.sh"',
     "---",
     "",
     "# Reference: Docker Compose Profile Service Coverage",
@@ -193,7 +193,9 @@ lines: list[str] = [
     "## Repository Role",
     "",
     "Use this document as derived inventory context only. Do not edit it by hand;",
-    "regenerate it with `bash scripts/operations/generate-compose-profile-service-coverage.sh`.",
+    "regenerate it with `bash scripts/operations/generate-compose-profile-service-coverage.sh --write`;",
+    "use `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`",
+    "to verify freshness without writing.",
     "It does not replace Compose files, operations runbooks, or runtime validation.",
     "",
     "## Scope",
@@ -318,7 +320,7 @@ elif MODE == "check":
     current = OUTPUT.read_text(errors="ignore")
     if current != content:
         print(f"FAIL: stale generated Compose coverage snapshot: {OUTPUT}", file=sys.stderr)
-        print("Run: bash scripts/operations/generate-compose-profile-service-coverage.sh", file=sys.stderr)
+        print("Run: bash scripts/operations/generate-compose-profile-service-coverage.sh --write", file=sys.stderr)
         sys.exit(1)
     print(f"PASS: generated Compose coverage snapshot is fresh: {OUTPUT}")
 elif MODE == "write":

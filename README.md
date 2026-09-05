@@ -232,7 +232,7 @@ docker compose --profile core up -d
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
-- `bash scripts/validation/run-local-qa-gates.sh --changed` - 변경 경로가 영향을 주는 public suite 실행
+- `python3 scripts/validation/run-ci-gate.py --profile changed` - 변경 경로가 영향을 주는 public suite 실행
 - `python3 scripts/validation/run-ci-gate.py --profile full` - six public validation suites 전체 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
@@ -255,7 +255,7 @@ release visibility gate이며, remote required-check enforcement 증거로
 
 `validation-full` job은 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
-로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --explain`으로
+로컬에서는 `python3 scripts/validation/run-ci-gate.py --profile changed --explain`으로
 선택된 suite와 validator 매핑을 실행 없이 확인합니다.
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.

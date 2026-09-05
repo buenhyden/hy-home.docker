@@ -208,8 +208,6 @@ class CiGateAdapterTests(unittest.TestCase):
             "tests.lib.gate.test_github_workflow_contract",
             "tests.lib.ops.test_postgres_logical_upgrade_rehearsal",
             "tests.lib.supply_chain.test_grype_db_seed",
-            "tests.lib.target_surface.test_target_surface_contracts",
-            "tests.lib.target_surface.test_target_surface_delta_contracts",
         )
         for module in modules:
             with self.subTest(module=module):

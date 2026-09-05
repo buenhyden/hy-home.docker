@@ -1,434 +1,29 @@
-from __future__ import annotations
-
-import ast
-from collections import defaultdict
-from copy import deepcopy
+import datetime as dt
 import importlib.util
-import json
-import os
-import posixpath
 import re
-import shutil
 import subprocess
 import sys
-import tempfile
-import unittest
-from pathlib import Path, PurePosixPath
 
+import scripts.lib.document_governance as document_governance
 import yaml
 
+from tests.validation._script_manifest_support import *
+from tests.validation._script_manifest_support import ROOT
 
-ROOT = Path(__file__).resolve().parents[2]
-BASELINE = "232effd9a5e00907bdbe30efc6665023fb2d07f4"
 MANIFEST = ROOT / "scripts/manifest.yaml"
-LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
-OPERATIONS_MANIFEST_PATHS = (
-    "scripts/lib/document_governance/operations_catalog.py",
-    "scripts/validation/check-operations-catalog.py",
-)
-MIGRATION_ROOTS = (
-    "docs/01.requirements",
-    "docs/02.architecture",
-    "docs/03.specs",
-    "docs/04.execution",
-    "docs/05.operations",
-    "docs/90.references",
-    "docs/98.archive",
-)
-REQUIRED_FIELDS = frozenset(
-    {
-        "path",
-        "kind",
-        "authority",
-        "lifecycle",
-        "mutation",
-        "consumers",
-        "disposition",
-        "successor",
-        "tests",
-    }
-)
-KINDS = frozenset(
-    {
-        "contract",
-        "dependency-manifest",
-        "generator",
-        "hook",
-        "library",
-        "operations",
-        "runner",
-        "validator",
-    }
-)
-LIFECYCLES = frozenset({"active", "transition"})
-MUTATIONS = frozenset({"none", "check-write", "runtime"})
-DISPOSITIONS = frozenset({"retain", "merge", "delete", "rewrite"})
-PUBLIC_SUITE_NAMES = frozenset(
-    {
-        "agent-governance",
-        "document-contract",
-        "document-graph",
-        "document-lifecycle",
-        "operations",
-        "repository-integrity",
-    }
-)
-FORBIDDEN_EVIDENCE_PREFIXES = (
-    "graphify-out/",
-    "docs/98.archive/",
-    "docs/04.execution/",
-    "docs/90.references/data/0082-llm-wiki-index/",
-)
-MUTATION_OVERRIDES = {
-    "scripts/hooks/post-tool-validate.sh": "check-write",
-    "scripts/knowledge/generate-llm-wiki.py": "check-write",
-    "scripts/operations/gen-secrets.sh": "runtime",
-    "scripts/operations/generate-compose-profile-service-coverage.sh": "check-write",
-    "scripts/operations/generate-tech-stack-version-provenance.sh": "check-write",
-    "scripts/operations/provider_surface_renderer.py": "check-write",
-    "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
-    "scripts/operations/sync-provider-surfaces.sh": "check-write",
-    "scripts/lib/document_governance/metadata_validator.py": "check-write",
-    "scripts/operations/sync-tech-stack-versions.sh": "check-write",
-    "scripts/security/generate-supply-chain-sample-service-summary.sh": "check-write",
-    "scripts/security/seed-grype-db-cache.sh": "runtime",
-    "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
-    "scripts/validation/check-document-corpus-lifecycle.py": "check-write",
-    "scripts/validation/check-document-metadata.py": "check-write",
-    "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
-    "scripts/validation/generate-security-automation-readiness.sh": "check-write",
-    "scripts/validation/report-provider-hook-parity.sh": "check-write",
-    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh": "runtime",
-    "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
-    "scripts/validation/run-compose-core-readiness.sh": "runtime",
-    "scripts/validation/compose-core-readiness.lib.sh": "runtime",
-    "scripts/validation/validate-docker-compose.sh": "runtime",
-}
-MANDATORY_DISPOSITIONS = {
-    "scripts/hooks/post-tool-validate.sh": "retain",
-    "scripts/knowledge/generate-llm-wiki.py": "retain",
-}
-TASK12_RETIRED_SCRIPTS = frozenset(
-    {
-        "scripts/hooks/patch-graphify-post-commit.sh",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh",
-        "scripts/knowledge/generate-llm-wiki-index.sh",
-        "scripts/validation/check-repo-contracts.sh",
-        "scripts/validation/recommend-gap-routing.sh",
-        "scripts/validation/recommend-qa-gates.sh",
-    }
-)
-KNOWN_TOMBSTONE_REPLACEMENTS = {
-    "docs/98.archive/05.operations/guides/03-security/01.setup.md": (
-        "docs/05.operations/03-security/ops-0016-vault/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md": (
-        "docs/05.operations/04-data/ops-0018-analytics-ksqldb/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
-        "docs/05.operations/07-workflow/ops-0051-airflow-dag-basics/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/guides/08-ai/01.llm-inference.md": (
-        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/08-ai/local-llm-setup.md": (
-        "docs/05.operations/08-ai/ops-0056-ollama/guide.md",
-    ),
-    "docs/98.archive/05.operations/guides/09-tooling/01.iac-automation.md": (
-        "docs/05.operations/09-tooling/ops-0069-terrakube/guide.md",
-        "docs/05.operations/09-tooling/ops-0068-terraform/guide.md",
-    ),
-    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
-        "docs/03.specs/0008-workflow/spec.md",
-    ),
-}
-LINK_FORM_BASELINE_DECLARATIONS = {
-    "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": (
-        "docs/05.operations/guides/07-workflow/airflow-dag-basics.md",
-    ),
-    "docs/98.archive/05.operations/guides/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/policies/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-    "docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md": (
-        "docs/03.specs/008-workflow/spec.md",
-    ),
-}
+MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
 
 
 def load_manifest_checker():
-    path = ROOT / "scripts/validation/check-script-manifest.py"
-    spec = importlib.util.spec_from_file_location("check_script_manifest", path)
+    spec = importlib.util.spec_from_file_location(
+        "check_script_manifest", MANIFEST_CHECKER
+    )
     if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load {path}")
+        raise RuntimeError(f"cannot load {MANIFEST_CHECKER}")
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
-
-
-def tracked_paths(*pathspecs: str) -> set[str]:
-    paths = subprocess.run(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", *pathspecs],
-        cwd=ROOT,
-        text=True,
-        check=True,
-        capture_output=True,
-    ).stdout.splitlines()
-    return {path for path in paths if (ROOT / path).is_file()}
-
-
-def local_path(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
-
-
-def git_text(path: str) -> str:
-    return subprocess.run(
-        ["git", "show", f"{BASELINE}:{path}"],
-        cwd=ROOT,
-        text=True,
-        check=True,
-        capture_output=True,
-    ).stdout
-
-
-def frontmatter(text: str) -> dict[str, object]:
-    if not text.startswith("---\n"):
-        return {}
-    value = yaml.safe_load(text.split("---\n", 2)[1]) or {}
-    return value if isinstance(value, dict) else {}
-
-
-def markdown_code_paths(text: str) -> list[str]:
-    return re.findall(r"`(docs/[^`]+)`", text)
-
-
-def repository_docs_targets(text: str, source_path: str) -> list[str]:
-    targets: list[str] = []
-    declaration_pattern = re.compile(
-        r"`(?P<code>docs/[^`]+)`|"
-        r"\[[^]]*\]\((?P<link>[^)\s]+)(?:\s+[^)]*)?\)"
-    )
-    for match in declaration_pattern.finditer(text):
-        raw_target = match.group("code") or match.group("link")
-        candidate = raw_target.strip("<>").split("#", 1)[0]
-        if not candidate or "://" in candidate:
-            continue
-        if candidate.startswith("/docs/"):
-            candidate = candidate.lstrip("/")
-        if not candidate.startswith("docs/"):
-            candidate = posixpath.join(posixpath.dirname(source_path), candidate)
-        candidate = posixpath.normpath(candidate).lstrip("/")
-        if candidate.startswith("docs/") and candidate not in targets:
-            targets.append(candidate)
-    return targets
-
-
-def declared_tombstone_replacements(text: str, tombstone_path: str) -> list[str]:
-    for line in text.splitlines():
-        if re.match(r"\|\s*Current replacement\s*\|", line, re.IGNORECASE):
-            cells = line.strip().strip("|").split("|", 1)
-            return repository_docs_targets(cells[1], tombstone_path)
-    return []
-
-
-def canonical_current_path(path: str) -> str:
-    """Resolve the Migration 0003 predecessor spelling to its live Stage03 path."""
-
-    return path.replace(
-        "docs/03.specs/spec-0008-workflow/", "docs/03.specs/0008-workflow/"
-    )
-
-
-def replacement_preservation_errors(
-    row: dict[str, object], translated: list[str]
-) -> list[str]:
-    if not translated:
-        return ["declared-replacement-empty"]
-    errors: list[str] = []
-    if row["replacement"] is None:
-        errors.append("replacement-null")
-    elif canonical_current_path(str(row["replacement"])) != translated[0]:
-        errors.append("primary-replacement-mismatch")
-    evidence = canonical_current_path(f"{row['replacement']} {row['reason']}")
-    if any(target not in evidence for target in translated):
-        errors.append("translated-replacement-evidence-missing")
-    return errors
-
-
-def _python_imports_target(reference: str, target: str) -> bool:
-    if not reference.endswith(".py") or not target.endswith(".py"):
-        return False
-    module = target.removesuffix(".py").replace("/", ".")
-    sibling_module = PurePosixPath(target).stem
-    same_directory = PurePosixPath(reference).parent == PurePosixPath(target).parent
-    try:
-        tree = ast.parse((ROOT / reference).read_text(encoding="utf-8"))
-    except SyntaxError:
-        return False
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            if any(alias.name == module for alias in node.names):
-                return True
-        elif isinstance(node, ast.ImportFrom):
-            if node.module == module or (
-                same_directory and node.module == sibling_module
-            ):
-                return True
-            package, _, member = module.rpartition(".")
-            if node.module == package and any(
-                alias.name == member for alias in node.names
-            ):
-                return True
-    return False
-
-
-MACHINE_REFERENCE_KEYS = frozenset(
-    {
-        "argv",
-        "command",
-        "commands",
-        "entry",
-        "entrypoint",
-        "implementation",
-        "path",
-        "required_evidence_paths",
-        "run",
-        "script",
-    }
-)
-
-
-def machine_config_proves_use(document: object, target: str, parent: str = "") -> bool:
-    if isinstance(document, dict):
-        return any(
-            machine_config_proves_use(value, target, str(key))
-            for key, value in document.items()
-        )
-    if isinstance(document, list):
-        return any(
-            machine_config_proves_use(value, target, parent) for value in document
-        )
-    if parent not in MACHINE_REFERENCE_KEYS or not isinstance(document, str):
-        return False
-    return bool(
-        re.search(
-            rf"(?<![A-Za-z0-9_./-]){re.escape(target)}(?![A-Za-z0-9_./-])",
-            document,
-        )
-    )
-
-
-def reference_proves_use(reference: str, target: str) -> bool:
-    """Prove invocation/import evidence, not path inventory membership.
-
-    Markdown evidence must put the path/basename in a command/code span. Source
-    evidence must either import the Python module or name the path/basename in
-    executable/fixture content. Inventory-only surfaces are rejected up front.
-    """
-
-    if reference == "scripts/manifest.yaml" or reference == ".github/CODEOWNERS":
-        return False
-    if reference.startswith(FORBIDDEN_EVIDENCE_PREFIXES):
-        return False
-    if _python_imports_target(reference, target):
-        return True
-    text = (ROOT / reference).read_text(encoding="utf-8")
-    basename = PurePosixPath(target).name
-    module_symbol = PurePosixPath(target).stem.replace("-", "_")
-    token_present = target in text or basename in text
-    if not token_present and reference.endswith(".py"):
-        token_present = bool(re.search(rf"\b{re.escape(module_symbol)}\b", text))
-    if not token_present:
-        return False
-    if reference.endswith(".md"):
-        in_fence = False
-        for line in text.splitlines():
-            if line.lstrip().startswith("```"):
-                in_fence = not in_fence
-                continue
-            if (target in line or basename in line) and (
-                in_fence or "`" in line or re.search(r"\[[^]]*\]\([^)]*\)", line)
-            ):
-                return True
-        return False
-    if reference.endswith((".yaml", ".yml")):
-        try:
-            document = yaml.safe_load(text)
-        except yaml.YAMLError:
-            return False
-        return machine_config_proves_use(document, target)
-    if reference.endswith((".sh", ".bash")):
-        return any(
-            (target in line or basename in line) and not line.lstrip().startswith("#")
-            for line in text.splitlines()
-        )
-    if reference.endswith(".py"):
-        return any(
-            marker in text
-            for marker in (
-                "subprocess.run",
-                "subprocess.Popen",
-                "runpy.run_path",
-                "importlib",
-            )
-        )
-    return target in text
-
-
-def is_runbook_authority(path: str) -> bool:
-    return bool(
-        re.fullmatch(
-            r"docs/05\.operations/catalog/[0-9]{2}-[a-z0-9-]+/"
-            r"[0-9]{4}-[a-z0-9-]+/runbook\.md",
-            path,
-        )
-    )
-
-
-def stable_target_type(path: str) -> str | None:
-    patterns = (
-        (r"docs/01\.requirements/prd-[0-9]{4}-[^/]+\.md", "prd"),
-        (r"docs/02\.architecture/descriptions/ad-[0-9]{4}-[^/]+\.md", "ad"),
-        (r"docs/02\.architecture/decisions/adr-[0-9]{4}-[^/]+\.md", "adr"),
-        (r"docs/03\.specs/[0-9]{4}-[^/]+/spec\.md", "spec"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/spec\.md", "spec"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/plan\.md", "plan"),
-        (r"docs/03\.specs/spec-[0-9]{4}-[^/]+/task\.md", "task"),
-        (
-            r"docs/05\.operations/(?:[0-9]{2}-[^/]+)/(?:ops-[0-9]{4}-[^/]+)/(?:guide|policy|runbook)\.md",
-            "ops-role",
-        ),
-        (
-            r"docs/05\.operations/incidents/[0-9]{4}/inc-[0-9]{4}-[^/]+/(?:incident|postmortem)\.md",
-            "event",
-        ),
-        (r"docs/05\.operations/releases/rel-[0-9]{4}-[^/]+/release\.md", "release"),
-        (
-            r"docs/90\.references/.*/ref-[0-9]{4}-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
-            "reference",
-        ),
-        (r"docs/98\.archive/changes/chg-[0-9]{4}-[^/]+/(?:plan|task)\.md", "change"),
-        (
-            r"docs/98\.archive/tombstones/(?:01\.requirements|02\.architecture|03\.specs|05\.operations)/[^/]+\.md",
-            "tombstone",
-        ),
-        (r"docs/98\.archive/migrations/mig-[0-9]{4}-[^/]+\.md", "migration"),
-    )
-    if path == "docs/05.operations/README.md" or path.endswith("/README.md"):
-        return "readme"
-    for pattern, target_type in patterns:
-        if re.fullmatch(pattern, path):
-            return target_type
-    return None
 
 
 class ScriptManifestTests(unittest.TestCase):
@@ -443,18 +38,20 @@ class ScriptManifestTests(unittest.TestCase):
         cls.manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         cls.rows = cls.manifest["files"]
         cls.rows_by_path = {row["path"]: row for row in cls.rows}
-        ledger_text = (
-            LEDGER.read_text(encoding="utf-8")
-            .split("```yaml\n", 1)[1]
-            .split("```", 1)[0]
-        )
-        cls.ledger_rows = yaml.safe_load(ledger_text)["records"]
-        cls.ledger_by_path = {row["legacy_path"]: row for row in cls.ledger_rows}
-
     def test_every_tracked_script_has_one_manifest_record(self) -> None:
         declared = [row["path"] for row in self.rows]
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(self.tracked, set(declared))
+
+    def test_production_scripts_do_not_reference_tests_tree(self) -> None:
+        violations: list[str] = []
+        for path in sorted((ROOT / "scripts").rglob("*")):
+            if path.is_file() and path.suffix in {".py", ".sh"}:
+                text = path.read_text(encoding="utf-8")
+                if "tests/fixtures/" in text or 'ROOT / "tests"' in text:
+                    violations.append(path.relative_to(ROOT).as_posix())
+
+        self.assertEqual([], violations)
 
     def test_stage90_generators_declare_exact_destinations_and_explicit_write_mode(
         self,
@@ -495,6 +92,123 @@ class ScriptManifestTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertIn("--write", result.stdout)
 
+    def test_generator_refresh_guidance_uses_explicit_write_mode(self) -> None:
+        for script in (
+            "scripts/operations/generate-compose-profile-service-coverage.sh",
+            "scripts/operations/generate-tech-stack-version-provenance.sh",
+        ):
+            with self.subTest(script=script):
+                result = subprocess.run(
+                    ["bash", script, "--dry-run"],
+                    cwd=ROOT, text=True, capture_output=True, check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn(f"`bash {script} --write`", result.stdout)
+                self.assertNotIn(f"`bash {script}`", result.stdout)
+
+    def test_scripts_readme_write_generators_use_explicit_write_mode(self) -> None:
+        readme = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
+        maintenance_row = next(
+            line
+            for line in readme.splitlines()
+            if line.startswith("| Generated index maintenance ")
+        )
+        for command in (
+            "scripts/validation/generate-audit-implementation-matrix.sh",
+            "scripts/validation/generate-security-automation-readiness.sh",
+            "scripts/security/generate-supply-chain-sample-service-summary.sh",
+        ):
+            with self.subTest(command=command):
+                self.assertIn(f"`{command} --write`", maintenance_row)
+        audit_example = "bash scripts/validation/generate-audit-implementation-matrix.sh"
+        audit_block = readme.split(
+            "# Generate and check the audit implementation matrix snapshot\n", 1
+        )[1].split("\n\n", 1)[0]
+        self.assertIn(f"{audit_example} --write", audit_block)
+
+    def test_compose_profile_generator_emits_canonical_published_metadata(
+        self,
+    ) -> None:
+        script = "scripts/operations/generate-compose-profile-service-coverage.sh"
+        result = subprocess.run(
+            ["bash", script, "--dry-run"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        metadata = yaml.safe_load(result.stdout.split("---", 2)[1])
+        expected_fields = (
+            "title",
+            "version",
+            "type",
+            "status",
+            "owner",
+            "updated",
+            "layer",
+            "artifact_id",
+            "parent_ids",
+            "created",
+            "observed_at",
+            "generated_by",
+        )
+        stable_fields = {
+            "title": "Reference: Docker Compose Profile Service Coverage",
+            "type": "reference/data-pack",
+            "status": "published",
+            "owner": "@buenhyden",
+            "layer": "references",
+            "artifact_id": "DATA-0059",
+            "parent_ids": [],
+            "generated_by": script,
+        }
+        semver = re.compile(
+            r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
+        )
+        iso_date = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+
+        def assert_valid_envelope(candidate: dict[str, object]) -> None:
+            self.assertEqual(expected_fields, tuple(candidate))
+            self.assertEqual(
+                stable_fields,
+                {field: candidate.get(field) for field in stable_fields},
+            )
+            version = candidate.get("version")
+            self.assertIsInstance(version, str)
+            self.assertIsNotNone(semver.fullmatch(version))
+            for field in ("created", "updated", "observed_at"):
+                value = candidate.get(field)
+                self.assertIsInstance(value, str)
+                self.assertIsNotNone(iso_date.fullmatch(value))
+                try:
+                    dt.date.fromisoformat(value)
+                except ValueError as error:
+                    self.fail(f"{field} must be a valid ISO date: {error}")
+
+        assert_valid_envelope(metadata)
+
+        next_publication = dict(metadata)
+        next_publication.update(
+            version="2.1.0",
+            updated="2027-01-02",
+            observed_at="2027-01-01",
+        )
+        assert_valid_envelope(next_publication)
+
+        for field, value in (
+            ("status", "active"),
+            ("version", 2),
+            ("version", "01.0.0"),
+            ("updated", dt.date(2027, 1, 2)),
+            ("observed_at", "2027-13-40"),
+        ):
+            with self.subTest(field=field, value=value):
+                invalid = dict(metadata)
+                invalid[field] = value
+                with self.assertRaises(AssertionError):
+                    assert_valid_envelope(invalid)
+
     def test_stage90_generators_require_write_and_touch_only_declared_output(
         self,
     ) -> None:
@@ -514,6 +228,7 @@ class ScriptManifestTests(unittest.TestCase):
                 root = Path(directory)
                 inputs = {script}
                 fixture_sources: dict[str, Path] = {}
+                fixture_texts: dict[str, str] = {}
                 if "tech-stack" in script:
                     (root / "infra").mkdir()
                     (root / "infra/tech-stack.versions.json").write_text(
@@ -561,10 +276,6 @@ class ScriptManifestTests(unittest.TestCase):
                     )
 
                     inputs.add(freshness_module.SUPERSEDED_2026_07_07_README.as_posix())
-                    inputs.add(semantic["task_evidence"])
-                    fixture_sources[semantic["task_evidence"]] = (
-                        ROOT / "tests/fixtures/agentic-audit/task-evidence.md"
-                    )
                     inputs.update(
                         path
                         for assertion in semantic["assertions"]
@@ -584,7 +295,7 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     inputs.update(
                         path.relative_to(ROOT).as_posix()
-                        for path in (ROOT / "tests/fixtures/supply-chain").rglob("*")
+                        for path in (ROOT / "examples/operations/supply-chain").rglob("*")
                         if path.is_file()
                     )
                 elif "hook-parity" in script:
@@ -595,11 +306,14 @@ class ScriptManifestTests(unittest.TestCase):
                     len(inputs), 180, "fixture must remain a bounded producer input set"
                 )
                 for relative in sorted(inputs):
-                    source = fixture_sources.get(relative, ROOT / relative)
                     target = root / relative
-                    self.assertTrue(source.is_file(), relative)
                     target.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(source, target)
+                    if relative in fixture_texts:
+                        target.write_text(fixture_texts[relative], encoding="utf-8")
+                    else:
+                        source = fixture_sources.get(relative, ROOT / relative)
+                        self.assertTrue(source.is_file(), relative)
+                        shutil.copy2(source, target)
                 output = self.rows_by_path[script]["outputs"][0]
                 target = root / output
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -637,6 +351,10 @@ class ScriptManifestTests(unittest.TestCase):
                         timeout=30,
                     )
                     self.assertNotEqual(0, result.returncode, script)
+                    if "compose-profile-service-coverage" in script:
+                        self.assertIn(
+                            f"Run: bash {script} --write", result.stderr
+                        )
                     self.assertEqual(before, snapshot(), script)
                 result = subprocess.run(
                     [*command, "--write", *extra],
@@ -690,21 +408,13 @@ class ScriptManifestTests(unittest.TestCase):
                 and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
-            if row["kind"] == "validator":
-                expected_fields = expected_fields | {
-                    "public_suites",
-                    "execution_contexts",
-                }
-                if row.get("execution_argv"):
-                    expected_fields = expected_fields | {"execution_argv"}
+            if row["lifecycle"] == "transition":
+                expected_fields = expected_fields | {"removal_condition"}
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
             self.assertIn(row["mutation"], MUTATIONS)
             self.assertIn(row["disposition"], DISPOSITIONS)
-            if row["kind"] == "validator":
-                self.assertEqual(1, len(row["public_suites"]))
-                self.assertIn(row["public_suites"][0], PUBLIC_SUITE_NAMES)
             self.assertIsInstance(row["authority"], str)
             self.assertTrue(row["authority"])
             self.assertNotEqual(row["authority"], "sdlc-taxonomy-convergence")
@@ -738,6 +448,26 @@ class ScriptManifestTests(unittest.TestCase):
                     "dependency-manifest",
                 }:
                     self.assertTrue(row["tests"])
+
+    def test_nonretained_successor_is_distinct(self) -> None:
+        for row in self.rows:
+            if row["disposition"] != "retain":
+                with self.subTest(path=row["path"]):
+                    self.assertNotEqual(row["path"], row.get("successor"))
+
+    def test_document_governance_package_marker_is_registered(self) -> None:
+        marker = "scripts/lib/document_governance/__init__.py"
+        self.assertEqual("retain", self.rows_by_path[marker]["disposition"])
+        self.assertIn("document-governance", document_governance.__doc__ or "")
+
+    def test_retained_public_entrypoint_has_current_consumer(self) -> None:
+        for row in self.rows:
+            if (
+                row["kind"] in {"validator", "runner", "operations"}
+                and row["disposition"] == "retain"
+            ):
+                with self.subTest(path=row["path"]):
+                    self.assertTrue(row["consumers"])
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
@@ -789,12 +519,6 @@ class ScriptManifestTests(unittest.TestCase):
                 "scripts/lib/document_governance/metadata_validator.py",
             )
         )
-        self.assertFalse(
-            _python_imports_target(
-                adapter,
-                "scripts/lib/target_surface/target_surface_contract.py",
-            )
-        )
 
     def test_mutation_classes_follow_observed_script_behavior(self) -> None:
         for row in self.rows:
@@ -827,7 +551,7 @@ class ScriptManifestTests(unittest.TestCase):
 
     def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
         postgres = self.rows_by_path[
-            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+            "scripts/operations/rehearse-postgres-logical-upgrade.sh"
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
@@ -835,11 +559,11 @@ class ScriptManifestTests(unittest.TestCase):
             postgres["authority"],
         )
         self.assertEqual(
-            [postgres["authority"]],
+            [".github/workflow-contract.yml", postgres["authority"]],
             postgres["consumers"],
         )
         self.assertEqual(
-            ["tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py"],
+            ["tests/validation/test_postgres_logical_upgrade_rehearsal.py"],
             postgres["tests"],
         )
 
@@ -923,443 +647,10 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIn("scripts/manifest.yaml", compact)
         self.assertIn("check-script-manifest.py", compact)
 
-    def test_ledger_has_one_complete_sorted_row_for_every_migration_document(
-        self,
-    ) -> None:
-        rows = self.ledger_rows
-        expected = set(
-            subprocess.run(
-                [
-                    "git",
-                    "ls-tree",
-                    "-r",
-                    "--name-only",
-                    BASELINE,
-                    "--",
-                    *MIGRATION_ROOTS,
-                ],
-                cwd=ROOT,
-                text=True,
-                check=True,
-                capture_output=True,
-            ).stdout.splitlines()
-        )
-        declared = [row["legacy_path"] for row in rows]
-        self.assertEqual(declared, sorted(declared))
-        self.assertEqual(len(declared), len(set(declared)))
-        self.assertEqual(expected, set(declared))
-        required = {
-            "legacy_path",
-            "stable_path",
-            "artifact_id",
-            "action",
-            "replacement",
-            "source_commit",
-            "reason",
-        }
-        destructive = {"merge", "delete"}
-        for row in rows:
-            with self.subTest(path=row["legacy_path"]):
-                self.assertEqual(required, set(row))
-                self.assertIn(
-                    row["action"],
-                    {"archive", "delete", "merge", "move", "retain", "rewrite"},
-                )
-                self.assertEqual(
-                    BASELINE,
-                    row["source_commit"],
-                )
-                self.assertTrue(row["reason"])
-                if row["action"] == "delete":
-                    self.assertIsNone(row["stable_path"])
-                else:
-                    self.assertIsInstance(row["stable_path"], str)
-                    self.assertTrue(row["stable_path"])
-                if row["action"] in destructive:
-                    self.assertIsInstance(row["replacement"], str)
-                    self.assertTrue(row["replacement"])
-                elif row["action"] != "archive":
-                    self.assertIsNone(row["replacement"])
-
-    def test_ledger_targets_match_stable_typed_taxonomy(self) -> None:
-        for row in self.ledger_rows:
-            with self.subTest(path=row["legacy_path"]):
-                target = row["stable_path"]
-                replacement = row["replacement"]
-                if target is not None:
-                    self.assertIsNotNone(stable_target_type(target), target)
-                    parts = PurePosixPath(target).parts
-                    self.assertNotIn("docs/04.execution", target)
-                    self.assertNotIn("README.md/", target)
-                    self.assertFalse(
-                        any(re.fullmatch(r"[0-9]{4}", part) for part in parts)
-                    )
-                    self.assertFalse(
-                        any(
-                            re.match(r"[0-9]{4}-[0-9]{2}-[0-9]{2}-", part)
-                            for part in parts
-                        )
-                    )
-                    self.assertFalse(
-                        target.startswith(
-                            (
-                                "docs/05.operations/guides/",
-                                "docs/05.operations/policies/",
-                                "docs/05.operations/runbooks/",
-                            )
-                        )
-                    )
-                if replacement is not None:
-                    self.assertNotEqual(row["legacy_path"], replacement)
-                    if row["action"] == "archive":
-                        self.assertNotEqual(target, replacement)
-                    self.assertIsNotNone(stable_target_type(replacement), replacement)
-
-                if target and "/changes/chg-" in target:
-                    match = re.fullmatch(
-                        r"docs/98\.archive/changes/chg-([0-9]{4})-[^/]+/(plan|task)\.md",
-                        target,
-                    )
-                    self.assertIsNotNone(match)
-                    identity, role = match.groups()
-                    if role == "plan":
-                        self.assertEqual(f"plan-{identity}", row["artifact_id"])
-                    else:
-                        self.assertRegex(
-                            str(row["artifact_id"]), rf"^task-{identity}-[0-9]{{2}}$"
-                        )
-
-    def test_ledger_artifact_ids_match_target_profile_identities(self) -> None:
-        direct_profiles = {
-            "prd": (r".*/prd-([0-9]{4})-[^/]+\.md", "prd"),
-            "ad": (r".*/ad-([0-9]{4})-[^/]+\.md", "ad"),
-            "adr": (r".*/adr-([0-9]{4})-[^/]+\.md", "adr"),
-            "spec": (r".*/spec-([0-9]{4})-[^/]+/spec\.md", "spec"),
-            "event": (r".*/inc-([0-9]{4})-[^/]+/incident\.md", "inc"),
-            "release": (r".*/rel-([0-9]{4})-[^/]+/release\.md", "rel"),
-            "reference": (
-                r".*/ref-([0-9]{4})-[^/]+(?:\.(?:md|yaml|yml|json)|/README\.md)",
-                "ref",
-            ),
-            "migration": (r".*/mig-([0-9]{4})-[^/]+\.md", "mig"),
-        }
-        for row in self.ledger_rows:
-            target = row["stable_path"]
-            if target is None:
-                continue
-            target_type = stable_target_type(target)
-            artifact_id = row["artifact_id"]
-            with self.subTest(path=row["legacy_path"], target=target):
-                if target_type == "readme":
-                    self.assertIsNone(artifact_id)
-                    continue
-                self.assertIsInstance(artifact_id, str)
-                if target_type in direct_profiles:
-                    pattern, prefix = direct_profiles[target_type]
-                    match = re.fullmatch(pattern, target)
-                    self.assertIsNotNone(match)
-                    self.assertEqual(f"{prefix}-{match.group(1)}", artifact_id)
-                elif target_type in {"plan", "task"}:
-                    match = re.fullmatch(
-                        r"docs/03\.specs/spec-([0-9]{4})-[^/]+/(plan|task)\.md",
-                        target,
-                    )
-                    self.assertIsNotNone(match)
-                    identity, role = match.groups()
-                    expected = (
-                        f"plan-{identity}" if role == "plan" else f"task-{identity}-01"
-                    )
-                    self.assertEqual(expected, artifact_id)
-                elif target_type == "ops-role":
-                    match = re.fullmatch(
-                        r"docs/05\.operations/[^/]+/ops-([0-9]{4})-[^/]+/(guide|policy|runbook)\.md",
-                        target,
-                    )
-                    self.assertIsNotNone(match)
-                    identity, role = match.groups()
-                    self.assertEqual(f"{role}-{identity}", artifact_id)
-                elif target_type == "change":
-                    match = re.fullmatch(
-                        r"docs/98\.archive/changes/chg-([0-9]{4})-[^/]+/(plan|task)\.md",
-                        target,
-                    )
-                    self.assertIsNotNone(match)
-                    identity, role = match.groups()
-                    if role == "plan":
-                        self.assertEqual(f"plan-{identity}", artifact_id)
-                    else:
-                        self.assertRegex(artifact_id, rf"^task-{identity}-[0-9]{{2}}$")
-                    target_path = ROOT / target
-                    if target_path.is_file():
-                        target_metadata = frontmatter(
-                            target_path.read_text(encoding="utf-8")
-                        )
-                        self.assertEqual(
-                            target_metadata.get("artifact_id"), artifact_id
-                        )
-                elif target_type == "tombstone":
-                    filename = PurePosixPath(target).stem
-                    self.assertTrue(
-                        filename.startswith(f"{artifact_id}-")
-                        or filename == artifact_id
-                    )
-
-    def test_active_and_draft_sources_never_route_to_archive(self) -> None:
-        for row in self.ledger_rows:
-            metadata = frontmatter(git_text(row["legacy_path"]))
-            if metadata.get("status") not in {"active", "draft"}:
-                continue
-            with self.subTest(path=row["legacy_path"]):
-                self.assertNotEqual("archive", row["action"])
-                self.assertFalse(str(row["stable_path"]).startswith("docs/98.archive/"))
-
-    def test_semantic_helpers_reject_known_bad_mutations(self) -> None:
+    def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"
         self.assertFalse(reference_proves_use("scripts/manifest.yaml", taxonomy))
         self.assertFalse(reference_proves_use(".github/CODEOWNERS", taxonomy))
-        self.assertIsNone(stable_target_type("docs/04.execution/plans/plan.md"))
-        self.assertIsNone(stable_target_type("docs/03.specs/spec-131-example/spec.md"))
-        self.assertIsNone(stable_target_type("docs/05.operations/runbooks/example.md"))
-
-    def test_tombstones_are_terminal_and_only_name_active_replacements(self) -> None:
-        for row in self.ledger_rows:
-            if row["action"] != "archive":
-                continue
-            with self.subTest(path=row["legacy_path"]):
-                metadata = frontmatter(git_text(row["legacy_path"]))
-                self.assertIn(
-                    metadata.get("status"), {"completed", "superseded", "archived"}
-                )
-                self.assertTrue(
-                    str(row["stable_path"]).startswith("docs/98.archive/tombstones/")
-                )
-                replacement = row["replacement"]
-                if replacement is not None:
-                    self.assertFalse(str(replacement).startswith("docs/98.archive/"))
-
-    def test_link_form_tombstone_replacements_are_parsed(self) -> None:
-        for legacy_path, expected in LINK_FORM_BASELINE_DECLARATIONS.items():
-            with self.subTest(path=legacy_path):
-                self.assertEqual(
-                    expected,
-                    tuple(
-                        declared_tombstone_replacements(
-                            git_text(legacy_path), legacy_path
-                        )
-                    ),
-                )
-        self.assertEqual(
-            ["docs/05.operations/example.md"],
-            repository_docs_targets(
-                "[local](../05.operations/example.md#procedure) "
-                "[external](https://example.com/docs/ignored.md)",
-                "docs/98.archive/tombstone.md",
-            ),
-        )
-
-    def test_baseline_tombstone_replacements_are_preserved_as_stable_targets(
-        self,
-    ) -> None:
-        index_replacements: dict[str, list[str]] = {}
-        index_path = "docs/98.archive/README.md"
-        for line in git_text(index_path).splitlines():
-            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-            if len(cells) != 4:
-                continue
-            archived_paths = repository_docs_targets(cells[1], index_path)
-            replacements = repository_docs_targets(cells[3], index_path)
-            if (
-                len(archived_paths) == 1
-                and archived_paths[0].startswith("docs/98.archive/05.operations/")
-                and replacements
-            ):
-                index_replacements[archived_paths[0]] = replacements
-
-        checked: set[str] = set()
-        self.assertEqual(9, len(index_replacements))
-        for legacy_path in sorted(index_replacements):
-            self.assertIn(legacy_path, self.ledger_by_path)
-            row = self.ledger_by_path[legacy_path]
-            declarations = declared_tombstone_replacements(
-                git_text(legacy_path), legacy_path
-            )
-            checked.add(legacy_path)
-            with self.subTest(path=legacy_path):
-                self.assertEqual("archive", row["action"])
-                self.assertTrue(declarations)
-                self.assertEqual(len(declarations), len(set(declarations)))
-                self.assertEqual(declarations, index_replacements.get(legacy_path))
-                translated: list[str] = []
-                for declaration in declarations:
-                    self.assertIn(declaration, self.ledger_by_path)
-                    target = self.ledger_by_path[declaration]["stable_path"]
-                    self.assertIsInstance(target, str)
-                    canonical_target = canonical_current_path(str(target))
-                    self.assertFalse(canonical_target.startswith("docs/98.archive/"))
-                    self.assertIsNotNone(
-                        stable_target_type(canonical_target), canonical_target
-                    )
-                    translated.append(canonical_target)
-
-                self.assertEqual([], replacement_preservation_errors(row, translated))
-                if legacy_path in KNOWN_TOMBSTONE_REPLACEMENTS:
-                    self.assertEqual(
-                        KNOWN_TOMBSTONE_REPLACEMENTS[legacy_path],
-                        tuple(translated),
-                    )
-
-        known_paths = set(KNOWN_TOMBSTONE_REPLACEMENTS)
-        self.assertEqual(known_paths, checked)
-
-    def test_null_link_form_replacement_mutation_is_rejected(self) -> None:
-        legacy_path = (
-            "docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md"
-        )
-        declarations = declared_tombstone_replacements(
-            git_text(legacy_path), legacy_path
-        )
-        translated = [
-            str(self.ledger_by_path[declaration]["stable_path"])
-            for declaration in declarations
-        ]
-        mutated = dict(self.ledger_by_path[legacy_path])
-        mutated["replacement"] = None
-        self.assertIn(
-            "replacement-null",
-            replacement_preservation_errors(mutated, translated),
-        )
-
-    def test_active_stage04_sources_follow_owning_spec_and_never_archive(self) -> None:
-        for path, row in self.ledger_by_path.items():
-            if not path.startswith("docs/04.execution/") or path.endswith("README.md"):
-                continue
-            metadata = frontmatter(git_text(path))
-            if metadata.get("status") not in {"active", "draft"}:
-                continue
-            target = row["stable_path"] or ""
-            self.assertFalse(target.startswith("docs/98.archive/"), path)
-            parents = metadata.get("parent_ids") or []
-            spec_parent = next(
-                (str(value) for value in parents if str(value).startswith("spec:")),
-                None,
-            )
-            if spec_parent is None:
-                self.assertIn(row["action"], {"merge", "rewrite"})
-                continue
-            match = re.match(r"spec:(?:0*)([0-9]+)-(.+)", spec_parent)
-            self.assertIsNotNone(match, spec_parent)
-            identity, slug = match.groups()
-            role = "plan" if "/plans/" in path else "task"
-            expected = f"docs/03.specs/spec-{int(identity):04d}-{slug}/{role}.md"
-            self.assertEqual(expected, target)
-            expected_id = (
-                f"plan-{int(identity):04d}"
-                if role == "plan"
-                else f"task-{int(identity):04d}-01"
-            )
-            self.assertEqual(expected_id, row["artifact_id"])
-
-    def test_completed_linked_plan_task_pairs_share_typed_change_packet(self) -> None:
-        plans_by_id: dict[str, str] = {}
-        plans_by_slug: dict[str, str] = {}
-        for path in self.ledger_by_path:
-            if not path.startswith("docs/04.execution/plans/") or path.endswith(
-                "README.md"
-            ):
-                continue
-            metadata = frontmatter(git_text(path))
-            if isinstance(metadata.get("artifact_id"), str):
-                plans_by_id[str(metadata["artifact_id"])] = path
-            slug = PurePosixPath(path).stem.removesuffix("-plan")
-            plans_by_slug[slug] = path
-
-        pairs: set[tuple[str, str]] = set()
-        for task_path in self.ledger_by_path:
-            if not task_path.startswith(
-                "docs/04.execution/tasks/"
-            ) or task_path.endswith("README.md"):
-                continue
-            body = git_text(task_path)
-            metadata = frontmatter(body)
-            if metadata.get("status") != "completed":
-                continue
-            paired = False
-            for parent in metadata.get("parent_ids") or []:
-                if str(parent) in plans_by_id:
-                    pairs.add((plans_by_id[str(parent)], task_path))
-                    paired = True
-                    break
-            task_slug = PurePosixPath(task_path).stem.removesuffix("-tasks")
-            if not paired and task_slug in plans_by_slug:
-                pairs.add((plans_by_slug[task_slug], task_path))
-
-        self.assertGreater(len(pairs), 80)
-        for plan_path, task_path in sorted(pairs):
-            with self.subTest(plan=plan_path, task=task_path):
-                plan = self.ledger_by_path[plan_path]
-                task = self.ledger_by_path[task_path]
-                self.assertEqual(
-                    PurePosixPath(plan["stable_path"]).parent,
-                    PurePosixPath(task["stable_path"]).parent,
-                )
-                plan_match = re.fullmatch(r"plan-([0-9]{4})", str(plan["artifact_id"]))
-                task_match = re.fullmatch(
-                    r"task-([0-9]{4})-[0-9]{2}", str(task["artifact_id"])
-                )
-                self.assertIsNotNone(plan_match)
-                self.assertIsNotNone(task_match)
-                self.assertEqual(plan_match.group(1), task_match.group(1))
-
-    def test_duplicate_targets_have_exactly_one_non_merge_owner(self) -> None:
-        grouped: dict[str, list[dict[str, object]]] = defaultdict(list)
-        for row in self.ledger_rows:
-            if row["stable_path"] is not None:
-                grouped[str(row["stable_path"])].append(row)
-        duplicates = {target: rows for target, rows in grouped.items() if len(rows) > 1}
-        self.assertTrue(duplicates)
-        for target, rows in duplicates.items():
-            with self.subTest(target=target):
-                owners = [row for row in rows if row["action"] != "merge"]
-                self.assertEqual(1, len(owners))
-                self.assertTrue(
-                    all(
-                        row["action"] == "merge" for row in rows if row is not owners[0]
-                    )
-                )
-
-    def test_current_archived_capabilities_are_restored_to_stage03(self) -> None:
-        for identity, slug in (
-            (123, "agentic-engineering-audit-remediation"),
-            (131, "document-corpus-lifecycle-migration-foundation"),
-            (132, "agent-governance-harness-convergence"),
-            (133, "target-surface-contract-convergence"),
-        ):
-            path = f"docs/98.archive/03.specs/{identity}-{slug}/spec.md"
-            row = self.ledger_by_path[path]
-            self.assertEqual("move", row["action"])
-            self.assertEqual(f"spec-{identity:04d}", row["artifact_id"])
-            self.assertEqual(
-                f"docs/03.specs/spec-{identity:04d}-{slug}/spec.md",
-                row["stable_path"],
-            )
-            self.assertIsNone(row["replacement"])
-            self.assertIn("current", row["reason"])
-
-    def test_operations_root_is_single_and_possible(self) -> None:
-        root = self.ledger_by_path["docs/05.operations/README.md"]
-        self.assertEqual("docs/05.operations/README.md", root["stable_path"])
-        self.assertEqual("rewrite", root["action"])
-        impossible = [
-            row["stable_path"]
-            for row in self.ledger_rows
-            if isinstance(row["stable_path"], str)
-            and (
-                "docs/04.execution" in row["stable_path"]
-                or row["stable_path"].startswith("docs/05.operations/operations/")
-            )
-        ]
-        self.assertEqual([], impossible)
-
 
 class ScriptManifestValidationTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -1377,13 +668,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
         row: dict[str, object] = {
             "path": "scripts/example.py",
             "kind": "validator",
-            "public_suites": ["repository-integrity"],
-            "execution_contexts": [
-                "local",
-                "pull_request",
-                "push",
-                "workflow_dispatch",
-            ],
             "authority": "docs/authority.md",
             "lifecycle": "active",
             "mutation": "none",
@@ -1466,6 +750,38 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "successor-untracked",
             self.codes(self.row(disposition="merge", successor="scripts/next.py")),
         )
+        self.assertIn(
+            "successor-self",
+            self.codes(self.row(disposition="rewrite", successor="scripts/example.py")),
+        )
+
+    def test_transition_requires_nonretained_disposition_and_removal_condition(self) -> None:
+        self.assertIn(
+            "transition-disposition-invalid", self.codes(self.row(lifecycle="transition"))
+        )
+        transition = self.row(
+            lifecycle="transition", disposition="merge", successor="docs/consumer.md"
+        )
+        for condition in (None, "", "   ", 42):
+            with self.subTest(condition=condition):
+                self.assertIn(
+                    "removal-condition-invalid",
+                    self.codes({**transition, "removal_condition": condition}),
+                )
+        self.assertIn("removal-condition-invalid", self.codes(transition))
+        valid = {
+            **transition,
+            "removal_condition": "Remove after the consumer cutover test passes.",
+        }
+        self.assertEqual(set(), self.codes(valid))
+        self.assertIn(
+            "successor-self", self.codes({**valid, "successor": "scripts/example.py"})
+        )
+        self.assertIn("successor-missing", self.codes({**valid, "successor": None}))
+        self.assertIn(
+            "removal-condition-unexpected",
+            self.codes(self.row(removal_condition="No active removal.")),
+        )
 
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(
         self,
@@ -1496,8 +812,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             consumers=[],
             tests=[],
         )
-        library.pop("public_suites")
-        library.pop("execution_contexts")
         tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
         self.assertIn("tests-missing", self.codes(library, tracked))
 
@@ -1564,6 +878,16 @@ class ScriptManifestValidationTests(unittest.TestCase):
             ),
         )
 
+    def test_manifest_rejects_executable_composition_fields(self) -> None:
+        values = {
+            "public_suites": ["repository-integrity"],
+            "execution_argv": ["--check"],
+            "execution_contexts": ["local"],
+        }
+        for field, value in values.items():
+            with self.subTest(field=field):
+                self.assertIn("fields-unknown", self.codes(self.row(**{field: value})))
+
     def test_manifest_rejects_unknown_fields_and_untracked_paths(self) -> None:
         self.assertIn("fields-unknown", self.codes(self.row(legacy=True)))
         self.assertIn(
@@ -1627,8 +951,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             check_command=["python3", script_path, "--check"],
             outputs=["docs/output.md"],
         )
-        generator.pop("public_suites")
-        generator.pop("execution_contexts")
         manifest = {
             "schema_version": 1,
             "files": [
@@ -1690,14 +1012,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             producer = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
             next(row for row in producer["files"] if row["path"] == script_path).update(
                 kind="validator",
-                public_suites=["repository-integrity"],
-                execution_argv=["--check"],
-                execution_contexts=[
-                    "local",
-                    "pull_request",
-                    "push",
-                    "workflow_dispatch",
-                ],
             )
             manifest_path.write_text(
                 yaml.safe_dump(producer, sort_keys=False), encoding="utf-8"

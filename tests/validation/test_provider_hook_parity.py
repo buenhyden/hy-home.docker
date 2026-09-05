@@ -94,6 +94,22 @@ class ProviderHookParityTests(unittest.TestCase):
     def test_current_dispatchers_wrappers_timeouts_and_events_are_exact(self) -> None:
         self.assertEqual(0, self.run_validation(ROOT).returncode)
 
+    def test_changed_aggregate_is_owned_only_by_completion_dispatch(self) -> None:
+        post_tool = (ROOT / "scripts/hooks/post-tool-validate.sh").read_text(
+            encoding="utf-8"
+        )
+        dispatcher = (ROOT / "scripts/hooks/agent-event-hook.sh").read_text(
+            encoding="utf-8"
+        )
+        invocation = "python3 scripts/validation/run-ci-gate.py --profile changed"
+
+        self.assertNotIn(invocation, post_tool)
+        self.assertIn("changed_profile_stop_gate", dispatcher)
+        self.assertIn(
+            f'output="$(timeout --kill-after=5s 540s {invocation} 2>&1)"',
+            dispatcher,
+        )
+
     def test_generated_data_is_fresh(self) -> None:
         result = subprocess.run(
             ["bash", str(SCRIPT), "--check", "--root", str(ROOT)],

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Automation Candidates"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0021"
 parent_ids:
@@ -78,6 +78,7 @@ treated as execution evidence.
 
 ## Criterion Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AUT-01 | Orchestrate locally safe, deterministic validation without duplicating every CI responsibility. | The local runner executes 20 script-backed steps, supports an 18-step harness subset, and lists CI/remote-only work separately. The controlled all-files wrapper is an explicit final-gate exception, not a duplicate default runner. | Implemented | 3 | Retain | Local QA runner owner | Existing orchestration; preserve one runner and the bounded wrapper exception. | Inspect direct and nested `run_step` calls and `--list` output. | High. |
@@ -94,10 +95,11 @@ treated as execution evidence.
 
 ## Implementation Status Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Automation Area | Current Status | Evidence | Candidate |
 | --- | --- | --- | --- |
-| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/recommend-qa-gates.sh`, `.github/workflows/ci-quality.yml` | Changed-path gate recommendations are available locally and published to GitHub Step Summary in CI. |
-| Repository contracts | Implemented | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/report-audit-pack-coverage.sh` | Audit-pack implementation-status coverage output is now available locally and checked by repo contracts. |
+| Local validation orchestration | Implemented | [scripts README](../../../../scripts/README.md), `scripts/validation/run-ci-gate.py`, `scripts/validation/recommend-qa-gates.sh`, `.github/workflows/ci-quality.yml` | Typed full/changed profiles and changed-path recommendations are available locally; the recommendation is also published to GitHub Step Summary in CI. |
+| Repository contracts | Implemented | `scripts/validation/run-ci-gate.py`, `scripts/validation/generate-audit-implementation-matrix.sh` | The typed aggregate owns repository checks and the matrix generator owns audit-pack implementation-status coverage. |
 | Provider surface sync | Implemented | `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh`, Provider semantic parity validator spec | Semantic role-scope parity is enforced for the Stage 00 catalog, Claude adapters, strict Codex TOML adapters, native Gemini adapters, shared `.agents` compatibility, and the subagent protocol. Future work can add deeper free-text clause comparison if needed. |
 | Provider hooks | Implemented | `.claude/hooks/`, `.codex/hooks.json`, `.gemini/settings.json`, `.gemini/hooks/`, Gemini provider notes (retired path: `00.agent-governance/providers/gemini.md`), [provider hook parity matrix](../../data/0072-provider-hook-parity-matrix/README.md) | Native tracked settings/hooks and the provider hook-parity owner are generated and freshness-checked; live provider interception remains unproved. |
 | LLM Wiki freshness | Implemented | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/generate-llm-wiki-coverage.sh`, `docs/90.references/data/0082-llm-wiki-index/README.md`, [LLM Wiki coverage snapshot](../../data/0076-llm-wiki-stage-category-coverage/README.md) | Safe tracked-source index freshness and source-bucket/category coverage are generated and checked locally. |
@@ -126,8 +128,9 @@ treated as execution evidence.
   The remaining highest-value gaps are live comparative model-quality eval, SBOM
   generation, provenance/attestation automation, Scorecard, and broader
   ecosystem/container vulnerability scanning.
-- Native Gemini agents, settings, and hook wrappers are tracked and validated;
-  live runtime acceptance and interception remain unproved.
+> Historical evidence (not current authority; source: Git history):
+> Native Gemini agents, settings, and hook wrappers were tracked and validated;
+> live runtime acceptance and interception were unproved.
 - Public remote workflow metadata is current only to the dated 2026-07-26
   observation. It records a failed 15-job run with unverified root cause;
   authenticated protection/ruleset/environment state and any enforcement
@@ -135,6 +138,7 @@ treated as execution evidence.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Candidate ID | Candidate | Suggested Future Stage |
 | --- | --- | --- |
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Implemented by QA gate recommendation CI summary spec, task evidence, `.github/workflows/ci-quality.yml`, and `scripts/validation/check-repo-contracts.sh`. |
@@ -143,13 +147,23 @@ treated as execution evidence.
 | AEA-AUTO-004 | Gap-to-stage routing generator for the Stage 00 manual routing contract | Implemented by Gap routing recommendation spec, task evidence, and `scripts/validation/recommend-gap-routing.sh`. |
 | AEA-AUTO-005 | Compose profile/service coverage snapshot | Implemented by Compose profile service coverage snapshot spec, task evidence, [generated Docker data reference](../../data/0059-compose-profile-service-coverage/README.md), and `scripts/operations/generate-compose-profile-service-coverage.sh`. |
 | AEA-AUTO-006 | SSDF/SLSA maturity coverage matrix | Implemented by [Security framework maturity coverage](../0031-security-framework-maturity/README.md); follow-up security tooling remains future Stage 03/04 work. |
-| AEA-AUTO-007 | Audit-pack implementation-status coverage output | Implemented by Audit pack coverage report spec, task evidence, `scripts/validation/report-audit-pack-coverage.sh`, and repo-contract `--check` coverage. |
+| AEA-AUTO-007 | Audit-pack implementation-status coverage output | Implemented by Audit pack coverage report spec, task evidence, and the `scripts/validation/generate-audit-implementation-matrix.sh --check` route. |
 | AEA-AUTO-008 | LLM Wiki stage/category coverage report | Implemented by LLM Wiki stage category coverage spec, task evidence, [generated coverage snapshot](../../data/0076-llm-wiki-stage-category-coverage/README.md), `scripts/knowledge/generate-llm-wiki-coverage.sh`, and repo-contract freshness coverage. |
 | AEA-AUTO-009 | Tech-stack version drift severity and source provenance summary | Implemented by Tech-stack version provenance spec, task evidence, [generated provenance snapshot](../../data/0061-tech-stack-version-provenance/README.md), `scripts/operations/generate-tech-stack-version-provenance.sh`, and repo-contract freshness coverage. |
 | AEA-AUTO-010 | Provider hook parity matrix and native Gemini hook adapters | Implemented by Provider hook parity matrix spec, task evidence, [generated hook matrix](../../data/0072-provider-hook-parity-matrix/README.md), `.gemini/settings.json`, `.gemini/hooks/`, `scripts/validation/report-provider-hook-parity.sh`, and repo-contract freshness coverage. Live Gemini interception remains unproved. |
 | AEA-AUTO-011 | Exact synthetic agent-output eval runner and CI gate | Implemented by Agent output eval runner spec, Agent output eval CI gate spec, runner task evidence, CI gate task evidence, [fixture reference](../../data/0064-agent-output-eval-fixtures/README.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, repo-contract fixture/regression checks, and `.github/workflows/ci-quality.yml`; exact `11/11` fixture and `16/16` regression markers are required, while live comparative model scoring remains future work. |
 | AEA-AUTO-012 | Security automation readiness snapshot and scoped dependency vulnerability gate | Readiness snapshot implemented by Security automation readiness snapshot spec, task evidence, [generated security readiness data](../../data/0078-security-automation-readiness/README.md), `scripts/validation/generate-security-automation-readiness.sh`, and repo-contract freshness coverage; scoped npm vulnerability gate implemented by Dependency vulnerability audit gate spec, task evidence, and `.github/workflows/ci-quality.yml`. The scoped gate satisfies only `SEC-AUTO-008`; `SEC-AUTO-012` and `SEC-AUTO-013` remain `Gap` and route to draft Spec 126, together with SBOM, signing/provenance attestation, and Scorecard automation. |
 | AEA-AUTO-013 | Audit implementation matrix snapshot | Implemented by Audit implementation matrix snapshot spec, task evidence, [generated audit implementation matrix](../../data/0065-audit-implementation-matrix/README.md), `scripts/validation/generate-audit-implementation-matrix.sh`, and repo-contract freshness coverage; live comparative model evaluation and security tooling remain future work. |
+
+**Current local correction.**
+
+The current tracked provider projection has two providers, Claude and Codex.
+Run the sole renderer directly with
+`python3 scripts/operations/provider_surface_renderer.py --check` or
+`python3 scripts/operations/provider_surface_renderer.py --write`.
+The shared `.agents/skills` projection is retained; the former shared
+`.agents/agents` compatibility projection is retired. These repository-local
+facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
 

@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 created: "2026-02-21"
 ---
 
@@ -48,7 +48,7 @@ created: "2026-02-21"
 ```text
 tests/
 ├── README.md  # This file
-├── fixtures/          # 검증기 입력 fixture
+├── fixtures/          # 독립 consumer가 필요한 고정 입력만 허용; 현재 비어 있음
 ├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
 └── validation/        # validation/entrypoint 및 실행-context 테스트
 ```
@@ -62,6 +62,11 @@ tests/
    `tests/validation/`에 둡니다.
 4. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
 5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
+
+운영 rehearsal의 재사용 입력은 `examples/operations/`가 소유합니다.
+단일 필드 오류 입력은 테스트 builder로 만들며, production은 `tests/`를
+읽지 않습니다. 전체 Python discovery는
+`PYTHONPATH=. python3 -m unittest discover -s tests -p 'test_*.py'`로 실행합니다.
 
 문서 메타데이터 검증 테스트는
 `PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'`로

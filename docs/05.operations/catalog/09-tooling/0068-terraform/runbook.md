@@ -109,7 +109,7 @@ docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm
 
 - `force-unlock` 후에도 같은 lock이 반복되면 추가 unlock을 중단하고 active Terraform 실행 주체를 확인한다.
 - 로컬 state 복구가 실패하면 `terraform.tfstate.corrupted`와 backup 파일을 보존하고 원격 backend 또는 백업 담당자에게 이관한다.
-- 문서 변경만 있었다면 직전 diff 단위로 되돌리고 `bash scripts/validation/run-local-qa-gates.sh`를 재실행한다.
+- 문서 변경만 있었다면 직전 diff 단위로 되돌리고 `python3 scripts/validation/run-ci-gate.py --profile changed`를 재실행한다.
 - runtime, secret value, remote deployment 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
 
 ## Escalation

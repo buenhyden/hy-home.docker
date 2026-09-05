@@ -28,8 +28,9 @@ own policy.
 
 Document profiles, paths, identifiers, lifecycle states, and template mappings
 belong to [Stage 99](../99.templates/README.md). Executable enforcement belongs
-to registered scripts. Current execution state and durable evidence belong to
-the active Spec Package Task; Git history is the recovery boundary.
+to registered scripts. Current execution state belongs to the active Spec
+Package Task. After disposition, the preserved Stage 98 Task is durable
+evidence; Git history proves that record and does not replace its body.
 
 ## Structure
 
@@ -52,7 +53,8 @@ No other active top-level entry is permitted.
 3. Load only the policy, role, skill, provider adapter, and stage documents
    needed for the active request.
 4. Record implementation and verification evidence in the active Task.
-5. Regenerate adapters with `scripts/operations/sync-provider-surfaces.sh`;
+5. Regenerate adapters with
+   `python3 scripts/operations/provider_surface_renderer.py --write`;
    treat any provider quarantine as a nonzero exact-path cleanup handoff under
    [Provider adapters](providers/README.md), then prove `--check` drift 0.
 

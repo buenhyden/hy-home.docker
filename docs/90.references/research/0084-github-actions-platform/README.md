@@ -74,7 +74,7 @@ and release remain outside the evidence boundary.
 - [Workflow contract](../../../../.github/workflow-contract.yml) and
   [CI Quality Gates](../../../../.github/workflows/ci-quality.yml).
 - [Main protection record](../../../../.github/rulesets/main-protection.md).
-- [SPEC-0172 execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).
 
 The member owns the detailed source inventory and claim-by-claim analysis.
 
@@ -106,8 +106,8 @@ The member owns the detailed source inventory and claim-by-claim analysis.
 - Requirement/Architecture: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and
   [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md).
-- Implementation/evidence: [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md)
-  and its [Task](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- Implementation/evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
+  and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Templates and Registry: [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md), and
   [Registry](../../../99.templates/registry.json).

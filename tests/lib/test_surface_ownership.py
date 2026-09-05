@@ -28,13 +28,12 @@ def _full_profile_unittest_modules() -> list[str]:
     registry = gate_contract.parse_gate_registry(
         document, ".github/workflow-contract.yml"
     )
-    suites = gate_contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-    public_gate = gate_contract.parse_public_gate_contract(document, suites)
+    public_gate = gate_contract.parse_public_gate_contract(document)
     selected = gate_contract.select_public_suites(public_gate, "full", ())
     plan = gate_runner.build_public_validation_plan(
         registry,
         gate_contract.public_root_gate_ids(public_gate, selected),
-        suites,
+        public_gate,
         selected,
         gate_runner.ExecutionContext.LOCAL,
         profile="full",
@@ -70,44 +69,19 @@ class SurfaceOwnershipTests(unittest.TestCase):
                 f"tests/{name} described a structure that was never built",
             )
 
-    def test_library_rows_declare_no_execution_context(self) -> None:
-        """A library declares no execution context.
-
-        This replaced a ban on `if __name__ == "__main__"` that would have been
-        red eight ways. `ci_gate_adapters.py` carries that guard and is the
-        declared entrypoint of thirty-four gate leaves, so the guard is not what
-        makes a module a library here. Declaring no execution context is.
-        """
-
+    def test_manifest_rows_declare_no_executable_composition(self) -> None:
+        forbidden = {"public_suites", "execution_argv", "execution_contexts"}
         offenders = [
             row["path"]
             for row in _manifest_rows()
-            if str(row.get("path", "")).startswith("scripts/lib/")
-            and row.get("execution_contexts")
+            if forbidden.intersection(row)
         ]
         self.assertEqual([], offenders)
 
-    def test_every_non_standalone_path_lives_under_scripts_lib(self) -> None:
-        """The derivation replacing the constant must be exhaustive.
-
-        Four rows of the earlier move set were wrong in both directions. This
-        asserts the property that made the constant deletable, rather than
-        trusting that the move covered it.
-        """
-
-        offenders = [
-            row["path"]
-            for row in _manifest_rows()
-            if row.get("kind") in {"validator", "library"}
-            and row.get("execution_contexts") == []
-            and not str(row.get("path", "")).startswith("scripts/lib/")
-        ]
-        self.assertEqual([], offenders)
-
-    def test_the_non_standalone_list_is_gone(self) -> None:
-        from scripts.lib.document_governance import suite_registry
-
-        self.assertFalse(hasattr(suite_registry, "NON_STANDALONE_VALIDATOR_PATHS"))
+    def test_retired_manifest_suite_registry_is_gone(self) -> None:
+        self.assertFalse(
+            (ROOT / "scripts/lib/document_governance/suite_registry.py").exists()
+        )
 
     def test_every_test_module_is_reachable_from_the_full_profile(self) -> None:
         on_disk = {
@@ -130,7 +104,6 @@ class SurfaceOwnershipTests(unittest.TestCase):
         contract_tests = (
             *sorted((ROOT / "tests/lib/document_governance/metadata").glob("*.py")),
             *sorted((ROOT / "tests/validation/lifecycle").glob("*.py")),
-            ROOT / "tests/lib/target_surface/test_target_surface_contracts.py",
             ROOT / "tests/lib/document_governance/test_spec_packages.py",
         )
         forbidden = (

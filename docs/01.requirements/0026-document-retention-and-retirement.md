@@ -1,10 +1,10 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "requirements"
 artifact_id: "REQ-0026"
 parent_ids: []
@@ -59,7 +59,11 @@ created: "2026-09-01"
   `docs/98.archive/` 하위 트리로 보존 이동합니다. 보존은 이동이므로 status
   표시와 이동을 한 변경 안에서 함께 수행합니다. 두 단계로 나누는 규칙은
   member를 삭제하던 이전 모델의 제약이었고, 실행 증거 삭제 check는 문서가
-  다른 경로에 계속 존재하는 이동에는 적용되지 않습니다.
+  다른 경로에 계속 존재하는 이동에는 적용되지 않습니다. Stage 03 완료 시
+  영구 outcome은 completed Spec에 먼저 write back하고 `completed/`에
+  보존합니다. Plan과 Task는 current consumer가 없고 exact Git regular-blob
+  recovery가 확인된 경우 별도 archive copy나 redirect 없이 제거하며, current
+  consumer가 있으면 그 의미와 증거를 현재 정본으로 먼저 이전합니다.
 - **REQ-0026-FR-0010**: Stage 03 package는 경계가 있는 변경 계약입니다.
   정상상태를 서술하는 package는 그 상태를 소유하는 Stage 02 Description과
   Stage 05 subject로 내용을 옮긴 뒤 은퇴합니다.
@@ -68,10 +72,10 @@ created: "2026-09-01"
   요구사항이 각자 다시 선언하지 않습니다.
 
 - **REQ-0026-FR-0012**: 보존 기록은 수정하지 않습니다. 이동 또는 삭제 당시
-  본문과 byte-identical해야 하며, 처분과 사유는 경로와 Tombstone이 담고 보존본
-  자신의 frontmatter가 담지 않습니다. 현재 계약에 맞추기 위한 편집은 보존
-  대상을 훼손하므로 보존 기록은 frontmatter와 section 계약의 적용 대상이
-  아닙니다.
+  본문과 byte-identical해야 합니다. 철회의 처분과 사유는 `retired/` 경로와
+  Tombstone이 담고, 완료와 대체의 처분은 각각 `status`와 `superseded_by`가
+  자기 서술합니다. 현재 계약에 맞추기 위한 편집은 보존 대상을 훼손하므로
+  보존 기록은 frontmatter와 section 계약의 적용 대상이 아닙니다.
 
 ## Non-functional Requirements
 
@@ -84,9 +88,11 @@ created: "2026-09-01"
 
 ## Constraints
 
-- Stage 98의 처분별 하위 트리는 은퇴·완료·대체 당시 본문을 byte-identical
-  frozen copy로 보존합니다. Git object와 recovery commit은 그 복사본의 원본
-  동일성을 검증하고 독립 복구 경로를 제공하며 redirect 권위를 만들지 않습니다.
+- Stage 98의 처분별 하위 트리는 은퇴·완료·대체 당시 보존 대상으로 선택된
+  본문을 byte-identical frozen copy로 보존합니다. 완료 package의 보존 대상은
+  outcome을 write back한 Spec입니다. Git object와 recovery commit은 보존본의
+  원본 동일성 또는 제거된 transient Plan/Task의 독립 복구 경로를 제공하며
+  redirect 권위를 만들지 않습니다.
 - 변경의 비교 base는 그 변경의 분기 지점이므로, base에서 terminal이 아닌
   status는 그 문서를 은퇴시키는 동일한 변경이 terminal로 관측할 수 없습니다.
   따라서 terminal-status 의무는 base 대비 강제가 아니라 Tombstone에 기록됩니다.
@@ -100,6 +106,9 @@ created: "2026-09-01"
 - 보존 규칙은 Spec Package를 적재하지 않고 Stage 00에서 읽을 수 있습니다.
 - `completed` status를 가진 Spec Package 중 `plan.md` 또는 Task를 보유한
   package가 하나도 없습니다.
+- completed Spec이 transient Plan/Task의 현재 의미와 증거를 먼저 흡수했고,
+  남은 current consumer가 없으며, 제거된 각 본문이 exact regular blob으로
+  복구될 때만 Plan/Task 제거가 허용됩니다.
 - Tombstone이 존재하는 모든 stage namespace는 그 stage에서 실제로 은퇴가
   일어났음을 뜻하며, 은퇴가 일어난 stage에 namespace가 없는 경우는 없습니다.
 

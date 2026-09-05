@@ -14,7 +14,6 @@ import sys
 
 root = pathlib.Path.cwd()
 sys.path.insert(0, str(root))
-from scripts.lib.document_governance.suite_registry import SuiteRegistryError, load as load_suites
 from scripts.lib.gate.ci_gate_contract import load_contract_document, parse_public_gate_contract
 from scripts.lib.gate.github_workflow_contract import (
     GateContractError, WorkflowContractError, expand_gate_ids,
@@ -58,9 +57,7 @@ try:
         f"{finding.path}: {finding.code}: {finding.message}"
         for finding in validate_workflows(root, contract)
     )
-    public = parse_public_gate_contract(
-        load_contract_document(root), load_suites(root / "scripts/manifest.yaml")
-    )
+    public = parse_public_gate_contract(load_contract_document(root))
     roots = next(route.root_gate_ids for route in public.suites if route.name == "repository-integrity")
     reachable: set[str] = set()
     for gate in ("ci.frontend-quality", "ci.storybook-coverage"):
@@ -76,7 +73,7 @@ try:
                 f"{contract_path}: gate {gate_id} argv mismatch: "
                 f"expected {expected_argv}, found {declared[gate_id]}"
             )
-except (GateContractError, WorkflowContractError, SuiteRegistryError) as error:
+except (GateContractError, WorkflowContractError) as error:
     failures.append(f"{contract_path}: {error}")
 
 if not vitest_config_path.is_file():

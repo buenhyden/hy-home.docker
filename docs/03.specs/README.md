@@ -22,7 +22,9 @@ docs/03.specs는 범위가 정해진 변경의 명세와 실행 packet을 관리
 - 포함: 진행 중인 변경의 Spec·Plan·Task와 Spec이 직접 소유하는 executable
   contract. 완료된 package는 보존 경로를 통해 찾습니다.
 - 제외: 운영 절차, 감사·조사 데이터, 과거 실행 본문, 이전 경로의 복제본과
-  redirect. 해당 자료는 각 Stage의 현재 owner 또는 Git history가 소유합니다.
+  redirect. 운영·참조 자료는 각 Stage의 현재 owner가, 처분된 실행 증거는
+  Stage 98의 보존 package와 Task가 소유합니다. Git history는 원본과 복구를
+  증명하며 필수 보존 본문을 대체하지 않습니다.
 
 ## Structure
 
@@ -67,9 +69,9 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0169 | [Document Lifecycle Convergence](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 | SPEC-0170 | [Archive Preservation Model](../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) and [Task](../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 | SPEC-0171 | [Compose Sibling Pair Resolution](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) and [Task](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) |
-| SPEC-0172 | [Document Contract Convergence](0172-document-contract-convergence/spec.md) | in flight with [Plan](0172-document-contract-convergence/plan.md) and [Task](0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) |
-
-| SPEC-0174 | [Governance and QA Convergence](0174-governance-qa-convergence/spec.md) | draft implementation with [Plan](0174-governance-qa-convergence/plan.md) and [Task](0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md); acceptance and historical cleanup remain open |
+| SPEC-0172 | [Document Contract Convergence](../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | completed record unchanged; divergent main [Spec](../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md), [Plan](../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md), and [Task](../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) preserved by the SPEC-0173 branch receipt |
+| SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md); Tasks 1-5 implementation milestones reviewed, Task 6 integrating and verifying final evidence |
+| SPEC-0174 | [Governance and QA Convergence](0174-governance-qa-convergence/spec.md) | draft with [Plan](0174-governance-qa-convergence/plan.md) and [Task](0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md); approved successor handoff is being completed by SPEC-0173 |
 
 ## How to Work in This Area
 

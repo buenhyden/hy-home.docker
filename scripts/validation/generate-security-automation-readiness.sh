@@ -60,7 +60,6 @@ sys.path.insert(0, str(pathlib.Path.cwd()))
 from scripts.lib.gate.ci_gate_contract import (
     GateContractError,
     load_contract_document,
-    load_public_suite_registry,
     parse_public_gate_contract,
     public_root_gate_ids,
 )
@@ -177,15 +176,9 @@ def resolve_typed_workflow_evidence(
     registry = contract.gate_registry
     try:
         contract_document = load_contract_document(repository_root)
-        suite_registry = load_public_suite_registry(
-            repository_root / "scripts/manifest.yaml"
-        )
-        public_gate = parse_public_gate_contract(
-            contract_document,
-            suite_registry,
-        )
+        public_gate = parse_public_gate_contract(contract_document)
         root_gate_ids = list(
-            public_root_gate_ids(public_gate, suite_registry.public_names)
+            public_root_gate_ids(public_gate, public_gate.suite_names)
         )
     except (GateContractError, OSError):
         return empty

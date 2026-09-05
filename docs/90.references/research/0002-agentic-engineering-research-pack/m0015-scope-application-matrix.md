@@ -327,7 +327,7 @@ The scope axis is enforced in fragments, and the fragments do not meet.
 | Scope-file `layer:` frontmatter equals its name     | `tests/validation/test_agent_governance_contract.py:1955-1967` | **13 of 14 files; `docs` omitted**           |
 | Placeholder-path hygiene in scope prose             | `check-repo-contracts.sh:465-468` scans the scopes directory   | all 14 files, but only for path placeholders |
 | Named content checks on individual scope files      | `check-repo-contracts.sh:1576-1577, 2898-2903`                 | `infra`, `security`, `common`, `qa`          |
-| Doc/implementation alignment                        | `check-doc-implementation-alignment.sh:28`                     | `qa` only                                    |
+| Document graph and implementation-path alignment    | `check-document-links.py --mode all`                           | all selected current documents               |
 | Prose File Ownership SSOT tables                    | no match for `File Ownership` under `scripts/` or `tests/`     | **none**                                     |
 | Fourteen-file axis reconciled with eight-value enum | no validator found                                             | **none**                                     |
 

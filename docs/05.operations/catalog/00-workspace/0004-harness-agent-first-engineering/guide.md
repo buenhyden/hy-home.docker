@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -59,7 +59,7 @@ How-to / audit guide.
 ## Troubleshooting
 
 - Treating `.codex/agents/*.toml` or `.claude/agents/*.md` as canonical role catalogs instead of provider-native adapters to the Stage 00 catalog.
-- Recreating the retired shared runtime directory or treating explicit Codex canonical-skill reads as native picker discovery.
+- Recreating retired shared roles, skills, or generated README contents in an allowed empty root, or treating explicit Codex canonical-skill reads as native picker discovery.
 - Editing root shims instead of the governance hub.
 - Treating contaminated Graphify output as authoritative architecture evidence.
 - Treating `status=advisory` Graphify health as a failure or as architecture authority; it is downgraded navigation context only.

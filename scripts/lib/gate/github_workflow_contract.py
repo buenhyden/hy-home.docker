@@ -22,6 +22,9 @@ try:
         expand_gate_ids as _expand_gate_ids,
         load_contract_document,
         parse_gate_registry,
+        parse_public_gate_contract,
+        public_root_gate_ids,
+        select_public_suites,
         validate_gate_registry,
     )
 except ModuleNotFoundError:  # Direct sibling-script execution.
@@ -32,6 +35,9 @@ except ModuleNotFoundError:  # Direct sibling-script execution.
         expand_gate_ids as _expand_gate_ids,
         load_contract_document,
         parse_gate_registry,
+        parse_public_gate_contract,
+        public_root_gate_ids,
+        select_public_suites,
         validate_gate_registry,
     )
 

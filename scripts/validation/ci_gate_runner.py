@@ -19,20 +19,22 @@ import time
 from collections.abc import Mapping
 
 from scripts.lib.gate import ci_gate_adapters
-from scripts.lib.document_governance import suite_registry as public_suite_registry
 
 try:
     from scripts.lib.gate.ci_gate_contract import (
         GateContractError,
         GateKind,
         GateRegistry,
+        PUBLIC_SUITE_NAMES,
+        PublicGateContract,
+        PublicValidatorRoute,
         expand_gate_ids,
-        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
         parse_public_gate_contract,
         public_root_gate_ids,
         select_public_suites,
+        validate_public_execution_argv,
         validate_gate_registry,
     )
 except ModuleNotFoundError:  # Direct sibling-script execution.
@@ -40,13 +42,16 @@ except ModuleNotFoundError:  # Direct sibling-script execution.
         GateContractError,
         GateKind,
         GateRegistry,
+        PUBLIC_SUITE_NAMES,
+        PublicGateContract,
+        PublicValidatorRoute,
         expand_gate_ids,
-        load_public_suite_registry,
         load_contract_document,
         parse_gate_registry,
         parse_public_gate_contract,
         public_root_gate_ids,
         select_public_suites,
+        validate_public_execution_argv,
         validate_gate_registry,
     )
 
@@ -122,7 +127,7 @@ _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapter
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
-        ("scripts/operations/sync-provider-surfaces.sh", ("--check",)),
+        ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
         ("scripts/knowledge/generate-llm-wiki.py", ("--check",)),
         ("scripts/validation/generate-audit-implementation-matrix.sh", ("--check",)),
@@ -150,9 +155,9 @@ def _is_admitted_internal_invocation(
 
 
 def public_suite_names() -> tuple[str, ...]:
-    """Return the immutable suite model without changing gate routing."""
+    """Return the immutable public suite names."""
 
-    return load_public_suite_registry().public_names
+    return PUBLIC_SUITE_NAMES
 
 
 def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
@@ -401,17 +406,18 @@ def build_public_execution_plan(
 def build_public_validation_plan(
     registry: GateRegistry,
     root_gate_ids: tuple[str, ...],
-    suite_model: public_suite_registry.SuiteRegistry,
+    public_contract: PublicGateContract,
     selected_suites: tuple[str, ...],
     context: ExecutionContext,
     *,
     profile: str = "changed",
+    root: pathlib.Path | None = None,
 ) -> tuple[GateInvocation, ...]:
     """Join public suite ownership to one canonical invocation per validator."""
 
     selected = set(selected_suites)
     if len(selected) != len(selected_suites) or not selected.issubset(
-        suite_model.public_names
+        public_contract.suite_names
     ):
         raise GateContractError(
             "ci-gate-public-suites",
@@ -419,43 +425,38 @@ def build_public_validation_plan(
             "selected public suites must be unique and registered",
         )
     base_plan = _filter_execution_context(
-        build_public_execution_plan(registry, root_gate_ids), context, registry
+        build_public_execution_plan(registry, root_gate_ids), context
     )
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
     selected_ownership = tuple(
         item
-        for item in suite_model.validators
-        if item.public_suites[0] in selected
-        and manifest_context in item.execution_contexts
+        for item in public_contract.validators
+        if item.suite in selected and manifest_context in item.contexts
     )
-    selected_paths = {item.path for item in selected_ownership}
+    selected_paths = {item.entrypoint for item in selected_ownership}
     templates: dict[pathlib.PurePosixPath, GateInvocation] = {}
     for invocation in base_plan:
         if invocation.entrypoint in selected_paths:
             templates.setdefault(invocation.entrypoint, invocation)
 
     def canonical_invocation(
-        item: public_suite_registry.ValidatorOwnership,
+        item: PublicValidatorRoute,
     ) -> GateInvocation:
-        template = templates.get(item.path)
+        template = templates.get(item.entrypoint)
         return GateInvocation(
-            gate_id=(
-                template.gate_id
-                if template is not None
-                else "public.validator." + item.path.as_posix().replace("/", ".")
-            ),
-            entrypoint=item.path,
+            gate_id=item.gate_id,
+            entrypoint=item.entrypoint,
             argv=_context_validator_argv(item, context, profile),
             cwd=(template.cwd if template is not None else pathlib.PurePosixPath(".")),
             allowed_env_keys=(
                 ("TEMPLATE_GATE_BASE",)
-                if item.path.name
+                if item.entrypoint.name
                 in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
                 and context in {ExecutionContext.PULL_REQUEST, ExecutionContext.PUSH}
                 else ()
-                if item.path.name
+                if item.entrypoint.name
                 in {"check-document-metadata.py", "check-document-corpus-lifecycle.py"}
                 else template.allowed_env_keys
                 if template is not None
@@ -464,11 +465,13 @@ def build_public_validation_plan(
             timeout_seconds=(template.timeout_seconds if template is not None else 300),
         )
 
-    canonical = {item.path: canonical_invocation(item) for item in selected_ownership}
+    canonical = {
+        item.entrypoint: canonical_invocation(item) for item in selected_ownership
+    }
     plan: list[GateInvocation] = []
     emitted: set[pathlib.PurePosixPath] = set()
     standalone_validator_paths = {
-        item.path for item in suite_model.validators if item.execution_contexts
+        item.entrypoint for item in public_contract.validators
     }
     for invocation in base_plan:
         path = invocation.entrypoint
@@ -479,9 +482,9 @@ def build_public_validation_plan(
             continue
         plan.append(invocation)
     for item in selected_ownership:
-        if item.path not in emitted:
-            plan.append(canonical[item.path])
-            emitted.add(item.path)
+        if item.entrypoint not in emitted:
+            plan.append(canonical[item.entrypoint])
+            emitted.add(item.entrypoint)
     result = tuple(plan)
     if context in {
         ExecutionContext.LOCAL,
@@ -494,13 +497,45 @@ def build_public_validation_plan(
             if invocation.gate_id != "leaf.repo-metadata-base"
         )
     validate_public_execution_parity(
-        suite_model, selected_suites, result, context, profile=profile
+        public_contract, selected_suites, result, context, profile=profile
     )
+    invocation_root = (
+        pathlib.Path(__file__).resolve().parents[2] if root is None else root
+    )
+    seen_keys: dict[tuple[pathlib.Path, tuple[str, ...], str, str], str] = {}
+    for invocation in result:
+        key = canonical_invocation_key(
+            invocation_root,
+            invocation,
+            profile=profile,
+            context=context,
+        )
+        previous = seen_keys.get(key)
+        if previous is not None:
+            raise GateContractError(
+                "ci-gate-invocation-duplicate",
+                invocation.gate_id,
+                f"canonical invocation duplicates {previous}",
+            )
+        seen_keys[key] = invocation.gate_id
     return result
 
 
+def canonical_invocation_key(
+    root: pathlib.Path,
+    invocation: GateInvocation,
+    *,
+    profile: str,
+    context: ExecutionContext,
+) -> tuple[pathlib.Path, tuple[str, ...], str, str]:
+    """Return the execution identity shared by every public gate context."""
+
+    resolved = (root / invocation.entrypoint).resolve(strict=True)
+    return resolved, tuple(invocation.argv), profile, context.value
+
+
 def _context_validator_argv(
-    item: public_suite_registry.ValidatorOwnership,
+    item: PublicValidatorRoute,
     context: ExecutionContext,
     profile: str,
 ) -> tuple[str, ...]:
@@ -508,7 +543,7 @@ def _context_validator_argv(
         raise GateContractError(
             "ci-gate-profile-unknown", "profile", "unknown public profile"
         )
-    if item.path.name == "check-document-metadata.py":
+    if item.entrypoint.name == "check-document-metadata.py":
         if profile == "full":
             return ("--mode", "check-contracts", "--history-scope", "full")
         if context in {
@@ -517,11 +552,11 @@ def _context_validator_argv(
             ExecutionContext.WORKFLOW_DISPATCH,
         }:
             return ("--mode", "check-active")
-    return item.execution_argv
+    return item.argv
 
 
 def validate_public_execution_parity(
-    suite_model: public_suite_registry.SuiteRegistry,
+    public_contract: PublicGateContract,
     selected_suites: tuple[str, ...],
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
@@ -531,19 +566,12 @@ def validate_public_execution_parity(
     """Fail unless selected validators occur exactly once and others not at all."""
 
     selected = set(selected_suites)
-    ownership_paths = tuple(item.path for item in suite_model.validators)
-    try:
-        for item in suite_model.validators:
-            public_suite_registry.validate_execution_argv(
-                item.path, item.execution_argv
-            )
-    except public_suite_registry.SuiteRegistryError as error:
-        raise GateContractError(
-            "ci-gate-validator-arguments", "manifest", str(error)
-        ) from error
+    ownership_paths = tuple(item.entrypoint for item in public_contract.validators)
+    for item in public_contract.validators:
+        validate_public_execution_argv(item.entrypoint, item.argv)
     if (
         len(selected) != len(selected_suites)
-        or not selected.issubset(suite_model.public_names)
+        or not selected.issubset(public_contract.suite_names)
         or len(ownership_paths) != len(set(ownership_paths))
     ):
         raise GateContractError(
@@ -555,12 +583,13 @@ def validate_public_execution_parity(
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
     expected = {
-        item.path
-        for item in suite_model.validators
-        if item.public_suites[0] in selected
-        and manifest_context in item.execution_contexts
+        item.entrypoint
+        for item in public_contract.validators
+        if item.suite in selected and manifest_context in item.contexts
     }
-    ownership_by_path = {item.path: item for item in suite_model.validators}
+    ownership_by_path = {
+        item.entrypoint: item for item in public_contract.validators
+    }
     counts: collections.Counter[pathlib.PurePosixPath] = collections.Counter()
     for invocation in plan:
         if _is_admitted_internal_invocation(invocation, context):
@@ -591,7 +620,7 @@ def validate_public_execution_parity(
 
 def render_public_validation_plan(
     plan: tuple[GateInvocation, ...],
-    suite_model: public_suite_registry.SuiteRegistry,
+    public_contract: PublicGateContract,
     selected_suites: tuple[str, ...],
     context: ExecutionContext,
     *,
@@ -600,16 +629,15 @@ def render_public_validation_plan(
     """Explain the validator rows proven by the executable plan itself."""
 
     validate_public_execution_parity(
-        suite_model, selected_suites, plan, context, profile=profile
+        public_contract, selected_suites, plan, context, profile=profile
     )
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
     suite_by_path = {
-        item.path: item.public_suites[0]
-        for item in suite_model.validators
-        if item.public_suites[0] in selected_suites
-        and manifest_context in item.execution_contexts
+        item.entrypoint: item.suite
+        for item in public_contract.validators
+        if item.suite in selected_suites and manifest_context in item.contexts
     }
     return tuple(
         f"{suite_by_path[item.entrypoint]}\t{item.entrypoint.as_posix()}"
@@ -621,18 +649,15 @@ def render_public_validation_plan(
 def _filter_execution_context(
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
-    registry: GateRegistry,
 ) -> tuple[GateInvocation, ...]:
     if context is ExecutionContext.PULL_REQUEST:
         return plan
     if context is ExecutionContext.LOCAL:
-        node_by_id = {node.gate_id: node for node in registry.nodes}
         return tuple(
             invocation
             for invocation in plan
             if invocation.gate_id not in _LOCAL_EXCLUDED_GATE_IDS
             and not invocation.gate_id.startswith("setup.")
-            and node_by_id[invocation.gate_id].profiles != ("ci",)
         )
     return tuple(
         invocation for invocation in plan if invocation.gate_id not in _PR_ONLY_GATE_IDS
@@ -747,8 +772,7 @@ def main(argv: list[str] | None = None) -> int:
                     file=sys.stderr,
                 )
             return 1
-        suite_model = load_public_suite_registry(root / "scripts/manifest.yaml")
-        public_contract = parse_public_gate_contract(document, suite_model)
+        public_contract = parse_public_gate_contract(document)
         context = derive_execution_context(os.environ)
         changed_paths = (
             ()
@@ -763,33 +787,28 @@ def main(argv: list[str] | None = None) -> int:
         plan = build_public_validation_plan(
             registry,
             public_root_gate_ids(public_contract, selected_suites),
-            suite_model,
+            public_contract,
             selected_suites,
             context,
             profile=arguments.profile,
+            root=root,
         )
         if arguments.explain:
             for line in render_public_validation_plan(
-                plan, suite_model, selected_suites, context, profile=arguments.profile
+                plan,
+                public_contract,
+                selected_suites,
+                context,
+                profile=arguments.profile,
             ):
                 print(line)
             return 0
         return execute_execution_plan(root, plan, os.environ)
-    except (
-        GateContractError,
-        argparse.ArgumentError,
-        public_suite_registry.SuiteRegistryError,
-    ) as error:
+    except (GateContractError, argparse.ArgumentError) as error:
         if isinstance(error, GateContractError):
             code = error.code
             path = error.path
             message = error.message
-        elif isinstance(error, public_suite_registry.SuiteRegistryError):
-            code, path, message = (
-                "ci-gate-manifest-invalid",
-                "scripts/manifest.yaml",
-                str(error),
-            )
         else:
             code = "ci-gate-cli-arguments"
             path = "arguments"

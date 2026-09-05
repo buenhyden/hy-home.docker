@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "2.1.0"
+version: "2.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -250,6 +250,34 @@ A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
 namespace of the document it retires. Every stage that can retire a document has
 one. A missing namespace is a namespace to create, never a reason to remove a
 document without its Tombstone.
+
+### Divergent branch package handoff
+
+This rule applies only to an explicitly approved integration of divergent,
+committed lineages when the same source identity is already an immutable
+completed archive Spec record. It does not permit ordinary removal of a
+nonterminal package.
+
+Preserve the source packet's original status and bytes unchanged, and copy the
+full packet to `docs/98.archive/superseded/<original-path>`. The target current
+in-progress Task carries the integration receipt in
+`branch_integration_receipts`: the exact source commit, path, and identity plus
+a receipt for the distinct active integration owner. That active package owns
+the integration receipt and acceptance mapping. Before its atomic completion,
+every still-current obligation and inbound consumer is cut over to its canonical
+Stage 00, 01, 02, or 05 owner.
+
+There is exactly one carrier state. After target atomic completion and
+preservation, the matching Task under
+`docs/98.archive/completed/<target-package>/` is the durable carrier. Its
+receipt remains unchanged across the move; the archived Task is frozen evidence,
+not current policy.
+
+This handoff creates no Tombstone or new identity, does not reopen a terminal
+package, and never treats Git-only deletion or an allowlist as sufficient
+evidence. Machine guards verify the full source tree against the superseded
+mirror, the exact source commit/path/identity, the existing immutable completed
+same-ID Spec record, and the distinct target.
 
 ### Implementation coverage
 

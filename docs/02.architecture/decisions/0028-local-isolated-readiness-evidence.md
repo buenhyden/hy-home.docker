@@ -1,10 +1,10 @@
 ---
 title: "Local-Isolated Readiness Evidence"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "ADR-0028"
 parent_ids:
@@ -48,7 +48,7 @@ Synthetic input과 고유 project identity를 사용해 네 lane을 독립적으
 
 Local-isolated contract-first rehearsal을 채택한다.
 
-- Compose readiness는 `run-compose-core-readiness.sh`와 공통 library가 exact
+- Compose readiness는 `check-compose-core-readiness.sh`와 공통 library가 exact
   service set, timeout, health, owned teardown을 검증한다.
 - PostgreSQL recovery는 `rehearse-postgres-logical-upgrade.sh`가 synthetic
   logical backup/restore, representative upgrade, integrity oracle을 검증한다.
@@ -75,5 +75,5 @@ Local-isolated contract-first rehearsal을 채택한다.
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
 - `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
-- `tests/validation/test_supply_chain_policy.py`
+- `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`

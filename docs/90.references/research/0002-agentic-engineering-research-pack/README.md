@@ -365,8 +365,8 @@ list contains only sources shared across categories.
   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
   [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md), and
   [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
-- Current Spec/Task: [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md)
-  and [SPEC-0172-TSK-0001](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- Implementation evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
+  and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Operations: [Stage 05](../../../05.operations/README.md).
 - Audit/data: [AUD-0026](../../audits/0026-implementation-overview/README.md),
   [AUD-0097](../../audits/0097-compose-domain-defect-register/README.md),

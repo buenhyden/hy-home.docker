@@ -17,10 +17,9 @@ from typing import Any, Iterable, Mapping, Sequence
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from scripts.lib.document_governance.suite_registry import (  # noqa: E402
-    SuiteRegistryError,
+from scripts.lib.gate.ci_gate_contract import (  # noqa: E402
+    ManifestContractError,
     load_manifest_document,
-    validate_execution_argv,
 )
 
 
@@ -37,15 +36,7 @@ REQUIRED_FIELDS = frozenset(
         "tests",
     }
 )
-OPTIONAL_FIELDS = frozenset(
-    {
-        "check_command",
-        "outputs",
-        "public_suites",
-        "execution_argv",
-        "execution_contexts",
-    }
-)
+OPTIONAL_FIELDS = frozenset({"check_command", "outputs", "removal_condition"})
 KINDS = frozenset(
     {
         "contract",
@@ -81,16 +72,6 @@ REQUIRED_LOCAL_PATHS = frozenset(
     }
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
-PUBLIC_SUITE_NAMES = frozenset(
-    {
-        "agent-governance",
-        "document-contract",
-        "document-graph",
-        "document-lifecycle",
-        "operations",
-        "repository-integrity",
-    }
-)
 RUNBOOK_AUTHORITY = __import__("re").compile(
     r"docs/05\.operations/catalog/[0-9]{2}-[^/]+/[0-9]{4}-[^/]+/runbook\.md"
 )
@@ -236,81 +217,6 @@ def validate_manifest_document(
             findings.append(
                 _finding("kind-invalid", path, f"invalid kind: {row.get('kind')!r}")
             )
-        public_suites = row.get("public_suites")
-        if row.get("kind") == "validator":
-            if (
-                not isinstance(public_suites, list)
-                or len(public_suites) != 1
-                or not isinstance(public_suites[0], str)
-                or public_suites[0] not in PUBLIC_SUITE_NAMES
-            ):
-                findings.append(
-                    _finding(
-                        "public-suite-invalid",
-                        path,
-                        "every validator requires exactly one canonical public_suites value",
-                    )
-                )
-            execution_argv = row.get("execution_argv", [])
-            if not isinstance(execution_argv, list) or not all(
-                isinstance(item, str) and item for item in execution_argv
-            ):
-                findings.append(
-                    _finding(
-                        "validator-execution-argv-invalid",
-                        path,
-                        "validator execution_argv must be a string list",
-                    )
-                )
-            execution_contexts = row.get("execution_contexts")
-            if isinstance(execution_argv, list) and all(
-                isinstance(item, str) for item in execution_argv
-            ):
-                try:
-                    validate_execution_argv(PurePosixPath(path), tuple(execution_argv))
-                except SuiteRegistryError as error:
-                    findings.append(
-                        _finding("validator-execution-argv-invalid", path, str(error))
-                    )
-            if (
-                not isinstance(execution_contexts, list)
-                or execution_contexts
-                != [
-                    context
-                    for context in (
-                        "local",
-                        "pull_request",
-                        "push",
-                        "workflow_dispatch",
-                    )
-                    if context in execution_contexts
-                ]
-                or len(execution_contexts) != len(set(execution_contexts))
-            ):
-                findings.append(
-                    _finding(
-                        "validator-execution-contexts-invalid",
-                        path,
-                        "validator execution_contexts must be a canonical context list",
-                    )
-                )
-        elif public_suites is not None:
-            findings.append(
-                _finding(
-                    "public-suite-kind-invalid",
-                    path,
-                    "only validator rows may declare public_suites",
-                )
-            )
-        else:
-            if "execution_argv" in row or "execution_contexts" in row:
-                findings.append(
-                    _finding(
-                        "validator-execution-kind-invalid",
-                        path,
-                        "only validator rows may declare execution fields",
-                    )
-                )
         authority = row.get("authority")
         if not _safe_repo_path(authority):
             findings.append(
@@ -444,6 +350,30 @@ def validate_manifest_document(
                         )
                     )
 
+        if row.get("lifecycle") == "transition":
+            if disposition == "retain":
+                findings.append(
+                    _finding(
+                        "transition-disposition-invalid", path,
+                        "transition rows require a non-retain disposition",
+                    )
+                )
+            condition = row.get("removal_condition")
+            if not isinstance(condition, str) or not condition.strip():
+                findings.append(
+                    _finding(
+                        "removal-condition-invalid", path,
+                        "transition rows require a nonblank removal_condition",
+                    )
+                )
+        elif "removal_condition" in row:
+            findings.append(
+                _finding(
+                    "removal-condition-unexpected", path,
+                    "only transition rows may declare removal_condition",
+                )
+            )
+
         successor = row.get("successor")
         if disposition == "retain":
             if successor is not None:
@@ -468,6 +398,14 @@ def validate_manifest_document(
                     "successor-untracked",
                     path,
                     f"successor is not tracked: {successor}",
+                )
+            )
+        elif successor == path:
+            findings.append(
+                _finding(
+                    "successor-self",
+                    path,
+                    "non-retained rows require a distinct successor path",
                 )
             )
 
@@ -567,7 +505,7 @@ def _git_paths(repo_root: Path) -> set[str]:
 def _load_manifest(manifest_path: Path) -> object:
     try:
         return load_manifest_document(manifest_path)
-    except SuiteRegistryError as exc:
+    except ManifestContractError as exc:
         return {"_load_error": str(exc)}
 
 
@@ -585,7 +523,13 @@ def _python_proves_use(text: str, target: str) -> bool:
             bind_scopes(child, child if isinstance(child, scope_nodes) else scope)
 
     bind_scopes(tree, tree)
-    module = target.removesuffix(".py").replace("/", ".")
+    target_path = PurePosixPath(target)
+    module_path = (
+        target_path.parent
+        if target_path.name == "__init__.py"
+        else target_path.with_suffix("")
+    )
+    module = module_path.as_posix().replace("/", ".")
     parent_module, _, module_leaf = module.rpartition(".")
     subprocess_modules: set[tuple[ast.AST, str]] = set()
     subprocess_calls: set[tuple[ast.AST, str]] = set()

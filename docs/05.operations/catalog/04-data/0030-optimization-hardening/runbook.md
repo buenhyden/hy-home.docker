@@ -96,7 +96,7 @@ created: "2026-05-17"
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: `infrastructure-hardening` 게이트 임시 비활성은 승인 후만 수행
-- **Eval Re-run**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `check-doc-traceability`
+- **Eval Re-run**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI logs + compose config output
 
 ## Evidence

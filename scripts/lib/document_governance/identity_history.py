@@ -13,13 +13,15 @@ import subprocess
 import time
 from collections.abc import Mapping
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
-from scripts.lib.document_governance.registry import (
-    DocumentRegistry,
-    RegistryFinding,
-    classify_path,
-)
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+
+if TYPE_CHECKING:
+    from scripts.lib.document_governance.registry import (
+        DocumentRegistry,
+        RegistryFinding,
+    )
 
 
 # Object-name listings plus Requirement identity-bearing blobs, not patch text.
@@ -64,10 +66,116 @@ _OBJECT_ID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 _ARTIFACT_ID_GREP = r"^[[:space:]]*artifact_id[[:space:]]*:"
 _INTERNAL_REQUIREMENT_GREP = r"(REQ|PRD|SRS|IFR)-[0-9]{4}-(FR|NFR|IF|R|AC)-?[0-9]{4}"
 _GIT_GREP_BATCH_SIZE = 256
+_LEGACY_REQUIREMENT_PATH = re.compile(
+    r"docs/01\.requirements/(?:prd|srs|ifr|interface)-"
+    r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md",
+    re.IGNORECASE,
+)
+_TRUSTED_LEGACY_REQUIREMENT_PATH = re.compile(
+    r"docs/01\.requirements/prd-(?P<package>[0-9]{4})-"
+    r"[a-z0-9][a-z0-9-]*\.md"
+)
+_TRUSTED_LEGACY_CHILD_ID = re.compile(
+    r"PRD-(?P<package>[0-9]{4})-R(?P<number>[0-9]{4})"
+)
+_TRUSTED_LEGACY_REQUIREMENT_SECTION = re.compile(
+    r"(?ms)^## (?P<name>Requirements|Non-functional Requirements)\n"
+    r"(?P<body>.*?)(?=^## |\Z)"
+)
+_TRUSTED_LEGACY_SECTION_KIND = {
+    "Requirements": "FR",
+    "Non-functional Requirements": "NFR",
+}
+_TRUSTED_LEGACY_REQUIREMENT_SUBSECTION = re.compile(
+    r"(?ms)^### (?P<name>Functional requirements|Non-functional requirements)\n"
+    r"(?P<body>.*?)(?=^### |\Z)"
+)
+_TRUSTED_LEGACY_SUBSECTION_KIND = {
+    "Functional requirements": "FR",
+    "Non-functional requirements": "NFR",
+}
 
 
 class IdentityHistoryError(RuntimeError):
     """Raised when Git history cannot be inspected safely."""
+
+
+def recover_historical_identity(
+    path: str | pathlib.PurePosixPath,
+) -> str | None:
+    """Recover a stable Requirement package ID from one legacy Stage 01 path."""
+
+    candidate = pathlib.PurePosixPath(path)
+    normalized = candidate.as_posix()
+    if candidate.is_absolute() or any(part in {"", ".", ".."} for part in candidate.parts):
+        return None
+    match = _LEGACY_REQUIREMENT_PATH.fullmatch(normalized)
+    if match is None:
+        return None
+    return f"REQ-{match.group('number')}"
+
+
+def match_historical_requirement_path(path: str) -> re.Match[str] | None:
+    """Match one immutable pre-taxonomy Requirement package path."""
+
+    return _TRUSTED_LEGACY_REQUIREMENT_PATH.fullmatch(path)
+
+
+def parse_historical_requirement_declarations(
+    package_texts: Mapping[str, str],
+) -> tuple[bool, dict[str, set[int]]]:
+    """Recover child allocations only when a trusted snapshot uses old grammar."""
+
+    historical_paths = {
+        path: match
+        for path in package_texts
+        if (match := match_historical_requirement_path(path)) is not None
+    }
+    if not historical_paths:
+        return False, {}
+    if len(historical_paths) != len(package_texts):
+        raise IdentityHistoryError(
+            "trusted Requirement predecessor mixes current and legacy package paths"
+        )
+
+    declarations: dict[str, set[int]] = {}
+    for path, path_match in historical_paths.items():
+        package_number = path_match.group("package")
+        for section in _TRUSTED_LEGACY_REQUIREMENT_SECTION.finditer(
+            package_texts[path]
+        ):
+            bodies = (
+                (
+                    _TRUSTED_LEGACY_SECTION_KIND[section.group("name")],
+                    section.group("body"),
+                ),
+            )
+            if section.group("name") == "Requirements":
+                subsections = tuple(
+                    _TRUSTED_LEGACY_REQUIREMENT_SUBSECTION.finditer(
+                        section.group("body")
+                    )
+                )
+                if subsections:
+                    bodies = tuple(
+                        (
+                            _TRUSTED_LEGACY_SUBSECTION_KIND[subsection.group("name")],
+                            subsection.group("body"),
+                        )
+                        for subsection in subsections
+                    )
+            for expected_kind, body in bodies:
+                for match in _TRUSTED_LEGACY_CHILD_ID.finditer(body):
+                    if match.group("package") != package_number:
+                        raise IdentityHistoryError(
+                            "trusted Requirement predecessor has a foreign child ID: "
+                            f"{path}"
+                        )
+                    name = f"REQ-{package_number}.{expected_kind}"
+                    declarations.setdefault(name, set()).add(
+                        int(match.group("number"))
+                    )
+    return True, declarations
 
 
 @dataclasses.dataclass(frozen=True)
@@ -522,6 +630,8 @@ def validate_allocation_transition(
 ) -> tuple[RegistryFinding, ...]:
     """Compare stable package issuance with one pinned, regular Git predecessor."""
 
+    from scripts.lib.document_governance.registry import RegistryFinding, classify_path
+
     if re.fullmatch(r"[0-9a-f]{40}", base_commit) is None:
         raise IdentityHistoryError("allocation predecessor must be a full commit")
     deadline = time.monotonic() + MAX_GIT_SCAN_SECONDS
@@ -842,6 +952,8 @@ def validate_identity_history(
     issued: IssuedIdentities,
 ) -> tuple[RegistryFinding, ...]:
     """Reject allocation state below any observed current or historical identity."""
+
+    from scripts.lib.document_governance.registry import RegistryFinding
 
     findings: list[RegistryFinding] = []
     for name, space in registry.identity_spaces.items():

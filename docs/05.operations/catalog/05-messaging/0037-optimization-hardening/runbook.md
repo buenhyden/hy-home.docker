@@ -92,7 +92,7 @@ created: "2026-05-17"
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: 메시징 관리 자동화 작업 일시 중지(승인 필요)
-- **Eval Re-run**: `check-all-hardening.sh 05-messaging`, `check-template-security-baseline`, `check-doc-traceability`
+- **Eval Re-run**: `check-all-hardening.sh 05-messaging`, `check-template-security-baseline`, `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI logs + compose config output + health 상태 스냅샷
 
 ## Evidence

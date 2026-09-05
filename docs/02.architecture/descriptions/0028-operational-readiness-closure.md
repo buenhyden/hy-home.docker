@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -36,8 +36,8 @@ failure boundary, cleanup, evidence를 독립적으로 검증해야 한다.
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
-| Compose readiness | `scripts/validation/run-compose-core-readiness.sh` and `compose-core-readiness.lib.sh` | bounded readiness and cleanup verdict |
-| PostgreSQL recovery | `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` | backup/restore and integrity verdict |
+| Compose readiness | `scripts/operations/check-compose-core-readiness.sh` and `scripts/lib/ops/compose-core-readiness.sh` | bounded readiness and cleanup verdict |
+| PostgreSQL recovery | `scripts/operations/rehearse-postgres-logical-upgrade.sh` | backup/restore and integrity verdict |
 | Supply chain | `scripts/security/verify-sample-service-supply-chain.sh` and `scripts/validation/check-supply-chain-policy.py` | digest-bound trust verdict |
 | Local delivery | `scripts/operations/rehearse-sample-service-delivery.sh` | canary, promotion, rollback verdict |
 
@@ -79,5 +79,5 @@ file, database state는 task-scoped transient resource다. 실행 전 exact targ
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
 - `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
-- `tests/validation/test_supply_chain_policy.py`
+- `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`

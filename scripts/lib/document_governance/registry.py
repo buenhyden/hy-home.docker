@@ -55,15 +55,8 @@ _GIT_OID = re.compile(r"[0-9a-f]{40,64}")
 _TRUSTED_REQUIREMENT_PATH = re.compile(
     r"docs/01\.requirements/(?P<package>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
-_TRUSTED_LEGACY_REQUIREMENT_PATH = re.compile(
-    r"docs/01\.requirements/prd-(?P<package>[0-9]{4})-"
-    r"[a-z0-9][a-z0-9-]*\.md"
-)
 _TRUSTED_CHILD_ID = re.compile(
     r"REQ-(?P<package>[0-9]{4})-(?P<kind>FR|NFR|IF)-(?P<number>[0-9]{4})"
-)
-_TRUSTED_LEGACY_CHILD_ID = re.compile(
-    r"PRD-(?P<package>[0-9]{4})-R(?P<number>[0-9]{4})"
 )
 _TRUSTED_REQUIREMENT_SECTION = re.compile(
     r"(?ms)^## (?P<name>Functional Requirements|Non-functional Requirements|"
@@ -73,22 +66,6 @@ _TRUSTED_SECTION_KIND = {
     "Functional Requirements": "FR",
     "Non-functional Requirements": "NFR",
     "Interface Requirements": "IF",
-}
-_TRUSTED_LEGACY_REQUIREMENT_SECTION = re.compile(
-    r"(?ms)^## (?P<name>Requirements|Non-functional Requirements)\n"
-    r"(?P<body>.*?)(?=^## |\Z)"
-)
-_TRUSTED_LEGACY_SECTION_KIND = {
-    "Requirements": "FR",
-    "Non-functional Requirements": "NFR",
-}
-_TRUSTED_LEGACY_REQUIREMENT_SUBSECTION = re.compile(
-    r"(?ms)^### (?P<name>Functional requirements|Non-functional requirements)\n"
-    r"(?P<body>.*?)(?=^### |\Z)"
-)
-_TRUSTED_LEGACY_SUBSECTION_KIND = {
-    "Functional requirements": "FR",
-    "Non-functional requirements": "NFR",
 }
 _TRUSTED_CHILD_SPACE_NAME = re.compile(
     r"REQ-(?P<package>[0-9]{4})\.(?P<kind>FR|NFR|IF)"
@@ -213,9 +190,14 @@ def declares_frozen_legacy_record(profile: Mapping[str, object], path: str) -> b
 def _trusted_requirement_path_match(path: str) -> re.Match[str] | None:
     """Match current or immutable predecessor Requirement Package paths."""
 
-    return _TRUSTED_REQUIREMENT_PATH.fullmatch(
-        path
-    ) or _TRUSTED_LEGACY_REQUIREMENT_PATH.fullmatch(path)
+    current = _TRUSTED_REQUIREMENT_PATH.fullmatch(path)
+    if current is not None:
+        return current
+    from scripts.lib.document_governance.identity_history import (
+        match_historical_requirement_path,
+    )
+
+    return match_historical_requirement_path(path)
 
 
 def _read_regular_file(path: pathlib.Path, maximum: int) -> bytes:
@@ -1570,65 +1552,36 @@ def load_trusted_requirement_allocation_baseline(
             "trusted Requirement predecessor declares a package outside its high-water"
         )
 
-    current_paths = [
-        path for path in trusted_paths if _TRUSTED_REQUIREMENT_PATH.fullmatch(path)
-    ]
-    legacy_paths = [
-        path
-        for path in trusted_paths
-        if _TRUSTED_LEGACY_REQUIREMENT_PATH.fullmatch(path)
-    ]
-    if current_paths and legacy_paths:
-        raise RegistryError(
-            "trusted Requirement predecessor mixes current and legacy package paths"
+    from scripts.lib.document_governance.identity_history import (
+        IdentityHistoryError,
+        parse_historical_requirement_declarations,
+    )
+
+    try:
+        legacy_predecessor, declarations = (
+            parse_historical_requirement_declarations(package_texts)
         )
-    legacy_predecessor = bool(legacy_paths)
-    declarations: dict[str, set[int]] = {}
-    for path in trusted_paths:
-        path_match = _trusted_requirement_path_match(path)
-        assert path_match is not None
-        text = package_texts[path]
-        package_number = path_match.group("package")
-        section_pattern = (
-            _TRUSTED_LEGACY_REQUIREMENT_SECTION
-            if legacy_predecessor
-            else _TRUSTED_REQUIREMENT_SECTION
-        )
-        section_kinds = (
-            _TRUSTED_LEGACY_SECTION_KIND
-            if legacy_predecessor
-            else _TRUSTED_SECTION_KIND
-        )
-        child_pattern = (
-            _TRUSTED_LEGACY_CHILD_ID if legacy_predecessor else _TRUSTED_CHILD_ID
-        )
-        for section in section_pattern.finditer(text):
-            bodies = ((section_kinds[section.group("name")], section.group("body")),)
-            if legacy_predecessor and section.group("name") == "Requirements":
-                subsections = tuple(
-                    _TRUSTED_LEGACY_REQUIREMENT_SUBSECTION.finditer(
-                        section.group("body")
-                    )
-                )
-                if subsections:
-                    bodies = tuple(
-                        (
-                            _TRUSTED_LEGACY_SUBSECTION_KIND[subsection.group("name")],
-                            subsection.group("body"),
-                        )
-                        for subsection in subsections
-                    )
-            for expected_kind, body in bodies:
-                for match in child_pattern.finditer(body):
-                    if match.group("package") != package_number or (
-                        not legacy_predecessor and match.group("kind") != expected_kind
+    except IdentityHistoryError as error:
+        raise RegistryError(str(error)) from error
+    if not legacy_predecessor:
+        for path in trusted_paths:
+            path_match = _TRUSTED_REQUIREMENT_PATH.fullmatch(path)
+            assert path_match is not None
+            package_number = path_match.group("package")
+            for section in _TRUSTED_REQUIREMENT_SECTION.finditer(package_texts[path]):
+                expected_kind = _TRUSTED_SECTION_KIND[section.group("name")]
+                for match in _TRUSTED_CHILD_ID.finditer(section.group("body")):
+                    if (
+                        match.group("package") != package_number
+                        or match.group("kind") != expected_kind
                     ):
                         raise RegistryError(
                             f"trusted Requirement predecessor has a foreign child ID: {path}"
                         )
-                    number = int(match.group("number"))
                     name = f"REQ-{package_number}.{expected_kind}"
-                    declarations.setdefault(name, set()).add(number)
+                    declarations.setdefault(name, set()).add(
+                        int(match.group("number"))
+                    )
 
     states: dict[str, RequirementAllocationState] = {}
     expected_children = {

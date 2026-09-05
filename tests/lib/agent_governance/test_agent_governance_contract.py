@@ -227,8 +227,8 @@ class AgentGovernanceContractTests(unittest.TestCase):
         )
         self.assertTrue(
             contract.path_matches_artifact_pattern(
-                "docs/01.requirements/prd-0001-example.md",
-                "docs/01.requirements/prd-{0001..0025}-*.md",
+                "docs/01.requirements/0001-example.md",
+                "docs/01.requirements/{0001..0025}-*.md",
             )
         )
 

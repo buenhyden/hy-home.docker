@@ -67,6 +67,14 @@ created: "2026-06-04"
    bash scripts/validation/validate-docker-compose.sh
    ```
 
+   The isolated five-service runtime harness is a separate operator action. Its
+   preflight is safe to run without starting services; scenarios require the
+   task-specific runtime approval and are never selected by a validation profile.
+
+   ```bash
+   bash scripts/operations/check-compose-core-readiness.sh --preflight
+   ```
+
 5. Confirm changelog and tag readiness from tracked release surfaces.
 
    ```bash
@@ -95,20 +103,38 @@ created: "2026-06-04"
    Docker를 시작하지 않는 fixture-only preflight를 실행한다.
 
    ```bash
-   bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id 2026-07-19-dre --baseline-verdict tests/fixtures/sample-service-delivery/spec126-verdict.baseline.accepted.json --candidate-verdict tests/fixtures/sample-service-delivery/spec126-verdict.candidate.accepted.json
+   bash scripts/operations/rehearse-sample-service-delivery.sh preflight --task-id sample-delivery --baseline-verdict examples/operations/sample-service-delivery/verdict.baseline.accepted.json --candidate-verdict examples/operations/sample-service-delivery/verdict.candidate.accepted.json
    ```
 
    `evidence=fixture-contract-only`, `readiness=passed`,
    `recovery_boundary=passed`, `compose=passed`, `ports=18080,18081`이 모두
    있어야 한다. Fixture verdict는 실제 실행 승인이 아니다.
 
-9. 실제 local rehearsal은 다음 canonical Spec 126 파일 세 개가 모두 존재하고,
-   verdict schema v2와 pair schema/generation v3 계약을 통과할 때만 실행한다.
+   Supply-chain preparation stays fail-closed: use fixture-only or preflight
+   checks by default, and run the networked Grype seed only under its tracked
+   approval surface.
+
+   ```bash
+   bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only
+   bash scripts/security/verify-sample-service-supply-chain.sh --preflight
+   bash scripts/security/seed-grype-db-cache.sh --preflight
+   ```
+
+   Secret generation is likewise an explicit operator action. Use its read-only
+   check before any no-argument write mode.
+
+   ```bash
+   bash scripts/operations/gen-secrets.sh --check
+   ```
+
+9. 정적 delivery 계약은 다음 operation-owned 예제 세 개로 검증한다.
+   verdict schema v2와 pair schema/generation v3의 형식을 설명하는 fixture이며,
+   실제 local rehearsal 입력이나 실행 승인은 아니다.
 
    ```text
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json
+   examples/operations/sample-service-delivery/verdict.baseline.accepted.json
+   examples/operations/sample-service-delivery/verdict.candidate.accepted.json
+   examples/operations/sample-service-delivery/verification-verdict.pair.json
    ```
 
    Verdict v2는 OCI manifest/config/archive, deterministic Docker-load archive,

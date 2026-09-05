@@ -60,9 +60,9 @@ publication lifecycle proceeds through review.
 | Evidence retained here | Dated result | Evidence depth | Current owner / disposition |
 | --- | --- | --- | --- |
 | Assessment target | `main@4c6d211129615eab372d720ebd209b6c27618c86`, observed 2026-09-05 | Defined, Local-executed | Historical assessment boundary; current baseline moves to RES-0002-m0020 |
-| Request identity | `RES-0085-SCOPE` recovered as `RES-0085-m0001` in the same package | Repository-enforced | Preserve the exact carrier and reciprocal SPEC-0172 Task tuple |
+| Request identity | `RES-0085-SCOPE` recovered as `RES-0085-m0001` in the same package | Repository-enforced | Preserve the exact carrier and reciprocal SPEC-0173 Task 1 tuple |
 | Evidence classes | Repository, Hosted, provider, runtime, and remote observations remain non-substitutable | Defined | RES-0002-m0020 applies these classes to current conclusions |
-| Hosted and remote observations | SPEC-0172 records exact Hosted runs and the 2026-09-05 protection read-back | Hosted-executed, Remote-verified at cutoff | Task and main-protection record remain execution owners |
+| Hosted and remote observations | The completed SPEC-0172 outcome records exact Hosted runs and the 2026-09-05 protection read-back | Hosted-executed, Remote-verified at cutoff | Completed Spec and main-protection record retain the dated evidence |
 | Deployment and release | No exact target or version was supplied | Unverified / not adopted | No acceptance claim; separate SDLC work required |
 | Consolidation lifecycle | Package and member advance from `draft` to `review` | Repository-enforced | Publication and later supersession require subsequent forward transitions |
 
@@ -78,8 +78,8 @@ Detailed current findings are not repeated here. They are consolidated in
 - [Stage 99 Registry](../../../99.templates/registry.json),
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   and [research-member template](../../../99.templates/templates/references/research.template.md).
-- [SPEC-0172](../../../03.specs/0172-document-contract-convergence/spec.md) and
-  its [execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) and
+  [current identity-recovery decision](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - [CI workflow](../../../../.github/workflows/ci-quality.yml),
   [workflow contract](../../../../.github/workflow-contract.yml), and
   [main protection record](../../../../.github/rulesets/main-protection.md).
@@ -116,7 +116,8 @@ Detailed current findings are not repeated here. They are consolidated in
 - Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md), and
   [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
-- Current work/evidence owner: [SPEC-0172 Task](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md).
+- Current identity-recovery owner: [SPEC-0173 Task 1](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
+  the [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) retains the dated implementation result.
 - Operations authority: [Stage 05](../../../05.operations/README.md).
 - Audit/data evidence: [implementation overview](../../audits/0026-implementation-overview/README.md),
   [Compose defects](../../audits/0097-compose-domain-defect-register/README.md),

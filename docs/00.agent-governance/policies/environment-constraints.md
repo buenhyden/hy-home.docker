@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.0.0"
+version: "1.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Environment Constraints
@@ -97,7 +97,7 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
 - Run the completion checklist in `docs/00.agent-governance/policies/task-checklists.md` before declaring done.
 - Provider surface `--write` is allowed once only after an approved canonical
   Stage 00 or Provider Registry change. Ordinary postflight and CI use
-  `scripts/operations/sync-provider-surfaces.sh --check`; hooks and validation
+  `python3 scripts/operations/provider_surface_renderer.py --check`; hooks and validation
   commands must not regenerate provider surfaces implicitly. A reported
   quarantine is a nonzero cleanup handoff, not successful regeneration; follow
   the exact-path procedure in `docs/00.agent-governance/providers/README.md`

@@ -11,7 +11,6 @@ from scripts.lib.document_governance.references import (
 )
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
-    load_public_suite_registry,
     parse_public_gate_contract,
     select_public_suites,
 )
@@ -77,10 +76,7 @@ class ReferenceStageRepoContractTests(unittest.TestCase):
                 load_reference_packages(root / "docs/90.references")
 
     def test_public_changed_profile_selects_reference_validators(self) -> None:
-        suite_registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-        contract = parse_public_gate_contract(
-            load_contract_document(ROOT), suite_registry
-        )
+        contract = parse_public_gate_contract(load_contract_document(ROOT))
         selected = select_public_suites(
             contract,
             "changed",

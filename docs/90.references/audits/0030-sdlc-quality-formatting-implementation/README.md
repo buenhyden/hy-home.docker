@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC Quality Formatting Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0030"
 parent_ids:
@@ -86,7 +86,7 @@ than current evidence. No remote setting was changed.
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | QAF-01 | Name the applicable evidence class and command instead of claiming undifferentiated “QA.” | Research and scripts distinguish formatting, lint, syntax, type, test, build, coverage, dependency, security, traceability, eval, and freshness evidence. | Implemented | 2 | Retain | QA scope and task evidence owner | Existing named-gate inventory; applicability remains change-scoped. | Compare the quality research matrix with scripts, workflow jobs, and task evidence. | High. |
-| QAF-02 | Provide deterministic local orchestration for locally safe gates and disclose excluded responsibilities. | `run-local-qa-gates.sh` executes 20 script-backed steps in default/script-backed/all-profile modes, 18 in harness mode, and lists one non-executed recommender plus CI/remote-only duties. The controlled all-files wrapper remains a separate approved final gate. | Implemented | 3 | Retain | `scripts/validation/run-local-qa-gates.sh` | Existing local orchestration; do not count the recommender or controlled wrapper as default runner steps. | `bash scripts/validation/run-local-qa-gates.sh --list`; inspect direct/helper `run_step` calls. | High. |
+| QAF-02 | Provide deterministic local orchestration for locally safe gates and disclose excluded responsibilities. | `run-ci-gate.py` expands typed full/changed profiles from the workflow contract and can explain the normalized leaves without executing them. The controlled all-files wrapper remains a separate approved final gate. | Implemented | 3 | Retain | `scripts/validation/run-ci-gate.py` | Preserve the single typed composition owner; do not count recommendations, hosted-only evidence, or the controlled wrapper as executed leaves. | `python3 scripts/validation/run-ci-gate.py --profile changed --explain`; inspect normalized leaf uniqueness tests. | High. |
 | QAF-03 | Enforce formatting only on declared file families and distinguish configuration from execution. | Whitespace/newline hooks and post-tool normalization exist; EditorConfig/Prettier configs exist, but shared automation does not invoke Prettier. | Partial | 2 | Improve | Common scope and relevant project owners | Candidate formatting coverage inventory before any new gate. | Inspect `.editorconfig`, Prettier config, pre-commit hooks, and post-tool script. | High. |
 | QAF-04 | Run scoped static linting with explicit exclusions and duplicate-job ownership. | Markdown, YAML, shell, workflow, Dockerfile, and Storybook lint surfaces exist; `recommend-qa-gates.sh` is excluded from ShellCheck and CI pre-commit skips ESLint in favor of `frontend-quality`. | Partial | 3 | Improve | QA scope and language/project owners | Existing scoped hooks/jobs; inventory uncovered languages before expansion. | Inspect hook `files`/`exclude`, CI `SKIP`, and dedicated lint commands. | High. |
 | QAF-05 | Parse supported shell, JSON, TOML, YAML, workflow, and Compose inputs without equating syntax with semantics. | `bash -n`, check-json, check-toml, yamllint, actionlint, Compose render, and repository contract checks exist at different layers. | Implemented | 3 | Retain | QA scope and validator owners | Existing parsers; semantic checks remain separately owned. | Run shell syntax and the applicable parser/validator for changed files. | High. |
@@ -111,7 +111,7 @@ than current evidence. No remote setting was changed.
 | Task evidence | Implemented | [Stage 04 tasks README](../../../03.specs/README.md), audit pack task | Task files record evidence, status, deviation, and validation results. |
 | Documentation contracts | Partially Implemented | [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md), [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
 | CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines 16 docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, supply-chain-fixture, and workflow-security jobs. The latest public remote observation saw 15 jobs in a failed run; tracked definitions do not prove current remote success or enforcement. |
-| Local QA orchestration | Implemented | `scripts/validation/run-local-qa-gates.sh`, [scripts README](../../../../scripts/README.md) | Local gate runner lists local, CI/local-tooling, and remote-only responsibilities. |
+| Local QA orchestration | Implemented | `scripts/validation/run-ci-gate.py`, [scripts README](../../../../scripts/README.md) | The typed runner explains and executes registered local profiles while keeping hosted and remote-only responsibilities explicit. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
 | Linting | Partially Implemented | `.github/workflows/ci-quality.yml`, pre-commit, frontend lint, shell syntax checks | Frontend and hook/script surfaces have checks; all repo languages do not have a single universal lint gate. |
 | Syntax checks | Implemented | `python -m json.tool` examples in HAFE policy, `bash -n`, repo contracts, CI | JSON/YAML/workflow/script/document syntax checks are represented through scripts and CI. |
@@ -145,7 +145,7 @@ than current evidence. No remote setting was changed.
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
 | Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Retain the implemented registry/checker/contract foundation and use the [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md) to bound later corpus migration. |
 | Actual Release record | Not Implemented | Keep the implemented Release profile/template/index, changelog communication, and release runbook distinct; create a record only from an actual event. |
-| Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the eleven fixtures, sixteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
+| Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the ten fixtures, fourteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Route deployment/release engineering through the separately approval-gated draft Spec 127 chain; keep it separate from validation CI. |
 | Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](../0031-security-framework-maturity/README.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 

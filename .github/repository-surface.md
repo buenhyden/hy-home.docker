@@ -84,7 +84,7 @@ python3 scripts/validation/check-github-workflow-contract.py
   suites a profile selects.
 - [Focused workflow checker](../scripts/validation/check-github-workflow-contract.py)
   validates `workflow-contract.yml` against every tracked workflow definition.
-- [Local QA profile wrapper](../scripts/validation/run-local-qa-gates.sh)
+- [Typed local QA gate](../scripts/validation/run-ci-gate.py)
   renders the selected suite-to-validator mapping with `--explain`.
 
 ## How to Work in This Area

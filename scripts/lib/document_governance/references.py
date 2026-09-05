@@ -51,7 +51,6 @@ _ACTIVE_CONSUMER_PATHS = (
     pathlib.PurePosixPath("scripts/lib/document_governance/operations_catalog.py"),
     pathlib.PurePosixPath("evals/agent_output_eval.py"),
     pathlib.PurePosixPath("scripts/validation/check-document-corpus-lifecycle.py"),
-    pathlib.PurePosixPath("scripts/lib/target_surface/target_surface_contract.py"),
 )
 _RETIRED_ACTIVE_PATHS = (
     "docs/90.references/learning",
@@ -823,7 +822,7 @@ def validate_active_reference_consumers(
 
 def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
     """Resolve bounded exact Data outputs from active declared producers."""
-    from scripts.lib.document_governance.suite_registry import load_manifest_document
+    from scripts.lib.gate.ci_gate_contract import load_manifest_document
 
     manifest = load_manifest_document(root / "scripts/manifest.yaml")
     if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), list):

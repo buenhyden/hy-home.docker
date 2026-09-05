@@ -1,10 +1,10 @@
 ---
 title: "Reference: Provider Harness and Loop Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0028"
 parent_ids:
@@ -18,9 +18,10 @@ reviewed_at: "2026-07-27"
 
 ## Overview
 
-This reference assesses every `PIC-*` provider criterion against tracked
-Claude, Codex, Gemini/Antigravity, and Stage 00 surfaces at baseline `507cd505`
-on 2026-07-11, with bounded revalidation through 2026-07-27.
+> Historical evidence (not current authority; source: Git history):
+> This reference assessed every `PIC-*` provider criterion against tracked
+> Claude, Codex, Gemini/Antigravity, and Stage 00 surfaces at baseline `507cd505`
+> on 2026-07-11, with bounded revalidation through 2026-07-27.
 
 ## Purpose
 
@@ -47,20 +48,23 @@ files remain authoritative; the fixed model catalog remains bound to the
 
 ## Definitions / Facts
 
-- Stage 00 owns 14 roles (one supervisor and thirteen workers) and 24
-  functions. The renderer emits 14 role adapters in each of `.claude`,
-  `.codex`, `.gemini`, and `.agents`; function skills intentionally project to
-  24 Claude and 24 shared `.agents` directories.
-- Five current profiles map eleven cataloged models exactly: adversarial review
-  and long-horizon supervision use Opus 5 / Sol / Gemini 3.6; complex
-  implementation uses Sonnet 5 / Sol / Gemini 3.6; evidence research uses
-  Sonnet 5 / Terra / Gemini 3.5 Lite; routine validation uses Haiku 4.5 /
-  Terra / Gemini 3.5 Lite. Exact provider controls remain distinct. There is
-  no active fallback graph and implicit substitution is prohibited.
-- One typed seven-event contract renders seven Claude mappings, six Codex
-  native mappings plus explicit unsupported `SessionEnd`, and seven Gemini
-  mappings. All tracked bindings are configured-not-executed, so local parity
-  does not prove provider runtime acceptance.
+> Historical evidence (not current authority; source: Git history):
+> Stage 00 owned 14 roles (one supervisor and thirteen workers) and 24
+> functions. The renderer emitted 14 role adapters in each of `.claude`,
+> `.codex`, `.gemini`, and `.agents`; function skills intentionally projected to
+> 24 Claude and 24 shared `.agents` directories.
+>
+> Five profiles mapped eleven cataloged models exactly: adversarial review
+> and long-horizon supervision used Opus 5 / Sol / Gemini 3.6; complex
+> implementation used Sonnet 5 / Sol / Gemini 3.6; evidence research used
+> Sonnet 5 / Terra / Gemini 3.5 Lite; routine validation used Haiku 4.5 /
+> Terra / Gemini 3.5 Lite. Exact provider controls remained distinct. There was
+> no active fallback graph and implicit substitution was prohibited.
+>
+> One typed seven-event contract rendered seven Claude mappings, six Codex
+> native mappings plus explicit unsupported `SessionEnd`, and seven Gemini
+> mappings. All tracked bindings were configured-not-executed, so local parity
+> did not prove provider runtime acceptance.
 
 ## Assessment Method
 
@@ -73,6 +77,7 @@ proof. Graphify was stale/advisory and was not used as authority.
 
 ## Audit Criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | PIC-01 | Preserve native hierarchical project-instruction discovery. | Root shims delegate to Stage 00; Claude/Codex/Gemini discovery syntax remains provider-specific. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts. | Inspect root shims; provider sync check. | High. |
@@ -95,9 +100,10 @@ proof. Graphify was stale/advisory and was not used as authority.
 
 ## Findings
 
-- Gemini native agents, settings, and hook wrappers are generated and
-  validator-backed. Live Gemini acceptance and interception remain unobserved,
-  so provider parity remains partial rather than absent.
+> Historical evidence (not current authority; source: Git history):
+> Gemini native agents, settings, and hook wrappers were generated and
+> validator-backed. Live Gemini acceptance and interception remained unobserved,
+> so provider parity remained partial rather than absent.
 - Structural sync is depth 3, but it cannot validate native schema acceptance,
   complete hook interception, or account/model availability.
 - `PIC-08`, `PIC-09`, and `PIC-10` remain `Needs Revalidation` because the
@@ -106,12 +112,23 @@ proof. Graphify was stale/advisory and was not used as authority.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap | Action | Boundary |
 | --- | --- | --- |
 | Provider-native schema and hook acceptance | Fix | Tracked provider/governance/generator/validator parity is current; verify live native acceptance only through separate approved scope. |
 | Gemini CLI native runtime acceptance | Improve | Keep `.gemini` native adapters and `.agents` compatibility semantics distinct; validate live acceptance only in separate approved scope. |
 | Provider model runtime evidence | Improve | Preserve the exact typed profiles and no-fallback invariant; verify entitlement and runtime acceptance only in separate approved scope. |
 | Live sandbox/network/MCP facts | Retain unknown state | Observe only within an authorized executing task; never persist secrets. |
+
+**Current local correction.**
+
+The current tracked provider projection has two providers, Claude and Codex.
+Run the sole renderer directly with
+`python3 scripts/operations/provider_surface_renderer.py --check` or
+`python3 scripts/operations/provider_surface_renderer.py --write`.
+The shared `.agents/skills` projection is retained; the former shared
+`.agents/agents` compatibility projection is retired. These repository-local
+facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
 

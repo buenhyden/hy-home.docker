@@ -30,14 +30,10 @@ EXPECTED_AUDIT_INDEX = "docs/90.references/audits/README.md"
 EXPECTED_CANONICAL_PACK = "docs/90.references/audits"
 EXPECTED_CANONICAL_README = f"{EXPECTED_CANONICAL_PACK}/0019-readme/README.md"
 EXPECTED_OVERVIEW = f"{EXPECTED_CANONICAL_PACK}/0026-implementation-overview/README.md"
-EXPECTED_TASK_EVIDENCE = (
-    "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md"
-)
 EXPECTED_TOP_LEVEL_PATHS = {
     "audit_index": EXPECTED_AUDIT_INDEX,
     "canonical_pack": EXPECTED_CANONICAL_PACK,
     "overview": EXPECTED_OVERVIEW,
-    "task_evidence": EXPECTED_TASK_EVIDENCE,
 }
 # The snapshot is superseded, so it is preserved under the archive rather than
 # kept in the live audit tree; its content is still the thing checked here.
@@ -67,7 +63,6 @@ CONTRACT_KEYS = {
     "audit_index",
     "canonical_pack",
     "overview",
-    "task_evidence",
     "required_index_headings",
     "assertions",
 }
@@ -76,7 +71,6 @@ ASSERTION_KEYS = {
     "report",
     "required_state",
     "required_evidence_paths",
-    "completed_task_ids",
     "forbidden_stale_phrases",
 }
 
@@ -148,7 +142,7 @@ def _validate_contract_schema(contract: object) -> list[str]:
     if type(contract["schema_version"]) is not int or contract["schema_version"] != 1:
         errors.append("schema_version must be integer 1")
 
-    for key in ("audit_index", "canonical_pack", "overview", "task_evidence"):
+    for key in ("audit_index", "canonical_pack", "overview"):
         if not _is_safe_repo_path(contract[key]):
             errors.append(f"{key}: unsafe repository-relative path: {contract[key]!r}")
         if contract[key] != EXPECTED_TOP_LEVEL_PATHS[key]:
@@ -203,7 +197,6 @@ def _validate_contract_schema(contract: object) -> list[str]:
 
         for key in (
             "required_evidence_paths",
-            "completed_task_ids",
             "forbidden_stale_phrases",
         ):
             _validate_string_array(owner, key, assertion[key], errors)
@@ -334,17 +327,9 @@ def _validate_tracked_contract_paths(
         ("audit index", contract["audit_index"]),
         ("canonical pack README", EXPECTED_CANONICAL_README),
         ("overview", contract["overview"]),
-        ("task evidence", contract["task_evidence"]),
         ("2026-07-07 README", SUPERSEDED_2026_07_07_README.as_posix()),
     ]
     for label, relative in declared:
-        if (
-            label == "task evidence"
-            and not (repo_root / relative).exists()
-            and not (repo_root / relative).is_symlink()
-        ):
-            _read_task_evidence(repo_root, contract, errors)
-            continue
         errors.extend(
             _validate_repository_input(
                 repo_root,
@@ -398,47 +383,6 @@ def _validate_lifecycle(repo_root: pathlib.Path, contract: dict[str, Any]) -> li
     return errors
 
 
-def _task_is_done(task_text: str, task_id: str) -> bool:
-    pattern = re.compile(
-        rf"^\|\s*{re.escape(task_id)}\s*\|.*\|\s*Done\s*\|\s*$",
-        re.MULTILINE,
-    )
-    return bool(pattern.search(task_text))
-
-
-def _read_task_evidence(
-    repo_root: pathlib.Path,
-    contract: dict[str, Any],
-    errors: list[str],
-) -> str | None:
-    """Use live execution evidence, or its explicit compact recovery mapping."""
-
-    path = repo_root / contract["task_evidence"]
-    if path.exists() or path.is_symlink():
-        return _read_required(path, "task evidence", errors)
-    from scripts.lib.document_governance.archive import _migration_document
-    from scripts.lib.document_governance.git_provenance import HistoricalDocument
-
-    try:
-        migration = _migration_document(repo_root)
-        rows = [
-            row
-            for row in migration["rows"]
-            if row["source_path"] == contract["task_evidence"]
-        ]
-        if migration["schema_version"] != 3 or len(rows) != 1:
-            raise ValueError("retired task requires one compact recovery mapping")
-        row = rows[0]
-        if row["action"] != "delete" or row["target_path"] is not None:
-            raise ValueError("retired task must be an approved deletion")
-        return HistoricalDocument(
-            repo_root, row["recovery_commit"], row["source_path"]
-        ).read_text()
-    except (ValueError, OSError, UnicodeError):
-        errors.append("task evidence: explicit compact regular Git recovery is invalid")
-        return None
-
-
 def _validate_assertions(
     repo_root: pathlib.Path,
     contract: dict[str, Any],
@@ -446,7 +390,6 @@ def _validate_assertions(
     tracked: set[str],
 ) -> list[str]:
     errors: list[str] = []
-    task_text = _read_task_evidence(repo_root, contract, errors)
     report_cache: dict[str, str | None] = {}
 
     for assertion in contract["assertions"]:
@@ -488,13 +431,6 @@ def _validate_assertions(
                     "required tracked evidence",
                 )
             )
-
-        if task_text is not None:
-            for task_id in assertion["completed_task_ids"]:
-                if not _task_is_done(task_text, task_id):
-                    errors.append(
-                        f"{criterion_id}: completed task {task_id} is missing or not Done"
-                    )
 
         if not report_errors and expected_report not in report_cache:
             report_cache[expected_report] = _read_required(

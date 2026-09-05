@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Implementation Overview"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0026"
 parent_ids:
@@ -95,7 +95,7 @@ controlled agent all-files wrapper. The full historical metadata inventory and
 README migration remain advisory rather than corpus-wide blocking.
 
 Provider synchronization, lifecycle semantics, hook-parity generation, the
-existing CI metadata step, and exact `11/11` fixture plus `16/16` regression
+existing CI metadata step, and exact `10/10` fixture plus `14/14` regression
 scoring are current tracked evidence. The bounded
 `2026-07-26T18:22:32+09:00` GitHub observation records public repository/run
 metadata, including 15 observed jobs and a failed run with unverified root
@@ -145,14 +145,20 @@ broad supply-chain coverage, deployment success, or a formal framework claim.
 Exact commands, project identities, digests, review outcomes, and commit
 identities remain owned by the linked Stage 04 task records.
 
-The 2026-07-27 canonical-evidence refresh reconciles the current Stage 00
-cardinalities and official source observations without changing any criterion
-state: 14 roles, 24 functions, five exact profiles, 11 model records, eight
-harness layers, eight ordered workflow states, nine capability-intake rows,
-11 fixtures, and 16 regressions. The provider contract facts retain
-`2026-07-26T20:08:18+09:00`; external revalidation is separately timestamped
-`2026-07-27T02:33:54+09:00`. The model policy has no active fallback graph or
-implicit substitution.
+> Historical evidence (not current authority; source: Git history): The
+> 2026-07-27 canonical-evidence refresh reconciled the then-current Stage 00
+> cardinalities and official source observations without changing any criterion
+> state: 14 roles, 24 functions, five exact profiles, 11 model records, eight
+> harness layers, eight ordered workflow states, nine capability-intake rows,
+> 11 fixtures, and 16 regressions. The provider contract facts retained
+> `2026-07-26T20:08:18+09:00`; external revalidation was separately timestamped
+> `2026-07-27T02:33:54+09:00`. The model policy had no active fallback graph or
+> implicit substitution.
+
+Current correction: the [provider registry](../../../00.agent-governance/providers/registry.yaml)
+defines two providers and five model records, and the [agent-output evaluation
+fixture catalog](../../data/0064-agent-output-eval-fixtures/README.md) defines
+ten fixtures with fourteen regressions.
 
 ## Implementation Status Matrix
 
@@ -162,7 +168,7 @@ implicit substitution.
 | Loop engineering | Partial | [Loop audit](../0027-loop-engineering-implementation/README.md) | LOOP-03/04 now provide measured depth-4 synthetic evaluation and typed retry/stop enforcement; live provider parity, durable resume, and unified telemetry remain partial. |
 | Claude provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), `.claude/settings.json`, `.claude/agents/`, `.claude/hooks/` | Native agents/hooks and tracked adapters exist; actual global permissions, sandbox, MCP, entitlement, and complete semantic enforcement are unobserved. |
 | Codex provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), `.codex/hooks.json`, `.codex/agents/` | Strict native TOML adapters and six supported hook mappings are generated; `SessionEnd` is explicit N/A and live schema/event acceptance remains unproved. |
-| Provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), [provider registry](../../../00.agent-governance/providers/registry.yaml), `.agents/` | Stage 00 registers exactly Claude and Codex plus their shared compatibility projection; live acceptance and interception remain unproved. |
+| Provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), [provider registry](../../../00.agent-governance/providers/registry.yaml), `.agents/skills/` | Stage 00 registers exactly Claude and Codex; `.agents/skills` is the shared skill projection. Live acceptance and interception remain unproved. |
 | Common provider-neutral rules/environment | Partial | [Workspace rules audit](../0032-workspace-rules-environment-implementation/README.md) | Authority, catalog parity, skills, and validation are strong; live/global environment facts and measured evidence closure remain incomplete. |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial | [Instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md) | Sixteen AIV, seven AIC, and seven AMS rows cover authority, safe iteration, catalog add/merge/reject, exact literals, cutoff integrity, and eval gaps without importing identities or changing policy. |
 | Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/0072-provider-hook-parity-matrix/README.md), [agent-output eval fixtures](../../data/0064-agent-output-eval-fixtures/README.md) | Local scripts, CI gates, generated native adapters/hooks, exact `10/10` plus `14/14` semantic evaluation, indexes, sync checks, and the controlled pre-commit wrapper exist; live provider execution, remote enforcement, and CD remain partial or missing. |
@@ -207,7 +213,7 @@ implicit substitution.
 | Gap | Impact | Candidate Owner |
 | --- | --- | --- |
 | Native schema/event acceptance remains unproved. | Synchronized provider surfaces and parity checks do not prove live native acceptance or complete interception. | Separate approved provider/runtime verification |
-| Native provider runtime acceptance remains unproved despite generated Claude/Codex/Gemini adapters. | `.gemini` native adapters and `.agents` compatibility projections must remain distinct from live acceptance claims. | Separate approved provider/runtime verification |
+| Native provider runtime acceptance remains unproved despite generated Claude/Codex adapters. | The native adapters and shared `.agents/skills` projection must remain distinct from live acceptance claims. | Separate approved provider/runtime verification |
 | The synthetic evaluator is implemented, but no live cross-provider model-quality baseline exists. | Repository harness semantics can be gated without claiming entitlement, latency, cost, or live model equivalence. | [Agent-output eval fixtures](../../data/0064-agent-output-eval-fixtures/README.md) |
 | Product discovery has no bounded catalog owner; repository semantic evaluation is owned by `eval-engineer`, while no live comparative model-quality baseline exists. | Adding a broad product persona would duplicate authority or import untested instructions; live evaluation needs separate privacy, entitlement, cost, and runtime approval. | Future product proposal after demand/eval; existing QA/eval owner for any approved live comparison |
 | Exact model task fit and entitlement are unproven. | Current literals cannot be changed or described as equivalent from catalog prose. | AMS-01..07 coupled model-change protocol |
@@ -227,9 +233,9 @@ complete 161-row audit implementation matrix are generated and freshness-checked
 through repo contracts, LLM Wiki safe-path
 coverage is grouped by source bucket/category in Stage 90 data, tech-stack
 version source provenance is generated from the registry and listed Compose
-declarations, provider hook parity is generated with native Gemini settings and
-hook wrappers, and agent-output evaluation requires exact `11/11` fixture and
-`16/16` synthetic-regression markers in local and CI routes. The Storybook Next.js dependency surface has a high
+declarations, provider hook parity is generated from the Claude/Codex registry
+contracts, and agent-output evaluation requires exact `10/10` fixture and
+`14/14` synthetic-regression markers in local and CI routes. The Storybook Next.js dependency surface has a high
 severity npm audit gate, and security automation readiness is generated from
 tracked workflow/script surfaces.
 

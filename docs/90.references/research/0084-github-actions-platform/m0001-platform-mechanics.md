@@ -681,4 +681,4 @@ and [OIDC](https://docs.github.com/en/actions/reference/security/oidc).
 - [Workflow contract](../../../../.github/workflow-contract.yml)
 - [CI workflow](../../../../.github/workflows/ci-quality.yml)
 - [Main protection record](../../../../.github/rulesets/main-protection.md)
-- [SPEC-0172 execution evidence](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md)
+- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)

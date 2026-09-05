@@ -3,7 +3,6 @@
   "audit_index": "docs/90.references/audits/README.md",
   "canonical_pack": "docs/90.references/audits",
   "overview": "docs/90.references/audits/0026-implementation-overview/README.md",
-  "task_evidence": "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0010-archive.md",
   "required_index_headings": [
     "## Canonical Current Audit",
     "## Dated Historical Snapshots",
@@ -19,10 +18,6 @@
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
       ],
-      "completed_task_ids": [
-        "T-AER-008",
-        "T-AER-012"
-      ],
       "forbidden_stale_phrases": [
         "No `artifact_id` exists",
         "no typed semantic metadata parser"
@@ -37,9 +32,6 @@
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
       ],
-      "completed_task_ids": [
-        "T-AER-007"
-      ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
       ]
@@ -52,10 +44,6 @@
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
-      ],
-      "completed_task_ids": [
-        "T-AER-008",
-        "T-AER-012"
       ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
@@ -70,10 +58,6 @@
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
       ],
-      "completed_task_ids": [
-        "T-AER-007",
-        "T-AER-012"
-      ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
       ]
@@ -86,10 +70,6 @@
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
-      ],
-      "completed_task_ids": [
-        "T-AER-007",
-        "T-AER-008"
       ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
@@ -104,10 +84,6 @@
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
       ],
-      "completed_task_ids": [
-        "T-AER-008",
-        "T-AER-012"
-      ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
       ]
@@ -120,10 +96,6 @@
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
-      ],
-      "completed_task_ids": [
-        "T-AER-008",
-        "T-AER-012"
       ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
@@ -138,11 +110,6 @@
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
       ],
-      "completed_task_ids": [
-        "T-AER-007",
-        "T-AER-008",
-        "T-AER-012"
-      ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser"
       ]
@@ -155,11 +122,6 @@
         "docs/99.templates/registry.json",
         "scripts/validation/check-document-metadata.py",
         "tests/lib/document_governance/metadata/test_profile.py"
-      ],
-      "completed_task_ids": [
-        "T-AER-007",
-        "T-AER-008",
-        "T-AER-012"
       ],
       "forbidden_stale_phrases": [
         "no typed semantic metadata parser",
@@ -175,10 +137,6 @@
         "scripts/validation/run-agent-precommit-all-files.sh",
         "tests/validation/test_run_agent_precommit_all_files.sh"
       ],
-      "completed_task_ids": [
-        "T-AER-009",
-        "T-AER-012"
-      ],
       "forbidden_stale_phrases": [
         "wrapper remains absent",
         "wrapper does not yet exist",
@@ -193,10 +151,6 @@
         "docs/00.agent-governance/policies/task-checklists.md",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "tests/validation/test_run_agent_precommit_all_files.sh"
-      ],
-      "completed_task_ids": [
-        "T-AER-009",
-        "T-AER-012"
       ],
       "forbidden_stale_phrases": [
         "controlled wrapper is absent until Task 9",

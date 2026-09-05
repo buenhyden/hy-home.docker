@@ -17,8 +17,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 class PublicSuiteRegistryTests(unittest.TestCase):
-    def test_gate_contract_consumes_the_immutable_public_suite_registry(self) -> None:
-        registry = contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+    def test_workflow_contract_owns_the_immutable_public_suite_registry(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
         self.assertEqual(
             (
                 "agent-governance",
@@ -28,17 +30,16 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 "operations",
                 "repository-integrity",
             ),
-            registry.public_names,
+            public.suite_names,
         )
 
     def test_public_profiles_and_changed_path_impacts_are_closed(self) -> None:
-        registry = contract.load_public_suite_registry(ROOT / "scripts/manifest.yaml")
         document = contract.load_contract_document(ROOT)
-        public = contract.parse_public_gate_contract(document, registry)
+        public = contract.parse_public_gate_contract(document)
         self.assertEqual(("changed", "full"), public.profile_names)
-        self.assertEqual(registry.public_names, public.suite_names)
+        self.assertEqual(contract.PUBLIC_SUITE_NAMES, public.suite_names)
         self.assertEqual(
-            registry.public_names,
+            contract.PUBLIC_SUITE_NAMES,
             contract.select_public_suites(public, "full", ()),
         )
         selected = contract.select_public_suites(
@@ -53,6 +54,104 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         with self.assertRaises(contract.GateContractError) as raised:
             contract.select_public_suites(public, "unknown", ())
         self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
+
+    def test_public_validator_records_fail_closed_on_ownership_and_argv_drift(
+        self,
+    ) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: list[tuple[str, dict[str, object], str]] = []
+
+        missing = json.loads(json.dumps(baseline))
+        del missing["public_gate"]["validators"]
+        cases.append(("missing-validators", missing, "ci-gate-public-contract"))
+
+        duplicate = json.loads(json.dumps(baseline))
+        duplicate["public_gate"]["validators"][1]["entrypoint"] = duplicate[
+            "public_gate"
+        ]["validators"][0]["entrypoint"]
+        cases.append(("duplicate-entrypoint", duplicate, "ci-gate-public-validators"))
+
+        contexts = json.loads(json.dumps(baseline))
+        contexts["public_gate"]["validators"][0]["contexts"].reverse()
+        cases.append(("context-order", contexts, "ci-gate-public-validators"))
+
+        weakened = json.loads(json.dumps(baseline))
+        links = next(
+            row
+            for row in weakened["public_gate"]["validators"]
+            if row["entrypoint"] == "scripts/validation/check-document-links.py"
+        )
+        links["argv"] = ["--mode", "traceability"]
+        cases.append(("weakened-capability", weakened, "ci-gate-validator-arguments"))
+
+        for label, document, expected_code in cases:
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.parse_public_gate_contract(document)
+                self.assertEqual(expected_code, caught.exception.code)
+
+    def test_manifest_reader_rejects_ambiguous_unbounded_and_nonregular_inputs(
+        self,
+    ) -> None:
+        valid = b"schema_version: 1\nfiles: []\n"
+        cases = (
+            b"schema_version: 0\n" + valid,
+            b"files: [{path: one, path: two}]\n",
+            b"files: &a []\nother: *a\n",
+            b"files: []\nother: " + b"[" * 65 + b"]" * 65,
+            valid + b"#" * contract.MAX_MANIFEST_BYTES,
+            valid + b"\xff",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / "manifest.yaml"
+            for raw in cases:
+                with self.subTest(raw=raw[:40]):
+                    path.write_bytes(raw)
+                    with self.assertRaises(contract.ManifestContractError):
+                        contract.load_manifest_document(path)
+
+            path.unlink()
+            target = root / "source.yaml"
+            target.write_bytes(valid)
+            path.symlink_to(target)
+            with self.subTest(boundary="file-symlink"):
+                with self.assertRaises(contract.ManifestContractError):
+                    contract.load_manifest_document(path)
+            path.unlink()
+            path.mkdir()
+            with self.subTest(boundary="directory"):
+                with self.assertRaises(contract.ManifestContractError):
+                    contract.load_manifest_document(path)
+
+    def test_manifest_reader_rejects_ancestor_symlink_and_fifo_swap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            source = root / "source"
+            source.mkdir()
+            path = source / "manifest.yaml"
+            path.write_text("files: []\n", encoding="utf-8")
+            alias = root / "alias"
+            alias.symlink_to(source, target_is_directory=True)
+            with self.subTest(boundary="ancestor-symlink"):
+                with self.assertRaises(contract.ManifestContractError):
+                    contract.load_manifest_document(alias / "manifest.yaml")
+
+            real_open = os.open
+            swapped = False
+
+            def swap_before_open(name, flags, *args, **kwargs):
+                nonlocal swapped
+                if str(name) == path.name and not swapped:
+                    swapped = True
+                    path.unlink()
+                    os.mkfifo(path)
+                    self.assertTrue(flags & os.O_NONBLOCK)
+                return real_open(name, flags, *args, **kwargs)
+
+            with mock.patch.object(contract.os, "open", side_effect=swap_before_open):
+                with self.assertRaises(contract.ManifestContractError):
+                    contract.load_manifest_document(path)
 
 
 class PinDerivationTests(unittest.TestCase):
@@ -113,54 +212,9 @@ REQUIRED_ROOT_CHILDREN = contract._REQUIRED_ROOT_CHILDREN
 ALL_CI_SUITES = contract._ALL_CI_SUITES
 REQUIRED_JOB_SUITES = contract._REQUIRED_JOB_SUITES
 LOCAL_AGGREGATE_CHILDREN = contract._LOCAL_AGGREGATE_CHILDREN
-
-
-LOCAL_SCRIPT_ROOTS = (
-    "leaf.local-diff-hygiene",
-    "leaf.local-shell-syntax",
-    "leaf.local-provider-surface-drift",
-    "ci.agent-output-eval-fixture-gate",
-    "leaf.local-agent-governance-contract",
-    "leaf.agent-governance-regressions",
-    "leaf.provider-governance-regressions",
-    "leaf.local-tech-stack-version-drift",
-    "ci.docs-traceability",
-    "leaf.docs-implementation-alignment",
-    "local.document-corpus-lifecycle",
-    "local.target-surface",
-    "local.workflow-harness",
-    "local.supply-chain",
-    "local.compose-validation",
-    "local.infrastructure-hardening",
-    "local.template-security-baseline",
-    "local.quickwin-baseline",
-    "local.generated-freshness",
-    "leaf.repository-integrity-regressions",
-    "leaf.repo-contracts",
-)
-LOCAL_HARNESS_ROOTS = tuple(
-    gate_id
-    for gate_id in LOCAL_SCRIPT_ROOTS
-    if gate_id
-    not in {
-        "leaf.local-tech-stack-version-drift",
-        "local.quickwin-baseline",
-    }
-)
-PROFILE_ROOTS = (
-    contract.ProfileRoot("local-script-backed", LOCAL_SCRIPT_ROOTS, "local"),
-    contract.ProfileRoot("local-harness", LOCAL_HARNESS_ROOTS, "local"),
-    contract.ProfileRoot(
-        "local-all-profiles",
-        LOCAL_SCRIPT_ROOTS,
-        "local",
-    ),
-)
-PROFILE_ORDER = (
-    "ci",
-    "local-script-backed",
-    "local-harness",
-    "local-all-profiles",
+PUBLIC_ROOTS = contract.public_root_gate_ids(
+    contract.parse_public_gate_contract(contract.load_contract_document(ROOT)),
+    contract.PUBLIC_SUITE_NAMES,
 )
 
 
@@ -170,13 +224,12 @@ def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
         kind=contract.GateKind.LEAF,
         suite_key=suite_key,
         entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-target-surface-delta-contract.py"
+            "scripts/validation/check-document-links.py"
         ),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
         allowed_env_keys=(),
         timeout_minutes=10,
-        profiles=("ci",),
         opaque=True,
         children=(),
     )
@@ -192,7 +245,6 @@ def aggregate(gate_id: str, children: tuple[str, ...]) -> contract.GateNode:
         cwd=None,
         allowed_env_keys=(),
         timeout_minutes=None,
-        profiles=("ci",),
         opaque=False,
         children=children,
     )
@@ -204,13 +256,12 @@ def setup(gate_id: str) -> contract.GateNode:
         kind=contract.GateKind.SETUP,
         suite_key=None,
         entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-target-surface-delta-contract.py"
+            "scripts/validation/check-document-links.py"
         ),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
         allowed_env_keys=(),
         timeout_minutes=10,
-        profiles=("ci",),
         opaque=False,
         children=(),
     )
@@ -250,13 +301,10 @@ def complete_registry() -> contract.GateRegistry:
         )
         for gate_id in children
     }
-    local_direct_roots = {
-        gate_id
-        for profile in PROFILE_ROOTS
-        for gate_id in profile.root_gate_ids
-        if gate_id.startswith("leaf.")
+    public_leaf_roots = {
+        gate_id for gate_id in PUBLIC_ROOTS if gate_id.startswith("leaf.")
     }
-    for gate_id in structural_children | local_direct_roots:
+    for gate_id in structural_children | public_leaf_roots:
         if gate_id.startswith("setup."):
             nodes.setdefault(gate_id, setup(gate_id))
         elif gate_id.startswith("leaf."):
@@ -265,36 +313,10 @@ def complete_registry() -> contract.GateRegistry:
     for gate_id, children in LOCAL_AGGREGATE_CHILDREN.items():
         nodes[gate_id] = aggregate(gate_id, children)
 
-    roots_by_profile = {
-        "ci": tuple(REQUIRED_JOB_ROOTS.values()),
-        **{profile.profile: profile.root_gate_ids for profile in PROFILE_ROOTS},
-    }
-    reached_by_profile: dict[str, set[str]] = {gate_id: set() for gate_id in nodes}
-    for profile, roots in roots_by_profile.items():
-        pending = list(reversed(roots))
-        seen: set[str] = set()
-        while pending:
-            gate_id = pending.pop()
-            if gate_id in seen:
-                continue
-            seen.add(gate_id)
-            reached_by_profile[gate_id].add(profile)
-            pending.extend(reversed(nodes[gate_id].children))
-    profiled_nodes = tuple(
-        dataclasses.replace(
-            node,
-            profiles=tuple(
-                profile
-                for profile in PROFILE_ORDER
-                if profile in reached_by_profile[node.gate_id]
-            ),
-        )
-        for node in nodes.values()
-    )
     return contract.GateRegistry(
-        nodes=profiled_nodes,
+        nodes=tuple(nodes.values()),
         job_roots=tuple(job_roots),
-        profile_roots=PROFILE_ROOTS,
+        public_roots=PUBLIC_ROOTS,
     )
 
 
@@ -302,15 +324,13 @@ def registry(
     *,
     nodes: tuple[contract.GateNode, ...] | None = None,
     job_roots: tuple[contract.JobRoot, ...] | None = None,
-    profile_roots: tuple[contract.ProfileRoot, ...] | None = None,
+    public_roots: tuple[str, ...] | None = None,
 ) -> contract.GateRegistry:
     default = complete_registry()
     return contract.GateRegistry(
         nodes=nodes if nodes is not None else default.nodes,
         job_roots=(job_roots if job_roots is not None else default.job_roots),
-        profile_roots=(
-            profile_roots if profile_roots is not None else default.profile_roots
-        ),
+        public_roots=(public_roots if public_roots is not None else default.public_roots),
     )
 
 
@@ -336,7 +356,6 @@ class CiGateContractTests(unittest.TestCase):
             leaf.entrypoint,
         )
         self.assertEqual((), leaf.argv)
-        self.assertIn("ci", leaf.profiles)
         self.assertIn(
             leaf.gate_id,
             nodes["ci.repo-contracts"].children,
@@ -350,17 +369,17 @@ class CiGateContractTests(unittest.TestCase):
             cases = (
                 (
                     '{"schema_version":2,"schema_version":2,'
-                    '"gate_nodes":[],"job_roots":[],"profile_roots":[]}',
+                    '"gate_nodes":[],"job_roots":[]}',
                     "ci-gate-json-duplicate-key",
                 ),
                 (
                     "schema_version: 2\ngate_nodes: []\n"
-                    "job_roots: []\nprofile_roots: []\n",
+                    "job_roots: []\n",
                     "ci-gate-json-invalid",
                 ),
                 (
                     '{"schema_version":1,"gate_nodes":[],'
-                    '"job_roots":[],"profile_roots":[]}',
+                    '"job_roots":[]}',
                     "ci-gate-schema-version",
                 ),
             )
@@ -375,7 +394,6 @@ class CiGateContractTests(unittest.TestCase):
                 "schema_version": 2,
                 "gate_nodes": [],
                 "job_roots": [],
-                "profile_roots": [],
                 "unknown": [],
             }
             with self.assertRaises(contract.GateContractError) as caught:
@@ -389,7 +407,6 @@ class CiGateContractTests(unittest.TestCase):
                 "schema_version": 2.0,
                 "gate_nodes": [],
                 "job_roots": [],
-                "profile_roots": [],
             }
             with self.subTest(boundary="float-schema"):
                 with self.assertRaises(contract.GateContractError) as caught:
@@ -407,7 +424,7 @@ class CiGateContractTests(unittest.TestCase):
                 + "[" * 1500
                 + "0"
                 + "]" * 1500
-                + ',"job_roots":[],"profile_roots":[]}',
+                + ',"job_roots":[]}',
                 encoding="utf-8",
             )
             with self.subTest(boundary="deep-json"):
@@ -430,13 +447,11 @@ class CiGateContractTests(unittest.TestCase):
                         "cwd": ".",
                         "allowed_env_keys": [],
                         "timeout_minutes": 10,
-                        "profiles": ["ci"],
                         "opaque": True,
                     }
                     for index in range(2049)
                 ],
                 "job_roots": [],
-                "profile_roots": [],
             }
             with self.subTest(boundary="node-limit"):
                 with self.assertRaises(contract.GateContractError) as caught:
@@ -459,7 +474,6 @@ class CiGateContractTests(unittest.TestCase):
             "cwd": ".",
             "allowed_env_keys": [],
             "timeout_minutes": 10,
-            "profiles": ["ci"],
             "opaque": True,
         }
         invalid_nodes = (
@@ -486,7 +500,6 @@ class CiGateContractTests(unittest.TestCase):
                     "cwd": ".",
                     "allowed_env_keys": [],
                     "timeout_minutes": 10,
-                    "profiles": ["ci"],
                     "opaque": False,
                 },
                 "ci-gate-kind-fields",
@@ -501,9 +514,9 @@ class CiGateContractTests(unittest.TestCase):
             (
                 {
                     **valid_leaf,
-                    "profiles": ["local-script-backed", "ci"],
+                    "profiles": ["ci"],
                 },
-                "ci-gate-profiles",
+                "ci-gate-kind-fields",
             ),
             ({**valid_leaf, "opaque": False}, "ci-gate-kind-fields"),
         )
@@ -513,7 +526,6 @@ class CiGateContractTests(unittest.TestCase):
                     "schema_version": 2,
                     "gate_nodes": [invalid_node],
                     "job_roots": [],
-                    "profile_roots": [],
                 }
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_gate_registry(
@@ -586,21 +598,22 @@ class CiGateContractTests(unittest.TestCase):
         ) + (leaf("leaf.deep", "deep"),)
         deep_registry = contract.GateRegistry(
             deep_nodes,
-            (),
             (
-                contract.ProfileRoot(
-                    "local-script-backed",
-                    ("aggregate.deep-0",),
-                    "local",
+                contract.JobRoot(
+                    ".github/workflows/ci-quality.yml",
+                    "validation-changed",
+                    "aggregate.deep-0",
+                    "required-quality",
                 ),
             ),
+            ("aggregate.deep-0",),
         )
         with self.subTest(boundary="deep-iterative-expansion"):
             self.assertEqual(
                 ("leaf.deep",),
                 contract.expand_gate_ids(
                     deep_registry,
-                    "local-script-backed",
+                    "ci",
                     None,
                     True,
                 ),
@@ -629,7 +642,7 @@ class CiGateContractTests(unittest.TestCase):
         candidate = registry()
         duplicate_suite_nodes = tuple(
             leaf(node.gate_id, "docs-traceability")
-            if node.gate_id == "leaf.docs-implementation-alignment"
+            if node.gate_id == "leaf.operations-catalog"
             else node
             for node in candidate.nodes
         )
@@ -679,7 +692,7 @@ class CiGateContractTests(unittest.TestCase):
             contract.GateRegistry(
                 candidate.nodes,
                 candidate.job_roots[:-1],
-                candidate.profile_roots,
+                candidate.public_roots,
             ),
         )
         self.assert_codes(findings, "ci-gate-required-job-roots")
@@ -687,7 +700,7 @@ class CiGateContractTests(unittest.TestCase):
         duplicate = contract.GateRegistry(
             candidate.nodes,
             (*candidate.job_roots, candidate.job_roots[0]),
-            candidate.profile_roots,
+            candidate.public_roots,
         )
         self.assert_codes(
             contract.validate_gate_registry(ROOT, duplicate),
@@ -808,113 +821,41 @@ class CiGateContractTests(unittest.TestCase):
                 findings = contract.validate_gate_registry(ROOT, candidate)
             self.assert_codes(findings, "ci-gate-entrypoint-invalid")
 
-    def test_profile_roots_are_ordered_and_cannot_override_nodes(self) -> None:
-        leaf_fields = {
-            "kind": "leaf",
-            "suite_key": "first",
-            "entrypoint": ("scripts/validation/check-target-surface-delta-contract.py"),
-            "argv": [],
-            "cwd": ".",
-            "allowed_env_keys": [],
-            "timeout_minutes": 10,
-            "profiles": ["local-script-backed"],
-            "opaque": True,
-        }
-        ordered_document: dict[str, object] = {
-            "schema_version": 2,
-            "gate_nodes": [
-                {"gate_id": "leaf.first", **leaf_fields},
-                {
-                    "gate_id": "leaf.second",
-                    **{**leaf_fields, "suite_key": "second"},
-                },
-            ],
-            "job_roots": [],
-            "profile_roots": [
-                {
-                    "profile": "local-script-backed",
-                    "root_gate_ids": ["leaf.first", "leaf.second"],
-                    "classification": "local",
-                }
-            ],
-        }
-        parsed = contract.parse_gate_registry(
-            ordered_document,
-            ".github/workflow-contract.yml",
+    def test_retired_profile_grammar_is_rejected_and_local_children_are_exact(
+        self,
+    ) -> None:
+        live = contract.load_contract_document(ROOT)
+        self.assertNotIn("profile_roots", live)
+        self.assertTrue(
+            all("profiles" not in node for node in live["gate_nodes"])
         )
-        self.assertEqual(
-            ("leaf.first", "leaf.second"),
-            contract.expand_gate_ids(
-                parsed,
-                "local-script-backed",
-                None,
-                True,
-            ),
-        )
-        reversed_document = json.loads(json.dumps(ordered_document))
-        reversed_document["profile_roots"][0]["root_gate_ids"].reverse()
-        reversed_registry = contract.parse_gate_registry(
-            reversed_document,
-            ".github/workflow-contract.yml",
-        )
-        self.assertEqual(
-            ("leaf.second", "leaf.first"),
-            contract.expand_gate_ids(
-                reversed_registry,
-                "local-script-backed",
-                None,
-                True,
-            ),
-        )
-
-        document = json.loads(json.dumps(ordered_document))
-        document["profile_roots"][0]["gate_nodes"] = []
-        with self.assertRaises(contract.GateContractError) as caught:
-            contract.parse_gate_registry(document, ".github/workflow-contract.yml")
-        self.assertEqual("ci-gate-profile-fields", caught.exception.code)
-
-        wrong_classification = json.loads(json.dumps(ordered_document))
-        wrong_classification["profile_roots"][0]["classification"] = "local-override"
-        with self.subTest(boundary="profile-classification"):
+        retired_root = json.loads(json.dumps(live))
+        retired_root["profile_roots"] = []
+        with self.subTest(boundary="retired-profile-roots"):
             with self.assertRaises(contract.GateContractError) as caught:
                 contract.parse_gate_registry(
-                    wrong_classification,
+                    retired_root,
                     ".github/workflow-contract.yml",
                 )
-            self.assertEqual(
-                "ci-gate-profile-classification",
-                caught.exception.code,
-            )
+            self.assertEqual("ci-gate-document-fields", caught.exception.code)
+
+        retired_node = json.loads(json.dumps(live))
+        retired_node["gate_nodes"][0]["profiles"] = ["ci"]
+        with self.subTest(boundary="retired-node-profiles"):
+            with self.assertRaises(contract.GateContractError) as caught:
+                contract.parse_gate_registry(
+                    retired_node,
+                    ".github/workflow-contract.yml",
+                )
+            self.assertEqual("ci-gate-kind-fields", caught.exception.code)
 
         candidate = complete_registry()
-        for aggregate_id, prohibited_child in (
-            ("local.compose-validation", "setup.compose-env"),
-            ("local.workflow-harness", "leaf.pre-commit"),
-        ):
-            with self.subTest(prohibited_child=prohibited_child):
-                unsafe_nodes = tuple(
-                    dataclasses.replace(
-                        node,
-                        children=(prohibited_child, *node.children),
-                    )
-                    if node.gate_id == aggregate_id
-                    else node
-                    for node in candidate.nodes
-                )
-                self.assert_codes(
-                    contract.validate_gate_registry(
-                        ROOT,
-                        dataclasses.replace(candidate, nodes=unsafe_nodes),
-                    ),
-                    "ci-gate-local-unsafe",
-                )
-
         wrong_local_children = tuple(
             dataclasses.replace(
                 node,
                 children=tuple(reversed(node.children)),
             )
-            if node.gate_id == "local.target-surface"
+            if node.gate_id == "local.workflow-harness"
             else node
             for node in candidate.nodes
         )
@@ -942,7 +883,6 @@ class CiGateContractTests(unittest.TestCase):
                 "schema_version": 2,
                 "gate_nodes": [],
                 "job_roots": [],
-                "profile_roots": [],
             }
             contract_path.write_text(json.dumps(valid), encoding="utf-8")
             symlink_root = base / "repo-link"
@@ -1041,7 +981,6 @@ class CiGateContractTests(unittest.TestCase):
             "cwd": ".",
             "allowed_env_keys": [],
             "timeout_minutes": 10,
-            "profiles": ["ci"],
             "opaque": True,
         }
         dangerous = (
@@ -1074,7 +1013,6 @@ class CiGateContractTests(unittest.TestCase):
                         }
                     ],
                     "job_roots": [],
-                    "profile_roots": [],
                 }
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_gate_registry(

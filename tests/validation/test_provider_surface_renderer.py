@@ -17,7 +17,6 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 RENDERER = ROOT / "scripts/operations/provider_surface_renderer.py"
-WRAPPER = ROOT / "scripts/operations/sync-provider-surfaces.sh"
 
 
 def _child_env() -> dict[str, str]:
@@ -825,19 +824,6 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed"):
                 renderer._quarantine_owned_projection(root, relative, identity)
             self.assertEqual("# outside user file\n", outside_file.read_text())
-
-    def test_wrapper_check_is_clean(self) -> None:
-        result = subprocess.run(
-            ["bash", str(WRAPPER), "--check"],
-            cwd=ROOT,
-            env=_child_env(),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("providers=2", result.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()

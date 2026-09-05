@@ -653,6 +653,71 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         self.assertEqual((), validate_frontmatter(hook_values, schema_path))
 
+    def test_task_branch_integration_receipt_has_one_closed_typed_contract(
+        self,
+    ) -> None:
+        registry = load_registry()
+        schema_path = (
+            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        )
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        receipt = {
+            "source_commit": "a" * 40,
+            "source_package_path": "docs/03.specs/0172-document-contract-convergence",
+            "source_artifact_id": "SPEC-0172",
+            "preserved_package_path": (
+                "docs/98.archive/superseded/03.specs/"
+                "0172-document-contract-convergence"
+            ),
+            "target_package_path": (
+                "docs/03.specs/0173-governance-qa-surface-convergence"
+            ),
+            "target_artifact_id": "SPEC-0173",
+            "disposition": "historical-superseded",
+        }
+        task = registry.profiles["task"]
+        self.assertIn("branch_integration_receipts", task["optional_frontmatter"])
+        self.assertTrue(
+            all(
+                "branch_integration_receipts"
+                not in profile["optional_frontmatter"]
+                for profile_id, profile in registry.profiles.items()
+                if profile_id != "task"
+            )
+        )
+        self.assertIn(
+            "branch_integration_receipts", registry.common["frontmatter_order"]
+        )
+        self.assertEqual(
+            (),
+            validate_frontmatter(
+                {"branch_integration_receipts": [receipt]}, schema_path
+            ),
+        )
+        for mutation in (
+            {"disposition": "retired"},
+            {"source_commit": "a" * 39},
+            {"source_package_path": "docs/03.specs/../0172-invalid"},
+            {"unexpected": "value"},
+        ):
+            with self.subTest(mutation=mutation):
+                invalid = dict(receipt)
+                invalid.update(mutation)
+                self.assertEqual(
+                    {"frontmatter-schema-invalid"},
+                    {
+                        finding.code
+                        for finding in validate_frontmatter(
+                            {"branch_integration_receipts": [invalid]},
+                            schema_path,
+                        )
+                    },
+                )
+        self.assertEqual(
+            False,
+            schema["$defs"]["branchIntegrationReceipt"]["additionalProperties"],
+        )
+
     def test_registered_templates_use_one_placeholder_grammar(self) -> None:
         registry = load_registry()
 
@@ -1599,17 +1664,12 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_adapter_rejects_every_unregistered_target_route(self) -> None:
         """A route the Registry does not own is unsupported, with no fallback.
 
-        The retired legacy envelope classified `prd-####-*.md` as `prd`. That
-        profile owned no document, so the route now fails closed like any other
-        unregistered path.
+        Stage 01 files must use the registered four-digit package route.
         """
 
         adapted = build_registry_profiles(load_registry())
 
-        for unregistered in (
-            "docs/01.requirements/prd-0001-legacy.md",
-            "docs/01.requirements/not-numbered.md",
-        ):
+        for unregistered in ("docs/01.requirements/not-numbered.md",):
             with self.subTest(path=unregistered):
                 self.assertEqual(
                     "unsupported",

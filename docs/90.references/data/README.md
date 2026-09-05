@@ -1,10 +1,10 @@
 ---
 title: "Data Packages"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -28,12 +28,8 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 | [DATA-0065](./0065-audit-implementation-matrix/README.md) | Reference: Audit Implementation Matrix | active |
 | [DATA-0066](./0066-foundation-summary/README.md) | Document Corpus Migration Summary | active |
 | [DATA-0067](./0067-foundation/README.md) | Foundation | active |
-| [DATA-0068](./0068-target-surface-convergence-summary/README.md) | Document Corpus Migration Summary | active |
-| [DATA-0069](./0069-target-surface-convergence/README.md) | Target Surface Convergence | active |
 | [DATA-0071](./0071-github-actions-control-plane-observation/README.md) | Github Actions Control Plane Observation | active |
 | [DATA-0072](./0072-provider-hook-parity-matrix/README.md) | Provider Hook Parity Matrix | active |
-| [DATA-0073](./0073-target-surface-delta-manifest/README.md) | Target Surface Delta Manifest | active |
-| [DATA-0074](./0074-target-surface-delta-summary/README.md) | Target Surface Delta Summary | active |
 | [DATA-0076](./0076-llm-wiki-stage-category-coverage/README.md) | LLM Wiki Stage Category Coverage | active |
 | [DATA-0078](./0078-security-automation-readiness/README.md) | Reference: Security Automation Readiness | active |
 | [DATA-0079](./0079-supply-chain-sample-service/README.md) | Reference: Sample-service Local Supply-chain Verification | active |

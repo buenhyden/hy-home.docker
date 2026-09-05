@@ -11,15 +11,18 @@ import tempfile
 import textwrap
 import unittest
 
+from tests.validation._sample_delivery_fixtures import (
+    verdict_variant,
+    write_verdict_variant,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/rehearse-sample-service-delivery.sh"
-FIXTURES = ROOT / "tests/fixtures/sample-service-delivery"
-BASELINE = FIXTURES / "spec126-verdict.baseline.accepted.json"
-CANDIDATE = FIXTURES / "spec126-verdict.candidate.accepted.json"
+FIXTURES = ROOT / "examples/operations/sample-service-delivery"
+BASELINE = FIXTURES / "verdict.baseline.accepted.json"
+CANDIDATE = FIXTURES / "verdict.candidate.accepted.json"
 PAIR_MANIFEST = FIXTURES / "verification-verdict.pair.json"
-REJECTED = FIXTURES / "spec126-verdict.candidate.rejected.json"
-DIGEST_MISMATCH = FIXTURES / "spec126-verdict.candidate.digest-mismatch.json"
 COMPOSE = ROOT / "examples/sample-web-service/docker-compose.yml"
 OVERRIDE = FIXTURES / "compose.delivery.override.yml"
 POLICY = ROOT / "infra/supply-chain.sample-service-policy.json"
@@ -316,9 +319,17 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         return result, calls
 
     def test_fixture_verdicts_have_exact_schema(self) -> None:
-        for path in (BASELINE, CANDIDATE, REJECTED, DIGEST_MISMATCH):
-            with self.subTest(path=path.name):
-                self.assertEqual(VERDICT_KEYS, set(json.loads(path.read_text())))
+        payloads = {
+            BASELINE.name: json.loads(BASELINE.read_text()),
+            CANDIDATE.name: json.loads(CANDIDATE.read_text()),
+            "candidate.rejected": verdict_variant(CANDIDATE, verdict="rejected"),
+            "candidate.digest-mismatch": verdict_variant(
+                CANDIDATE, image_config_digest="sample-web-service:latest"
+            ),
+        }
+        for name, payload in payloads.items():
+            with self.subTest(name=name):
+                self.assertEqual(VERDICT_KEYS, set(payload))
 
     def test_pair_manifest_fixture_binds_exact_verdict_bytes(self) -> None:
         manifest = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
@@ -489,15 +500,34 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 )
 
     def test_rejects_missing_rejected_or_mismatched_verdict(self) -> None:
-        cases = (
-            (FIXTURES / "missing.json", "candidate"),
-            (REJECTED, "candidate"),
-            (DIGEST_MISMATCH, "candidate"),
-        )
-        for path, role in cases:
-            with self.subTest(path=path.name):
-                result = self.run_sourced(f"load_and_validate_verdict {role} {path!s}")
-                self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            cases = (
+                (root / "missing.json", "candidate"),
+                (
+                    write_verdict_variant(
+                        root, CANDIDATE, "rejected.json", verdict="rejected"
+                    ),
+                    "candidate",
+                ),
+                (
+                    write_verdict_variant(
+                        root,
+                        CANDIDATE,
+                        "digest-mismatch.json",
+                        image_config_digest="sample-web-service:latest",
+                    ),
+                    "candidate",
+                ),
+            )
+            for path, role in cases:
+                with self.subTest(path=path.name):
+                    result = self.run_sourced(
+                        f"load_and_validate_verdict {role} {path!s}"
+                    )
+                    self.assertEqual(
+                        10, result.returncode, result.stdout + result.stderr
+                    )
 
     def test_rejects_extra_unknown_verdict_field(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -563,7 +593,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 )
                 self.assertEqual(10, result.returncode, result.stdout + result.stderr)
 
-    def test_accepts_current_spec126_verdict_schema_and_binds_pair_context(
+    def test_accepts_current_verdict_contract_and_binds_pair_context(
         self,
     ) -> None:
         build_context = "sha256:" + "e" * 64

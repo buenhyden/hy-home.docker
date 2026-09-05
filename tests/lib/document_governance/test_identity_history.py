@@ -18,10 +18,65 @@ from scripts.lib.document_governance.identity_history import (
     collect_issued_identities,
     validate_identity_history,
 )
+from scripts.lib.document_governance.metadata.profile import (
+    build_registry_profiles,
+    infer_artifact_type,
+)
 from scripts.lib.document_governance.registry import load_registry
+
+LEGACY_REQUIREMENT = pathlib.PurePosixPath(
+    "docs/01.requirements/prd-0042-preserved.md"
+)
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        self.assertEqual(
+            "unsupported",
+            infer_artifact_type(pathlib.Path(LEGACY_REQUIREMENT), profiles),
+        )
+
+    def test_history_reader_recovers_legacy_requirement_identity(self) -> None:
+        self.assertEqual(
+            "REQ-0042",
+            identity_history.recover_historical_identity(LEGACY_REQUIREMENT),
+        )
+
+    def test_history_reader_parses_legacy_requirement_children(self) -> None:
+        historical, declarations = (
+            identity_history.parse_historical_requirement_declarations(
+                {
+                    "docs/01.requirements/prd-0042-preserved.md": (
+                        "## Requirements\n"
+                        "### Functional requirements\nPRD-0042-R0001\n"
+                        "### Non-functional requirements\nPRD-0042-R0002\n"
+                    )
+                }
+            )
+        )
+        self.assertTrue(historical)
+        self.assertEqual({1}, declarations["REQ-0042.FR"])
+        self.assertEqual({2}, declarations["REQ-0042.NFR"])
+
+    def test_current_registry_delegates_old_grammar_to_history_reader(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        original = identity_history.parse_historical_requirement_declarations
+        with mock.patch.object(
+            identity_history,
+            "parse_historical_requirement_declarations",
+            wraps=original,
+        ) as historical_parser:
+            registry_module.load_trusted_requirement_allocation_baseline(":")
+
+        historical_parser.assert_called_once()
+        registry_source = pathlib.Path(registry_module.__file__).read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("_TRUSTED_LEGACY_REQUIREMENT_SECTION", registry_source)
+        self.assertNotIn("_TRUSTED_LEGACY_CHILD_ID", registry_source)
+
     def test_identity_scan_does_not_read_patch_text(self) -> None:
         """Identity history cost must not grow with every historical diff."""
 

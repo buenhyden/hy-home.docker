@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.1"
+version: "1.0.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -120,8 +120,8 @@ in the task evidence.
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` and LLM Wiki regeneration via `scripts/knowledge/generate-llm-wiki.py --write` when docs are added, removed, or renamed | Public document suites selected by the changed-path contract | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
 | Historical-file cleanup                     | Documentation checks, stale active-reference scans, and minimal metadata/link checks                                                                                                                       | Remote docs implementation-alignment, traceability, and repo contracts | Task evidence and Git recovery reference                              | Domain tests, coverage, Docker runtime checks                        |
-| Governance or provider policy docs           | Documentation checks plus `sync-provider-surfaces.sh --check` when provider surfaces are affected                                                                                                       | Remote repo contracts and required checks                        | Provider sync check output and policy-gate evidence                    | Runtime tests unless behavior/config changed                         |
-| Provider adapter, hook, or validation script | Targeted script self-check, `run-local-qa-gates.sh` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Wrapper command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped wrapper rationale is explicit |
+| Governance or provider policy docs           | Documentation checks plus `python3 scripts/operations/provider_surface_renderer.py --check` when provider surfaces are affected                                                                          | Remote repo contracts and required checks                        | Provider renderer check output and policy-gate evidence                | Runtime tests unless behavior/config changed                         |
+| Provider adapter, hook, or validation script | Targeted script self-check, `python3 scripts/validation/run-ci-gate.py --profile changed` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped route rationale is explicit |
 | Runtime, Docker, or Compose config           | Compose validation, hardening scripts, targeted service smoke checks when safe                                                                                                                          | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate                | Live service mutation skipped unless approved                        |
 | CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | GitHub Actions jobs, branch protection/ruleset verification      | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
 | Model policy or reasoning-effort config      | Stage 00 policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
@@ -152,10 +152,10 @@ optional cleanup.
 
 ## 7. Local QA/CI Orchestration
 
-Use `bash scripts/validation/run-local-qa-gates.sh --explain` to render the
-selected public suite-to-validator mapping without execution. The wrapper
-contains no child-command inventory: `--changed`, `--full`, and `--explain`
-delegate once to the public runner. These routes do not
+Use `python3 scripts/validation/run-ci-gate.py --profile changed --explain` to render the
+selected public suite-to-validator mapping without execution. The public runner
+exposes `--profile changed`, `--profile full`, and `--explain` routes and contains
+no duplicated child-command inventory. These routes do not
 upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
 stage-document runtime version drift for implementation-pinned images and

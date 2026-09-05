@@ -203,8 +203,8 @@ if not tool_name or tool_name in edit_tools:
                 f"Path: `{short_path}`\n\n"
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
-                "target-relative links, and `## Related Documents` section. The PostToolUse and "
-                "Stop hooks run `python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
+                "target-relative links, and `## Related Documents` section. The Stop hook runs "
+                "`python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
                 "changed-doc template gate."
             )
             break
@@ -343,98 +343,34 @@ print(json.dumps({"systemMessage": msg.strip()}))
 PY
 }
 
-has_changed_target_stage_docs() {
-  python3 - <<'PY'
-from __future__ import annotations
-
-import pathlib
-import subprocess
-import sys
-
-stage_roots = (
-    pathlib.Path("docs/01.requirements"),
-    pathlib.Path("docs/02.architecture"),
-    pathlib.Path("docs/03.specs"),
-    pathlib.Path("docs/05.operations"),
-    pathlib.Path("docs/90.references"),
-)
-
-
-def run_git(args: list[str]) -> list[str]:
-    try:
-        result = subprocess.run(
-            ["git", *args],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-    except subprocess.CalledProcessError:
-        return []
-    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
-
-
-def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
-
-
-paths: set[pathlib.Path] = set()
-for git_args in (
-    ["diff", "--name-only", "--diff-filter=AM"],
-    ["diff", "--cached", "--name-only", "--diff-filter=AM"],
-    ["ls-files", "--others", "--exclude-standard"],
-):
-    paths.update(pathlib.Path(path) for path in run_git(git_args))
-
-for path in paths:
-    if path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
-        continue
-    if any(is_relative_to(path, root) for root in stage_roots):
-        sys.exit(0)
-
-sys.exit(1)
-PY
-}
-
-template_stop_gate() {
-  if ! has_changed_target_stage_docs; then
-    return 0
-  fi
-
-  local output
-  if output="$(python3 scripts/validation/run-ci-gate.py --profile changed 2>&1)"; then
-    return 0
-  fi
-
-  GATE_OUTPUT="$output" HOOK_INPUT="$INPUT" python3 - <<'PY'
+stop_retry_active() {
+  HOOK_INPUT="$INPUT" python3 - <<'PY'
 import json
 import os
 
-output = os.environ.get("GATE_OUTPUT", "").strip()
-reason = (
-    "Changed target-stage documentation does not satisfy the docs/99.templates "
-    "contract. Continue the task, fix the document from the mapped template, "
-    "and rerun `python3 scripts/validation/run-ci-gate.py --profile changed`."
-)
-if output:
-    reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
+try:
+    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
+except (TypeError, ValueError):
+    payload = {}
+raise SystemExit(0 if isinstance(payload, dict) and payload.get("stop_hook_active") is True else 1)
+PY
+}
 
-if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
-    try:
-        payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-    except (TypeError, ValueError):
-        payload = {}
-    if isinstance(payload, dict) and payload.get("stop_hook_active") is True:
-        print(json.dumps({
-            "continue": False,
-            "stopReason": f"Stop retry limit reached. {reason}",
-        }))
-    else:
-        print(json.dumps({"decision": "block", "reason": reason}))
+emit_stop_block() {
+  local reason="$1"
+  local retry="${2:-0}"
+  STOP_RETRY="$retry" python3 3<<<"$reason" <<'PY'
+import json
+import os
+
+reason = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
+retry = os.environ.get("STOP_RETRY") == "1"
+if retry:
+    reason = f"Stop retry limit reached. {reason}"
+if retry:
+    print(json.dumps({"continue": False, "stopReason": reason}))
+elif os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
+    print(json.dumps({"decision": "block", "reason": reason}))
 else:
     print(json.dumps({
         "decision": "block",
@@ -442,6 +378,33 @@ else:
         "systemMessage": reason,
     }))
 PY
+}
+
+changed_profile_stop_gate() {
+  local output result
+  if ! command -v timeout >/dev/null 2>&1; then
+    emit_stop_block "The changed validation profile could not start because the bounded timeout command is unavailable. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\` and continue the task."
+    return 1
+  fi
+  if output="$(timeout --kill-after=5s 540s python3 scripts/validation/run-ci-gate.py --profile changed 2>&1)"; then
+    return 0
+  else
+    result=$?
+  fi
+
+  local reason
+  if [[ "$result" -eq 124 || "$result" -eq 137 ]]; then
+    reason="The changed validation profile timed out or was incomplete after its 540-second hook budget. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, inspect the complete result, and continue the task."
+  else
+    reason="Changed repository state does not satisfy the changed validation profile. Continue the task, fix the reported contract failure, and manually rerun \`python3 scripts/validation/run-ci-gate.py --profile changed\`."
+  fi
+  if [[ -n "$output" ]]; then
+    reason="$reason
+
+Validator output:
+${output: -6000}"
+  fi
+  emit_stop_block "$reason"
   return 1
 }
 
@@ -450,24 +413,14 @@ logical_commit_stop_gate() {
     return 0
   fi
 
-  local output
-  output="$(
-    python3 - <<'PY'
+  local output git_status="$1"
+  if ! output="$(
+    python3 3<<<"$git_status" <<'PY'
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
-
-try:
-    result = subprocess.run(
-        ["git", "status", "--porcelain=v1"],
-        check=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-    )
-except subprocess.CalledProcessError:
-    raise SystemExit(0)
 
 REGISTRY = "docs/00.agent-governance/policies/approval-boundaries.md"
 SCHEMA = "agent-governance/deferred-paths/v1"
@@ -532,9 +485,11 @@ def deferred_paths() -> set[str]:
 exempt = deferred_paths()
 
 paths: list[str] = []
-for line in result.stdout.splitlines():
+for line in os.fdopen(3, encoding="utf-8").read().splitlines():
     if not line.strip():
         continue
+    if len(line) < 4 or line[2] != " ":
+        raise SystemExit(2)
     path = line[3:]
     if " -> " in path:
         path = path.split(" -> ", 1)[1]
@@ -542,19 +497,30 @@ for line in result.stdout.splitlines():
         continue
     paths.append(path)
 
-print("\n".join(paths[:80]))
+display_limit = 6000
+notice = "\n[additional changed-path bytes omitted]"
+payload = "\n".join(paths[:80]).encode("utf-8")
+if len(payload) > display_limit:
+    prefix_limit = display_limit - len(notice.encode("utf-8"))
+    display = payload[:prefix_limit].decode("utf-8", errors="ignore") + notice
+else:
+    display = payload.decode("utf-8")
+print(display)
 PY
-  )"
+  )"; then
+    emit_stop_block "Git status could not be parsed, so repository cleanliness and completion cannot be proven. Resolve the malformed status output, manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, and continue the task."
+    return 1
+  fi
 
   if [[ -z "$output" ]]; then
     return 0
   fi
 
-  GATE_OUTPUT="$output" HOOK_INPUT="$INPUT" python3 - <<'PY'
-import json
+  local reason
+  reason="$(
+    python3 3<<<"$output" <<'PY'
 import os
-
-paths = os.environ.get("GATE_OUTPUT", "").strip()
+paths = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
 reason = (
     "Repository-modifying work still has uncommitted task-owned changes. "
     "Before the final response, inspect the diff, run the relevant checks, "
@@ -565,33 +531,32 @@ reason = (
 )
 if paths:
     reason = f"{reason}\n\nUncommitted paths:\n{paths}"
-
-if os.environ.get("HY_HOME_HOOK_PROVIDER") == "codex":
-    try:
-        payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-    except (TypeError, ValueError):
-        payload = {}
-    if isinstance(payload, dict) and payload.get("stop_hook_active") is True:
-        print(json.dumps({
-            "continue": False,
-            "stopReason": f"Stop retry limit reached. {reason}",
-        }))
-    else:
-        print(json.dumps({"decision": "block", "reason": reason}))
-else:
-    print(json.dumps({
-        "decision": "block",
-        "reason": reason,
-        "systemMessage": reason,
-    }))
+print(reason)
 PY
+  )"
+  emit_stop_block "$reason"
   return 1
 }
 
 stop() {
-  if template_stop_gate && logical_commit_stop_gate; then
+  if stop_retry_active; then
+    emit_stop_block "Automatic Stop validation already ran for this stop interaction. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\` after any fix, record the result, and request a new stop interaction." 1
+    return 0
+  fi
+
+  local git_status
+  if ! git_status="$(git status --porcelain=v1 --untracked-files=normal 2>/dev/null)"; then
+    emit_stop_block "Git status could not be inspected, so repository cleanliness and completion cannot be proven. Resolve the Git error, manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, and continue the task."
+    return 0
+  fi
+
+  if [[ -n "$git_status" ]] && ! changed_profile_stop_gate; then
+    return 0
+  fi
+  if logical_commit_stop_gate "$git_status"; then
     session_end
   fi
+  return 0
 }
 
 user_prompt_submit() {

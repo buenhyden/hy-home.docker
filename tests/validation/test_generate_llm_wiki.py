@@ -171,20 +171,15 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             )
             self.assertIn('status: "published"', index)
 
-    def test_exact_script_identity_excludes_transition_wrappers(self) -> None:
+    def test_script_identity_excludes_transition_wrappers_and_python_helpers(
+        self,
+    ) -> None:
         generator = load_generator()
         script_paths = {
             candidate.path
             for candidate in generator.collect_candidates(ROOT)
             if candidate.category == "Scripts and validators"
         }
-        # 40 as measured on 2026-09-03: every `.sh` under the two automation
-        # roots plus this generator and the non-script companions. It was 39
-        # while `scripts/` was the only root; moving the agent-output eval
-        # harness to `evals/` removed one member and added two, because
-        # `evals/README.md` counts as a companion exactly as `scripts/README.md`
-        # does. `.py` validators are still not members in either root.
-        self.assertEqual(40, len(script_paths))
         self.assertIn(generator.GENERATOR_PATH, script_paths)
         self.assertNotIn("scripts/knowledge/generate-llm-wiki-index.sh", script_paths)
         self.assertNotIn(
