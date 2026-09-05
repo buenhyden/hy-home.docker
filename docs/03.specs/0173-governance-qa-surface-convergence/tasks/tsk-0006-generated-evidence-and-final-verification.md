@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.4"
+version: "0.4.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -25,10 +25,12 @@ branch_integration_receipts:
 
 ## Objective
 
-Own the latest canonical-home relocation, its all-source disposition, safe
-verification and independent review. Prior integration evidence stays dated.
-The follow-up now authorizes local commits and safe next-step verification;
-remote delivery and operational actions remain outside scope.
+Own the remaining acceptance evidence after canonical-home relocation and its
+verified follow-ups entered local main at `8176cdee7`. Reconcile the active
+package against that implementation without repeating completed milestones or
+reinterpreting historical results. Local documentation changes, scoped commits
+and safe verification remain authorized; remote delivery and operational actions
+remain outside scope.
 
 ## Inputs
 
@@ -39,6 +41,94 @@ remote delivery and operational actions remain outside scope.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Post-integration package review (2026-09-06)
+
+The latest user instruction explicitly requested local-main integration first,
+then review and execution of the remaining Spec, Plan and Tasks against that
+integrated baseline. Root and retained QA worktrees were clean at
+`8176cdee732954415bc5462d6d4d43da4e319394`; local main and the observed local
+origin/main tracking ref were at `a8c6ede82a4118fadab6c991880999905c0586e1`.
+`git merge-base --is-ancestor main HEAD` exited 0. Metadata inspection again
+found no configured pre-merge, post-merge or post-checkout hook.
+
+`git switch main` and `git merge --ff-only codex/0173-agent-governance-home`
+exited 0, advancing main to 8176cdee7 without conflicts or a merge commit.
+`python3 scripts/operations/provider_surface_renderer.py --check` and
+`python3 scripts/knowledge/generate-llm-wiki.py --check` each exited 0 on main;
+Git status was clean. `git switch codex/0173-agent-governance-home` then exited
+0 at the same HEAD. The existing branch and detached QA worktree are preserved.
+This receipt supersedes the a8c6ede82 integration boundary below, without granting
+remote actions or automatically integrating later unreviewed follow-up changes.
+
+This review uses main 8176cdee7 as its implementation baseline. The original
+e5685b42c remains the relocation/recovery baseline, not a checkout target.
+`lstat` confirmed the retired governance root, `.codex/skills`,
+`.codex/config.toml` and provider quarantine absent, and `.agents` a real
+directory. No private-file payload, operating input or global configuration was
+read or changed in this reconciliation.
+
+Installed tools were rechecked: Git 2.43.0, Python 3.12.3, Codex 0.140.0 and
+Claude 2.1.261; all version commands exited 0. Linux is WSL2
+6.18.33.2-microsoft-standard-WSL2, with `/proc` and pidfd available. Codex's
+read-only PATH-alias warning remains; unchanged versions do not resolve the
+previously recorded native startup boundary. No startup or model call was retried.
+
+Before edits, `python3 scripts/validation/run-ci-gate.py --profile changed
+--explain` exited 0 and selected eight repository-integrity fallback validators
+on the clean tree. Local changed selection reads unstaged, staged and untracked
+paths; its fallback is not verification of an already committed migration.
+The documentation candidate receives its own inspected selection and evidence
+below, separate from the whole-migration aggregate blocked by PostgreSQL.
+
+The Stage 99 lifecycle and source implementation distinguish an implementation
+milestone from document completion. All six Task documents remain `in-progress`,
+while Spec and Plan remain `active`. The current branch-handoff receipt carrier
+requires an active Spec and in-progress Task; per-check BLOCKED evidence does not
+authorize changing that carrier state or atomically preserving an incomplete
+package. No acceptance criterion, lifecycle edge or preservation rule is waived.
+
+Read-only independent `active_task_audit` reviewed all five earlier Tasks and
+their actual consumers. Tracked nonarchive path and frontmatter inventories found
+one Spec, one Plan and six Tasks, all in SPEC-0173; the other matching document
+forms are Stage 99 templates, not additional work packets. The audit found no
+missing implementation within Tasks 1-5's scope, but identified stale current
+claims and already-closed dependencies. It did not run tests or grant approval.
+
+| Artifact | Observed discrepancy at main 8176cdee7 | Reconciliation and remaining owner |
+| --- | --- | --- |
+| [Spec](../spec.md) | Original baseline and a8c6ede82 integration scope read as the current starting point | Separate original recovery provenance from integrated main; retain all acceptance criteria |
+| [Plan](../plan.md) | Executed W1-W5 cutover and subsequent lint repair still appear as unchecked prospective work | Keep stable W labels for traceability; route executed evidence here and plan only remaining verification |
+| [Task 1](tsk-0001-lifecycle-and-red-contracts.md) | Obsolete Spec-only/Git-only preservation rulings remain imperative | Preserve original claims as historical quotations; current full-package preservation follows canonical policy and this receipt |
+| [Task 2](tsk-0002-gate-composition-convergence.md) | No current implementation contradiction found; invocation counts are original measurements | Preserve this file byte-for-byte; final gate composition evidence remains here |
+| [Task 3](tsk-0003-script-and-operation-ownership.md) | DATA-0068/0069/0073/0074 retirement remains deferred although Task 5 recorded 37a756f2 | Close the dependency with its existing evidence; retain original operation tests and boundaries |
+| [Task 4](tsk-0004-test-and-fixture-convergence.md) | T-AER removal and DATA-0078 staleness are phrased as current work after later corrections | Point to 8c4d2709 and f5d3702bf; preserve original failure counts and assign final freshness here |
+| [Task 5](tsk-0005-document-and-provider-residue.md) | Stage 00 and generated `.agents/skills` wording conflict with current canonical ownership; DATA-0065 designation is already resolved | Distinguish authored canonical input from native outputs; retain original review and link 062cb6115 for resolved designation |
+| This Task | Current integration and acceptance summary still points to a8c6ede82 | Record the actual 8176cdee7 receipt and this review; keep per-check blockers and dated earlier checkpoints |
+
+The Stage 03 index routes readers to this remaining acceptance owner. It does
+not create another execution ledger. No new package, ID, ADR, runtime feature,
+gate, fixture or archive body is introduced by this reconciliation.
+
+| Preflight interface | Conflict reviewed | Ruling |
+| --- | --- | --- |
+| Task 1 retention and Spec/Plan final disposition | Old transient-body deletion conflicts with current full-package preservation | Quote the actual earlier decision without applying it; no frozen-body changes |
+| Task 5 provider outcome and Spec canonical-home contract | Historical generated skill projection conflicts with current authored input | Preserve the old observation; keep only `.claude` and `.codex` as generated native owners |
+| Tasks 3-5 deferrals and Task 6 acceptance | Completed prerequisite work can be redispatched from stale prose | Close only evidence-backed dependencies; keep current verification in this Task |
+| Plan W1-W6 and acceptance mapping | Replacing all labels would orphan existing promotion rows | Keep labels and acceptance requirements while removing executed cutover instructions from prospective work |
+| Document statuses and blocked execution | A BLOCKED check is not a valid terminal preservation or receipt-carrier transition | Preserve active Spec/Plan and in-progress Tasks; do not waive acceptance criterion 15 |
+
+Independent exact-diff review additionally found an upstream promotion
+dependency at the integrated baseline: REQ-0026's FR-0009, Constraints and
+Acceptance Criteria, AD-0030's Data Flow, and accepted ADR-0031's Decision and
+Consequences still prescribe transient Plan/Task removal. Canonical policy and
+the executable package validator already require full-package preservation.
+This is remaining authority reconciliation within the user's request, not
+permission to delete Task bodies or weaken the validator. The current eight-file
+slice does not resolve those upstream owners. The next bounded follow-up must
+review a successor decision, preserve ADR-0031's original accepted body through
+its registered supersession route, and align live Requirement/Description and
+their consumers. No accepted decision body may be silently rewritten.
 
 ### Main integration and remaining static work (2026-09-06)
 
@@ -955,6 +1045,64 @@ Stable identity/recovery checks remain enforced; no frozen archive body was edit
 
 ## Verification Evidence
 
+### Package reconciliation verification (2026-09-06)
+
+The current candidate changes existing Stage 03 documents only. It adds no
+document path or runtime behavior. Task 2, the Stage 98 preserved bodies and
+executable/configuration contracts are outside its edit set. Domain-code
+coverage, new regression cases and Docker runtime checks are N/A for this
+wording-only slice. Registered document regressions selected by the public gate
+remain applicable. Wiki freshness uses its formal check; generation is required
+only if that check or a source-inventory change establishes actual drift.
+
+On integrated main, renderer and Wiki checks each exited 0 before follow-up
+editing. The documentation candidate's `changed --explain` exited 0 and selected
+11 validators. The retained QA worktree at 8176cdee7 received only the eight
+owned document diffs, patch SHA-256
+`37ed86d289d0d7860463e05bb77307c3ea7f8ee9762355763bfa9c4275a567b7`.
+All eight hashes matched the original candidate before execution and stayed
+unchanged afterward. It used the previously reviewed isolated example-input
+environment: allowlisted PATH/LANG/TMPDIR, empty task-owned DOCKER_CONFIG,
+nonexistent task-owned DOCKER_HOST socket and `HYHOME_COMPOSE_PROFILES=core`.
+No real `.env`, local settings or personal resume file was present in QA.
+
+| Command and scope | Exit / result |
+| --- | --- |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 8176cdee732954415bc5462d6d4d43da4e319394`, original worktree | 0 / PASS: eight documents, zero violations/exceptions/transition overrides |
+| `python3 scripts/validation/check-document-links.py --mode all`, original worktree candidate | 0 / PASS: 695 documents, 5,951 links, zero failures |
+| `markdownlint-cli2` with the exact eight authored paths, isolated content snapshot and unchanged repository rules with autofix disabled | 0 / PASS: CLI 0.23.0, markdownlint 0.41.0, eight files, zero errors |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --explain`, QA candidate | 0 / PASS selection: 11 validators; no actual PostgreSQL operation selected |
+| `python3 scripts/validation/run-ci-gate.py --profile changed`, QA candidate | 0 / PASS: 296.333 seconds; 795 reported tests in 11 batches, including 11 existing Wave-C skips, no failures |
+| `python3 scripts/operations/provider_surface_renderer.py --check`, original worktree candidate | 0 / PASS: two providers, zero drift |
+| `python3 scripts/knowledge/generate-llm-wiki.py --check`, original worktree candidate and public QA route | 0 / PASS: both outputs fresh; no regeneration necessary |
+| `git diff --check`, original worktree | 0 / PASS |
+
+The public gate also observed 374 active metadata documents with zero violations
+and fresh DATA-0078 output. Its registered example-input Compose baselines passed;
+those results do not establish operational readiness. Independent snapshot
+comparison confirmed unchanged Spec Behavior and Acceptance sections, all eight
+package identity/lifecycle/receipt envelopes, and Task 2 bytes. A metadata-only
+Stage 03 census found nine actual files including its index, no symlinks, and
+zero untracked or ignored files. The edit set contains no executable, native
+configuration, generated or archived file.
+
+Independent `package_reconciliation_review` approved the exact candidate for
+specification compliance and documentation quality (A), with zero new findings.
+It identified the upstream preservation-owner dependency recorded above; that
+dependency remains open for the next bounded follow-up. These measured results
+and the resulting Plan/Spec dependency clarification are appended after the QA
+snapshot and receive focused final document validation and scoped re-review;
+they are not retroactively part of the earlier aggregate input.
+
+`git apply --reverse --check` and reversal of only the owned QA patch each
+exited 0. QA is clean, its isolated Docker config remains empty, and no real
+`.env` was created. The public documentation result does not substitute for
+acceptance row 15's blocked whole-migration aggregate or unobserved native
+startup. Full, all-files, Graphify, Hosted CI and operating/model checks retain
+their separately recorded scope and unmet prerequisites.
+
+### Earlier integration verification
+
 The following pre-relocation execution details are dated integration history.
 Any prospective full-run instruction in those details was superseded by the
 current Plan. The receipt distinguishes current blocked relocation acceptance.
@@ -1132,9 +1280,11 @@ original SPEC-0174 Task cleanup promise is also preserved: its temporary
 Actions acquisition, transport, and reconstruction workflows are absent from
 the delivered tree and are not QA evidence.
 
-The mapping retains previously observed integration evidence in rows 1-13.
-Rows 14-16 now govern relocation and must be revalidated after implementation;
-historical results do not prove the relocated candidate. BLOCKED/NOT_RUN is not PASS.
+The mapping retains previously observed integration evidence in rows 1-13 and
+the recorded relocation/follow-up results in rows 14-16. The implemented tree
+is now integrated at 8176cdee7. This document reconciliation does not rerun or
+re-date those results, and its documentation gate cannot close the outstanding
+whole-migration aggregate in row 15. BLOCKED/NOT_RUN is not PASS.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
@@ -1223,6 +1373,8 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 | `4aa319a40` | Reviewed manifest transition guards and explicit generator write guidance with regression coverage |
 | `6c283d395` | Atomic canonical-home relocation, provider/document consumer transition and reviewed regression evidence |
 | `c265bacc5` | Clean-checkout tracked test ownership, preserved Compose case split, post-index Wiki freshness and bounded follow-up evidence |
+| `a8c6ede82` | Isolated Task-only public gate evidence, distinct from whole-migration and native acceptance |
+| `8176cdee7` | Reviewed ten-file static cleanup: preserved calls, facade exports and test bodies; scoped Ruff PASS and 563 direct test executions; now integrated on local main |
 
 ### Historical correction and cleanup checkpoint (2026-09-05)
 
@@ -1279,10 +1431,15 @@ No completed archive packet or new Spec/Plan/Task was created.
 
 ## Deferred Items
 
+- REQ-0026, AD-0030 and accepted ADR-0031 retain obsolete transient Plan/Task
+  removal language. Resolve that current-owner promotion dependency through the
+  reviewed successor/preservation lifecycle; keep the existing full-package
+  policy and executable guarantee unchanged. The eight-file reconciliation
+  itself does not close this item.
 - Push, pull request, Hosted CI, branch protection, deployment, tag, and release
   remain outside scope. The earlier cleanup instruction is historical; this
   follow-up retains the work branch/workspace and authorizes reviewed local
-  commits and the completed a8c6ede82 local-main checkpoint only. It does not
+  commits and the completed 8176cdee7 local-main checkpoint only. It does not
   authorize subsequent integration, remote delivery or cleanup.
 - Runtime and remote observations remain explicitly unverified.
 - The whole-migration aggregate remains BLOCKED by the PostgreSQL operating/image

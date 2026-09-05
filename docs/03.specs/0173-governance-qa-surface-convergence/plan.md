@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.4.3"
+version: "0.5.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -16,303 +16,240 @@ created: "2026-09-05"
 
 ## Objective
 
-Relocate reviewed common authority to a real repository-owned `.agents/` home,
-remove the former governance directory, and preserve native adapters, operational
-safety, document contracts and frozen execution evidence. This plan replaces the
-prospective integration/empty-root plan preserved at baseline `e5685b42c`.
-Completed Tasks and their evidence are not reopened or re-executed.
+Reconcile the active package with the implementation now integrated on local
+main at `8176cdee732954415bc5462d6d4d43da4e319394`, then collect the remaining
+acceptance evidence without weakening its input, runtime, or authorization
+boundaries. The canonical `.agents/` relocation, clean-worktree ownership and
+Wiki repair, recorded evidence, and bounded Python cleanup are the implemented
+baseline. They are not prospective migration work.
 
-The latest user request authorizes local source, consumer, generator, test and
-policy changes, a local work branch, and normal scoped approval for protected
-writes. The subsequent user instruction authorizes local commits and safe
-follow-up verification. The next explicit instruction authorizes integrating
-the reviewed tip `a8c6ede82` into local main before further work. Additional
-integration, push, PR, deployment, secret access, global settings and installation
-remain outside scope. The requested target supersedes earlier
-`.agents` removal/empty-container direction. No additional permission follows
-from a role, skill, external reference or historical Task.
+Tasks 0001 through 0005 retain their implementation milestones while their
+frontmatter remains nonterminal with the active package. Task 0006 is the sole
+execution and verification ledger. This Plan remains active until the package's
+whole acceptance contract can receive an atomic lifecycle disposition.
+
+The current authorization covers the integrated `8176cdee7` checkpoint, local
+documentation follow-up and review on the same
+`codex/0173-agent-governance-home` branch, and local commits. It does not imply
+integration of later unreviewed work. Push, pull request, deployment, secrets,
+global runtime settings, installation, Hosted CI and remote-state mutation
+remain outside scope.
 
 ## Dependencies
 
-- Baseline: local main `e5685b42c92039618ae86cca8736b6a425630221`, initially clean.
-- Work branch: `codex/0173-agent-governance-home`, created from that exact HEAD.
-- REQ-0024/0026, AD-0027/0030 and ADR-0029/0031 remain the existing owners.
-  Introduce the next registered ADR only for the changed authority-location
-  decision; preserve ADR-0029's decision body during legal supersession.
-- Task 0006 owns the per-source disposition, compatibility table, review and
-  actual execution results. This Plan owns prospective steps only.
-- Existing scripts remain executable owners. Stage 99 remains the document
-  machine-contract owner. Provider Registry remains translation data, not policy.
-- All 77 original common files were read and classified before movement. All
-  23 skills have explicit preconditions, inputs, procedure, outputs and failures;
-  ordinary policy/checklist/SDLC Markdown remains outside native skill discovery.
+- Original relocation provenance: local main
+  `e5685b42c92039618ae86cca8736b6a425630221`. This commit remains the comparison
+  origin for the reviewed migration; it is not the current execution baseline.
+- Current review baseline: local main and the work branch both at
+  `8176cdee732954415bc5462d6d4d43da4e319394`.
+- Integrated implementation checkpoints: `6c283d395` for the atomic canonical
+  relocation, `c265bacc5` for reproducible ownership and tracked-input Wiki
+  repair, `a8c6ede82` for isolated follow-up evidence, and `8176cdee7` for the
+  affected Python lint cleanup.
+- Durable owners: REQ-0024 and REQ-0026; AD-0027 and AD-0030; ADR-0031 and
+  accepted ADR-0032. Superseded ADR-0029 remains preserved evidence and is not a
+  current decision owner.
+- REQ-0026, AD-0030, and accepted ADR-0031 retain pre-existing transient
+  Plan/Task deletion language that conflicts with canonical full-package
+  preservation and executable package guards. Their alignment is an open
+  promotion dependency, not evidence that this package is ready to complete.
+- Existing scripts remain executable owners. Stage 99 owns document shapes;
+  the Provider Registry owns translation facts; Task 0006 owns actual command,
+  review, blocker and disposition evidence.
 
-### Chosen architecture and alternatives
+### Current interface boundary
 
-| Choice | Authority and loading | Safety / maintenance / navigation | Decision |
-| --- | --- | --- | --- |
-| Reviewed canonical relocation | One `.agents` source, native skill discovery, native provider adapters | Requires coordinated path/profile/loader transition; no duplicated bodies | Adopt within the user's requested direction after independent review |
-| Keep current Stage 00 sources | Existing direct reads and current checks remain | Does not meet requested canonical home or native skill route | Reject for this request |
-| Copy or link entire trees | Multiple policy roots or provider format aliasing | Ambiguous ownership, regeneration cycles and unsafe link boundaries | Reject |
+The public validation entrypoints remain exactly:
 
-```text
-.agents/
-  README.md
-  governance/
-    <existing policy>.md
-    sdlc.md
-    hooks/<existing hook policy>.md
-    providers/README.md
-    providers/registry.yaml
-  roles/<existing role>.md
-  skills/<existing skill>/SKILL.md
-  skills/<existing skill>/agents/openai.yaml
-.claude/
-  provider.md
-  README.md                  # generated pointer
-  agents/<role>.md           # generated native roles
-  skills/<skill>/SKILL.md     # generated thin adapters
-  settings.json, hooks/, output-styles/  # existing native mechanics
-.codex/
-  provider.md
-  README.md                  # generated pointer
-  agents/<role>.toml         # generated native roles
-  hooks.json                 # existing native mechanics
-```
+- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
+- `python3 scripts/validation/run-ci-gate.py --profile full`
 
-Optional rules, knowledge, prompts, workflows, evaluations, scripts and memory
-directories are not introduced without a distinct consumer. Normative workflow
-is `.agents/governance/workflows.md`; native JavaScript workflows are not adopted.
-All 14 role IDs, 23 skill IDs, model/effort/permission mappings and hook registration
-values stay unchanged. No `.codex/config.toml` is created solely for symmetry.
+Provider projection remains a separate direct interface:
 
-### Load graph and contracts
+- `python3 scripts/operations/provider_surface_renderer.py --check`
+- `python3 scripts/operations/provider_surface_renderer.py --write`
 
-`AGENTS.md` explicitly instructs reading governance/bootstrap, `.codex/provider.md`
-and selected policy/role/skill plus the current Task. `CLAUDE.md` uses verified
-relative imports for the common bootstrap and `.claude/provider.md`; it does not
-import Codex instructions. The two native README outputs point to authored
-provider sources and never feed the renderer.
+The controlled all-files route is
+`scripts/validation/run-agent-precommit-all-files.sh`. It is not a substitute
+for either public profile and remains NOT_RUN because its owned execution may
+install hook environments and invoke container-bound linters.
 
-Native SKILL frontmatter uses `name`, `description`, and `metadata` containing
-existing governance identity, owner, version, lifecycle and scope fields. Preserve
-all meaningful source fields through the native-profile contract. Codex's
-`agents/openai.yaml` sets `policy.allow_implicit_invocation: false`; Claude thin
-adapters set `disable-model-invocation: true`. No tool grants, dependency installer,
-server, memory or global skill copy is added. Explicit invocation metadata does
-not replace approval gates. Codex reads canonical `.agents/skills`; the Registry
-must distinguish canonical discovery from generated native skill output.
+Canonical skill shape, direct repository loading and static provider checks are
+PASS in Task 0006. Normal native startup discovery is not observed. Skill calls
+and live hook delivery remain NOT_RUN; static parity cannot promote either state.
 
 ## Execution Sequence
 
-1. W1: Record suitability, exact baseline, all source dispositions and successor decision.
-2. W2: Replace canonical-home, skill-envelope and provider-rendering contracts with regressions.
-3. W3: Move document profiles, discovery, link resolution and knowledge indexing to the new home.
-4. W4: Cut over hook, evaluation, CI and root bootstrap consumers without widening execution.
-5. W5: Apply reviewed source moves, regenerate native/index outputs and remove the old home.
-6. W6: Verify final static behavior, preservation, runtime evidence limits and independent review.
+1. W1: Preserve the reviewed authority decision, provenance and branch-handoff
+   contract while reconciling current package language.
+2. W2: Preserve the implemented canonical/provider contracts and their static
+   evidence without claiming native runtime discovery.
+3. W3: Preserve the implemented document, gate and test ownership contracts and
+   their acceptance mappings.
+4. W4: Preserve the implemented bootstrap, hook, evaluation and CI routing while
+   keeping live runtime observations separate.
+5. W5: Preserve the completed source cutover, generated outputs and archive
+   dispositions as the integrated baseline.
+6. W6: Review the post-integration package, run safe document checks, and resume
+   blocked acceptance only when its exact prerequisites are available.
 
 ### W1: Reviewed authority decision
 
-- [ ] Record the latest user authorization and local baseline in Task 0006;
-  preserve every earlier dated record and replace only obsolete current receipt
-  claims and prospective directions.
-- [ ] Record every original source, purpose, destination, consumers, dependencies,
-  preserved contracts, approval effect and validation in that Task's migration
-  table. Missing or duplicate source/destination is a failure.
-- [ ] Compare official sources against Codex 0.140.0 and Claude Code 2.1.261.
-  Record syntax, discovery, invocation and enforcement as separate evidence.
-- [ ] Review proposed ADR-0032 without supersession metadata. On adoption under
-  the explicit user relocation request and actual independent review, transition
-  it to accepted, replace its proposal wording with the adopted decision and
-  actual review basis, and add supersedes ADR-0029. Transition ADR-0029 accepted to
-  superseded with reciprocal superseded_by ADR-0032, changing only lifecycle
-  metadata before its first preservation. Move those pre-preservation bytes to
-  Stage 98 superseded/02.architecture/decisions in the same reviewed change.
-  Preserve its decision body and all already-frozen records; no fabricated
-  terminal commit, signature, Tombstone or historical approval. Update live
-  Spec/Requirement/AD/Registry/index links to the effective successor.
-- [ ] Obtain separate read-only rules/code review of this exact design before
-  source/code implementation. Address findings within the requested scope.
+Implemented baseline: the original source inventory and branch-handoff receipt
+are recorded in Task 0006. ADR-0032 is the accepted canonical-home decision;
+ADR-0029 is legally superseded and preserved. Current validators distinguish
+current-path grammar from historical recovery.
+
+Keep current Spec, Plan, Task and index prose consistent with `8176cdee7`. Do
+not allocate another canonical-home ADR, repeat ADR-0032, repeat source
+disposition, or reopen the handoff. The separate retention-owner promotion uses
+this sequence:
+
+1. Compare the conflicting REQ-0026, AD-0030, and ADR-0031 clauses with the
+   canonical policy and executable full-package guards.
+2. Produce and independently review one bounded successor design covering the
+   required preservation invariant, owner updates, lifecycle transitions,
+   alternatives, consumer effects, and recovery.
+3. Only after that design is accepted, update REQ-0026 and AD-0030 and introduce
+   the successor required to change ADR-0031. Preserve ADR-0031's accepted body
+   and use the applicable reciprocal supersession lifecycle.
+4. Record actual promotion, review, validation, and consumer evidence only in
+   Task 0006.
+
+No successor identity or substantive decision is selected before step 2.
+Acceptance rows 11 and 12 retain the W1 mapping.
 
 ### W2: Canonical and provider contracts
 
-Owned sources: `scripts/lib/agent_governance/agent_governance_contract.py`,
-`provider_surface_renderer.py`, provider Registry, and existing provider/core tests.
+Implemented baseline: strict bounded `.agents/` inventory, native skill
+envelopes, explicit-invocation controls, provider source/output separation,
+deterministic rendering and focused actual-root regression evidence are present.
+Acceptance row 14 retains the W2 mapping.
 
-- [ ] Constrain native fixture copies to exact tracked configuration inputs,
-  excluding local settings/memory. Read new canonical sources and authored native
-  provider documents from exact registered expected paths with bounded no-follow
-  reads, including task-owned untracked files; staging is not a prerequisite.
-- [ ] RED: valid populated canonical home currently fails; missing root, unknown
-  entry, symlink/FIFO, wrong skill name/metadata, implicit invocation and canonical
-  output injection must fail after migration.
-- [ ] Replace the empty-container contract with bounded no-follow canonical
-  inventory validation. Unknown source files are preserved and reported; never
-  quarantine or remove canonical inputs.
-- [ ] Load nested native skills and metadata; derive role procedure links from
-  loaded source paths. Validate exact role/skill inventory and native control files.
-- [ ] Restrict output roots to existing native surfaces. Reject source/output
-  cycles and foreign adapter inputs. Thin Claude adapters link to canonical bodies.
-- [ ] Retain source-link rebasing, query/fragment handling, read/output bounds,
-  atomic writes, descriptor identities, quarantine races and unknown-file guards.
-- [ ] GREEN: run the three existing provider/core modules after fixture hardening;
-  test two writes in isolated fixtures plus canonical source-byte preservation.
+Normal native startup remains a separate observation. Its required input is an
+environment where the ordinary installed runtime can start and expose
+repository-local discovery without unapproved authentication or global-state
+effects. The decision is whether that input boundary becomes available within
+an authorized follow-up. Resume only through ordinary startup and record the
+observed discovery result in Task 0006. Do not use a bypass flag, direct file read,
+static check or model call as replacement evidence.
 
 ### W3: Document and knowledge consumers
 
-Owned surfaces: Stage 99 Registry/schema/templates, document-governance library,
-metadata/link/lifecycle entrypoints, wiki generator and associated registered tests.
+Implemented baseline: Stage 99 classification, hidden canonical discovery,
+current and historical link boundaries, Wiki source scope, canonical invocation
+identity, manifest ownership and the repaired library/CLI test split are present.
+Acceptance rows 1 through 10 retain their W3 mapping.
 
-- [ ] RED: hidden canonical source discovery and valid relative links are currently
-  absent; old live README route and unknown native skill fields expose old contracts.
-- [ ] Register each new source exactly once, including the native skill envelope
-  and invocation metadata, without weakening common authored or frozen profiles.
-- [ ] Admit only the new canonical hidden root and remove old live route ownership.
-  Retain historical namespace readers needed for frozen identities and recovery.
-- [ ] Scan canonical outbound links and apply current-authority archive boundaries.
-  Existing frozen outbound-link handling remains unchanged; no redirect is added.
-- [ ] Update LLM Wiki input scopes/category, source templates and exact output owner.
-  Preserve secret, symlink, lockfile, private/dotfile and bounded-read exclusions.
-- [ ] GREEN: existing document tests plus new hidden discovery, retired-root,
-  malformed skill, link escape and wiki scope negative cases; official check modes.
+For this reconciliation, preserve those contracts and update only current
+package descriptions and navigation. No Registry, schema, generator, test,
+workflow, model or permission behavior changes are planned. A changed-profile
+selection describes the final unstaged, staged and untracked path set together
+with required fallback validators; it does not prove an arbitrary committed
+range.
 
 ### W4: Hooks, entrypoints and repository routing
 
-Owned surfaces: hook_rules and event hook, evals, parity/report scripts, script
-manifest, semantic contract, workflow/labeler/CODEOWNERS and active navigation.
+Implemented baseline: canonical bootstrap routes, fail-closed policy loading,
+provider event conversion, evaluation paths, manifest routing, CI selection and
+active navigation have been cut over. Native hook setting files and event facts
+remain unchanged.
 
-- [ ] RED: missing configured policy directory must fail closed rather than
-  silently loading zero rules. Exercise new directory with independent known
-  rule count, deny/allow/error/root fixtures. Run the actual dispatcher for both
-  providers on missing/invalid policy and Python/evaluator errors; require deny
-  JSON or exit 2 so an outer exception handler cannot turn a loader failure into allow.
-- [ ] Move policy paths, source contexts, bootstrap strings and skill suggestions
-  through the reviewed mapping; preserve events, matchers, budgets and permissions.
-- [ ] Keep provider event conversion separate. Do not enable or trust new hooks,
-  run a native session with bypass flags, or alter user-local settings.
-- [ ] Keep hidden `.agents` changes in existing CI/document/security selection;
-  remove old active prefix routing, not tests of retired-root rejection.
-- [ ] Rebase current links/imports by resolved source/target paths. Historical
-  quotations retain dated meaning and current-owner context; frozen bytes stay exact.
-- [ ] GREEN: direct rule/core/eval/routing regressions and fresh changed-plan
-  inspection; verify no ignored local file was read by fixture setup.
+Live hook delivery and enforcement remain NOT_RUN. No hook activation, trust
+change, user-local configuration write or new runtime session is part of this
+documentation reconciliation.
 
 ### W5: Protected cutover and generated outputs
 
-- [ ] Verify every old regular source hash still matches its inventoried baseline
-  and every destination is absent before applying the reviewed mapping. Abort on
-  drift or local-state collision. This is a single transition, not two authorities.
-- [ ] Use normal scoped approval for `.agents`/`.codex` source writes and native
-  regeneration. Do not unmount protection or widen trust/sandbox/global settings.
-- [ ] Apply content-specific edits, native envelopes and resolved relative links;
-  preserve policy meaning and English contract language. Remove original files
-  only when their mapped source exists and has been checked.
-- [ ] Regenerate via `python3 scripts/operations/provider_surface_renderer.py --write`,
-  then `--check`; run a second write and compare native/canonical byte inventories.
-- [ ] Regenerate affected LLM outputs via their official `--write` then `--check`;
-  do not edit generated output to satisfy a validator.
-- [ ] Remove only now-empty original directories with `rmdir`. Verify `lstat`
-  absence, current functional references zero, and classify every remaining old
-  string as historical evidence, historical grammar or a negative regression.
+Implemented baseline: the canonical move, native outputs, tracked-input Wiki
+refresh, former-root removal, frozen-body preservation and four DATA
+dispositions are committed and reviewed. Acceptance row 13 retains the W5
+mapping.
+
+Do not rerun migration, source allocation or protected cutover steps. A later
+canonical source change must use the registered generator and receive its own
+review; this reconciliation changes no generator input outside the active Spec
+package and Stage 03 index.
 
 ### W6: Final evidence and review
 
-- [ ] Run `git diff --check`, formal metadata/contracts/links/lifecycle checks,
-  provider/wiki drift checks and the focused changed-code regressions.
-- [ ] Inspect `run-ci-gate.py --profile changed --explain` on final paths and trace
-  indirect operations before actual execution. The baseline selected QuickWin and
-  template-security leaves implicitly consume real `.env` through Compose; this
-  request does not authorize that. Record BLOCKED/NOT_RUN precisely if still selected.
-- [ ] Use full only if current policy/impact requires it and its execution inputs
-  are authorized. Prior main full exit 10/Docker socket denial is historical
-  baseline evidence, not proof of an absent image or permission for a retry.
-- [ ] Verify all existing frozen hashes, monotonic IDs, no local-state changes,
-  only approved index/commit changes and native model/permission/event equality.
-- [ ] Attempt only supported, non-model local discovery with installed tooling;
-  filter results to repository paths. Paid invocation, hook trust and fresh-session
-  enforcement remain NOT_RUN without their specific authority and actual evidence.
-- [ ] Obtain independent policy/Python review of the exact final diff and record
-  each correction and verification. Commit the verified coupled source/consumer
-  transition using explicit task-owned paths. Keep the branch/workspace, with no
-  push, PR, deployment or cleanup of historical working artifacts. Only the
-  explicitly named local-main checkpoint is authorized for integration.
+W6 remains in progress. Review the reconciled package at the current local-main
+baseline and record actual results in Task 0006 under
+[Post-integration package review](tasks/tsk-0006-generated-evidence-and-final-verification.md#post-integration-package-review-2026-09-06)
+and
+[Package reconciliation verification](tasks/tsk-0006-generated-evidence-and-final-verification.md#package-reconciliation-verification-2026-09-06).
+Acceptance rows 15 and 16 retain the W6 mapping.
 
-### Follow-up after local commit
+Apply this order for the documentation follow-up:
 
-1. Preserve the verified transition as one atomic local commit; disconnected
-   folder-only commits would break source, generated output and consumer paths.
-2. Recheck the committed tree's contracts and freshness. A clean local `changed`
-   profile selects no committed diff, so do not use it as proof of that commit.
-   Newly allocated or relocated ordinary documents enter the Wiki through Git's
-   tracked inventory. Regenerate and check its outputs after those paths enter
-   the index, and recheck the final committed tree; an earlier untracked-input
-   checkpoint is not sufficient evidence for the tracked inventory.
-3. Review a clean isolated linked worktree for the two Compose baseline checks,
-   using tracked non-sensitive examples only and no copied local environment.
-   Execute only after inspecting the exact commands and available tools.
-4. Keep PostgreSQL image/runtime evidence and normal native discovery separate.
-   Do not replace their guarantees with synthetic fixtures, global-state bypass,
-   or a broad all-files wrapper that could install tools or start containers.
-   If a clean checkout exposes a test-ownership defect, preserve all existing
-   behavior cases while restoring the library/CLI responsibility split required
-   by this Spec. Update the Manifest, existing gate registration and independent
-   ownership checks together; an empty or cache-only directory is not a repair.
-5. Record actual follow-up results and remaining boundaries in Task 0006, then
-   commit that evidence separately. No remote integration is authorized.
+1. Inspect the exact working-tree paths and diff, confirm that only the active
+   package and required index are involved, and review their inbound links.
+2. Run `git diff --check` on the scoped files.
+3. Inspect
+   `python3 scripts/validation/run-ci-gate.py --profile changed --explain` on the
+   final path set. Trace every selected leaf and its inputs before execution.
+4. Run the applicable formal document checks and the changed profile only when
+   the inspected leaves can use the reviewed isolated input boundary. Record
+   command, path set, input boundary, exit and state in Task 0006.
+5. Obtain independent exact-diff package review and correct only findings within
+   the current authorization. Root owns the resulting Task update and commits.
 
-### Remaining static diagnostics after local integration
+No native model, web, installed-version or runtime probe needs repetition for
+this wording-only package reconciliation because no native contract changes.
 
-1. Integrate the already reviewed `a8c6ede82` tip into local main without rewriting
-   history or changing user files. Confirm the committed source/output tree,
-   then continue on the existing work branch at the same tip. Retain both
-   worktrees. Task 0006 owns the actual receipt and remaining acceptance state.
-2. Check all 46 Python files touched since the original e568 baseline using the
-   installed Ruff rules. Classify each finding before editing: remove unused
-   bindings only when they are not public facade exports, replace star imports
-   with exact dependencies, and preserve observable validation calls and errors.
-   Preserve existing deferred bootstrap imports with narrow documented E402
-   annotations; no blanket lint suppression, gate change or unsafe autofix.
-3. Preserve every existing test body and its discovery/registration. Run the
-   relevant document, Manifest, routing and semantic suites for changed import
-   consumers; compare exported facade identities and failure behavior. New
-   behavior is not intended, so use the existing behavior tests and the lint
-   failure as the regression evidence rather than duplicating them.
-4. Independently review the bounded diff, run Ruff check/format on the final
-   affected scope, inspect public changed selection and execute it only with
-   the previously reviewed isolated example inputs. Commit verified local
-   changes. Keep PostgreSQL, native discovery and remote/installer blockers
-   separate; source cleanup cannot establish those observations.
+The whole-migration aggregate remains BLOCKED by the actual PostgreSQL
+operating/image leaf. Required input is the real image and operation input set
+selected by that leaf under an execution boundary that permits using them. The
+decision is whether those inputs and that execution scope are supplied for a
+future run. Resume only after both are available, inspect the selected plan
+again, and execute the exact aggregate without removing, replacing or hiding the
+PostgreSQL leaf. Focused fixture and isolated Compose results do not satisfy it.
+
+The all-files wrapper remains NOT_RUN while its installer and container-bound
+inputs are unavailable or outside scope. Resume only if the completion policy
+requires that route, its separately controlled execution is authorized, and
+all inputs are reviewed. Hosted CI and remote protection remain unverified and
+outside this local Plan; local results do not infer their state.
 
 ## Risk and Rollback
 
 | Risk | Guard | Recovery |
 | --- | --- | --- |
-| Source meaning lost | All-source disposition and before/after review | Restore only affected source/consumer slice from e568 baseline after review |
-| Skill gains implicit execution | Native explicit-invocation metadata and negative tests | Revert source/control/adapter slice together; no global disable |
-| Missing policy becomes zero rules | Fail-closed path errors and direct rule tests | Restore the registered policy path/core pair |
-| Canonical files treated as generated | Distinct source/output inventories and race guards | Stop, preserve exact paths and regenerate only reviewed native outputs |
-| Frozen record rewritten | Baseline hashes and existing recovery checks | Stop; no in-place frozen correction |
-| Protected write unavailable | Scoped normal approval; no protection bypass | Keep original authority until cutover can be completed |
-| Aggregate reads operating inputs | Inspect actual selected leaf graph | Record BLOCKED and run safe formal static checks separately |
+| Current prose reopens completed implementation | Treat `8176cdee7` as the implemented baseline and keep W1-W6 labels stable | Revert only the package-reconciliation documentation slice |
+| Original provenance is mistaken for current HEAD | Name `e5685b42c` as migration origin and `8176cdee7` as review baseline | Correct the receipt against Git and Task 0006 before further evidence |
+| Static evidence is promoted to native acceptance | Keep direct reads, shape checks, discovery, invocation and hook delivery separate | Restore the prior state label and require direct observation |
+| Aggregate blocker is hidden by focused PASS results | Preserve the actual PostgreSQL leaf and acceptance row 15 as BLOCKED | Stop; restore the selected plan and record the unmet input |
+| Changed selection is treated as committed-range proof | Bind it to the observed working-tree path set and fallback validators | Record the exact comparison separately or retain UNVERIFIED |
+| Wrapper or remote work exceeds authorization | Keep all-files, Hosted CI and remote state explicitly conditional | Leave NOT_RUN or unverified and request the required input/scope later |
 
 ## Verification
 
-Task 0006 records commands, cwd, exit code, scope and PASS/FAIL/BLOCKED/NOT_RUN/N/A.
-A syntax or repository-contract pass is not discovery, invocation, permission
-or hook execution. The current session loaded the old bootstrap before migration;
-re-reading a new file is not a fresh-session startup test.
+Task 0006 records every actual command, cwd, selected inputs, exit code, scope,
+review finding and PASS/FAIL/BLOCKED/NOT_RUN/N/A state. This Plan records order
+and resume conditions only. It makes no new execution claim.
+
+Package completion requires acceptance criterion 15 to be satisfied as written;
+the current BLOCKED aggregate is not a waiver. Completion also requires the
+open REQ-0026, AD-0030, and ADR-0031 owner promotion to follow its reviewed
+design and lifecycle. Tasks 0001 through 0005 and the Spec/Plan stay nonterminal
+until Task 0006 proves the whole package can transition atomically. The current
+per-check blocker does not change Task 0006's `in-progress` lifecycle state
+while it carries the active branch receipt. Preserve criterion 16's distinction
+among local execution, configuration, repository enforcement, runtime,
+entitlement and remote state.
 
 ## Rulings
 
-- The latest explicit relocation request replaces the old empty `.agents` policy
-  and previous integration/cleanup plan, without weakening other approvals.
-- No new Spec/Plan/Task identity is needed. A successor ADR is a distinct durable
-  decision required by the existing authority contract.
-- Archived Tasks remain durable full-body evidence. Git history does not replace
-  their preservation and raw-string counts never justify their deletion.
-- No optional native feature, plugin, server, model or global configuration is
-  enabled by this relocation.
+- No new policy, configuration, model, permission, hook activation, Spec, Plan,
+  Task or secondary status ledger is introduced by this reconciliation.
+- The implemented migration and ADR-0032 remain stable. The retention-owner
+  successor design is a separate promotion dependency and must preserve
+  accepted ADR-0031 through its registered lifecycle.
+- Frozen Tasks remain durable full-body evidence. Git history does not replace
+  preservation, and no frozen body is edited to manufacture completion.
+- Current authorization covers local follow-up on the existing branch and local
+  commits; it does not authorize later unreviewed integration or remote work.
 
 ## Related Documents
 

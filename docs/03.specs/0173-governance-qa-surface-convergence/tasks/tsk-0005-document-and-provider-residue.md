@@ -1,10 +1,10 @@
 ---
 title: "Document and Provider Residue Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0005"
 parent_ids:
@@ -19,7 +19,7 @@ created: "2026-09-05"
 
 Remove current paths that reproduce legacy document grammar, retire obsolete
 generated snapshots, and reduce provider projections to required native
-interfaces backed by one Stage 00 authority.
+interfaces backed by one canonical authored `.agents/` authority.
 
 ## Inputs
 
@@ -46,9 +46,18 @@ README moves, four Tombstones, and exact Git recovery for unregistered payloads.
 Provider compatibility RED proved `.agents/agents` was still generated.
 Implementation commit `6aa4287e` then cut the workflow, runner, manifest,
 documentation, and tests to the direct renderer; made that Python entrypoint
-executable; and removed the shell wrapper. The renderer revalidated and
-quarantined exactly 14 owned compatibility role files before their approved
-cleanup. It now preserves `.agents/skills`, `.claude`, and `.codex` only.
+executable; and removed the shell wrapper.
+
+> Historical evidence (not current authority; source: Git history):
+> Source checkpoint: `6aa4287e`.
+>
+> The renderer revalidated and quarantined exactly 14 owned compatibility role
+> files before their approved cleanup. It now preserves `.agents/skills`,
+> `.claude`, and `.codex` only.
+
+After the later `6c283d395` canonical-home cutover, `.agents/skills` is authored
+canonical input. The renderer's generated outputs are limited to `.claude` and
+`.codex`, and `.codex/skills` is not a substitute source or output.
 PostToolUse no longer invokes the aggregate, while Stop invokes the changed
 profile for Git-visible dirty state before the logical-commit gate. The resumed
 review found that PostToolUse retained formatting but lost the policy-required
@@ -104,7 +113,7 @@ one correction responsibility rather than duplicate validators.
 | Stop re-enters the aggregate on retry | Inspect provider retry sentinel before execution; escalate without a cache | Closed by code and policy re-review |
 | Git inspection failure treated as clean | Distinguish clean, dirty, and unknown; fail closed | Closed by code and policy re-review |
 | Claude outer timeout truncates aggregate | Registered 600-second outer budget, bounded inner attempt, explicit incomplete result and manual revalidation | Closed by policy re-review |
-| Removed provider commands/surfaces in source audits | Delimit dated evidence and add the current direct-renderer route; regenerate derived output | Source correction closed; derived historical designation remains a Task 6 dependency |
+| Removed provider commands/surfaces in source audits | Delimit dated evidence and add the current direct-renderer route; regenerate derived output | Source correction closed; DATA-0065 historical designation closed by `062cb6115`; final freshness remains Task 6's responsibility |
 | Historical grammar still owned by registry/metadata modules | Move recovery-only parsing into the existing history/archive owners and cut actual callers over | Closed by code and Python re-review |
 | Old Stop helper name in hook-rule comment | Correct the comment with the hook fix | Closed by code re-review |
 
@@ -140,7 +149,8 @@ selector and added one table-driven test with 9 subcases. It did not change
 path-safety validation, policy, provider projections, or aggregate routing.
 `task5_policy_review` returned PASS, quality A, with 0 Critical, 0 Important,
 and 0 Minor findings; residual I1 is closed. DATA-0065 historical designation
-remains a Task 6 dependency. `history_python_review` also returned specification
+was completed by `062cb6115`; Task 6 retains only final freshness and package
+review responsibility. `history_python_review` also returned specification
 and code PASS with 0 Critical, 0 Important, and 0 Minor findings for this
 incremental correction. Its whole-module Ruff check reported an existing unused
 `shutil` import outside the approved incremental diff; that warning was not
@@ -170,8 +180,10 @@ This evidence checkpoint does not predict its own commit identity.
 
 - Keep stable frontmatter IDs while removing banned basename prefixes from
   current authored paths.
-- Retain `.agents/skills`, `.claude`, and `.codex` native interfaces; retire
-  `.agents/agents` only after renderer and consumer cutover is proven.
+- Retain authored canonical `.agents/skills` and the generated `.claude` and
+  `.codex` native adapters; do not introduce `.codex/skills`. The reviewed
+  renderer and consumer cutover completed `.agents/agents` retirement, and the
+  current guard prevents that compatibility output from being regenerated.
 - Generated snapshots without a current consumer are retired through the
   canonical lifecycle rather than preserved as active authority.
 - Create one sealed package Tombstone for each retired DATA artifact and move

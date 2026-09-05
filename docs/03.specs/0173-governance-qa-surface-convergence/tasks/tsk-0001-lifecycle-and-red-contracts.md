@@ -1,10 +1,10 @@
 ---
 title: "Lifecycle Reconciliation and RED Contracts Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0001"
 parent_ids:
@@ -30,9 +30,12 @@ that SPEC-0173 will change.
 
 ## Inputs
 
+These inputs describe Task 1's original execution baseline rather than the
+current integrated tree.
+
 - [SPEC-0173](../spec.md) and its [implementation plan](../plan.md).
-- The current SPEC-0172 package, Stage 03 index, Stage 98 catalog, registry,
-  lifecycle validator, and Git recovery rules.
+- The Task 1 baseline's then-current SPEC-0172 package, Stage 03 index, Stage 98
+  catalog, registry, lifecycle validator, and Git recovery rules.
 - The baseline invocation, script, test, fixture, document, and provider
   findings recorded in the Plan.
 
@@ -70,10 +73,16 @@ that SPEC-0173 will change.
   The durable outcome was written into the completed Spec, current protection
   and research consumers were cut over, and the reciprocal RES-0085 recovery
   decision moved to this Task before deletion.
-- REQ-0026, AD-0030, ADR-0031, Stage 00, Stage 03, Stage 98, the Registry, and
-  the executable lifecycle description now agree: completed Spec owns the
-  durable outcome; a Plan or Task without a current consumer is transient and
-  must remain exactly recoverable from Git.
+
+> Historical evidence (not current authority; source: Git history):
+> At the `0cb24199` preservation checkpoint, before the current full-package
+> preservation contract, the following was the Task 1 ruling:
+>
+> REQ-0026, AD-0030, ADR-0031, Stage 00, Stage 03, Stage 98, the Registry, and
+> the executable lifecycle description now agree: completed Spec owns the
+> durable outcome; a Plan or Task without a current consumer is transient and
+> must remain exactly recoverable from Git.
+
 - RES-0002, RES-0084, and RES-0085 were not merged. They respectively own the
   current workspace baseline, GitHub Actions mechanics, and the dated request
   boundary/recovery record, so the user's conditional same-purpose criterion
@@ -127,26 +136,38 @@ predict its own commit identity.
 
 ## Rulings
 
-- Preserve the completed SPEC-0172 Spec as durable evidence under the Stage 98
-  route required by the current policy.
-- Treat the Plan and Task bodies as transient artifacts recoverable from
-  Git; do not create archive copies that compete with the completed Spec.
-- Correct the stale Stage 00 preservation sentence so Stage 00, the current
-  Stage 03 index, and the Registry agree on transient Plan/Task removal.
+> Historical evidence (not current authority; source: Git history):
+> Commits `10e0d016`, `0cb24199`, and milestone `b7fb8911` preserve the original
+> Task 1 execution and review result. Its then-current retention rulings were:
+>
+> - Preserve the completed SPEC-0172 Spec as durable evidence under the Stage 98
+>   route required by the current policy.
+> - Treat the Plan and Task bodies as transient artifacts recoverable from
+>   Git; do not create archive copies that compete with the completed Spec.
+> - Correct the stale Stage 00 preservation sentence so Stage 00, the current
+>   Stage 03 index, and the Registry agree on transient Plan/Task removal.
+
+- Current policy requires atomic full-package preservation of the Spec, Plan,
+  and Tasks. Task 0006 owns the branch-integration receipt, final promotion
+  evidence, and eventual atomic disposition; Task 1's original Spec-only and
+  Git-only rulings are not current instructions. See the
+  [documentation retention contract](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+  and [Task 0006](tsk-0006-generated-evidence-and-final-verification.md).
 - Add RED contracts before changing gate, script, test, fixture, document, or
   provider behavior.
-- Record this Task's implementation milestone in the Plan checklist, focused
-  evidence, independent review, and commit ledger. Active-stage occupancy
-  forbids a terminal Task in current Stage 03, so its frontmatter remains
-  `in-progress` until the package's atomic terminal disposition.
+- Retain this Task's implementation milestone, focused evidence, independent
+  review, and commit ledger here; Task 0006 owns its current acceptance mapping.
+  Active-stage occupancy forbids a terminal Task in current Stage 03, so its
+  frontmatter remains `in-progress` until the package's atomic terminal
+  disposition.
 
 ## Deferred Items
 
 - Hosted execution, remote control-plane mutation, provider entitlement,
   deployment, release, push, pull request, and merge are outside this Task.
-- The final full gate, Task 6 review, and branch-finish decision occur only
-  after Tasks 2-6 complete. This Task's pre-completion all-files wrapper passed
-  against the exact clean preservation tree recorded above.
+- Task 0006 owns current final acceptance, promotion, and atomic package
+  disposition. This Task's earlier all-files wrapper result remains scoped to
+  the exact clean preservation tree recorded above.
 
 ## Related Documents
 

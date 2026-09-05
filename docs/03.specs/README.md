@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -70,7 +70,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0170 | [Archive Preservation Model](../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) and [Task](../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 | SPEC-0171 | [Compose Sibling Pair Resolution](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) and [Task](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) |
 | SPEC-0172 | [Document Contract Convergence](../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | completed record unchanged; divergent main [Spec](../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md), [Plan](../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md), and [Task](../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) preserved by the SPEC-0173 branch receipt |
-| SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md); Tasks 1-5 implementation milestones reviewed, Task 6 integrating and verifying final evidence |
+| SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md); canonical `.agents` implementation and QA repairs are integrated on local main, Tasks 1-5 retain reviewed implementation milestones, and in-progress Task 6 owns package reconciliation plus the blocked aggregate and unobserved native-runtime evidence |
 | SPEC-0174 | [Governance and QA Convergence](../98.archive/superseded/03.specs/0174-governance-qa-convergence/spec.md) | superseded by SPEC-0173; cancelled [Plan](../98.archive/superseded/03.specs/0174-governance-qa-convergence/plan.md) and [Task](../98.archive/superseded/03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md) preserved with the full packet |
 
 ## How to Work in This Area

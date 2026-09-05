@@ -1,10 +1,10 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0003"
 parent_ids:
@@ -102,8 +102,11 @@ This evidence checkpoint does not predict its own commit identity.
 - Historical Git blobs and immutable archive evidence are not rewritten.
 - New general-purpose script frameworks are outside the bounded convergence
   scope.
-- The four target-surface DATA packages and their registry mapping remain a
-  Task 0005 lifecycle retirement; they are not current executable consumers.
+- Task 0005 completed retirement of the four target-surface DATA packages and
+  their registry mapping in `37a756f2`; they are not current executable
+  consumers. The earlier residue count above remains Task 3's execution
+  snapshot. See the
+  [Task 0005 ledger](tsk-0005-document-and-provider-residue.md#commit-ledger).
 - Reverting `174c29d9` is the Task 3 rollback boundary. Restoring only a wrapper
   or target-surface library would recreate split ownership and is not a valid
   partial rollback.

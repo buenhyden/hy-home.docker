@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.3.2"
+version: "0.3.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -23,17 +23,20 @@ created: "2026-09-05"
 
 ## Overview
 
-The prior governance/QA convergence is integrated on local main. The latest
-request relocates reviewed common policy, roles and callable skills into a real
-repository-owned `.agents/` home while preserving native Claude/Codex adapters,
-Stage 99 machine contracts, executable owners and frozen execution evidence.
-The existing package remains the work owner; earlier completed Tasks retain
-historical outcomes rather than becoming current relocation evidence.
+The reviewed governance/QA convergence, canonical `.agents/` relocation,
+clean-worktree ownership repair and bounded Python cleanup are integrated on
+local main at `8176cdee732954415bc5462d6d4d43da4e319394`. Native Claude/Codex
+adapters, Stage 99 machine contracts, executable owners and frozen execution
+evidence remain preserved. The existing package remains active: Tasks 0001
+through 0005 retain their implementation milestones and Task 0006 remains the
+sole ledger for package review and outstanding acceptance evidence.
 
 ## Boundaries and Inputs
 
-- Baseline: local main `e5685b42c92039618ae86cca8736b6a425630221`, clean;
-  work branch `codex/0173-agent-governance-home`.
+- Original relocation provenance: local main
+  `e5685b42c92039618ae86cca8736b6a425630221`, then clean. Current review
+  baseline: local main `8176cdee732954415bc5462d6d4d43da4e319394`;
+  `codex/0173-agent-governance-home` points to the same commit.
 - In scope: all former governance sources and their direct/indirect consumers,
   provider/core contracts, Registry/schema/templates, hooks, tests, active links,
   navigation, CI selection and affected registered generated outputs.
@@ -43,11 +46,20 @@ historical outcomes rather than becoming current relocation evidence.
 - Preserve: existing role/skill IDs, permissions/model settings, six suites/two
   profiles, required CI jobs, strict protection contract, Operations identity
   routes, issued-ID high-water and all existing frozen archive bytes.
+- Durable-owner promotion remains open because REQ-0026, AD-0030, and accepted
+  ADR-0031 still describe transient Plan/Task deletion while canonical policy
+  and executable package guards require full-package preservation. Reconcile
+  the Requirement and Description only after a bounded design review. Preserve
+  ADR-0031's accepted body; changing its decision requires a reviewed successor
+  and the applicable reciprocal supersession lifecycle. No successor identity
+  or design outcome is selected by this specification update.
 - The subsequent user instruction authorizes local commits of the reviewed
   relocation and continued review/execution of safe follow-up verification.
-- The next instruction authorizes integrating the existing reviewed tip
-  `a8c6ede82` into local main before remaining work. Subsequent implementation
-  continues on the work branch and does not imply further integration approval.
+- The reviewed relocation (`6c283d395`), reproducible ownership and Wiki repair
+  (`c265bacc5`), evidence checkpoint (`a8c6ede82`), and bounded lint cleanup
+  (`8176cdee7`) now form the integrated local baseline. Current authorization
+  covers the `8176cdee7` checkpoint and follow-up on the same work branch; it
+  does not imply integration of later unreviewed work.
 - Out of scope: additional integration, push, PR, fetch/pull, deployment, live
   Compose/service actions, credentials/environment contents, certificates,
   global settings, new servers/plugins, model entitlement and hook trust changes.
@@ -106,22 +118,18 @@ historical outcomes rather than becoming current relocation evidence.
 
 ## Technical Approach
 
-Revalidate the actual main baseline and preserve current work. Review all source
-bodies and a per-source disposition before moving files. Introduce the successor
-architecture decision through the existing ADR lifecycle. Replace the old
-empty-root check with strict canonical source ownership; coordinate native skill
-metadata, source/output boundaries, document discovery and link rebasing.
+Treat the integrated `8176cdee7` tree as the implemented baseline. Preserve the
+reviewed source dispositions, accepted ADR-0032, superseded ADR-0029, provider
+source/output boundary, document discovery, link rebasing, hook routing and
+test-ownership repair. Further work reconciles the active package and collects
+only evidence whose actual inputs are available and authorized.
 
-Write failing focused regressions before changing validators, generators and
-hook path/error handling. Fix fixture copies that include ignored local state.
-Apply reviewed source, consumer and native output changes as one transition,
-then remove the empty original directories. Two generation passes must leave
-canonical bytes unchanged and yield a fixed native result. Keep historical
-strings and frozen bodies classified rather than changing history for grep zero.
-
-The follow-up authorizes reviewed local commits; remote/runtime limits remain. Run only
-checks whose actual inputs are authorized, recording blocked aggregates rather
-than changing their checks, environment or thresholds to obtain a pass.
+Canonical skill shape, direct loading and static provider checks have passed;
+they do not establish normal native discovery. The whole-migration aggregate
+remains blocked by its actual PostgreSQL operating/image leaf. Keep that leaf
+selected and record BLOCKED or NOT_RUN until its inputs and execution boundary
+permit direct observation. Do not convert focused or synthetic PASS results
+into aggregate, native runtime, Hosted CI or remote acceptance.
 
 ## Interfaces and Data
 
@@ -251,18 +259,23 @@ def canonical_invocation_key(
 
 ## Open Questions
 
-No unresolved design choice blocks planning. External consumers of
-`.agents/roles/**`, current Hosted CI status, provider entitlement, and remote
-branch protection remain observation limits rather than implementation inputs.
+Durable-owner promotion has one unresolved design dependency: align REQ-0026
+and AD-0030 with canonical full-package preservation and define the reviewed
+successor treatment needed to change accepted ADR-0031 without rewriting it.
+That design must be approved before those owners or identity allocation change.
+Actual PostgreSQL operating/image inputs, normal native startup without
+unauthorized auth or global-runtime side effects, Hosted CI, provider
+entitlement, and remote branch protection remain separate observation
+prerequisites or limits.
 
 ## Operational Impact
 
-The planned relocation preserves the integrated gate and fixture ownership
-while aligning canonical sources with native skill discovery. It does not start,
-stop or reconfigure services. Provider changes include reviewed canonical skill
-metadata and thin native adapters; they do not assert runtime acceptance. Rollback is a normal
-reviewed restoration of the affected baseline slice; no reset, clean, force push, or archive-body rewrite is
-part of the plan.
+The implemented relocation preserves integrated gate and fixture ownership and
+provides the canonical native skill shape. It does not prove that normal native
+startup discovers or invokes those skills, and it does not start, stop or
+reconfigure services. Rollback remains a reviewed restoration of the affected
+baseline slice; no reset, clean, force push, or archive-body rewrite is part of
+the plan.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Test and Fixture Convergence Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0004"
 parent_ids:
@@ -66,7 +66,7 @@ count.
 | Fixture-pattern suite | 51 tests passed; static test fixtures reduced from 34 to 0 with zero production references and zero `spec126` residue |
 | Manifest and workflow | Canonical script manifest passed; 59 manifest current/history tests passed; 47 workflow tests passed with 11 intentional Wave-C skips |
 | Document graph | All-mode validation reported 689 documents, 5,748 links, and 0 failures |
-| Recursive discovery | The original command first returned 0 tests; package markers then collected 1,085 tests. Three current assertion drifts were corrected and focused tests passed; the remaining two failures are the expected stale DATA-0078 output assigned to Task 0006 |
+| Recursive discovery | Task 4 snapshot: the original command first returned 0 tests; package markers then collected 1,085 tests. Three current assertion drifts were corrected and focused tests passed; the remaining two failures were the then-stale DATA-0078 output assigned to later work |
 | Whitespace | Both implementation snapshots passed `git diff --check` before commit |
 
 ## Review Evidence
@@ -100,13 +100,12 @@ This evidence checkpoint does not predict its own commit identity.
 - Performance benchmarking and runtime service execution are outside this
   Task.
 - Immutable historical evidence remains unchanged.
-- The current agentic-audit checker still recovers `T-AER-*` completion tags
-  from retired Git evidence. Task 0005 must remove that production compatibility
-  path with its contract and consumers; Task 4 removed only its static test
-  fixture.
-- DATA-0078 is stale because Tasks 1 through 4 changed tracked workflow and
-  script inputs. Task 0006 owns generator ordering, freshness checks, and the
-  final full-discovery rerun.
+- Task 0005 removed the `T-AER-*` production compatibility path and its current
+  consumers in `8c4d2709`; Task 4's earlier snapshot removed only the static
+  test fixture. See [Task 0005](tsk-0005-document-and-provider-residue.md#commit-ledger).
+- DATA-0078 was stale at the Task 4 snapshot because Tasks 1 through 4 changed
+  tracked workflow and script inputs. Commit `f5d3702bf` later refreshed it;
+  Task 0006 owns final freshness and discovery evidence for the reconciled tree.
 - Reverting `85b0fc13` restores the former fixture and test ownership; reverting
   `e8a59d9c` restores the prior non-recursive discovery behavior. Partial
   restoration of production reads from `tests/**` is not a valid rollback.
