@@ -156,7 +156,10 @@ if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
   source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
 fi
 
+EXISTING_CHANGED_FILES=()
 SHELL_STYLE_FILES=()
+YAML_STYLE_FILES=()
+JSON_SYNTAX_FILES=()
 
 format_text_file_basics() {
   local file="$1"
@@ -199,6 +202,7 @@ for path in "${CHANGED_PATHS[@]}"; do
   rel="${rel#./}"
 
   if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
+    EXISTING_CHANGED_FILES+=("$rel")
     if [[ "$check_only" -eq 0 ]]; then
       case "$rel" in
       *.md | *.sh | *.yml | *.yaml | *.json)
@@ -208,13 +212,40 @@ for path in "${CHANGED_PATHS[@]}"; do
     fi
   fi
 
-  if [[ "$rel" =~ ^(\.claude/hooks|scripts)/.*\.sh$ ]]; then
-    if [[ -f "$rel" ]]; then
-      SHELL_STYLE_FILES+=("$rel")
-    fi
+  if [[ "$rel" =~ \.sh$ && -f "$rel" ]]; then
+    SHELL_STYLE_FILES+=("$rel")
+  fi
+  if [[ "$rel" =~ \.ya?ml$ && -f "$rel" ]]; then
+    YAML_STYLE_FILES+=("$rel")
+  fi
+  if [[ "$rel" =~ \.json$ && -f "$rel" ]]; then
+    JSON_SYNTAX_FILES+=("$rel")
   fi
 done
 
 if [[ "$check_only" -eq 0 && "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
   shfmt -w "${SHELL_STYLE_FILES[@]}"
+fi
+
+if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
+  shfmt -d "${SHELL_STYLE_FILES[@]}"
+fi
+if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shellcheck >/dev/null 2>&1; then
+  shellcheck "${SHELL_STYLE_FILES[@]}"
+fi
+if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]] && command -v yamllint >/dev/null 2>&1; then
+  yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
+fi
+if [[ "${#EXISTING_CHANGED_FILES[@]}" -gt 0 ]]; then
+  git diff --check -- "${EXISTING_CHANGED_FILES[@]}"
+fi
+if [[ "${#JSON_SYNTAX_FILES[@]}" -gt 0 ]]; then
+  for file in "${JSON_SYNTAX_FILES[@]}"; do
+    python3 -m json.tool "$file" >/dev/null
+  done
+fi
+if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]]; then
+  for file in "${SHELL_STYLE_FILES[@]}"; do
+    bash -n "$file"
+  done
 fi

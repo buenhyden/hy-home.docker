@@ -79,7 +79,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh\"",
-            "timeout": 30
+            "timeout": 600
           }
         ],
         "matcher": "*"

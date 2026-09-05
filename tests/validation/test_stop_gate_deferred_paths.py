@@ -49,6 +49,8 @@ class StopGateDeferredPathTests(unittest.TestCase):
     @staticmethod
     def _run_stop(repo: pathlib.Path) -> tuple[int, str]:
         environment = dict(os.environ)
+        environment.pop("CODEX_PROJECT_DIR", None)
+        environment.pop("CLAUDE_PROJECT_DIR", None)
         environment["CLAUDE_PROJECT_DIR"] = str(repo)
         environment.pop("AGENT_ALLOW_UNCOMMITTED_STOP", None)
         result = subprocess.run(

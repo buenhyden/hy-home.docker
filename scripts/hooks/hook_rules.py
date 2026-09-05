@@ -17,7 +17,7 @@ directly, and anything outside it is skipped rather than raised.
 which is a placeholder rather than a condition — evaluating
 `require-logical-commits-before-stop` generically would block every stop. Their
 real conditions are contextual and already live in the dispatcher's
-`template_stop_gate` and `logical_commit_stop_gate`.
+`changed_profile_stop_gate` and `logical_commit_stop_gate`.
 """
 
 from __future__ import annotations

@@ -105,7 +105,10 @@ class ProviderHookParityTests(unittest.TestCase):
 
         self.assertNotIn(invocation, post_tool)
         self.assertIn("changed_profile_stop_gate", dispatcher)
-        self.assertIn(f'output="$({invocation} 2>&1)"', dispatcher)
+        self.assertIn(
+            f'output="$(timeout --kill-after=5s 540s {invocation} 2>&1)"',
+            dispatcher,
+        )
 
     def test_generated_data_is_fresh(self) -> None:
         result = subprocess.run(
