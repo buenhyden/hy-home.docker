@@ -1498,17 +1498,12 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_adapter_rejects_every_unregistered_target_route(self) -> None:
         """A route the Registry does not own is unsupported, with no fallback.
 
-        The retired legacy envelope classified `prd-####-*.md` as `prd`. That
-        profile owned no document, so the route now fails closed like any other
-        unregistered path.
+        Stage 01 files must use the registered four-digit package route.
         """
 
         adapted = build_registry_profiles(load_registry())
 
-        for unregistered in (
-            "docs/01.requirements/prd-0001-legacy.md",
-            "docs/01.requirements/not-numbered.md",
-        ):
+        for unregistered in ("docs/01.requirements/not-numbered.md",):
             with self.subTest(path=unregistered):
                 self.assertEqual(
                     "unsupported",

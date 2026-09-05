@@ -64,10 +64,30 @@ _OBJECT_ID = re.compile(r"[0-9a-f]{40}|[0-9a-f]{64}")
 _ARTIFACT_ID_GREP = r"^[[:space:]]*artifact_id[[:space:]]*:"
 _INTERNAL_REQUIREMENT_GREP = r"(REQ|PRD|SRS|IFR)-[0-9]{4}-(FR|NFR|IF|R|AC)-?[0-9]{4}"
 _GIT_GREP_BATCH_SIZE = 256
+_LEGACY_REQUIREMENT_PATH = re.compile(
+    r"docs/01\.requirements/(?:prd|srs|ifr|interface)-"
+    r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md",
+    re.IGNORECASE,
+)
 
 
 class IdentityHistoryError(RuntimeError):
     """Raised when Git history cannot be inspected safely."""
+
+
+def recover_historical_identity(
+    path: str | pathlib.PurePosixPath,
+) -> str | None:
+    """Recover a stable Requirement package ID from one legacy Stage 01 path."""
+
+    candidate = pathlib.PurePosixPath(path)
+    normalized = candidate.as_posix()
+    if candidate.is_absolute() or any(part in {"", ".", ".."} for part in candidate.parts):
+        return None
+    match = _LEGACY_REQUIREMENT_PATH.fullmatch(normalized)
+    if match is None:
+        return None
+    return f"REQ-{match.group('number')}"
 
 
 @dataclasses.dataclass(frozen=True)

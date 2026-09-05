@@ -18,10 +18,31 @@ from scripts.lib.document_governance.identity_history import (
     collect_issued_identities,
     validate_identity_history,
 )
+from scripts.lib.document_governance.metadata.profile import (
+    build_registry_profiles,
+    infer_artifact_type,
+)
 from scripts.lib.document_governance.registry import load_registry
+
+LEGACY_REQUIREMENT = pathlib.PurePosixPath(
+    "docs/01.requirements/prd-0042-preserved.md"
+)
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        self.assertEqual(
+            "unsupported",
+            infer_artifact_type(pathlib.Path(LEGACY_REQUIREMENT), profiles),
+        )
+
+    def test_history_reader_recovers_legacy_requirement_identity(self) -> None:
+        self.assertEqual(
+            "REQ-0042",
+            identity_history.recover_historical_identity(LEGACY_REQUIREMENT),
+        )
+
     def test_identity_scan_does_not_read_patch_text(self) -> None:
         """Identity history cost must not grow with every historical diff."""
 

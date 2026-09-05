@@ -56,7 +56,6 @@ from scripts.lib.document_governance.metadata.heading import (
     validate_body_contract,
 )
 from scripts.lib.document_governance.metadata.identity import (
-    _REQUIREMENT_INTERNAL_CONTRACTS,
     _allocation_findings,
     _decode_git_paths,
     _fenced_yaml_string_arrays,
@@ -66,7 +65,6 @@ from scripts.lib.document_governance.metadata.identity import (
     _run_git,
     _tracked_machine_templates,
     _tracked_repository_markdown,
-    validate_requirement_internal_id_contract,
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
     _legacy_exception_evidence,
@@ -338,41 +336,6 @@ def validate_repository_contracts(
                     Finding(finding.path, finding.code, finding.message)
                     for finding in spec_lifecycle_findings
                 )
-
-    for path in () if registry_native else tracked_markdown:
-        if not any(
-            pattern.fullmatch(path.as_posix())
-            for pattern, _, _, _ in _REQUIREMENT_INTERNAL_CONTRACTS
-        ):
-            continue
-        source = root / path
-        current = root
-        symlink_component = False
-        for part in path.parts:
-            current /= part
-            if current.is_symlink():
-                symlink_component = True
-                break
-        if symlink_component:
-            findings.append(
-                Finding(
-                    path.as_posix(),
-                    "requirement-source-symlink",
-                    "typed requirement sources may not use symlink components",
-                )
-            )
-            continue
-        try:
-            status = source.lstat()
-            if not stat.S_ISREG(status.st_mode):
-                raise OSError("typed requirement source is not a regular file")
-            text = source.read_text(encoding="utf-8")
-        except (OSError, UnicodeError) as error:
-            findings.append(
-                Finding(path.as_posix(), "requirement-source-unreadable", str(error))
-            )
-        else:
-            findings.extend(validate_requirement_internal_id_contract(path, text))
 
     if (
         any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)

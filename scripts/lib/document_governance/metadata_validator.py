@@ -22,10 +22,6 @@ from scripts.lib.document_governance.metadata.heading import (
     _native_migration_compaction_witness,
     validate_body_contract,
 )
-from scripts.lib.document_governance.metadata.identity import (
-    validate_prd_internal_id_contract,
-    validate_requirement_internal_id_contract,
-)
 from scripts.lib.document_governance.metadata.lifecycle import (
     _record_from_text,
     collect_records_at_ref,
@@ -94,10 +90,8 @@ __all__ = (
     "render_report",
     "validate_body_contract",
     "validate_frontmatter",
-    "validate_prd_internal_id_contract",
     "validate_record",
     "validate_repository_contracts",
-    "validate_requirement_internal_id_contract",
     "validate_static_exception_document",
     "validate_static_migration_manifest",
 )

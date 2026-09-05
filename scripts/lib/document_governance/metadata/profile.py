@@ -66,7 +66,6 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     load_registry,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
-    classify_path as classify_taxonomy_path,
     requirement_package_identity,
 )
 
@@ -858,18 +857,9 @@ def infer_artifact_type(
         registered = classify_registered_path(normalized, registry)
         if registered is not None and registered != "unsupported":
             return registered
-        legacy_map = profiles.get("_legacy_profiles")
-        if not isinstance(legacy_map, Mapping):
-            return "unsupported"
-        if isinstance(legacy_map, Mapping):
-            legacy_match = classify_taxonomy_path(
-                pathlib.PurePosixPath(normalized), legacy_map
-            )
-            if legacy_match is not None:
-                return legacy_match
         if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
             return "generated"
-        # These are explicit, removable legacy corpus envelopes. Canonical
+        # Preserved and reference corpora remain broad envelopes. Canonical
         # Stage 01/02/03/05 role paths must match Registry above or fail closed.
         if normalized.startswith("docs/00.agent-governance/") or normalized.startswith(
             "docs/99.templates/support/"
@@ -902,11 +892,7 @@ def infer_artifact_type(
     if normalized.startswith("docs/98.archive/"):
         return "archive"
     if normalized.startswith("docs/01.requirements/"):
-        if pathlib.PurePosixPath(normalized).name.startswith("srs-"):
-            return "srs"
-        if pathlib.PurePosixPath(normalized).name.startswith("interface-"):
-            return "interface-requirement"
-        return "prd"
+        return "requirements-package"
     if normalized.startswith("docs/02.architecture/descriptions/"):
         return "architecture-description"
     if normalized.startswith("docs/02.architecture/decisions/"):
@@ -914,7 +900,7 @@ def infer_artifact_type(
     if normalized.startswith("docs/03.specs/"):
         if name == "plan.md":
             return "plan"
-        if name == "task.md":
+        if name.startswith("tsk-"):
             return "task"
         return "spec"
     if normalized.startswith("docs/05.operations/"):
@@ -931,70 +917,6 @@ def infer_artifact_type(
     if normalized.startswith("docs/90.references/"):
         return "reference"
     return "unsupported"
-
-
-LEGACY_SPEC_RELATION_PATH = re.compile(
-    r"docs/03\.specs/spec-(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*/spec\.md"
-)
-LEGACY_SPEC_RELATION_ID = re.compile(r"spec-(?P<number>[0-9]{4})")
-CANONICAL_REQUIREMENT_RELATION_PATH = re.compile(
-    r"docs/01\.requirements/(?P<number>[0-9]{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md"
-)
-CANONICAL_REQUIREMENT_RELATION_ID = re.compile(r"REQ-(?P<number>[0-9]{4})")
-LEGACY_REQUIREMENT_RELATION_ID = re.compile(r"prd-[0-9]{4}")
-
-
-def _legacy_spec_relation_alias(record: Record) -> str | None:
-    """Return the one-way canonical relation alias for a valid legacy Spec."""
-
-    if record.artifact_type != "spec" or record.metadata.get("type") != "sdlc/spec":
-        return None
-    path_match = LEGACY_SPEC_RELATION_PATH.fullmatch(record.path.as_posix())
-    artifact_id = record.metadata.get("artifact_id")
-    id_match = (
-        LEGACY_SPEC_RELATION_ID.fullmatch(artifact_id)
-        if isinstance(artifact_id, str)
-        else None
-    )
-    if path_match is None or id_match is None:
-        return None
-    if path_match.group("number") != id_match.group("number"):
-        return None
-    return f"SPEC-{id_match.group('number')}"
-
-
-def _legacy_requirement_relation_alias(record: Record) -> str | None:
-    """Expose one read-only relation alias for immutable pre-migration evidence."""
-
-    if record.artifact_type != "requirements-package":
-        return None
-    path_match = CANONICAL_REQUIREMENT_RELATION_PATH.fullmatch(record.path.as_posix())
-    artifact_id = record.metadata.get("artifact_id")
-    id_match = (
-        CANONICAL_REQUIREMENT_RELATION_ID.fullmatch(artifact_id)
-        if isinstance(artifact_id, str)
-        else None
-    )
-    if path_match is None or id_match is None:
-        return None
-    if path_match.group("number") != id_match.group("number"):
-        return None
-    return f"prd-{id_match.group('number')}"
-
-
-def _legacy_requirement_reference_permitted(
-    referencing_record: Record, artifact_id: str
-) -> bool:
-    """Limit legacy Requirement aliases to immutable Stage 98 evidence."""
-
-    if LEGACY_REQUIREMENT_RELATION_ID.fullmatch(artifact_id) is None:
-        return True
-    return (
-        referencing_record.path.as_posix().startswith("docs/98.archive/")
-        and referencing_record.artifact_type in {"archive", "migration", "tombstone"}
-        and referencing_record.metadata.get("status")
-        in {"archived", "completed", "superseded"}
-    )
 
 
 def build_manifest(
@@ -1025,12 +947,6 @@ def build_manifest(
         artifact_id = record.metadata.get("artifact_id")
         if isinstance(artifact_id, str) and artifact_id.strip():
             relation_candidates[artifact_id.strip()].append(record)
-        alias = _legacy_spec_relation_alias(record)
-        if alias is not None:
-            relation_candidates[alias].append(record)
-        requirement_alias = _legacy_requirement_relation_alias(record)
-        if requirement_alias is not None:
-            relation_candidates[requirement_alias].append(record)
 
     relation_records_by_id: dict[str, Record] = {}
     relation_conflicts: dict[str, tuple[pathlib.Path, ...]] = {}
@@ -1526,14 +1442,7 @@ def _relation_record(
     artifact_id: str,
     referencing_record: Record | None = None,
 ) -> Record | None:
-    """Resolve exact IDs or one-way legacy Spec aliases for relations only."""
-
-    if (
-        referencing_record is not None
-        and artifact_id not in manifest.records_by_id
-        and not _legacy_requirement_reference_permitted(referencing_record, artifact_id)
-    ):
-        return None
+    """Resolve one exact, unambiguous artifact ID for a relation."""
     if artifact_id in manifest.relation_conflicts:
         return None
     return manifest.relation_records_by_id.get(artifact_id)
@@ -1544,16 +1453,10 @@ def _relation_reference_exists(
     artifact_id: str,
     referencing_record: Record | None = None,
 ) -> bool:
-    """Return whether an exact or unique transition relation is resolvable."""
+    """Return whether one exact, unambiguous artifact ID is resolvable."""
 
-    return (
-        (
-            referencing_record is None
-            or artifact_id in manifest.records_by_id
-            or _legacy_requirement_reference_permitted(referencing_record, artifact_id)
-        )
-        and artifact_id not in manifest.relation_conflicts
-        and (artifact_id in manifest.relation_records_by_id or artifact_id in manifest)
+    return artifact_id not in manifest.relation_conflicts and (
+        artifact_id in manifest.relation_records_by_id or artifact_id in manifest
     )
 
 
@@ -1562,12 +1465,6 @@ def _relation_ids_for_record(record: Record) -> frozenset[str]:
     artifact_id = record.metadata.get("artifact_id")
     if isinstance(artifact_id, str) and artifact_id.strip():
         relation_ids.add(artifact_id.strip())
-    alias = _legacy_spec_relation_alias(record)
-    if alias is not None:
-        relation_ids.add(alias)
-    requirement_alias = _legacy_requirement_relation_alias(record)
-    if requirement_alias is not None:
-        relation_ids.add(requirement_alias)
     return frozenset(relation_ids)
 
 

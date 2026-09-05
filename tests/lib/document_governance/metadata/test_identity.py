@@ -158,10 +158,10 @@ class IdentityBehaviorTests(unittest.TestCase):
     def test_inventory_records_identity_relations_and_transition_evidence(self) -> None:
         profiles = current_profiles()
         parent = metadata.Record(
-            pathlib.Path("docs/02.architecture/descriptions/ad-0123-parent.md"),
+            pathlib.Path("docs/02.architecture/descriptions/0123-parent.md"),
             {
                 "status": "active",
-                "artifact_id": "architecture-description:0123-parent",
+                "artifact_id": "AD-0123",
                 "artifact_type": "architecture-description",
                 "parent_ids": [],
                 "created": "2026-08-07",
@@ -171,12 +171,12 @@ class IdentityBehaviorTests(unittest.TestCase):
             frontmatter_present=True,
         )
         child = metadata.Record(
-            pathlib.Path("docs/03.specs/spec-0123-child/spec.md"),
+                pathlib.Path("docs/03.specs/0123-child/spec.md"),
             {
                 "status": "completed",
-                "artifact_id": "spec:0123-child",
+                "artifact_id": "SPEC-0123",
                 "artifact_type": "spec",
-                "parent_ids": ["architecture-description:0123-parent"],
+                "parent_ids": ["AD-0123"],
                 "created": "2026-08-07",
                 "updated": "2026-08-07",
             },
@@ -194,7 +194,7 @@ class IdentityBehaviorTests(unittest.TestCase):
         child_row = next(
             line
             for line in report.splitlines()
-            if "docs/03.specs/spec-0123-child/spec.md" in line
+            if "docs/03.specs/0123-child/spec.md" in line
         )
         self.assertIn(
             "| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |",

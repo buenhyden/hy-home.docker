@@ -55,8 +55,8 @@ class TransitionOverrideEvidencePathTests(unittest.TestCase):
             )
         self.assertEqual(1, len(overrides))
 
-    def test_the_retired_spec_slash_task_form_is_rejected(self) -> None:
-        evidence = "docs/03.specs/spec-0001-fixture/task.md"
+    def test_a_package_root_task_form_is_rejected(self) -> None:
+        evidence = "docs/03.specs/0001-fixture/task.md"
         with tempfile.TemporaryDirectory() as raw:
             root = pathlib.Path(raw)
             self._tree(root, evidence)

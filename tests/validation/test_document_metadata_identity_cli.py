@@ -29,7 +29,7 @@ class DocumentMetadataIdentityCliTests(unittest.TestCase):
     def test_duplicate_yaml_key_has_distinct_inventory_state(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            path = root / "docs/03.specs/spec-0123-example/spec.md"
+            path = root / "docs/03.specs/0123-example/spec.md"
             path.parent.mkdir(parents=True)
             path.write_text(
                 "---\nstatus: active\nstatus: completed\n---\n", encoding="utf-8"
@@ -44,7 +44,7 @@ class DocumentMetadataIdentityCliTests(unittest.TestCase):
     ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            path = root / "docs/03.specs/spec-0123-example/spec.md"
+            path = root / "docs/03.specs/0123-example/spec.md"
             path.parent.mkdir(parents=True)
             path.write_text("---\nstatus: [active\n---\n", encoding="utf-8")
             result = run_checker(root, "report")
@@ -69,14 +69,14 @@ class DocumentMetadataIdentityCliTests(unittest.TestCase):
     def test_report_order_is_deterministic_and_sorted_by_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            write_doc(root / "docs/03.specs/spec-0200-z/spec.md", {"status": "active"})
-            write_doc(root / "docs/01.requirements/prd-0100-a.md", {"status": "active"})
+            write_doc(root / "docs/03.specs/0200-z/spec.md", {"status": "active"})
+            write_doc(root / "docs/01.requirements/0100-a.md", {"status": "active"})
             first = run_checker(root, "report")
             second = run_checker(root, "report")
             self.assertEqual(first.stdout, second.stdout)
             self.assertLess(
-                first.stdout.index("docs/01.requirements/prd-0100-a.md"),
-                first.stdout.index("docs/03.specs/spec-0200-z/spec.md"),
+                first.stdout.index("docs/01.requirements/0100-a.md"),
+                first.stdout.index("docs/03.specs/0200-z/spec.md"),
             )
 
     def test_report_output_check_detects_staleness(self) -> None:
