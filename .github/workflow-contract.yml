@@ -486,6 +486,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
+        "tests.lib.document_governance.lifecycle.test_promoted",
         "tests.lib.document_governance.test_architecture",
         "tests.lib.document_governance.test_archive",
         "tests.lib.document_governance.test_identity_history",
