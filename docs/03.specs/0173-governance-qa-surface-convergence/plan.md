@@ -513,7 +513,7 @@ git commit -m "refactor(gate): converge executable composition"
 - Produces: one direct document-link validator, one typed public gate CLI,
   purpose-owned operation entrypoints, and a manifest with bounded transitions.
 
-- [ ] **Step 1: Add manifest tests for bounded transitions and consumers**
+- [x] **Step 1: Add manifest tests for bounded transitions and consumers**
 
 Add to `tests/validation/test_script_manifest.py`:
 
@@ -531,7 +531,7 @@ def test_retained_public_entrypoint_has_current_consumer(self) -> None:
                 self.assertTrue(row["consumers"], row["path"])
 ```
 
-- [ ] **Step 2: Run the manifest tests and verify RED**
+- [x] **Step 2: Run the manifest tests and verify RED**
 
 Run:
 
@@ -542,7 +542,7 @@ PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
 Expected: FAIL for the measured self-successors and consumerless retained or
 transition entrypoints.
 
-- [ ] **Step 3: Cut document-link consumers to one validator**
+- [x] **Step 3: Cut document-link consumers to one validator**
 
 Replace every current call of either shell wrapper with:
 
@@ -558,7 +558,7 @@ rg -n 'check-doc-(implementation-alignment|traceability)\.sh' --glob '!docs/98.a
 
 returns no current consumer.
 
-- [ ] **Step 4: Remove obsolete local and harness dispatchers**
+- [x] **Step 4: Remove obsolete local and harness dispatchers**
 
 Replace current `run-local-qa-gates.sh` callers with `run-ci-gate.py` and replace
 `--explain` callers with the typed CLI's own `--explain`. Delete
@@ -572,28 +572,28 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 python3 scripts/validation/run-ci-gate.py --profile full
 ```
 
-- [ ] **Step 5: Retire the target-surface executable subsystem**
+- [x] **Step 5: Retire the target-surface executable subsystem**
 
 Delete the target-surface libraries, CLI wrappers, workflow nodes, manifest
 rows, and focused tests after Task 2 covers current invocation ownership and
 the Stage 99 metadata/lifecycle validators cover current documents. Keep no
 redirect wrapper or compatibility import.
 
-- [ ] **Step 6: Move operation entrypoints out of library and validation trees**
+- [x] **Step 6: Move operation entrypoints out of library and validation trees**
 
 Move the PostgreSQL rehearsal and Compose readiness files to the paths listed
 above. Update script-relative root resolution, runbooks, manifest entries, and
 tests atomically. Register the PostgreSQL public operation check with explicit
 argv `--check-config-only`; no runtime mode runs from a validation aggregate.
 
-- [ ] **Step 7: Merge audit coverage into the matrix check**
+- [x] **Step 7: Merge audit coverage into the matrix check**
 
 Move the current coverage predicate from `report-audit-pack-coverage.sh` into
 `generate-audit-implementation-matrix.sh --check`. Keep a single generated
 output owner and remove the standalone report wrapper, manifest row, and gate
 leaf.
 
-- [ ] **Step 8: Resolve every remaining manifest disposition**
+- [x] **Step 8: Resolve every remaining manifest disposition**
 
 For each former self-successor row, choose exactly one result:
 
@@ -604,7 +604,7 @@ For each former self-successor row, choose exactly one result:
 No manifest row may remain `transition` solely because earlier Specs used that
 label.
 
-- [ ] **Step 9: Run focused GREEN checks**
+- [x] **Step 9: Run focused GREEN checks**
 
 Run:
 
