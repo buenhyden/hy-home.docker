@@ -8,7 +8,6 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from unittest import mock
 
 import yaml
 
@@ -26,16 +25,6 @@ if spec is None or spec.loader is None:
 module = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = module
 spec.loader.exec_module(module)
-
-
-def task_evidence(task_ids: list[str]) -> str:
-    rows = "\n".join(f"| {task_id} | Synthetic evidence | Done |" for task_id in task_ids)
-    return (
-        "# Synthetic Task Evidence\n\n"
-        "| Task ID | Scope | Status |\n"
-        "| :--- | :--- | :--- |\n"
-        f"{rows}\n"
-    )
 
 
 def _assert_task5_integration_contract(
@@ -157,17 +146,6 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             destination = self.repo / relative_path
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / relative_path, destination)
-
-        task_path = self.repo / contract["task_evidence"]
-        task_path.parent.mkdir(parents=True, exist_ok=True)
-        required_task_ids = sorted(
-            {
-                task_id
-                for assertion in contract["assertions"]
-                for task_id in assertion["completed_task_ids"]
-            }
-        )
-        task_path.write_text(task_evidence(required_task_ids), encoding="utf-8")
 
         self.contract = json.loads(self.contract_path.read_text(encoding="utf-8"))
         subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
@@ -388,75 +366,6 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.append_to_report("AUT-09", "the controlled wrapper is absent until Task 9")
         self.assert_failure("AUT-09", "forbidden stale phrase")
 
-    def test_missing_completed_task_id_fails(self) -> None:
-        task_path = self.repo / self.contract["task_evidence"]
-        text = task_path.read_text(encoding="utf-8")
-        task_id = self.contract["assertions"][-2]["completed_task_ids"][0]
-        task_path.write_text(
-            text.replace(task_id, f"{task_id}-missing"), encoding="utf-8"
-        )
-        self.assert_failure("QAF-12", f"completed task {task_id}")
-
-    def test_retired_task_evidence_requires_explicit_compact_regular_git_recovery(
-        self,
-    ) -> None:
-        from scripts.lib.document_governance import archive
-
-        task_path = self.repo / self.contract["task_evidence"]
-        expected = task_path.read_text(encoding="utf-8")
-        subprocess.run(
-            ["git", "add", "--", self.contract["task_evidence"]],
-            cwd=self.repo,
-            check=True,
-        )
-        subprocess.run(
-            [
-                "git",
-                "-c",
-                "user.name=Fixture",
-                "-c",
-                "user.email=fixture@example.invalid",
-                "commit",
-                "-qm",
-                "task evidence",
-            ],
-            cwd=self.repo,
-            check=True,
-        )
-        commit = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=self.repo, text=True
-        ).strip()
-        task_path.unlink()
-        row = {
-            "source_path": self.contract["task_evidence"],
-            "target_path": None,
-            "artifact_id": None,
-            "action": "delete",
-            "recovery_commit": commit,
-        }
-        compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": [row]}
-        with mock.patch.object(archive, "_migration_document", return_value=compact):
-            errors = []
-            self.assertEqual(
-                expected, module._read_task_evidence(self.repo, self.contract, errors)
-            )
-            self.assertEqual([], errors)
-            for key, value in (
-                ("action", "rename"),
-                ("recovery_commit", None),
-                ("recovery_commit", "0" * 40),
-                ("source_path", "../outside"),
-            ):
-                original = row[key]
-                row[key] = value
-                with self.subTest(field=key):
-                    errors = []
-                    self.assertIsNone(
-                        module._read_task_evidence(self.repo, self.contract, errors)
-                    )
-                    self.assertTrue(errors)
-                row[key] = original
-
     def test_wrong_lifecycle_heading_fails(self) -> None:
         path = self.repo / self.contract["audit_index"]
         text = path.read_text(encoding="utf-8")
@@ -592,9 +501,9 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assert_failure("AUT-09", "required tracked report")
 
     def test_empty_assertion_array_is_rejected(self) -> None:
-        self.contract["assertions"][0]["completed_task_ids"] = []
+        self.contract["assertions"][0]["forbidden_stale_phrases"] = []
         self.write_contract()
-        self.assert_failure("completed_task_ids", "non-empty array")
+        self.assert_failure("forbidden_stale_phrases", "non-empty array")
 
     def test_non_string_assertion_array_item_is_rejected(self) -> None:
         self.contract["assertions"][0]["forbidden_stale_phrases"] = [7]
