@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 created: "2026-02-21"
 ---
 
@@ -146,7 +146,7 @@ script.
 | LLM Wiki Generator                     | [generate-llm-wiki.py](./knowledge/generate-llm-wiki.py)                                    | Generate and check both the repo-local path index and Stage 90 source-bucket/category coverage snapshot                                                                                                                               |
 | Graphify Health Report                 | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                          | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, current-task routing, post-edit style validation/formatting, logical commit completion reminders, and Stop gating        |
-| Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits                                                                                                            |
+| Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Check safe changed paths with available formatting/lint tools, diff hygiene, and syntax checks; completion-time aggregate validation belongs to Stop |
 | Unified Hardening Check                | [check-all-hardening.sh](./hardening/check-all-hardening.sh)                                | Run all tier hardening checks, or one selected tier                                                                                                                                                             |
 | QA/CI Tooling Environment              | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh)                                       | Expose user-global QA/CI tools to restricted agent shells                                                                                                                                                       |
 | Docker Preflight Mode                  | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight`         | Real local prerequisite validation without dummy file creation                                                                                                                                                  |
@@ -154,8 +154,8 @@ script.
 | Sample Service Delivery Rehearsal      | [rehearse-sample-service-delivery.sh](./operations/rehearse-sample-service-delivery.sh)     | Validate fixture contracts or run the canonical-gated local baseline/canary promotion, rollback, atomic evidence, and owned-cleanup state machine                                                              |
 | Provider Surface Renderer              | [provider_surface_renderer.py](./operations/provider_surface_renderer.py)                   | Deterministically render native Claude/Codex role adapters and Claude/Codex skill projections from typed Stage 00 sources with confined, bounded writes; `--check` is read-only and `--write` applies                                  |
 | Tech-Stack Version Sync                | [sync-tech-stack-versions.sh](./operations/sync-tech-stack-versions.sh)                     | Re-point curated `infra/tech-stack.versions.json` images to declared compose tags; default writes, `--check` verifies, `--dry-run` previews                                                                     |
-| Compose Profile Coverage Snapshot      | [generate-compose-profile-service-coverage.sh](./operations/generate-compose-profile-service-coverage.sh) | Generate and check the Stage 90 Docker Compose profile/service coverage reference from tracked Compose files                                                                                                    |
-| Tech-Stack Version Provenance Snapshot | [generate-tech-stack-version-provenance.sh](./operations/generate-tech-stack-version-provenance.sh) | Generate and check the Stage 90 tech-stack registry drift severity and source provenance reference from curated registry and Compose image declarations                                                         |
+| Compose Profile Coverage Snapshot      | [generate-compose-profile-service-coverage.sh](./operations/generate-compose-profile-service-coverage.sh) | Generate the Stage 90 Docker Compose profile/service coverage reference with `--write`; use `--check` for read-only freshness verification                                                                     |
+| Tech-Stack Version Provenance Snapshot | [generate-tech-stack-version-provenance.sh](./operations/generate-tech-stack-version-provenance.sh) | Generate the Stage 90 tech-stack registry drift severity and source provenance reference with `--write`; use `--check` for read-only freshness verification                                                    |
 
 ## Hardening Tier Arguments
 
@@ -205,7 +205,7 @@ under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
 | Agent QA/CI environment     | `source scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Generated index maintenance | `scripts/knowledge/generate-llm-wiki.py --write`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh` |
+| Generated index maintenance | `scripts/knowledge/generate-llm-wiki.py --write`, `scripts/operations/generate-compose-profile-service-coverage.sh --write`, `scripts/operations/generate-tech-stack-version-provenance.sh --write`, `scripts/validation/generate-audit-implementation-matrix.sh --write`, `scripts/validation/generate-security-automation-readiness.sh --write`, `scripts/security/generate-supply-chain-sample-service-summary.sh --write` |
 | Internal library            | `scripts/lib/hardening-lib.sh`, `scripts/lib/ops/compose-core-readiness.sh` |
 
 `scripts/operations/gen-secrets.sh` is a manual operation entrypoint. Its
@@ -380,7 +380,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
 # Generate and check the audit implementation matrix snapshot
-bash scripts/validation/generate-audit-implementation-matrix.sh
+bash scripts/validation/generate-audit-implementation-matrix.sh --write
 bash scripts/validation/generate-audit-implementation-matrix.sh --check
 
 # Approved final QA only; prefixes must match the task's reviewed scope
@@ -433,13 +433,13 @@ bash scripts/operations/sync-tech-stack-versions.sh --dry-run
 bash scripts/operations/sync-tech-stack-versions.sh
 
 # Generate the Docker Compose profile/service coverage reference
-bash scripts/operations/generate-compose-profile-service-coverage.sh
+bash scripts/operations/generate-compose-profile-service-coverage.sh --write
 
 # Verify the Docker Compose profile/service coverage reference is fresh
 bash scripts/operations/generate-compose-profile-service-coverage.sh --check
 
 # Generate and verify the tech-stack version provenance reference
-bash scripts/operations/generate-tech-stack-version-provenance.sh
+bash scripts/operations/generate-tech-stack-version-provenance.sh --write
 bash scripts/operations/generate-tech-stack-version-provenance.sh --check
 
 # Make globally installed QA/CI tools available in restricted agent shells
@@ -462,6 +462,9 @@ repository update. A retained check-write generator registers a safe argv
 runtime` scripts are Operations entrypoints;
 they are not run during document migration and require a current Runbook plus
 the declared test evidence before explicit invocation.
+
+Transition rows require a non-retain disposition, a distinct tracked successor,
+and a nonblank `removal_condition`; active rows omit `removal_condition`.
 
 Do not invoke a `mutation: runtime` row from inventory or migration evidence;
 follow its current Runbook and explicit operator boundary. Do not invoke a

@@ -8,6 +8,7 @@ import scripts.lib.document_governance as document_governance
 import yaml
 
 from tests.validation._script_manifest_support import *
+from tests.validation._script_manifest_support import ROOT
 
 MANIFEST = ROOT / "scripts/manifest.yaml"
 MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
@@ -90,6 +91,40 @@ class ScriptManifestTests(unittest.TestCase):
                 )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertIn("--write", result.stdout)
+
+    def test_generator_refresh_guidance_uses_explicit_write_mode(self) -> None:
+        for script in (
+            "scripts/operations/generate-compose-profile-service-coverage.sh",
+            "scripts/operations/generate-tech-stack-version-provenance.sh",
+        ):
+            with self.subTest(script=script):
+                result = subprocess.run(
+                    ["bash", script, "--dry-run"],
+                    cwd=ROOT, text=True, capture_output=True, check=False,
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertIn(f"`bash {script} --write`", result.stdout)
+                self.assertNotIn(f"`bash {script}`", result.stdout)
+
+    def test_scripts_readme_write_generators_use_explicit_write_mode(self) -> None:
+        readme = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
+        maintenance_row = next(
+            line
+            for line in readme.splitlines()
+            if line.startswith("| Generated index maintenance ")
+        )
+        for command in (
+            "scripts/validation/generate-audit-implementation-matrix.sh",
+            "scripts/validation/generate-security-automation-readiness.sh",
+            "scripts/security/generate-supply-chain-sample-service-summary.sh",
+        ):
+            with self.subTest(command=command):
+                self.assertIn(f"`{command} --write`", maintenance_row)
+        audit_example = "bash scripts/validation/generate-audit-implementation-matrix.sh"
+        audit_block = readme.split(
+            "# Generate and check the audit implementation matrix snapshot\n", 1
+        )[1].split("\n\n", 1)[0]
+        self.assertIn(f"{audit_example} --write", audit_block)
 
     def test_compose_profile_generator_emits_canonical_published_metadata(
         self,
@@ -373,6 +408,8 @@ class ScriptManifestTests(unittest.TestCase):
                 and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
+            if row["lifecycle"] == "transition":
+                expected_fields = expected_fields | {"removal_condition"}
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
@@ -716,6 +753,34 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn(
             "successor-self",
             self.codes(self.row(disposition="rewrite", successor="scripts/example.py")),
+        )
+
+    def test_transition_requires_nonretained_disposition_and_removal_condition(self) -> None:
+        self.assertIn(
+            "transition-disposition-invalid", self.codes(self.row(lifecycle="transition"))
+        )
+        transition = self.row(
+            lifecycle="transition", disposition="merge", successor="docs/consumer.md"
+        )
+        for condition in (None, "", "   ", 42):
+            with self.subTest(condition=condition):
+                self.assertIn(
+                    "removal-condition-invalid",
+                    self.codes({**transition, "removal_condition": condition}),
+                )
+        self.assertIn("removal-condition-invalid", self.codes(transition))
+        valid = {
+            **transition,
+            "removal_condition": "Remove after the consumer cutover test passes.",
+        }
+        self.assertEqual(set(), self.codes(valid))
+        self.assertIn(
+            "successor-self", self.codes({**valid, "successor": "scripts/example.py"})
+        )
+        self.assertIn("successor-missing", self.codes({**valid, "successor": None}))
+        self.assertIn(
+            "removal-condition-unexpected",
+            self.codes(self.row(removal_condition="No active removal.")),
         )
 
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(

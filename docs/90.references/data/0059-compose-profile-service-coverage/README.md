@@ -31,7 +31,9 @@ gated behind Compose profiles.
 ## Repository Role
 
 Use this document as derived inventory context only. Do not edit it by hand;
-regenerate it with `bash scripts/operations/generate-compose-profile-service-coverage.sh`.
+regenerate it with `bash scripts/operations/generate-compose-profile-service-coverage.sh --write`;
+use `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`
+to verify freshness without writing.
 It does not replace Compose files, operations runbooks, or runtime validation.
 
 ## Scope

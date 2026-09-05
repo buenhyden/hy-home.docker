@@ -617,7 +617,7 @@ files:
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  lifecycle: transition
+  lifecycle: active
   mutation: runtime
   consumers:
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md

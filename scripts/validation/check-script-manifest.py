@@ -36,7 +36,7 @@ REQUIRED_FIELDS = frozenset(
         "tests",
     }
 )
-OPTIONAL_FIELDS = frozenset({"check_command", "outputs"})
+OPTIONAL_FIELDS = frozenset({"check_command", "outputs", "removal_condition"})
 KINDS = frozenset(
     {
         "contract",
@@ -349,6 +349,30 @@ def validate_manifest_document(
                             f"test must be executable evidence below an approved test root: {value}",
                         )
                     )
+
+        if row.get("lifecycle") == "transition":
+            if disposition == "retain":
+                findings.append(
+                    _finding(
+                        "transition-disposition-invalid", path,
+                        "transition rows require a non-retain disposition",
+                    )
+                )
+            condition = row.get("removal_condition")
+            if not isinstance(condition, str) or not condition.strip():
+                findings.append(
+                    _finding(
+                        "removal-condition-invalid", path,
+                        "transition rows require a nonblank removal_condition",
+                    )
+                )
+        elif "removal_condition" in row:
+            findings.append(
+                _finding(
+                    "removal-condition-unexpected", path,
+                    "only transition rows may declare removal_condition",
+                )
+            )
 
         successor = row.get("successor")
         if disposition == "retain":
