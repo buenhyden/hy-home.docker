@@ -46,7 +46,7 @@ into its canonical owner and the staging copy is discarded.
 
 Scripts that write here name their own subdirectory under `repo-support/`, for
 example `scripts/security/verify-sample-service-supply-chain.sh` and
-`scripts/lib/ops/rehearse-postgres-logical-upgrade.sh`.
+`scripts/operations/rehearse-postgres-logical-upgrade.sh`.
 
 ## Allowed Surface
 

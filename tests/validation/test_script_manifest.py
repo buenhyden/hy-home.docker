@@ -16,6 +16,7 @@ import unittest
 from pathlib import Path, PurePosixPath
 
 import yaml
+import scripts.lib.document_governance as document_governance
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -88,10 +89,9 @@ MUTATION_OVERRIDES = {
     "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
     "scripts/validation/generate-security-automation-readiness.sh": "check-write",
     "scripts/validation/report-provider-hook-parity.sh": "check-write",
-    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh": "runtime",
+    "scripts/operations/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
-    "scripts/validation/run-compose-core-readiness.sh": "runtime",
-    "scripts/validation/compose-core-readiness.lib.sh": "runtime",
+    "scripts/operations/check-compose-core-readiness.sh": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
 MANDATORY_DISPOSITIONS = {
@@ -718,6 +718,26 @@ class ScriptManifestTests(unittest.TestCase):
                     "dependency-manifest",
                 }:
                     self.assertTrue(row["tests"])
+
+    def test_nonretained_successor_is_distinct(self) -> None:
+        for row in self.rows:
+            if row["disposition"] != "retain":
+                with self.subTest(path=row["path"]):
+                    self.assertNotEqual(row["path"], row.get("successor"))
+
+    def test_document_governance_package_marker_is_registered(self) -> None:
+        marker = "scripts/lib/document_governance/__init__.py"
+        self.assertEqual("retain", self.rows_by_path[marker]["disposition"])
+        self.assertIn("document-governance", document_governance.__doc__ or "")
+
+    def test_retained_public_entrypoint_has_current_consumer(self) -> None:
+        for row in self.rows:
+            if (
+                row["kind"] in {"validator", "runner", "operations"}
+                and row["disposition"] == "retain"
+            ):
+                with self.subTest(path=row["path"]):
+                    self.assertTrue(row["consumers"])
                 if row["mutation"] == "runtime" and row["disposition"] == "retain":
                     self.assertTrue(is_runbook_authority(row["authority"]))
                     self.assertTrue(row["tests"])
@@ -769,12 +789,6 @@ class ScriptManifestTests(unittest.TestCase):
                 "scripts/lib/document_governance/metadata_validator.py",
             )
         )
-        self.assertFalse(
-            _python_imports_target(
-                adapter,
-                "scripts/lib/target_surface/target_surface_contract.py",
-            )
-        )
 
     def test_mutation_classes_follow_observed_script_behavior(self) -> None:
         for row in self.rows:
@@ -807,7 +821,7 @@ class ScriptManifestTests(unittest.TestCase):
 
     def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
         postgres = self.rows_by_path[
-            "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+            "scripts/operations/rehearse-postgres-logical-upgrade.sh"
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
@@ -815,7 +829,7 @@ class ScriptManifestTests(unittest.TestCase):
             postgres["authority"],
         )
         self.assertEqual(
-            [postgres["authority"]],
+            [".github/workflow-contract.yml", postgres["authority"]],
             postgres["consumers"],
         )
         self.assertEqual(
@@ -1438,6 +1452,10 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn(
             "successor-untracked",
             self.codes(self.row(disposition="merge", successor="scripts/next.py")),
+        )
+        self.assertIn(
+            "successor-self",
+            self.codes(self.row(disposition="rewrite", successor="scripts/example.py")),
         )
 
     def test_manifest_rejects_missing_behavioral_tests_and_invalid_mutation(

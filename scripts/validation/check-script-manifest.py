@@ -376,6 +376,14 @@ def validate_manifest_document(
                     f"successor is not tracked: {successor}",
                 )
             )
+        elif successor == path:
+            findings.append(
+                _finding(
+                    "successor-self",
+                    path,
+                    "non-retained rows require a distinct successor path",
+                )
+            )
 
         maintained_generator = (
             (
@@ -491,7 +499,13 @@ def _python_proves_use(text: str, target: str) -> bool:
             bind_scopes(child, child if isinstance(child, scope_nodes) else scope)
 
     bind_scopes(tree, tree)
-    module = target.removesuffix(".py").replace("/", ".")
+    target_path = PurePosixPath(target)
+    module_path = (
+        target_path.parent
+        if target_path.name == "__init__.py"
+        else target_path.with_suffix("")
+    )
+    module = module_path.as_posix().replace("/", ".")
     parent_module, _, module_leaf = module.rpartition(".")
     subprocess_modules: set[tuple[ast.AST, str]] = set()
     subprocess_calls: set[tuple[ast.AST, str]] = set()

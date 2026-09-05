@@ -95,7 +95,7 @@ created: "2026-05-17"
 - **Eval Re-run**:
   - `check-all-hardening.sh 07-workflow`
   - `check-template-security-baseline`
-  - `check-doc-traceability`
+  - `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI logs + compose config + health 상태
 
 ## Evidence

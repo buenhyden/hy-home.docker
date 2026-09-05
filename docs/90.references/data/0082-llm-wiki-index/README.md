@@ -893,12 +893,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/knowledge/generate-llm-wiki.py](../../../../scripts/knowledge/generate-llm-wiki.py) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../../scripts/lib/hardening-lib.sh) | script |
-| [scripts/lib/ops/rehearse-postgres-logical-upgrade.sh](../../../../scripts/lib/ops/rehearse-postgres-logical-upgrade.sh) | script |
-| [scripts/lib/ops/validate-harness.sh](../../../../scripts/lib/ops/validate-harness.sh) | script |
+| [scripts/lib/ops/compose-core-readiness.sh](../../../../scripts/lib/ops/compose-core-readiness.sh) | script |
 | [scripts/manifest.yaml](../../../../scripts/manifest.yaml) | YAML config |
+| [scripts/operations/check-compose-core-readiness.sh](../../../../scripts/operations/check-compose-core-readiness.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-compose-profile-service-coverage.sh](../../../../scripts/operations/generate-compose-profile-service-coverage.sh) | script |
 | [scripts/operations/generate-tech-stack-version-provenance.sh](../../../../scripts/operations/generate-tech-stack-version-provenance.sh) | script |
+| [scripts/operations/rehearse-postgres-logical-upgrade.sh](../../../../scripts/operations/rehearse-postgres-logical-upgrade.sh) | script |
 | [scripts/operations/rehearse-sample-service-delivery.sh](../../../../scripts/operations/rehearse-sample-service-delivery.sh) | script |
 | [scripts/operations/sync-provider-surfaces.sh](../../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/sync-tech-stack-versions.sh](../../../../scripts/operations/sync-tech-stack-versions.sh) | script |
@@ -909,20 +910,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/security/seed-grype-db-cache.sh](../../../../scripts/security/seed-grype-db-cache.sh) | script |
 | [scripts/security/verify-sample-service-supply-chain.sh](../../../../scripts/security/verify-sample-service-supply-chain.sh) | script |
 | [scripts/validation/agentic-audit-semantic-contract.json](../../../../scripts/validation/agentic-audit-semantic-contract.json) | JSON registry |
-| [scripts/validation/check-doc-implementation-alignment.sh](../../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
-| [scripts/validation/check-doc-traceability.sh](../../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../../scripts/validation/check-template-security-baseline.sh) | script |
-| [scripts/validation/compose-core-readiness.lib.sh](../../../../scripts/validation/compose-core-readiness.lib.sh) | script |
 | [scripts/validation/generate-audit-implementation-matrix.sh](../../../../scripts/validation/generate-audit-implementation-matrix.sh) | script |
 | [scripts/validation/generate-security-automation-readiness.sh](../../../../scripts/validation/generate-security-automation-readiness.sh) | script |
-| [scripts/validation/report-audit-pack-coverage.sh](../../../../scripts/validation/report-audit-pack-coverage.sh) | script |
 | [scripts/validation/report-provider-hook-parity.sh](../../../../scripts/validation/report-provider-hook-parity.sh) | script |
 | [scripts/validation/run-agent-precommit-all-files.sh](../../../../scripts/validation/run-agent-precommit-all-files.sh) | script |
 | [scripts/validation/run-ci-precommit.sh](../../../../scripts/validation/run-ci-precommit.sh) | script |
-| [scripts/validation/run-compose-core-readiness.sh](../../../../scripts/validation/run-compose-core-readiness.sh) | script |
-| [scripts/validation/run-local-qa-gates.sh](../../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh) | script |
 
 ### GitHub workflow surface
@@ -989,6 +984,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |

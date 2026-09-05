@@ -199,7 +199,6 @@
       "opaque": false,
       "children": [
         "ci.docs-traceability",
-        "ci.docs-implementation-alignment",
         "ci.repo-contracts",
         "ci.agent-output-eval-fixture-gate",
         "ci.supply-chain-fixture-policy",
@@ -221,7 +220,6 @@
       "opaque": false,
       "children": [
         "ci.docs-traceability",
-        "ci.docs-implementation-alignment",
         "ci.repo-contracts",
         "ci.agent-output-eval-fixture-gate",
         "ci.supply-chain-fixture-policy",
@@ -252,7 +250,8 @@
       "opaque": false,
       "children": [
         "setup.compose-env",
-        "leaf.compose-validation"
+        "leaf.compose-validation",
+        "leaf.postgres-logical-upgrade-config"
       ]
     },
     {
@@ -261,14 +260,6 @@
       "opaque": false,
       "children": [
         "leaf.dependency-vulnerability-audit"
-      ]
-    },
-    {
-      "gate_id": "ci.docs-implementation-alignment",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.docs-implementation-alignment"
       ]
     },
     {
@@ -525,6 +516,19 @@
       "suite_key": "compose-validation"
     },
     {
+      "gate_id": "leaf.postgres-logical-upgrade-config",
+      "kind": "leaf",
+      "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
+      "argv": [
+        "--check-config-only"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "postgres-logical-upgrade-config"
+    },
+    {
       "gate_id": "leaf.dependency-vulnerability-audit",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -559,20 +563,6 @@
       "suite_key": "document-lifecycle-regressions"
     },
     {
-      "gate_id": "leaf.docs-implementation-alignment",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-document-links.py",
-      "argv": [
-        "--mode",
-        "alignment"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 5,
-      "opaque": true,
-      "suite_key": "docs-implementation-alignment"
-    },
-    {
       "gate_id": "leaf.operations-catalog",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-operations-catalog.py",
@@ -589,7 +579,7 @@
       "entrypoint": "scripts/validation/check-document-links.py",
       "argv": [
         "--mode",
-        "traceability"
+        "all"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
@@ -862,61 +852,6 @@
       "suite_key": "local-shell-syntax"
     },
     {
-      "gate_id": "leaf.local-target-delta-contract",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-target-surface-delta-contract.py",
-      "argv": [
-        "--mode",
-        "advisory"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-target-delta-contract"
-    },
-    {
-      "gate_id": "leaf.local-target-delta-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.lib.target_surface.test_target_surface_delta_contracts",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-target-delta-regressions"
-    },
-    {
-      "gate_id": "leaf.local-target-surface-contract",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-target-surface-contract.py",
-      "argv": [],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-target-surface-contract"
-    },
-    {
-      "gate_id": "leaf.local-target-surface-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.lib.target_surface.test_target_surface_contracts",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-target-surface-regressions"
-    },
-    {
       "gate_id": "leaf.local-tech-stack-version-drift",
       "kind": "leaf",
       "entrypoint": "scripts/operations/sync-tech-stack-versions.sh",
@@ -1182,7 +1117,8 @@
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.compose-validation"
+        "leaf.compose-validation",
+        "leaf.postgres-logical-upgrade-config"
       ]
     },
     {
@@ -1222,17 +1158,6 @@
         "leaf.supply-chain-fixture-policy",
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness"
-      ]
-    },
-    {
-      "gate_id": "local.target-surface",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.local-target-surface-regressions",
-        "leaf.local-target-surface-contract",
-        "leaf.local-target-delta-regressions",
-        "leaf.local-target-delta-contract"
       ]
     },
     {
@@ -1353,12 +1278,10 @@
       ],
       "document-contract": [
         "leaf.repo-metadata-base",
-        "leaf.repo-document-metadata",
-        "local.target-surface"
+        "leaf.repo-document-metadata"
       ],
       "document-graph": [
-        "ci.docs-traceability",
-        "leaf.docs-implementation-alignment"
+        "ci.docs-traceability"
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
@@ -1427,20 +1350,6 @@
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       },
       {
-        "suite": "document-graph",
-        "gate_id": "public.validator.scripts.validation.check-doc-implementation-alignment.sh",
-        "entrypoint": "scripts/validation/check-doc-implementation-alignment.sh",
-        "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
-        "suite": "document-graph",
-        "gate_id": "public.validator.scripts.validation.check-doc-traceability.sh",
-        "entrypoint": "scripts/validation/check-doc-traceability.sh",
-        "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
         "suite": "document-lifecycle",
         "gate_id": "leaf.local-document-corpus-lifecycle",
         "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
@@ -1476,6 +1385,13 @@
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       },
       {
+        "suite": "operations",
+        "gate_id": "leaf.postgres-logical-upgrade-config",
+        "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
+        "argv": ["--check-config-only"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
         "suite": "repository-integrity",
         "gate_id": "leaf.quickwin-baseline",
         "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
@@ -1504,31 +1420,10 @@
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       },
       {
-        "suite": "document-contract",
-        "gate_id": "leaf.local-target-surface-contract",
-        "entrypoint": "scripts/validation/check-target-surface-contract.py",
-        "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
-        "suite": "document-contract",
-        "gate_id": "leaf.local-target-delta-contract",
-        "entrypoint": "scripts/validation/check-target-surface-delta-contract.py",
-        "argv": ["--mode", "advisory"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
         "suite": "repository-integrity",
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
-        "suite": "document-lifecycle",
-        "gate_id": "public.validator.scripts.validation.report-audit-pack-coverage.sh",
-        "entrypoint": "scripts/validation/report-audit-pack-coverage.sh",
-        "argv": ["--check"],
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       },
       {

@@ -18,7 +18,7 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[3]
-SCRIPT = ROOT / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+SCRIPT = ROOT / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
 FIXTURE = ROOT / "tests/fixtures/postgres-logical-upgrade"
 COMPOSE = FIXTURE / "docker-compose.yml"
 SEED_SQL = FIXTURE / "sql/001_schema_and_seed.sql"
@@ -210,7 +210,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory(prefix="ior-direct-run-", dir="/tmp") as tmp:
             root = Path(tmp) / "repo"
-            script = root / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+            script = root / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
             script.parent.mkdir(parents=True)
             shutil.copy2(SCRIPT, script)
             checker = root / "scripts/validation" / IMAGE_IDENTITY_CHECKER.name
@@ -518,7 +518,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 ) as tmp:
                     root = Path(tmp) / "repo"
                     isolated_script = (
-                        root / "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                        root / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
                     )
                     isolated_script.parent.mkdir(parents=True)
                     shutil.copy2(SCRIPT, isolated_script)
@@ -551,7 +551,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         }
                     )
                     result = subprocess.run(
-                        ["bash", str(isolated_script), "--check"],
+                        ["bash", str(isolated_script), "--check-config-only"],
                         cwd=root,
                         env=env,
                         text=True,
@@ -618,7 +618,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                             IOR_TEST_DOCKER_CALLS={calls!s}
                             {variable}={value}
                             export PATH IOR_TEST_DOCKER_CALLS {variable}
-                            main --check
+                            main --check-config-only
                             """
                         )
                     )
@@ -1078,7 +1078,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertEqual(
             sum(
                 row.get("path")
-                == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                == "scripts/operations/rehearse-postgres-logical-upgrade.sh"
                 for row in document["files"]
             ),
             1,
@@ -1086,7 +1086,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
 
     def test_direct_evidence_override_is_forbidden(self) -> None:
         result = self.run_script(
-            "--check", extra_env={"IOR_EVIDENCE_DIR": "/var/tmp/ior-unsafe"}
+            "--check-config-only", extra_env={"IOR_EVIDENCE_DIR": "/var/tmp/ior-unsafe"}
         )
         self.assertEqual(result.returncode, 10, result.stdout + result.stderr)
         self.assertIn("failure_class=preflight", result.stdout)

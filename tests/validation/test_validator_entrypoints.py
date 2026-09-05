@@ -22,25 +22,25 @@ PYTHON_ENTRYPOINTS = (
     "scripts/validation/check-github-workflow-contract.py",
     "scripts/validation/check-operations-catalog.py",
     "scripts/validation/check-supply-chain-policy.py",
-    "scripts/validation/check-target-surface-contract.py",
-    "scripts/validation/check-target-surface-delta-contract.py",
     "scripts/lib/gate/ci_gate_contract.py",
     "scripts/validation/ci_gate_runner.py",
     "scripts/lib/gate/github_workflow_contract.py",
     "scripts/validation/run-ci-gate.py",
-    "scripts/lib/target_surface/target_surface_contract.py",
 )
 SHELL_ENTRYPOINTS = (
     "scripts/hardening/check-all-hardening.sh",
     "scripts/hooks/agent-event-hook.sh",
     "scripts/hooks/post-tool-validate.sh",
+    "scripts/knowledge/report-graphify-health.sh",
+    "scripts/operations/check-compose-core-readiness.sh",
+    "scripts/operations/gen-secrets.sh",
+    "scripts/operations/rehearse-postgres-logical-upgrade.sh",
     "scripts/operations/sync-provider-surfaces.sh",
     "scripts/operations/sync-tech-stack-versions.sh",
     "scripts/operations/use-qa-ci-tools.sh",
     "evals/run-agent-output-eval-fixtures.sh",
     "scripts/validation/run-agent-precommit-all-files.sh",
-    "scripts/validation/run-local-qa-gates.sh",
-    "scripts/lib/ops/validate-harness.sh",
+    "scripts/validation/validate-docker-compose.sh",
 )
 
 

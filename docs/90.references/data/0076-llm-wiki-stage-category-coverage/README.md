@@ -43,7 +43,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `994`
+- Safe tracked source paths: `990`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -61,13 +61,13 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `docs/03.specs` | 9 | [docs/03.specs/0173-governance-qa-surface-convergence/plan.md](../../../03.specs/0173-governance-qa-surface-convergence/plan.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/spec.md](../../../03.specs/0173-governance-qa-surface-convergence/spec.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md) |
 | `docs/05.operations` | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
 | `docs/90.references` | 65 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
-| `docs/98.archive` | 144 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md)<br>[docs/98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) |
+| `docs/98.archive` | 145 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md)<br>[docs/98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) |
 | `docs/99.templates` | 43 | [docs/99.templates/README.md](../../../99.templates/README.md)<br>[docs/99.templates/contracts/document-frontmatter.schema.json](../../../99.templates/contracts/document-frontmatter.schema.json)<br>[docs/99.templates/contracts/document-profile.schema.json](../../../99.templates/contracts/document-profile.schema.json) |
 | `docs/README.md` | 1 | [docs/README.md](../../../README.md) |
 | `evals` | 2 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh) |
 | `infra` | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | `root` | 7 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
-| `scripts` | 38 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
+| `scripts` | 33 | [scripts/README.md](../../../../scripts/README.md)<br>[scripts/hardening/check-all-hardening.sh](../../../../scripts/hardening/check-all-hardening.sh)<br>[scripts/hooks/agent-event-hook.sh](../../../../scripts/hooks/agent-event-hook.sh) |
 | `secrets` | 1 | [secrets/README.md](../../../../secrets/README.md) |
 
 ## LLM Wiki Category Coverage
@@ -82,20 +82,20 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
 | Reference and template docs | 108 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
 | Infrastructure source | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
-| Scripts and validators | 40 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh)<br>[scripts/README.md](../../../../scripts/README.md) |
+| Scripts and validators | 35 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh)<br>[scripts/README.md](../../../../scripts/README.md) |
 | GitHub workflow surface | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
-| Other tracked source | 144 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md)<br>[docs/98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) |
+| Other tracked source | 145 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md)<br>[docs/98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) |
 
 ## Path Role Coverage
 
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 77 |
-| Markdown reference | 559 |
+| Markdown reference | 560 |
 | YAML config | 102 |
 | folder index | 171 |
-| script | 53 |
+| script | 48 |
 | source path | 28 |
 | text entrypoint | 4 |
 

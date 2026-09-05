@@ -800,7 +800,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "scripts/operations/rehearse-sample-service-delivery.sh"
             ),
             pathlib.PurePosixPath("scripts/validation/run-ci-gate.py"),
-            pathlib.PurePosixPath("scripts/validation/run-local-qa-gates.sh"),
             pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
             pathlib.PurePosixPath(
                 "scripts/validation/run-agent-precommit-all-files.sh"
@@ -962,7 +961,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for node in document["gate_nodes"]:
             if node["gate_id"] == "leaf.local-diff-hygiene":
                 node["entrypoint"] = (
-                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                    "scripts/operations/check-compose-core-readiness.sh"
                 )
                 node["argv"] = []
         with (

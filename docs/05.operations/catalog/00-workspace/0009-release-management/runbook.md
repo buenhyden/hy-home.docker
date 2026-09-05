@@ -68,6 +68,14 @@ created: "2026-06-04"
    bash scripts/validation/validate-docker-compose.sh
    ```
 
+   The isolated five-service runtime harness is a separate operator action. Its
+   preflight is safe to run without starting services; scenarios require the
+   task-specific runtime approval and are never selected by a validation profile.
+
+   ```bash
+   bash scripts/operations/check-compose-core-readiness.sh --preflight
+   ```
+
 5. Confirm changelog and tag readiness from tracked release surfaces.
 
    ```bash
@@ -102,6 +110,23 @@ created: "2026-06-04"
    `evidence=fixture-contract-only`, `readiness=passed`,
    `recovery_boundary=passed`, `compose=passed`, `ports=18080,18081`이 모두
    있어야 한다. Fixture verdict는 실제 실행 승인이 아니다.
+
+   Supply-chain preparation stays fail-closed: use fixture-only or preflight
+   checks by default, and run the networked Grype seed only under its tracked
+   approval surface.
+
+   ```bash
+   bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only
+   bash scripts/security/verify-sample-service-supply-chain.sh --preflight
+   bash scripts/security/seed-grype-db-cache.sh --preflight
+   ```
+
+   Secret generation is likewise an explicit operator action. Use its read-only
+   check before any no-argument write mode.
+
+   ```bash
+   bash scripts/operations/gen-secrets.sh --check
+   ```
 
 9. 실제 local rehearsal은 다음 canonical Spec 126 파일 세 개가 모두 존재하고,
    verdict schema v2와 pair schema/generation v3 계약을 통과할 때만 실행한다.

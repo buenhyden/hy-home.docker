@@ -6,17 +6,17 @@ BASE_DIR="$(git rev-parse --show-toplevel 2>/dev/null)" || {
   exit 10
 }
 
-# shellcheck source=scripts/validation/compose-core-readiness.lib.sh
-source "${BASE_DIR}/scripts/validation/compose-core-readiness.lib.sh"
+# shellcheck source=scripts/lib/ops/compose-core-readiness.sh
+source "${BASE_DIR}/scripts/lib/ops/compose-core-readiness.sh"
 
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/validation/run-compose-core-readiness.sh --preflight
-  bash scripts/validation/run-compose-core-readiness.sh --scenario startup-readiness
-  bash scripts/validation/run-compose-core-readiness.sh --scenario vault-restart-recovery
-  bash scripts/validation/run-compose-core-readiness.sh --scenario negative-timeout
-  bash scripts/validation/run-compose-core-readiness.sh --cleanup-only --project-name hyhome-crr-20260719-12345-abcd1234
+  bash scripts/operations/check-compose-core-readiness.sh --preflight
+  bash scripts/operations/check-compose-core-readiness.sh --scenario startup-readiness
+  bash scripts/operations/check-compose-core-readiness.sh --scenario vault-restart-recovery
+  bash scripts/operations/check-compose-core-readiness.sh --scenario negative-timeout
+  bash scripts/operations/check-compose-core-readiness.sh --cleanup-only --project-name hyhome-crr-20260719-12345-abcd1234
 
 Exit classes: 0=pass, 2=usage, 10=preflight/scope, 20=startup,
 30=readiness, 40=recovery, 50=cleanup ambiguity.
@@ -172,7 +172,7 @@ main() {
       "recovery_timeout_seconds=${CRR_RECOVERY_TIMEOUT_SECONDS:-120}" \
       "readiness_handoff=${CRR_VERDICT_PATH}" \
       "scenario_evidence_pattern=${CRR_EVIDENCE_DIR}/readiness-verdict.<scenario>.json" \
-      "cleanup_command=bash scripts/validation/run-compose-core-readiness.sh --cleanup-only --project-name ${CRR_PROJECT_NAME}"
+      "cleanup_command=bash scripts/operations/check-compose-core-readiness.sh --cleanup-only --project-name ${CRR_PROJECT_NAME}"
     return 0
   fi
 

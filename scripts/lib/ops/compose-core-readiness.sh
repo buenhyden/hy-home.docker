@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Library for run-compose-core-readiness.sh. Sourcing this file must not mutate
+# Library for check-compose-core-readiness.sh. Sourcing this file must not mutate
 # Docker state or create files.
 
 # shellcheck disable=SC2034 # Constants and parse results are consumed by the wrapper.

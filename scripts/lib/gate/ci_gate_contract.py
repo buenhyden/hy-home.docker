@@ -61,8 +61,7 @@ _COMPLETE_CAPABILITY_ARGV = {
     "check-document-links.py": ("--mode", "all"),
     "check-document-metadata.py": ("--mode", "check-changed"),
     "check-supply-chain-policy.py": ("--check",),
-    "check-target-surface-delta-contract.py": ("--mode", "advisory"),
-    "report-audit-pack-coverage.sh": ("--check",),
+    "rehearse-postgres-logical-upgrade.sh": ("--check-config-only",),
     "report-provider-hook-parity.sh": ("--check",),
 }
 _TOP_LEVEL_FIELDS = frozenset(
@@ -77,7 +76,6 @@ _TOP_LEVEL_FIELDS = frozenset(
 )
 _INTERNAL_CI_ROOTS = {
     "docs-traceability": "ci.docs-traceability",
-    "docs-implementation-alignment": "ci.docs-implementation-alignment",
     "repo-contracts": "ci.repo-contracts",
     "agent-output-eval-fixture-gate": "ci.agent-output-eval-fixture-gate",
     "supply-chain-fixture-policy": "ci.supply-chain-fixture-policy",
@@ -96,7 +94,6 @@ _INTERNAL_CI_ROOTS = {
 
 _INTERNAL_ROOT_CHILDREN = {
     "ci.docs-traceability": ("leaf.docs-traceability",),
-    "ci.docs-implementation-alignment": ("leaf.docs-implementation-alignment",),
     "ci.repo-contracts": (
         "leaf.repo-metadata-base",
         "setup.repo-python-dependencies",
@@ -138,6 +135,7 @@ _INTERNAL_ROOT_CHILDREN = {
     "ci.compose-validation": (
         "setup.compose-env",
         "leaf.compose-validation",
+        "leaf.postgres-logical-upgrade-config",
     ),
     "ci.infrastructure-hardening": (
         "setup.compose-env",
@@ -203,12 +201,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.document-lifecycle-regressions",
         "leaf.document-governance-library-regressions",
     ),
-    "local.target-surface": (
-        "leaf.local-target-surface-regressions",
-        "leaf.local-target-surface-contract",
-        "leaf.local-target-delta-regressions",
-        "leaf.local-target-delta-contract",
-    ),
     "local.workflow-harness": (
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",
@@ -223,7 +215,10 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness",
     ),
-    "local.compose-validation": ("leaf.compose-validation",),
+    "local.compose-validation": (
+        "leaf.compose-validation",
+        "leaf.postgres-logical-upgrade-config",
+    ),
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",

@@ -206,7 +206,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         active_surfaces = "\n".join(
             (ROOT / path).read_text(encoding="utf-8")
             for path in (
-                "scripts/validation/run-local-qa-gates.sh",
                 "scripts/hooks/agent-event-hook.sh",
                 "scripts/hooks/post-tool-validate.sh",
                 ".claude/settings.json",
@@ -671,7 +670,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "heredoc": "python3 - <<'PY'\nprint('gate')\nPY",
             "substitution": "python3 $(printf scripts/validation/run-ci-gate.py)",
             "eval": "eval python3 scripts/validation/run-ci-gate.py",
-            "source": "source scripts/validation/run-local-qa-gates.sh",
+            "source": "source scripts/validation/run-ci-gate.py",
             "shell-c": "bash -c 'true'",
             "direct-script": (
                 "python3 scripts/validation/check-document-links.py --mode traceability"
@@ -795,7 +794,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 workflow.read_text(encoding="utf-8").replace(
                     "run: python3 scripts/validation/run-ci-gate.py --profile changed",
                     "run: python3 scripts/validation/run-ci-gate.py "
-                    "--profile ci --gate leaf.docs-implementation-alignment",
+                    "--profile ci --gate leaf.docs-traceability",
                     1,
                 ),
                 encoding="utf-8",
@@ -803,7 +802,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             document = self.load_contract_document(root)
             for record in document["job_roots"]:
                 if record["job_id"] == "validation-changed":
-                    record["root_gate_id"] = "leaf.docs-implementation-alignment"
+                    record["root_gate_id"] = "leaf.docs-traceability"
                     break
             self.write_contract_document(root, document)
             findings = self.module.validate_workflows(
@@ -1230,7 +1229,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
         )
         for marker in (
-            "scripts/validation/check-target-surface-contract.py",
             "scripts/validation/check-agentic-audit-semantic-freshness.py",
             "scripts/validation/check-agent-governance-contract.py",
         ):

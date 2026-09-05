@@ -99,8 +99,8 @@ artifact trust, promotion/rollback 동작을 증명할 수 없다. 이 요구사
 
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)
-- **Implementation**: `scripts/validation/run-compose-core-readiness.sh`,
-  `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh`,
+- **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,
+  `scripts/operations/rehearse-postgres-logical-upgrade.sh`,
   `scripts/security/verify-sample-service-supply-chain.sh`,
   `scripts/validation/check-supply-chain-policy.py`,
   `scripts/operations/rehearse-sample-service-delivery.sh`

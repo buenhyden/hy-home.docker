@@ -224,7 +224,7 @@ def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
         kind=contract.GateKind.LEAF,
         suite_key=suite_key,
         entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-target-surface-delta-contract.py"
+            "scripts/validation/check-document-links.py"
         ),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
@@ -256,7 +256,7 @@ def setup(gate_id: str) -> contract.GateNode:
         kind=contract.GateKind.SETUP,
         suite_key=None,
         entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-target-surface-delta-contract.py"
+            "scripts/validation/check-document-links.py"
         ),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
@@ -642,7 +642,7 @@ class CiGateContractTests(unittest.TestCase):
         candidate = registry()
         duplicate_suite_nodes = tuple(
             leaf(node.gate_id, "docs-traceability")
-            if node.gate_id == "leaf.docs-implementation-alignment"
+            if node.gate_id == "leaf.operations-catalog"
             else node
             for node in candidate.nodes
         )
@@ -855,7 +855,7 @@ class CiGateContractTests(unittest.TestCase):
                 node,
                 children=tuple(reversed(node.children)),
             )
-            if node.gate_id == "local.target-surface"
+            if node.gate_id == "local.workflow-harness"
             else node
             for node in candidate.nodes
         )

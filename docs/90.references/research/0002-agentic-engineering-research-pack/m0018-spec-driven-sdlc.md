@@ -180,22 +180,13 @@ later artifact merely to make a check pass.
 | CI/workflow configuration                 | A tracked automation definition                                                                       | A successful run, required-check configuration, branch protection, or production outcome.  |
 | Release/operations evidence               | A bounded event or operating contract                                                                 | Deployment/runtime proof outside the separately evidenced chain.                           |
 
-Two named scripts implement the traceability/alignment slice of this table
-and were re-read directly this revision rather than assumed from their names.
-`check-doc-traceability.sh` (90 lines) is **not** requirement-ID or
-artifact-graph tracing; it checks reciprocal README links between
-`docs/04.execution/` and `docs/05.operations/`, priority-Plan links to the
-operations policy catalog/index, and that catalog `OPER`/`RUN` targets exist —
-a link-literal check, not a `parent_ids`/requirement-ID verifier.
-`check-doc-implementation-alignment.sh` (261 lines, inline Python) walks
-active Stage 01-05 Markdown, extracts referenced repository paths, and
-confirms each resolves against a fixed prefix/file allowlist (`docs/`,
-`infra/`, `scripts/`, `.github/`, `.claude/`, `.codex/`, `secrets/`,
-`projects/`, `tests/`, named root files) — it catches a doc citing a path no
-longer in the tree, not whether the cited path's content matches the doc's
-claim about it. Neither performs end-to-end requirement-to-commit tracing;
-both are narrower verifiers this repository composes with the metadata
-checker and human review to approximate full traceability.
+One document-graph validator implements the traceability/alignment slice of
+this table. `check-document-links.py --mode all` owns reciprocal catalog and
+operations links, rendered Markdown targets and anchors, and current document
+references to repository paths. It detects missing or prohibited graph edges;
+it does not prove that a referenced implementation behaves as the prose
+claims. End-to-end requirement-to-commit traceability therefore still
+requires metadata validation, task evidence, and human review.
 
 ### External implementations and standards boundary
 
@@ -266,8 +257,7 @@ and, where it matters more, what it does not.
 | [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)                                                                   | 2026-08-08 | Workspace tracked            | Canonical stage purposes, inputs, templates, and done criteria at Task 5 baseline.                                                                       |
 | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                                                        | 2026-08-08 | Workspace tracked            | Human lifecycle and feedback boundary.                                                                                                                   |
 | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                                                       | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                                                     |
-| [Document traceability checker](../../../../scripts/validation/check-doc-traceability.sh)                                                                | 2026-08-14 | Workspace tracked executable | 90-line script re-read directly; scope confirmed as README-link and catalog-target checks, not requirement-ID tracing.                                   |
-| [Implementation alignment checker](../../../../scripts/validation/check-doc-implementation-alignment.sh)                                                 | 2026-08-14 | Workspace tracked executable | 261-line inline-Python script re-read directly; scope confirmed as path-reference resolution against an allowlist.                                       |
+| [Document graph validator](../../../../scripts/validation/check-document-links.py)                                                                       | 2026-09-04 | Workspace tracked executable | The typed `--mode all` route owns both rendered-link traceability and current-path alignment checks.                                                      |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                              | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; all used claims corroborated against current tracked sources.                                                                     |
 
 ## Scope Application

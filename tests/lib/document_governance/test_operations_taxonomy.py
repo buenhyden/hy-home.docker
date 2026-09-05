@@ -178,7 +178,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         rehearsal = next(
             row
             for row in manifest["files"]
-            if row["path"] == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+            if row["path"] == "scripts/operations/rehearse-postgres-logical-upgrade.sh"
         )
         self.assertEqual("validator", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])

@@ -190,8 +190,8 @@ four tracked JSON/config files (`.claude/settings.json`, `.codex/hooks.json`,
 changed; `bash -n` syntax-checking of `.claude/hooks/*.sh`, `.gemini/hooks/*.sh`,
 and `scripts/**/*.sh` when a hook/script shell file changed;
 `validate-docker-compose.sh` when a Compose/`infra/`/`.env.example` path
-changed; and `check-repo-contracts.sh` plus `check-doc-traceability.sh` when a
-governance-relevant path changed (root shims, `docs/*`, `.github/*`,
+changed; and the typed `run-ci-gate.py --profile changed` route, including
+`check-document-links.py`, when a governance-relevant path changed (root shims, `docs/*`, `.github/*`,
 `.claude/*`, `.codex/*`, `.gemini/*`, `.agents/*`, `scripts/*`, or the
 tech-stack version file). This is the closest thing this workspace has to a
 "local execution" evidence depth for style and contract drift, and it fires

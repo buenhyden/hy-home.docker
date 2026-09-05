@@ -36,8 +36,8 @@ failure boundary, cleanup, evidence를 독립적으로 검증해야 한다.
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
-| Compose readiness | `scripts/validation/run-compose-core-readiness.sh` and `compose-core-readiness.lib.sh` | bounded readiness and cleanup verdict |
-| PostgreSQL recovery | `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` | backup/restore and integrity verdict |
+| Compose readiness | `scripts/operations/check-compose-core-readiness.sh` and `scripts/lib/ops/compose-core-readiness.sh` | bounded readiness and cleanup verdict |
+| PostgreSQL recovery | `scripts/operations/rehearse-postgres-logical-upgrade.sh` | backup/restore and integrity verdict |
 | Supply chain | `scripts/security/verify-sample-service-supply-chain.sh` and `scripts/validation/check-supply-chain-policy.py` | digest-bound trust verdict |
 | Local delivery | `scripts/operations/rehearse-sample-service-delivery.sh` | canary, promotion, rollback verdict |
 
