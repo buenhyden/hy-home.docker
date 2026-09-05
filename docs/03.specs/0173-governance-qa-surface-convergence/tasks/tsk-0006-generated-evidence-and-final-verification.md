@@ -307,6 +307,16 @@ existing schema methods reproduced five failures; after correction all four
 methods passed in 0.079 seconds, including a new positive assertion that the
 current complete registry remains valid. This does not yet claim a full pass.
 
+Schema policy and Python reviews both passed with zero actionable findings.
+The full retry at `2e04198fa` passed the previously failing metadata leaf,
+then reached 345 document-governance tests and stopped with two missing-file
+errors in `test_registry.py`. Those two tests also read retired current
+SPEC-0172. Their inputs now use independent synthetic Spec frontmatter while
+retaining wrong-layer, empty-optional-value and empty-root-parent assertions.
+The two focused methods passed in 0.250 seconds and independent Python review
+passed. A scoped search found no other test reading the removed current
+Spec packet; the remaining literal paths are schema or regex inputs only.
+
 The lifecycle correction is committed at `2d45f5cbd`: only the Plan sequence
 and its existing generic execution-state regression changed. The focused
 method passed in 0.390 seconds; policy/Python review passed with no actionable

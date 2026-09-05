@@ -60,6 +60,20 @@ def _child_env() -> dict[str, str]:
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
+_SPEC_SOURCE = '''---
+title: "Fixture Spec"
+version: "0.1.0"
+type: "sdlc/spec"
+status: "draft"
+owner: "@fixture"
+updated: "2026-09-04"
+layer: "specs"
+artifact_id: "SPEC-0001"
+parent_ids: []
+created: "2026-09-04"
+---
+'''
+
 
 def _fixture_git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
@@ -142,9 +156,9 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertNotIn("retain-superseded-in-place", {item["kind"] for item in load_registry().profiles["adr"]["exceptions"]})
 
     def test_authored_stage_layer_uses_registry_literal(self) -> None:
-        path = pathlib.Path("docs/03.specs/0172-document-contract-convergence/spec.md")
+        path = pathlib.Path("docs/03.specs/0001-fixture/spec.md")
         profiles = build_registry_profiles(load_registry())
-        source = (ROOT / path).read_text(encoding="utf-8")
+        source = _SPEC_SOURCE
         record = metadata_validator._record_from_text(
             path, source.replace('layer: "specs"', 'layer: "wrong-layer"'), profiles=profiles
         )
@@ -161,9 +175,9 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
     def test_optional_empty_values_are_rejected_without_banning_root_parents(self) -> None:
-        path = pathlib.Path("docs/03.specs/0172-document-contract-convergence/spec.md")
+        path = pathlib.Path("docs/03.specs/0001-fixture/spec.md")
         profiles = build_registry_profiles(load_registry())
-        source = (ROOT / path).read_text(encoding="utf-8")
+        source = _SPEC_SOURCE
         for value in ("[]", "null", '""'):
             with self.subTest(value=value):
                 changed = source.replace(
