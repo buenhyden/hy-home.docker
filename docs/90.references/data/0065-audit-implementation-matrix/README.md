@@ -1,10 +1,10 @@
 ---
 title: "Reference: Audit Implementation Matrix"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "DATA-0065"
 parent_ids: []
@@ -135,6 +135,7 @@ closure, generated evidence surfaces, and residual gap signals.
 
 ## Complete Criterion Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Report | Criterion ID | External criterion | Workspace evidence | Status | Depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | README.md | HAR-01 | Discover hierarchical provider instructions with explicit precedence. | Thin `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` shims route to `docs/00.agent-governance/rules/bootstrap.md`; provider sync validates projections. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts; add no parallel instruction layer. | `bash scripts/operations/sync-provider-surfaces.sh --check`; inspect root shims. | High: direct tracked evidence; loading still does not prove compliance. |
@@ -301,6 +302,7 @@ closure, generated evidence surfaces, and residual gap signals.
 
 ## Normalized Status Counts
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Normalized Status | Count |
 | --- | ---: |
 | Implemented | 77 |
@@ -312,6 +314,7 @@ closure, generated evidence surfaces, and residual gap signals.
 
 ## Raw Status Counts
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Raw Status | Count |
 | --- | ---: |
 | Implemented | 77 |
@@ -322,6 +325,7 @@ closure, generated evidence surfaces, and residual gap signals.
 
 ## Automation Candidate Closure Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Candidate ID | Candidate | Disposition |
 | --- | --- | --- |
 | AEA-AUTO-001 | PR/CI summary integration for the changed-path QA-gate recommendation report | Closed with evidence |

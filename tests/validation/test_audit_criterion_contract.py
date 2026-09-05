@@ -155,6 +155,42 @@ class AuditCriterionContractTests(unittest.TestCase):
                     self.assertIn("| Criterion rows parsed | 161 |", result.stdout)
                     self.assertIn("| Overview categories found | 15 |", result.stdout)
 
+    def test_matrix_designates_only_historical_source_derived_tables(self) -> None:
+        result = subprocess.run(
+            [
+                "bash",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "--dry-run",
+            ],
+            cwd=ROOT,
+            env={**os.environ, "AUDIT_PACK_DIR": str(self.pack)},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        marker = (
+            "<!-- Historical evidence table (not current authority; "
+            "source: Git history). -->"
+        )
+        historical_headers = (
+            "| Report | Criterion ID | External criterion |",
+            "| Normalized Status | Count |",
+            "| Raw Status | Count |",
+            "| Candidate ID | Candidate | Disposition |",
+        )
+        self.assertEqual(len(historical_headers), result.stdout.count(marker))
+        for header in historical_headers:
+            self.assertIn(f"{marker}\n{header}", result.stdout)
+        for current_header in (
+            "| Metric | Value |",
+            "| Category | Status |",
+            "| Criterion Report | File State | Criterion Rows |",
+            "| Surface | Candidate | Script | Output / Evidence |",
+            "| Signal | Canonical Routing |",
+        ):
+            self.assertNotIn(f"{marker}\n{current_header}", result.stdout)
+
     def test_matrix_check_rejects_missing_current_overview_category(self) -> None:
         overview = self.pack / "0026-implementation-overview/README.md"
         source = overview.read_text(encoding="utf-8")

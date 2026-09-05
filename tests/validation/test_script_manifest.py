@@ -1,7 +1,11 @@
+import datetime as dt
 import importlib.util
+import re
+import subprocess
 import sys
 
 import scripts.lib.document_governance as document_governance
+import yaml
 
 from tests.validation._script_manifest_support import *
 
@@ -86,6 +90,89 @@ class ScriptManifestTests(unittest.TestCase):
                 )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertIn("--write", result.stdout)
+
+    def test_compose_profile_generator_emits_canonical_published_metadata(
+        self,
+    ) -> None:
+        script = "scripts/operations/generate-compose-profile-service-coverage.sh"
+        result = subprocess.run(
+            ["bash", script, "--dry-run"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        metadata = yaml.safe_load(result.stdout.split("---", 2)[1])
+        expected_fields = (
+            "title",
+            "version",
+            "type",
+            "status",
+            "owner",
+            "updated",
+            "layer",
+            "artifact_id",
+            "parent_ids",
+            "created",
+            "observed_at",
+            "generated_by",
+        )
+        stable_fields = {
+            "title": "Reference: Docker Compose Profile Service Coverage",
+            "type": "reference/data-pack",
+            "status": "published",
+            "owner": "@buenhyden",
+            "layer": "references",
+            "artifact_id": "DATA-0059",
+            "parent_ids": [],
+            "generated_by": script,
+        }
+        semver = re.compile(
+            r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
+        )
+        iso_date = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+
+        def assert_valid_envelope(candidate: dict[str, object]) -> None:
+            self.assertEqual(expected_fields, tuple(candidate))
+            self.assertEqual(
+                stable_fields,
+                {field: candidate.get(field) for field in stable_fields},
+            )
+            version = candidate.get("version")
+            self.assertIsInstance(version, str)
+            self.assertIsNotNone(semver.fullmatch(version))
+            for field in ("created", "updated", "observed_at"):
+                value = candidate.get(field)
+                self.assertIsInstance(value, str)
+                self.assertIsNotNone(iso_date.fullmatch(value))
+                try:
+                    dt.date.fromisoformat(value)
+                except ValueError as error:
+                    self.fail(f"{field} must be a valid ISO date: {error}")
+
+        assert_valid_envelope(metadata)
+
+        next_publication = dict(metadata)
+        next_publication.update(
+            version="2.1.0",
+            updated="2027-01-02",
+            observed_at="2027-01-01",
+        )
+        assert_valid_envelope(next_publication)
+
+        for field, value in (
+            ("status", "active"),
+            ("version", 2),
+            ("version", "01.0.0"),
+            ("updated", dt.date(2027, 1, 2)),
+            ("observed_at", "2027-13-40"),
+        ):
+            with self.subTest(field=field, value=value):
+                invalid = dict(metadata)
+                invalid[field] = value
+                with self.assertRaises(AssertionError):
+                    assert_valid_envelope(invalid)
 
     def test_stage90_generators_require_write_and_touch_only_declared_output(
         self,
@@ -229,6 +316,10 @@ class ScriptManifestTests(unittest.TestCase):
                         timeout=30,
                     )
                     self.assertNotEqual(0, result.returncode, script)
+                    if "compose-profile-service-coverage" in script:
+                        self.assertIn(
+                            f"Run: bash {script} --write", result.stderr
+                        )
                     self.assertEqual(before, snapshot(), script)
                 result = subprocess.run(
                     [*command, "--write", *extra],

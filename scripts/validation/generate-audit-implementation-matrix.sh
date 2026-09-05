@@ -280,11 +280,11 @@ def build_output() -> tuple[str, list[str]]:
     lines: list[str] = [
         "---",
         'title: "Reference: Audit Implementation Matrix"',
-        'version: "1.0.0"',
+        'version: "1.0.1"',
         'type: "reference/data-pack"',
         'status: "published"',
         "owner: \"@buenhyden\"",
-        'updated: "2026-09-04"',
+        'updated: "2026-09-05"',
         'layer: "references"',
         'artifact_id: "DATA-0065"',
         "parent_ids: []",
@@ -403,6 +403,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Complete Criterion Matrix",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Report | Criterion ID | External criterion | Workspace evidence | Status | Depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |",
             "| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |",
         ]
@@ -455,6 +456,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Normalized Status Counts",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Normalized Status | Count |",
             "| --- | ---: |",
         ]
@@ -467,6 +469,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Raw Status Counts",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Raw Status | Count |",
             "| --- | ---: |",
         ]
@@ -479,6 +482,7 @@ def build_output() -> tuple[str, list[str]]:
             "",
             "## Automation Candidate Closure Matrix",
             "",
+            "<!-- Historical evidence table (not current authority; source: Git history). -->",
             "| Candidate ID | Candidate | Disposition |",
             "| --- | --- | --- |",
         ]
