@@ -213,8 +213,8 @@ its terminal move:
 
 ```text
 Commit A: Spec draft→review; Plan draft→approved; Task draft→ready
-Commit B: Spec review→approved; Plan approved→active; Task ready→in-progress
-Commit C: Spec approved→active; Task remains in-progress
+Commit B: Spec review→approved; Plan and Task remain approved/ready
+Commit C: Spec approved→active; Plan approved→active; Task ready→in-progress
 Commit D: Task in-progress→completed; Plan active→completed; Spec active→completed
 ```
 

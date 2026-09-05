@@ -13,10 +13,20 @@ import time
 import unittest
 from unittest import mock
 
+from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 from scripts.lib.document_governance.registry import load_registry
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
+
+
+def _current_spec_rows(index_text: str) -> dict[str, str]:
+    rows: dict[str, str] = {}
+    for line in index_text.splitlines():
+        if line.startswith("| SPEC-"):
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            rows[cells[0]] = cells[2]
+    return rows
 
 
 def _spec_packages_module():
@@ -840,6 +850,18 @@ class SpecPackageTests(unittest.TestCase):
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/tests.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
+
+    def test_current_index_does_not_claim_active_for_draft_spec(self) -> None:
+        rows = _current_spec_rows(
+            (ROOT / "docs/03.specs/README.md").read_text(encoding="utf-8")
+        )
+        for spec_path in sorted((ROOT / "docs/03.specs").glob("*/spec.md")):
+            metadata = parse_frontmatter_text(spec_path.read_text(encoding="utf-8"))
+            artifact_id = metadata["artifact_id"]
+            self.assertFalse(
+                metadata["status"] == "draft" and "active" in rows[artifact_id],
+                artifact_id,
+            )
 
     def test_active_route_authority_uses_only_canonical_spec_execution_paths(
         self,

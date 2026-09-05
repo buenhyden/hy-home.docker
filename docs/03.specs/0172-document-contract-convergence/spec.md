@@ -2,7 +2,7 @@
 title: "Document Contract Convergence Specification"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-04"
 layer: "specs"
