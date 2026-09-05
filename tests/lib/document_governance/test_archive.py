@@ -921,10 +921,9 @@ class ArchiveMinimizationTests(unittest.TestCase):
     def test_every_frozen_migration_is_byte_identical(self) -> None:
         """0001 and 0002 had no integrity control until 2026-09-02.
 
-        Only 0003 was digest-tripwired. The action-count maps in
-        `lifecycle/promoted.py` were the sole thing standing between 0001 and a
-        silent edit, and a count cannot see a changed path or commit. All three
-        retained ledgers are frozen evidence, so all three are pinned here.
+        Only 0003 was originally digest-tripwired. All three retained ledgers
+        are frozen evidence, so all three are pinned here rather than relying
+        on completed-migration action counts.
 
         Repinned in the same change: both declared the retired `SPEC-0136` as
         parent, which the 0158 merge removed, so the frontmatter now points at

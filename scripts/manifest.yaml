@@ -241,7 +241,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/lib/document_governance/lifecycle/test_promoted.py
 - path: scripts/lib/document_governance/lifecycle/public.py
   kind: library
   authority: docs/99.templates/registry.json

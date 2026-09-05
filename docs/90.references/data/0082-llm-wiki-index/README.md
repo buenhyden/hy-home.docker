@@ -545,15 +545,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/data/0066-foundation-summary/README.md](../0066-foundation-summary/README.md) | folder index |
 | [docs/90.references/data/0067-foundation/README.md](../0067-foundation/README.md) | folder index |
 | [docs/90.references/data/0067-foundation/data.yaml](../0067-foundation/data.yaml) | YAML config |
-| [docs/90.references/data/0068-target-surface-convergence-summary/README.md](../0068-target-surface-convergence-summary/README.md) | folder index |
-| [docs/90.references/data/0069-target-surface-convergence/README.md](../0069-target-surface-convergence/README.md) | folder index |
-| [docs/90.references/data/0069-target-surface-convergence/data.yaml](../0069-target-surface-convergence/data.yaml) | YAML config |
 | [docs/90.references/data/0071-github-actions-control-plane-observation/README.md](../0071-github-actions-control-plane-observation/README.md) | folder index |
 | [docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml](../0071-github-actions-control-plane-observation/data.yaml) | YAML config |
 | [docs/90.references/data/0072-provider-hook-parity-matrix/README.md](../0072-provider-hook-parity-matrix/README.md) | folder index |
-| [docs/90.references/data/0073-target-surface-delta-manifest/README.md](../0073-target-surface-delta-manifest/README.md) | folder index |
-| [docs/90.references/data/0073-target-surface-delta-manifest/data.yaml](../0073-target-surface-delta-manifest/data.yaml) | YAML config |
-| [docs/90.references/data/0074-target-surface-delta-summary/README.md](../0074-target-surface-delta-summary/README.md) | folder index |
 | [docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md](../0076-llm-wiki-stage-category-coverage/README.md) | folder index |
 | [docs/90.references/data/0078-security-automation-readiness/README.md](../0078-security-automation-readiness/README.md) | folder index |
 | [docs/90.references/data/0079-supply-chain-sample-service/README.md](../0079-supply-chain-sample-service/README.md) | folder index |
@@ -1087,7 +1081,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/retired/90.references/audits/0038-sdlc-qa-security-audit/README.md](../../../98.archive/retired/90.references/audits/0038-sdlc-qa-security-audit/README.md) | folder index |
 | [docs/98.archive/retired/90.references/data/0062-stable-reference-terms/README.md](../../../98.archive/retired/90.references/data/0062-stable-reference-terms/README.md) | folder index |
 | [docs/98.archive/retired/90.references/data/0063-agent-governance-retirement-ledger/README.md](../../../98.archive/retired/90.references/data/0063-agent-governance-retirement-ledger/README.md) | folder index |
+| [docs/98.archive/retired/90.references/data/0068-target-surface-convergence-summary/README.md](../../../98.archive/retired/90.references/data/0068-target-surface-convergence-summary/README.md) | folder index |
+| [docs/98.archive/retired/90.references/data/0069-target-surface-convergence/README.md](../../../98.archive/retired/90.references/data/0069-target-surface-convergence/README.md) | folder index |
 | [docs/98.archive/retired/90.references/data/0070-gap-to-stage-routing/README.md](../../../98.archive/retired/90.references/data/0070-gap-to-stage-routing/README.md) | folder index |
+| [docs/98.archive/retired/90.references/data/0073-target-surface-delta-manifest/README.md](../../../98.archive/retired/90.references/data/0073-target-surface-delta-manifest/README.md) | folder index |
+| [docs/98.archive/retired/90.references/data/0074-target-surface-delta-summary/README.md](../../../98.archive/retired/90.references/data/0074-target-surface-delta-summary/README.md) | folder index |
 | [docs/98.archive/retired/90.references/data/0075-profile/README.md](../../../98.archive/retired/90.references/data/0075-profile/README.md) | folder index |
 | [docs/98.archive/retired/90.references/data/0077-docker-compose-to-k3s-migration/README.md](../../../98.archive/retired/90.references/data/0077-docker-compose-to-k3s-migration/README.md) | folder index |
 | [docs/98.archive/retired/90.references/research/0001-agentic-research-pack-refresh/README.md](../../../98.archive/retired/90.references/research/0001-agentic-research-pack-refresh/README.md) | folder index |

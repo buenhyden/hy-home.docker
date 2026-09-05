@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -80,13 +80,12 @@ frontmatter가 이미 말합니다.
 ## How to Work in This Area
 
 1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 삭제 당시 값 그대로이며
-   처분을 뜻하지 않습니다. 현재 `retired/` 104건 중 49건이 `status: active`를
-   담고 있습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는 사실과
+   처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는 사실과
    해당 Tombstone이 결정하며, frontmatter가 결정하지 않습니다.
 2. **보존 기록은 수정하지 않습니다.** 삭제 또는 이동 당시 본문과
    byte-identical해야 하고, 현재 계약에 맞추기 위한 편집은 보존하려던 대상을
    훼손합니다. 그래서 이 기록들은 frontmatter가 관리되지 않는 프로파일로
-   등록되며, 104건 중 83건은 타입 분류 체계 이전 문서라 `type`이 없습니다.
+   등록되며, 타입 분류 체계 이전 문서는 `type`이 없을 수 있습니다.
    자동 포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로
    동작하므로 `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에
    두어야 하며, 그러지 않으면 all-files 실행이 보존 본문을 조용히 다시

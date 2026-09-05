@@ -85,9 +85,7 @@
       "tools"
     ],
     "generated_outputs": {
-      "docs/90.references/data/0066-foundation-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py",
-      "docs/90.references/data/0068-target-surface-convergence-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py",
-      "docs/90.references/data/0074-target-surface-delta-summary/README.md": "scripts/validation/check-target-surface-delta-contract.py"
+      "docs/90.references/data/0066-foundation-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py"
     },
     "globally_forbidden": [
       "document_type",
@@ -3647,8 +3645,8 @@
     "tombstone": {
       "prefix": "tomb-",
       "width": 4,
-      "high_water": 198,
-      "next_number": 199,
+      "high_water": 202,
+      "next_number": 203,
       "child_spaces": {}
     }
   },

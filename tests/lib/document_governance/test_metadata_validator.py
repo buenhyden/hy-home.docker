@@ -63,7 +63,7 @@ class ResponsibilityModuleTests(unittest.TestCase):
             (lifecycle, "validate_record"),
             (reference, "validate_repository_contracts"),
             (contract, "load_migration_manifest"),
-            (promoted, "validate_migration_manifest"),
+            (promoted, "_historical_promoted_findings"),
             (public, "_spec_package_lifecycle_findings"),
             (recovery, "run"),
         )

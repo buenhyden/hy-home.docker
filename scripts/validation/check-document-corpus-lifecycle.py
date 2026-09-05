@@ -42,7 +42,6 @@ from scripts.lib.document_governance.lifecycle.contract import (
 )
 from scripts.lib.document_governance.lifecycle.promoted import (
     _historical_promoted_findings,
-    _load_declared_manifests,
 )
 from scripts.lib.document_governance.lifecycle.public import (
     _spec_package_lifecycle_findings,

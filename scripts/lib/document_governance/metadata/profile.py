@@ -859,22 +859,6 @@ def infer_artifact_type(
             return registered
         if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
             return "generated"
-        # Preserved and reference corpora remain broad envelopes. Canonical
-        # Stage 01/02/03/05 role paths must match Registry above or fail closed.
-        if normalized.startswith("docs/00.agent-governance/") or normalized.startswith(
-            "docs/99.templates/support/"
-        ):
-            return "governance"
-        if normalized.startswith("docs/98.archive/"):
-            return "archive"
-        if normalized.startswith("docs/90.references/audits/"):
-            return "audit"
-        if normalized.startswith("docs/90.references/"):
-            return "reference"
-        if normalized.startswith(
-            "docs/99.templates/templates/"
-        ) and normalized.endswith(".template.md"):
-            return "template-source"
         return "unsupported"
     name = pathlib.PurePosixPath(normalized).name
     if registered_generated_owner(pathlib.Path(normalized), profiles) is not None:
