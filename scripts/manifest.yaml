@@ -507,7 +507,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_compose_core_readiness.py
+  - tests/lib/ops/test_compose_core_readiness.py
 - path: scripts/lib/supply_chain/grype_db_seed.py
   kind: validator
   authority: docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md

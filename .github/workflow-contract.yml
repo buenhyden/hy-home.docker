@@ -1041,6 +1041,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
+        "tests.lib.ops.test_compose_core_readiness",
         "tests.validation.test_compose_core_readiness",
         "tests.validation.test_postgres_logical_upgrade_rehearsal",
         "tests.lib.supply_chain.test_grype_db_seed",

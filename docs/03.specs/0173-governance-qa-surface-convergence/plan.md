@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -241,12 +241,20 @@ manifest, semantic contract, workflow/labeler/CODEOWNERS and active navigation.
    folder-only commits would break source, generated output and consumer paths.
 2. Recheck the committed tree's contracts and freshness. A clean local `changed`
    profile selects no committed diff, so do not use it as proof of that commit.
+   Newly allocated or relocated ordinary documents enter the Wiki through Git's
+   tracked inventory. Regenerate and check its outputs after those paths enter
+   the index, and recheck the final committed tree; an earlier untracked-input
+   checkpoint is not sufficient evidence for the tracked inventory.
 3. Review a clean isolated linked worktree for the two Compose baseline checks,
    using tracked non-sensitive examples only and no copied local environment.
    Execute only after inspecting the exact commands and available tools.
 4. Keep PostgreSQL image/runtime evidence and normal native discovery separate.
    Do not replace their guarantees with synthetic fixtures, global-state bypass,
    or a broad all-files wrapper that could install tools or start containers.
+   If a clean checkout exposes a test-ownership defect, preserve all existing
+   behavior cases while restoring the library/CLI responsibility split required
+   by this Spec. Update the Manifest, existing gate registration and independent
+   ownership checks together; an empty or cache-only directory is not a repair.
 5. Record actual follow-up results and remaining boundaries in Task 0006, then
    commit that evidence separately. No remote integration is authorized.
 

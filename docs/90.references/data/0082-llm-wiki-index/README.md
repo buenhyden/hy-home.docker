@@ -286,6 +286,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
 | [docs/02.architecture/decisions/0031-preserved-archive-record.md](../../../02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
+| [docs/02.architecture/decisions/0032-canonical-agent-governance-home.md](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) | Markdown reference |
 | [docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/descriptions/0001-gateway-architecture.md](../../../02.architecture/descriptions/0001-gateway-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0002-auth-architecture.md](../../../02.architecture/descriptions/0002-auth-architecture.md) | Markdown reference |
@@ -1112,6 +1113,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/retired/90.references/research/0001-agentic-research-pack-refresh/README.md](../../../98.archive/retired/90.references/research/0001-agentic-research-pack-refresh/README.md) | folder index |
 | [docs/98.archive/retired/archive/Windows-Network-IP.md](../../../98.archive/retired/archive/Windows-Network-IP.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
+| [docs/98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md](../../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md](../../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |

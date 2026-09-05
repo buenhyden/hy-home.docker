@@ -238,6 +238,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             "operations": {
                 "tests.validation.test_postgres_logical_upgrade_rehearsal",
                 "tests.lib.supply_chain.test_grype_db_seed",
+                "tests.lib.ops.test_compose_core_readiness",
                 "tests.validation.test_compose_core_readiness",
                 "tests.validation.test_sample_service_delivery_rehearsal",
                 "tests.lib.supply_chain.test_supply_chain_policy",
@@ -272,9 +273,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         document = contract.load_contract_document(ROOT)
         public = contract.parse_public_gate_contract(document)
         declared = document["public_gate"]["validators"]
-        actual = {
-            item.entrypoint.as_posix(): item.suite for item in public.validators
-        }
+        actual = {item.entrypoint.as_posix(): item.suite for item in public.validators}
         self.assertEqual(
             {item["entrypoint"]: item["suite"] for item in declared}, actual
         )
@@ -284,6 +283,4 @@ class PublicSuiteModelTests(unittest.TestCase):
             (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         )
         forbidden = {"public_suites", "execution_argv", "execution_contexts"}
-        self.assertFalse(
-            any(forbidden.intersection(row) for row in manifest["files"])
-        )
+        self.assertFalse(any(forbidden.intersection(row) for row in manifest["files"]))

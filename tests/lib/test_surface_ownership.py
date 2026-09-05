@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pathlib
+import subprocess
+import tempfile
 import unittest
 from unittest import mock
 
@@ -11,6 +13,29 @@ from scripts.lib.gate import ci_gate_contract as gate_contract
 from scripts.validation import ci_gate_runner as gate_runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def _missing_test_domains(root: pathlib.Path, tracked: set[str]) -> list[str]:
+    paths = {pathlib.PurePosixPath(path) for path in tracked if path}
+    packages = {
+        path.parts[2]
+        for path in paths
+        if path.parts[:2] == ("scripts", "lib") and len(path.parts) >= 4
+    }
+    tested = {
+        path.parts[2]
+        for path in paths
+        if path.parts[:2] == ("tests", "lib")
+        and len(path.parts) >= 4
+        and path.name.startswith("test_")
+        and path.suffix == ".py"
+        and not any(
+            root.joinpath(*path.parts[:index]).is_symlink()
+            for index in range(1, len(path.parts) + 1)
+        )
+        and (root / path).is_file()
+    }
+    return sorted(packages - tested)
 
 
 def _manifest_rows() -> list[dict]:
@@ -51,16 +76,47 @@ def _full_profile_unittest_modules() -> list[str]:
 class SurfaceOwnershipTests(unittest.TestCase):
     """A directory states what its files are, and no constant restates it."""
 
-    def test_every_library_package_has_a_test_directory(self) -> None:
-        packages = {
-            path.name
-            for path in (ROOT / "scripts/lib").iterdir()
-            if path.is_dir() and not path.name.startswith("__")
-        }
-        missing = sorted(
-            name for name in packages if not (ROOT / "tests/lib" / name).is_dir()
+    def test_every_library_package_has_a_tracked_test(self) -> None:
+        tracked = set(
+            subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT, timeout=10)
+            .decode()
+            .split("\0")
         )
-        self.assertEqual([], missing)
+        self.assertEqual([], _missing_test_domains(ROOT, tracked))
+
+    def test_library_mirror_requires_a_tracked_behavior_test(self) -> None:
+        for shape in (
+            "empty",
+            "cache",
+            "placeholder",
+            "untracked",
+            "symlink",
+            "tracked",
+        ):
+            with self.subTest(shape=shape), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                (root / "scripts/lib/sample").mkdir(parents=True)
+                mirror = root / "tests/lib/sample"
+                mirror.mkdir(parents=True)
+                tracked = {"scripts/lib/sample/module.py"}
+                if shape == "cache":
+                    (mirror / "__pycache__").mkdir()
+                elif shape == "placeholder":
+                    (mirror / ".gitkeep").touch()
+                    tracked.add("tests/lib/sample/.gitkeep")
+                elif shape in {"untracked", "tracked"}:
+                    (mirror / "test_module.py").write_text(
+                        "def test_behavior():\n    assert True\n", encoding="utf-8"
+                    )
+                    if shape == "tracked":
+                        tracked.add("tests/lib/sample/test_module.py")
+                elif shape == "symlink":
+                    target = root / "test_outside.py"
+                    target.write_text("def test_behavior():\n    assert True\n")
+                    (mirror / "test_module.py").symlink_to(target)
+                    tracked.add("tests/lib/sample/test_module.py")
+                expected = [] if shape == "tracked" else ["sample"]
+                self.assertEqual(expected, _missing_test_domains(root, tracked))
 
     def test_no_placeholder_test_directory_remains(self) -> None:
         for name in ("docs", "qa", "setup"):
@@ -72,9 +128,7 @@ class SurfaceOwnershipTests(unittest.TestCase):
     def test_manifest_rows_declare_no_executable_composition(self) -> None:
         forbidden = {"public_suites", "execution_argv", "execution_contexts"}
         offenders = [
-            row["path"]
-            for row in _manifest_rows()
-            if forbidden.intersection(row)
+            row["path"] for row in _manifest_rows() if forbidden.intersection(row)
         ]
         self.assertEqual([], offenders)
 
