@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 artifact_id: "RUN-0009"
 parent_ids:
@@ -128,13 +128,14 @@ created: "2026-06-04"
    bash scripts/operations/gen-secrets.sh --check
    ```
 
-9. 실제 local rehearsal은 다음 canonical Spec 126 파일 세 개가 모두 존재하고,
-   verdict schema v2와 pair schema/generation v3 계약을 통과할 때만 실행한다.
+9. 정적 delivery 계약은 다음 operation-owned 예제 세 개로 검증한다.
+   verdict schema v2와 pair schema/generation v3의 형식을 설명하는 fixture이며,
+   실제 local rehearsal 입력이나 실행 승인은 아니다.
 
    ```text
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.baseline.json
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.candidate.json
-   _workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain/verification-verdict.pair.json
+   examples/operations/sample-service-delivery/verdict.baseline.accepted.json
+   examples/operations/sample-service-delivery/verdict.candidate.accepted.json
+   examples/operations/sample-service-delivery/verification-verdict.pair.json
    ```
 
    Verdict v2는 OCI manifest/config/archive, deterministic Docker-load archive,
@@ -142,13 +143,8 @@ created: "2026-06-04"
    포함한다. Pair v3 (`hyhome-verification-verdict-pair-v3`)는 두 verdict의
    exact byte hash와 role별 전체 tuple을 고정한다. 하나라도 없거나 legacy,
    stale, mixed, substituted이면 class `10`에서 중단하며 Docker/Compose 호출,
-   project, record를 만들지 않는다. 현재 Spec 126 accepted pair는 존재하며,
-   승인된 Task 5 positive promotion 및 injected rollback 순서는 완료되었다.
-   현재 실행 상태와 정확한 project, timestamp, record hash/inode, cleanup
-   증거는
-   Deployment/release Task가
-   소유한다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
-   history이며 현재 blocker가 아니다.
+   project, record를 만들지 않는다. 실제 rehearsal은 현재 owning Task가
+   별도로 승인하고 생성한 verdict 경로와 실행 증거를 사용해야 한다.
 
 10. 승인된 Task 5 runtime은 positive `rehearse` 후 injected-rollback
     `rehearse` 순서로 정확히 한 번씩 완료되었다. Baseline/canary는

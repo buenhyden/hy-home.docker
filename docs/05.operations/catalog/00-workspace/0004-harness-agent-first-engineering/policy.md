@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -31,8 +31,8 @@ created: "2026-06-04"
 - `.codex/**`
 - `docs/00.agent-governance/**`
 - `docs/03.specs/**`
-- `docs/03.specs/spec-*/plan.md`
-- `docs/03.specs/spec-*/task.md`
+- `docs/03.specs/[0-9][0-9][0-9][0-9]-*/plan.md`
+- `docs/03.specs/[0-9][0-9][0-9][0-9]-*/tasks/tsk-[0-9][0-9][0-9][0-9]-*.md`
 - `docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/guide.md`
 - `docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/policy.md`
 - `docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/runbook.md`
