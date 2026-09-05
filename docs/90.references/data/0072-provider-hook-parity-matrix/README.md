@@ -26,7 +26,7 @@ Expose deterministic provider-event configuration parity without claiming live e
 
 ## Repository Role
 
-This generated Stage 90 datum supports validation and cannot override Stage 00 policy.
+This generated Stage 90 datum supports validation and cannot override `.agents/governance` policy.
 
 ## Scope
 
@@ -50,7 +50,7 @@ Configured means a tracked native hook entry exists; unsupported means no native
 
 ## Sources
 
-- `docs/00.agent-governance/providers/registry.yaml`
+- `.agents/governance/providers/registry.yaml`
 - `.claude/settings.json`
 - `.codex/hooks.json`
 
@@ -60,8 +60,8 @@ Regenerate after provider registry or native hook configuration changes.
 
 ## Related Documents
 
-- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)
-- [Provider registry](../../../00.agent-governance/providers/registry.yaml)
+- [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md)
+- [Provider registry](../../../../.agents/governance/providers/registry.yaml)
 
 ## Schema
 

@@ -2,7 +2,7 @@ schema_version: 1
 files:
 - path: evals/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -25,7 +25,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: evals/run-agent-output-eval-fixtures.sh
   kind: runner
-  authority: docs/00.agent-governance/skills/provider-model-evaluation.md
+  authority: .agents/skills/provider-model-evaluation/SKILL.md
   lifecycle: active
   mutation: none
   consumers:
@@ -38,7 +38,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/README.md
   kind: contract
-  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -105,9 +105,9 @@ files:
   lifecycle: active
   mutation: check-write
   consumers:
+  - .agents/governance/quality-standards.md
   - .github/workflow-contract.yml
   - README.md
-  - docs/00.agent-governance/policies/quality-standards.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
   - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
@@ -272,7 +272,7 @@ files:
   - tests/validation/lifecycle/test_recovery.py
 - path: scripts/lib/document_governance/links.py
   kind: library
-  authority: docs/00.agent-governance/policies/documentation-protocol.md
+  authority: .agents/governance/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -522,7 +522,7 @@ files:
   - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/manifest.yaml
   kind: contract
-  authority: docs/02.architecture/decisions/0029-workspace-governance-authority.md
+  authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
@@ -590,7 +590,7 @@ files:
   - docs/90.references/data/0061-tech-stack-version-provenance/README.md
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
-  authority: docs/00.agent-governance/providers/registry.yaml
+  authority: .agents/governance/providers/registry.yaml
   lifecycle: active
   mutation: check-write
   consumers:
@@ -925,7 +925,7 @@ files:
   - docs/90.references/data/0078-security-automation-readiness/README.md
 - path: scripts/validation/report-provider-hook-parity.sh
   kind: validator
-  authority: docs/00.agent-governance/providers/registry.yaml
+  authority: .agents/governance/providers/registry.yaml
   lifecycle: active
   mutation: check-write
   consumers:

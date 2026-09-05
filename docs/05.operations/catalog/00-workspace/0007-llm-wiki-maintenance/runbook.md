@@ -1,10 +1,10 @@
 ---
 title: "LLM Wiki Maintenance Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "operations"
 artifact_id: "RUN-0007"
 parent_ids:
@@ -99,7 +99,7 @@ created: "2026-07-04"
 
 ### AI Agent Controls
 
-- **Model / Prompt Change Process**: `doc-writer` follows `docs/00.agent-governance/policies/documentation-protocol.md`; model changes follow the Stage 00 provider adapter change protocol.
+- **Model / Prompt Change Process**: `doc-writer` follows `.agents/governance/documentation-protocol.md`; model changes follow the canonical agent governance provider adapter change protocol.
 - **Eval / Guardrail Threshold**: stale index, unsafe path inclusion, or forbidden wording is a blocking validation failure.
 - **Log / Trace Retention**: record final verification in the Task owning the current maintenance work; do not paste raw secret-adjacent logs.
 - **Safety Incident Thresholds**: suspected secret exposure or public-scope drift requires immediate stop and user escalation.

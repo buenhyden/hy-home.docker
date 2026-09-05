@@ -18,7 +18,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE = ROOT / "evals/agent_output_eval.py"
 RUNNER = ROOT / "evals/run-agent-output-eval-fixtures.sh"
 CATALOG = ROOT / "docs/90.references/data/0064-agent-output-eval-fixtures/README.md"
-CONTRACT = ROOT / "docs/00.agent-governance/providers/registry.yaml"
+CONTRACT = ROOT / ".agents/governance/providers/registry.yaml"
 
 EXPECTED_FIXTURE_IDS = (
     "AOE-ADAPTER-001",
@@ -146,15 +146,15 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         evaluator = load_eval_module()
         expected = {
             "AOE-HOOK-001": (
-                "docs/00.agent-governance/policies/workflows.md",
+                ".agents/governance/workflows.md",
                 "max_attempts",
             ),
             "AOE-MODEL-001": (
-                "docs/00.agent-governance/skills/provider-model-evaluation.md",
+                ".agents/skills/provider-model-evaluation/SKILL.md",
                 "provider-model-evaluation",
             ),
             "AOE-LOOP-001": (
-                "docs/00.agent-governance/policies/workflows.md",
+                ".agents/governance/workflows.md",
                 "read-only",
             ),
         }
@@ -181,7 +181,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
                     {"pass", "fail"}, {case.expected_result for case in cases}
                 )
 
-        workflow = (ROOT / "docs/00.agent-governance/policies/workflows.md").read_text(
+        workflow = (ROOT / ".agents/governance/workflows.md").read_text(
             encoding="utf-8"
         )
         lifecycle = (

@@ -21,6 +21,18 @@ from scripts.lib.gate.ci_gate_contract import (  # noqa: E402
     ManifestContractError,
     load_manifest_document,
 )
+from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
+    ContractLoadError,
+    canonical_source_paths,
+    read_repository_text,
+)
+from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    _run_git as run_bounded_git,
+)
+from scripts.lib.document_governance.registry import (  # noqa: E402
+    classify_path,
+    load_registry,
+)
 
 
 REQUIRED_FIELDS = frozenset(
@@ -78,7 +90,7 @@ RUNBOOK_AUTHORITY = __import__("re").compile(
 MACHINE_AUTHORITIES = frozenset(
     {
         ".github/workflow-contract.yml",
-        "docs/00.agent-governance/providers/registry.yaml",
+        ".agents/governance/providers/registry.yaml",
         "scripts/manifest.yaml",
     }
 )
@@ -137,11 +149,15 @@ def _generator_command_error(row: Mapping[str, Any]) -> str | None:
 
 
 def validate_manifest_document(
-    document: object, tracked_paths: Iterable[str]
+    document: object,
+    tracked_paths: Iterable[str],
+    *,
+    admitted_reference_paths: Iterable[str] = (),
 ) -> list[Finding]:
     """Return deterministic fail-closed findings for a parsed manifest."""
 
     tracked = set(tracked_paths)
+    references = tracked | set(admitted_reference_paths)
     findings: list[Finding] = []
     if not isinstance(document, dict):
         return [
@@ -226,7 +242,7 @@ def validate_manifest_document(
                     "authority must be a non-empty repository path",
                 )
             )
-        elif authority not in tracked:
+        elif authority not in references:
             findings.append(
                 _finding(
                     "authority-untracked",
@@ -322,7 +338,7 @@ def validate_manifest_document(
                         )
                     )
             for value in values:
-                if value not in tracked:
+                if value not in (references if field == "consumers" else tracked):
                     findings.append(
                         _finding(
                             f"{field}-untracked",
@@ -354,7 +370,8 @@ def validate_manifest_document(
             if disposition == "retain":
                 findings.append(
                     _finding(
-                        "transition-disposition-invalid", path,
+                        "transition-disposition-invalid",
+                        path,
                         "transition rows require a non-retain disposition",
                     )
                 )
@@ -362,14 +379,16 @@ def validate_manifest_document(
             if not isinstance(condition, str) or not condition.strip():
                 findings.append(
                     _finding(
-                        "removal-condition-invalid", path,
+                        "removal-condition-invalid",
+                        path,
                         "transition rows require a nonblank removal_condition",
                     )
                 )
         elif "removal_condition" in row:
             findings.append(
                 _finding(
-                    "removal-condition-unexpected", path,
+                    "removal-condition-unexpected",
+                    path,
                     "only transition rows may declare removal_condition",
                 )
             )
@@ -507,6 +526,40 @@ def _load_manifest(manifest_path: Path) -> object:
         return load_manifest_document(manifest_path)
     except ManifestContractError as exc:
         return {"_load_error": str(exc)}
+
+
+def _local_reference_paths(repo_root: Path, requested: set[str]) -> set[str]:
+    """Admit exact non-ignored registered references without reading their bodies."""
+    requested = {path for path in requested if _safe_repo_path(path)}
+    if not requested:
+        return set()
+    result = run_bounded_git(
+        repo_root,
+        ["ls-files", "--others", "--exclude-standard", "-z", "--", *sorted(requested)],
+    )
+    if result.returncode or (result.stdout and not result.stdout.endswith(b"\0")):
+        raise ValueError("local reference inventory is unavailable or malformed")
+    paths = result.stdout.decode("utf-8").split("\0")[:-1]
+    if len(paths) != len(set(paths)) or not set(paths).issubset(requested):
+        raise ValueError("local reference inventory exceeds its requested scope")
+    canonical = (
+        {path.as_posix() for path in canonical_source_paths(repo_root)}
+        if any(path.startswith(".agents/") for path in paths)
+        else set()
+    )
+    documents = {
+        path
+        for path in paths
+        if path.startswith("docs/") and not path.startswith(FORBIDDEN_EVIDENCE_PREFIXES)
+    }
+    if documents:
+        registry = load_registry(repo_root / "docs/99.templates/registry.json")
+        canonical.update(path for path in documents if classify_path(path, registry))
+    return {
+        path
+        for path in paths
+        if path in canonical and _repo_regular_path(repo_root, path)
+    }
 
 
 def _python_proves_use(text: str, target: str) -> bool:
@@ -878,12 +931,9 @@ def _semantic_findings(repo_root: Path, document: object) -> list[Finding]:
             if not isinstance(values, list):
                 continue
             for reference in values:
-                ref_path = repo_root / str(reference)
-                if not ref_path.is_file():
-                    continue
                 try:
-                    text = ref_path.read_text(encoding="utf-8")
-                except (OSError, UnicodeError):
+                    text = read_repository_text(repo_root, str(reference))
+                except (ContractLoadError, OSError, UnicodeError):
                     findings.append(
                         _finding(
                             f"{field}-unreadable", path, f"cannot read {reference}"
@@ -966,11 +1016,19 @@ def _authority_findings(repo_root: Path, document: object) -> list[Finding]:
         ):
             continue
         authority = row.get("authority")
-        if not isinstance(authority, str) or not _repo_regular_path(
-            repo_root, authority
-        ):
+        if not isinstance(authority, str):
             continue
-        text = (repo_root / authority).read_text(encoding="utf-8")
+        try:
+            text = read_repository_text(repo_root, authority)
+        except (ContractLoadError, OSError, UnicodeError):
+            findings.append(
+                _finding(
+                    "runtime-authority-unreadable",
+                    row["path"],
+                    f"cannot read {authority}",
+                )
+            )
+            continue
         metadata: object = {}
         if text.startswith("---\n"):
             try:
@@ -1009,11 +1067,31 @@ def check_manifest(repo_root: Path, manifest_path: Path) -> list[Finding]:
             _finding("manifest-unreadable", manifest_path, str(document["_load_error"]))
         ]
     tracked = _git_paths(repo_root)
+    rows = document.get("files") if isinstance(document, dict) else None
+    requested = {
+        value
+        for row in (rows if isinstance(rows, list) else [])
+        if isinstance(row, dict)
+        for value in [
+            row.get("authority"),
+            *(row["consumers"] if isinstance(row.get("consumers"), list) else []),
+        ]
+        if isinstance(value, str) and value not in tracked
+    }
+    try:
+        local_references = _local_reference_paths(repo_root, requested)
+    except (OSError, ValueError) as error:
+        return [_finding("reference-inventory-unavailable", manifest_path, str(error))]
+    structural_findings = validate_manifest_document(
+        document,
+        tracked,
+        admitted_reference_paths=local_references,
+    ) + _declared_path_findings(repo_root, document)
+    if structural_findings:
+        return sorted(set(structural_findings))
     return sorted(
         set(
-            validate_manifest_document(document, tracked)
-            + _semantic_findings(repo_root, document)
-            + _declared_path_findings(repo_root, document)
+            _semantic_findings(repo_root, document)
             + _authority_findings(repo_root, document)
         )
     )

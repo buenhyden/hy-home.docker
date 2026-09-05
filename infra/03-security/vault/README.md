@@ -1,10 +1,10 @@
 ---
 title: "Vault Secret Management"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2026-01-15"
 ---
 
@@ -129,7 +129,7 @@ docker compose --profile security exec vault-agent ls -la /vault/out
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **Sealed Status Check**: 모든 API 작업 전 `vault status`를 통해 `Sealed: false`임을 확인한다.
 2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.

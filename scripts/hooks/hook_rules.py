@@ -1,6 +1,6 @@
-"""Evaluate the Stage 00 hook rules against one tool-use payload.
+"""Evaluate the canonical hook rules against one tool-use payload.
 
-The rule files under `docs/00.agent-governance/policies/hooks/` are not prose:
+The rule files under `.agents/governance/hooks/` are not prose:
 their frontmatter is the machine part (`name`, `enabled`, `event`, `action`, and
 either a flat `pattern` or a list of `conditions`) and the body is the message a
 rule shows when it fires. Until now nothing read them, so every rule declared
@@ -11,7 +11,8 @@ also the files that run them.
 Frontmatter is parsed here rather than with PyYAML on purpose. This runs inside
 `agent-event-hook.sh` on every tool call, and a hook that dies on a missing
 import would break every call; the accepted schema is small enough to read
-directly, and anything outside it is skipped rather than raised.
+directly. Invalid configured rules raise an error so the dispatcher can deny
+the tool call instead of silently dropping policy.
 
 `event: stop` rules are deliberately not evaluated. Both carry `pattern: .*`,
 which is a placeholder rather than a condition — evaluating
@@ -27,10 +28,14 @@ import pathlib
 import re
 from dataclasses import dataclass
 
-RULES_DIRECTORY = "docs/00.agent-governance/policies/hooks"
+RULES_DIRECTORY = ".agents/governance/hooks"
 EVALUATED_EVENTS = frozenset({"bash", "file"})
 CONDITION_FIELDS = frozenset({"file_path", "new_text"})
 MAX_RULE_BYTES = 64 * 1024
+
+
+class RuleConfigurationError(RuntimeError):
+    """The configured rule source cannot be loaded safely."""
 
 
 @dataclass(frozen=True)
@@ -68,15 +73,21 @@ def _split_frontmatter(text: str) -> tuple[list[str], str]:
 
 def _parse_rule(path: pathlib.Path) -> Rule | None:
     try:
+        if path.is_symlink() or not path.is_file():
+            raise RuleConfigurationError(
+                f"hook rule is not a regular file: {path.name}"
+            )
         if path.stat().st_size > MAX_RULE_BYTES:
-            return None
+            raise RuleConfigurationError(f"hook rule exceeds byte limit: {path.name}")
         text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeError):
-        return None
+    except RuleConfigurationError:
+        raise
+    except (OSError, UnicodeError) as error:
+        raise RuleConfigurationError(f"hook rule is unreadable: {path.name}") from error
 
     lines, body = _split_frontmatter(text)
     if not lines:
-        return None
+        raise RuleConfigurationError(f"hook rule has invalid frontmatter: {path.name}")
 
     scalars: dict[str, str] = {}
     conditions: list[dict[str, str]] = []
@@ -91,25 +102,36 @@ def _parse_rule(path: pathlib.Path) -> Rule | None:
             conditions.append({})
             item = line[2:] if line.startswith("- ") else line[4:]
             key, _, value = item.partition(":")
-            conditions[-1][key.strip()] = _unquote(value)
+            conditions[-1][_unquote(key)] = _unquote(value)
             continue
         if in_conditions and line.startswith("  ") and conditions:
             key, _, value = line.strip().partition(":")
-            conditions[-1][key.strip()] = _unquote(value)
+            conditions[-1][_unquote(key)] = _unquote(value)
             continue
         if line.startswith(" "):
             continue
         in_conditions = False
         key, _, value = line.partition(":")
-        scalars[key.strip()] = _unquote(value)
+        scalars[_unquote(key)] = _unquote(value)
 
-    if scalars.get("enabled", "").lower() != "true":
+    enabled = scalars.get("enabled", "").lower()
+    if enabled not in {"true", "false"}:
+        raise RuleConfigurationError(
+            f"hook rule has invalid enabled value: {path.name}"
+        )
+    if enabled == "false":
         return None
     event = scalars.get("event", "")
     action = scalars.get("action", "")
     name = scalars.get("name", "")
-    if event not in EVALUATED_EVENTS or action not in {"warn", "block"} or not name:
+    if not name or action not in {"warn", "block"}:
+        raise RuleConfigurationError(
+            f"hook rule has invalid identity or action: {path.name}"
+        )
+    if event == "stop":
         return None
+    if event not in EVALUATED_EVENTS:
+        raise RuleConfigurationError(f"hook rule has invalid event: {path.name}")
 
     if not conditions and "pattern" in scalars:
         conditions = [
@@ -124,17 +146,21 @@ def _parse_rule(path: pathlib.Path) -> Rule | None:
     for condition in conditions:
         field = condition.get("field", "")
         if condition.get("operator") != "regex_match":
-            return None
+            raise RuleConfigurationError(f"hook rule has invalid operator: {path.name}")
         if event == "file" and field not in CONDITION_FIELDS:
-            return None
+            raise RuleConfigurationError(f"hook rule has invalid field: {path.name}")
         if event == "bash" and field != "command":
-            return None
+            raise RuleConfigurationError(f"hook rule has invalid field: {path.name}")
         try:
             compiled.append((field, re.compile(condition.get("pattern", ""))))
-        except re.error:
-            return None
+        except re.error as error:
+            raise RuleConfigurationError(
+                f"hook rule has invalid regex: {path.name}"
+            ) from error
     if not compiled:
-        return None
+        raise RuleConfigurationError(
+            f"hook rule has no evaluable condition: {path.name}"
+        )
 
     return Rule(
         name=name,
@@ -149,13 +175,21 @@ def load_rules(root: pathlib.Path) -> tuple[Rule, ...]:
     """Return every enabled, evaluable rule, sorted by name."""
 
     directory = root / RULES_DIRECTORY
-    if not directory.is_dir():
-        return ()
-    rules = [
-        rule
-        for path in sorted(directory.glob("*.md"))
-        if (rule := _parse_rule(path)) is not None
-    ]
+    if directory.is_symlink() or not directory.is_dir():
+        raise RuleConfigurationError(
+            "configured hook policy directory is missing or invalid"
+        )
+    try:
+        paths = sorted(directory.glob("hookify.*.md"))
+    except OSError as error:
+        raise RuleConfigurationError(
+            "configured hook policy directory is unreadable"
+        ) from error
+    if not paths:
+        raise RuleConfigurationError(
+            "configured hook policy directory contains no rules"
+        )
+    rules = [rule for path in paths if (rule := _parse_rule(path)) is not None]
     return tuple(sorted(rules, key=lambda item: item.name))
 
 

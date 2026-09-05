@@ -1,10 +1,10 @@
 ---
 title: "Document Corpus Migration Summary: Lifecycle Foundation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "DATA-0066"
 parent_ids: []
@@ -13,6 +13,13 @@ observed_at: "2026-08-23"
 ---
 
 # Document Corpus Migration Summary: Lifecycle Foundation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 - Wave: `foundation`
 - Baseline commit: `e00e1483e7ab797b354d7c3b22b6d5440e998c14`
@@ -26,6 +33,7 @@ observed_at: "2026-08-23"
 
 ## Reviewed Paths
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source | Target | Disposition | Specification | Quality |
 | --- | --- | --- | --- | --- |
 | docs/00.agent-governance/memory/progress.md | docs/00.agent-governance/memory/progress.md | migrate | pass | pass |

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Workspace Rules and Environment Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0032"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Workspace Rules and Environment Implementation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -29,7 +36,7 @@ or unobservable without overstating documentation as runtime enforcement.
 
 ## Repository Role
 
-This Stage 90 report supports follow-up planning. Stage 00/99, scripts, CI,
+This Stage 90 report supports follow-up planning. canonical governance and Stage 99, scripts, CI,
 provider adapters, and actual executing environments remain authoritative.
 
 ## Scope
@@ -47,10 +54,13 @@ provider adapters, and actual executing environments remain authoritative.
 
 ## Definitions / Facts
 
-- Stage 00 is the provider-neutral policy authority; provider files are adapters.
-- The tracked catalog has one supervisor, thirteen workers, and 24 functions,
-  with native role projections for Claude and Codex; `.agents/skills` is the
-  shared skill projection.
+> Historical evidence (not current authority; source: Git history): Catalog statement at the recorded audit baseline; current ownership follows the routing note above.
+>
+> - Stage 00 is the provider-neutral policy authority; provider files are adapters.
+> - The tracked catalog has one supervisor, thirteen workers, and 24 functions,
+>   with native role projections for Claude and Codex; `.agents/skills` is the
+>   shared skill projection.
+>
 - No per-agent concrete model selector was available to the collaboration
   runtime for this implementation. The dispatch recorded the repository role
   (`code-reviewer`) and requested Senior tier while the platform chose
@@ -70,6 +80,7 @@ and was never treated as implementation truth.
 
 ## Audit Criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | WRE-01 | Maintain one provider-neutral instruction authority. | Stage 00 governance hub, bootstrap, agentic rule, and thin root/provider shims define canonical ownership. | Implemented | 3 | Retain | `docs/00.agent-governance/` | Existing repo contracts and provider sync. | Inspect shims and Stage 00 authority statements. | High. |
@@ -122,9 +133,9 @@ separate.
 ## Sources
 
 - `Workspace baseline research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `workspace-baseline` leaf)
-- [Stage 00 governance hub](../../../00.agent-governance/README.md)
-- [Agentic rule](../../../00.agent-governance/policies/agentic.md)
-- [Task checklists](../../../00.agent-governance/policies/task-checklists.md)
+- [Canonical governance governance hub](../../../../.agents/README.md)
+- [Agentic rule](../../../../.agents/governance/agentic.md)
+- [Task checklists](../../../../.agents/governance/task-checklists.md)
 - Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
 - [`_workspace` contract](../../../../_workspace/README.md)
 - [`_workspace` repo-support contract](../../../../_workspace/repo-support/README.md)
@@ -132,7 +143,7 @@ separate.
 ## Maintenance
 
 - **Owner**: Agentic Workflow Specialist / Repository Maintainer.
-- **Review Cadence**: After Stage 00, provider, validation, or evidence changes.
+- **Review Cadence**: After canonical agent governance, provider, validation, or evidence changes.
 - **Update Trigger**: Common rule state, enforcement depth, or environment evidence changes.
 
 ## Related Documents

@@ -271,8 +271,22 @@ def _validate_relative_path(path_text: str) -> str:
     return path_text
 
 
-def _git_ls_files(repo_root: Path) -> set[str]:
-    result = _run_git_bounded(repo_root, ["ls-files", "--cached", "-z"])
+def _git_ls_files(repo_root: Path, *, local_governance: bool = False) -> set[str]:
+    arguments = (
+        [
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "-z",
+            "--",
+            ".agents/",
+            ".claude/provider.md",
+            ".codex/provider.md",
+        ]
+        if local_governance
+        else ["ls-files", "--cached", "-z"]
+    )
+    result = _run_git_bounded(repo_root, arguments)
     if result.returncode != 0:
         detail = result.stderr.decode("utf-8", errors="replace").strip()
         raise GeneratorError(f"git ls-files failed: {detail or result.returncode}")
@@ -293,6 +307,36 @@ def _git_ls_files(repo_root: Path) -> set[str]:
     if len(paths) != len(set(paths)):
         raise GeneratorError("tracked inventory contains duplicate paths")
     return set(paths)
+
+
+def _local_governance_paths(repo_root: Path, tracked: set[str]) -> set[str]:
+    """Admit canonical inputs through the existing provider source inventory.
+
+    Git excludes ignored files and limits discovery to the new canonical root
+    and exact authored adapters. Arbitrary untracked documents stay excluded.
+    The provider Registry already owns the exact canonical Markdown/YAML paths.
+    """
+
+    candidates = _git_ls_files(repo_root, local_governance=True)
+    candidates.update(path for path in tracked if path.startswith(".agents/"))
+    if not candidates:
+        return set()
+    module_root = str(Path(__file__).resolve().parents[2])
+    if module_root not in sys.path:
+        sys.path.insert(0, module_root)
+    from scripts.lib.agent_governance.agent_governance_contract import (
+        ContractLoadError,
+        canonical_source_paths,
+    )
+
+    try:
+        declared = {path.as_posix() for path in canonical_source_paths(repo_root)}
+    except ContractLoadError as error:
+        raise GeneratorError(
+            "local governance requires a valid canonical source inventory"
+        ) from error
+    declared.update({".claude/provider.md", ".codex/provider.md"})
+    return candidates & declared
 
 
 def _open_parent_no_follow(path: Path, *, create: bool = False) -> tuple[int, str]:
@@ -415,6 +459,7 @@ def is_safe_candidate(path_text: str) -> bool:
         path_text in ROOT_ENTRYPOINTS
         or path_text.startswith(
             (
+                ".agents/",
                 ".claude/",
                 ".codex/",
                 ".github/",
@@ -441,7 +486,7 @@ def classify(path_text: str) -> str:
         or path_text == "llms.txt"
     ):
         return "LLM Wiki reference"
-    if path_text.startswith("docs/00.agent-governance/"):
+    if path_text.startswith(".agents/"):
         return "Agent governance"
     if path_text.startswith((".claude/", ".codex/")):
         return "Runtime surfaces"
@@ -499,6 +544,11 @@ def collect_candidates(repo_root: Path) -> list[Candidate]:
     """Select and classify safe paths exactly once for both outputs."""
 
     tracked = _git_ls_files(repo_root)
+    canonical = _local_governance_paths(repo_root, tracked)
+    tracked = {path for path in tracked if not path.startswith(".agents/")}
+    tracked.update(canonical)
+    if len(tracked) > MAX_TRACKED_PATHS:
+        raise GeneratorError("tracked and local governance path count bound exceeded")
     selected = {path for path in tracked if is_safe_candidate(path)}
     selected.update(REQUIRED_LOCAL_PATHS)
     aggregate_bytes = 0
@@ -552,11 +602,11 @@ def render_index(candidates: Sequence[Candidate]) -> str:
     lines = [
         "---",
         'title: "LLM Wiki Generated Index"',
-        'version: "1.0.0"',
+        'version: "1.0.1"',
         'type: "reference/data-pack"',
         'status: "published"',
         'owner: "@buenhyden"',
-        'updated: "2026-09-04"',
+        'updated: "2026-09-06"',
         'layer: "references"',
         'artifact_id: "DATA-0082"',
         "parent_ids: []",
@@ -579,7 +629,7 @@ def render_index(candidates: Sequence[Candidate]) -> str:
         "",
         "## Provenance",
         "",
-        "This generated tracked repo-local index complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.",
+        "This generated repo-local index of tracked sources and registered governance inputs complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `.agents/`.",
         "",
         "Graphify output is advisory navigation context only. This index is generated from repository path metadata and does not treat `graphify-out/` as source material.",
         "",
@@ -626,7 +676,7 @@ def render_index(candidates: Sequence[Candidate]) -> str:
             "- [LLM Wiki repository map](../0083-repository-map/README.md)",
             f"- [generate-llm-wiki.py](../../../../{GENERATOR_PATH})",
             "- [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)",
-            "- [Agent governance hub](../../../00.agent-governance/README.md)",
+            "- [Agent governance hub](../../../../.agents/README.md)",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -652,11 +702,11 @@ def render_coverage(candidates: Sequence[Candidate]) -> str:
     lines = [
         "---",
         'title: "LLM Wiki Stage Category Coverage"',
-        'version: "1.0.0"',
+        'version: "1.0.1"',
         'type: "reference/data-pack"',
         'status: "published"',
         'owner: "@buenhyden"',
-        'updated: "2026-09-04"',
+        'updated: "2026-09-06"',
         'layer: "references"',
         'artifact_id: "DATA-0076"',
         "parent_ids: []",

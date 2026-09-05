@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Request Scope"
-version: "0.3.0"
+version: "0.3.1"
 type: "reference/research"
 status: "review"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0085-m0001"
 parent_ids:
@@ -21,6 +21,13 @@ identity_recovery:
 ---
 
 # Workspace Engineering Main Baseline Request Scope
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -46,7 +53,7 @@ runtime state, while keeping the exact recovery provenance available.
 
 RES-0085 owns the dated request and recovery evidence. RES-0002-m0020 owns
 current baseline interpretation, RES-0002 owns cross-domain research, RES-0084
-owns GitHub Actions platform mechanics, Stage 00 owns policy, and the current
+owns GitHub Actions platform mechanics, canonical agent governance owns policy, and the current
 Task owns execution evidence.
 
 ## Scope
@@ -142,7 +149,7 @@ have precedence.
 
 - Repository baseline `main@4c6d211129615eab372d720ebd209b6c27618c86`,
   observed 2026-09-05.
-- [Stage 00 governance](../../../00.agent-governance/README.md).
+- [Canonical governance governance](../../../../.agents/README.md).
 - [Registry](../../../99.templates/registry.json) and the
   [research member template](../../../99.templates/templates/references/research.template.md).
 - [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).

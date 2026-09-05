@@ -1,10 +1,10 @@
 ---
 title: "Reference: Frontmatter, Template, and README Implementation Audit"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0024"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-12"
 ---
 
 # Reference: Frontmatter, Template, and README Implementation Audit
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -32,7 +39,7 @@ migration.
 
 ## Repository Role
 
-[Stage 00 documentation policy](../../../00.agent-governance/policies/documentation-protocol.md)
+[canonical agent governance documentation policy](../../../../.agents/governance/documentation-protocol.md)
 and the [Stage 99 Registry](../../../99.templates/registry.json) remain the
 current owners. This advisory audit preserves its July baseline and recorded
 Spec 129 follow-up. Its old classifier, README exception, Stage 04, and Release
@@ -59,6 +66,7 @@ Tasks, and external release evidence without a Release profile.
 
 > Historical evidence (not current authority; source: Git history):
 > Observation boundary: July 2026 audit definitions.
+>
 > - **Syntactically valid** means a non-README target-stage leaf has top YAML
 >   frontmatter with one allowed status word.
 > - **Semantically correct** means the value and keys fit the inferred artifact
@@ -112,7 +120,7 @@ dated repo-wide evidence. They are not current implementation counts.
 > and impacted-dependent selection is blocking.
 
 For current Release behavior, use the
-[external-release-evidence policy](../../../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary).
+[external-release-evidence policy](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary).
 The criterion rows retain their observed historical verdicts and do not
 reclassify current profiles or authorize a new Release record.
 
@@ -190,7 +198,7 @@ the old enforcement boundary.
 - Counts describe tracked files at their stated historical baseline.
 - Graphify's `30df271a` report is stale and advisory; it was not used as proof.
 - The DML criteria come from primary-source-backed Task 1 research, but active
-  schema ownership remains Stage 00/99 and approved current Stage 03 work.
+  schema ownership remains canonical governance and Stage 99 and approved current Stage 03 work.
 - Historical 930/948 counts remain dated evidence with their original scopes.
 
 ## Sources
@@ -199,7 +207,7 @@ the old enforcement boundary.
 - `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - artifact-type boundaries
 - [Frontmatter contract](../../../99.templates/README.md) - current key/profile and README/generated rules
 - [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
-- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - target-stage status, template, and numbering rules
+- [Documentation protocol](../../../../.agents/governance/documentation-protocol.md) - target-stage status, template, and numbering rules
 - [Audit template](../../../99.templates/templates/references/audit-pack.template.md) - current registered report profile
 
 ## Maintenance

@@ -55,7 +55,7 @@ import yaml
 
 root = pathlib.Path(sys.argv[1]).absolute()
 mode = sys.argv[2]
-registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+registry_path = root / ".agents/governance/providers/registry.yaml"
 output = root / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
 provider_ids = ("claude", "codex")
 safe_repository_path_part = re.compile(r"\.?[A-Za-z0-9][A-Za-z0-9._-]*")
@@ -260,7 +260,7 @@ lines = [
     "",
     "## Repository Role",
     "",
-    "This generated Stage 90 datum supports validation and cannot override Stage 00 policy.",
+    "This generated Stage 90 datum supports validation and cannot override `.agents/governance` policy.",
     "",
     "## Scope",
     "",
@@ -284,7 +284,7 @@ lines.extend(
         "",
         "## Sources",
         "",
-        "- `docs/00.agent-governance/providers/registry.yaml`",
+        "- `.agents/governance/providers/registry.yaml`",
         "- `.claude/settings.json`",
         "- `.codex/hooks.json`",
         "",
@@ -294,8 +294,8 @@ lines.extend(
         "",
         "## Related Documents",
         "",
-        "- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)",
-        "- [Provider registry](../../../00.agent-governance/providers/registry.yaml)",
+        "- [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md)",
+        "- [Provider registry](../../../../.agents/governance/providers/registry.yaml)",
         "",
         "## Schema",
         "",

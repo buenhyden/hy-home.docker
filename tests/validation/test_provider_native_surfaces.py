@@ -74,9 +74,36 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             )
             for skill_id in role.skill_ids:
                 self.assertIn(
-                    f"docs/00.agent-governance/skills/{skill_id}.md",
+                    f".agents/skills/{skill_id}/SKILL.md",
                     payload["developer_instructions"],
                 )
+
+    def test_all_skills_are_explicit_without_added_tool_grants(self) -> None:
+        renderer = load_renderer()
+        state = renderer.load_agent_governance(ROOT)
+        self.assertEqual(14, len(state.roles))
+        self.assertEqual(23, len(state.skills))
+        for provider in state.provider_records:
+            self.assertEqual(
+                ".agents/skills/{skill_id}/SKILL.md", provider.canonical_skill_pattern
+            )
+        self.assertIsNone(state.provider_records[1].skill_pattern)
+        projection = renderer.expected_native_projection(ROOT)
+        for skill in state.skills:
+            controls = yaml.safe_load(
+                (ROOT / skill.source_path.parent / "agents/openai.yaml").read_text()
+            )
+            self.assertEqual({"policy": {"allow_implicit_invocation": False}}, controls)
+            payload = projection[
+                pathlib.Path(f".claude/skills/{skill.skill_id}/SKILL.md")
+            ].decode()
+            native = yaml.safe_load(payload.split("---\n", 2)[1])
+            self.assertEqual(
+                {"name", "description", "disable-model-invocation"}, set(native)
+            )
+            self.assertIs(native["disable-model-invocation"], True)
+            self.assertEqual(skill.description, native["description"])
+            self.assertNotIn("## Procedure", payload)
 
     def test_unknown_provider_fails_closed(self) -> None:
         renderer = load_renderer()

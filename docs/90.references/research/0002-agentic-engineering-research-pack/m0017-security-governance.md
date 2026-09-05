@@ -1,10 +1,10 @@
 ---
 title: "Reference: Security Governance and Secure Delivery"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0017"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Security Governance and Secure Delivery
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -44,7 +51,7 @@ verification limits, gaps, remediation ownership, and all fourteen scopes.
 This Stage 90 reference is advisory analysis. It neither changes security
 policy nor authorizes a scan, secret read, credential operation, workflow
 permission, runtime action, publication, or remote mutation. Current policy
-lives in Stage 00; implementation and test owners live in tracked scripts,
+lives in canonical agent governance; implementation and test owners live in tracked scripts,
 workflows, and Specs; live response and recovery evidence belongs in Stage 05.
 
 ## Scope
@@ -91,6 +98,7 @@ and incident/disclosure sinks. No external system or secret value was probed.
 
 ### Security control map
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Concern                             | Current tracked evidence                                                                                                                                                                                                                   | State and limit                                                                                              | Owner / follow-up                                             |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
 | Disclosure                          | `.github/SECURITY.md` gives private routes and response targets.                                                                                                                                                                           | Implemented as policy; contact availability and target attainment unverified.                                | Security owner; exercise through approved incident procedure. |
@@ -222,18 +230,19 @@ whether GitHub's hosted runs, branch protection, or ruleset enforcement
 matches the tracked declaration — that remains `UNVERIFIED` under
 `SEC-AUTO-007`.
 
-`.github/CODEOWNERS` and `.github/rulesets/main-protection.md` were also read
-directly today. CODEOWNERS assigns a single owner (`@buenhyden`) across `*`
-and explicit high-value paths (`infra/**`, `scripts/**`, `secrets/**`,
-`docs/00.agent-governance/**`, and the provider-adapter directories);
-`main-protection.md` states its own observation boundary explicitly —
-"Authenticated current ruleset, branch-protection, required-check, review,
-environment, and repository-setting readback is unavailable... this proposal
-does not infer applied remote state from tracked files or public workflow
-metadata" — and lists the sixteen CI Quality Gates job names it proposes as
-required checks. Both files are consistent with `SEC-AUTO-007`'s classification:
-local, tracked branch-protection _intent_ exists; live GitHub enforcement of
-that intent is not observable from this workspace and is not asserted here.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> `.github/CODEOWNERS` and `.github/rulesets/main-protection.md` were also read
+> directly today. CODEOWNERS assigns a single owner (`@buenhyden`) across `*`
+> and explicit high-value paths (`infra/**`, `scripts/**`, `secrets/**`,
+> `docs/00.agent-governance/**`, and the provider-adapter directories);
+> `main-protection.md` states its own observation boundary explicitly —
+> "Authenticated current ruleset, branch-protection, required-check, review,
+> environment, and repository-setting readback is unavailable... this proposal
+> does not infer applied remote state from tracked files or public workflow
+> metadata" — and lists the sixteen CI Quality Gates job names it proposes as
+> required checks. Both files are consistent with `SEC-AUTO-007`'s classification:
+> local, tracked branch-protection _intent_ exists; live GitHub enforcement of
+> that intent is not observable from this workspace and is not asserted here.
 
 ### Secure SDLC and supply-chain interpretation
 
@@ -337,6 +346,7 @@ for the registered scope (4, 6) versus an explicit named gap (3, 9).
 
 ### Severity-ranked findings
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Severity                           | Finding                                                                                                | Evidence / reachability                                                                                                                                                                  | Remediation owner                                                                                                                                                                                                                                                                       |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Resolved (was Important at Task 8) | Readiness generator produced false downgrades and stale routes.                                        | Task 8: `--check` FAIL; dry-run 7/3/3 versus typed resolution 11/1/1. Re-verified 2026-08-11: `--check` PASS (fresh); dry-run and stored snapshot both report 11/1/1 across 13 controls. | Fixed by the tracked Task 10a workstream (`WS-TASK10A-FIX1`-`FIX5`, commits `eed66ec7`-`08bbba79`), independently reviewed Approved-equivalent/Approved-with-Minor with no remaining Critical/Important finding; Task 10's overall status is otherwise outside this leaf's observation. |
@@ -410,6 +420,7 @@ observation was retained for this draft; any OCI-specific proposition is
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                                                                                            | Accessed                    | Class                                | Verification state                                                                                                                                                                                                                                                                            |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [NIST SP 800-218, SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                                                                                                                                          | 2026-08-08T18:18:06+09:00   | External fixed publication           | Verified official page; February 2022 final, comparison only.                                                                                                                                                                                                                                 |
@@ -420,7 +431,7 @@ observation was retained for this draft; any OCI-specific proposition is
 | [OpenSSF Scorecard commit `40c1e359`](https://github.com/ossf/scorecard/commit/40c1e35996730d4fdcbdb2e6a23917a2467e29b7)                                                                                          | 2026-08-08T18:18:06+09:00   | External fixed at pinned revision    | `git ls-remote` and immutable commit page verified.                                                                                                                                                                                                                                           |
 | [Docker Compose file reference](https://docs.docker.com/reference/compose-file/)                                                                                                                                  | 2026-08-08T18:18:06+09:00   | External mutable                     | Verified official application-model page; local adoption remains tracked evidence.                                                                                                                                                                                                            |
 | Security scope (retired path: `../../../00.agent-governance/scopes/security.md`)                                                                                                                                                 | 2026-08-08                  | Workspace tracked policy             | Identity, secrets, container/network hardening, and approved-secret-work protocol.                                                                                                                                                                                                            |
-| [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)                                                                                                                                  | 2026-08-08                  | Workspace tracked policy             | Protected surfaces and unconditional secret-value-read prohibition.                                                                                                                                                                                                                           |
+| [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)                                                                                                                                  | 2026-08-08                  | Workspace tracked policy             | Protected surfaces and unconditional secret-value-read prohibition.                                                                                                                                                                                                                           |
 | [Typed workflow contract](../../../../.github/workflow-contract.yml)                                                                                                                                              | 2026-08-08                  | Workspace tracked at `910ce5f`       | Gate indirection, leaf entrypoints, action pins, and profiles resolved directly.                                                                                                                                                                                                              |
 | [CI quality workflow](../../../../.github/workflows/ci-quality.yml)                                                                                                                                               | 2026-08-08                  | Workspace tracked                    | Permissions and typed gate calls; no hosted result inferred.                                                                                                                                                                                                                                  |
 | [Security readiness generator](../../../../scripts/validation/generate-security-automation-readiness.sh)                                                                                                          | 2026-08-11 (was 2026-08-08) | Workspace tracked/executed read-only | Re-verified at `5580931`: `--check` PASS (fresh, exit 0); `--dry-run` 11/1/1 over 7 workflows/37 scripts/54 reachable typed gates. The Task 8 `--check` FAIL / dry-run 7/3/3 result no longer reproduces after fix commits `eed66ec7`-`08bbba79`; no write performed by this re-verification. |

@@ -25,6 +25,8 @@ _REGISTERED_TOKEN_PATTERN = re.compile(
     r"|\{(?:slug|domain|stage)\}"
 )
 _REGISTERED_STAGES = (
+    # Historical tombstone namespaces retain the original stage name. Current
+    # README routes are explicit and no longer use this token to admit Stage 00.
     "00.agent-governance",
     "01.requirements",
     "02.architecture",

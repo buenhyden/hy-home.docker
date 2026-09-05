@@ -1,10 +1,10 @@
 ---
 title: "Reference: LLM Wiki Repository Map"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "DATA-0083"
 parent_ids: []
@@ -24,7 +24,7 @@ Provide a repo-local exploration order so LLM agents do not confuse runtime trut
 
 ## Repository Role
 
-This reference is the curated repository map for the LLM Wiki. It provides exploration paths based on tracked files. Policy decisions are checked in `docs/00.agent-governance/`, operations decisions in `docs/05.operations/`, and latest runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
+This reference is the curated repository map for the LLM Wiki. It provides exploration paths based on tracked files. Policy decisions are checked in `.agents/`, operations decisions in `docs/05.operations/`, and latest runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
 
 Graphify output is only a navigation aid. Even when `graphify-out/` exists, do not treat it as an authoritative source. If `bash scripts/knowledge/report-graphify-health.sh` reports `status=advisory`, recheck all structural judgments against canonical tracked source files.
 
@@ -50,7 +50,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 - **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/data/0082-llm-wiki-index/`.
 - **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki.py`.
 - **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
-- **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/` documents that directly define current runtime configuration and validation criteria.
+- **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `.agents/` documents that directly define current runtime configuration and validation criteria.
 - **Advisory graph context**: Supporting material such as `graphify-out/` output that may be used only as exploration hints and must not be promoted to canonical evidence.
 
 ## Repository Map
@@ -60,7 +60,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 | Repository overview | [README.md](../../../../README.md) | human-facing root hub |
 | Agent execution rules | [AGENTS.md](../../../../AGENTS.md) | provider-neutral entry shim |
 | Documentation taxonomy | [docs/README.md](../../../README.md) | active stage routing |
-| Agent governance | [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md) | repo-local governance SSOT |
+| Agent governance | [.agents/README.md](../../../../.agents/README.md) | repo-local governance SSOT |
 | Infrastructure layout | [infra/README.md](../../../../infra/README.md) | Compose tier and service map |
 | Script inventory | [scripts/README.md](../../../../scripts/README.md) | validator and automation map |
 | Secret handling | [secrets/README.md](../../../../secrets/README.md) | path and policy context only |
@@ -101,7 +101,7 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 - [LLM entrypoint](../../../../llms.txt)
 - [90.references](../../README.md)
 - [docs index](../../../README.md)
-- [agent governance hub](../../../00.agent-governance/README.md)
+- [agent governance hub](../../../../.agents/README.md)
 
 ## Schema
 

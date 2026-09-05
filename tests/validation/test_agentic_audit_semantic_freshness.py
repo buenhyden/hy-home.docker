@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -186,6 +187,21 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             path.read_text(encoding="utf-8") + f"\n{text}\n", encoding="utf-8"
         )
 
+    def make_canonical_evidence_untracked(self) -> pathlib.Path:
+        relative = pathlib.Path(".agents/governance/task-checklists.md")
+        subprocess.run(
+            ["git", "rm", "--cached", "-q", "--", relative.as_posix()],
+            cwd=self.repo,
+            check=True,
+        )
+        registry = self.repo / ".agents/governance/providers/registry.yaml"
+        registry.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(
+            ROOT / ".agents/governance/providers/registry.yaml",
+            registry,
+        )
+        return self.repo / relative
+
     def assert_failure(self, *expected_text: str) -> None:
         with self.assertRaises(module.AuditSemanticContractError) as context:
             module.validate_semantics(self.repo, CONTRACT)
@@ -357,6 +373,75 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
         self.assertion("QAF-12")["required_evidence_paths"] = ["untracked-evidence.txt"]
         self.write_contract()
         self.assert_failure("QAF-12", "required tracked evidence")
+
+    def test_registered_untracked_canonical_evidence_passes_without_staging(
+        self,
+    ) -> None:
+        self.make_canonical_evidence_untracked()
+        result = module.validate_semantics(self.repo, CONTRACT)
+        self.assertEqual(11, result.assertion_count)
+
+    def test_unknown_untracked_canonical_path_is_not_admitted(self) -> None:
+        self.make_canonical_evidence_untracked()
+        path = self.repo / ".agents/governance/private-note.md"
+        path.write_text("unregistered\n", encoding="utf-8")
+        self.assertion("QAF-12")["required_evidence_paths"] = [
+            ".agents/governance/private-note.md"
+        ]
+        self.write_contract()
+        self.assert_failure("QAF-12", "required tracked evidence")
+
+    def test_ignored_registered_canonical_evidence_is_not_admitted(self) -> None:
+        self.make_canonical_evidence_untracked()
+        ignore = self.repo / ".gitignore"
+        ignore.write_text(".agents/governance/task-checklists.md\n", encoding="utf-8")
+        subprocess.run(["git", "add", ".gitignore"], cwd=self.repo, check=True)
+        self.assert_failure("QAF-12", "required tracked evidence")
+
+    def test_registered_canonical_symlink_is_rejected(self) -> None:
+        evidence = self.make_canonical_evidence_untracked()
+        evidence.unlink()
+        with tempfile.TemporaryDirectory() as outside:
+            target = pathlib.Path(outside) / "task-checklists.md"
+            target.write_text("outside\n", encoding="utf-8")
+            evidence.symlink_to(target)
+            self.assert_failure("registered canonical", "unsafe")
+
+    def test_untracked_canonical_checks_use_the_bounded_git_reader(self) -> None:
+        self.make_canonical_evidence_untracked()
+        with mock.patch.object(
+            module, "run_bounded_git", wraps=module.run_bounded_git
+        ) as run_git:
+            module.validate_semantics(self.repo, CONTRACT)
+        arguments = [call.args[1] for call in run_git.call_args_list]
+        self.assertIn(
+            [
+                "ls-files",
+                "--others",
+                "--exclude-standard",
+                "-z",
+                "--",
+                ".agents/governance/providers/registry.yaml",
+            ],
+            arguments,
+        )
+        self.assertIn(
+            [
+                "ls-files",
+                "--others",
+                "--exclude-standard",
+                "-z",
+                "--",
+                ".agents/governance/task-checklists.md",
+            ],
+            arguments,
+        )
+
+    def test_bounded_git_failure_is_propagated(self) -> None:
+        self.make_canonical_evidence_untracked()
+        failure = subprocess.CompletedProcess(["git"], 124, b"", b"deadline exceeded")
+        with mock.patch.object(module, "run_bounded_git", return_value=failure):
+            self.assert_failure("exit 124", "deadline exceeded")
 
     def test_completed_task_described_as_future_fails(self) -> None:
         self.append_to_report("QAF-12", "Task 9 will add wrapper")

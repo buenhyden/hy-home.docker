@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.0.0"
+version: "2.0.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0084"
 parent_ids: []
@@ -13,6 +13,13 @@ observed_at: "2026-09-05"
 ---
 
 # Reference: GitHub Actions Platform Mechanics
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Question
 
@@ -102,10 +109,10 @@ The member owns the detailed source inventory and claim-by-claim analysis.
 - Current baseline: [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md).
 - Dated baseline/recovery evidence:
   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
-- Governance: [Stage 00](../../../00.agent-governance/README.md).
+- Governance: [canonical agent governance](../../../../.agents/README.md).
 - Requirement/Architecture: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and
-  [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md).
+  [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md).
 - Implementation/evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
   and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Templates and Registry: [research-pack template](../../../99.templates/templates/references/research-pack.template.md),

@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging)"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2025-11-12"
 ---
 
@@ -51,7 +51,7 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. Read the [Kafka Guide](../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md) for cluster ops.
 2. Follow the [RabbitMQ Guide](../../docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md) for queues.

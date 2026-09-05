@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2025-11-12"
 ---
 
@@ -70,7 +70,7 @@ opensearch/
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../../.agents/governance/agentic.md)와 [documentation protocol](../../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/catalog/04-data/0019-opensearch/guide.md)를 참조한다.
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/catalog/04-data/0019-opensearch/policy.md)을 확인한다.

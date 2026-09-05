@@ -24,6 +24,7 @@ from scripts.lib.document_governance.spec_packages import (
 from scripts.lib.document_governance.metadata.heading import _machine_template_path
 from scripts.lib.document_governance.metadata.profile import (
     TARGET_MARKDOWN_PREFIXES,
+    TARGET_MARKDOWN_FILES,
     Finding,
     ProfileError,
     Record,
@@ -101,7 +102,10 @@ def _tracked_markdown(
         {
             path
             for path in paths
-            if path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            if (
+                path.as_posix() in TARGET_MARKDOWN_FILES
+                or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            )
             and (root / path).is_file()
         },
         key=lambda path: path.as_posix(),

@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -16,19 +16,23 @@ created: "2026-06-01"
 ## Context and Stakeholders
 
 여러 AI provider가 같은 저장소를 수정하더라도 정책, 역할, skill, SDLC,
-승인 경계는 하나여야 한다. Maintainer는 Stage 00에서 규범을 검토하고,
+승인 경계는 하나여야 한다. Maintainer는 `.agents/`에서 규범을 검토하고,
 Agent는 provider adapter를 통해 동일한 규범을 native runtime 형식으로
 소비하며, reviewer는 projection drift를 독립적으로 검증한다.
 
 ## System Boundaries
 
-- Stage 00은 policy, workflow, canonical roles/skills, provider boundary를
+- `.agents/`는 policy, workflow, canonical roles/skills, provider boundary를
   소유한다.
 - Stage 99는 docs profile, path, identity, lifecycle, template의 typed contract를
   소유한다.
-- `.claude/`, `.codex/`는 projection 또는 runtime mechanics를
-  소유하지만 정책을 정의하지 않는다.
-- Current Task는 실행 결과를, Git은 diff와 삭제 본문의 recovery를 소유한다.
+- `.agents/governance/`, `.agents/roles/`, `.agents/skills/`는 작성 정본이며
+  생성물이나 호환성 복사본이 아니다.
+- `.claude/provider.md`, `.codex/provider.md`는 각 provider의 로딩·문법 차이를
+  소유한다. 생성 README·role·Claude skill adapter와 기존 runtime mechanics는
+  공통 정책을 정의하거나 canonical source를 덮어쓰지 않는다.
+- Current Task는 실행 결과를 소유한다. 완료 후 Stage 98이 동결 본문을
+  보존하며 Git은 source와 recovery history를 증명한다.
 - User-global configuration, credential, provider availability, deployment
   state는 이 아키텍처 밖이다.
 
@@ -36,17 +40,22 @@ Agent는 provider adapter를 통해 동일한 규범을 native runtime 형식으
 
 | Component | Responsibility |
 | --- | --- |
-| Stage 00 bootstrap and policies | authority resolution, safety, workflow |
-| Stage 00 roles and skills | reusable provider-neutral behavior |
+| canonical agent governance bootstrap and policies | authority resolution, safety, workflow |
+| canonical agent governance roles and skills | reusable provider-neutral behavior |
 | Provider Registry | provider identity and translation facts |
-| Provider adapters | native prompt/config/hook projection |
+| Authored native provider documents | provider-specific loading and syntax |
+| Generated native adapters | role translation and thin Claude skill pointers |
 | Stage 99 Registry | document shape and lifecycle machine contract |
 | Validators and suites | focused predicate execution and routing |
 
 ## Data Flow
 
-Bootstrap은 root shim에서 Stage 00 policy와 해당 provider adapter로 이동한다.
+Bootstrap은 root shim에서 공통 Agent 거버넌스 policy와 해당 provider adapter로 이동한다.
 요청에 필요한 canonical role/skill과 active Spec/Task만 선택적으로 로드한다.
+Canonical `SKILL.md`는 `name`, `description`과 기존 계약을 담은 `metadata`를
+사용한다. Codex의 skill-local `allow_implicit_invocation: false`와 Claude의
+`disable-model-invocation: true`가 명시적 호출을 요구하며, 검색 자체는 권한이나
+관측된 runtime acceptance가 아니다.
 Provider Registry의 translation fact가 native surface를 생성·검증하고, Stage 99
 Registry가 repository 문서의 profile과 lifecycle을 검증한다. 실행 결과는
 current Task와 검토된 Git diff로 되돌아온다.
@@ -62,7 +71,7 @@ adapter 변경 자체는 Docker runtime, remote service, secret mutation을 요�
 
 - **Determinism**: 동일 source와 registry에서 동일 projection과 verdict가
   나와야 한다.
-- **Security**: adapter는 Stage 00 approval boundary를 완화할 수 없다.
+- **Security**: adapter는 공통 Agent 거버넌스 approval boundary를 완화할 수 없다.
 - **Maintainability**: policy, provider translation, document schema는 각각
   하나의 owner만 가진다.
 - **Efficiency**: bootstrap은 전체 corpus가 아닌 request-relevant context를
@@ -73,6 +82,6 @@ adapter 변경 자체는 Docker runtime, remote service, secret mutation을 요�
 ## Traceability
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
-- [ADR-0029 Workspace Governance Authority](../decisions/0029-workspace-governance-authority.md)
-- [Stage 00 bootstrap](../../00.agent-governance/policies/bootstrap.md)
+- [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
+- [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../99.templates/registry.json)

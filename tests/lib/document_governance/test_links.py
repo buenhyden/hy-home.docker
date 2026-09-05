@@ -47,6 +47,90 @@ def load_script_manifest_cli():
 
 
 class SharedDocumentGovernanceTests(unittest.TestCase):
+    def test_only_exact_registry_frozen_legacy_records_stop_routing(self) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+
+        spec = importlib.util.spec_from_file_location("agent_home_frozen_links", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            frozen = (
+                root
+                / "docs/98.archive/migrations/0002-operations-catalog-convergence.md"
+            )
+            ordinary = root / "docs/98.archive/migrations/0004-current.md"
+            frozen.parent.mkdir(parents=True)
+            for path in (frozen, ordinary):
+                path.write_text('---\nstatus: "completed"\n---\n[Historical](old.md)\n')
+            registry = load_registry()
+            self.assertFalse(module._routing_status(root, frozen, registry))
+            self.assertTrue(module._routing_status(root, ordinary, registry))
+            frozen.write_text("---\nstatus: draft\n---\n[Current](old.md)\n")
+            self.assertTrue(module._routing_status(root, frozen, registry))
+            frozen.write_text('---\nstatus: "completed\n---\n[Invalid](old.md)\n')
+            self.assertTrue(module._routing_status(root, frozen, registry))
+
+    def test_authored_adapter_parent_symlink_is_reported_without_body_read(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import build_document_graph
+
+        spec = importlib.util.spec_from_file_location("agent_home_safe_links", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            tempfile.TemporaryDirectory() as external,
+        ):
+            root = pathlib.Path(directory)
+            outside = pathlib.Path(external)
+            (outside / "provider.md").write_text("private fixture sentinel\n")
+            for provider in (".claude", ".codex"):
+                (root / provider).symlink_to(outside, target_is_directory=True)
+            with mock.patch.object(
+                pathlib.Path,
+                "read_text",
+                side_effect=AssertionError("unbounded source body read"),
+            ):
+                paths = module._paths(root)
+                graph = build_document_graph(paths, repo_root=root)
+            self.assertEqual(2, len(graph.input_findings))
+            self.assertEqual(
+                {"document-symlink-ancestor"},
+                {finding.code for finding in graph.input_findings},
+            )
+
+    def test_hidden_governance_links_are_checked_but_frozen_history_is_preserved(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        spec = importlib.util.spec_from_file_location("agent_home_links", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            bodies = {
+                ".agents/README.md": "# Home\n",
+                ".agents/governance/bootstrap.md": "[Home](.agents/README.md)\n[Old](docs/00.agent-governance/README.md)\n",
+                "docs/98.archive/superseded/02.architecture/decisions/0029-old.md": "[Historical](docs/00.agent-governance/README.md)\n",
+            }
+            for relative, body in bodies.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(body)
+            paths = module._paths(root)
+            self.assertEqual(
+                set(bodies), {path.relative_to(root).as_posix() for path in paths}
+            )
+            findings = check_alignment(build_document_graph(paths, repo_root=root))
+            self.assertEqual(1, len(findings))
+            self.assertEqual(".agents/governance/bootstrap.md:2", findings[0].path)
+
     def test_exited_git_process_requires_complete_successful_drains(self) -> None:
         from scripts.lib.document_governance import git_provenance
 
@@ -813,8 +897,8 @@ class DocumentLinksCliTests(unittest.TestCase):
 
         candidates = [ROOT / "README.md"]
         for root in (
-            ROOT / "docs/00.agent-governance/policies",
-            ROOT / "docs/00.agent-governance/roles",
+            ROOT / ".agents/policies",
+            ROOT / ".agents/roles",
             ROOT / "docs/01.requirements",
             ROOT / "docs/02.architecture",
             ROOT / "docs/03.specs",
@@ -904,7 +988,7 @@ class LinkSelectionScopeTests(unittest.TestCase):
     def test_selection_covers_every_tracked_documentation_root(self) -> None:
         module = load_links_cli()
         expected = (
-            "docs/00.agent-governance/policies/x.md",
+            ".agents/governance/x.md",
             "docs/01.requirements/0001-a.md",
             "docs/02.architecture/decisions/0001-a.md",
             "docs/03.specs/0001-a/spec.md",

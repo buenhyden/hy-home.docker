@@ -1,10 +1,10 @@
 ---
 title: "Reference: Loop Engineering"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0010"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Loop Engineering
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -139,7 +146,7 @@ named gap, not a defect: `workflow_states` supplies a `design/plan` state and
 `approval` gate around the four loops, so planning exists at the lifecycle
 level, but no typed loop re-plans and re-attempts with backtracking the way a
 tree-search or plan-execute primitive would. The observation that would close
-this gap is a Stage 00 decision on whether backtracking/replanning behavior
+this gap is a canonical agent governance decision on whether backtracking/replanning behavior
 should become a fifth typed loop or stay an untyped, agent-discretion pattern
 under `independent-review-loop`'s `escalate` route.
 
@@ -275,7 +282,7 @@ companion harness-side list is
 2. Select one of the four typed loops declared in `harness_loops` and stay
    inside its declared states, permission profile, and stop condition. Do not
    invent a fifth typed loop: no typed loop covers plan-execute or tree
-   search, and closing that gap requires a Stage 00 decision, not
+   search, and closing that gap requires a canonical agent governance decision, not
    agent discretion.
 3. Count attempts yourself. `max_attempts` is a contract field that no script
    in `scripts/hooks/` or `scripts/validation/` reads or increments, so the
@@ -301,7 +308,7 @@ companion harness-side list is
    validated its own contract, never that a provider event fired.
 8. Keep the ten analytical feedback patterns as analysis. They overlap the
    four typed controls with no one-to-one mapping, and converting any of them
-   into retry policy requires a reviewed Stage 00/03/04 change.
+   into retry policy requires a reviewed canonical agent governance/03/04 change.
 
 ### Carried source-evidence claims
 
@@ -375,6 +382,7 @@ primary sources with a fixed preprint identifier but no confirmed pinned
 version in this retrieval; treat exact figures as subject to revision on a
 future arXiv version.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                         | Class                           | Verification                                                                                                          |
 | ---------------------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | [Claude hooks](https://code.claude.com/docs/en/hooks)                                          | External mutable, primary       | Re-verified 2026-08-14: Stop schema accepts exit-2 or `continue:false`+`stopReason`; full event/decision breakdown.   |
@@ -386,10 +394,10 @@ future arXiv version.
 | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)         | Workspace tracked               | Re-read 2026-08-14: eight-state, four-loop, seven-event, 21-cell derivation, including Gemini `deny-retry` Stop mode. |
 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                     | Workspace tracked               | Re-read 2026-08-14: `evaluation.fixture_count`/`regression_count` typed fields (11/16), scorer, runner, tests.        |
 | Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)                         | Workspace tracked               | Verified human routing view and exact four typed loop rules.                                                          |
-| [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Workspace tracked               | Re-read 2026-08-14: three-provider Stop-mode row (`blocking`/`retry`/`deny-retry`).                                   |
+| [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) | Workspace tracked               | Re-read 2026-08-14: three-provider Stop-mode row (`blocking`/`retry`/`deny-retry`).                                   |
 | `providers/gemini.md` (retired path: `../../../00.agent-governance/providers/gemini.md`)                      | Workspace tracked               | Read 2026-08-14: `AfterAgent` deny-retry mechanism description.                                                       |
 | [Shared dispatcher](../../../../scripts/hooks/agent-event-hook.sh)                             | Workspace tracked, executable   | Read directly 2026-08-14: no attempt-counter code path against `max_attempts`.                                        |
-| [Hookify catalog](../../../00.agent-governance/policies/hooks)                                   | Workspace tracked               | Counted 2026-08-14: 2 of 19 rules scoped to `event: stop`; no runtime binding found.                                  |
+| [Hookify catalog](../../../../.agents/governance/hooks)                                   | Workspace tracked               | Counted 2026-08-14: 2 of 19 rules scoped to `event: stop`; no runtime binding found.                                  |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                    | Workspace tracked, stale        | Read first; built from `f8a72211`; every lead corroborated.                                                           |
 
 ## Scope Application
@@ -427,7 +435,7 @@ boundary, or a durable blocker; do not equate additional turns with progress.
 Re-measure the eight states, four typed loops, seven semantic events, binding
 depths, provider hook schemas, dispatcher decisions, fixture/regression counts,
 and review protocol whenever their canonical owners change. Do not convert the
-ten analytical patterns into retry policy without a reviewed Stage 00/03/04
+ten analytical patterns into retry policy without a reviewed canonical agent governance/03/04
 change.
 
 ## Related Documents

@@ -1,0 +1,54 @@
+---
+name: "ci-cd-patterns"
+description: "Use when delivery workflows need deterministic local and CI gates, least-privilege jobs, and explicit remote promotion boundaries."
+metadata:
+  title: "ci-cd-patterns"
+  version: "1.1.0"
+  type: "governance/skill"
+  status: "active"
+  owner: "@buenhyden"
+  updated: "2026-09-06"
+  function_id: "ci-cd-patterns"
+  scope: "ops"
+  owner_agent: "ci-cd-engineer"
+---
+
+# ci-cd-patterns
+
+## Preconditions
+
+Invoke this procedure explicitly. Invocation does not select a role or grant the
+owning role's permissions. Use the already selected role's permission profile and
+approved Task scope; route to the owner when incompatible.
+
+The delivery contract, repository workflow state, and protected remote-action boundary must be known before selecting a pipeline pattern.
+
+## Inputs
+
+- Approved delivery contract and current workflow files.
+- Required checks, permissions, trigger conditions, and failure policy.
+
+## Procedure
+
+1. Map changed surfaces to deterministic local and CI gates, reusing existing jobs before adding new workflow structure.
+2. Select least-privilege permissions, immutable action references, bounded matrices, and secret-safe output for each job.
+3. Validate trigger/base-SHA behavior and record which deployment or remote gates remain outside local evidence.
+
+## Outputs
+
+- A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
+
+## Gates
+
+- Workflow permissions are least privilege.
+- Every check is reproducible or explicitly classified as CI-only.
+
+## Failure Handling
+
+Stop when credentials, remote rulesets, or promotion authority are required; produce a scoped follow-up rather than weakening the gate.
+
+## Related Documents
+
+- [CI/CD engineer](../../roles/ci-cd-engineer.md)
+- [GitHub governance](../../governance/github-governance.md)
+- [Task checklists](../../governance/task-checklists.md)

@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "operations"
 artifact_id: "RUN-0009"
 parent_ids: []
@@ -228,7 +228,7 @@ created: "2026-06-04"
 
 ## Traceability
 
-- Current policy: [Documentation Protocol](../../../../00.agent-governance/policies/documentation-protocol.md), including external-release-evidence ownership.
+- Current policy: [Documentation Protocol](../../../../../.agents/governance/documentation-protocol.md), including external-release-evidence ownership.
 - Historical implementation evidence only: [Workspace Revalidation Outcome](../../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). This completed record is not current execution authority.
 - Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
 

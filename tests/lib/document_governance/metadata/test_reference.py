@@ -36,6 +36,73 @@ from tests.lib.document_governance.metadata._support import (
 
 
 class MetadataValidatorCompatibilityTests(unittest.TestCase):
+    def test_generated_inventory_has_registered_audit_metadata(self) -> None:
+        from scripts.lib.document_governance.registry import validate_frontmatter
+
+        rendered = reference_module.render_report([], current_profiles(), {})
+        values = metadata._parse_frontmatter_text(rendered)
+        self.assertEqual((), validate_frontmatter(values))
+        self.assertLessEqual(
+            set(
+                current_profiles()["_registry"].profiles["audit"][
+                    "required_frontmatter"
+                ]
+            ),
+            values.keys(),
+        )
+        self.assertEqual("reference/audit-pack", values["type"])
+        self.assertEqual("AUD-0023", values["artifact_id"])
+        self.assertEqual("published", values["status"])
+        self.assertEqual("1.0.1", values["version"])
+        self.assertEqual("2026-07-05", str(values["created"]))
+        self.assertEqual("2026-09-06", str(values["observed_at"]))
+        _, h2 = extract_markdown_headings(rendered)
+        headings = {heading.removeprefix("## ") for heading in h2}
+        self.assertLessEqual(
+            set(current_profiles()["_registry"].profiles["audit"]["required_sections"]),
+            headings,
+        )
+
+    def test_report_includes_new_managed_governance_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            relative = pathlib.Path(".agents/governance/bootstrap.md")
+            path = root / relative
+            path.parent.mkdir(parents=True)
+            path.write_bytes((ROOT / relative).read_bytes())
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--profiles",
+                        str(ROOT / "docs/99.templates/registry.json"),
+                        "--mode",
+                        "report",
+                    ]
+                )
+            self.assertEqual(0, result)
+            self.assertIn(relative.as_posix(), output.getvalue())
+            path.write_text(
+                '---\ntitle: Fixture\nversion: invalid-fixture-version\ntype: governance/policy\nstatus: active\nowner: "@fixture"\nupdated: "2026-09-06"\n---\n# Fixture\n'
+            )
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--profiles",
+                        str(ROOT / "docs/99.templates/registry.json"),
+                        "--mode",
+                        "check-active",
+                    ]
+                )
+            self.assertEqual(1, result)
+            self.assertIn(relative.as_posix(), output.getvalue())
+
     def test_metadata_validator_declares_its_compatibility_api(self) -> None:
         """The split preserves live imports, not incidental module globals."""
 
@@ -495,7 +562,7 @@ class GloballyForbiddenKeyTests(unittest.TestCase):
         registry = metadata.load_registry()
         profiles = metadata.build_registry_profiles(registry)
         record = metadata.Record(
-            pathlib.Path("docs/00.agent-governance/providers/README.md"),
+            pathlib.Path(".agents/governance/providers/README.md"),
             {
                 "title": "Providers",
                 "version": "1.0.0",

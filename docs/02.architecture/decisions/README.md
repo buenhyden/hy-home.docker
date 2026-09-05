@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.0.2"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "architecture"
 ---
 
@@ -36,8 +36,8 @@ docs/02.architecture/decisions/
 ├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
 ├── 0028-local-isolated-readiness-evidence.md
-├── 0029-workspace-governance-authority.md
 ├── 0031-preserved-archive-record.md
+├── 0032-canonical-agent-governance-home.md
 └── README.md
 ```
 
@@ -49,12 +49,14 @@ docs/02.architecture/decisions/
   ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence strategy.
-- [`ADR-0029`](./0029-workspace-governance-authority.md):
-  active workspace governance authority decision; ADR-0027을 supersede한다.
+- [`ADR-0029`](../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md):
+  ADR-0032가 supersede한 이전 workspace governance authority decision.
 - [`ADR-0030`](../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md):
   ADR-0031이 supersede한 Tombstone-only preservation decision.
 - [`ADR-0031`](./0031-preserved-archive-record.md):
   frozen body와 disposition record를 분리하는 active archive preservation decision.
+- [`ADR-0032`](./0032-canonical-agent-governance-home.md):
+  공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 active decision.
 
 ## How to Work in This Area
 

@@ -42,9 +42,10 @@ Do not create or retain:
 Before task completion, promote the durable non-secret outcome to the canonical
 owner:
 
-- implementation evidence goes to `docs/04.execution/tasks/`;
+- implementation evidence goes to the current `docs/03.specs/` package Task;
 - stable reference context goes to `docs/90.references/`;
-- governance memory goes to `docs/00.agent-governance/memory/`.
+- durable governance rules go to their `.agents/governance/` policy owner;
+- task-specific context stays in the current Task; no governance memory root is adopted.
 
 Leave raw scratch artifacts ignored unless the user explicitly approves a
 future non-secret promotion.

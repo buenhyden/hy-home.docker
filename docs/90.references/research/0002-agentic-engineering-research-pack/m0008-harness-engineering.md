@@ -1,10 +1,10 @@
 ---
 title: "Reference: Harness Engineering"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0008"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Harness Engineering
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -42,7 +49,7 @@ enforcement, runtime acceptance, or remote proof.
 
 ## Repository Role
 
-This Stage 90 reference is advisory analysis. Stage 00 contracts, provider
+This Stage 90 reference is advisory analysis. canonical agent governance contracts, provider
 adapters, scripts, tests, lifecycle documents, and approved runtime evidence
 remain authoritative. Recommendations here do not authorize provider,
 security, infrastructure, secret, runtime, or remote mutations.
@@ -63,7 +70,7 @@ security, infrastructure, secret, runtime, or remote mutations.
 - Inspecting user-global provider configuration, credentials, private state,
   ignored volumes, transcripts, raw logs, or shell history.
 - Starting services or proving live provider, model, hook, CI, or remote state.
-- Editing Stage 00 contracts, provider adapters, hooks, scripts, or tests.
+- Editing canonical agent governance contracts, provider adapters, hooks, scripts, or tests.
 
 ## Definitions / Facts
 
@@ -85,6 +92,7 @@ configuration records, and provider/model `runtime_acceptance` remains
 
 ### Harness element model
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Element                   | Required contract                                                                          | Current tracked implementation                                                                         | Evidence depth                                     | Gap or adoption condition                                                                                                 |
 | ------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Canonical authority       | One provider-neutral owner for roles, functions, models, events, permissions, and evidence | Stage 00 catalogs and rules                                                                            | Definition + repository validation                 | Change the canonical owner before regenerating adapters; never patch policy into one adapter.                             |
@@ -103,6 +111,7 @@ configuration records, and provider/model `runtime_acceptance` remains
 The following counts were re-derived from complete tracked owners, not from
 Graphify or predecessor prose.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface                        |                                   Count or state | Tracked owner and derivation                                                                                  |
 | ------------------------------ | -----------------------------------------------: | ------------------------------------------------------------------------------------------------------------- |
 | Canonical agents               |                                               14 | `contracts/agent-catalog.yaml` `agents`                                                                       |
@@ -149,32 +158,34 @@ their names.
 `.codex/hooks.json` (same script, `HY_HOME_HOOK_PROVIDER=codex` set). Per
 event:
 
-- `SessionStart` prints branch, changed-file count, last commit, and the
-  `infra/` directory listing as a `systemMessage` — advisory context only.
-- `PreToolUse` emits **advisory** `systemMessage`/`additionalContext` for up to
-  five independent triggers matched by changed-path pattern: a stale Graphify
-  graph present, a Docker Compose path, a `.agents/` compatibility-surface
-  path, a `docs/00.agent-governance/memory/` path, a target-stage doc path
-  (`docs/01`–`docs/05`, `docs/90`), and a `README.md` path (with a separate
-  infra-service-readiness message when a Compose/Dockerfile marker sits beside
-  it). None of these five triggers can block the tool call; they only prepend
-  guidance text.
-- `PostToolUse` delegates entirely to `scripts/hooks/post-tool-validate.sh`.
-- `SessionEnd` and `PreCompact` each print a state-snapshot reminder
-  (branch/last-commit/uncommitted-count plus a fixed checklist); both are
-  advisory.
-- `Stop` is the **only** locally blocking gate. It runs two Python-coded
-  checks in sequence — `template_stop_gate` (blocks when a changed
-  target-stage doc fails `check-repo-contracts.sh`) and
-  `logical_commit_stop_gate` (blocks when task-owned changes remain
-  uncommitted, bypassed only by `AGENT_ALLOW_UNCOMMITTED_STOP=1`) — and only
-  calls `session_end` if both pass.
-- `UserPromptSubmit` keyword-matches the incoming prompt against seven named
-  Stage 00 functions (`compose-stack-agent`, `requirements-to-design-agent`,
-  `execution-plan-agent`, `task-breakdown-agent`, `ops-runbook-agent`,
-  `knowledge-map-agent`, `policy-gate-agent`) and, on a hit, injects their
-  catalog paths as `additionalContext`. This is routing advice, not tool
-  selection or execution.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+>
+> - `SessionStart` prints branch, changed-file count, last commit, and the
+>   `infra/` directory listing as a `systemMessage` — advisory context only.
+> - `PreToolUse` emits **advisory** `systemMessage`/`additionalContext` for up to
+>   five independent triggers matched by changed-path pattern: a stale Graphify
+>   graph present, a Docker Compose path, a `.agents/` compatibility-surface
+>   path, a `docs/00.agent-governance/memory/` path, a target-stage doc path
+>   (`docs/01`–`docs/05`, `docs/90`), and a `README.md` path (with a separate
+>   infra-service-readiness message when a Compose/Dockerfile marker sits beside
+>   it). None of these five triggers can block the tool call; they only prepend
+>   guidance text.
+> - `PostToolUse` delegates entirely to `scripts/hooks/post-tool-validate.sh`.
+> - `SessionEnd` and `PreCompact` each print a state-snapshot reminder
+>   (branch/last-commit/uncommitted-count plus a fixed checklist); both are
+>   advisory.
+> - `Stop` is the **only** locally blocking gate. It runs two Python-coded
+>   checks in sequence — `template_stop_gate` (blocks when a changed
+>   target-stage doc fails `check-repo-contracts.sh`) and
+>   `logical_commit_stop_gate` (blocks when task-owned changes remain
+>   uncommitted, bypassed only by `AGENT_ALLOW_UNCOMMITTED_STOP=1`) — and only
+>   calls `session_end` if both pass.
+> - `UserPromptSubmit` keyword-matches the incoming prompt against seven named
+>   Stage 00 functions (`compose-stack-agent`, `requirements-to-design-agent`,
+>   `execution-plan-agent`, `task-breakdown-agent`, `ops-runbook-agent`,
+>   `knowledge-map-agent`, `policy-gate-agent`) and, on a hit, injects their
+>   catalog paths as `additionalContext`. This is routing advice, not tool
+>   selection or execution.
 
 `scripts/hooks/post-tool-validate.sh` (invoked by `PostToolUse` on both
 providers) reads the hook's JSON payload for changed paths, then runs a fixed
@@ -200,27 +211,28 @@ local check at all beyond the whitespace pass.
 
 ### Hookify: a defined rule catalog without a tracked local projection
 
-`docs/00.agent-governance/rules/hooks/` holds 19 canonical Hookify rule files
-(re-counted directly: 7 `action: block`, 12 `action: warn`; by trigger, 6
-`event: bash`, 11 `event: file`, 2 `event: stop`). `rules/provider-capability-matrix.md`
-§1 records the Claude "Rules" row as "canonical Hookify rules + `settings.json`;
-local projection not tracked" — verified directly in this worktree: no
-`.claude/hookify/` directory, no Hookify-specific entry in
-`.claude/settings.json`, and no code path in `scripts/hooks/agent-event-hook.sh`
-that parses a Hookify file's `name`/`event`/`pattern`/`action` frontmatter at
-runtime. Per the evidence-depth table above, the 19 rules sit at
-**Definition** only, not **Configuration**: each rule names a blocking or
-warning behavior (for example `block-direct-main-push`,
-`require-logical-commits-before-stop`), but nothing in the tracked runtime
-executes that declaration as a tool-level gate. The two `event: stop` rules
-(`require-logical-commits-before-stop`, `warn-docker-infra-stop`) restate —
-rather than extend — the `logical_commit_stop_gate` already hard-coded in
-`scripts/hooks/agent-event-hook.sh`; the seven `action: block` rules (for
-example blocking a direct `git push origin main`) are enforceable today only
-through an agent's own compliance with written policy, since no tool-level
-interception reads them. Closing this gap — generating an actual Hookify
-runtime projection, or wiring these declarations into `PreToolUse`/`Stop`
-matchers — is an explicit adoption decision this reference does not make.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> `docs/00.agent-governance/rules/hooks/` holds 19 canonical Hookify rule files
+> (re-counted directly: 7 `action: block`, 12 `action: warn`; by trigger, 6
+> `event: bash`, 11 `event: file`, 2 `event: stop`). `rules/provider-capability-matrix.md`
+> §1 records the Claude "Rules" row as "canonical Hookify rules + `settings.json`;
+> local projection not tracked" — verified directly in this worktree: no
+> `.claude/hookify/` directory, no Hookify-specific entry in
+> `.claude/settings.json`, and no code path in `scripts/hooks/agent-event-hook.sh`
+> that parses a Hookify file's `name`/`event`/`pattern`/`action` frontmatter at
+> runtime. Per the evidence-depth table above, the 19 rules sit at
+> **Definition** only, not **Configuration**: each rule names a blocking or
+> warning behavior (for example `block-direct-main-push`,
+> `require-logical-commits-before-stop`), but nothing in the tracked runtime
+> executes that declaration as a tool-level gate. The two `event: stop` rules
+> (`require-logical-commits-before-stop`, `warn-docker-infra-stop`) restate —
+> rather than extend — the `logical_commit_stop_gate` already hard-coded in
+> `scripts/hooks/agent-event-hook.sh`; the seven `action: block` rules (for
+> example blocking a direct `git push origin main`) are enforceable today only
+> through an agent's own compliance with written policy, since no tool-level
+> interception reads them. Closing this gap — generating an actual Hookify
+> runtime projection, or wiring these declarations into `PreToolUse`/`Stop`
+> matchers — is an explicit adoption decision this reference does not make.
 
 ### Native event surface size versus local wiring depth
 
@@ -242,7 +254,7 @@ upstream blocking-capable events with **no local binding at all** (not
 configured, not advisory — absent from `.claude/settings.json`); Gemini's
 `BeforeModel`, `AfterModel`, `BeforeToolSelection`, and `Notification` are the
 mirror case, upstream capability with no local `.gemini/settings.json` entry.
-Closing either requires a Stage 00 semantic-event addition, a renderer
+Closing either requires a canonical agent governance semantic-event addition, a renderer
 change, and a validator update — out of scope for this reference.
 
 ### A third tracked provider surface: Gemini
@@ -277,7 +289,7 @@ spans.
 ### Environment and rules for workspace application
 
 1. Start from an approved requirement and specification, then resolve the
-   canonical Stage 00 owner before touching an adapter.
+   canonical agent governance owner before touching an adapter.
 2. Load the bootstrap, provider overlay, one primary scope, and only the stage
    documents needed for the task. Record instruction loading as context, not
    enforcement.
@@ -344,6 +356,7 @@ Every row uses the disposition and evidence owners in the
 [scope application matrix](./m0015-scope-application-matrix.md); this table states
 the harness-specific implication so no scope is inherited silently.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | Harness implication                                                                                           | Current disposition / route                                                                    |
 | -------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `agentic`      | Owns contracts, adapters, hooks, roles, skills, and provider translation.                                     | Implemented as tracked definitions; runtime unverified; route changes through Stage 00 owners. |
@@ -373,6 +386,7 @@ recorded; this is a retrieval-method limitation distinct from the source
 itself and is flagged wherever it produced an unresolved discrepancy (see the
 Gemini event-count note above).
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source | Class | Verification |
 | --- | --- | --- |
 | [Claude hooks](https://code.claude.com/docs/en/hooks) | External mutable, primary | Re-verified 2026-08-14: 31 events, 5 handler types, blocking split, 6 config scopes. |
@@ -388,7 +402,7 @@ Gemini event-count note above).
 | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | External mutable, primary | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Workspace tracked | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
 | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Workspace tracked | Re-read 2026-08-14: 3-provider list, `local_cli_observation`, all 21 event cells, 4 loops. |
-| [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Workspace tracked | Re-read 2026-08-14: 3-column matrix, Hookify "local projection not tracked" line. |
+| [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) | Workspace tracked | Re-read 2026-08-14: 3-column matrix, Hookify "local projection not tracked" line. |
 | Harness implementation map (retired path: `../../../00.agent-governance/harness-implementation-map.md`) | Workspace tracked | Corroborated routing map; policy remains in linked owners. |
 | [`.claude/settings.json`](../../../../.claude/settings.json) | Workspace tracked | Read 2026-08-14: `permissions`, `hooks`, `autoMode`, `deniedMcpServers`. |
 | [`scripts/hooks/agent-event-hook.sh`](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked | Read 2026-08-14: all 7 event handlers, both Stop-gate functions. |
@@ -436,7 +450,7 @@ Re-measure this leaf when agent/function catalogs, provider models, adapters,
 hooks, harness layers, loop/event contracts, eval fixtures, regressions, or
 official provider pages change. Record a new baseline and retrieval timestamp,
 preserve the evidence-depth distinctions, and route implementation changes to
-their canonical Stage 00/03/04 owner.
+their canonical agent governance/03/04 owner.
 
 ## Related Documents
 

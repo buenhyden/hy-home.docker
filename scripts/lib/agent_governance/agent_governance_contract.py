@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Validate canonical Stage 00 sources and their two-provider projections."""
+"""Validate canonical agent governance sources and their two-provider projections."""
 
 from __future__ import annotations
 
+import ast
 import fnmatch
 import json
 import os
@@ -16,11 +17,13 @@ from types import MappingProxyType
 import yaml
 
 
-GOVERNANCE = pathlib.PurePosixPath("docs/00.agent-governance")
-REGISTRY = GOVERNANCE / "providers/registry.yaml"
+GOVERNANCE = pathlib.PurePosixPath(".agents")
+PROVIDERS = GOVERNANCE / "governance/providers"
+REGISTRY = PROVIDERS / "registry.yaml"
+CANONICAL_SKILL_PATTERN = ".agents/skills/{skill_id}/SKILL.md"
 SUPPORTED_PROVIDERS = ("claude", "codex")
-ROOT_ENTRIES = ("README.md", "policies", "providers", "roles", "sdlc.md", "skills")
-PROVIDER_ENTRIES = ("README.md", "claude.md", "codex.md", "registry.yaml")
+ROOT_ENTRIES = ("README.md", "governance", "roles", "skills")
+PROVIDER_ENTRIES = ("README.md", "registry.yaml")
 GOVERNANCE_PROFILES = {
     "governance-hook-policy",
     "governance-policy",
@@ -54,10 +57,11 @@ _RETIRED_CURRENT = "memory" + "/current"
 UNSUPPORTED_TOKEN = re.compile(
     rf"(?i)(?:\b{_RETIRED_PROVIDER}\b|\b{_RETIRED_EXPERIMENT}\b|"
     rf"{_RETIRED_HANDOFF}|{_RETIRED_CURRENT}|"
-    r"docs/00\.agent-governance/(?:rules|scopes|agents|contracts)(?:/|\b)|"
+    r"docs/00\.agent-governance(?:/|\b)|"
     r"subagent-protocol\.md|harness-implementation-map\.md|"
     r"memory\.template\.md|progress\.template\.md)"
 )
+RETIRED_PATHS = ("docs/00.agent-governance",)
 RETIRED_PROVIDER_DIRECTORY = "." + _RETIRED_PROVIDER
 RETIRED_PROVIDER_SHIM = _RETIRED_PROVIDER.upper() + ".md"
 GENERATED_AUTHORITY = re.compile(
@@ -72,7 +76,7 @@ HISTORICAL_TABLE_MARKER = (
 
 
 class ContractLoadError(ValueError):
-    """Raised when a Stage 00 source cannot be loaded safely."""
+    """Raised when a canonical agent source cannot be loaded safely."""
 
 
 class _UniqueLoader(yaml.SafeLoader):
@@ -122,6 +126,7 @@ class SkillRecord:
     skill_id: str
     scope: str
     owner_agent: str
+    description: str
     source_path: pathlib.PurePosixPath
     source_text: str
 
@@ -135,6 +140,7 @@ class ProviderRecord:
     adapter_path: pathlib.PurePosixPath
     agent_pattern: str
     skill_pattern: str | None
+    canonical_skill_pattern: str
     config_path: pathlib.PurePosixPath
 
 
@@ -188,21 +194,29 @@ def _safe_relative(value: str | pathlib.PurePath) -> pathlib.PurePosixPath:
 def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
     root = root.absolute()
     safe = _safe_relative(relative)
-    current = root
-    for part in safe.parts:
-        current = current / part
-        try:
-            metadata = current.lstat()
-        except OSError as error:
-            raise ContractLoadError(f"AGC-FILE-MISSING path={safe}") from error
-        if stat.S_ISLNK(metadata.st_mode):
-            raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
-    if not stat.S_ISREG(current.stat().st_mode):
-        raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
-    if metadata.st_mode & 0o444 == 0:
-        raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}")
+    parent = -1
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     try:
-        descriptor = os.open(current, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        parent = os.open(root, directory_flags)
+        for part in safe.parts[:-1]:
+            before = os.stat(part, dir_fd=parent, follow_symlinks=False)
+            if not stat.S_ISDIR(before.st_mode):
+                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+            child = os.open(part, directory_flags, dir_fd=parent)
+            opened = os.fstat(child)
+            if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
+                os.close(child)
+                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+            os.close(parent)
+            parent = child
+        metadata = os.stat(safe.name, dir_fd=parent, follow_symlinks=False)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+        if metadata.st_mode & 0o444 == 0:
+            raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}")
+        descriptor = os.open(
+            safe.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent
+        )
         with os.fdopen(descriptor, "rb") as source:
             opened = os.fstat(source.fileno())
             if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
@@ -218,8 +232,13 @@ def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
                 after.st_ctime_ns,
             ):
                 raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+    except FileNotFoundError as error:
+        raise ContractLoadError(f"AGC-FILE-MISSING path={safe}") from error
     except OSError as error:
         raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}") from error
+    finally:
+        if parent >= 0:
+            os.close(parent)
     if len(payload) > MAX_TEXT_BYTES:
         raise ContractLoadError(f"AGC-FILE-TOO-LARGE path={safe}")
     try:
@@ -384,17 +403,20 @@ def _validate_registry(
         "adapter_path",
         "native_agent_pattern",
         "native_skill_pattern",
+        "canonical_skill_pattern",
         "native_config_path",
     }
     expected_provider_values = {
         "claude": {
             "native_agent_pattern": ".claude/agents/{agent_id}.md",
             "native_skill_pattern": ".claude/skills/{skill_id}/SKILL.md",
+            "canonical_skill_pattern": CANONICAL_SKILL_PATTERN,
             "native_config_path": ".claude/settings.json",
         },
         "codex": {
             "native_agent_pattern": ".codex/agents/{agent_id}.toml",
             "native_skill_pattern": None,
+            "canonical_skill_pattern": CANONICAL_SKILL_PATTERN,
             "native_config_path": ".codex/hooks.json",
         },
     }
@@ -417,7 +439,7 @@ def _validate_registry(
                 "AGC-PROVIDER-REGISTRY-INVALID field=runtime_acceptance"
             )
         adapter = _safe_relative(str(values.get("adapter_path", "")))
-        expected_adapter = GOVERNANCE / f"providers/{provider_id}.md"
+        expected_adapter = pathlib.PurePosixPath(f".{provider_id}/provider.md")
         if adapter != expected_adapter:
             raise ContractLoadError("AGC-PROVIDER-ADAPTER-CROSS-REFERENCE")
         config = _safe_relative(str(values.get("native_config_path", "")))
@@ -444,16 +466,11 @@ def _validate_registry(
                 )
                 if values.get("native_skill_pattern") is not None
                 else None,
+                canonical_skill_pattern=CANONICAL_SKILL_PATTERN,
                 config_path=config,
             )
         )
-    canonical = _mapping(registry.get("canonical_sources"), field="canonical_sources")
-    _exact_keys(canonical, {"role_pattern", "skill_pattern"}, field="canonical_sources")
-    if canonical != {
-        "role_pattern": "docs/00.agent-governance/roles/{agent_id}.md",
-        "skill_pattern": "docs/00.agent-governance/skills/{skill_id}.md",
-    }:
-        raise ContractLoadError("AGC-CANONICAL-SOURCE-PATTERN")
+    _canonical_source_paths(registry)
     providers = set(SUPPORTED_PROVIDERS)
     raw_projections = registry.get("projections")
     if not isinstance(raw_projections, list) or not raw_projections:
@@ -477,8 +494,8 @@ def _validate_registry(
             or path.parts[0] != expected_prefix
             or path.suffix.casefold() != ".md"
             or SAFE_REPOSITORY_PATH_PART.fullmatch(path.name) is None
-            or source.parts[: len(GOVERNANCE.parts)] != GOVERNANCE.parts
-            or source.suffix.casefold() != ".md"
+            or source != pathlib.PurePosixPath(f".{provider_id}/provider.md")
+            or path.name == "provider.md"
         ):
             raise ContractLoadError(f"AGC-PROJECTION-ROUTE field={index}")
         if path in projection_paths:
@@ -741,18 +758,35 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
 def _load_skills(root: pathlib.Path) -> tuple[SkillRecord, ...]:
     directory = root / GOVERNANCE / "skills"
     records: list[SkillRecord] = []
-    for file_path in sorted(directory.glob("*.md")):
+    for file_path in sorted(directory.glob("*/SKILL.md")):
         relative = pathlib.PurePosixPath(file_path.relative_to(root).as_posix())
         text = _read_text(root, relative)
-        values = _frontmatter(text, relative)
+        envelope = _frontmatter(text, relative)
+        _exact_keys(envelope, {"name", "description", "metadata"}, field=str(relative))
+        values = _mapping(envelope["metadata"], field=f"{relative}.metadata")
         skill_id = _identifier(values, "function_id", relative)
-        if file_path.stem != skill_id or values.get("type") != "governance/skill":
+        if (
+            file_path.parent.name != skill_id
+            or _identifier(envelope, "name", relative) != skill_id
+            or values.get("type") != "governance/skill"
+        ):
             raise ContractLoadError(f"AGC-SKILL-IDENTITY path={relative}")
+        description = _string(envelope, "description", relative)
+        if not description.strip():
+            raise ContractLoadError(f"AGC-SKILL-DESCRIPTION path={relative}")
+        controls_path = relative.parent / "agents/openai.yaml"
+        controls = _load_yaml(root, controls_path)
+        _exact_keys(controls, {"policy"}, field=str(controls_path))
+        policy = _mapping(controls["policy"], field=f"{controls_path}.policy")
+        _exact_keys(policy, {"allow_implicit_invocation"}, field=str(controls_path))
+        if policy["allow_implicit_invocation"] is not False:
+            raise ContractLoadError(f"AGC-SKILL-INVOCATION path={controls_path}")
         records.append(
             SkillRecord(
                 skill_id=skill_id,
                 scope=_string(values, "scope", relative),
                 owner_agent=_identifier(values, "owner_agent", relative),
+                description=description,
                 source_path=relative,
                 source_text=text,
             )
@@ -762,6 +796,9 @@ def _load_skills(root: pathlib.Path) -> tuple[SkillRecord, ...]:
 
 def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     root = root.absolute()
+    home_findings = validate_canonical_agent_home(root)
+    if home_findings:
+        raise ContractLoadError(render_findings(home_findings))
     roles = _load_roles(root)
     skills = _load_skills(root)
     registry = _load_yaml(root, REGISTRY)
@@ -769,9 +806,7 @@ def load_agent_governance(root: pathlib.Path) -> AgentGovernanceState:
     provider_ids = tuple(item.provider_id for item in provider_records)
     governance_root = root / GOVERNANCE
     root_entries = tuple(sorted(path.name for path in governance_root.iterdir()))
-    provider_entries = tuple(
-        sorted(path.name for path in (governance_root / "providers").iterdir())
-    )
+    provider_entries = tuple(sorted(path.name for path in (root / PROVIDERS).iterdir()))
     return AgentGovernanceState(
         providers=provider_ids,
         provider_records=provider_records,
@@ -803,13 +838,15 @@ def validate_contract_bundle(
     if state.root_entries != ROOT_ENTRIES:
         findings.append(
             _finding(
-                GOVERNANCE, "AGC-ROOT-INVENTORY", "Stage 00 root inventory differs"
+                GOVERNANCE,
+                "AGC-ROOT-INVENTORY",
+                "canonical agent home inventory differs",
             )
         )
     if state.provider_entries != PROVIDER_ENTRIES:
         findings.append(
             _finding(
-                GOVERNANCE / "providers",
+                PROVIDERS,
                 "AGC-PROVIDER-INVENTORY",
                 "provider inventory differs",
             )
@@ -822,7 +859,7 @@ def validate_contract_bundle(
     }
     skill_paths = {
         pathlib.PurePosixPath(path.relative_to(root).as_posix())
-        for path in (root / GOVERNANCE / "skills").glob("*.md")
+        for path in (root / GOVERNANCE / "skills").glob("*/SKILL.md")
     }
     if (
         not role_ids
@@ -964,19 +1001,20 @@ ACTIVE_TEXT_EXTENSIONS = {
     ".yml",
 }
 ACTIVE_TEXT_ROOTS = (
-    "_workspace",
     ".github",
-    "docs/00.agent-governance",
+    ".agents",
     "docs/01.requirements",
     "docs/02.architecture",
     "docs/03.specs",
     "docs/05.operations",
     "docs/99.templates",
     "scripts",
-    ".claude",
-    ".codex",
 )
 ACTIVE_TEXT_FILES = (
+    # The tracked style selected by .claude/settings.json outputStyle.
+    ".claude/output-styles/hy-home.md",
+    "_workspace/README.md",
+    "_workspace/repo-support/README.md",
     ".pre-commit-config.yaml",
     "AGENTS.md",
     "CLAUDE.md",
@@ -984,8 +1022,36 @@ ACTIVE_TEXT_FILES = (
 )
 
 
-def _active_text_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+def _active_text_paths(
+    root: pathlib.Path, state: AgentGovernanceState | None = None
+) -> tuple[pathlib.PurePosixPath, ...]:
     paths = {pathlib.PurePosixPath(item) for item in ACTIVE_TEXT_FILES}
+    if state is not None:
+        # Local settings and session files are not registered authority inputs.
+        for provider in state.provider_records:
+            paths.update((provider.adapter_path, provider.config_path))
+            paths.update(
+                pathlib.PurePosixPath(
+                    provider.agent_pattern.format(agent_id=role.agent_id)
+                )
+                for role in state.roles
+            )
+            if provider.skill_pattern is not None:
+                paths.update(
+                    pathlib.PurePosixPath(
+                        provider.skill_pattern.format(skill_id=skill.skill_id)
+                    )
+                    for skill in state.skills
+                )
+        paths.update(
+            pathlib.PurePosixPath(item["path"])
+            for item in state.registry["projections"]
+        )
+        paths.update(
+            pathlib.PurePosixPath(item["executable"])
+            for contracts in state.registry["hook_contracts"].values()
+            for item in contracts.values()
+        )
     for directory_name in ACTIVE_TEXT_ROOTS:
         directory = root / directory_name
         try:
@@ -1049,13 +1115,44 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
     if relative.startswith("docs/") and relative.endswith(".md"):
         text = current_markdown_authority(text)
     if relative.endswith(".py"):
-        # Literal inventories used to prove retired paths absent are data, not
-        # provider adoption. No executable statement is removed by this match.
-        text = re.sub(
-            r"(?m)^\w*(?:REMOVED|RETIRED)_PATHS(?::[^=\n]+)? = \(\n(?:[ \t]+\"[^\"\n]+\",\n)+\)",
-            "",
-            text,
-        )
+        # Strip only literal values in module-level retired-path inventories;
+        # formatting cannot turn adjacent executable statements into evidence.
+        try:
+            nodes = ast.parse(text).body
+        except SyntaxError:
+            nodes = []
+        payload = text.encode("utf-8")
+        offsets = [0]
+        for line in payload.splitlines(keepends=True):
+            offsets.append(offsets[-1] + len(line))
+        spans = []
+        for node in nodes:
+            if isinstance(node, ast.Assign) and len(node.targets) == 1:
+                target, value = node.targets[0], node.value
+            elif isinstance(node, ast.AnnAssign):
+                target, value = node.target, node.value
+            else:
+                continue
+            if (
+                isinstance(target, ast.Name)
+                and re.fullmatch(r"\w*(?:REMOVED|RETIRED)_PATHS", target.id)
+                and isinstance(value, ast.Tuple)
+                and all(
+                    isinstance(item, ast.Constant) and isinstance(item.value, str)
+                    for item in value.elts
+                )
+                and value.end_lineno is not None
+                and value.end_col_offset is not None
+            ):
+                spans.append(
+                    (
+                        offsets[value.lineno - 1] + value.col_offset,
+                        offsets[value.end_lineno - 1] + value.end_col_offset,
+                    )
+                )
+        for start, end in reversed(spans):
+            payload = payload[:start] + payload[end:]
+        text = payload.decode("utf-8")
         return UNSUPPORTED_TOKEN.search(text) is not None
     # A search pattern names evidence, not an adopted provider. Strip only the
     # quoted pattern, retaining adjacent commands and all remaining arguments.
@@ -1099,41 +1196,117 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
     return False
 
 
-def validate_optional_agent_directory(root: pathlib.Path) -> list[Finding]:
-    """Allow only absence or an empty real directory, without reading children."""
+def _canonical_source_paths(
+    registry: Mapping[str, object],
+) -> tuple[pathlib.PurePosixPath, ...]:
+    values = registry.get("canonical_sources")
+    if (
+        not isinstance(values, list)
+        or not values
+        or len(values) > 1024
+        or any(not isinstance(value, str) for value in values)
+    ):
+        raise ContractLoadError("AGC-CANONICAL-SOURCES")
+    paths = tuple(_safe_relative(value) for value in values)
+    if len(paths) != len(set(paths)) or any(
+        path.as_posix() != value for path, value in zip(paths, values)
+    ):
+        raise ContractLoadError("AGC-CANONICAL-SOURCES")
+    required = {
+        GOVERNANCE / "README.md",
+        REGISTRY,
+        PROVIDERS / "README.md",
+        GOVERNANCE / "governance/sdlc.md",
+    }
+    patterns = (
+        r"[.]agents/governance/[a-z][a-z0-9-]*[.]md",
+        r"[.]agents/governance/hooks/hookify[.][a-z][a-z0-9-]*[.]md",
+        r"[.]agents/roles/[a-z][a-z0-9-]*[.]md",
+        r"[.]agents/skills/[a-z][a-z0-9-]*/(?:SKILL[.]md|agents/openai[.]yaml)",
+    )
+    if not required.issubset(paths) or any(
+        path not in required
+        and not any(re.fullmatch(pattern, str(path)) for pattern in patterns)
+        for path in paths
+    ):
+        raise ContractLoadError("AGC-CANONICAL-SOURCES")
+    roles = {path for path in paths if path.parent == GOVERNANCE / "roles"}
+    skills = {path.parent for path in paths if path.name == "SKILL.md"}
+    controls = {path.parent.parent for path in paths if path.name == "openai.yaml"}
+    if not roles or not skills or skills != controls:
+        raise ContractLoadError("AGC-CANONICAL-SOURCES")
+    return paths
+
+
+def canonical_source_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    """Return the single registered source inventory, without opening its payloads."""
+    return _canonical_source_paths(_load_yaml(root, REGISTRY))
+
+
+def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
+    """Validate registered structure without reading or mutating unknown contents."""
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    count = 0
+
+    def scan(
+        descriptor: int,
+        relative: pathlib.PurePosixPath,
+        directories: Mapping[pathlib.PurePosixPath, set[str]],
+    ) -> None:
+        nonlocal count
+        entries = []
+        with os.scandir(descriptor) as iterator:
+            for entry in iterator:
+                count += 1
+                if count > 2048:
+                    raise ValueError("canonical inventory is oversized")
+                entries.append(entry)
+        if {entry.name for entry in entries} != directories[relative]:
+            raise ValueError(f"unregistered or missing canonical input in {relative}")
+        for entry in sorted(entries, key=lambda item: item.name):
+            child_relative = relative / entry.name
+            before = entry.stat(follow_symlinks=False)
+            if child_relative in directories:
+                if not stat.S_ISDIR(before.st_mode):
+                    raise ValueError("canonical directory is unsafe")
+                child = os.open(entry.name, flags, dir_fd=descriptor)
+                try:
+                    opened = os.fstat(child)
+                    if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+                        raise ValueError("canonical directory changed")
+                    scan(child, child_relative, directories)
+                finally:
+                    os.close(child)
+            elif not stat.S_ISREG(before.st_mode):
+                raise ValueError("canonical file is unsafe")
+            after = os.stat(entry.name, dir_fd=descriptor, follow_symlinks=False)
+            if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
+                raise ValueError("canonical input changed")
+
     try:
+        directories: dict[pathlib.PurePosixPath, set[str]] = {}
+        for source in canonical_source_paths(root):
+            while source != GOVERNANCE:
+                directories.setdefault(source.parent, set()).add(source.name)
+                source = source.parent
         root_descriptor = os.open(root.absolute(), flags)
         try:
-            try:
-                descriptor = os.open(".agents", flags, dir_fd=root_descriptor)
-            except FileNotFoundError:
-                return []
+            descriptor = os.open(".agents", flags, dir_fd=root_descriptor)
             try:
                 before = os.fstat(descriptor)
-                with os.scandir(descriptor) as entries:
-                    empty = next(entries, None) is None
+                scan(descriptor, GOVERNANCE, directories)
                 after = os.stat(
                     ".agents", dir_fd=root_descriptor, follow_symlinks=False
                 )
-                if empty and stat.S_ISDIR(after.st_mode) and (
-                    before.st_dev, before.st_ino
-                ) == (after.st_dev, after.st_ino):
-                    return []
+                if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
+                    raise ValueError("canonical home changed")
             finally:
                 os.close(descriptor)
         finally:
             os.close(root_descriptor)
-    except OSError:
-        pass
-    return [
-        _finding(
-            ".agents",
-            "AGC-RETIRED-SURFACE",
-            "only an absent or verifiably empty real directory is allowed; "
-            "preserve existing contents for manual disposition",
-        )
-    ]
+    except (OSError, ValueError) as error:
+        return [_finding(GOVERNANCE, "AGC-CANONICAL-HOME", str(error))]
+    return []
 
 
 def validate_repository(
@@ -1142,7 +1315,18 @@ def validate_repository(
     if section not in {"catalog", "providers", "harness", "all"}:
         raise ValueError(f"unsupported section: {section}")
     root = root.absolute()
-    findings = validate_optional_agent_directory(root)
+    findings = validate_canonical_agent_home(root)
+    if findings:
+        return findings
+    for retired in RETIRED_PATHS:
+        if os.path.lexists(root / retired):
+            findings.append(
+                _finding(
+                    retired,
+                    "AGC-RETIRED-SURFACE",
+                    "retired canonical home exists; preserve for reviewed disposition",
+                )
+            )
     roles = {item.agent_id for item in bundle.state.roles}
     skills = {item.skill_id for item in bundle.state.skills}
     if section == "all":
@@ -1173,7 +1357,7 @@ def validate_repository(
                     "unsupported provider surface exists",
                 )
             )
-        for relative_path in _active_text_paths(root):
+        for relative_path in _active_text_paths(root, bundle.state):
             try:
                 text = _read_text(root, relative_path)
             except ContractLoadError as error:

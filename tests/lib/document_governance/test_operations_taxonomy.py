@@ -72,7 +72,7 @@ class OperationsAuthorityTests(unittest.TestCase):
             root = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             fixtures = {
-                "docs/00.agent-governance/active.md": (
+                ".agents/governance/active.md": (
                     "See docs/05.operations/catalog/00-workspace/"
                     "ops-####-subject/guide.md.\n"
                 ),
@@ -97,7 +97,7 @@ class OperationsAuthorityTests(unittest.TestCase):
                     "See docs/05.operations/catalog/00-workspace/"
                     "ops-####-negative/guide.md.\n"
                 ),
-                "docs/00.agent-governance/negative.md": (
+                ".agents/governance/negative.md": (
                     "No separate Release document role.\n"
                 ),
             }
@@ -111,7 +111,7 @@ class OperationsAuthorityTests(unittest.TestCase):
 
             self.assertEqual(
                 {
-                    "docs/00.agent-governance/active.md",
+                    ".agents/governance/active.md",
                     "docs/03.specs/0999-current/spec.md",
                 },
                 {finding.path.split(":", 1)[0] for finding in findings},
@@ -170,9 +170,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         )
         self.assertEqual(
             (
-                pathlib.PurePosixPath(
-                    "scripts/validation/check-operations-catalog.py"
-                ),
+                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
                 pathlib.PurePosixPath(
                     "scripts/operations/rehearse-postgres-logical-upgrade.sh"
                 ),
@@ -190,8 +188,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         self.assertEqual("operations", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])
         self.assertFalse(
-            {"public_suites", "execution_argv", "execution_contexts"}
-            & set(rehearsal)
+            {"public_suites", "execution_argv", "execution_contexts"} & set(rehearsal)
         )
 
     def test_public_changed_profile_routes_operations_paths_fail_closed(

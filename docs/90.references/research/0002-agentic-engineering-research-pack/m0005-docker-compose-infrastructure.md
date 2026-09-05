@@ -1,10 +1,10 @@
 ---
 title: "Reference: Docker Compose and Infrastructure"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0005"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Docker Compose and Infrastructure
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -48,7 +55,7 @@ This Stage 90 reference is advisory analysis. It does not change Compose,
 adopt an upstream example as policy, approve a port or network exception,
 create a secret, execute a backup, start a service, or authorize deployment.
 Runtime truth remains in approved observations of the tracked Compose owners;
-policy and procedures remain in Stage 00 and Stage 05, and implementation gaps
+policy and procedures remain in canonical agent governance and Stage 05, and implementation gaps
 require a separate Stage 03/04 chain.
 
 ## Scope
@@ -387,6 +394,7 @@ observability behavior. Re-deriving ownership for each of the seven
 operational concerns named in this leaf's charter against tracked repository
 surfaces:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Concern                  | What Compose supplies                                                                                                             | Tracked owner today                                                                                                                                                                                   | Verdict                                                                                                                                                          |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Backup                   | Nothing; a volume mount is not a backup mechanism                                                                                 | No tracked backup label, script, or schedule was found for any of the 102 top-level volume declarations                                                                                               | **No tracked owner.** Named gap below.                                                                                                                           |
@@ -473,6 +481,7 @@ that a secret exists, was mounted, or was withheld from logs.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                          | Accessed                  | Class                             | Verification state                                                                                                                                                                                                                                                                        |
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Docker Compose file reference](https://docs.docker.com/reference/compose-file/)                                                                | 2026-08-08T18:18:06+09:00 | External mutable                  | Verified official page; Compose application-model capability only.                                                                                                                                                                                                                        |
@@ -485,7 +494,7 @@ that a secret exists, was mounted, or was withheld from logs.
 | [Hardening entry point](../../../../scripts/hardening/check-all-hardening.sh)                                                                   | 2026-08-08                | Workspace tracked/executed        | Eleven tier checks passed; static selected-control evidence only.                                                                                                                                                                                                                         |
 | [Tech-stack registry](../../../../infra/tech-stack.versions.json) and [floating exceptions](../../../../infra/image-tag-policy.exceptions.json) | 2026-08-08                | Workspace tracked                 | 18 components, 21 curated images, and exception ownership.                                                                                                                                                                                                                                |
 | [Tech-stack provenance](../../data/0061-tech-stack-version-provenance/README.md)                                                                     | 2026-08-08                | Workspace generated/tracked       | `--check` PASS; dry-run reports 20 pinned and one approved floating row.                                                                                                                                                                                                                  |
-| [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)                                                                | 2026-08-08                | Workspace tracked policy          | Compose, secret, runtime, validation, rollback, and hard-stop boundaries.                                                                                                                                                                                                                 |
+| [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)                                                                | 2026-08-08                | Workspace tracked policy          | Compose, secret, runtime, validation, rollback, and hard-stop boundaries.                                                                                                                                                                                                                 |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                     | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; navigation clues were corroborated and not used as proof.                                                                                                                                                                                                          |
 | [Compose `include` reference](https://docs.docker.com/reference/compose-file/include/)                                                          | 2026-08-14                | External mutable                  | Verified official page; relative-path, project-directory, env-precedence, and conflict-detection rules for `include` confirmed distinct from `extends`.                                                                                                                                   |
 | [compose-spec repository](https://github.com/compose-spec/compose-spec) at `11296e387ba76c77db1db768b9153a4304a3c9bd`                           | 2026-08-14                | External fixed at pinned revision | `git ls-remote --tags` returns no tags (no numbered releases exist); `HEAD` resolved and used as the exact upstream reference instead of mutable `main`.                                                                                                                                  |

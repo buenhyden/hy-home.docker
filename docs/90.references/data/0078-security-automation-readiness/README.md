@@ -31,8 +31,8 @@ artifacts, attest builds, query registries, or change CI behavior.
 ## Consumers
 
 This reference supports Stage 90 security maturity audits and future Stage
-03/04 security automation planning. It does not replace Stage 00 security
-governance, `.github/workflows/**`, `.github/SECURITY.md`, runtime
+03 security automation planning. It does not replace `.agents/governance`
+security policy, `.github/workflows/**`, `.github/SECURITY.md`, runtime
 hardening scripts, branch protection, release workflows, or vulnerability
 management procedures.
 

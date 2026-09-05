@@ -1,10 +1,10 @@
 ---
 title: "LLM Wiki Generated Index"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "DATA-0082"
 parent_ids: []
@@ -27,7 +27,7 @@ Each inventory row contains a repository-relative path and a lightweight role de
 
 ## Provenance
 
-This generated tracked repo-local index complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `docs/00.agent-governance/`.
+This generated repo-local index of tracked sources and registered governance inputs complements `llms.txt` and the DATA-0083 repository map. Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `.agents/`.
 
 Graphify output is advisory navigation context only. This index is generated from repository path metadata and does not treat `graphify-out/` as source material.
 
@@ -68,83 +68,104 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 | Path | Role |
 | --- | --- |
-| [docs/00.agent-governance/README.md](../../../00.agent-governance/README.md) | folder index |
-| [docs/00.agent-governance/policies/agentic.md](../../../00.agent-governance/policies/agentic.md) | Markdown reference |
-| [docs/00.agent-governance/policies/approval-boundaries.md](../../../00.agent-governance/policies/approval-boundaries.md) | Markdown reference |
-| [docs/00.agent-governance/policies/bootstrap.md](../../../00.agent-governance/policies/bootstrap.md) | Markdown reference |
-| [docs/00.agent-governance/policies/documentation-protocol.md](../../../00.agent-governance/policies/documentation-protocol.md) | Markdown reference |
-| [docs/00.agent-governance/policies/environment-constraints.md](../../../00.agent-governance/policies/environment-constraints.md) | Markdown reference |
-| [docs/00.agent-governance/policies/git-workflow.md](../../../00.agent-governance/policies/git-workflow.md) | Markdown reference |
-| [docs/00.agent-governance/policies/github-governance.md](../../../00.agent-governance/policies/github-governance.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-absolute-file-link.md](../../../00.agent-governance/policies/hooks/hookify.block-absolute-file-link.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-direct-main-push.md](../../../00.agent-governance/policies/hooks/hookify.block-direct-main-push.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-gha-secrets-in-run.md](../../../00.agent-governance/policies/hooks/hookify.block-gha-secrets-in-run.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-git-no-verify.md](../../../00.agent-governance/policies/hooks/hookify.block-git-no-verify.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-plaintext-secret-compose.md](../../../00.agent-governance/policies/hooks/hookify.block-plaintext-secret-compose.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.block-unpinned-gha-action.md](../../../00.agent-governance/policies/hooks/hookify.block-unpinned-gha-action.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.enforce-docs-templates.md](../../../00.agent-governance/policies/hooks/hookify.enforce-docs-templates.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.require-logical-commits-before-stop.md](../../../00.agent-governance/policies/hooks/hookify.require-logical-commits-before-stop.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-branch-naming.md](../../../00.agent-governance/policies/hooks/hookify.warn-branch-naming.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-conventional-commit.md](../../../00.agent-governance/policies/hooks/hookify.warn-conventional-commit.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-docker-infra-stop.md](../../../00.agent-governance/policies/hooks/hookify.warn-docker-infra-stop.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-force-push.md](../../../00.agent-governance/policies/hooks/hookify.warn-force-push.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-governance-memory-edit.md](../../../00.agent-governance/policies/hooks/hookify.warn-governance-memory-edit.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-hook-parity-edit.md](../../../00.agent-governance/policies/hooks/hookify.warn-hook-parity-edit.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-korean-in-governance.md](../../../00.agent-governance/policies/hooks/hookify.warn-korean-in-governance.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-parallel-doc-file.md](../../../00.agent-governance/policies/hooks/hookify.warn-parallel-doc-file.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md](../../../00.agent-governance/policies/hooks/hookify.warn-pre-commit-manual.md) | Markdown reference |
-| [docs/00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md](../../../00.agent-governance/policies/hooks/hookify.warn-stage-doc-edit.md) | Markdown reference |
-| [docs/00.agent-governance/policies/output-style.md](../../../00.agent-governance/policies/output-style.md) | Markdown reference |
-| [docs/00.agent-governance/policies/persona.md](../../../00.agent-governance/policies/persona.md) | Markdown reference |
-| [docs/00.agent-governance/policies/postflight-checklist.md](../../../00.agent-governance/policies/postflight-checklist.md) | Markdown reference |
-| [docs/00.agent-governance/policies/provider-capability-matrix.md](../../../00.agent-governance/policies/provider-capability-matrix.md) | Markdown reference |
-| [docs/00.agent-governance/policies/quality-standards.md](../../../00.agent-governance/policies/quality-standards.md) | Markdown reference |
-| [docs/00.agent-governance/policies/stage-authoring-matrix.md](../../../00.agent-governance/policies/stage-authoring-matrix.md) | Markdown reference |
-| [docs/00.agent-governance/policies/standards.md](../../../00.agent-governance/policies/standards.md) | Markdown reference |
-| [docs/00.agent-governance/policies/task-checklists.md](../../../00.agent-governance/policies/task-checklists.md) | Markdown reference |
-| [docs/00.agent-governance/policies/workflows.md](../../../00.agent-governance/policies/workflows.md) | Markdown reference |
-| [docs/00.agent-governance/providers/README.md](../../../00.agent-governance/providers/README.md) | folder index |
-| [docs/00.agent-governance/providers/claude.md](../../../00.agent-governance/providers/claude.md) | Markdown reference |
-| [docs/00.agent-governance/providers/codex.md](../../../00.agent-governance/providers/codex.md) | Markdown reference |
-| [docs/00.agent-governance/providers/registry.yaml](../../../00.agent-governance/providers/registry.yaml) | YAML config |
-| [docs/00.agent-governance/roles/ci-cd-engineer.md](../../../00.agent-governance/roles/ci-cd-engineer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/code-reviewer.md](../../../00.agent-governance/roles/code-reviewer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/doc-writer.md](../../../00.agent-governance/roles/doc-writer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/drift-detector.md](../../../00.agent-governance/roles/drift-detector.md) | Markdown reference |
-| [docs/00.agent-governance/roles/eval-engineer.md](../../../00.agent-governance/roles/eval-engineer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/hook-developer.md](../../../00.agent-governance/roles/hook-developer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/iac-reviewer.md](../../../00.agent-governance/roles/iac-reviewer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/incident-responder.md](../../../00.agent-governance/roles/incident-responder.md) | Markdown reference |
-| [docs/00.agent-governance/roles/infra-implementer.md](../../../00.agent-governance/roles/infra-implementer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/qa-engineer.md](../../../00.agent-governance/roles/qa-engineer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/rules-engineer.md](../../../00.agent-governance/roles/rules-engineer.md) | Markdown reference |
-| [docs/00.agent-governance/roles/security-auditor.md](../../../00.agent-governance/roles/security-auditor.md) | Markdown reference |
-| [docs/00.agent-governance/roles/skill-creator.md](../../../00.agent-governance/roles/skill-creator.md) | Markdown reference |
-| [docs/00.agent-governance/roles/workflow-supervisor.md](../../../00.agent-governance/roles/workflow-supervisor.md) | Markdown reference |
-| [docs/00.agent-governance/sdlc.md](../../../00.agent-governance/sdlc.md) | Markdown reference |
-| [docs/00.agent-governance/skills/adr-writing.md](../../../00.agent-governance/skills/adr-writing.md) | Markdown reference |
-| [docs/00.agent-governance/skills/change-review-execution.md](../../../00.agent-governance/skills/change-review-execution.md) | Markdown reference |
-| [docs/00.agent-governance/skills/ci-cd-patterns.md](../../../00.agent-governance/skills/ci-cd-patterns.md) | Markdown reference |
-| [docs/00.agent-governance/skills/code-review-dimensions.md](../../../00.agent-governance/skills/code-review-dimensions.md) | Markdown reference |
-| [docs/00.agent-governance/skills/compose-stack-agent.md](../../../00.agent-governance/skills/compose-stack-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/container-threat-modeling.md](../../../00.agent-governance/skills/container-threat-modeling.md) | Markdown reference |
-| [docs/00.agent-governance/skills/deployment-pipeline-design.md](../../../00.agent-governance/skills/deployment-pipeline-design.md) | Markdown reference |
-| [docs/00.agent-governance/skills/docker-compose-patterns.md](../../../00.agent-governance/skills/docker-compose-patterns.md) | Markdown reference |
-| [docs/00.agent-governance/skills/e2e-testing.md](../../../00.agent-governance/skills/e2e-testing.md) | Markdown reference |
-| [docs/00.agent-governance/skills/execution-plan-agent.md](../../../00.agent-governance/skills/execution-plan-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/incident-response.md](../../../00.agent-governance/skills/incident-response.md) | Markdown reference |
-| [docs/00.agent-governance/skills/infra-cross-validate.md](../../../00.agent-governance/skills/infra-cross-validate.md) | Markdown reference |
-| [docs/00.agent-governance/skills/infra-validate.md](../../../00.agent-governance/skills/infra-validate.md) | Markdown reference |
-| [docs/00.agent-governance/skills/knowledge-map-agent.md](../../../00.agent-governance/skills/knowledge-map-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/ops-runbook-agent.md](../../../00.agent-governance/skills/ops-runbook-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/policy-gate-agent.md](../../../00.agent-governance/skills/policy-gate-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/provider-model-evaluation.md](../../../00.agent-governance/skills/provider-model-evaluation.md) | Markdown reference |
-| [docs/00.agent-governance/skills/requirements-to-design-agent.md](../../../00.agent-governance/skills/requirements-to-design-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/security-audit.md](../../../00.agent-governance/skills/security-audit.md) | Markdown reference |
-| [docs/00.agent-governance/skills/style-validation.md](../../../00.agent-governance/skills/style-validation.md) | Markdown reference |
-| [docs/00.agent-governance/skills/task-breakdown-agent.md](../../../00.agent-governance/skills/task-breakdown-agent.md) | Markdown reference |
-| [docs/00.agent-governance/skills/test-authoring.md](../../../00.agent-governance/skills/test-authoring.md) | Markdown reference |
-| [docs/00.agent-governance/skills/workspace-audit-revalidation.md](../../../00.agent-governance/skills/workspace-audit-revalidation.md) | Markdown reference |
+| [.agents/README.md](../../../../.agents/README.md) | folder index |
+| [.agents/governance/agentic.md](../../../../.agents/governance/agentic.md) | Markdown reference |
+| [.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) | Markdown reference |
+| [.agents/governance/bootstrap.md](../../../../.agents/governance/bootstrap.md) | Markdown reference |
+| [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) | Markdown reference |
+| [.agents/governance/environment-constraints.md](../../../../.agents/governance/environment-constraints.md) | Markdown reference |
+| [.agents/governance/git-workflow.md](../../../../.agents/governance/git-workflow.md) | Markdown reference |
+| [.agents/governance/github-governance.md](../../../../.agents/governance/github-governance.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-absolute-file-link.md](../../../../.agents/governance/hooks/hookify.block-absolute-file-link.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-direct-main-push.md](../../../../.agents/governance/hooks/hookify.block-direct-main-push.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-gha-secrets-in-run.md](../../../../.agents/governance/hooks/hookify.block-gha-secrets-in-run.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-git-no-verify.md](../../../../.agents/governance/hooks/hookify.block-git-no-verify.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-plaintext-secret-compose.md](../../../../.agents/governance/hooks/hookify.block-plaintext-secret-compose.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.block-unpinned-gha-action.md](../../../../.agents/governance/hooks/hookify.block-unpinned-gha-action.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.enforce-docs-templates.md](../../../../.agents/governance/hooks/hookify.enforce-docs-templates.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.require-logical-commits-before-stop.md](../../../../.agents/governance/hooks/hookify.require-logical-commits-before-stop.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-branch-naming.md](../../../../.agents/governance/hooks/hookify.warn-branch-naming.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-conventional-commit.md](../../../../.agents/governance/hooks/hookify.warn-conventional-commit.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-docker-infra-stop.md](../../../../.agents/governance/hooks/hookify.warn-docker-infra-stop.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-force-push.md](../../../../.agents/governance/hooks/hookify.warn-force-push.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-governance-memory-edit.md](../../../../.agents/governance/hooks/hookify.warn-governance-memory-edit.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-hook-parity-edit.md](../../../../.agents/governance/hooks/hookify.warn-hook-parity-edit.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-korean-in-governance.md](../../../../.agents/governance/hooks/hookify.warn-korean-in-governance.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-parallel-doc-file.md](../../../../.agents/governance/hooks/hookify.warn-parallel-doc-file.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-pre-commit-manual.md](../../../../.agents/governance/hooks/hookify.warn-pre-commit-manual.md) | Markdown reference |
+| [.agents/governance/hooks/hookify.warn-stage-doc-edit.md](../../../../.agents/governance/hooks/hookify.warn-stage-doc-edit.md) | Markdown reference |
+| [.agents/governance/output-style.md](../../../../.agents/governance/output-style.md) | Markdown reference |
+| [.agents/governance/persona.md](../../../../.agents/governance/persona.md) | Markdown reference |
+| [.agents/governance/postflight-checklist.md](../../../../.agents/governance/postflight-checklist.md) | Markdown reference |
+| [.agents/governance/provider-capability-matrix.md](../../../../.agents/governance/provider-capability-matrix.md) | Markdown reference |
+| [.agents/governance/providers/README.md](../../../../.agents/governance/providers/README.md) | folder index |
+| [.agents/governance/providers/registry.yaml](../../../../.agents/governance/providers/registry.yaml) | YAML config |
+| [.agents/governance/quality-standards.md](../../../../.agents/governance/quality-standards.md) | Markdown reference |
+| [.agents/governance/sdlc.md](../../../../.agents/governance/sdlc.md) | Markdown reference |
+| [.agents/governance/stage-authoring-matrix.md](../../../../.agents/governance/stage-authoring-matrix.md) | Markdown reference |
+| [.agents/governance/standards.md](../../../../.agents/governance/standards.md) | Markdown reference |
+| [.agents/governance/task-checklists.md](../../../../.agents/governance/task-checklists.md) | Markdown reference |
+| [.agents/governance/workflows.md](../../../../.agents/governance/workflows.md) | Markdown reference |
+| [.agents/roles/ci-cd-engineer.md](../../../../.agents/roles/ci-cd-engineer.md) | Markdown reference |
+| [.agents/roles/code-reviewer.md](../../../../.agents/roles/code-reviewer.md) | Markdown reference |
+| [.agents/roles/doc-writer.md](../../../../.agents/roles/doc-writer.md) | Markdown reference |
+| [.agents/roles/drift-detector.md](../../../../.agents/roles/drift-detector.md) | Markdown reference |
+| [.agents/roles/eval-engineer.md](../../../../.agents/roles/eval-engineer.md) | Markdown reference |
+| [.agents/roles/hook-developer.md](../../../../.agents/roles/hook-developer.md) | Markdown reference |
+| [.agents/roles/iac-reviewer.md](../../../../.agents/roles/iac-reviewer.md) | Markdown reference |
+| [.agents/roles/incident-responder.md](../../../../.agents/roles/incident-responder.md) | Markdown reference |
+| [.agents/roles/infra-implementer.md](../../../../.agents/roles/infra-implementer.md) | Markdown reference |
+| [.agents/roles/qa-engineer.md](../../../../.agents/roles/qa-engineer.md) | Markdown reference |
+| [.agents/roles/rules-engineer.md](../../../../.agents/roles/rules-engineer.md) | Markdown reference |
+| [.agents/roles/security-auditor.md](../../../../.agents/roles/security-auditor.md) | Markdown reference |
+| [.agents/roles/skill-creator.md](../../../../.agents/roles/skill-creator.md) | Markdown reference |
+| [.agents/roles/workflow-supervisor.md](../../../../.agents/roles/workflow-supervisor.md) | Markdown reference |
+| [.agents/skills/adr-writing/SKILL.md](../../../../.agents/skills/adr-writing/SKILL.md) | Markdown reference |
+| [.agents/skills/adr-writing/agents/openai.yaml](../../../../.agents/skills/adr-writing/agents/openai.yaml) | YAML config |
+| [.agents/skills/change-review-execution/SKILL.md](../../../../.agents/skills/change-review-execution/SKILL.md) | Markdown reference |
+| [.agents/skills/change-review-execution/agents/openai.yaml](../../../../.agents/skills/change-review-execution/agents/openai.yaml) | YAML config |
+| [.agents/skills/ci-cd-patterns/SKILL.md](../../../../.agents/skills/ci-cd-patterns/SKILL.md) | Markdown reference |
+| [.agents/skills/ci-cd-patterns/agents/openai.yaml](../../../../.agents/skills/ci-cd-patterns/agents/openai.yaml) | YAML config |
+| [.agents/skills/code-review-dimensions/SKILL.md](../../../../.agents/skills/code-review-dimensions/SKILL.md) | Markdown reference |
+| [.agents/skills/code-review-dimensions/agents/openai.yaml](../../../../.agents/skills/code-review-dimensions/agents/openai.yaml) | YAML config |
+| [.agents/skills/compose-stack-agent/SKILL.md](../../../../.agents/skills/compose-stack-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/compose-stack-agent/agents/openai.yaml](../../../../.agents/skills/compose-stack-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/container-threat-modeling/SKILL.md](../../../../.agents/skills/container-threat-modeling/SKILL.md) | Markdown reference |
+| [.agents/skills/container-threat-modeling/agents/openai.yaml](../../../../.agents/skills/container-threat-modeling/agents/openai.yaml) | YAML config |
+| [.agents/skills/deployment-pipeline-design/SKILL.md](../../../../.agents/skills/deployment-pipeline-design/SKILL.md) | Markdown reference |
+| [.agents/skills/deployment-pipeline-design/agents/openai.yaml](../../../../.agents/skills/deployment-pipeline-design/agents/openai.yaml) | YAML config |
+| [.agents/skills/docker-compose-patterns/SKILL.md](../../../../.agents/skills/docker-compose-patterns/SKILL.md) | Markdown reference |
+| [.agents/skills/docker-compose-patterns/agents/openai.yaml](../../../../.agents/skills/docker-compose-patterns/agents/openai.yaml) | YAML config |
+| [.agents/skills/e2e-testing/SKILL.md](../../../../.agents/skills/e2e-testing/SKILL.md) | Markdown reference |
+| [.agents/skills/e2e-testing/agents/openai.yaml](../../../../.agents/skills/e2e-testing/agents/openai.yaml) | YAML config |
+| [.agents/skills/execution-plan-agent/SKILL.md](../../../../.agents/skills/execution-plan-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/execution-plan-agent/agents/openai.yaml](../../../../.agents/skills/execution-plan-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/incident-response/SKILL.md](../../../../.agents/skills/incident-response/SKILL.md) | Markdown reference |
+| [.agents/skills/incident-response/agents/openai.yaml](../../../../.agents/skills/incident-response/agents/openai.yaml) | YAML config |
+| [.agents/skills/infra-cross-validate/SKILL.md](../../../../.agents/skills/infra-cross-validate/SKILL.md) | Markdown reference |
+| [.agents/skills/infra-cross-validate/agents/openai.yaml](../../../../.agents/skills/infra-cross-validate/agents/openai.yaml) | YAML config |
+| [.agents/skills/infra-validate/SKILL.md](../../../../.agents/skills/infra-validate/SKILL.md) | Markdown reference |
+| [.agents/skills/infra-validate/agents/openai.yaml](../../../../.agents/skills/infra-validate/agents/openai.yaml) | YAML config |
+| [.agents/skills/knowledge-map-agent/SKILL.md](../../../../.agents/skills/knowledge-map-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/knowledge-map-agent/agents/openai.yaml](../../../../.agents/skills/knowledge-map-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/ops-runbook-agent/SKILL.md](../../../../.agents/skills/ops-runbook-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/ops-runbook-agent/agents/openai.yaml](../../../../.agents/skills/ops-runbook-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/policy-gate-agent/SKILL.md](../../../../.agents/skills/policy-gate-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/policy-gate-agent/agents/openai.yaml](../../../../.agents/skills/policy-gate-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/provider-model-evaluation/SKILL.md](../../../../.agents/skills/provider-model-evaluation/SKILL.md) | Markdown reference |
+| [.agents/skills/provider-model-evaluation/agents/openai.yaml](../../../../.agents/skills/provider-model-evaluation/agents/openai.yaml) | YAML config |
+| [.agents/skills/requirements-to-design-agent/SKILL.md](../../../../.agents/skills/requirements-to-design-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/requirements-to-design-agent/agents/openai.yaml](../../../../.agents/skills/requirements-to-design-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/security-audit/SKILL.md](../../../../.agents/skills/security-audit/SKILL.md) | Markdown reference |
+| [.agents/skills/security-audit/agents/openai.yaml](../../../../.agents/skills/security-audit/agents/openai.yaml) | YAML config |
+| [.agents/skills/style-validation/SKILL.md](../../../../.agents/skills/style-validation/SKILL.md) | Markdown reference |
+| [.agents/skills/style-validation/agents/openai.yaml](../../../../.agents/skills/style-validation/agents/openai.yaml) | YAML config |
+| [.agents/skills/task-breakdown-agent/SKILL.md](../../../../.agents/skills/task-breakdown-agent/SKILL.md) | Markdown reference |
+| [.agents/skills/task-breakdown-agent/agents/openai.yaml](../../../../.agents/skills/task-breakdown-agent/agents/openai.yaml) | YAML config |
+| [.agents/skills/test-authoring/SKILL.md](../../../../.agents/skills/test-authoring/SKILL.md) | Markdown reference |
+| [.agents/skills/test-authoring/agents/openai.yaml](../../../../.agents/skills/test-authoring/agents/openai.yaml) | YAML config |
+| [.agents/skills/workspace-audit-revalidation/SKILL.md](../../../../.agents/skills/workspace-audit-revalidation/SKILL.md) | Markdown reference |
+| [.agents/skills/workspace-audit-revalidation/agents/openai.yaml](../../../../.agents/skills/workspace-audit-revalidation/agents/openai.yaml) | YAML config |
 
 ### Runtime surfaces
 
@@ -174,6 +195,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/hooks/stop.sh](../../../../.claude/hooks/stop.sh) | script |
 | [.claude/hooks/user-prompt-submit.sh](../../../../.claude/hooks/user-prompt-submit.sh) | script |
 | [.claude/output-styles/hy-home.md](../../../../.claude/output-styles/hy-home.md) | Markdown reference |
+| [.claude/provider.md](../../../../.claude/provider.md) | Markdown reference |
 | [.claude/settings.json](../../../../.claude/settings.json) | JSON registry |
 | [.claude/skills/adr-writing/SKILL.md](../../../../.claude/skills/adr-writing/SKILL.md) | Markdown reference |
 | [.claude/skills/change-review-execution/SKILL.md](../../../../.claude/skills/change-review-execution/SKILL.md) | Markdown reference |
@@ -214,6 +236,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.codex/agents/skill-creator.toml](../../../../.codex/agents/skill-creator.toml) | source path |
 | [.codex/agents/workflow-supervisor.toml](../../../../.codex/agents/workflow-supervisor.toml) | source path |
 | [.codex/hooks.json](../../../../.codex/hooks.json) | JSON registry |
+| [.codex/provider.md](../../../../.codex/provider.md) | Markdown reference |
 
 ### Active stage docs
 
@@ -262,7 +285,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
-| [docs/02.architecture/decisions/0029-workspace-governance-authority.md](../../../02.architecture/decisions/0029-workspace-governance-authority.md) | Markdown reference |
 | [docs/02.architecture/decisions/0031-preserved-archive-record.md](../../../02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
 | [docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/descriptions/0001-gateway-architecture.md](../../../02.architecture/descriptions/0001-gateway-architecture.md) | Markdown reference |
@@ -1116,4 +1138,4 @@ Graphify output is advisory navigation context only. This index is generated fro
 - [LLM Wiki repository map](../0083-repository-map/README.md)
 - [generate-llm-wiki.py](../../../../scripts/knowledge/generate-llm-wiki.py)
 - [LLM Wiki maintenance guide](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
-- [Agent governance hub](../../../00.agent-governance/README.md)
+- [Agent governance hub](../../../../.agents/README.md)

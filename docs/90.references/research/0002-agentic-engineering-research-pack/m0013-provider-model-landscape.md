@@ -1,10 +1,10 @@
 ---
 title: "Reference: Provider Model Landscape at the Evidence Cutoff"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0013"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Provider Model Landscape at the Evidence Cutoff
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -380,6 +387,7 @@ all provider offerings.
 
 ## Scope Implications
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | Application and disposition                                                                                                              |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `agentic`      | Own the typed registry, renderer, and native-control parity; status axes must remain separate.                                           |
@@ -399,6 +407,7 @@ all provider offerings.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                        | Accessed                  | Class                    | Verification state                                                                                         |
 | --------------------------------------------------------------------------------------------- | ------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | [Anthropic models overview](https://platform.claude.com/docs/en/about-claude/models/overview) | 2026-08-08T16:18:04+09:00 | External mutable         | Original docs URL redirected here; HTTP 200; IDs, lifecycle, capability, context, and reasoning facts.     |

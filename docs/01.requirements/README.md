@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "requirements"
 ---
 
@@ -79,7 +79,7 @@ high-water를 낮추지 않는다.
   필수 `parent_ids: []`는 구조적 root를 표시한다.
 - 구현 방법이나 실행 순서를 요구사항으로 복사하지 않는다.
 - 비어 있는 분류를 위해 별도 요구사항 문서를 만들지 않는다.
-- 작성 의미와 역할 경계는 [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)을 따른다.
+- 작성 의미와 역할 경계는 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 따른다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 

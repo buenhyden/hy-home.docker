@@ -1,10 +1,10 @@
 ---
 title: "Reference: Task-Aware Agent Model Selection"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0002"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Task-Aware Agent Model Selection
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -359,6 +366,7 @@ does not evidence that an environment override was set here.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                                      | Accessed                  | Class             | Verification state                                                                                                                          |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Anthropic models overview](https://platform.claude.com/docs/en/about-claude/models/overview)                                                               | 2026-08-08T16:18:04+09:00 | External mutable  | HTTP 200 via canonical redirect; task-fit/lifecycle facts only.                                                                             |
@@ -367,7 +375,7 @@ does not evidence that an environment override was set here.
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                                                                | 2026-08-08T16:18:04+09:00 | External mutable  | HTTP 200; `model` and native configuration fields.                                                                                          |
 | Provider model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                                                                      | 2026-08-08                | Workspace tracked | Five profiles, 11 model rows, and separated status axes at Task 4 baseline.                                                                 |
 | Agent catalog contract (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                                                                         | 2026-08-08                | Workspace tracked | Fourteen role-to-profile assignments and evaluation owner.                                                                                  |
-| [Provider model evaluation function](../../../00.agent-governance/skills/provider-model-evaluation.md)                                            | 2026-08-08                | Workspace tracked | Source, native-schema, regression, and `needs_revalidation` gate.                                                                           |
+| [Provider model evaluation function](../../../../.agents/skills/provider-model-evaluation/SKILL.md)                                            | 2026-08-08                | Workspace tracked | Source, native-schema, regression, and `needs_revalidation` gate.                                                                           |
 | [Claude Code subagents reference](https://code.claude.com/docs/en/sub-agents)                                                                               | 2026-08-14T13:40:00+09:00 | External mutable  | HTTP 200; subagent model-resolution precedence, `effort` frontmatter, and the explicit no-per-subagent-thinking statement.                  |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                                                                | 2026-08-14T13:40:00+09:00 | External mutable  | Re-read; HTTP 200; source of the `model_reasoning_effort` five-value drift analysis.                                                        |
 | Agent catalog contract (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                                                                         | 2026-08-14                | Workspace tracked | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; 14 agents, 8-value `scopes:` enum, full role table re-derived line by line.   |

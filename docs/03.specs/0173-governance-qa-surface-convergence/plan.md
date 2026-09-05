@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.3.1"
+version: "0.4.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173-PLAN-0001"
 parent_ids:
@@ -14,571 +14,274 @@ created: "2026-09-05"
 
 # Governance and QA Surface Convergence Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for
-> a separately approved implementation. Steps use checkbox syntax; an unchecked
-> step is prospective, not evidence of execution.
-
-**Goal:** Plan a selective integration onto the user-fixed main baseline while
-allowing an empty `.agents/` directory, retaining direct canonical skill reads,
-and preserving both implementation histories without duplicate authority.
-
-**Architecture:** Stage 00 owns policy; Stage 99 owns document and lifecycle
-contracts. The target executable-composition owner is
-`.github/workflow-contract.yml`; `scripts/manifest.yaml` owns file inventory.
-Only native Claude/Codex surfaces are generated. An allowed empty `.agents/`
-root is not a role, skill, policy, or memory authority.
-
-**Tech Stack:** Python 3, PyYAML, Bash, Git, unittest, typed gate contracts,
-repository-native document validators, and static Docker Compose checks.
-
-**Spec:** `docs/03.specs/0173-governance-qa-surface-convergence/spec.md`
-
 ## Objective
 
-This revision replaces the old prospective sequence, not its historical evidence.
-Task 0001 through Task 0005 retain their actual RED/GREEN, review, and commit
-records. The prior Plan is recoverable at `5547e07a2`; do not re-execute its
-completed steps or use its shared-skill/transient-deletion instructions as the
-integration contract.
+Relocate reviewed common authority to a real repository-owned `.agents/` home,
+remove the former governance directory, and preserve native adapters, operational
+safety, document contracts and frozen execution evidence. This plan replaces the
+prospective integration/empty-root plan preserved at baseline `e5685b42c`.
+Completed Tasks and their evidence are not reopened or re-executed.
 
-The user subsequently authorized finishing this existing package, local main
-integration and safe feature cleanup without new Spec/Plan/Task documents or
-IDs. The latest approval explicitly includes adjusting the existing disposition
-policy and correcting the two remaining Stop/README defects with independent
-re-review. This supersedes the earlier planning-only checkpoint, not its
-historical evidence. No remote or runtime action is authorized.
-
-The rules-engineer cleared a generic typed divergent-branch handoff design.
-W1 must implement and verify its exact preservation guards before predecessor
-disposition. W4's independent bounded fixes can proceed while that contract is
-implemented; neither their focused success nor policy clearance is final
-integration acceptance.
-
-### Global constraints
-
-- Integration baseline: `c02fa282db30fa4576fa04bcd328a47fe7da8511`.
-- Feature checkpoint: `5547e07a2ef0b5a8d5b16c2d96af02167f46a8ab`, plus the
-  pre-existing task-owned working patch. Neither is a final green tree.
-- Common ancestor: `71da6654e2fa3def174b238ad309c92fe46e9dae`.
-- Preserve six suites: `agent-governance`, `document-contract`,
-  `document-graph`, `document-lifecycle`, `operations`,
-  `repository-integrity`.
-- Preserve profiles `changed` and `full`, required jobs
-  `validation-changed`/`validation-full`, `strict=true`, and app ID `15368`.
-- Keep main's direct Stage 00 skill loading and Codex
-  `native_skill_pattern: null`. Change only the whole-root prohibition:
-  absence or an empty real `.agents/` directory is permitted.
-- Do not restore `.agents/agents/`, `.agents/skills/`, generated
-  `.agents/README.md`, or a `.codex/skills/` substitute. Unknown contents are
-  preserved and reported for manual disposition, never automatically deleted.
-- Empty directories are not tracked by Git. Do not add a placeholder file,
-  unowned content, or a generator solely to force directory presence.
-- Preserve main's substantive metadata/schema/SDLC changes and independent
-  Compose selections; no whole-file "ours/theirs" resolution.
-- Keep all frozen archive bytes unchanged, including completed SPEC-0172 and
-  retired DATA-0068/0069/0073/0074 with Tombstones 0199-0202.
-- Keep Spec allocation at least high-water 174/next 175 and Tombstone allocation
-  at least high-water 202/next 203. Do not issue an ID in this planning turn.
-- No validator exception, parallel registry, credential access, global setting
-  change, service execution, push, PR, remote mutation, force operation, stash,
-  reset, or clean. Existing cleanup requests remain conditional on verified
-  integration and do not authorize discarding unmerged work.
+The latest user request authorizes local source, consumer, generator, test and
+policy changes, a local work branch, and normal scoped approval for protected
+writes. The subsequent user instruction authorizes local commits and safe
+follow-up verification. Push, merge, PR, deployment, secret access, global
+settings and installation remain outside scope. The requested target supersedes earlier
+`.agents` removal/empty-container direction. No additional permission follows
+from a role, skill, external reference or historical Task.
 
 ## Dependencies
 
-The current authorities to reconcile are REQ-0024/0026, AD-0027/0030,
-ADR-0029/0031, Stage 00 bootstrap/provider/documentation/quality/approval/workflow
-policies, Stage 99, and the two branch histories.
+- Baseline: local main `e5685b42c92039618ae86cca8736b6a425630221`, initially clean.
+- Work branch: `codex/0173-agent-governance-home`, created from that exact HEAD.
+- REQ-0024/0026, AD-0027/0030 and ADR-0029/0031 remain the existing owners.
+  Introduce the next registered ADR only for the changed authority-location
+  decision; preserve ADR-0029's decision body during legal supersession.
+- Task 0006 owns the per-source disposition, compatibility table, review and
+  actual execution results. This Plan owns prospective steps only.
+- Existing scripts remain executable owners. Stage 99 remains the document
+  machine-contract owner. Provider Registry remains translation data, not policy.
+- All 77 original common files were read and classified before movement. All
+  23 skills have explicit preconditions, inputs, procedure, outputs and failures;
+  ordinary policy/checklist/SDLC Markdown remains outside native skill discovery.
 
-The main baseline adds SPEC-0174 and changes SPEC-0172's draft follow-up.
-The feature already preserves a completed SPEC-0172. The earlier unqualified
-draft-to-archive proposal was withdrawn. The approved generic divergent-branch
-handoff now requires exact preservation and a verified receipt; ordinary
-disposition still requires registered terminal transitions.
+### Chosen architecture and alternatives
 
-The current root checkout exposes an empty read-only tmpfs at `.agents`.
-The old main whole-root check fails there while renderer parity passes.
-Do not remove/unmount it or hide it with an exemption. After W2 implements the
-explicitly requested empty-root contract, that real empty directory is a valid
-input; it is not evidence of native runtime acceptance.
+| Choice | Authority and loading | Safety / maintenance / navigation | Decision |
+| --- | --- | --- | --- |
+| Reviewed canonical relocation | One `.agents` source, native skill discovery, native provider adapters | Requires coordinated path/profile/loader transition; no duplicated bodies | Adopt within the user's requested direction after independent review |
+| Keep current Stage 00 sources | Existing direct reads and current checks remain | Does not meet requested canonical home or native skill route | Reject for this request |
+| Copy or link entire trees | Multiple policy roots or provider format aliasing | Ambiguous ownership, regeneration cycles and unsafe link boundaries | Reject |
 
-### Source selection and owned paths
+```text
+.agents/
+  README.md
+  governance/
+    <existing policy>.md
+    sdlc.md
+    hooks/<existing hook policy>.md
+    providers/README.md
+    providers/registry.yaml
+  roles/<existing role>.md
+  skills/<existing skill>/SKILL.md
+  skills/<existing skill>/agents/openai.yaml
+.claude/
+  provider.md
+  README.md                  # generated pointer
+  agents/<role>.md           # generated native roles
+  skills/<skill>/SKILL.md     # generated thin adapters
+  settings.json, hooks/, output-styles/  # existing native mechanics
+.codex/
+  provider.md
+  README.md                  # generated pointer
+  agents/<role>.toml         # generated native roles
+  hooks.json                 # existing native mechanics
+```
 
-| Unit | Future implementation owner | Exact primary surfaces |
-| --- | --- | --- |
-| W1 | doc-writer, independently reviewed by rules-engineer | SPEC-0173 Spec/Plan/Task 0006; current SPEC-0172/0174 packages; Stage 03/98 indexes; Stage 99 Registry; document-governance Spec/archive/lifecycle tests |
-| W2 | ci-cd-engineer, policy review first | Stage 00 provider/policy sources; agent-governance library; provider renderer; native surface tests and generated adapters |
-| W3 | ci-cd-engineer | workflow contract; gate libraries/runner; manifest/checker; relocated operation/examples and their existing tests |
-| W4 | hook-developer and doc-writer, separate diffs | event hook/routing tests; scripts README and existing generator guidance tests |
-| W5 | doc-writer | validated predecessor package disposition; current reference corrections; declared generator outputs and indexes |
-| W6 | qa-engineer plus independent reviewers | checks and Task 0006 evidence; no unrelated implementation |
+Optional rules, knowledge, prompts, workflows, evaluations, scripts and memory
+directories are not introduced without a distinct consumer. Normative workflow
+is `.agents/governance/workflows.md`; native JavaScript workflows are not adopted.
+All 14 role IDs, 23 skill IDs, model/effort/permission mappings and hook registration
+values stay unchanged. No `.codex/config.toml` is created solely for symmetry.
+
+### Load graph and contracts
+
+`AGENTS.md` explicitly instructs reading governance/bootstrap, `.codex/provider.md`
+and selected policy/role/skill plus the current Task. `CLAUDE.md` uses verified
+relative imports for the common bootstrap and `.claude/provider.md`; it does not
+import Codex instructions. The two native README outputs point to authored
+provider sources and never feed the renderer.
+
+Native SKILL frontmatter uses `name`, `description`, and `metadata` containing
+existing governance identity, owner, version, lifecycle and scope fields. Preserve
+all meaningful source fields through the native-profile contract. Codex's
+`agents/openai.yaml` sets `policy.allow_implicit_invocation: false`; Claude thin
+adapters set `disable-model-invocation: true`. No tool grants, dependency installer,
+server, memory or global skill copy is added. Explicit invocation metadata does
+not replace approval gates. Codex reads canonical `.agents/skills`; the Registry
+must distinguish canonical discovery from generated native skill output.
 
 ## Execution Sequence
 
-1. W1: Implement the approved identity-preservation rule and integration ledger.
-2. W2: Reconcile the allowed-directory/direct-skill policy and its consumers.
-3. W3: Integrate gate invariants and PostgreSQL operation ownership.
-4. W4: Perform separately authorized Stop and README correction units.
-5. W5: Close lifecycle handoff and regenerate only affected evidence.
-6. W6: Verify the final content and obtain independent acceptance.
+1. W1: Record suitability, exact baseline, all source dispositions and successor decision.
+2. W2: Replace canonical-home, skill-envelope and provider-rendering contracts with regressions.
+3. W3: Move document profiles, discovery, link resolution and knowledge indexing to the new home.
+4. W4: Cut over hook, evaluation, CI and root bootstrap consumers without widening execution.
+5. W5: Apply reviewed source moves, regenerate native/index outputs and remove the old home.
+6. W6: Verify final static behavior, preservation, runtime evidence limits and independent review.
 
-### W1: Identity decision and integration ledger
+### W1: Reviewed authority decision
 
-**Files:** Read both histories of
-`docs/03.specs/0172-document-contract-convergence/`,
-`docs/03.specs/0174-governance-qa-convergence/`,
-`docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`,
-`docs/99.templates/registry.json`,
-`scripts/lib/document_governance/spec_packages.py`,
-`scripts/lib/document_governance/archive.py`, and
-`scripts/lib/document_governance/lifecycle/contract.py`.
-Policy and machine owners are
-`docs/00.agent-governance/policies/documentation-protocol.md`,
-`docs/99.templates/contracts/document-frontmatter.schema.json`, Registry,
-`scripts/lib/document_governance/spec_packages.py`, and existing Spec-package
-and Registry tests. Record decisions in this package's Task 0006.
+- [ ] Record the latest user authorization and local baseline in Task 0006;
+  preserve every earlier dated record and replace only obsolete current receipt
+  claims and prospective directions.
+- [ ] Record every original source, purpose, destination, consumers, dependencies,
+  preserved contracts, approval effect and validation in that Task's migration
+  table. Missing or duplicate source/destination is a failure.
+- [ ] Compare official sources against Codex 0.140.0 and Claude Code 2.1.261.
+  Record syntax, discovery, invocation and enforcement as separate evidence.
+- [ ] Review proposed ADR-0032 without supersession metadata. On adoption under
+  the explicit user relocation request and actual independent review, transition
+  it to accepted, replace its proposal wording with the adopted decision and
+  actual review basis, and add supersedes ADR-0029. Transition ADR-0029 accepted to
+  superseded with reciprocal superseded_by ADR-0032, changing only lifecycle
+  metadata before its first preservation. Move those pre-preservation bytes to
+  Stage 98 superseded/02.architecture/decisions in the same reviewed change.
+  Preserve its decision body and all already-frozen records; no fabricated
+  terminal commit, signature, Tombstone or historical approval. Update live
+  Spec/Requirement/AD/Registry/index links to the effective successor.
+- [ ] Obtain separate read-only rules/code review of this exact design before
+  source/code implementation. Address findings within the requested scope.
 
-**Interfaces:** Consumes immutable baseline/feature objects and current Registry
-edges. Produces a user-approved path/identity/disposition ledger and
-acceptance-to-owner mapping; no implicit lifecycle permission.
+### W2: Canonical and provider contracts
 
-- [ ] Capture main, feature, worktree, staged and unstaged state again:
+Owned sources: `scripts/lib/agent_governance/agent_governance_contract.py`,
+`provider_surface_renderer.py`, provider Registry, and existing provider/core tests.
 
-```bash
-git rev-parse main HEAD
-git worktree list --porcelain
-git status --short
-git diff --check
-git diff --name-status c02fa282d HEAD
-git diff --name-status
-```
+- [ ] Constrain native fixture copies to exact tracked configuration inputs,
+  excluding local settings/memory. Read new canonical sources and authored native
+  provider documents from exact registered expected paths with bounded no-follow
+  reads, including task-owned untracked files; staging is not a prerequisite.
+- [ ] RED: valid populated canonical home currently fails; missing root, unknown
+  entry, symlink/FIFO, wrong skill name/metadata, implicit invocation and canonical
+  output injection must fail after migration.
+- [ ] Replace the empty-container contract with bounded no-follow canonical
+  inventory validation. Unknown source files are preserved and reported; never
+  quarantine or remove canonical inputs.
+- [ ] Load nested native skills and metadata; derive role procedure links from
+  loaded source paths. Validate exact role/skill inventory and native control files.
+- [ ] Restrict output roots to existing native surfaces. Reject source/output
+  cycles and foreign adapter inputs. Thin Claude adapters link to canonical bodies.
+- [ ] Retain source-link rebasing, query/fragment handling, read/output bounds,
+  atomic writes, descriptor identities, quarantine races and unknown-file guards.
+- [ ] GREEN: run the three existing provider/core modules after fixture hardening;
+  test two writes in isolated fixtures plus canonical source-byte preservation.
 
-- [ ] Inventory each c02 SPEC-0172/0174 Spec/Plan/Task obligation and assign its
-  still-current behavior to Stage 00/01/02/05 plus an integration acceptance
-  criterion in SPEC-0173. Keep source commit, blob, owner, created date and
-  full artifact ID. Obtain exact objects using:
+### W3: Document and knowledge consumers
 
-```bash
-git ls-tree -r c02fa282d -- docs/03.specs/0172-document-contract-convergence docs/03.specs/0174-governance-qa-convergence
-git ls-tree -r 5547e07a2 -- docs/98.archive/completed/03.specs/0172-document-contract-convergence
-git show c02fa282d:docs/99.templates/registry.json
-```
+Owned surfaces: Stage 99 Registry/schema/templates, document-governance library,
+metadata/link/lifecycle entrypoints, wiki generator and associated registered tests.
 
-- [ ] Resolve **SPEC-0172 through the approved branch-handoff rule**. The feature's completed
-  identity has no outgoing lifecycle edge. Do not reopen it, relabel main's
-  draft as completed/superseded, overwrite its completed archive, or allocate
-  SPEC-0175 merely to escape the conflict. Leave main's package and the existing
-  archive unchanged. Register typed `branch_integration_receipts` on Task only:
-  full source commit, original package path/ID, superseded preservation path,
-  distinct target package path/ID, and `historical-superseded` disposition.
-  Verify the exact source base, complete regular-file tree and byte equality,
-  absence from current Stage 03, immutable same-ID completed Spec, and one valid
-  target Task carrier. No per-ID or commit allowlist is permitted.
-- [ ] Before any eventual archive mutation, add isolated regression cases in
-  `tests/lib/document_governance/test_archive.py`,
-  `tests/lib/document_governance/test_identity_history.py`, and
-  `tests/lib/document_governance/test_spec_packages.py`:
-  reject terminal-ID reopening and unreceipted draft-to-archive shortcuts; preserve the
-  original completed body; prove every full package member's recovery.
-  Example negative invariant using the actual Registry:
+- [ ] RED: hidden canonical source discovery and valid relative links are currently
+  absent; old live README route and unknown native skill fields expose old contracts.
+- [ ] Register each new source exactly once, including the native skill envelope
+  and invocation metadata, without weakening common authored or frozen profiles.
+- [ ] Admit only the new canonical hidden root and remove old live route ownership.
+  Retain historical namespace readers needed for frozen identities and recovery.
+- [ ] Scan canonical outbound links and apply current-authority archive boundaries.
+  Existing frozen outbound-link handling remains unchanged; no redirect is added.
+- [ ] Update LLM Wiki input scopes/category, source templates and exact output owner.
+  Preserve secret, symlink, lockfile, private/dotfile and bounded-read exclusions.
+- [ ] GREEN: existing document tests plus new hidden discovery, retired-root,
+  malformed skill, link escape and wiki scope negative cases; official check modes.
 
-```python
-registry = json.loads((ROOT / "docs/99.templates/registry.json").read_text())
-edges = registry["lifecycles"]["spec"]["transitions"]
-self.assertEqual([], edges["completed"])
-self.assertNotIn("superseded", edges["draft"])
-self.assertIn("superseded", edges["active"])
-```
+### W4: Hooks, entrypoints and repository routing
 
-  Keep the lifecycle graph unchanged. Test current and completed-archive Task
-  receipt carriers, missing/duplicate carrier, wrong base/path/identity, invalid
-  target, changed/missing/extra/unsafe members, and ordinary terminal
-  preservation. The completed carrier is the unchanged receipt preserved after
-  atomic target completion, not current policy authority.
-- [ ] Freeze an exact per-path keep/merge/move/disposition ledger covering both
-  commit deltas and the existing WIP. Preserve both histories and future recovery
-  references; no rebase/squash or whole-side conflict selection. Agree how to
-  checkpoint each WIP logical unit before any Git merge; do not overwrite dirty
-  paths or hide them in stash. Execution uses the existing isolated feature
-  worktree, not direct main edits.
-- [x] Obtain explicit implementation approval and independent policy design clearance.
-  Proposed evidence commit: `docs(spec): approve bounded main integration`.
-  Stage only reviewed package evidence; do not commit rejected code as complete.
+Owned surfaces: hook_rules and event hook, evals, parity/report scripts, script
+manifest, semantic contract, workflow/labeler/CODEOWNERS and active navigation.
 
-### W2: Allow an empty directory without restoring duplicate authority
+- [ ] RED: missing configured policy directory must fail closed rather than
+  silently loading zero rules. Exercise new directory with independent known
+  rule count, deny/allow/error/root fixtures. Run the actual dispatcher for both
+  providers on missing/invalid policy and Python/evaluator errors; require deny
+  JSON or exit 2 so an outer exception handler cannot turn a loader failure into allow.
+- [ ] Move policy paths, source contexts, bootstrap strings and skill suggestions
+  through the reviewed mapping; preserve events, matchers, budgets and permissions.
+- [ ] Keep provider event conversion separate. Do not enable or trust new hooks,
+  run a native session with bypass flags, or alter user-local settings.
+- [ ] Keep hidden `.agents` changes in existing CI/document/security selection;
+  remove old active prefix routing, not tests of retired-root rejection.
+- [ ] Rebase current links/imports by resolved source/target paths. Historical
+  quotations retain dated meaning and current-owner context; frozen bytes stay exact.
+- [ ] GREEN: direct rule/core/eval/routing regressions and fresh changed-plan
+  inspection; verify no ignored local file was read by fixture setup.
 
-**Files:** Modify canonical sources first:
-`docs/00.agent-governance/providers/codex.md`,
-`docs/00.agent-governance/providers/registry.yaml`,
-`docs/00.agent-governance/policies/agentic.md`,
-`docs/00.agent-governance/policies/provider-capability-matrix.md`,
-`docs/00.agent-governance/policies/stage-authoring-matrix.md`,
-`docs/00.agent-governance/policies/approval-boundaries.md`,
-`docs/01.requirements/0024-agent-governance-standardization.md`,
-`docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
-and `docs/02.architecture/decisions/0029-workspace-governance-authority.md`.
-If an accepted ADR needs supersession rather than a compatible clarification,
-stop for that separate decision instead of silently rewriting its choice.
-Code owners:
-`scripts/lib/agent_governance/agent_governance_contract.py`,
-`scripts/operations/provider_surface_renderer.py`,
-`scripts/hooks/agent-event-hook.sh`.
-Tests:
-`tests/lib/agent_governance/test_agent_governance_contract.py`,
-`tests/validation/test_provider_native_surfaces.py`,
-`tests/validation/test_provider_surface_renderer.py`.
-Only affected `.claude/` and `.codex/` outputs are generated.
+### W5: Protected cutover and generated outputs
 
-**Interfaces:** One agent-governance library rule returns findings for the
-optional root and is consumed by governance validation and renderer check/write.
-Do not copy feature commit `5547e07a2` wholesale: its subtree-only assumption is
-not the new directory-without-projections contract.
+- [ ] Verify every old regular source hash still matches its inventoried baseline
+  and every destination is absent before applying the reviewed mapping. Abort on
+  drift or local-state collision. This is a single transition, not two authorities.
+- [ ] Use normal scoped approval for `.agents`/`.codex` source writes and native
+  regeneration. Do not unmount protection or widen trust/sandbox/global settings.
+- [ ] Apply content-specific edits, native envelopes and resolved relative links;
+  preserve policy meaning and English contract language. Remove original files
+  only when their mapped source exists and has been checked.
+- [ ] Regenerate via `python3 scripts/operations/provider_surface_renderer.py --write`,
+  then `--check`; run a second write and compare native/canonical byte inventories.
+- [ ] Regenerate affected LLM outputs via their official `--write` then `--check`;
+  do not edit generated output to satisfy a validator.
+- [ ] Remove only now-empty original directories with `rmdir`. Verify `lstat`
+  absence, current functional references zero, and classify every remaining old
+  string as historical evidence, historical grammar or a negative regression.
 
-- [ ] Add an empty-root acceptance test before changing the whole-root rule:
+### W6: Final evidence and review
 
-```python
-with tempfile.TemporaryDirectory() as directory:
-    root = pathlib.Path(directory)
-    copy_governance_fixture(root)
-    (root / ".agents").mkdir(exist_ok=True)
-    findings = contract.validate_repository(
-        root, contract.load_contract_bundle(root), "providers"
-    )
-    self.assertFalse(any(item.path.startswith(".agents") for item in findings))
-```
+- [ ] Run `git diff --check`, formal metadata/contracts/links/lifecycle checks,
+  provider/wiki drift checks and the focused changed-code regressions.
+- [ ] Inspect `run-ci-gate.py --profile changed --explain` on final paths and trace
+  indirect operations before actual execution. The baseline selected QuickWin and
+  template-security leaves implicitly consume real `.env` through Compose; this
+  request does not authorize that. Record BLOCKED/NOT_RUN precisely if still selected.
+- [ ] Use full only if current policy/impact requires it and its execution inputs
+  are authorized. Prior main full exit 10/Docker socket denial is historical
+  baseline evidence, not proof of an absent image or permission for a retry.
+- [ ] Verify all existing frozen hashes, monotonic IDs, no local-state changes,
+  only approved index/commit changes and native model/permission/event equality.
+- [ ] Attempt only supported, non-model local discovery with installed tooling;
+  filter results to repository paths. Paid invocation, hook trust and fresh-session
+  enforcement remain NOT_RUN without their specific authority and actual evidence.
+- [ ] Obtain independent policy/Python review of the exact final diff and record
+  each correction and verification. Commit the verified coupled source/consumer
+  transition using explicit task-owned paths. Keep the branch/workspace, with no
+  push, merge, PR, deployment or cleanup of historical working artifacts.
 
-  Run the library test on c02 behavior and record the retired-root RED finding.
-  Adapt the existing fixture copier to main's native-only surfaces, not to a
-  second shared projection.
-- [ ] Add file, symlink (including broken link), FIFO, nonempty root, forbidden
-  `agents`/`skills` child, and permission-denied cases. Absence and an empty
-  real directory pass; unreadable/unverifiable or nonempty roots fail without
-  following children or reading their contents. A read-only empty root also
-  passes. Use temporary input, never chmod/remove the host mount.
-- [ ] Implement the rule in the existing library with no-follow descriptor
-  operations. Distinguish missing root, directory, unsupported object and
-  enumeration failure. Inspect child names only; preserve unknown objects.
-  Both renderer modes call this same owner; write refuses before any generated
-  write/quarantine when the root fails validation.
-- [ ] Update the named current policy/architecture consumers to permit this
-  root without granting it authority. Keep Registry v2, native Claude skills,
-  direct Codex skill reads, `native_skill_pattern: null`, and no generated
-  `.agents/README.md`/shared skills. Do not introduce a placeholder or new
-  runtime README profile. Update the hook's whole-root edit warning to the new
-  empty-root/non-authority rule without changing Stop behavior in this unit.
-- [ ] Run RED/GREEN and then native projection generation and checks:
+### Follow-up after local commit
 
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract tests.validation.test_provider_native_surfaces tests.validation.test_provider_surface_renderer -v
-python3 scripts/operations/provider_surface_renderer.py --write
-python3 scripts/operations/provider_surface_renderer.py --check
-python3 scripts/validation/check-agent-governance-contract.py --section providers
-git diff --check
-```
-
-- [ ] Obtain independent code and policy review. Commit canonical source, tests,
-  and generated adapters atomically:
-  `fix(governance): allow empty agent directory with direct skills`.
-
-### W3: Select gate and operation improvements without reverting main
-
-**Files:** `.github/workflow-contract.yml`,
-`scripts/lib/gate/ci_gate_contract.py`,
-`scripts/lib/gate/github_workflow_contract.py`,
-`scripts/validation/ci_gate_runner.py`,
-`scripts/manifest.yaml`,
-`scripts/validation/check-script-manifest.py`,
-`scripts/operations/rehearse-postgres-logical-upgrade.sh`,
-`examples/operations/postgres-logical-upgrade/`;
-tests in `tests/lib/gate/`,
-`tests/validation/test_ci_gate_model.py`,
-`tests/validation/test_ci_gate_plan.py`,
-`tests/validation/test_ci_gate_execution_context.py`,
-`tests/validation/test_postgres_logical_upgrade_rehearsal.py`,
-`tests/validation/test_script_manifest.py`,
-`tests/lib/test_surface_ownership.py`, and
-`tests/lib/document_governance/lifecycle/__init__.py`.
-Remove the old `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` and
-`tests/fixtures/postgres-logical-upgrade/` only with their existing operation,
-manifest, runbook, test and workflow consumers cut over in that atomic change.
-Runbook: `docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md`.
-
-**Interfaces:** Preserve main's one Compose leaf and
-`setup.frontend-node-dependencies` identifier. Port feature's
-`canonical_invocation_key(root, invocation, profile=..., context=...)` and
-`ci-gate-invocation-duplicate` rejection; keep descriptor execution intact.
-
-- [ ] Exercise feature's existing canonical-key negative tests against the
-  pre-integration runner; record RED or exact already-present behavior. Use
-  resolved entrypoint plus normalized argv, public profile and execution context;
-  semantic modes remain explicit argv, not ambient environment.
-- [ ] Merge the workflow-owned public composition and inventory-only manifest
-  as a single gate slice. Preserve c02 Greeting permissions and unrelated
-  workflow fixes. Keep no-env independent Compose selection and one frontend
-  setup node; adapt feature's old Storybook node-ID assertions to main's ID.
-- [ ] Carry the reviewed transition contract: final sample-delivery operation is
-  active; transitioning rows require a distinct tracked successor, non-retain
-  disposition and nonblank `removal_condition`. Active rows omit the condition.
-  Do not restore a second composition registry.
-- [ ] Register the promoted lifecycle module exactly once and preserve its
-  discovery initializer. Verify every test module's reachability:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_plan.CiGateRunnerContractTests.test_every_public_plan_has_unique_canonical_invocations tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_every_test_module_is_reachable_from_the_full_profile -v
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/gate -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/validation -p 'test_ci_gate*.py'
-python3 scripts/validation/check-script-manifest.py
-```
-
-- [ ] Obtain independent gate review; commit `refactor(gate): integrate canonical invocation ownership`.
-- [ ] In a separate operation slice, preserve `f8ce954cc` with its relocation,
-  example bytes, `leaf.postgres-logical-upgrade-config` check-only route and
-  consumer cutover. Root discovery must remain:
-
-```bash
-SCRIPT_PATH="$(readlink -f -- "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd -P)"
-ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd -P)"
-```
-
-- [ ] Reproduce old held-descriptor failure only in the existing temporary
-  fixture, then run the actual corrected runner test and full operation owner:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v
-```
-
-  Require exit 0, `status=check-passed`, `cleanup_status=passed`, and no real
-  Docker service. Do not add source-only evidence as a substitute for the real
-  `execute_execution_plan` regression. Review and commit
-  `fix(operations): integrate verified PostgreSQL entrypoint`.
-
-### W4: Approved renewed bounded corrections
-
-**Files:** `scripts/hooks/agent-event-hook.sh`,
-`tests/validation/test_agent_governance_ci_routing.py`,
-`scripts/README.md`, `tests/validation/test_script_manifest.py`.
-The user's latest explicit approval renews these two named corrections and
-their independent re-review; it does not authorize unrelated fixes.
-
-**Interfaces:** Stop emits a blocking JSON result when dirty/error state cannot
-be cleared; README write instructions invoke the existing explicit write mode.
-
-- [x] Obtain explicit approval separately naming the downstream Stop byte-bound
-  and the remaining README write examples, plus independent re-review. Do not
-  classify these as automatically authorized by W1 integration.
-- [ ] Extend the existing fake-Git routing regression for both providers with
-  80 path rows that approach a legal relative PATH_MAX length:
-
-```python
-segments = "/".join(["x" * 200] * 18)
-porcelain = "\n".join(f"?? {segments}/file-{i:03d}.txt" for i in range(80))
-self.assertGreater(len(porcelain.encode("utf-8")), 131072)
-```
-
-  Feed this to the current fake-Git helper; require parseable blocking JSON,
-  no SessionEnd, and at most one changed aggregate. Add a multibyte path case
-  and retain malformed Git, timeout and retry tests. Witness RED before fixing.
-- [ ] Preserve feature's FD input and parser failure guard, 540-second gate
-  timeout plus five-second termination bound, both-provider retry guard, and
-  600-second Claude hook contract. Bound displayed path diagnostics to 6000
-  UTF-8 bytes before any remaining environment transport; bound the final
-  reason as well or send it over a descriptor. Preserve a nonempty explicit
-  truncation notice. Never let truncation produce an empty clean-state result.
-  A byte-aware display core can use:
-
-```python
-payload = "\n".join(paths[:80]).encode("utf-8")
-display = payload[:6000].decode("utf-8", errors="ignore")
-if len(payload) > 6000:
-    display += "\n[additional changed-path bytes omitted]"
-```
-
-  This is diagnostic display only: full dirty-state detection is not truncated.
-  Do not discard W2's revised directory warning while applying the hook slice.
-- [ ] Run the routing suite and independent review. Commit
-  `fix(hooks): bound completion diagnostics by bytes`.
-- [ ] In a separate documentation slice, change the maintenance entries for
-  `generate-audit-implementation-matrix.sh`,
-  `generate-security-automation-readiness.sh`, and
-  `generate-supply-chain-sample-service-summary.sh` to explicit `--write`.
-  The first audit “generate and check” example also needs `--write`; leave
-  read-only advisory/check listings unchanged. Exact executable examples:
-
-```bash
-bash scripts/validation/generate-audit-implementation-matrix.sh --write
-bash scripts/validation/generate-audit-implementation-matrix.sh --check
-bash scripts/validation/generate-security-automation-readiness.sh --write
-bash scripts/security/generate-supply-chain-sample-service-summary.sh --write
-```
-
-- [ ] Add a focused README contract test, scoped to the “Generated index
-  maintenance” row and audit refresh code block, so checking only DATA-0059/0061
-  cannot mask these omissions. Assert each exact command above in its write
-  context; verify the audit check command still exists. Witness RED, fix prose,
-  run the manifest test owner, and get independent documentation review.
-  Commit `docs(qa): correct remaining generator write routes`.
-
-### W5: Lifecycle closeout and derived evidence
-
-**Files:** Current SPEC-0174 Spec/Plan/Task and eventual matching package paths
-under `docs/98.archive/superseded/03.specs/0174-governance-qa-convergence/`;
-`docs/03.specs/README.md`, `docs/98.archive/README.md`,
-`docs/99.templates/registry.json`; Task 0006 promotion receipt.
-Reference source corrections: AUD-0019/0020/0026/0027/0030/0032 READMEs,
-REQ-0025, ADR-0028, AD-0028, scripts/tests READMEs.
-Do not overwrite main's additional metadata/SDLC work with these feature files.
-
-**Interfaces:** Consumes W1's approved identity decision and verified owner
-transfer. Produces registered terminal disposition, complete preserved packages,
-unchanged frozen bodies and fresh generated outputs.
-
-- [ ] SPEC-0172 disposition remains controlled by W1, not by this generic
-  closeout. Do not supply a fabricated route in its place.
-- [ ] For SPEC-0174, obtain real review/approval for closeout and use separate
-  registered edges; these are not retrospective approvals of old implementation:
-
-| Checkpoint | Spec | Plan | Task |
-| --- | --- | --- | --- |
-| A | draft → review | draft → approved | draft → ready |
-| B | review → approved | approved retained | ready retained |
-| C | approved → active | approved → active | ready → in-progress |
-| D, only after verified transfer | active → superseded | active → cancelled | in-progress → cancelled |
-
-  An active Plan requires an active Spec. Checkpoint B therefore leaves the
-  Plan approved; checkpoint C activates Spec, Plan and Task atomically. This
-  corrects the rejected sequence without weakening the existing state contract.
-  Check each nonterminal checkpoint before committing. Bind current owner
-  SPEC-0173 with reciprocal lineage where the profiles allow it. At D,
-  transition and full-package preservation are one atomic disposition; no
-  terminal documents remain in current Stage 03. Preserve the approved
-  terminal source bytes, not an edited frozen body. Keep c02 source objects
-  reachable as the earlier observation. Only W1's verified divergent-source
-  receipt permits nonterminal preservation; never claim unobserved acceptance
-  as completed.
-- [ ] Prove archive/lineage/identity behavior in isolated fixtures first.
-  If dual historical SPEC-0172 disposition or SPEC-0174 package-member rules
-  reject the proposed route, stop for a lifecycle decision; no new exception,
-  speculative ID, or alternate path. Commands:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive tests.lib.document_governance.test_identity_history tests.lib.document_governance.test_spec_packages -v
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
-python3 scripts/validation/check-document-corpus-lifecycle.py
-python3 scripts/validation/check-document-links.py --mode all
-```
-
-- [ ] Reconcile Registry max-issued values, current indexes, references and
-  promotion receipt atomically. Correct archive README wording to distinguish
-  the three Registry-frozen legacy migration ledgers from normally linted
-  authored migrations/tombstones; do not edit those frozen ledgers.
-- [ ] Preserve the feature's accepted current-vs-historical audit corrections,
-  but re-evaluate every current provider statement against W2 (no shared
-  skills). Do not treat past two-provider parity as current native acceptance.
-- [ ] Regenerate only changed-input outputs, in this order: provider native
-  projections; DATA-0059/0061 owner outputs; DATA-0065 audit matrix;
-  DATA-0078 security readiness; DATA-0079 supply-chain summary; DATA-0072 hook
-  parity if dispatch inputs changed; DATA-0076/0082 LLM Wiki.
-  Use each existing manifest-declared owner and explicit `--write`, followed
-  by `--check`. If inputs did not change, record the skip and run check mode.
-  Do not write authored `llms.txt`, excluded `llms-full.txt`, or Graphify
-  output by hand.
-- [ ] Review source/disposition and derived-output changes independently.
-  Use logical commits `docs(spec): preserve approved predecessor handoff`
-  and `chore(data): refresh integrated governance evidence`.
-
-### W6: Final verification and handoff
-
-**Files:** Task 0006 owns exact acceptance mapping, command outcomes, review
-findings, rollback references, and limitations. The Spec owns durable target
-behavior; none of the earlier candidate runs proves this integrated tree.
-
-**Interfaces:** Consumes accepted W1-W5 and committed executable entrypoints.
-Produces independently reviewed final-tree evidence, not deployment claims.
-
-- [ ] In Task 0006 map Spec acceptance 1-16 to W1-W6 and Stage 00/01/02/05
-  owners. Use observed PASS or justified SKIP; never a count-only policy or
-  candidate success copied from another tree.
-- [ ] Run focused suites, then source-derived freshness checks before the
-  heavy aggregate. Commit reviewed executable changes before descriptor
-  identity admission; do not bypass the tracked-object check.
-- [ ] Execute on final content. The latest minimum-check instruction replaces
-  separate repeat discoveries below with the canonical full profile's existing
-  leaf coverage. Run a direct focused check only for a changed integration
-  boundary or to diagnose the first failing leaf:
-
-```bash
-git diff --check
-python3 scripts/validation/run-ci-gate.py --profile full
-git status --short
-```
-
-  Run the canonical-key and full-profile reachability tests from W3 as well.
-  Scan current script/docs/template examples for forbidden basename prefixes,
-  shorthand Requirement IDs, old operation routes and shared generated skills.
-  Classify actual historical quotations separately; do not delete them by age.
-  No production script may read `tests/`; no generator runs write mode in a
-  validation aggregate.
-- [ ] Record first failure and stop at the applicable retry bound. Never rerun
-  unchanged heavy aggregates for reassurance. After evidence edits, regenerate
-  only affected derived outputs and verify their new content once.
-- [ ] Obtain independent code, Python and policy review for exact final diff
-  and evidence. A separate reviewer owns each verdict.
-- [ ] Only after green acceptance, invoke finishing-a-development-branch under
-  the user's current integration/cleanup instruction. Preserve recovery commits.
-  Merge reviewed feature commits into local main, resolve conflicts there under
-  the user's latest instruction, verify the result, and clean only fully
-  integrated feature state. Prepare for push without performing a remote push.
-  Reuse unchanged focused evidence and avoid duplicate heavy aggregates under
-  the user's minimum-check instruction; retain the final mandatory gate.
+1. Preserve the verified transition as one atomic local commit; disconnected
+   folder-only commits would break source, generated output and consumer paths.
+2. Recheck the committed tree's contracts and freshness. A clean local `changed`
+   profile selects no committed diff, so do not use it as proof of that commit.
+3. Review a clean isolated linked worktree for the two Compose baseline checks,
+   using tracked non-sensitive examples only and no copied local environment.
+   Execute only after inspecting the exact commands and available tools.
+4. Keep PostgreSQL image/runtime evidence and normal native discovery separate.
+   Do not replace their guarantees with synthetic fixtures, global-state bypass,
+   or a broad all-files wrapper that could install tools or start containers.
+5. Record actual follow-up results and remaining boundaries in Task 0006, then
+   commit that evidence separately. No remote integration is authorized.
 
 ## Risk and Rollback
 
 | Risk | Guard | Recovery |
 | --- | --- | --- |
-| Terminal SPEC-0172 reopened | W1 hard identity gate | Keep both existing histories untouched; request decision |
-| Main changes lost in wide merge | Per-path ledger and semantic review | Reviewed inverse patch or logical revert; no whole-side resolution |
-| Empty root becomes duplicate policy tree | W2 single rule and negative tests | Revert source/projection logical commit; preserve unknown contents |
-| Read-only root causes unsafe cleanup | Enumerate names without mutation | Report unverifiable state; never remove/unmount |
-| Stop appears clean after truncation | Dirty detection separate from byte-bounded display | Revert hook slice; completion remains blocked |
-| Gate coverage drops | All-module reachability and canonical uniqueness | Revert gate slice with consumer map |
-| Frozen evidence rewritten | Exact Git blob comparison and legal terminal disposition | Stop; restore only through approved recovery, never patch frozen bodies |
-| Stale generated data | One owner and explicit write/check | Regenerate from reviewed source or revert that logical output |
+| Source meaning lost | All-source disposition and before/after review | Restore only affected source/consumer slice from e568 baseline after review |
+| Skill gains implicit execution | Native explicit-invocation metadata and negative tests | Revert source/control/adapter slice together; no global disable |
+| Missing policy becomes zero rules | Fail-closed path errors and direct rule tests | Restore the registered policy path/core pair |
+| Canonical files treated as generated | Distinct source/output inventories and race guards | Stop, preserve exact paths and regenerate only reviewed native outputs |
+| Frozen record rewritten | Baseline hashes and existing recovery checks | Stop; no in-place frozen correction |
+| Protected write unavailable | Scoped normal approval; no protection bypass | Keep original authority until cutover can be completed |
+| Aggregate reads operating inputs | Inspect actual selected leaf graph | Record BLOCKED and run safe formal static checks separately |
 
 ## Verification
 
-Revision checks are metadata/profile, internal links, whitespace, and independent
-policy/code review. W1 requires a tested generic preservation contract before
-integration; W4 requires new RED/GREEN evidence and independent re-review.
-No validation exception is authorized. Run the full gate only on the final
-integrated content after focused findings have been resolved.
-
-Implementation acceptance is W6, not these planning checks. Preserve test counts
-as dated Task evidence, including pre-existing skips; never promote them into
-permanent policy. Hosted CI, remote protection, runtime, deployment and provider
-entitlement remain unverified.
+Task 0006 records commands, cwd, exit code, scope and PASS/FAIL/BLOCKED/NOT_RUN/N/A.
+A syntax or repository-contract pass is not discovery, invocation, permission
+or hook execution. The current session loaded the old bootstrap before migration;
+re-reading a new file is not a fresh-session startup test.
 
 ## Rulings
 
-- Existing SPEC-0173/Task 0006 owns integration planning; no new package or ID.
-- The current user direction changes the target policy to permit an empty
-  `.agents/` directory while retaining direct skill loading. It authorizes
-  implementing that bounded change as part of the approved integration.
-- W4 correction approvals are distinct from integration approval and from the
-  exhausted prior attempt. No agent handoff resets the retry bound.
-- W1's approved route is exact divergent-source preservation with a typed Task
-  receipt, not a lifecycle edge or ID-specific exception. Implementation and
-  negative tests must prove the route before any package is moved.
-- No `docs/superpowers/plans/` artifact is created; this co-located Plan is the
-  canonical execution design.
+- The latest explicit relocation request replaces the old empty `.agents` policy
+  and previous integration/cleanup plan, without weakening other approvals.
+- No new Spec/Plan/Task identity is needed. A successor ADR is a distinct durable
+  decision required by the existing authority contract.
+- Archived Tasks remain durable full-body evidence. Git history does not replace
+  their preservation and raw-string counts never justify their deletion.
+- No optional native feature, plugin, server, model or global configuration is
+  enabled by this relocation.
 
 ## Related Documents
 
 - [Specification](spec.md)
 - [Task 0006 evidence](tasks/tsk-0006-generated-evidence-and-final-verification.md)
-- [Task 0001 historical lifecycle evidence](tasks/tsk-0001-lifecycle-and-red-contracts.md)
-- [Task 0002 gate evidence](tasks/tsk-0002-gate-composition-convergence.md)
-- [Task 0003 operation evidence](tasks/tsk-0003-script-and-operation-ownership.md)
-- [Task 0004 fixture evidence](tasks/tsk-0004-test-and-fixture-convergence.md)
-- [Task 0005 provider evidence](tasks/tsk-0005-document-and-provider-residue.md)
 - [Stage 03 index](../README.md)

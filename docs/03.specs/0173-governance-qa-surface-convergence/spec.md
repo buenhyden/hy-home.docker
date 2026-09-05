@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.2.0"
+version: "0.3.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 artifact_id: "SPEC-0173"
 parent_ids:
@@ -12,8 +12,8 @@ parent_ids:
 - "REQ-0026"
 - "AD-0027"
 - "AD-0030"
-- "ADR-0029"
 - "ADR-0031"
+- "ADR-0032"
 supersedes:
 - "SPEC-0174"
 created: "2026-09-05"
@@ -23,51 +23,31 @@ created: "2026-09-05"
 
 ## Overview
 
-The repository has the intended two public validation profiles and a typed gate
-runner, but executable ownership is divided between
-`.github/workflow-contract.yml`, `scripts/manifest.yaml`, and runner-side
-admission tables. Different gate identifiers can therefore execute the same
-normalized command, completed migration evidence remains in current validation
-paths, and compatibility wrappers preserve interfaces whose underlying modes no
-longer exist.
-
-This change converges the gate, script, test, fixture, document-governance, and
-provider-projection surfaces around their current responsibilities. It removes
-completed migration residue without weakening validation, preserves historical
-identity recovery, and keeps Stage 00, Stage 03, Stage 90, and Stage 99 ownership
-distinct.
+The prior governance/QA convergence is integrated on local main. The latest
+request relocates reviewed common policy, roles and callable skills into a real
+repository-owned `.agents/` home while preserving native Claude/Codex adapters,
+Stage 99 machine contracts, executable owners and frozen execution evidence.
+The existing package remains the work owner; earlier completed Tasks retain
+historical outcomes rather than becoming current relocation evidence.
 
 ## Boundaries and Inputs
 
-- In scope: `.github/workflow-contract.yml`, `.github/workflows/ci-quality.yml`,
-  `.pre-commit-config.yaml`, `scripts/manifest.yaml`, the typed gate libraries
-  and runner, registered validators and generators, provider projection
-  configuration, hooks, tests, fixtures, current operator documentation, and
-  generated indexes affected by those paths.
-- In scope: valid forward lifecycle reconciliation for SPEC-0172 and retirement
-  of DATA-0068, DATA-0069, DATA-0073, and DATA-0074 after inbound-consumer and
-  recovery checks pass.
-- In scope: current-path and current-ID examples, test placement, fixture
-  ownership, public command reduction, and removal of compatibility branches
-  that have no current semantic consumer.
-- Preserve: the six public suite names, the `changed` and `full` public profiles,
-  the `validation-changed` and `validation-full` GitHub job names, `strict=true`,
-  GitHub Actions app ID `15368`, artifact identity high-water, and frozen archive
-  bodies.
-- Preserve: historical readers required to prove issued identity high-water,
-  tombstone inheritance, archive recovery, and immutable migration evidence.
-- Out of scope: dependency upgrades unrelated to a reproduced gate failure,
-  application behavior, service topology, live Compose execution, deployment,
-  provider entitlement mutation, remote branch-protection mutation, tag,
-  release, push, and pull request. The later user authorization permits local
-  main integration and this feature's cleanup only after verified acceptance.
-- Out of scope: secrets, credentials, certificates, user-global provider
-  settings, shell history, raw log databases, and edits to preserved archive
-  bodies.
-- Baseline: local `main` at
-  `71da6654e2fa3def174b238ad309c92fe46e9dae`, with cached `origin/main` at
-  `4c6d211129615eab372d720ebd209b6c27618c86` and a clean worktree when the
-  design was approved.
+- Baseline: local main `e5685b42c92039618ae86cca8736b6a425630221`, clean;
+  work branch `codex/0173-agent-governance-home`.
+- In scope: all former governance sources and their direct/indirect consumers,
+  provider/core contracts, Registry/schema/templates, hooks, tests, active links,
+  navigation, CI selection and affected registered generated outputs.
+- The latest explicit user request adopts relocation after suitability review
+  and replaces the earlier empty-container/direct-read restriction. It authorizes
+  normal scoped approval for protected `.agents` and `.codex` writes.
+- Preserve: existing role/skill IDs, permissions/model settings, six suites/two
+  profiles, required CI jobs, strict protection contract, Operations identity
+  routes, issued-ID high-water and all existing frozen archive bytes.
+- The subsequent user instruction authorizes local commits of the reviewed
+  relocation and continued review/execution of safe follow-up verification.
+- Out of scope: push, merge, PR, fetch/pull, deployment, live
+  Compose/service actions, credentials/environment contents, certificates,
+  global settings, new servers/plugins, model entitlement and hook trust changes.
 
 ## Behavior Contract
 
@@ -109,12 +89,12 @@ distinct.
 12. Completed target-surface migration snapshots cannot remain current
     validation authorities. Their historical evidence is retired through the
     registered lifecycle after all current consumers are cut over.
-13. Stage 00 remains the canonical role, skill, provider, permission, and hook
-    owner. Native `.claude/**` and `.codex/**` remain generated adapters.
-    Codex reads canonical Stage 00 skills directly. An absent or empty real
-    `.agents/` directory is allowed, but shared role/skill/README projections
-    and `.codex/skills/` are not restored. Nonempty or unverifiable roots fail
-    closed without deleting unknown contents.
+13. `.agents/governance`, `.agents/roles` and callable `.agents/skills` are the
+    canonical common sources. Native provider files remain adapters/mechanics.
+    All original governance files have an explicit reviewed disposition. The old
+    governance root has no remaining live reader, generator, route or directory.
+    Canonical skills have standard native entry metadata and explicit-invocation
+    controls; no implicit permission/tool/model expansion is introduced.
 14. A manifest transition has a different successor and a bounded removal
     condition. A self-successor cannot justify an indefinite transition state.
 15. Local configuration, tests, and generated parity do not prove Hosted CI,
@@ -123,22 +103,22 @@ distinct.
 
 ## Technical Approach
 
-First add negative tests for lifecycle/index disagreement, duplicate canonical
-invocations, divided executable ownership, production-to-test fixture access,
-legacy current-path admission, and unconsumed provider compatibility output.
-Before implementing those contracts, activate this Spec, its Plan, and the
-current Task through each registered lifecycle edge in separate reviewed
-commits; later Tasks activate only when their predecessor is complete.
-Move public suite and invocation data into the workflow contract and reduce the
-manifest to inventory metadata. Then cut consumers over before deleting wrappers,
-move operation entrypoints and reusable examples to their owning trees, split
-mixed tests, isolate historical readers, retire completed migration data, and
-regenerate only declared outputs.
+Revalidate the actual main baseline and preserve current work. Review all source
+bodies and a per-source disposition before moving files. Introduce the successor
+architecture decision through the existing ADR lifecycle. Replace the old
+empty-root check with strict canonical source ownership; coordinate native skill
+metadata, source/output boundaries, document discovery and link rebasing.
 
-Each independently reviewable slice ends with focused tests and a logical
-commit. The final aggregate runs only after generated output and links are
-fresh. No validator exception, allowlist, threshold reduction, or compatibility
-fallback is introduced to make the migration pass.
+Write failing focused regressions before changing validators, generators and
+hook path/error handling. Fix fixture copies that include ignored local state.
+Apply reviewed source, consumer and native output changes as one transition,
+then remove the empty original directories. Two generation passes must leave
+canonical bytes unchanged and yield a fixed native result. Keep historical
+strings and frozen bodies classified rather than changing history for grep zero.
+
+The follow-up authorizes reviewed local commits; remote/runtime limits remain. Run only
+checks whose actual inputs are authorized, recording blocked aggregates rather
+than changing their checks, environment or thresholds to obtain a pass.
 
 ## Interfaces and Data
 
@@ -185,7 +165,7 @@ def canonical_invocation_key(
   tests, and generators atomically.
 - Fixture movement can change rehearsal defaults. Compare bytes or parsed
   payloads before and after the move and update the operation, test, and runbook
-  in one commit.
+  in one reviewed change set.
 - Removing legacy grammar can break identity recovery. Keep full-history tests
   separate and prove the current classifier rejects the same legacy path that
   the history reader accepts as preserved evidence.
@@ -236,20 +216,22 @@ def canonical_invocation_key(
     divergent follow-up is preserved byte-for-byte under the approved generic
     branch-handoff rule, with a verified Task receipt and obligation transfer.
     SPEC-0174 follows registered transitions and full-package preservation.
-    No new Spec/Plan/Task or artifact ID is allocated; no current package is
-    dropped solely because Git can recover it.
+    No new Spec/Plan/Task is allocated; the successor authority ADR follows its
+    own monotonic allocation. No package is dropped solely because Git can recover it.
 13. DATA-0068, DATA-0069, DATA-0073, and DATA-0074 leave the current data index
     through registered lifecycle transitions. Their archived `README.md` bodies
     are byte-identical and Tombstones `tomb-DATA-0068`, `tomb-DATA-0069`,
     `tomb-DATA-0073`, and `tomb-DATA-0074` own their disposition without any
     frozen archive body edit.
-14. `.agents/agents/**`, `.agents/skills/**`, generated `.agents/README.md`,
-    and `.codex/skills/**` are absent. An empty real `.agents/` directory,
-    including a read-only one, passes the same library rule in renderer and
-    provider validation; native projections match renderer output.
-15. Focused tests, script manifest validation, metadata discovery, lifecycle
-    discovery, generated checks, `git diff --check`, and the canonical full gate
-    pass after all cutovers.
+14. All 77 original common files have a reviewed disposition; `.agents` is the
+    sole common authority with 14 unchanged role IDs and 23 explicit-invocation
+    skill packages. Native projections are deterministic consumers; old live
+    governance paths and `.codex/skills` substitutes are absent.
+15. Applicable focused tests, script manifest, metadata/lifecycle discovery,
+    generated checks and `git diff --check` pass after cutover. Inspect changed
+    selection and run its public gate only with authorized inputs; full is
+    conditional on current policy/impact. Required unexecuted checks are
+    explicitly BLOCKED or NOT_RUN and are never promoted to an aggregate PASS.
 16. Final evidence distinguishes local-executed, configured, repository-enforced,
     unverified runtime, unverified entitlement, and unverified remote state.
 
@@ -257,7 +239,7 @@ def canonical_invocation_key(
 
 - Requirements: REQ-0024 and REQ-0026.
 - Architecture: AD-0027 and AD-0030.
-- Decisions: ADR-0029 and ADR-0031.
+- Decisions: ADR-0032 and ADR-0031.
 - Execution: SPEC-0173-PLAN-0001 and SPEC-0173-TSK-0001 through
   SPEC-0173-TSK-0006.
 - Completed evidence: SPEC-0155, SPEC-0157, SPEC-0159, SPEC-0161, SPEC-0167,
@@ -267,21 +249,21 @@ def canonical_invocation_key(
 ## Open Questions
 
 No unresolved design choice blocks planning. External consumers of
-`.agents/agents/**`, current Hosted CI status, provider entitlement, and remote
+`.agents/roles/**`, current Hosted CI status, provider entitlement, and remote
 branch protection remain observation limits rather than implementation inputs.
 
 ## Operational Impact
 
-The planned change reduces local and Hosted validation duplication and makes
-rehearsal inputs discoverable outside the test tree. It does not start, stop, or
-reconfigure a service. Provider changes are limited to generated repository
-adapters and do not assert native runtime acceptance. Rollback is a normal
-logical commit revert; no reset, clean, force push, or archive-body rewrite is
+The planned relocation preserves the integrated gate and fixture ownership
+while aligning canonical sources with native skill discovery. It does not start,
+stop or reconfigure services. Provider changes include reviewed canonical skill
+metadata and thin native adapters; they do not assert runtime acceptance. Rollback is a normal
+reviewed restoration of the affected baseline slice; no reset, clean, force push, or archive-body rewrite is
 part of the plan.
 
 ## Related Documents
 
 - [Implementation plan](plan.md)
 - [Stage 03 index](../README.md)
-- [Workspace governance authority](../../02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Workspace governance authority](../../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - [Document lifecycle architecture](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)

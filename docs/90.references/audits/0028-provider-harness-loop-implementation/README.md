@@ -1,10 +1,10 @@
 ---
 title: "Reference: Provider Harness and Loop Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0028"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Provider Harness and Loop Implementation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -30,7 +37,7 @@ official source, its tracked workspace adoption, and active repository policy.
 
 ## Repository Role
 
-This is advisory provider-maintenance evidence. Stage 00 and provider runtime
+This is advisory provider-maintenance evidence. canonical agent governance and provider runtime
 files remain authoritative; the fixed model catalog remains bound to the
 2026-07-10 10:00 KST cutoff.
 
@@ -104,6 +111,7 @@ proof. Graphify was stale/advisory and was not used as authority.
 > Gemini native agents, settings, and hook wrappers were generated and
 > validator-backed. Live Gemini acceptance and interception remained unobserved,
 > so provider parity remained partial rather than absent.
+
 - Structural sync is depth 3, but it cannot validate native schema acceptance,
   complete hook interception, or account/model availability.
 - `PIC-08`, `PIC-09`, and `PIC-10` remain `Needs Revalidation` because the
@@ -126,8 +134,8 @@ The current tracked provider projection has two providers, Claude and Codex.
 Run the sole renderer directly with
 `python3 scripts/operations/provider_surface_renderer.py --check` or
 `python3 scripts/operations/provider_surface_renderer.py --write`.
-The shared `.agents/skills` projection is retained; the former shared
-`.agents/agents` compatibility projection is retired. These repository-local
+The authored `.agents/skills` packages are canonical; the former
+`.agents/agents` compatibility projection remains retired. These repository-local
 facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
@@ -150,9 +158,9 @@ discovery.
 - `Provider comparison research and official evidence ledger` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
 - `Provider model landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
 - Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
-- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md)
-- [Claude notes](../../../00.agent-governance/providers/claude.md)
-- [Codex notes](../../../00.agent-governance/providers/codex.md)
+- [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md)
+- [Claude notes](../../../../.claude/provider.md)
+- [Codex notes](../../../../.codex/provider.md)
 - Gemini notes (retired path: `00.agent-governance/providers/gemini.md`)
 
 ## Maintenance

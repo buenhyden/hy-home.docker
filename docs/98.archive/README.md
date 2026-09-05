@@ -18,10 +18,10 @@ Stage 98은 활성 스테이지를 떠난 문서를 보관합니다. 완료된 �
 history는 그 파일이 삭제 당시 문서와 동일함을 증명하는 근거로만 쓰입니다.
 
 이 README는 현재 archive 탐색과 작업 안내를 소유하며 보존 정책은
-[Stage 00](../00.agent-governance/policies/documentation-protocol.md#document-retention-and-retirement),
+[.agents](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement),
 경로·profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가 소유합니다.
 보존 기록은 현재 규칙이나 구현 지침을 소유하지 않습니다. 여기 있는 어떤
-문서도 `docs/00.agent-governance/`, `docs/01.requirements/`,
+문서도 `.agents/`, `docs/01.requirements/`,
 `docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`의 현재 규칙을
 덮어쓰지 않습니다.
 
@@ -118,12 +118,12 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
 기록에 남기고 보존 원문을 수정하지 않습니다.
 
 활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 링크할
-수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 Stage 00/01/02/05
+수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 .agents/01/02/05
 문서를 함께 연결해야 합니다. `retired/` 보존본, Tombstone, Migration은 현재
 권위의 의존성이 아니며 이 README 또는 관련 Migration을 통해 탐색합니다.
 
 ## Related Documents
 
-- [문서 보존 및 은퇴 정책](../00.agent-governance/policies/documentation-protocol.md)
+- [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)

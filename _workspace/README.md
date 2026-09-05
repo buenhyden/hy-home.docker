@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2026-03-05"
 ---
 
@@ -98,7 +98,7 @@ staging contract.
 ## Related Documents
 
 - [Staging tree contract](./repo-support/README.md)
-- [Subagent protocol](../docs/00.agent-governance/policies/agentic.md)
-- [Environment constraints](../docs/00.agent-governance/policies/environment-constraints.md)
-- [Task checklists](../docs/00.agent-governance/policies/task-checklists.md)
+- [Subagent protocol](../.agents/governance/agentic.md)
+- [Environment constraints](../.agents/governance/environment-constraints.md)
+- [Task checklists](../.agents/governance/task-checklists.md)
 - [Repository README](../README.md)

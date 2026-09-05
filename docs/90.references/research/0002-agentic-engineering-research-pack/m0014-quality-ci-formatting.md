@@ -1,10 +1,10 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Quality, CI, and Formatting
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -59,7 +66,7 @@ This Stage 90 reference is advisory analysis. It does not add or weaken a gate,
 install dependencies, execute the controlled all-files wrapper, change a
 coverage threshold, make desired checks remotely required, or authorize
 deployment. Canonical QA owners remain the tracked configurations, scripts,
-tests, workflow contract, workflow YAML, Stage 00 governance, and separately
+tests, workflow contract, workflow YAML, canonical agent governance governance, and separately
 observed remote state.
 
 ## Scope
@@ -365,6 +372,7 @@ is configuration, not formatting enforcement.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                    | Accessed                                            | Class                             | Verification state                                                                                                                                                                                                 |
 | ----------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [Prettier CLI](https://prettier.io/docs/cli)                                                                                              | 2026-08-08T17:45:01+09:00                           | External mutable                  | Verified official page; `--write`, `--check`, ignore, and exit semantics used only to distinguish configuration from execution.                                                                                    |
@@ -384,7 +392,7 @@ is configuration, not formatting enforcement.
 | [Repository-contract validation dependencies](../../../../scripts/requirements.txt)                                                       | 2026-08-14                                          | Workspace tracked                 | `PyYAML>=6.0,<7.0`, `markdown-it-py>=3.0,<4.0`, `html5lib>=1.1,<2.0` read directly; the `html5lib` pin is the source of the re-verified gap below.                                                                 |
 | [Pre-commit orchestrator pin](../../../../scripts/requirements-pre-commit.txt)                                                            | 2026-08-14                                          | Workspace tracked                 | `pre-commit==4.6.1`, a separate pinned dependency set from `scripts/requirements.txt`; distinguishes orchestrator-version parity from validation-dependency parity.                                                |
 | Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                                     | 2026-08-14                                          | Workspace tracked/local execution | Run directly today in this session's default interpreter at `ece3eda9`: `failures=1`, exactly the `AGC-DEPENDENCY-MISSING path=html5lib` governance-memory finding; confirmed by direct `import html5lib` failure. |
-| [GitHub governance](../../../00.agent-governance/policies/github-governance.md)                                                              | 2026-08-08                                          | Workspace tracked policy          | Local/CI/remote split, controlled wrapper boundary, and change-type evidence matrix.                                                                                                                               |
+| [GitHub governance](../../../../.agents/governance/github-governance.md)                                                              | 2026-08-08                                          | Workspace tracked policy          | Local/CI/remote split, controlled wrapper boundary, and change-type evidence matrix.                                                                                                                               |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                               | 2026-08-08                                          | Workspace tracked stale/advisory  | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                 |
 
 ## Scope Application
@@ -464,5 +472,5 @@ enforcement, runtime acceptance, and deployment evidence in separate fields.
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
 - [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

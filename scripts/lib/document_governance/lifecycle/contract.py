@@ -93,7 +93,7 @@ ACTIVE_CONSUMER_PATHS = (
     ":(top,glob).codex/**",
     ":(top,glob).github/**",
     ":(top,glob).rtk/**",
-    ":(top,glob)docs/00.agent-governance/**",
+    ":(top,glob).agents/**",
     ":(top,glob)docs/01.requirements/**",
     ":(top,glob)docs/02.architecture/**",
     ":(top,glob)docs/03.specs/**",
@@ -1109,7 +1109,7 @@ def _surface_class(path: str, mode: str, profiles: dict[str, object]) -> str:
         return "runtime"
     if suffix in {".container", ".service", ".socket"}:
         return "runtime"
-    if suffix == ".md" and (path.startswith("examples/") or path.startswith("docs/")):
+    if suffix == ".md" and (path.startswith(("examples/", "docs/", ".agents/"))):
         return "typed-example"
     if mode == "100755" or (
         path.startswith("scripts/")
@@ -2719,7 +2719,10 @@ def _tracked_corpus_paths(
             path = raw_path.decode("utf-8")
         except (ValueError, UnicodeDecodeError):
             raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
-        if not path.endswith(".md") or not path.startswith(target_prefixes):
+        if not path.endswith(".md") or (
+            path not in metadata.TARGET_MARKDOWN_FILES
+            and not path.startswith(target_prefixes)
+        ):
             continue
         if not _safe_path(path):
             raise _CorpusSafetyError(path, "corpus-markdown-path-invalid")
@@ -2834,7 +2837,9 @@ def _untracked_corpus_paths(
             path = raw_path.decode("utf-8")
         except UnicodeDecodeError:
             raise _CorpusSafetyError("corpus", "corpus-markdown-path-invalid") from None
-        if not path.startswith(target_prefixes):
+        if path not in metadata.TARGET_MARKDOWN_FILES and not path.startswith(
+            target_prefixes
+        ):
             continue
         if not _safe_path(path):
             raise _CorpusSafetyError(path, "corpus-markdown-path-invalid")

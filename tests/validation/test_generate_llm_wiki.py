@@ -26,9 +26,82 @@ def load_generator():
 
 
 class LlmWikiGeneratorTests(unittest.TestCase):
+    def test_tracked_unknown_canonical_path_is_not_read(self) -> None:
+        module = load_generator()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._fixture_repo(root)
+            unknown = root / ".agents/roles/private-note.md"
+            unknown.parent.mkdir(parents=True, exist_ok=True)
+            unknown.write_text("fixture sentinel\n")
+            subprocess.run(["git", "add", str(unknown)], cwd=root, check=True)
+            original = module._read_bounded_regular_path
+
+            def guarded(path, **kwargs):
+                self.assertNotEqual(unknown, path)
+                return original(path, **kwargs)
+
+            with mock.patch.object(
+                module, "_read_bounded_regular_path", side_effect=guarded
+            ):
+                selected = {item.path for item in module.collect_candidates(root)}
+            self.assertNotIn(unknown.relative_to(root).as_posix(), selected)
+
+    def test_untracked_inputs_are_limited_to_registered_canonical_governance(
+        self,
+    ) -> None:
+        module = load_generator()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self._fixture_repo(root)
+            registry = root / ".agents/governance/providers/registry.yaml"
+            registry.parent.mkdir(parents=True, exist_ok=True)
+            registry.write_bytes(
+                (ROOT / ".agents/governance/providers/registry.yaml").read_bytes()
+            )
+            admitted = (
+                ".agents/governance/bootstrap.md",
+                ".agents/skills/test-authoring/SKILL.md",
+                ".agents/skills/test-authoring/agents/openai.yaml",
+                ".codex/provider.md",
+            )
+            for relative in (
+                *admitted,
+                ".agents/private-note.md",
+                ".agents/roles/private-note.md",
+                ".codex/private.md",
+            ):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fixture\n")
+            selected = {item.path for item in module.collect_candidates(root)}
+            self.assertLessEqual(set(admitted), selected)
+            self.assertNotIn(".agents/private-note.md", selected)
+            self.assertNotIn(".agents/roles/private-note.md", selected)
+            self.assertNotIn(".codex/private.md", selected)
+            self.assertNotIn("docs/arbitrary-untracked.md", selected)
+
+    def test_canonical_governance_is_indexed_with_hidden_boundaries(self) -> None:
+        module = load_generator()
+        for path in (
+            ".agents/governance/bootstrap.md",
+            ".agents/roles/qa.md",
+            ".agents/skills/test-authoring/SKILL.md",
+            ".agents/governance/providers/registry.yaml",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(module.is_safe_candidate(path))
+                self.assertEqual("Agent governance", module.classify(path))
+        self.assertFalse(module.is_safe_candidate(".agents/.private"))
+        self.assertFalse(module.is_safe_candidate(".unknown/policy.md"))
+        self.assertFalse(module.is_safe_candidate("secrets/real-secret.txt"))
+
     def _fixture_repo(self, root: Path) -> None:
         tracked = {
-            ".agents/agent.md": "agent\n",
+            ".agents/governance/bootstrap.md": "agent\n",
+            ".agents/governance/providers/registry.yaml": (
+                ROOT / ".agents/governance/providers/registry.yaml"
+            ).read_text(),
             ".claude/agent.md": "claude\n",
             ".codex/config.toml": "codex\n",
             ".github/workflow.yml": "workflow\n",
@@ -137,14 +210,16 @@ class LlmWikiGeneratorTests(unittest.TestCase):
             candidates = generator.collect_candidates(root)
             selected = {candidate.path: candidate.category for candidate in candidates}
             # Canonical 4b44cfd8 wrapper allowlist: .sh but not .py; only
-            # .github/.claude/.codex hidden surfaces. The stage assertion moved
+            # native hidden surfaces plus canonical .agents governance. The stage assertion moved
             # off `docs/04.execution/` when Stage 04 was removed on 2026-08-29:
             # the generator stopped classifying it, but this fixture kept
             # writing it, so the test asserted a stage the taxonomy no longer
             # has. No gate runs this module, which is why it went unnoticed.
             self.assertNotIn("scripts/tool.py", selected)
             self.assertIn("scripts/knowledge/generate-llm-wiki.py", selected)
-            self.assertNotIn(".agents/agent.md", selected)
+            self.assertEqual(
+                "Agent governance", selected[".agents/governance/bootstrap.md"]
+            )
             self.assertEqual("Runtime surfaces", selected[".claude/agent.md"])
             self.assertEqual("Runtime surfaces", selected[".codex/config.toml"])
             self.assertEqual(

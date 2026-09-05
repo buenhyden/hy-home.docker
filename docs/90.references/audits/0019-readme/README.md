@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Implementation Audit References"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0019"
 parent_ids: []
@@ -15,6 +15,13 @@ observed_at: "2026-07-05"
 ---
 
 # Reference: Agentic Engineering Implementation Audit References
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 > implementation-status audit pack for the agentic engineering research baseline
 
@@ -134,7 +141,7 @@ remains a folder-index exception.
 The current derived distribution is 77 `Implemented`, 60 `Partial`, 13
 `Missing`, 2 `Not Applicable`, and 9 `Needs Revalidation`. The prior
 68/68/14/2/9 snapshot is historical. Promotions are limited to tracked
-Stage 00 contracts, strict provider projections, typed retry/stop loops,
+canonical agent governance contracts, strict provider projections, typed retry/stop loops,
 synthetic evaluator evidence, local routing, and controlled-wrapper
 implementation; native runtime acceptance, model entitlement, remote
 enforcement, CD, and live comparative model quality remain unpromoted.
@@ -160,7 +167,7 @@ historical evidence, not current remote truth.
 > 77/60/13/2/9 status distribution, and it made no live-provider, remote-control,
 > or deployment claim.
 
-Current correction: the [provider registry](../../../00.agent-governance/providers/registry.yaml)
+Current correction: the [provider registry](../../../../.agents/governance/providers/registry.yaml)
 lists two providers and five model records; the [agent-output evaluation fixture
 catalog](../../data/0064-agent-output-eval-fixtures/README.md) defines ten
 fixtures and fourteen regressions. Those current cardinalities do not change
@@ -169,7 +176,7 @@ this pack's historical criterion distribution.
 ### Contract and Evidence Boundary
 
 This audit consumes the Stage 99 metadata registry, the SDLC/common/README
-human contracts, the metadata checker, and Stage 00 authoring routes. It does
+human contracts, the metadata checker, and canonical agent governance authoring routes. It does
 not redefine their schemas or policies. Current implementation statements also
 separate tracked definitions, dated remote configuration observations, recent
 run evidence, and remote mutation; evidence in one class is not promoted into
@@ -188,7 +195,7 @@ another.
    eleven reports, 161 unique rows, and the complete Spec 123 schema.
 7. Regenerate and freshness-check the frontmatter semantic inventory after
    changing tracked target documents, metadata profiles, or the metadata parser.
-8. Preserve historical payloads and route contract changes to Stage 00/99;
+8. Preserve historical payloads and route contract changes to canonical governance and Stage 99;
    update audit wording only after tracked or dated read-only evidence changes.
 
 ### Evidence Freshness Boundary

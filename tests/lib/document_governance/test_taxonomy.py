@@ -110,12 +110,21 @@ ADR_TO_AD = {
     "ADR-0029": "AD-0027",
     "ADR-0030": "AD-0030",
     "ADR-0031": "AD-0030",
+    "ADR-0032": "AD-0027",
 }
 
 
 def tracked_paths(pathspec: str) -> list[str]:
     result = subprocess.run(
-        ["git", "ls-files", "--", pathspec],
+        [
+            "git",
+            "ls-files",
+            "--cached",
+            "--others",
+            "--exclude-standard",
+            "--",
+            pathspec,
+        ],
         cwd=ROOT,
         check=True,
         capture_output=True,
@@ -274,6 +283,10 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
         self.assertEqual(
             set(ADR_TO_AD),
             {metadata_for(path)["artifact_id"] for path in paths + preserved},
+        )
+        self.assertIn("ADR-0032", {metadata_for(path)["artifact_id"] for path in paths})
+        self.assertIn(
+            "ADR-0029", {metadata_for(path)["artifact_id"] for path in preserved}
         )
         for path in paths:
             with self.subTest(path=path):
@@ -508,6 +521,20 @@ class ActiveStageScopeTests(unittest.TestCase):
                 metadata_validator.TARGET_MARKDOWN_PREFIXES,
             ),
         )
+
+    def test_native_provider_files_are_exact_paths_not_directory_prefixes(self) -> None:
+        from scripts.lib.document_governance.metadata.profile import (
+            TARGET_MARKDOWN_FILES,
+            _normalized_target_path,
+        )
+
+        self.assertEqual(
+            {".claude/provider.md", ".codex/provider.md"}, set(TARGET_MARKDOWN_FILES)
+        )
+        for relative in TARGET_MARKDOWN_FILES:
+            self.assertTrue((ROOT / relative).is_file())
+            self.assertEqual(Path(relative), _normalized_target_path(relative))
+            self.assertIsNone(_normalized_target_path(relative + "/private.md"))
 
     def test_every_active_stage_prefix_names_a_directory_that_exists(self) -> None:
         for name, prefixes in self.active_scopes():

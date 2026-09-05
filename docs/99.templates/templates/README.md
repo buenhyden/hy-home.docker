@@ -1,10 +1,10 @@
 ---
 title: "Template Catalog"
-version: "2.0.2"
+version: "2.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "templates"
 ---
 
@@ -92,8 +92,8 @@ Replaced sources are recoverable through Git history.
    `__UPPER_SNAKE__` tokens instead.
 3. Keep the declared `type`; allocate an identity above the persisted
    high-water mark where the profile declares one.
-4. Select applicable checks through the Stage 00
-   [verification matrix](../../00.agent-governance/policies/quality-standards.md#5-change-type-verification-matrix).
+4. Select applicable checks through the canonical agent governance
+   [verification matrix](../../../.agents/governance/quality-standards.md#5-change-type-verification-matrix).
    Inspect the selected gate with `--explain` before execution; record an unsafe
    or unavailable leaf as DEFER with its exact reason. A full or all-files run
    still follows the Task scope and controlled-wrapper approval boundary.
@@ -105,4 +105,4 @@ template out of Git into current authoring.
 
 - [Stage 99 authority](../README.md)
 - [Registry](../registry.json)
-- [Documentation protocol](../../00.agent-governance/policies/documentation-protocol.md)
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)

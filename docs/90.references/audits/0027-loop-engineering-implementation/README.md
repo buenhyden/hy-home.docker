@@ -1,10 +1,10 @@
 ---
 title: "Reference: Loop Engineering Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0027"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Loop Engineering Implementation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -32,7 +39,7 @@ without treating provider executability as a repository evaluation contract.
 ## Repository Role
 
 The report supports later Stage 03/04 improvement work. It does not replace
-Stage 00 workflow rules, provider hooks, validation scripts, CI, or task review.
+canonical agent governance workflow rules, provider hooks, validation scripts, CI, or task review.
 
 ## Scope
 
@@ -65,6 +72,7 @@ and fixture checks. Graphify was stale/advisory and did not support any status.
 
 ## Audit Criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | LOOP-01 | Run a bounded observe/action loop and return evidence to a controller. | Subagent protocol defines supervisor/worker handoff, scoped execution, result reporting, and separate review; provider-native execution differs and `.agents` remains pointer-based. | Partial | 2 | Improve | Stage 00 workflow supervisor and subagent protocol | Keep task review ledger; native execution compatibility is a provider follow-up. | Inspect `subagent-protocol.md`, active plan, task evidence, and provider role surfaces. | High for governance; medium for cross-provider runtime behavior. |
@@ -85,6 +93,7 @@ and fixture checks. Graphify was stale/advisory and did not support any status.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap | Disposition | Canonical owner |
 | --- | --- | --- |
 | Provider hook/event native and live acceptance | Retain tracked semantic/hook parity; verify native execution only in separate approved scope. | Stage 00 provider owners and executing runtime owner |
@@ -110,7 +119,7 @@ requirements.
 - `Loop research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf)
 - [Agent-output fixtures](../../data/0064-agent-output-eval-fixtures/README.md)
 - Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
-- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
 - Task evidence
 
 ## Maintenance

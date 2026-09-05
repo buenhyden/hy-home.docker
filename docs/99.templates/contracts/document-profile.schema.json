@@ -157,7 +157,7 @@
           "required": ["kind", "owner"],
           "properties": {
             "kind": {
-              "enum": ["delegate-reference-members", "provider-owned-binding"]
+              "enum": ["delegate-reference-members", "provider-owned-binding", "native-skill-envelope"]
             },
             "owner": { "type": "string", "minLength": 1 }
           }

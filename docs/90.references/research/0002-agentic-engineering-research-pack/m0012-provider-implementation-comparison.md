@@ -1,10 +1,10 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.1.1"
+version: "1.1.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0012"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Claude and Codex Implementation Comparison
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -41,7 +48,7 @@ configuration, repository enforcement, and unverified runtime/remote state.
 
 This Stage 90 comparison is advisory. It does not change provider policy,
 declare live compatibility, or authorize adapter/hook/configuration changes.
-Stage 00 remains the canonical contract; provider-native files remain adapters.
+canonical agent governance remains the canonical contract; provider-native files remain adapters.
 
 ## Scope
 
@@ -92,6 +99,7 @@ Stage 00 remains the canonical contract; provider-native files remain adapters.
 
 ### Measured local adoption
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface             | Claude                                                                               | Codex                                                                                                                                                                                         | Shared/canonical state                                               | Proof limit                                                                                                              |
 | ------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Root instructions   | `CLAUDE.md` uses four `@` imports                                                    | `AGENTS.md` tells the agent to load four owners in three steps                                                                                                                                | Stage 00 files are common                                            | Claude transcludes; Codex prose requests tool loading. No live context inspection.                                       |
@@ -167,6 +175,7 @@ The columns below reproduce Spec 137's required semantic construction view.
 identifies behavior that should remain native instead of being normalized into
 false parity.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Semantic capability              | Provider-neutral contract                                    | Claude native                                                   | Codex native                                                                                                                           | Shared implementation                        | Translation required                                                                                                                             | Irreducibly provider-native                                           | Tracked state                                                                                                            | Execution/enforcement evidence                                   | Gap                                                                                                                                                                                                                                    |
 | -------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Instruction entry and precedence | Bootstrap, provider overlay, scope, JIT stage evidence       | `CLAUDE.md`, imports, hierarchy, `.claude/rules/`               | `AGENTS.md`/override hierarchy, root-to-CWD concatenation                                                                              | Stage 00 documents and concise root shims    | Render/import for Claude; explicit load sequence for Codex                                                                                       | Claude `@` transclusion; Codex fallback/size/trust rules              | Both shims tracked; no nested local rule files used                                                                      | Metadata/repo checks validate files and links                    | Codex does not automatically transclude the four Stage 00 bodies named in prose.                                                                                                                                                       |
@@ -186,25 +195,27 @@ false parity.
 
 ### The construction recipe: Stage 00's Canonical Adapter Model
 
-`providers/agents-md.md` §5 (re-read directly 2026-08-14) states the exact
-mechanism this workspace already uses to answer "what does it take to build
-one common environment, ruleset, and system across providers." It is a
-two-tier model, not a two-provider one — Claude, Codex, and Gemini all sit in
-Tier 2:
-
-- **Tier 1 — Stage 00 canonical catalog**: `agents/agents/` (roles),
-  `agents/functions/` (skills), and `contracts/provider-models.yaml`
-  (provider/model/event facts) are the only place a capability is defined.
-  The agent and function **name sets** defined there are authoritative, and
-  every provider adapter must expose exactly those name sets.
-- **Tier 2 — provider runtime adapters**: Claude exposes native Markdown
-  agents/skills, Codex exposes native TOML agents plus hook compatibility,
-  Gemini exposes native Markdown agents, settings, and one thin event-name
-  adapter. None of the three is canonical; each is a translation.
+> Historical evidence (not current authority; source: Git history): Adapter construction recorded on 2026-08-14; current owners are linked above.
+> `providers/agents-md.md` §5 (re-read directly 2026-08-14) states the exact
+> mechanism this workspace already uses to answer "what does it take to build
+> one common environment, ruleset, and system across providers." It is a
+> two-tier model, not a two-provider one — Claude, Codex, and Gemini all sit in
+> Tier 2:
+>
+> - **Tier 1 — Stage 00 canonical catalog**: `agents/agents/` (roles),
+>   `agents/functions/` (skills), and `contracts/provider-models.yaml`
+>   (provider/model/event facts) are the only place a capability is defined.
+>   The agent and function **name sets** defined there are authoritative, and
+>   every provider adapter must expose exactly those name sets.
+> - **Tier 2 — provider runtime adapters**: Claude exposes native Markdown
+>   agents/skills, Codex exposes native TOML agents plus hook compatibility,
+>   Gemini exposes native Markdown agents, settings, and one thin event-name
+>   adapter. None of the three is canonical; each is a translation.
 
 Five adapter rules make the recipe concrete and falsifiable rather than
 aspirational:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Rule              | What it requires                                                                                                                 | Enforcement in this workspace                                                                                                                                                       |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Name-set parity   | Agent/function name sets identical across Stage 00 and every active projection                                                   | `scripts/lib/agent_governance/agent_governance_contract.py` and `python3 scripts/operations/provider_surface_renderer.py --check`                                                   |
@@ -269,6 +280,7 @@ and, where it matters more, what it does not.
 This table applies the [scope application matrix](./m0015-scope-application-matrix.md)
 to provider construction explicitly.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | Provider-comparison implication                                                                      | Disposition / route                                                                            |
 | -------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `agentic`      | Owns semantic contracts and native adapter translations.                                             | Implemented definitions; close drift through Stage 00 plus renderer/tests, not this reference. |
@@ -294,6 +306,7 @@ All nine minimum official pages were reopened 2026-08-08
 detail not previously recorded. All returned HTTP 200 with no redirect and no
 stable revision identifier; every vendor row is external mutable.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | ID | Source | Verification |
 | --- | --- | --- |
 | C-HOOK | [Claude hooks](https://code.claude.com/docs/en/hooks) | Re-verified 2026-08-14: 31 events, 5 handler types, exact blocking/advisory split, 6 config scopes. |
@@ -310,10 +323,10 @@ stable revision identifier; every vendor row is external mutable.
 | G-AGENT | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
 | WS-CATALOG | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
 | WS-PROVIDER | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
-| WS-MATRIX | [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
+| WS-MATRIX | [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
 | WS-ADAPTER | `providers/agents-md.md` (retired path: `../../../00.agent-governance/providers/agents-md.md`) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
-| WS-CLAUDE | [Claude provider notes](../../../00.agent-governance/providers/claude.md) | Tracked mutable; stale uniform-high effort sentence identified. |
-| WS-CODEX | [Codex provider notes](../../../00.agent-governance/providers/codex.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
+| WS-CLAUDE | [Claude provider notes](../../../../.claude/provider.md) | Tracked mutable; stale uniform-high effort sentence identified. |
+| WS-CODEX | [Codex provider notes](../../../../.codex/provider.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
 | WS-GEMINI | Gemini provider notes (retired path: `../../../00.agent-governance/providers/gemini.md`) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
 | WS-GRAPH | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
 
@@ -338,6 +351,7 @@ semantic hook events including `SessionEnd`; Codex has six and routes them
 through one shared hook adapter. Current provider documentation exposes
 additional native capabilities, but only tracked mappings count as adopted.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Capability | Repository implementation | Evidence depth | Gap | Verification route |
 | --- | --- | --- | --- | --- |
 | Shared policy | Root adapters route into Stage 00 | Repository-enforced | None for ownership split | provider-surface contract |

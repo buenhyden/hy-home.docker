@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI for the typed Stage 00 agent-governance contract validator."""
+"""CLI for the typed canonical agent-governance contract validator."""
 
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Validate typed Stage 00 agent-governance contracts."
+        description="Validate typed canonical agent-governance contracts."
     )
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
     parser.add_argument(

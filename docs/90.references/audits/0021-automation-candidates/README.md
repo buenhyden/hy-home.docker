@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Automation Candidates"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0021"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Agentic Engineering Automation Candidates
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -106,7 +113,7 @@ treated as execution evidence.
 | Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [Compose profile coverage reference](../../data/0059-compose-profile-service-coverage/README.md), `scripts/operations/generate-compose-profile-service-coverage.sh` | Profile-to-service coverage snapshot is now generated and freshness-checked locally; future work can publish grouped summaries into CI or audit reports if useful. |
 | Tech-stack version sync | Implemented | `scripts/operations/sync-tech-stack-versions.sh`, `infra/tech-stack.versions.json`, [tech-stack version provenance](../../data/0061-tech-stack-version-provenance/README.md) | Drift severity and source provenance are generated and freshness-checked locally. |
 | Agent-output eval | Synthetic Repository Eval Implemented / Live Comparison Unproved | `loop research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `loop-engineering` leaf), Stage 04 evidence patterns, [agent-output eval fixtures](../../data/0064-agent-output-eval-fixtures/README.md), `scripts/validation/run-agent-output-eval-fixtures.sh`, `.github/workflows/ci-quality.yml` | Eleven exact fixtures, sixteen synthetic regressions, calibrated deterministic scorers, exact thresholds, local routing, and CI markers implement the repository semantic loop at depth 4; live or comparative model-quality scoring remains separately approval-gated. |
-| Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
+| Gap routing | Implemented | Stage 04 task evidence, audit gap tables, [documentation protocol](../../../../.agents/governance/documentation-protocol.md), `scripts/validation/recommend-gap-routing.sh` | Gap-to-stage suggestions are now available locally for text and path inputs; future work can decide whether to publish routing summaries into audit reports. |
 | Audit implementation matrix | Implemented | [audit implementation matrix](../../data/0065-audit-implementation-matrix/README.md), `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/check-repo-contracts.sh` | Audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals are generated and freshness-checked locally. |
 | Security maturity | Mapped / Readiness Snapshot Implemented / Partially Implemented | `.github/workflows/ci-quality.yml`, `security research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf), [security framework maturity coverage](../0031-security-framework-maturity/README.md), [security automation readiness](../../data/0078-security-automation-readiness/README.md) | SSDF/SLSA/OpenSSF Scorecard coverage and repo-local readiness are mapped; the scoped Storybook Next.js `npm audit` gate satisfies `SEC-AUTO-008`, while broad dependency SCA and container/image scanning remain separate gaps. |
 | Remote required-check configuration | Needs Revalidation / Dated Public Observation | GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [main protection historical record](../../../../.github/rulesets/main-protection.md) | The latest public observation records a failed run with 15 observed jobs at default commit `a897978f`; current authenticated protection, ruleset, environment, secret, and variable state is unknown. |
@@ -128,9 +135,11 @@ treated as execution evidence.
   The remaining highest-value gaps are live comparative model-quality eval, SBOM
   generation, provenance/attestation automation, Scorecard, and broader
   ecosystem/container vulnerability scanning.
+
 > Historical evidence (not current authority; source: Git history):
 > Native Gemini agents, settings, and hook wrappers were tracked and validated;
 > live runtime acceptance and interception were unproved.
+
 - Public remote workflow metadata is current only to the dated 2026-07-26
   observation. It records a failed 15-job run with unverified root cause;
   authenticated protection/ruleset/environment state and any enforcement
@@ -161,8 +170,8 @@ The current tracked provider projection has two providers, Claude and Codex.
 Run the sole renderer directly with
 `python3 scripts/operations/provider_surface_renderer.py --check` or
 `python3 scripts/operations/provider_surface_renderer.py --write`.
-The shared `.agents/skills` projection is retained; the former shared
-`.agents/agents` compatibility projection is retired. These repository-local
+The authored `.agents/skills` packages are canonical; the former
+`.agents/agents` compatibility projection remains retired. These repository-local
 facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
@@ -191,7 +200,7 @@ model evaluation, or security classification.
 - `Automation research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) - research criteria.
 - [scripts README](../../../../scripts/README.md) - current automation inventory.
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - current remote pipeline.
-- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - provider automation boundary.
+- [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) - provider automation boundary.
 - [Loop implementation audit](../0027-loop-engineering-implementation/README.md) - loop gaps.
 - [Harness implementation audit](../0025-harness-engineering-implementation/README.md) - harness gaps.
 - `Docker Compose infrastructure research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `docker-compose-infrastructure` leaf) - Compose/infrastructure criteria.

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Memory Hierarchy and Lifecycle"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0011"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Agent Memory Hierarchy and Lifecycle
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -54,10 +61,16 @@ privacy, size/freshness, and provider-native boundaries.
 
 ## Repository Role
 
-This Stage 90 reference does not become memory policy. The active contract
-remains `docs/00.agent-governance/memory/README.md`; current-state validation
-remains in `agent_governance_contract.py`; durable evidence remains in its
-canonical Stage 03/04/05 owner.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> This Stage 90 reference does not become memory policy. The active contract
+> remains `docs/00.agent-governance/memory/README.md`; current-state validation
+> remains in `agent_governance_contract.py`; durable evidence remains in its
+> canonical Stage 03/04/05 owner.
+
+The current repository adopts no shared governance memory root. Task-specific
+context and execution evidence belong to the active Spec Package Task; durable
+rules belong to [canonical governance](../../../../.agents/governance/bootstrap.md).
+This historical research does not authorize local or provider-global memory work.
 
 ## Scope
 
@@ -79,9 +92,11 @@ canonical Stage 03/04/05 owner.
 
 The exact tracked measurement was:
 
-```bash
-git ls-files 'docs/00.agent-governance/memory/*.md' | sort | xargs wc -l -c
-```
+> Historical evidence (not current authority; source: Git history): Recorded command at the document observation baseline.
+>
+> ```bash
+> git ls-files 'docs/00.agent-governance/memory/*.md' | sort | xargs wc -l -c
+> ```
 
 It found 11 Markdown files, 2,292 lines, and 1,232,922 bytes:
 
@@ -184,6 +199,7 @@ the 8 durable notes and the historical file have no automated check.
 
 ### Provider-native boundaries
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Concern              | Claude Code public capability                                                                                                | Codex public capability                                                                                                    | Local adoption/evidence boundary                                                                   |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | Cross-session memory | Auto memory writes a per-repository, machine-local `MEMORY.md` plus on-demand topic files.                                   | Config reference exposes generation, consolidation, use/injection, age, idle-time, unused-time, and raw-memory caps.       | No provider-private memory was inspected; tracked repo config does not prove either mechanism ran. |
@@ -222,18 +238,19 @@ Subagent memory depends on `autoMemoryEnabled`: when auto memory is off
 `memory` field has no effect and the subagent launches without the memory
 instructions or tool access.
 
-Two size regimes now coexist and must not be conflated: this repository's
-`current.md` bound (400 lines / 32 KiB, enforced by
-`agent_governance_contract.py`) and Claude's native `MEMORY.md` bound (200
-lines / 25 KiB, enforced by the Claude Code client, per-project or
-per-subagent). Neither bound is derived from the other; the repository
-bound is roughly double the provider bound in both dimensions, by
-repository policy choice rather than by inheriting the provider default.
-`project`-scoped subagent memory (`.claude/agent-memory/<name>/`) is a
-tracked-repository-adjacent location this repository's Memory contract does
-not currently govern, mention, or exclude — it is neither the
-`docs/00.agent-governance/memory/` handoff nor explicitly out of scope for
-it, which is named as a gap below.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> Two size regimes now coexist and must not be conflated: this repository's
+> `current.md` bound (400 lines / 32 KiB, enforced by
+> `agent_governance_contract.py`) and Claude's native `MEMORY.md` bound (200
+> lines / 25 KiB, enforced by the Claude Code client, per-project or
+> per-subagent). Neither bound is derived from the other; the repository
+> bound is roughly double the provider bound in both dimensions, by
+> repository policy choice rather than by inheriting the provider default.
+> `project`-scoped subagent memory (`.claude/agent-memory/<name>/`) is a
+> tracked-repository-adjacent location this repository's Memory contract does
+> not currently govern, mention, or exclude — it is neither the
+> `docs/00.agent-governance/memory/` handoff nor explicitly out of scope for
+> it, which is named as a gap below.
 
 ### Codex `memories.*` exact configuration fields (2026-08-14 reopen)
 
@@ -367,6 +384,7 @@ before this process can be treated as an operating control.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                          | Accessed                  | Class                    | Verification state                                                                                                                 |
 | --------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Governance Memory contract (retired path: `../../../00.agent-governance/memory/README.md`)                                     | 2026-08-11                | Workspace tracked        | Direct owner for advisory authority, privacy, retrieval, replacement, retention, and archive cues.                                 |

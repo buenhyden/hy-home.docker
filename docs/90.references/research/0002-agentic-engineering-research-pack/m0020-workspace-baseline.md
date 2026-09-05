@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "2.1.0"
+version: "2.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0020"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Agentic Engineering Workspace Baseline
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -51,7 +58,7 @@ exists at all.
 
 This Stage 90 reference preserves dated source-backed facts and explanatory
 context and owns current baseline interpretation within the research pack.
-Current policy remains in Stage 00 and Stage 05, lifecycle intent and execution
+Current policy remains in canonical agent governance and Stage 05, lifecycle intent and execution
 remain in Stages 01-04, runtime truth remains in tracked runtime owners, and
 remote state requires separate control-plane evidence.
 
@@ -127,6 +134,7 @@ All results use the 2026-08-14 re-derivation commit unless marked otherwise.
 Counts from `git ls-files` exclude ignored-local and untracked paths. The
 `Delta` column compares against the 2026-08-11 measurement.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Measurement                                | Derivation                                                |    Result | Delta |
 | ------------------------------------------ | --------------------------------------------------------- | --------: | ----- |
 | Tracked paths                              | `git ls-files \| wc -l`                                   |     1,673 | +1    |
@@ -161,6 +169,7 @@ every `—` row above is a genuine re-derivation rather than a forwarded copy.
 The 1,673 tracked paths decompose exactly as follows. This census is the
 denominator for any corpus proportion a later leaf computes.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Root            | Files | Character                                                   |
 | --------------- | ----: | ----------------------------------------------------------- |
 | `docs/`         |   980 | Nine numbered stages plus the corpus index.                 |
@@ -212,9 +221,10 @@ than an assumption.
 
 ### Documentation corpus
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Canonical surface                                             | Files | Interpretation                                                                           |
 | ------------------------------------------------------------- | ----: | ---------------------------------------------------------------------------------------- |
-| [Stage 00 governance](../../../00.agent-governance/README.md) |   110 | Policy, scopes, agents, functions, typed contracts, provider rules, Memory.              |
+| [Canonical governance governance](../../../../.agents/README.md) |   110 | Policy, scopes, agents, functions, typed contracts, provider rules, Memory.              |
 | [Stage 01 requirements](../../../01.requirements/README.md)   |    26 | Active product-intent corpus including its index.                                        |
 | [Stage 02 architecture](../../../02.architecture/README.md)   |    53 | 26 requirement-path files, 26 decision-path files, and the stage index.                  |
 | [Stage 03 specifications](../../../03.specs/README.md)        |    53 | 28 active Spec directories; file and directory counts answer different questions.        |
@@ -279,6 +289,7 @@ its own conformance is measured.
 Adapter file counts alone hide the load-bearing fact: role projection and
 function projection have different declared reach.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface    | Files | Composition                                                                     |
 | ---------- | ----: | ------------------------------------------------------------------------------- |
 | `.claude/` |    48 | 1 `CLAUDE.md`, 14 agents, 24 skills, 7 hook wrappers, 1 output style, settings. |
@@ -498,7 +509,7 @@ not a substitute for each leaf's own source and claim review.
 
 ### Workspace adoption environment and rules
 
-1. Route changes to the canonical owner named by Stage 00 or the lifecycle
+1. Route changes to the canonical owner named by canonical agent governance or the lifecycle
    stage; a Stage 90 recommendation is never the change owner.
 2. For a tracked workspace claim, cite the owner path, baseline commit, and a
    reproducible identifier or command. Re-measure rather than forward-copying a
@@ -528,6 +539,7 @@ promotion, private configuration, or secret hygiene.
 
 Current gaps, each paired with the observation that would close it:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap                                                                                      | First owner                       | Closing observation                                                                          |
 | ---------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------- |
 | Six persona scopes outside the enum; `architecture` admitted with functions but no agent | Stage 00 catalog owner            | A contract change, or a recorded decision that the enum is intentionally narrower.           |
@@ -554,6 +566,7 @@ The companion [scope matrix](./m0015-scope-application-matrix.md) is the normati
 scope-axis map for this pack. This baseline's own disposition is summarized
 below so a topic-first reader encounters all fourteen scopes.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | Baseline implication                                                                                                        |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `agentic`      | Direct: 3 typed contracts, 110 Stage 00 files, 56 role adapters, 48 skill projections, harness/loop/model counts.           |
@@ -573,6 +586,7 @@ below so a topic-first reader encounters all fourteen scopes.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
@@ -580,12 +594,12 @@ below so a topic-first reader encounters all fourteen scopes.
 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
 | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
 | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
-| [Persona protocol](../../../00.agent-governance/policies/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
+| [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
 | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed in both interpreters; results recorded verbatim above.                                                                                                                                                                    |
 | [Governance contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
 | [Workflow contract](../../../../.github/workflow-contract.yml)                                         | 2026-08-14 | Tracked mutable        | Newly cited. Parsed; 16 `job_roots`, 80 `gate_nodes`, 3 `profile_roots`, 8 pinned actions.                                                                                                                                                      |
 | [Branch-protection ruleset record](../../../../.github/rulesets/main-protection.md)                    | 2026-08-14 | Tracked mutable        | Newly cited. The file itself declares control-plane verification `unverified` and lists the same 16 checks.                                                                                                                                     |
-| [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)                 | 2026-08-14 | Tracked mutable        | Re-verified directly; Stage 90 remains advisory.                                                                                                                                                                                                |
+| [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                 | 2026-08-14 | Tracked mutable        | Re-verified directly; Stage 90 remains advisory.                                                                                                                                                                                                |
 | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                               | 2026-08-14 | External fixed         | Re-fetched; live. Published February 2022; explicitly leaves tool choice to the adopting organization.                                                                                                                                          |
 | [SLSA v1.1 provenance](https://slsa.dev/spec/v1.1/provenance)                                          | 2026-08-14 | External fixed         | Newly cited. Provenance describes the build process, not artifact properties; untrusted external parameters.                                                                                                                                    |
 | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; protocol cannot enforce its own principles.                                                                                                                                 |
@@ -601,6 +615,7 @@ It is held outside the table only so one long URL does not widen every row.
 
 ## Scope Application
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
 | --- | --- | --- | --- | --- |
 | agentic | applies | Use the Stage 00 authority sequence before agentic changes. | Read cited policy at the literal baseline. | No runtime activity observed. |
@@ -672,7 +687,7 @@ claims, or authorize provider, deployment, release, or remote mutation.
 
 ## Maintenance
 
-Re-measure this document when tracked path sets, Stage 00 typed registries,
+Re-measure this document when tracked path sets, canonical agent governance typed registries,
 stage corpus routes, workflows, scripts, template families, Compose paths, or
 the twenty-leaf pack contract changes. Preserve the baseline commit and dated
 command result when interpreting an older count, and state the delta and its
@@ -689,6 +704,6 @@ unit.
 - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-- [Agent governance hub](../../../00.agent-governance/README.md)
+- [Agent governance hub](../../../../.agents/README.md)
 - [Dated RES-0085 assessment and recovery evidence](../0085-workspace-engineering-main-baseline-assessment/README.md)
 - [Research category router](../README.md)

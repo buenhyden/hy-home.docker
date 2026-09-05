@@ -305,9 +305,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.profiles = current_profiles()
-        cls.spec_path = pathlib.Path(
-            "docs/03.specs/0001-residue-fixture/spec.md"
-        )
+        cls.spec_path = pathlib.Path("docs/03.specs/0001-residue-fixture/spec.md")
         required_sections = cls.profiles["_registry"].profiles["spec"][
             "required_sections"
         ]
@@ -478,9 +476,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                     )
 
     def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
-        path = pathlib.Path(
-            "docs/00.agent-governance/policies/documentation-protocol.md"
-        )
+        path = pathlib.Path(".agents/governance/documentation-protocol.md")
         text = (ROOT / path).read_text(encoding="utf-8")
         record = metadata.Record(
             path,

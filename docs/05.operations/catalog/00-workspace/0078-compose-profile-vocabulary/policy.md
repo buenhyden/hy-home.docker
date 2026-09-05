@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -178,4 +178,4 @@ bash scripts/operations/generate-compose-profile-service-coverage.sh --check
 
 - [Infrastructure optimization governance](../0006-infrastructure-optimization-governance/policy.md)
 - [Developer environment](../0002-developer-environment/guide.md)
-- [Environment constraints](../../../../00.agent-governance/policies/environment-constraints.md)
+- [Environment constraints](../../../../../.agents/governance/environment-constraints.md)

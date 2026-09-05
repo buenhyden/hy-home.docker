@@ -1,13 +1,16 @@
 ---
-title: "{{TITLE}}"
-version: "0.1.0"
-type: "governance/skill"
-status: "draft"
-owner: "{{OWNER}}"
-updated: "{{UPDATED}}"
-function_id: "{{FUNCTION_ID}}"
-scope: "{{SCOPE}}"
-owner_agent: "{{OWNER_AGENT}}"
+name: "{{FUNCTION_ID}}"
+description: "{{DESCRIPTION}}"
+metadata:
+  title: "{{TITLE}}"
+  version: "0.1.0"
+  type: "governance/skill"
+  status: "draft"
+  owner: "{{OWNER}}"
+  updated: "{{UPDATED}}"
+  function_id: "{{FUNCTION_ID}}"
+  scope: "{{SCOPE}}"
+  owner_agent: "{{OWNER_AGENT}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->

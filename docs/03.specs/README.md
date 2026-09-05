@@ -1,10 +1,10 @@
 ---
 title: "03.specs"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "specs"
 ---
 
@@ -84,7 +84,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 6. Validate metadata, lifecycle, links, implementation alignment, and the
    registered Gate profile.
 7. Complete and preserve the package only after promotion, recovery, and
-   inbound-consumer checks. Follow the [SDLC](../00.agent-governance/sdlc.md)
+   inbound-consumer checks. Follow the [SDLC](../../.agents/governance/sdlc.md)
    for clarify, analyze, implementation, and verification order.
 
 ### Package Lifecycle
@@ -96,7 +96,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
   `Verification Evidence` 한 곳에 기록합니다.
 - 완료 package의 Spec·Plan·Task는 Stage 98의 해당 보존 경로로 이동합니다.
   Git recovery만을 근거로 실행 본문을 삭제하거나 frozen 내용을 다시 쓰지
-  않습니다. 철회와 완료의 처분 기록은 [문서 보존 정책](../00.agent-governance/policies/documentation-protocol.md#document-retention-and-retirement)을 따릅니다.
+  않습니다. 철회와 완료의 처분 기록은 [문서 보존 정책](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)을 따릅니다.
 
 ### Role Contract
 
@@ -112,7 +112,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Operations](../05.operations/README.md)
-- [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Document Registry](../99.templates/registry.json)
 - [Spec template](../99.templates/templates/specs/spec.template.md)
 - [Plan template](../99.templates/templates/specs/plan.template.md)

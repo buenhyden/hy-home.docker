@@ -1,10 +1,10 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.1.1"
+version: "1.1.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0006"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Document Metadata and Lifecycle
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -44,7 +51,7 @@ unexercised or legacy-partial without proposing changes to the contracts.
 
 This Stage 90 reference is advisory. The current machine owner is the
 [Stage 99 Registry](../../../99.templates/registry.json), consumed by
-`scripts/validation/check-document-metadata.py`. Stage 00 owns authoring and
+`scripts/validation/check-document-metadata.py`. canonical agent governance owns authoring and
 approval; the current Stage 03 Task owns execution evidence. Stage 98 preserves
 frozen bodies and separate disposition records. Dated measurements below do not
 authorize a metadata change, lifecycle transition, migration, or runtime action.
@@ -179,6 +186,7 @@ Historical table: 2026-08-14 lifecycle survey; current fields and paths are owne
 
 > Historical evidence (not current authority; source: Git history):
 > Observation boundary: 2026-08-14 lifecycle and override description.
+>
 > ```text
 > draft -> active -> completed -> superseded
 >                   \----------> superseded
@@ -221,7 +229,7 @@ is particularly limited here because its report predates the current baseline.
 ### Archive and retention boundary
 
 Current preservation and disposition follow the
-[Stage 00 documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md#document-retention-and-retirement)
+[Canonical governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 and [Stage 98 index](../../../98.archive/README.md). Registered frozen payloads
 remain unchanged; Tombstone and Migration records do not embed their bodies.
 Age or counts may prompt review but cannot authorize disposition.
@@ -322,7 +330,7 @@ and, where it matters more, what it does not.
 | [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
 | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
 | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
-| [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
+| [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
 | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
 | Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
 | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |

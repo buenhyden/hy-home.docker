@@ -97,6 +97,8 @@ secrets/SENSITIVE_ENV_VARS.md
 !.opencode/skills/.gitkeep
 
 .claude/settings.local.json
+.claude/agent-memory-local/
+CLAUDE.local.md
 
 
 volumes/

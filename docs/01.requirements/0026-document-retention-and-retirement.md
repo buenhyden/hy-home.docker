@@ -1,10 +1,10 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "requirements"
 artifact_id: "REQ-0026"
 parent_ids: []
@@ -45,7 +45,7 @@ created: "2026-09-01"
 - **REQ-0026-FR-0003**: 등록된 check는 Tombstone이 없는 package 제거를
   거부합니다. 해당 package를 가리키는 link의 존재 여부와 무관합니다.
 - **REQ-0026-FR-0004**: 아직 현재 의미를 갖는 obligation, decision, structure,
-  procedure는 그것을 담고 있던 문서가 은퇴하기 전에 canonical Stage 00, 01,
+  procedure는 그것을 담고 있던 문서가 은퇴하기 전에 canonical 공통 Agent 거버넌스, 01,
   02, 05 owner로 이동합니다.
 - **REQ-0026-FR-0005**: 이 workspace에 구현된 모든 capability는 Stage 01
   Requirement owner 하나와 Stage 02 Description 또는 ADR owner 하나를 가지며,
@@ -103,7 +103,7 @@ created: "2026-09-01"
 - Tombstone과 함께 제거된 package는 대응하는 `retired/` frozen copy가 있고,
   Tombstone의 recovery commit이 정규 Git blob으로 해석되며, 두 기록의 원래
   경로가 일치할 때만 통과합니다.
-- 보존 규칙은 Spec Package를 적재하지 않고 Stage 00에서 읽을 수 있습니다.
+- 보존 규칙은 Spec Package를 적재하지 않고 `.agents/`에서 읽을 수 있습니다.
 - `completed` status를 가진 Spec Package 중 `plan.md` 또는 Task를 보유한
   package가 하나도 없습니다.
 - completed Spec이 transient Plan/Task의 현재 의미와 증거를 먼저 흡수했고,
@@ -114,11 +114,11 @@ created: "2026-09-01"
 
 ## Traceability
 
-- [문서 보존 및 은퇴 정책](../00.agent-governance/policies/documentation-protocol.md)
+- [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0031 보존 기록으로서의 아카이브](../02.architecture/decisions/0031-preserved-archive-record.md)
 
 ## Related Documents
 
-- [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)

@@ -1,0 +1,54 @@
+---
+name: "security-audit"
+description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings."
+metadata:
+  title: "security-audit"
+  version: "1.1.0"
+  type: "governance/skill"
+  status: "active"
+  owner: "@buenhyden"
+  updated: "2026-09-06"
+  function_id: "security-audit"
+  scope: "security"
+  owner_agent: "security-auditor"
+---
+
+# security-audit
+
+## Preconditions
+
+Invoke this procedure explicitly. Invocation does not select a role or grant the
+owning role's permissions. Use the already selected role's permission profile and
+approved Task scope; route to the owner when incompatible.
+
+The exact change boundary, security contract, trust assumptions, and read-only authorization must be known.
+
+## Inputs
+
+- Exact change boundary and security contract.
+- Threat model, dependency/workflow metadata, secret boundaries, and validation evidence.
+
+## Procedure
+
+1. Trace exposed inputs, privileges, credentials, data flows, dependencies, and execution sinks affected by the change.
+2. Reproduce plausible weaknesses using safe static or approved local checks and distinguish exploit paths from policy hardening.
+3. Rank findings by impact and reachability, cite evidence, and assign remediation or residual-risk ownership.
+
+## Outputs
+
+- Severity-ranked security findings with evidence and remediation direction.
+
+## Gates
+
+- Every finding cites exact evidence.
+- Secret values and prohibited sensitive payloads are absent from output.
+
+## Failure Handling
+
+Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
+
+## Related Documents
+
+- [Security auditor](../../roles/security-auditor.md)
+- [Container threat modeling](../container-threat-modeling/SKILL.md)
+- [Security scope](../../governance/quality-standards.md)

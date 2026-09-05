@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 ---
 
 # docs
@@ -15,7 +15,7 @@ updated: "2026-09-05"
 
 `docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
-현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 05.operations`입니다. Plan과 Task는 별도 stage가 아니라 소유 패키지 안의 `03.specs/{number:4}-{slug}/plan.md`와 `03.specs/{number:4}-{slug}/tasks/`에 함께 놓입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `98.archive`, `99.templates`를 사용합니다.
+현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 05.operations`입니다. Plan과 Task는 별도 stage가 아니라 소유 패키지 안의 `03.specs/{number:4}-{slug}/plan.md`와 `03.specs/{number:4}-{slug}/tasks/`에 함께 놓입니다. 보조 문서 공간으로 `90.references`, `98.archive`, `99.templates`를 사용합니다. 공통 Agent 거버넌스는 문서 stage 밖의 [`.agents/`](../.agents/README.md)가 소유합니다.
 
 ## Audience
 
@@ -46,7 +46,6 @@ updated: "2026-09-05"
 
 ```text
 docs/
-├── 00.agent-governance/        # AI Agent 실행 정책, provider 계약, scope, rule, runtime catalog
 ├── 01.requirements/            # 제품/시스템 요구사항
 ├── 02.architecture/            # 아키텍처 설명과 결정 기록
 │   ├── descriptions/
@@ -104,14 +103,14 @@ docs/
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
+- Agent 전용 문서(`.agents/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
 - `docs/03.specs/**`의 leaf 문서는 영어로 작성합니다. 여기에는 같은 패키지 안의 `plan.md`와 `tasks/**`가 포함됩니다.
 - `docs/05.operations/catalog/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
 | Surface | Language Rule |
 | --- | --- |
-| `00.agent-governance/` | English-only governance, provider, rule, scope, and memory contracts |
+| `../.agents/` 및 native `provider.md` | English-only governance, role, skill, and provider contracts |
 | `01.requirements/` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
 | `02.architecture/` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
 | `03.specs/` | English-only technical specifications and contracts |
@@ -126,7 +125,7 @@ docs/
 ## Documentation Contract
 
 [Stage 99](99.templates/README.md) owns all document profiles, paths, lifecycle,
-identifiers, and registered templates. [Stage 00](00.agent-governance/README.md)
+identifiers, and registered templates. [canonical agent governance](../.agents/README.md)
 owns authoring behavior and approval boundaries. This index is navigation only.
 
 ## Cross-link Rules
@@ -135,9 +134,9 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
-- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [Stage 00 승인 경계](00.agent-governance/policies/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
+- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
 - `completed/`와 `superseded/` 보존본은 역사적 증거로 직접 인용할 수 있지만,
-  같은 문맥에서 현재 Stage 00/01/02/05 소유자를 함께 연결해야 합니다.
+  같은 문맥에서 현재 공통 Agent 거버넌스 또는 Stage 01/02/05 소유자를 함께 연결해야 합니다.
   `retired/`, Tombstone, Migration은 현재 권위의 의존성이 아니며 Stage 98
   README를 통해 탐색합니다.
 
@@ -187,7 +186,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 ## Related Documents
 
-- [00.agent-governance/README.md](00.agent-governance/README.md)
+- [Agent governance README](../.agents/README.md)
 - [01.requirements/README.md](01.requirements/README.md)
 - [02.architecture/README.md](02.architecture/README.md)
 - [03.specs/README.md](03.specs/README.md)

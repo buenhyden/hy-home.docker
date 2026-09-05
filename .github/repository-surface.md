@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2026-02-14"
 ---
 
@@ -38,7 +38,7 @@ authority. It owns no policy of its own.
 - Owned: the inventory below, and the mapping from each definition to its
   canonical owner and its verification command.
 - Not owned: GitHub governance policy, which lives in
-  [github-governance.md](../docs/00.agent-governance/policies/github-governance.md);
+  [github-governance.md](../.agents/governance/github-governance.md);
   gate composition, which lives in
   [workflow-contract.yml](./workflow-contract.yml); server-side branch
   protection, which lives in the GitHub project settings and is only proposed
@@ -90,7 +90,7 @@ python3 scripts/validation/check-github-workflow-contract.py
 ## How to Work in This Area
 
 1. Change the canonical owner first. Edit
-   [github-governance.md](../docs/00.agent-governance/policies/github-governance.md)
+   [github-governance.md](../.agents/governance/github-governance.md)
    when the behavior itself changes → the policy states the new rule.
 2. Declare the change in [workflow-contract.yml](./workflow-contract.yml) when
    it adds, removes, or reroutes a job or gate node → the contract names the
@@ -108,9 +108,9 @@ maintainer in GitHub project settings; this repository cannot apply it.
 
 ## Related Documents
 
-- [Canonical GitHub governance](../docs/00.agent-governance/policies/github-governance.md)
+- [Canonical GitHub governance](../.agents/governance/github-governance.md)
 - [Local main-protection proposal](./rulesets/main-protection.md)
-- [Agent governance overview](../docs/00.agent-governance/README.md)
-- [Current Stage 00 task checklist](../docs/00.agent-governance/policies/task-checklists.md)
-- [Workspace governance authority](../docs/02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Agent governance overview](../.agents/README.md)
+- [Current canonical agent governance task checklist](../.agents/governance/task-checklists.md)
+- [Workspace governance authority](../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - [Repository README](../README.md)

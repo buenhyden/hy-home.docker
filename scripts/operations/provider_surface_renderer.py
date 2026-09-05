@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render deterministic Claude and Codex adapters from canonical Stage 00 sources."""
+"""Render deterministic Claude and Codex adapters from canonical agent governance sources."""
 
 from __future__ import annotations
 
@@ -32,8 +32,13 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
     load_agent_governance,
     render_findings,
     validate_contract_bundle,
-    validate_optional_agent_directory,
+    validate_canonical_agent_home,
     ContractBundle,
+    GOVERNANCE,
+)
+
+from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    _run_git as run_bounded_git,
 )
 
 
@@ -90,7 +95,7 @@ def load_catalog(root: pathlib.Path) -> Catalog:
     state = load_agent_governance(root)
     findings = validate_contract_bundle(root, ContractBundle(state))
     if findings:
-        raise ValueError("canonical Stage 00 sources are invalid")
+        raise ValueError("canonical agent governance sources are invalid")
     return Catalog(state.roles, state.skills)
 
 
@@ -143,7 +148,7 @@ def _rebase_links(
 
 
 def _description(role: RoleRecord) -> str:
-    return f"Canonical {role.scope} role for {role.agent_id}; owned by Stage 00."
+    return f"Canonical {role.scope} role for {role.agent_id}; owned by canonical agent governance."
 
 
 def _yaml_scalar(value: str) -> str:
@@ -221,15 +226,15 @@ def _codex_agent(
 ) -> bytes:
     selection = _selection(state, role, "codex")
     body = _rebase_links(_body(role.source_text), role.source_path, output)
+    skills = {skill.skill_id: skill for skill in state.skills}
     procedures = "\n".join(
-        f"- `docs/00.agent-governance/skills/{skill_id}.md`"
-        for skill_id in role.skill_ids
+        f"- `{skills[skill_id].source_path}`" for skill_id in role.skill_ids
     )
     instructions = (
         f"{_marker(role.source_path, comment='hash')}\n\n{body}"
         "\n## Required Procedures\n\n"
         "Read the following canonical files explicitly before applying the role. "
-        "These are repository-relative source paths, not native skill-picker registrations.\n\n"
+        "These repository-relative files are the canonical skill sources; explicit invocation is required.\n\n"
         f"{procedures}\n"
     ).rstrip()
     values = {
@@ -246,13 +251,17 @@ def _codex_agent(
 
 
 def _skill(skill: SkillRecord, output: pathlib.PurePosixPath) -> bytes:
-    body = _rebase_links(_body(skill.source_text), skill.source_path, output)
+    target = posixpath.relpath(skill.source_path.as_posix(), output.parent.as_posix())
     return (
         "---\n"
         f"name: {_yaml_scalar(skill.skill_id)}\n"
-        f"description: {_yaml_scalar(f'Canonical {skill.scope} procedure for {skill.skill_id}; owned by {skill.owner_agent}.')}\n"
+        f"description: {_yaml_scalar(skill.description)}\n"
+        "disable-model-invocation: true\n"
         "---\n\n"
-        f"{_marker(skill.source_path)}\n\n{body}"
+        f"{_marker(skill.source_path)}\n\n"
+        f"# {skill.skill_id}\n\n"
+        f"Read [the canonical {skill.skill_id} skill]({target}) before applying it.\n"
+        "Follow its preconditions, procedure, gates, and failure handling.\n"
     ).encode()
 
 
@@ -293,7 +302,7 @@ def render_all(
     state = load_agent_governance(source_root)
     bundle_findings = validate_contract_bundle(source_root, ContractBundle(state))
     if bundle_findings:
-        raise ValueError("canonical Stage 00 sources are invalid")
+        raise ValueError("canonical agent governance sources are invalid")
     records: list[RenderRecord] = []
     providers_by_id = {item.provider_id: item for item in state.provider_records}
     for role in state.roles:
@@ -330,6 +339,16 @@ def render_all(
         source = pathlib.PurePosixPath(str(projection["source"]))
         title = f"{provider.title()} Runtime Route"
         records.append(RenderRecord(provider, path, _pointer(title, source, path)))
+    paths = [item.path for item in records]
+    if len(paths) != len(set(paths)) or any(
+        path.is_absolute()
+        or ".." in path.parts
+        or path.parts[0] not in {".claude", ".codex"}
+        or path.parts[:2] == (".codex", "skills")
+        or path in {record.adapter_path for record in state.provider_records}
+        for path in paths
+    ):
+        raise ValueError("unsafe or duplicate native output path")
     return tuple(sorted(records, key=lambda item: item.path.as_posix()))
 
 
@@ -526,7 +545,13 @@ def _generated_marker_source(candidate: bytes) -> pathlib.PurePosixPath | None:
     if not (
         not source.is_absolute()
         and ".." not in source.parts
-        and source.parts[:2] == ("docs", "00.agent-governance")
+        and (
+            re.fullmatch(r"[.]agents/roles/[a-z][a-z0-9-]*[.]md", source.as_posix())
+            or re.fullmatch(
+                r"[.]agents/skills/[a-z][a-z0-9-]*/SKILL[.]md", source.as_posix()
+            )
+            or source.as_posix() in {".claude/provider.md", ".codex/provider.md"}
+        )
     ):
         return None
     return source
@@ -567,7 +592,7 @@ def _is_codex_agent_projection(payload: bytes) -> bool:
         return False
     if (
         re.fullmatch(
-            rf"Canonical .+ role for {re.escape(name)}; owned by Stage 00\.",
+            rf"Canonical .+ role for {re.escape(name)}; owned by canonical agent governance\.",
             document["description"],
             flags=re.DOTALL,
         )
@@ -577,7 +602,7 @@ def _is_codex_agent_projection(payload: bytes) -> bool:
     instructions = document["developer_instructions"].splitlines()
     marker = instructions[0].encode("ascii", errors="strict") if instructions else b""
     source = _generated_marker_source(marker)
-    return source == pathlib.PurePosixPath(f"docs/00.agent-governance/roles/{name}.md")
+    return source == GOVERNANCE / f"roles/{name}.md"
 
 
 def _is_generated(payload: bytes) -> bool:
@@ -638,9 +663,40 @@ def _read_projection_prefix_at(
         os.close(descriptor)
 
 
+def _tracked_static_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    result = run_bounded_git(root, ["ls-files", "-z", "--", ".claude", ".codex"])
+    if result.returncode:
+        if result.returncode == 128 and not os.path.lexists(root / ".git"):
+            # A supplied non-Git fixture has no tracked stale-pointer candidates.
+            return ()
+        raise ValueError("tracked native input inventory is unavailable")
+    payload = result.stdout
+    if (payload and not payload.endswith(b"\0")) or b"\0\0" in payload:
+        raise ValueError("tracked native input inventory is not NUL-delimited")
+    if payload.count(b"\0") > 4096:
+        raise ValueError("tracked native input inventory is oversized")
+    names = payload.decode("utf-8").split("\0")
+    return tuple(
+        sorted(
+            {
+                pathlib.PurePosixPath(name)
+                for name in names
+                if re.fullmatch(
+                    r"[.](?:claude|codex)/[A-Za-z0-9][A-Za-z0-9._-]*[.]md", name
+                )
+                and pathlib.PurePosixPath(name).name != "provider.md"
+            }
+        )
+    )
+
+
 def _current_static_generated_files(
     root: pathlib.Path, state: AgentGovernanceState
 ) -> tuple[pathlib.PurePosixPath, ...]:
+    candidates = set(_tracked_static_paths(root))
+    candidates.update(
+        pathlib.PurePosixPath(item["path"]) for item in state.registry["projections"]
+    )
     result: list[pathlib.PurePosixPath] = []
     for namespace in _projection_namespaces(state):
         try:
@@ -650,11 +706,15 @@ def _current_static_generated_files(
                 f"projection namespace changed or is a symlink: {namespace}"
             ) from error
         try:
-            entries = tuple(os.scandir(descriptor))
-            for entry in sorted(entries, key=lambda item: item.name):
-                relative = namespace / entry.name
+            for relative in sorted(
+                path for path in candidates if path.parent == namespace
+            ):
                 try:
-                    metadata = entry.stat(follow_symlinks=False)
+                    metadata = os.stat(
+                        relative.name, dir_fd=descriptor, follow_symlinks=False
+                    )
+                except FileNotFoundError:
+                    continue
                 except OSError as error:
                     raise ValueError(
                         f"projection namespace changed during traversal: {relative}"
@@ -987,7 +1047,7 @@ def find_native_projection_drift(root: pathlib.Path) -> list[Finding]:
     ]
     findings.extend(
         Finding(pathlib.PurePosixPath(item.path), item.code)
-        for item in validate_optional_agent_directory(root)
+        for item in validate_canonical_agent_home(root)
     )
     for path, content in expected.items():
         relative = pathlib.PurePosixPath(path.as_posix())
@@ -1059,7 +1119,7 @@ def _atomic_write(
 
 def write_native_projection(root: pathlib.Path) -> None:
     root = root.absolute()
-    directory_findings = validate_optional_agent_directory(root)
+    directory_findings = validate_canonical_agent_home(root)
     if directory_findings:
         raise ValueError(render_findings(directory_findings))
     state = load_agent_governance(root)

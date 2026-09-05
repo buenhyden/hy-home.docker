@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security)"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2025-11-12"
 ---
 
@@ -50,7 +50,7 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [Stage 00 agentic governance](../../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../../docs/00.agent-governance/policies/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. Read the [Vault Operations Guide](../../docs/05.operations/catalog/03-security/0016-vault/guide.md) for initialization and AppRole bootstrap boundaries.
 2. Follow the [Operations Policy](../../docs/05.operations/catalog/03-security/README.md) for unseal protocols.

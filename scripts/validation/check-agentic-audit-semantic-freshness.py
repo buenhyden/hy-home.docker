@@ -20,6 +20,14 @@ from audit_criterion_contract import (
     AuditCriterionContractError,
     validate_pack,
 )
+from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
+    ContractLoadError,
+    canonical_source_paths,
+    read_repository_text,
+)
+from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+    _run_git as run_bounded_git,
+)
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 
 
@@ -267,6 +275,89 @@ def _tracked_paths(repo_root: pathlib.Path) -> set[str]:
     return {path for path in decoded.split("\0") if path}
 
 
+def _untracked_nonignored_paths(
+    repo_root: pathlib.Path, expected: set[str]
+) -> set[str]:
+    """Return exact requested untracked paths while honoring Git excludes."""
+
+    if not expected:
+        return set()
+    result = run_bounded_git(
+        repo_root,
+        [
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "-z",
+            "--",
+            *sorted(expected),
+        ],
+    )
+    if result.returncode != 0:
+        message = result.stderr.decode("utf-8", errors="replace").strip()
+        raise AuditSemanticContractError(
+            [
+                "git untracked canonical path check failed with exit "
+                f"{result.returncode}: {message or 'no diagnostic'}"
+            ]
+        )
+    if result.stdout and not result.stdout.endswith(b"\0"):
+        raise AuditSemanticContractError(
+            ["git untracked canonical path check is not NUL-terminated"]
+        )
+    try:
+        decoded = result.stdout.decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise AuditSemanticContractError(
+            ["git untracked canonical path check contains a non-UTF-8 path"]
+        ) from exc
+    paths = [path for path in decoded.split("\0") if path]
+    if len(paths) != len(set(paths)) or len(paths) > len(expected):
+        raise AuditSemanticContractError(
+            ["git untracked canonical path check returned an invalid inventory"]
+        )
+    if any(
+        not _is_safe_repo_path(path)
+        or not path.startswith(".agents/")
+        or path not in expected
+        for path in paths
+    ):
+        raise AuditSemanticContractError(
+            ["git untracked canonical path check returned an unsafe path"]
+        )
+    return set(paths)
+
+
+def _local_canonical_paths(
+    repo_root: pathlib.Path, tracked: set[str], requested: set[str]
+) -> set[str]:
+    """Admit only registered, non-ignored canonical sources during cutover."""
+
+    registry = ".agents/governance/providers/registry.yaml"
+    if registry not in tracked and registry not in _untracked_nonignored_paths(
+        repo_root, {registry}
+    ):
+        raise AuditSemanticContractError(
+            ["registered canonical source inventory is not tracked or non-ignored"]
+        )
+    try:
+        declared = {path.as_posix() for path in canonical_source_paths(repo_root)}
+    except ContractLoadError as exc:
+        raise AuditSemanticContractError(
+            [f"unable to load registered canonical source inventory: {exc}"]
+        ) from exc
+    eligible = requested & declared
+    admitted = _untracked_nonignored_paths(repo_root, eligible)
+    for relative in sorted(admitted):
+        try:
+            read_repository_text(repo_root, relative)
+        except ContractLoadError as exc:
+            raise AuditSemanticContractError(
+                [f"registered canonical input is unsafe: {relative}: {exc}"]
+            ) from exc
+    return admitted
+
+
 def _read_required(path: pathlib.Path, label: str, errors: list[str]) -> str | None:
     try:
         return path.read_text(encoding="utf-8", errors="strict")
@@ -278,7 +369,7 @@ def _read_required(path: pathlib.Path, label: str, errors: list[str]) -> str | N
 def _validate_repository_input(
     repo_root: pathlib.Path,
     relative: str,
-    tracked: set[str],
+    admitted_inputs: set[str],
     label: str,
     tracked_description: str,
 ) -> list[str]:
@@ -304,7 +395,7 @@ def _validate_repository_input(
     errors: list[str] = []
     if resolved is not None and not resolved.is_relative_to(resolved_root):
         errors.append(f"{label}: resolved path escapes repository root: {relative}")
-    if relative not in tracked or resolved is None or not candidate.is_file():
+    if relative not in admitted_inputs or resolved is None or not candidate.is_file():
         errors.append(f"{label}: {tracked_description} is missing: {relative}")
     return errors
 
@@ -388,6 +479,7 @@ def _validate_assertions(
     contract: dict[str, Any],
     rows: dict[str, Any],
     tracked: set[str],
+    admitted_inputs: set[str],
 ) -> list[str]:
     errors: list[str] = []
     report_cache: dict[str, str | None] = {}
@@ -426,7 +518,7 @@ def _validate_assertions(
                 _validate_repository_input(
                     repo_root,
                     evidence_path,
-                    tracked,
+                    admitted_inputs,
                     criterion_id,
                     "required tracked evidence",
                 )
@@ -470,6 +562,17 @@ def validate_semantics(
         raise AuditSemanticContractError(contract_errors)
 
     contract = _load_contract(repo_root / contract_path)
+    requested_canonical = {
+        path
+        for assertion in contract["assertions"]
+        for path in assertion["required_evidence_paths"]
+        if path not in tracked and path.startswith(".agents/")
+    }
+    admitted_inputs = set(tracked)
+    if requested_canonical:
+        admitted_inputs.update(
+            _local_canonical_paths(repo_root, tracked, requested_canonical)
+        )
     input_errors = _validate_tracked_contract_paths(repo_root, contract, tracked)
     for assertion in contract["assertions"]:
         input_errors.extend(
@@ -486,7 +589,7 @@ def validate_semantics(
                 _validate_repository_input(
                     repo_root,
                     evidence_path,
-                    tracked,
+                    admitted_inputs,
                     assertion["criterion_id"],
                     "required tracked evidence",
                 )
@@ -510,7 +613,9 @@ def validate_semantics(
         ) from exc
     rows = {row.criterion_id: row for row in criterion_contract.rows}
     errors = _validate_lifecycle(repo_root, contract)
-    errors.extend(_validate_assertions(repo_root, contract, rows, tracked))
+    errors.extend(
+        _validate_assertions(repo_root, contract, rows, tracked, admitted_inputs)
+    )
     if errors:
         raise AuditSemanticContractError(errors)
     return SemanticValidationResult(assertion_count=len(contract["assertions"]))

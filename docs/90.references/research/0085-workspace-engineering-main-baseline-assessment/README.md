@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.3.0"
+version: "0.3.1"
 type: "reference/research-pack"
 status: "review"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0085"
 parent_ids: []
@@ -13,6 +13,13 @@ observed_at: "2026-09-05"
 ---
 
 # Workspace Engineering Main Baseline Assessment
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Question
 
@@ -73,8 +80,8 @@ Detailed current findings are not repeated here. They are consolidated in
 
 - Repository baseline: Git commit
   `4c6d211129615eab372d720ebd209b6c27618c86`.
-- [Stage 00 governance](../../../00.agent-governance/README.md) and
-  [provider registry](../../../00.agent-governance/providers/registry.yaml).
+- [Canonical governance governance](../../../../.agents/README.md) and
+  [provider registry](../../../../.agents/governance/providers/registry.yaml).
 - [Stage 99 Registry](../../../99.templates/registry.json),
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   and [research-member template](../../../99.templates/templates/references/research.template.md).
@@ -112,7 +119,7 @@ Detailed current findings are not repeated here. They are consolidated in
 - Binding scope: [RES-0085-m0001](m0001-request-scope.md).
 - Governance authority: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and
-  [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md).
+  [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md).
 - Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md), and
   [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).

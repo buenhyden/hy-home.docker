@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2025-11-24"
 ---
 
@@ -177,11 +177,11 @@ service directory and cover the following agent-verifiable fields:
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
 4. **Validation**: `scripts/validation/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
-공유 실행 및 문서 규칙은 [Stage 00 agentic governance](../docs/00.agent-governance/policies/agentic.md)와 [documentation protocol](../docs/00.agent-governance/policies/documentation-protocol.md)로 라우팅한다.
+공유 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../.agents/governance/agentic.md)와 [documentation protocol](../.agents/governance/documentation-protocol.md)로 라우팅한다.
 
 1. 타겟 계층과 기존 서비스 패턴을 파악한다.
 2. 새 서비스가 `common-optimizations.yml` 템플릿을 준수하는지 확인한다.
-3. 상세 컨텍스트는 [bootstrap 정규 로드 순서](../docs/00.agent-governance/policies/bootstrap.md#canonical-load-order)에 따라 요청에 필요한 문서만 해석한다.
+3. 상세 컨텍스트는 [bootstrap 정규 로드 순서](../.agents/governance/bootstrap.md#canonical-load-order)에 따라 요청에 필요한 문서만 해석한다.
 4. 이 README의 "Infrastructure Tiers" 테이블을 업데이트하여 추적성을 유지한다.
 
 ## Related Documents

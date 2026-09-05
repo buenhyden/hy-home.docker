@@ -1,10 +1,10 @@
 ---
 title: "Operations Catalog"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "operations"
 ---
 
@@ -62,4 +62,4 @@ canonical catalog다. Incident event record는 이 catalog에 속하지
 - [Operations](../README.md)
 - [Incidents](../incidents/README.md)
 - [Template catalog](../../99.templates/templates/README.md)
-- [Stage authoring matrix](../../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Stage authoring matrix](../../../.agents/governance/stage-authoring-matrix.md)

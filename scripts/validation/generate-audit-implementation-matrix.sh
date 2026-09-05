@@ -311,8 +311,8 @@ def build_output() -> tuple[str, list[str]]:
         "## Repository Role",
         "",
         "Use this document as generated audit context only. Active governance remains",
-        "in Stage 00, implementation contracts remain in Stage 03, execution evidence",
-        "remains in Stage 04, audit conclusions remain in Stage 90 audit reports, and",
+        "in `.agents/governance`, implementation contracts and Task execution evidence",
+        "remain in Stage 03, audit conclusions remain in Stage 90 audit reports, and",
         "runtime truth remains in tracked source files such as scripts, workflows,",
         "Compose files, and registry references.",
         "",
@@ -422,7 +422,7 @@ def build_output() -> tuple[str, list[str]]:
             path, separator, fragment = href.partition("#")
             target = posixpath.normpath((report.parent / path).as_posix())
             if target == "docs/90.references/00.agent-governance/rules/stage-authoring-matrix.md":
-                target = "docs/00.agent-governance/policies/stage-authoring-matrix.md"
+                target = ".agents/governance/stage-authoring-matrix.md"
             relative = posixpath.relpath(target, OUTPUT.parent.as_posix())
             suffix = f"#{fragment}" if separator else ""
             return f"[{label}]({relative}{suffix})"

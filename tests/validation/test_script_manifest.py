@@ -1,8 +1,12 @@
 import datetime as dt
 import importlib.util
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
+import tempfile
+import unittest
+from unittest import mock
 
 import scripts.lib.document_governance as document_governance
 import yaml
@@ -27,6 +31,34 @@ def load_manifest_checker():
 
 
 class ScriptManifestTests(unittest.TestCase):
+    def test_local_reference_admission_is_exact_registered_and_nonignored(self) -> None:
+        checker = load_manifest_checker()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            names = {
+                ".agents/governance/quality.md",
+                ".agents/governance/private.md",
+                ".agents/governance/ignored.md",
+                ".agents/governance/linked.md",
+            }
+            for name in sorted(names - {".agents/governance/linked.md"}):
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("not read by path admission\n", encoding="utf-8")
+            (root / ".gitignore").write_text(".agents/governance/ignored.md\n")
+            (root / ".agents/governance/linked.md").symlink_to(root / ".gitignore")
+            registered = names - {".agents/governance/private.md"}
+            with mock.patch.object(
+                checker,
+                "canonical_source_paths",
+                return_value=tuple(PurePosixPath(name) for name in registered),
+            ):
+                self.assertEqual(
+                    {".agents/governance/quality.md"},
+                    checker._local_reference_paths(root, names),
+                )
+
     @classmethod
     def setUpClass(cls) -> None:
         # Read the roots from the checker rather than restating "scripts": the
@@ -38,6 +70,7 @@ class ScriptManifestTests(unittest.TestCase):
         cls.manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         cls.rows = cls.manifest["files"]
         cls.rows_by_path = {row["path"]: row for row in cls.rows}
+
     def test_every_tracked_script_has_one_manifest_record(self) -> None:
         declared = [row["path"] for row in self.rows]
         self.assertEqual(len(declared), len(set(declared)))
@@ -100,7 +133,10 @@ class ScriptManifestTests(unittest.TestCase):
             with self.subTest(script=script):
                 result = subprocess.run(
                     ["bash", script, "--dry-run"],
-                    cwd=ROOT, text=True, capture_output=True, check=False,
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
                 )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertIn(f"`bash {script} --write`", result.stdout)
@@ -120,7 +156,9 @@ class ScriptManifestTests(unittest.TestCase):
         ):
             with self.subTest(command=command):
                 self.assertIn(f"`{command} --write`", maintenance_row)
-        audit_example = "bash scripts/validation/generate-audit-implementation-matrix.sh"
+        audit_example = (
+            "bash scripts/validation/generate-audit-implementation-matrix.sh"
+        )
         audit_block = readme.split(
             "# Generate and check the audit implementation matrix snapshot\n", 1
         )[1].split("\n\n", 1)[0]
@@ -163,9 +201,7 @@ class ScriptManifestTests(unittest.TestCase):
             "parent_ids": [],
             "generated_by": script,
         }
-        semver = re.compile(
-            r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)"
-        )
+        semver = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
         iso_date = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
         def assert_valid_envelope(candidate: dict[str, object]) -> None:
@@ -295,7 +331,9 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     inputs.update(
                         path.relative_to(ROOT).as_posix()
-                        for path in (ROOT / "examples/operations/supply-chain").rglob("*")
+                        for path in (ROOT / "examples/operations/supply-chain").rglob(
+                            "*"
+                        )
                         if path.is_file()
                     )
                 elif "hook-parity" in script:
@@ -352,9 +390,7 @@ class ScriptManifestTests(unittest.TestCase):
                     )
                     self.assertNotEqual(0, result.returncode, script)
                     if "compose-profile-service-coverage" in script:
-                        self.assertIn(
-                            f"Run: bash {script} --write", result.stderr
-                        )
+                        self.assertIn(f"Run: bash {script} --write", result.stderr)
                     self.assertEqual(before, snapshot(), script)
                 result = subprocess.run(
                     [*command, "--write", *extra],
@@ -652,6 +688,7 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertFalse(reference_proves_use("scripts/manifest.yaml", taxonomy))
         self.assertFalse(reference_proves_use(".github/CODEOWNERS", taxonomy))
 
+
 class ScriptManifestValidationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.checker = load_manifest_checker()
@@ -715,6 +752,66 @@ class ScriptManifestValidationTests(unittest.TestCase):
         )
         self.assertIn("consumer-missing", {finding.code for finding in findings})
 
+    def test_rejected_consumer_is_not_read_by_followup_validation(self) -> None:
+        document = {"schema_version": 1, "files": [self.row(consumers=["private.md"])]}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "private.md").write_text("must not be read\n")
+            with (
+                mock.patch.object(
+                    self.checker, "_load_manifest", return_value=document
+                ),
+                mock.patch.object(
+                    self.checker, "_git_paths", return_value=self.tracked
+                ),
+                mock.patch.object(
+                    self.checker, "_local_reference_paths", return_value=set()
+                ),
+                mock.patch.object(
+                    Path, "read_text", side_effect=AssertionError("private body read")
+                ),
+            ):
+                findings = self.checker.check_manifest(root, root / "manifest.yaml")
+        self.assertIn("consumers-untracked", {item.code for item in findings})
+
+    def test_admitted_reference_cannot_satisfy_generated_output_tracking(self) -> None:
+        document = {
+            "schema_version": 1,
+            "files": [
+                self.row(
+                    kind="generator",
+                    mutation="check-write",
+                    authority=".github/workflow-contract.yml",
+                    consumers=["docs/output.md"],
+                    check_command=["python3", "scripts/example.py", "--check"],
+                    outputs=["docs/output.md"],
+                )
+            ],
+        }
+        findings = self.checker.validate_manifest_document(
+            document,
+            self.tracked - {"docs/output.md"},
+            admitted_reference_paths={"docs/output.md"},
+        )
+        codes = {item.code for item in findings}
+        self.assertIn("generated-output-untracked", codes)
+        self.assertNotIn("consumers-untracked", codes)
+
+    def test_semantic_reader_rejects_linked_parent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            outside = root / "outside"
+            outside.mkdir()
+            (outside / "consumer.md").write_text("scripts/example.py\n")
+            (root / "docs").symlink_to(outside, target_is_directory=True)
+            findings = self.checker._semantic_findings(
+                root,
+                {
+                    "files": [self.row(tests=[])],
+                },
+            )
+        self.assertIn("consumers-unreadable", {item.code for item in findings})
+
     def test_manifest_rejects_missing_and_invalid_authority(self) -> None:
         self.assertIn(
             "fields-missing",
@@ -755,9 +852,12 @@ class ScriptManifestValidationTests(unittest.TestCase):
             self.codes(self.row(disposition="rewrite", successor="scripts/example.py")),
         )
 
-    def test_transition_requires_nonretained_disposition_and_removal_condition(self) -> None:
+    def test_transition_requires_nonretained_disposition_and_removal_condition(
+        self,
+    ) -> None:
         self.assertIn(
-            "transition-disposition-invalid", self.codes(self.row(lifecycle="transition"))
+            "transition-disposition-invalid",
+            self.codes(self.row(lifecycle="transition")),
         )
         transition = self.row(
             lifecycle="transition", disposition="merge", successor="docs/consumer.md"

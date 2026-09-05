@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 created: "2026-02-21"
 ---
 
@@ -84,5 +84,5 @@ changed/new blocking gate는 활성 상태입니다. `check-document-metadata.py
 
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
-- [Documentation protocol](../docs/00.agent-governance/policies/documentation-protocol.md)
-- [Task checklists](../docs/00.agent-governance/policies/task-checklists.md)
+- [Documentation protocol](../.agents/governance/documentation-protocol.md)
+- [Task checklists](../.agents/governance/task-checklists.md)

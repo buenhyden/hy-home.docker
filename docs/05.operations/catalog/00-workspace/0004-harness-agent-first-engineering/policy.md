@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -29,7 +29,7 @@ created: "2026-06-04"
 - `AGENTS.md`, `CLAUDE.md`
 - `.claude/**`
 - `.codex/**`
-- `docs/00.agent-governance/**`
+- `.agents/**`
 - `docs/03.specs/**`
 - `docs/03.specs/[0-9][0-9][0-9][0-9]-*/plan.md`
 - `docs/03.specs/[0-9][0-9][0-9][0-9]-*/tasks/tsk-[0-9][0-9][0-9][0-9]-*.md`
@@ -42,8 +42,8 @@ created: "2026-06-04"
 
 | Control | Requirement |
 | --- | --- |
-| Thin root shims | Root files delegate detailed policy to `docs/00.agent-governance/` and runtime overlays. |
-| Runtime mirror parity | `.claude/agents` and `.claude/skills` stay synchronized with governance catalog files. |
+| Thin root shims | Root files delegate detailed policy to `.agents/` and runtime overlays. |
+| Runtime mirror parity | Native role adapters and thin Claude skill pointers stay synchronized with authored `.agents` sources; canonical files are never renderer output. |
 | Runtime parity scope | Repository checks prove catalog, model, scope import, and protocol-reference parity; they do not prove semantic parity of every runtime document. |
 | Model hierarchy | `workflow-supervisor` remains `opus`; worker agents remain `sonnet`. |
 | Scope imports | Each runtime agent imports exactly one primary scope. |
@@ -87,7 +87,7 @@ bash scripts/hardening/check-all-hardening.sh
 
 - Run repository contract checks after any root, governance, runtime, provider, script, or stage documentation change.
 - Re-run the full verification bundle before declaring a broad harness or Agent-first migration complete.
-- Review this policy when `.claude`, `.codex`, or the canonical Stage 00 role/skill catalogs change.
+- Review this policy when `.claude`, `.codex`, or the canonical canonical agent governance role/skill catalogs change.
 - Record out-of-scope infra profile failures separately instead of expanding HAFE acceptance criteria silently.
 
 ## Traceability

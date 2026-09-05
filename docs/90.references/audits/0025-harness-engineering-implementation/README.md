@@ -1,10 +1,10 @@
 ---
 title: "Reference: Harness Engineering Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0025"
 parent_ids:
@@ -16,6 +16,13 @@ reviewed_at: "2026-07-27"
 
 # Reference: Harness Engineering Implementation
 
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
 ## Overview
 
 This reference assesses every `HAR-*` criterion in the canonical harness
@@ -26,11 +33,11 @@ research against tracked workspace evidence at baseline `507cd505` on
 ## Purpose
 
 Distinguish a provider feature from repository adoption, and distinguish both
-from Stage 00 policy or an inference about live runtime behavior.
+from canonical agent governance policy or an inference about live runtime behavior.
 
 ## Repository Role
 
-This report feeds approved Stage 03/04 follow-up. Stage 00, provider adapters,
+This report feeds approved Stage 03/04 follow-up. canonical agent governance, provider adapters,
 scripts, CI, and runtime configuration remain authoritative for behavior.
 
 ## Scope
@@ -52,6 +59,7 @@ scripts, CI, and runtime configuration remain authoritative for behavior.
   `Needs Revalidation` exactly.
 - Enforcement depth is `0` absent, `1` documented, `2` partially applied,
   `3` automated/enforced, and `4` measured with a closed feedback loop.
+
 > Historical evidence (not current authority; source: Git history):
 > The tracked tree contained 14 canonical roles (one supervisor and thirteen
 > workers), 24 functions, and 14 generated role adapters on each of the
@@ -89,6 +97,7 @@ below is corroborated by tracked source.
   evaluator now close a measured depth-4 repository loop. Native compatibility,
   live permission evidence, entitlement, and comparative model quality remain
   separate unverified surfaces.
+
 > Historical evidence (not current authority; source: Git history):
 > Provider facts in the research pack did not change Stage 00 policy. In
 > particular, native Gemini CLI agents/hooks did not make `.agents` a native
@@ -110,8 +119,8 @@ The current tracked provider projection has two providers, Claude and Codex.
 Run the sole renderer directly with
 `python3 scripts/operations/provider_surface_renderer.py --check` or
 `python3 scripts/operations/provider_surface_renderer.py --write`.
-The shared `.agents/skills` projection is retained; the former shared
-`.agents/agents` compatibility projection is retired. These repository-local
+The authored `.agents/skills` packages are canonical; the former
+`.agents/agents` compatibility projection remains retired. These repository-local
 facts do not reobserve or revise the dated external findings above.
 
 ## Automation Impact
@@ -126,7 +135,7 @@ introduced here.
 - Provider features come from the current primary-source ledger in the
   canonical research pack; mutable pages prove retrieval-time facts only.
 - Workspace adoption comes from tracked files and command results.
-- Stage 00 policy is neither inferred from provider features nor changed by
+- canonical agent governance policy is neither inferred from provider features nor changed by
   this audit.
 
 ## Sources
@@ -135,12 +144,12 @@ introduced here.
 - `Provider comparison research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
 - Harness implementation map (retired path: `00.agent-governance/harness-implementation-map.md`)
 - Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
-- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
 
 ## Maintenance
 
 - **Owner**: Agentic Workflow Specialist.
-- **Review Cadence**: After Stage 00, provider adapter, hook, model, or eval changes.
+- **Review Cadence**: After canonical agent governance, provider adapter, hook, model, or eval changes.
 - **Update Trigger**: Any `HAR-*` criterion evidence or enforcement depth changes.
 
 ## Related Documents

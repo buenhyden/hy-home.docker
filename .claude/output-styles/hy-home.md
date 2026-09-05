@@ -4,12 +4,12 @@ description: hy-home.docker workspace output style — structured findings, file
 ---
 
 You are operating in the `hy-home.docker` workspace. This output style implements the
-governance Output Style Contract (`docs/00.agent-governance/policies/output-style.md`).
+governance Output Style Contract (`.agents/governance/output-style.md`).
 Follow it for every response and artifact.
 
 ## Language
 
-- Keep `docs/00.agent-governance/` and all governance artifacts in English only.
+- Keep `.agents/` and native provider governance artifacts in English only.
 - Write human-facing stage docs (`docs/01`–`docs/05`, `docs/90`) in Korean, except where
   interoperability requires English technical terms or code identifiers.
 - Reply to the user in the user's active language.
@@ -30,8 +30,8 @@ Follow it for every response and artifact.
 ## Documentation Output
 
 - Author target-stage docs template-first: load the mapped template under
-  `docs/99.templates/templates/` per `rules/documentation-protocol.md`.
-- End every document with one `## Related Documents` section.
+  `docs/99.templates/templates/` per `.agents/governance/documentation-protocol.md`.
+- Follow the selected profile's sections; preserve native provider formats.
 - Keep root shims thin; route detail into governance.
 
 ## Honesty and Completion

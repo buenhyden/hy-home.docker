@@ -1,10 +1,10 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Automation Pipeline and Workflow Topology
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -59,7 +66,7 @@ one-command rule or presenting continuous integration as continuous delivery.
 ## Repository Role
 
 This Stage 90 reference is advisory analysis. The tracked workflow registry,
-workflow YAML, scripts, Stage 00 governance, and any separately authorized
+workflow YAML, scripts, canonical agent governance governance, and any separately authorized
 remote GitHub readback remain the evidence owners. This document neither
 changes those owners nor authorizes dispatch, push, promotion, deployment,
 ruleset, environment, secret, release, or rollback actions.
@@ -216,14 +223,15 @@ route remain outside local execution claims.
 
 ### Promotion path: local check to required remote check
 
-Adding, changing, or retiring a required-quality job is a coupled three-surface
-change, not a single-file edit. `docs/00.agent-governance/rules/
-github-governance.md` §8 states the constraint explicitly: `.github/
-workflow-contract.yml` (typed root/registration), `.github/workflows/
-ci-quality.yml` (the actual `run:` step invoking `run-ci-gate.py --profile ci
---gate <id>`), and `.github/rulesets/main-protection.md` (the desired-state
-Required Status Checks list) must change together, followed by an update to
-the explanatory table in that same governance file.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> Adding, changing, or retiring a required-quality job is a coupled three-surface
+> change, not a single-file edit. `docs/00.agent-governance/rules/
+> github-governance.md` §8 states the constraint explicitly: `.github/
+> workflow-contract.yml` (typed root/registration), `.github/workflows/
+> ci-quality.yml` (the actual `run:` step invoking `run-ci-gate.py --profile ci
+> --gate <id>`), and `.github/rulesets/main-protection.md` (the desired-state
+> Required Status Checks list) must change together, followed by an update to
+> the explanatory table in that same governance file.
 
 Re-deriving both sides today confirms the desired state is currently
 consistent: the 16 `job_id` values in `workflow-contract.yml`'s `job_roots`
@@ -416,6 +424,7 @@ permission to mutate a remote target.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                                       | Accessed                           | Class                                  | Verification state                                                                                                                                                                                                                          |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [GitHub Actions workflow syntax](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions)                                    | 2026-08-08T17:45:01+09:00          | External mutable                       | Verified official page; prescribed route redirected to current workflow-syntax reference; trigger, permission, job, environment, timeout, and step semantics used.                                                                          |
@@ -435,7 +444,7 @@ permission to mutate a remote target.
 | [Workflow contract checker](../../../../scripts/validation/check-github-workflow-contract.py)                                                                | 2026-08-08; re-run 2026-08-14      | Workspace tracked/local execution      | Static check PASS re-run directly at `ece3eda9`; no hosted run or control-plane proof.                                                                                                                                                      |
 | [Typed validation dispatcher](../../../../scripts/validation/run-ci-gate.py)                                                                                 | 2026-08-08; current route re-verified 2026-09-04 | Workspace tracked/local list execution | The historical `--list` observation executed no leaves; the current dispatcher derives its ordered expansion from the typed workflow contract.                                                                                                                                                |
 | [Desired main protection proposal](../../../../.github/rulesets/main-protection.md)                                                                          | 2026-08-08; re-verified 2026-08-14 | Workspace tracked proposal             | Sixteen desired check names re-read; confirmed byte-for-byte identical set and order to `job_roots`' 16 `job_id` values; explicitly not applied-state evidence.                                                                             |
-| [GitHub governance policy](../../../00.agent-governance/policies/github-governance.md)                                                                          | 2026-08-14                         | Workspace tracked policy               | §8 "CI/CD Job Taxonomy" read in full; three-surface coupling constraint, `pre-commit` job's exact pinned-dependency install path, and non-gating workflow table used.                                                                       |
+| [GitHub governance policy](../../../../.agents/governance/github-governance.md)                                                                          | 2026-08-14                         | Workspace tracked policy               | §8 "CI/CD Job Taxonomy" read in full; three-surface coupling constraint, `pre-commit` job's exact pinned-dependency install path, and non-gating workflow table used.                                                                       |
 | [Public control-plane snapshot](../../data/0071-github-actions-control-plane-observation/data.yaml)                                                         | 2026-08-08                         | Historical retained observation        | Dated 2026-07-26; current rules, failure cause, and remote enforcement remain `UNVERIFIED`.                                                                                                                                                 |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                                                  | 2026-08-08                         | Workspace tracked stale/advisory       | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                          |
 
@@ -489,5 +498,5 @@ target and timestamp; never promote tracked intent to applied state.
 - [Harness engineering](./m0008-harness-engineering.md)
 - [Loop engineering](./m0010-loop-engineering.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [GitHub governance](../../../00.agent-governance/policies/github-governance.md)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

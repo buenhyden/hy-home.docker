@@ -14,6 +14,10 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    read_bounded_regular,
+)
 
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
@@ -32,6 +36,7 @@ _PRESERVED_LINK_PREFIXES = (
     "docs/98.archive/retired/",
 )
 _ROOT_PREFIXES = (
+    ".agents/",
     "docs/",
     "infra/",
     "scripts/",
@@ -416,7 +421,9 @@ def build_document_graph(
             )
             continue
         try:
-            text = path.read_text(encoding="utf-8")
+            text = read_bounded_regular(
+                root, relative, max_bytes=_MAX_ANCHOR_BYTES
+            ).decode("utf-8")
         except UnicodeError:
             input_findings.append(
                 LinkFinding(
@@ -424,7 +431,7 @@ def build_document_graph(
                 )
             )
             continue
-        except OSError:
+        except (OSError, OperationsAuthorityError):
             input_findings.append(
                 LinkFinding(
                     relative.as_posix(), "document-unreadable", relative.as_posix()

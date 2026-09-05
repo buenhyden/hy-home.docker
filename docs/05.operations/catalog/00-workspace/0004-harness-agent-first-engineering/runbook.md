@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-06-04"
 
 - Root instruction files change.
 - `.claude` or `.codex` files change.
-- `docs/00.agent-governance/**` changes.
+- `.agents/**` changes.
 - New stage docs are added.
 - A harness or Agent-first audit is requested.
 
@@ -50,7 +50,7 @@ created: "2026-06-04"
 2. Interpret Graphify health.
 
    - `status=clean`: Graphify may be used as a navigation aid.
-   - `status=advisory`: Graphify remains readable, but architecture and codebase claims must be corroborated against tracked source files, `docs/00.agent-governance/`, and active stage docs.
+   - `status=advisory`: Graphify remains readable, but architecture and codebase claims must be corroborated against tracked source files, `.agents/`, and active stage docs.
    - The report prints counts and guidance only; it must not print source file contents.
 
 3. Run governance and docs checks.
@@ -89,7 +89,7 @@ created: "2026-06-04"
 6. Run source-label scan.
 
    ```bash
-   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex docs/00.agent-governance
+   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex .agents
    ```
 
 7. Report changed files, command outcomes, Graphify health status, and any residual risk, including out-of-scope infra profile failures such as `10-communication`.
@@ -110,7 +110,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 ### Safe Rollback or Recovery Procedure
 
 - For documentation mistakes, revert only the affected stage doc or README hunk.
-- For runtime catalog drift, regenerate provider projections from the canonical Stage 00 roles, skills, and provider registry.
+- For runtime catalog drift, regenerate provider projections from the canonical canonical agent governance roles, skills, and provider registry.
 - For Compose validation failures, inspect the changed `infra/**/docker-compose*.yml` files before editing unrelated files.
 - For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
 
@@ -127,7 +127,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - [Usage Guide](../0004-harness-agent-first-engineering/guide.md)
 - Plan
 - Task Evidence
-- [Agent Governance Hub](../../../../00.agent-governance/README.md)
+- [Agent Governance Hub](../../../../../.agents/README.md)
 
 ## Evidence
 
@@ -155,5 +155,5 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Specification](../../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
-- [Agent Governance Hub](../../../../00.agent-governance/README.md)
-- [Subagent Protocol](../../../../00.agent-governance/policies/agentic.md)
+- [Agent Governance Hub](../../../../../.agents/README.md)
+- [Subagent Protocol](../../../../../.agents/governance/agentic.md)

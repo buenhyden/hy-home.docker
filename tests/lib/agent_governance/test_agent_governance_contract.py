@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import pathlib
 import shutil
@@ -30,43 +31,40 @@ contract = load_contract_module()
 
 
 def copy_governance_fixture(root: pathlib.Path) -> None:
-    shutil.copytree(
-        ROOT / "docs/00.agent-governance", root / "docs/00.agent-governance"
+    from tests.validation.test_provider_surface_renderer import (
+        _copy_registered_file,
+        copy_fixture,
     )
-    registry = root / "docs/99.templates/registry.json"
-    registry.parent.mkdir(parents=True)
-    shutil.copy2(ROOT / "docs/99.templates/registry.json", registry)
-    for path in ("AGENTS.md", "CLAUDE.md"):
-        shutil.copy2(ROOT / path, root / path)
-    for directory in (".claude", ".codex"):
-        shutil.copytree(ROOT / directory, root / directory)
-    hook = root / "scripts/hooks/agent-event-hook.sh"
-    hook.parent.mkdir(parents=True)
-    shutil.copy2(ROOT / "scripts/hooks/agent-event-hook.sh", hook)
+
+    copy_fixture(root)
+    for path in (
+        "docs/99.templates/registry.json",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "_workspace/README.md",
+        "_workspace/repo-support/README.md",
+    ):
+        _copy_registered_file(ROOT, root, path)
 
 
 class AgentGovernanceContractTests(unittest.TestCase):
-    def test_empty_shared_directory_is_allowed_including_read_only(self) -> None:
+    def test_read_only_canonical_directory_is_valid(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            optional = root / ".agents"
-            for mode in (None, 0o755, 0o555):
-                with self.subTest(mode=mode):
-                    if mode is not None:
-                        optional.mkdir(exist_ok=True)
-                        optional.chmod(mode)
-                    findings = contract.validate_repository(
-                        root, contract.load_contract_bundle(root), "providers"
-                    )
-                    self.assertFalse(
-                        any(item.path.startswith(".agents") for item in findings),
-                        findings,
-                    )
+            canonical = root / ".agents"
+            canonical.chmod(0o555)
+            self.assertEqual([], contract.validate_canonical_agent_home(root))
+            findings = contract.validate_repository(
+                root, contract.load_contract_bundle(root), "providers"
+            )
+            self.assertFalse(
+                any(item.path.startswith(".agents") for item in findings), findings
+            )
 
     def test_provider_registry_does_not_restate_neutral_workflow_policy(self) -> None:
         registry = yaml.safe_load(
-            (ROOT / "docs/00.agent-governance/providers/registry.yaml").read_text()
+            (ROOT / ".agents/governance/providers/registry.yaml").read_text()
         )
         neutral_keys = {
             "workflow_states",
@@ -77,52 +75,157 @@ class AgentGovernanceContractTests(unittest.TestCase):
         }
         self.assertEqual(set(), neutral_keys & set(registry))
 
-    def test_retired_shared_directory_is_rejected_without_reading_or_deleting_it(
-        self,
-    ) -> None:
+    def test_unsafe_canonical_home_is_rejected_and_preserved(self) -> None:
         for kind in (
-            "directory", "agents", "skills", "file", "symlink", "broken-symlink", "fifo"
+            "missing",
+            "empty",
+            "unknown",
+            "file",
+            "symlink",
+            "broken-symlink",
+            "fifo",
         ):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
-                copy_governance_fixture(root)
-                retired = root / ".agents"
-                if kind == "directory":
-                    retired.mkdir()
-                    (retired / "unowned.md").write_text("user-owned content\n")
-                elif kind in {"agents", "skills"}:
-                    (retired / kind).mkdir(parents=True)
+                home = root / ".agents"
+                if kind in {"empty", "unknown"}:
+                    home.mkdir()
+                    if kind == "unknown":
+                        (home / "unowned.md").write_text("user-owned content\n")
                 elif kind == "file":
-                    retired.write_text("user-owned content\n")
+                    home.write_text("user-owned content\n")
                 elif kind == "fifo":
-                    os.mkfifo(retired)
-                elif kind == "symlink":
+                    os.mkfifo(home)
+                elif kind in {"symlink", "broken-symlink"}:
                     outside = root / "outside"
-                    outside.mkdir()
-                    retired.symlink_to(outside, target_is_directory=True)
-                else:
-                    retired.symlink_to(
-                        root / "does-not-exist", target_is_directory=True
-                    )
-                findings = contract.validate_repository(
-                    root, contract.load_contract_bundle(root), "harness"
+                    if kind == "symlink":
+                        outside.mkdir()
+                    home.symlink_to(outside, target_is_directory=True)
+                findings = contract.validate_canonical_agent_home(root)
+                self.assertEqual(
+                    ["AGC-CANONICAL-HOME"], [item.code for item in findings]
                 )
-                self.assertIn("AGC-RETIRED-SURFACE", {item.code for item in findings})
-                self.assertTrue(os.path.lexists(retired))
-                if kind == "directory":
+                self.assertEqual(kind != "missing", os.path.lexists(home))
+                if kind == "unknown":
                     self.assertEqual(
-                        "user-owned content\n", (retired / "unowned.md").read_text()
+                        "user-owned content\n", (home / "unowned.md").read_text()
                     )
 
-    def test_optional_shared_directory_enumeration_failure_is_rejected(self) -> None:
+    def test_canonical_directory_enumeration_failure_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            optional = root / ".agents"
-            optional.mkdir()
+            (root / ".agents").mkdir()
             with mock.patch.object(contract.os, "scandir", side_effect=PermissionError):
-                findings = contract.validate_optional_agent_directory(root)
-            self.assertEqual(["AGC-RETIRED-SURFACE"], [item.code for item in findings])
-            self.assertTrue(optional.is_dir())
+                findings = contract.validate_canonical_agent_home(root)
+            self.assertEqual(["AGC-CANONICAL-HOME"], [item.code for item in findings])
+            self.assertTrue((root / ".agents").is_dir())
+
+    def test_skill_envelope_and_invocation_controls_are_closed(self) -> None:
+        mutations = {
+            "name-mismatch": lambda data: data.update(name="other"),
+            "description-missing": lambda data: data.pop("description"),
+            "description-blank": lambda data: data.update(description="  "),
+            "legacy-top-level": lambda data: data.update(scope="common"),
+            "tool-grant": lambda data: data.update({"allowed-tools": "Bash"}),
+            "metadata-shape": lambda data: data.update(metadata=[]),
+            "id-mismatch": lambda data: data["metadata"].update(function_id="other"),
+        }
+        for name, mutation in mutations.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                source = root / ".agents/skills/adr-writing/SKILL.md"
+                _, raw, body = source.read_text().split("---", 2)
+                data = yaml.safe_load(raw)
+                mutation(data)
+                source.write_text(
+                    "---\n" + yaml.safe_dump(data, sort_keys=False) + "---" + body
+                )
+                with self.assertRaises(contract.ContractLoadError):
+                    contract.load_agent_governance(root)
+        for controls in (
+            {"policy": {"allow_implicit_invocation": True}},
+            {"policy": {"allow_implicit_invocation": 0}},
+            {"policy": {"allow_implicit_invocation": False, "unknown": False}},
+            {
+                "policy": {"allow_implicit_invocation": False},
+                "dependencies": {"tools": []},
+            },
+        ):
+            with (
+                self.subTest(controls=controls),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                source = root / ".agents/skills/adr-writing/agents/openai.yaml"
+                source.write_text(yaml.safe_dump(controls))
+                with self.assertRaises(contract.ContractLoadError):
+                    contract.load_agent_governance(root)
+
+    def test_plausible_unregistered_policy_is_rejected_without_reading(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            bundle = contract.load_contract_bundle(root)
+            private = root / ".agents/governance/private.md"
+            private.write_bytes(b"synthetic private input")
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                findings = contract.validate_repository(root, bundle, "harness")
+                with self.assertRaisesRegex(
+                    contract.ContractLoadError, "CANONICAL-HOME"
+                ):
+                    contract.load_contract_bundle(root)
+            self.assertIn("AGC-CANONICAL-HOME", {item.code for item in findings})
+            self.assertNotIn(
+                ".agents/governance/private.md",
+                {str(call.args[1]) for call in read.call_args_list},
+            )
+            self.assertEqual(b"synthetic private input", private.read_bytes())
+
+    def test_registered_inventory_can_be_read_without_other_payloads(self) -> None:
+        from tests.validation.test_provider_surface_renderer import (
+            _copy_registered_file,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            _copy_registered_file(
+                ROOT, root, ".agents/governance/providers/registry.yaml"
+            )
+            sources = contract.canonical_source_paths(root)
+            self.assertEqual(98, len(sources))
+            self.assertIn(
+                pathlib.PurePosixPath(".agents/skills/adr-writing/SKILL.md"), sources
+            )
+            self.assertFalse((root / ".agents/skills").exists())
+
+    def test_canonical_child_boundaries_preserve_unknown_inputs(self) -> None:
+        for kind in ("unknown", "symlink", "fifo"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                source = root / ".agents/skills/adr-writing/SKILL.md"
+                if kind == "unknown":
+                    source = source.parent / "unknown.txt"
+                    source.write_bytes(b"user-owned")
+                else:
+                    source.unlink()
+                    if kind == "fifo":
+                        os.mkfifo(source)
+                    else:
+                        outside = root / "outside"
+                        outside.write_bytes(b"user-owned")
+                        source.symlink_to(outside)
+                with self.assertRaisesRegex(
+                    contract.ContractLoadError, "CANONICAL-HOME"
+                ):
+                    contract.load_agent_governance(root)
+                self.assertTrue(os.path.lexists(source))
+                if kind == "unknown":
+                    self.assertEqual(b"user-owned", source.read_bytes())
 
     def test_read_only_review_roles_remain_read_only(self) -> None:
         state = contract.load_agent_governance(ROOT)
@@ -139,28 +242,22 @@ class AgentGovernanceContractTests(unittest.TestCase):
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)
         self.assertEqual(
-            ("README.md", "policies", "providers", "roles", "sdlc.md", "skills"),
+            ("README.md", "governance", "roles", "skills"),
             state.root_entries,
         )
         self.assertEqual(
-            ("README.md", "claude.md", "codex.md", "registry.yaml"),
+            ("README.md", "registry.yaml"),
             state.provider_entries,
         )
         self.assertEqual(
-            {
-                path.stem
-                for path in (ROOT / "docs/00.agent-governance/roles").glob("*.md")
-            },
+            {path.stem for path in (ROOT / ".agents/roles").glob("*.md")},
             {role.agent_id for role in state.roles},
         )
         self.assertEqual(
-            {
-                path.stem
-                for path in (ROOT / "docs/00.agent-governance/skills").glob("*.md")
-            },
+            {path.parent.name for path in (ROOT / ".agents/skills").glob("*/SKILL.md")},
             {skill.skill_id for skill in state.skills},
         )
-        self.assertFalse((ROOT / "docs/00.agent-governance/memory").exists())
+        self.assertFalse((ROOT / ".agents/memory").exists())
         retired_provider = "ge" + "mini"
         self.assertFalse((ROOT / ("." + retired_provider)).exists())
         self.assertFalse((ROOT / (retired_provider.upper() + ".md")).exists())
@@ -174,7 +271,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            policy = root / "docs/00.agent-governance/policies/agentic.md"
+            policy = root / ".agents/governance/agentic.md"
             retired_experiment = "Anti" + "gravity"
             policy.write_text(policy.read_text() + f"\n{retired_experiment} adapter\n")
             findings = contract.validate_repository(
@@ -275,7 +372,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
             "top-level-key": lambda data: data.update({"unknown": True}),
             "provider-key": lambda data: data["providers"][0].update({"unknown": True}),
             "adapter-cross-reference": lambda data: data["providers"][0].update(
-                {"adapter_path": "docs/00.agent-governance/providers/codex.md"}
+                {"adapter_path": ".codex/provider.md"}
             ),
             "unsafe-projection": lambda data: data["providers"][0].update(
                 {"native_agent_pattern": "../outside/{agent_id}.md"}
@@ -296,7 +393,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_governance_fixture(root)
-                path = root / "docs/00.agent-governance/providers/registry.yaml"
+                path = root / ".agents/governance/providers/registry.yaml"
                 data = yaml.safe_load(path.read_text(encoding="utf-8"))
                 mutation(data)
                 path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
@@ -307,7 +404,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry_path = root / ".agents/governance/providers/registry.yaml"
             data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             binding = data["hook_contracts"]["codex"]["Stop"]
             original = binding["executable"]
@@ -327,26 +424,26 @@ class AgentGovernanceContractTests(unittest.TestCase):
     def test_canonical_role_and_skill_identifiers_are_safe_slugs(self) -> None:
         cases = {
             "role-id": (
-                "docs/00.agent-governance/roles/code-reviewer.md",
-                "docs/00.agent-governance/roles/evil: true.md",
+                ".agents/roles/code-reviewer.md",
+                ".agents/roles/evil: true.md",
                 'agent_id: "code-reviewer"',
                 'agent_id: "evil: true"',
             ),
             "skill-id": (
-                "docs/00.agent-governance/skills/code-review-dimensions.md",
-                "docs/00.agent-governance/skills/evil: true.md",
+                ".agents/skills/code-review-dimensions/SKILL.md",
+                ".agents/skills/evil: true/SKILL.md",
                 'function_id: "code-review-dimensions"',
                 'function_id: "evil: true"',
             ),
             "owner-id": (
-                "docs/00.agent-governance/skills/code-review-dimensions.md",
-                "docs/00.agent-governance/skills/code-review-dimensions.md",
+                ".agents/skills/code-review-dimensions/SKILL.md",
+                ".agents/skills/code-review-dimensions/SKILL.md",
                 'owner_agent: "code-reviewer"',
                 'owner_agent: "evil: true"',
             ),
             "skill-reference": (
-                "docs/00.agent-governance/roles/code-reviewer.md",
-                "docs/00.agent-governance/roles/code-reviewer.md",
+                ".agents/roles/code-reviewer.md",
+                ".agents/roles/code-reviewer.md",
                 '- "code-review-dimensions"',
                 '- "evil: true"',
             ),
@@ -362,10 +459,87 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 self.assertNotEqual(original, text)
                 if target != source:
                     source.unlink()
+                target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text(text, encoding="utf-8")
 
                 with self.assertRaises(contract.ContractLoadError):
                     contract.load_agent_governance(root)
+
+    def test_workspace_active_scan_does_not_read_ignored_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            private = root / "_workspace/repo-support/private-state.json"
+            private.parent.mkdir(parents=True, exist_ok=True)
+            private.write_bytes(b"private synthetic scratch state")
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                contract.validate_repository(root, bundle, "harness")
+            self.assertNotIn(
+                "_workspace/repo-support/private-state.json",
+                {str(call.args[1]) for call in read.call_args_list},
+            )
+            self.assertEqual(b"private synthetic scratch state", private.read_bytes())
+
+    def test_adopted_output_style_is_current_authority(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            settings = json.loads((root / ".claude/settings.json").read_text())
+            self.assertEqual("hy-home", settings["outputStyle"])
+            relative = ".claude/output-styles/hy-home.md"
+            style = root / relative
+            style.write_text(
+                style.read_text()
+                + "\nLoad docs/00.agent-governance/policies/bootstrap.md.\n"
+            )
+            findings = contract.validate_repository(
+                root, contract.load_contract_bundle(root), "harness"
+            )
+            self.assertIn(
+                relative,
+                {
+                    item.path
+                    for item in findings
+                    if item.code == "AGC-UNSUPPORTED-TOKEN"
+                },
+            )
+
+    def test_unregistered_output_style_is_preserved_without_reading(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            relative = ".claude/output-styles/private-local.md"
+            private = root / relative
+            private.write_bytes(b"private synthetic style input")
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                contract.validate_repository(root, bundle, "harness")
+            self.assertNotIn(
+                relative, {str(call.args[1]) for call in read.call_args_list}
+            )
+            self.assertEqual(b"private synthetic style input", private.read_bytes())
+
+    def test_native_active_scan_does_not_read_local_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            private = root / ".claude/settings.local.json"
+            private.write_bytes(b"private fixture payload")
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                contract.validate_repository(root, bundle, "harness")
+            self.assertNotIn(
+                ".claude/settings.local.json",
+                {str(call.args[1]) for call in read.call_args_list},
+            )
+            self.assertEqual(b"private fixture payload", private.read_bytes())
 
     def test_active_text_scan_fails_closed_on_invalid_inputs(self) -> None:
         cases = ("invalid-utf8", "unreadable", "symlink", "fifo")
@@ -483,6 +657,65 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 else:
                     self.assertIn(target.relative_to(root).as_posix(), unsupported)
 
+    def test_python_retired_inventory_is_syntax_bounded(self) -> None:
+        path = "scripts/check_authority.py"
+        old = "docs/00.agent-governance"
+        inventories = (
+            f'RETIRED_PATHS = ("{old}",)\n',
+            f'RETIRED_PATHS = (\n    "{old}",\n)\n',
+            f'REMOVED_PATHS: tuple[str, ...] = ("{old}",)\n',
+        )
+        for inventory in inventories:
+            with self.subTest(inventory=inventory):
+                self.assertFalse(
+                    contract._has_unsupported_active_token(path, inventory)
+                )
+                self.assertTrue(
+                    contract._has_unsupported_active_token(
+                        path,
+                        inventory.rstrip() + f'; load("{old}/policies/bootstrap.md")\n',
+                    )
+                )
+                self.assertTrue(
+                    contract._has_unsupported_active_token(
+                        path,
+                        inventory + f'CURRENT_PATH = "{old}/policies/bootstrap.md"\n',
+                    )
+                )
+        for source in (
+            f'CURRENT_PATHS = ("{old}",)\n',
+            f'RETIRED_PATHS = tuple(["{old}"])\n',
+            f'RETIRED_PATHS = (load("{old}"),)\n',
+        ):
+            self.assertTrue(contract._has_unsupported_active_token(path, source))
+
+    def test_retired_home_has_no_active_route_or_physical_fallback(self) -> None:
+        path = "docs/03.specs/9999-example/spec.md"
+        old = "docs/00.agent-governance"
+        for route in (
+            f"Load {old}/policies/bootstrap.md.",
+            f"Use {old}/skills/adr-writing.md.",
+        ):
+            self.assertTrue(contract._has_unsupported_active_token(path, route))
+            historical = contract.HISTORICAL_QUOTE_MARKER + "\n> " + route
+            self.assertFalse(contract._has_unsupported_active_token(path, historical))
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            retired = root / old / "unowned.md"
+            retired.parent.mkdir(parents=True)
+            retired.write_bytes(b"preserved user content")
+            bundle = contract.load_contract_bundle(root)
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                findings = contract.validate_repository(root, bundle, "harness")
+            self.assertIn("AGC-RETIRED-SURFACE", {item.code for item in findings})
+            self.assertFalse(
+                any(str(call.args[1]).startswith(old) for call in read.call_args_list)
+            )
+            self.assertEqual(b"preserved user content", retired.read_bytes())
+
     def test_explicit_history_quote_does_not_hide_adjacent_current_authority(
         self,
     ) -> None:
@@ -502,6 +735,39 @@ class AgentGovernanceContractTests(unittest.TestCase):
         self.assertTrue(
             contract._has_unsupported_active_token("scripts/current.py", quote)
         )
+
+    def test_source_reader_rejects_ancestor_replacement_race(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            inside = root / ".agents/governance/providers/registry.yaml"
+            outside = root / "outside/governance/providers/registry.yaml"
+            inside.parent.mkdir(parents=True)
+            outside.parent.mkdir(parents=True)
+            inside.write_bytes(b"registered input")
+            outside.write_bytes(b"outside sentinel")
+            real_stat = contract.os.stat
+            swapped = False
+
+            def swap_after_parent_stat(path, *args, **kwargs):
+                nonlocal swapped
+                result = real_stat(path, *args, **kwargs)
+                if not swapped and str(path) in {str(root / ".agents"), ".agents"}:
+                    swapped = True
+                    (root / ".agents").rename(root / "original-agents")
+                    (root / ".agents").symlink_to(
+                        root / "outside", target_is_directory=True
+                    )
+                return result
+
+            with mock.patch.object(
+                contract.os, "stat", side_effect=swap_after_parent_stat
+            ):
+                with self.assertRaises(contract.ContractLoadError):
+                    contract.read_repository_text(
+                        root, ".agents/governance/providers/registry.yaml"
+                    )
+            self.assertTrue(swapped)
+            self.assertEqual(b"outside sentinel", outside.read_bytes())
 
     def test_active_reader_retains_finite_four_mebibyte_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -601,6 +867,20 @@ class AgentGovernanceContractTests(unittest.TestCase):
 
     def test_projection_routes_and_managed_roots_are_strict(self) -> None:
         mutations = {
+            "canonical-native-root": lambda data: data["generated_roots"].append(
+                ".agents/skills"
+            ),
+            "canonical-static-output": lambda data: data["projections"][0].update(
+                {"path": ".agents/README.md"}
+            ),
+            "codex-fake-native-skill": lambda data: data["providers"][1].update(
+                {"native_skill_pattern": ".codex/skills/{skill_id}/SKILL.md"}
+            ),
+            "old-canonical-route": lambda data: data["providers"][1].update(
+                {
+                    "canonical_skill_pattern": "docs/00.agent-governance/skills/{skill_id}.md"
+                }
+            ),
             "projection-provider": lambda data: data["projections"][0].update(
                 {"provider_id": "unsupported"}
             ),
@@ -628,7 +908,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_governance_fixture(root)
-                path = root / "docs/00.agent-governance/providers/registry.yaml"
+                path = root / ".agents/governance/providers/registry.yaml"
                 data = yaml.safe_load(path.read_text(encoding="utf-8"))
                 mutation(data)
                 path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
@@ -639,8 +919,8 @@ class AgentGovernanceContractTests(unittest.TestCase):
         text = "\n".join(
             (ROOT / path).read_text(encoding="utf-8")
             for path in (
-                "docs/00.agent-governance/policies/agentic.md",
-                "docs/00.agent-governance/policies/approval-boundaries.md",
+                ".agents/governance/agentic.md",
+                ".agents/governance/approval-boundaries.md",
             )
         ).lower()
         for literal in (

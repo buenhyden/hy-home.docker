@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0001"
 parent_ids:
@@ -17,10 +17,17 @@ review_cycle: "on-source-change"
 
 # Reference: Agent Instructions and Bounded Vibe Coding
 
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
 ## Overview
 
 Agent instructions are scoped context, not proof of enforcement. In this
-workspace, direct system/user authority and tracked Stage 00 governance own the
+workspace, direct system/user authority and tracked canonical agent governance governance own the
 rules; root shims, provider overlays, generated agents, skills, settings, and
 hooks translate those rules for individual runtimes. Conversational or
 "vibe-coding" iteration remains acceptable only inside the same ownership,
@@ -39,11 +46,12 @@ generated-code ownership, escalation, and coupled change surfaces.
 
 ## Repository Role
 
-This Stage 90 reference explains the current system and identifies gaps. It
-does not create instruction precedence, grant a tool, authorize a mutation, or
-change provider configuration. Canonical authority remains in
-`docs/00.agent-governance/`; executable provider mechanics remain in their
-tracked adapters.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> This Stage 90 reference explains the current system and identifies gaps. It
+> does not create instruction precedence, grant a tool, authorize a mutation, or
+> change provider configuration. Canonical authority remains in
+> `docs/00.agent-governance/`; executable provider mechanics remain in their
+> tracked adapters.
 
 ## Scope
 
@@ -63,6 +71,7 @@ tracked adapters.
 
 ### Instruction authority and provider translation
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Layer                       | Tracked owner or surface                       | Meaning                                                            | Evidence limit                                          |
 | --------------------------- | ---------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------- |
 | Direct authority            | System and user instructions                   | Highest-priority task authority                                    | Not stored as repository policy by this leaf.           |
@@ -85,28 +94,30 @@ verify the result.
 This axis is easy to conflate because three separate precedence orders exist
 at once, only one of which this repository authors:
 
-1. **This repository's instruction hierarchy** (`providers/agents-md.md` §4,
-   read directly): (1) direct user/system instructions — always win; (2)
-   `docs/00.agent-governance/` — authoritative for policy; (3) root shim files
-   (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`); (4) provider overlays
-   (`providers/{claude,codex,gemini}.md`); (5) runtime controls (`.claude/`,
-   `.codex/`, `.gemini/`); (6) `.agents/` compatibility surfaces. This is
-   repo-authored policy, not a vendor mechanism.
-2. **Claude's native settings-file precedence** (`code.claude.com/docs/en/settings`,
-   re-verified 2026-08-14): managed > CLI arguments > `.claude/settings.local.json`
-   > `.claude/settings.json` > `~/.claude/settings.json` — a vendor-defined
-   > scope order for the JSON `permissions`/`hooks`/`autoMode` schema, with the
-   > caveat that `permissions` rules _merge_ across scopes rather than strictly
-   > overriding (any-scope `deny` wins, `allow` accumulates).
-3. **Claude's native CLAUDE.md load-location precedence** (`code.claude.com/docs/en/memory`,
-   re-verified 2026-08-14): managed policy (`/etc/claude-code/CLAUDE.md` or
-   equivalent) > user (`~/.claude/CLAUDE.md`) > project (`./CLAUDE.md` or
-   `./.claude/CLAUDE.md`) > local (`./CLAUDE.local.md`) — a fourth, separate
-   ordering for _which memory file_ is discovered, distinct from both (1) and
-   (2). CLAUDE.md content is "delivered as a user message after the system
-   prompt, not as part of the system prompt itself" per that page — an
-   explicit vendor statement that instruction files are context, not a hard
-   enforcement layer; only settings/hooks enforce.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+>
+> 1. **This repository's instruction hierarchy** (`providers/agents-md.md` §4,
+>    read directly): (1) direct user/system instructions — always win; (2)
+>    `docs/00.agent-governance/` — authoritative for policy; (3) root shim files
+>    (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`); (4) provider overlays
+>    (`providers/{claude,codex,gemini}.md`); (5) runtime controls (`.claude/`,
+>    `.codex/`, `.gemini/`); (6) `.agents/` compatibility surfaces. This is
+>    repo-authored policy, not a vendor mechanism.
+> 2. **Claude's native settings-file precedence** (`code.claude.com/docs/en/settings`,
+>    re-verified 2026-08-14): managed > CLI arguments > `.claude/settings.local.json`
+>    > `.claude/settings.json` > `~/.claude/settings.json` — a vendor-defined
+>    > scope order for the JSON `permissions`/`hooks`/`autoMode` schema, with the
+>    > caveat that `permissions` rules _merge_ across scopes rather than strictly
+>    > overriding (any-scope `deny` wins, `allow` accumulates).
+> 3. **Claude's native CLAUDE.md load-location precedence** (`code.claude.com/docs/en/memory`,
+>    re-verified 2026-08-14): managed policy (`/etc/claude-code/CLAUDE.md` or
+>    equivalent) > user (`~/.claude/CLAUDE.md`) > project (`./CLAUDE.md` or
+>    `./.claude/CLAUDE.md`) > local (`./CLAUDE.local.md`) — a fourth, separate
+>    ordering for _which memory file_ is discovered, distinct from both (1) and
+>    (2). CLAUDE.md content is "delivered as a user message after the system
+>    prompt, not as part of the system prompt itself" per that page — an
+>    explicit vendor statement that instruction files are context, not a hard
+>    enforcement layer; only settings/hooks enforce.
 
 Re-derived directly in this worktree: this repository tracks no
 `.claude/rules/` directory, no `CLAUDE.local.md`, and only one project-scope
@@ -146,6 +157,7 @@ approval-bypassing action, or skip the independent-review loop.
 All three root shims were re-read directly at this baseline (line counts
 exact):
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | File        | Lines | Loading mechanism                     | Content                                                                                                                                                                                  |
 | ----------- | ----: | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md` |     7 | Prose instruction ("Load `docs/...`") | Codex's official AGENTS.md page (re-verified 2026-08-14) states content is "read and prepended to the agent's context — it's not transcluded but actively loaded," rebuilt on every run. |
@@ -182,6 +194,7 @@ workspace-specific form of AIV-01 below.
 
 ### Instruction and generated-work criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Claim                        | Required workspace rule                                                               | Current status                                         | Verification limit / gap                                           |
 | ---------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------ |
 | AIV-01 Authority             | Stage 00 is canonical; projections cannot redefine policy.                            | Implemented in tracked governance and renderer inputs. | Provider loading is unobserved.                                    |
@@ -277,16 +290,17 @@ do not establish that this repository loaded either file in a live session.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source | Accessed | Class | Use and verification state |
 | --- | --- | --- | --- |
 | [Claude instructions and memory](https://code.claude.com/docs/en/memory) | 2026-08-14 | External mutable | Re-verified: full CLAUDE.md load-location order, `@import` 4-hop limit, external-import approval dialog, path-scoped `.claude/rules/`, "delivered as user message not system prompt." |
 | [Claude settings](https://code.claude.com/docs/en/settings) | 2026-08-14 | External mutable | New: exact 5-level settings-scope precedence, permission-merge-across-scopes rule. |
 | [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | 2026-08-14 | External mutable | Re-verified: global/project discovery order, `AGENTS.override.md`, 32 KiB `project_doc_max_bytes` default, "read and prepended, not transcluded." |
 | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference) | 2026-08-08 | External mutable | HTTP 200; instruction replacement and configuration boundary. |
-| [Stage 00 bootstrap](../../../00.agent-governance/policies/bootstrap.md) | 2026-08-14 | Workspace tracked | Re-read: canonical loading sequence and evidence boundary. |
+| [Canonical governance bootstrap](../../../../.agents/governance/bootstrap.md) | 2026-08-14 | Workspace tracked | Re-read: canonical loading sequence and evidence boundary. |
 | Provider-neutral notes (retired path: `../../../00.agent-governance/providers/agents-md.md`) | 2026-08-14 | Workspace tracked | Re-read: exact 6-level precedence list (§4) and Canonical Adapter Model (§5) with the five adapter rules. |
-| [Task checklists](../../../00.agent-governance/policies/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
-| [Environment constraints](../../../00.agent-governance/policies/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
+| [Task checklists](../../../../.agents/governance/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
+| [Environment constraints](../../../../.agents/governance/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
 | Root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) | 2026-08-14 | Workspace tracked | Read directly: exact line counts and `@`-import vs. prose-instruction loading mechanism per file. |
 | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; corroborated against tracked sources and not used as current proof. |
 

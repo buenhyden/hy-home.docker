@@ -31,6 +31,7 @@ from scripts.lib.document_governance.metadata.lifecycle import (
 from scripts.lib.document_governance.metadata.profile import (
     EXPECTED_EXCEPTION_SCHEMA,
     TARGET_MARKDOWN_PREFIXES,
+    TARGET_MARKDOWN_FILES,
     Finding,
     ProfileError,
     Record,
@@ -65,6 +66,7 @@ __all__ = (
     "Record",
     "RegistryError",
     "TARGET_MARKDOWN_PREFIXES",
+    "TARGET_MARKDOWN_FILES",
     "_introduced_body_findings",
     "_native_migration_compaction_witness",
     "_parse_frontmatter_text",

@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.1.0"
+version: "0.1.1"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0084-m0001"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: GitHub Actions Platform Mechanics
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 **Historical evidence notice.** Sections below preserve the package created and
 initially observed on 2026-07-05, including its external-source refresh dated
@@ -53,10 +60,10 @@ about against documented platform rules rather than against local habit.
 ## Repository Role
 
 `.github/workflows/` and `.github/workflow-contract.yml` remain the tracked
-implementation and its typed registry.
-`docs/00.agent-governance/rules/github-governance.md` remains the active
-policy. This Stage 90 document is a platform reference and changes no rule,
-workflow, or contract.
+implementation and its typed registry. The current policy is
+[GitHub governance](../../../../.agents/governance/github-governance.md).
+This Stage 90 document is a platform reference and changes no rule, workflow,
+or contract.
 
 ## Scope
 

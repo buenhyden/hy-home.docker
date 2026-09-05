@@ -28,9 +28,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         subprocess.run(
             ["git", "config", "user.email", "t@example.com"], cwd=repo, check=True
         )
-        subprocess.run(
-            ["git", "config", "user.name", "Test"], cwd=repo, check=True
-        )
+        subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
         gate = repo / "scripts/validation/run-ci-gate.py"
         gate.parent.mkdir(parents=True)
         gate.write_text(
@@ -87,15 +85,15 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             check=False,
         )
 
-    def test_github_routing_uses_canonical_stage00_roots(self) -> None:
+    def test_github_routing_includes_hidden_canonical_home(self) -> None:
         paths = (
             ROOT / ".github/CODEOWNERS",
             ROOT / ".github/PULL_REQUEST_TEMPLATE.md",
             ROOT / ".github/labeler.yml",
         )
         text = "\n".join(path.read_text(encoding="utf-8") for path in paths)
-        self.assertIn("docs/00.agent-governance/policies/", text)
-        self.assertNotIn("docs/00.agent-governance/rules/", text)
+        self.assertIn(".agents/", text)
+        self.assertNotIn("docs/00.agent-governance/", text)
         self.assertNotIn("." + "ge" + "mini", text.lower())
 
     def test_manifest_registers_provider_check_and_renderer(self) -> None:
@@ -112,7 +110,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
     def test_post_tool_yaml_registry_uses_governance_parser_not_json_tool(self) -> None:
         text = (ROOT / "scripts/hooks/post-tool-validate.sh").read_text()
         self.assertNotIn(
-            "python3 -m json.tool docs/00.agent-governance/providers/registry.yaml",
+            "python3 -m json.tool .agents/governance/providers/registry.yaml",
             text,
         )
         self.assertNotIn("run-ci-gate.py --profile changed", text)
@@ -144,9 +142,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     self.assertEqual(0, result.returncode, result.stderr)
                     self.assertEqual(
                         ["--profile changed"],
-                        (repo / ".gate-calls")
-                        .read_text(encoding="utf-8")
-                        .splitlines(),
+                        (repo / ".gate-calls").read_text(encoding="utf-8").splitlines(),
                     )
 
     def test_stop_clean_tree_skips_changed_profile(self) -> None:
@@ -199,7 +195,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 first = self._run_stop(repo, provider, allow_uncommitted=False)
                 self.assertEqual(0, first.returncode, first.stderr)
                 self.assertIn("Uncommitted paths", first.stdout)
-                self.assertEqual(1, len((repo / ".gate-calls").read_text().splitlines()))
+                self.assertEqual(
+                    1, len((repo / ".gate-calls").read_text().splitlines())
+                )
                 retry = self._run_stop(
                     repo,
                     provider,
@@ -208,7 +206,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 )
                 self.assertEqual(0, retry.returncode, retry.stderr)
                 self.assertIn("manual", retry.stdout.lower())
-                self.assertEqual(1, len((repo / ".gate-calls").read_text().splitlines()))
+                self.assertEqual(
+                    1, len((repo / ".gate-calls").read_text().splitlines())
+                )
 
     def test_stop_git_status_failure_blocks_without_session_end(self) -> None:
         for provider in ("claude", "codex"):
@@ -219,8 +219,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self._write_executable(
                     fake_bin / "git",
                     "#!/bin/sh\n"
-                    "if [ \"$1\" = status ]; then exit 42; fi\n"
-                    "exec /usr/bin/git \"$@\"\n",
+                    'if [ "$1" = status ]; then exit 42; fi\n'
+                    'exec /usr/bin/git "$@"\n',
                 )
                 result = self._run_stop(
                     repo,
@@ -256,8 +256,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     self._write_executable(
                         fake_bin / "git",
                         "#!/bin/sh\n"
-                        "if [ \"$1\" = status ]; then exec /bin/cat .fake-status; fi\n"
-                        "exec /usr/bin/git \"$@\"\n",
+                        'if [ "$1" = status ]; then exec /bin/cat .fake-status; fi\n'
+                        'exec /usr/bin/git "$@"\n',
                     )
                     result = self._run_stop(
                         repo,
@@ -289,7 +289,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     fake_bin / "git",
                     "#!/bin/sh\n"
                     "if [ \"$1\" = status ]; then printf '%s\\n' malformed; exit 0; fi\n"
-                    "exec /usr/bin/git \"$@\"\n",
+                    'exec /usr/bin/git "$@"\n',
                 )
                 result = self._run_stop(
                     repo,
@@ -315,9 +315,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 fake_bin / "timeout",
                 "#!/bin/sh\nprintf '%s\\n' \"$@\" > .timeout-arguments\nexit 124\n",
             )
-            result = self._run_stop(
-                repo, path=f"{fake_bin}:/usr/bin:/bin"
-            )
+            result = self._run_stop(repo, path=f"{fake_bin}:/usr/bin:/bin")
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertNotIn("Session ending", result.stdout)
             self.assertIn("timed out", result.stdout.lower())
@@ -484,7 +482,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     target = repo / relative
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_text(
-                        "#!/bin/sh\nif then\n" if check == "syntax"
+                        "#!/bin/sh\nif then\n"
+                        if check == "syntax"
                         else "#!/bin/sh\necho ok\n",
                         encoding="utf-8",
                     )
@@ -494,7 +493,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     for tool in ("shfmt", "shellcheck"):
                         self._write_executable(
                             fake_bin / tool,
-                            "#!/bin/sh\nexit " + ("37" if tool == check else "0") + "\n",
+                            "#!/bin/sh\nexit "
+                            + ("37" if tool == check else "0")
+                            + "\n",
                         )
                     result = subprocess.run(
                         ["bash", str(POST_TOOL), "--check"],
@@ -524,18 +525,12 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             (scripts / "first.sh").write_text(
                 "#!/bin/sh\necho valid\n", encoding="utf-8"
             )
-            (scripts / "second.sh").write_text(
-                "#!/bin/sh\nif then\n", encoding="utf-8"
-            )
+            (scripts / "second.sh").write_text("#!/bin/sh\nif then\n", encoding="utf-8")
             result = subprocess.run(
                 ["bash", str(POST_TOOL), "--check"],
                 cwd=repo,
                 input=json.dumps(
-                    {
-                        "tool_input": {
-                            "files": ["scripts/first.sh", "scripts/second.sh"]
-                        }
-                    }
+                    {"tool_input": {"files": ["scripts/first.sh", "scripts/second.sh"]}}
                 ),
                 capture_output=True,
                 text=True,

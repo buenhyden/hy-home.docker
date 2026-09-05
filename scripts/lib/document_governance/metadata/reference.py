@@ -37,6 +37,7 @@ from scripts.lib.document_governance.registry import (
     load_registry,
     load_trusted_requirement_allocation_baseline,
     resolve_template_placeholders,
+    normalize_profile_frontmatter,
     validate_frontmatter,
 )
 from scripts.lib.document_governance.requirements import (
@@ -74,6 +75,7 @@ from scripts.lib.document_governance.metadata.lifecycle import (
     _task10_archive_moved_body_baseline,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
+    _governance_moved_body_baseline,
     _text_at_ref,
     collect_records,
     collect_records_at_ref,
@@ -276,6 +278,9 @@ def validate_repository_contracts(
         records = collect_records(
             root,
             profiles,
+            selected_paths=sorted(
+                _changed_paths(root, (), BaseSelection("worktree", None, None))
+            ),
             previous_records=previous_records,
             require_git=True,
         )
@@ -833,36 +838,45 @@ def render_report(
     parse_count = sum(1 for record in records if record.parse_error)
     lines = [
         "---",
-        "status: active",
+        'title: "Reference: Frontmatter Semantic Inventory"',
+        'version: "1.0.1"',
+        'type: "reference/audit-pack"',
+        'status: "published"',
+        'owner: "@buenhyden"',
+        'updated: "2026-09-06"',
+        'layer: "references"',
+        'artifact_id: "AUD-0023"',
+        "parent_ids: []",
+        'created: "2026-07-05"',
+        'observed_at: "2026-09-06"',
         "generated_by: scripts/validation/check-document-metadata.py",
         "---",
         "",
-        "<!-- Target: docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md -->",
-        "",
         "# Reference: Frontmatter Semantic Inventory",
         "",
-        "## Overview",
+        "## Objective",
         "",
-        "This generated advisory reference inventories every tracked target-stage and",
+        "This generated advisory reference inventories tracked and selected new target-stage and",
         "governance/template Markdown document except this self-referential output. It records inferred profiles",
         "and metadata findings without printing body content, secret values, or raw logs.",
+        "The original snapshot supported Spec 123 Tasks 7 and 8; this regeneration measures the current worktree.",
         "",
-        "## Purpose",
+        "## Criteria",
         "",
-        "Provide the deterministic pre/post-migration comparison for Spec 123 Tasks 7 and 8.",
+        "Use the Stage 99 Registry's profile, identity, relation, lifecycle, and freshness contracts.",
         "Historical semantic findings remain advisory here; the separate changed/new",
         "checker enforces only its safely selected diff scope.",
         "",
         "## Repository Role",
         "",
-        "Stage 00 and Stage 99 own active metadata policy. This Stage 90 snapshot is",
+        "`.agents/governance` and Stage 99 own active metadata policy. This Stage 90 snapshot is",
         "generated evidence only; regenerate it with `check-document-metadata.py`.",
         "",
         "## Scope",
         "",
         "### In Scope",
         "",
-        "- Tracked Markdown paths, inferred profiles, safe frontmatter parse state, and finding codes",
+        "- Tracked and selected new managed Markdown paths, inferred profiles, safe frontmatter parse state, and finding codes",
         "- Identity, parent, lifecycle, freshness, README, generated, governance, template, and archive profiles",
         "",
         "### Out of Scope",
@@ -871,9 +885,9 @@ def render_report(
         "- Filesystem modification times as freshness evidence",
         "- Raw document bodies, logs, credentials, or secret values",
         "",
-        "## Definitions / Facts",
+        "## Evidence",
         "",
-        f"- **Tracked records**: {len(records)}",
+        f"- **Current records**: {len(records)}",
         f"- **Records with findings**: {semantic_count}",
         f"- **Frontmatter parser failures**: {parse_count}",
         "- **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking",
@@ -887,7 +901,15 @@ def render_report(
         f"| `{name}` | {count} |" for name, count in sorted(profile_counts.items())
     )
     lines.extend(
-        ["", "## Finding Summary", "", "| Finding | Count |", "| --- | ---: |"]
+        [
+            "",
+            "## Findings",
+            "",
+            "### Finding Summary",
+            "",
+            "| Finding | Count |",
+            "| --- | ---: |",
+        ]
     )
     if finding_counts:
         lines.extend(
@@ -933,20 +955,24 @@ def render_report(
             "",
             "## Source Rules",
             "",
-            "- Paths come from sorted `git ls-files '*.md'` output filtered to canonical docs stages; non-Git fixtures use sorted recursive discovery.",
+            "- Paths come from bounded Git tracked and changed/new Markdown discovery filtered to managed document roots; ignored files are excluded. Non-Git fixtures use sorted recursive discovery.",
             "- YAML is parsed with PyYAML `safe_load` behavior plus duplicate-key rejection.",
             "- Every row states parse, identity, relation, lifecycle, transition-evidence, freshness, and exception semantics; unavailable history is never inferred.",
             "- The report shows only bounded metadata states, safe repository paths, counts, and finding codes.",
             "- Graphify is advisory and is not used as inventory proof.",
             "",
-            "## Sources",
+            "## Traceability",
             "",
-            "- [Frontmatter contract](../../../99.templates/support/frontmatter-contract.md) - metadata ownership and exception rules",
-            "- [Lifecycle status](../../../99.templates/support/lifecycle-status.md) - lifecycle vocabulary and transitions",
-            "- [Spec 123](../../../03.specs/123-agentic-engineering-audit-remediation/spec.md) - typed metadata and rollout contract",
-            "- [Semantic audit](./frontmatter-template-readme-implementation.md) - pre-remediation criteria and baseline",
+            "- [Document Registry](../../../99.templates/registry.json) - metadata ownership and exception rules",
+            "- [Template governance](../../../99.templates/README.md) - lifecycle vocabulary and transitions",
+            "- [Semantic audit](../0024-frontmatter-template-readme-implementation/README.md) - historical pre-remediation criteria and baseline",
             "",
-            "## Maintenance",
+            "## Conformance",
+            "",
+            f"The inventory contains {semantic_count} records with findings and {parse_count} parser failures. These counts describe static document checks; they do not establish execution or provider-runtime conformance.",
+            "The separate official checks determine acceptance for their selected scope.",
+            "",
+            "## Actions",
             "",
             "- **Owner**: Metadata program owner / rules-engineer",
             "- **Review Cadence**: Regenerate when tracked Markdown or metadata profiles change",
@@ -955,8 +981,8 @@ def render_report(
             "## Related Documents",
             "",
             "- [Audit pack README](./README.md)",
-            "- [Frontmatter/template/README audit](./frontmatter-template-readme-implementation.md)",
-            "- [SDLC and document-contract audit](./sdlc-document-contracts-implementation.md)",
+            "- [Frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md)",
+            "- [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md)",
             "",
         ]
     )
@@ -1199,8 +1225,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
                     continue
                 try:
-                    values = _parse_frontmatter_text(text)
-                except FrontmatterError:
+                    values = normalize_profile_frontmatter(
+                        _parse_frontmatter_text(text), profile
+                    )
+                except (FrontmatterError, RegistryError):
                     contract_findings.append(
                         Finding(
                             source,
@@ -1390,6 +1418,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+    elif args.mode in {"report", "check-active"} and (root / ".git").exists():
+        try:
+            changed_selection = _changed_paths(root, (), base)
+        except ProfileError as error:
+            print(f"configuration-error: {error}", file=sys.stderr)
+            return 2
     base_records: list[Record] = []
     verified_task10_move_targets: set[str] = set()
     if base.merge_base:
@@ -1399,9 +1433,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
     base_records_by_path = {record.path.as_posix(): record for record in base_records}
+    governance_move_texts: dict[str, str] = {}
     if args.mode == "check-changed" and base.merge_base:
         for path_text in sorted(changed_selection):
             if path_text in base_records_by_path:
+                continue
+            governance_record, governance_text = _governance_moved_body_baseline(
+                root, pathlib.Path(path_text), profiles, base.merge_base
+            )
+            if governance_record is not None and governance_text is not None:
+                base_records_by_path[path_text] = governance_record
+                governance_move_texts[path_text] = governance_text
                 continue
             moved_record, _ = _task10_archive_moved_body_baseline(
                 root,
@@ -1493,7 +1535,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ]
                 continue
             base_record = base_records_by_path.get(path_text)
-            base_text = _text_at_ref(root, record.path, base.merge_base)
+            base_text = governance_move_texts.get(path_text)
+            if base_text is None:
+                base_text = _text_at_ref(root, record.path, base.merge_base)
             if (
                 base_text is not None
                 and current_text != base_text

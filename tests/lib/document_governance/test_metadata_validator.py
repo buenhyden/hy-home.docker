@@ -557,6 +557,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self.assertTrue(paths)
         self.assertTrue(all(identity is not None for identity in identities))
         self.assertEqual(len(paths), len(set(identities)))
+
     def test_requirement_template_publishes_all_owned_child_id_patterns(self) -> None:
         text = (
             ROOT
@@ -584,9 +585,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         )
         self.assertEqual(
             (
-                pathlib.PurePosixPath(
-                    "scripts/validation/check-operations-catalog.py"
-                ),
+                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
                 pathlib.PurePosixPath(
                     "scripts/operations/rehearse-postgres-logical-upgrade.sh"
                 ),
@@ -616,7 +615,7 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             [
                 "git",
                 "ls-files",
-                "docs/00.agent-governance",
+                ".agents",
                 "docs/99.templates",
                 ".claude/skills",
             ],
@@ -630,8 +629,6 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         )
         violations: list[str] = []
         for relative in tracked:
-            if relative.startswith("docs/00.agent-governance/memory/"):
-                continue
             path = ROOT / relative
             if not path.exists():
                 continue
@@ -648,9 +645,9 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
         self,
     ) -> None:
         contracts = (
-            "docs/00.agent-governance/skills/ops-runbook-agent.md",
-            "docs/00.agent-governance/skills/incident-response.md",
-            "docs/00.agent-governance/policies/documentation-protocol.md",
+            ".agents/skills/ops-runbook-agent/SKILL.md",
+            ".agents/skills/incident-response/SKILL.md",
+            ".agents/governance/documentation-protocol.md",
             "docs/05.operations/incidents/README.md",
         )
         missing: list[str] = []

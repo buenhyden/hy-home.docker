@@ -1,0 +1,230 @@
+schema_version: 2
+providers:
+  - provider_id: claude
+    capability_status: supported
+    adoption_status: adopted
+    runtime_acceptance: needs_revalidation
+    adapter_path: .claude/provider.md
+    native_agent_pattern: .claude/agents/{agent_id}.md
+    native_skill_pattern: .claude/skills/{skill_id}/SKILL.md
+    canonical_skill_pattern: .agents/skills/{skill_id}/SKILL.md
+    native_config_path: .claude/settings.json
+  - provider_id: codex
+    capability_status: supported
+    adoption_status: adopted
+    runtime_acceptance: needs_revalidation
+    adapter_path: .codex/provider.md
+    native_agent_pattern: .codex/agents/{agent_id}.toml
+    # Canonical skill packages are source inputs, never generated projections.
+    native_skill_pattern: null
+    canonical_skill_pattern: .agents/skills/{skill_id}/SKILL.md
+    native_config_path: .codex/hooks.json
+canonical_sources:
+  - .agents/README.md
+  - .agents/governance/agentic.md
+  - .agents/governance/approval-boundaries.md
+  - .agents/governance/bootstrap.md
+  - .agents/governance/documentation-protocol.md
+  - .agents/governance/environment-constraints.md
+  - .agents/governance/git-workflow.md
+  - .agents/governance/github-governance.md
+  - .agents/governance/hooks/hookify.block-absolute-file-link.md
+  - .agents/governance/hooks/hookify.block-direct-main-push.md
+  - .agents/governance/hooks/hookify.block-gha-secrets-in-run.md
+  - .agents/governance/hooks/hookify.block-git-no-verify.md
+  - .agents/governance/hooks/hookify.block-plaintext-secret-compose.md
+  - .agents/governance/hooks/hookify.block-unpinned-gha-action.md
+  - .agents/governance/hooks/hookify.enforce-docs-templates.md
+  - .agents/governance/hooks/hookify.require-logical-commits-before-stop.md
+  - .agents/governance/hooks/hookify.warn-branch-naming.md
+  - .agents/governance/hooks/hookify.warn-conventional-commit.md
+  - .agents/governance/hooks/hookify.warn-docker-infra-stop.md
+  - .agents/governance/hooks/hookify.warn-force-push.md
+  - .agents/governance/hooks/hookify.warn-governance-memory-edit.md
+  - .agents/governance/hooks/hookify.warn-hook-parity-edit.md
+  - .agents/governance/hooks/hookify.warn-korean-in-governance.md
+  - .agents/governance/hooks/hookify.warn-parallel-doc-file.md
+  - .agents/governance/hooks/hookify.warn-pre-commit-manual.md
+  - .agents/governance/hooks/hookify.warn-stage-doc-edit.md
+  - .agents/governance/output-style.md
+  - .agents/governance/persona.md
+  - .agents/governance/postflight-checklist.md
+  - .agents/governance/provider-capability-matrix.md
+  - .agents/governance/providers/README.md
+  - .agents/governance/providers/registry.yaml
+  - .agents/governance/quality-standards.md
+  - .agents/governance/sdlc.md
+  - .agents/governance/stage-authoring-matrix.md
+  - .agents/governance/standards.md
+  - .agents/governance/task-checklists.md
+  - .agents/governance/workflows.md
+  - .agents/roles/ci-cd-engineer.md
+  - .agents/roles/code-reviewer.md
+  - .agents/roles/doc-writer.md
+  - .agents/roles/drift-detector.md
+  - .agents/roles/eval-engineer.md
+  - .agents/roles/hook-developer.md
+  - .agents/roles/iac-reviewer.md
+  - .agents/roles/incident-responder.md
+  - .agents/roles/infra-implementer.md
+  - .agents/roles/qa-engineer.md
+  - .agents/roles/rules-engineer.md
+  - .agents/roles/security-auditor.md
+  - .agents/roles/skill-creator.md
+  - .agents/roles/workflow-supervisor.md
+  - .agents/skills/adr-writing/SKILL.md
+  - .agents/skills/adr-writing/agents/openai.yaml
+  - .agents/skills/change-review-execution/SKILL.md
+  - .agents/skills/change-review-execution/agents/openai.yaml
+  - .agents/skills/ci-cd-patterns/SKILL.md
+  - .agents/skills/ci-cd-patterns/agents/openai.yaml
+  - .agents/skills/code-review-dimensions/SKILL.md
+  - .agents/skills/code-review-dimensions/agents/openai.yaml
+  - .agents/skills/compose-stack-agent/SKILL.md
+  - .agents/skills/compose-stack-agent/agents/openai.yaml
+  - .agents/skills/container-threat-modeling/SKILL.md
+  - .agents/skills/container-threat-modeling/agents/openai.yaml
+  - .agents/skills/deployment-pipeline-design/SKILL.md
+  - .agents/skills/deployment-pipeline-design/agents/openai.yaml
+  - .agents/skills/docker-compose-patterns/SKILL.md
+  - .agents/skills/docker-compose-patterns/agents/openai.yaml
+  - .agents/skills/e2e-testing/SKILL.md
+  - .agents/skills/e2e-testing/agents/openai.yaml
+  - .agents/skills/execution-plan-agent/SKILL.md
+  - .agents/skills/execution-plan-agent/agents/openai.yaml
+  - .agents/skills/incident-response/SKILL.md
+  - .agents/skills/incident-response/agents/openai.yaml
+  - .agents/skills/infra-cross-validate/SKILL.md
+  - .agents/skills/infra-cross-validate/agents/openai.yaml
+  - .agents/skills/infra-validate/SKILL.md
+  - .agents/skills/infra-validate/agents/openai.yaml
+  - .agents/skills/knowledge-map-agent/SKILL.md
+  - .agents/skills/knowledge-map-agent/agents/openai.yaml
+  - .agents/skills/ops-runbook-agent/SKILL.md
+  - .agents/skills/ops-runbook-agent/agents/openai.yaml
+  - .agents/skills/policy-gate-agent/SKILL.md
+  - .agents/skills/policy-gate-agent/agents/openai.yaml
+  - .agents/skills/provider-model-evaluation/SKILL.md
+  - .agents/skills/provider-model-evaluation/agents/openai.yaml
+  - .agents/skills/requirements-to-design-agent/SKILL.md
+  - .agents/skills/requirements-to-design-agent/agents/openai.yaml
+  - .agents/skills/security-audit/SKILL.md
+  - .agents/skills/security-audit/agents/openai.yaml
+  - .agents/skills/style-validation/SKILL.md
+  - .agents/skills/style-validation/agents/openai.yaml
+  - .agents/skills/task-breakdown-agent/SKILL.md
+  - .agents/skills/task-breakdown-agent/agents/openai.yaml
+  - .agents/skills/test-authoring/SKILL.md
+  - .agents/skills/test-authoring/agents/openai.yaml
+  - .agents/skills/workspace-audit-revalidation/SKILL.md
+  - .agents/skills/workspace-audit-revalidation/agents/openai.yaml
+projections:
+  - provider_id: claude
+    path: .claude/CLAUDE.md
+    source: .claude/provider.md
+  - provider_id: claude
+    path: .claude/README.md
+    source: .claude/provider.md
+  - provider_id: codex
+    path: .codex/README.md
+    source: .codex/provider.md
+work_profiles:
+  adversarial-review:
+    claude: {model: claude-opus-5, control: effort, value: high}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
+  complex-implementation:
+    claude: {model: claude-sonnet-5, control: effort, value: high}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: high}
+  evidence-research:
+    claude: {model: claude-sonnet-5, control: effort, value: low}
+    codex: {model: gpt-5.6-terra, control: model_reasoning_effort, value: medium}
+  long-horizon-supervision:
+    claude: {model: claude-opus-5, control: effort, value: xhigh}
+    codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
+  routine-validation:
+    claude: {model: claude-haiku-4-5-20251001, control: effort, value: null}
+    codex: {model: gpt-5.6-terra, control: model_reasoning_effort, value: low}
+models:
+  claude-haiku-4-5-20251001:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: unsupported
+    work_profiles: [routine-validation]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  claude-opus-5:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: effort
+    supported_values: [high, low, max, medium, xhigh]
+    work_profiles: [adversarial-review, long-horizon-supervision]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  claude-sonnet-5:
+    provider: claude
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: effort
+    supported_values: [high, low, max, medium, xhigh]
+    work_profiles: [complex-implementation, evidence-research]
+    source_url: https://platform.claude.com/docs/en/about-claude/models/overview
+  gpt-5.6-sol:
+    provider: codex
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: model_reasoning_effort
+    supported_values: [high, low, max, medium, none, xhigh]
+    work_profiles: [adversarial-review, complex-implementation, long-horizon-supervision]
+    source_url: https://developers.openai.com/api/docs/models
+  gpt-5.6-terra:
+    provider: codex
+    lifecycle: stable
+    entitlement: needs_revalidation
+    runtime_acceptance: needs_revalidation
+    control: model_reasoning_effort
+    supported_values: [high, low, max, medium, none, xhigh]
+    work_profiles: [evidence-research, routine-validation]
+    source_url: https://developers.openai.com/api/docs/models
+model_catalog_policy:
+  active_rows_only: true
+  unselected_rows: external-research-not-active-authority
+  activation_requires: [official-source-revalidation, entitlement-revalidation, runtime-revalidation]
+permissions:
+  read-only: {claude: plan, codex: read-only}
+  workspace-write: {claude: acceptEdits, codex: workspace-write}
+semantic_events:
+  claude: [SessionStart, PreToolUse, PostToolUse, Stop, SessionEnd, PreCompact, UserPromptSubmit]
+  codex: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]
+hook_contracts:
+  claude:
+    SessionStart: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh"', timeout: 15, matcher: '*', executable: .claude/hooks/session-start.sh}
+    PreToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh"', timeout: 10, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/docker-compose-pre.sh}
+    PostToolUse: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh"', timeout: 30, matcher: 'Write|Edit|MultiEdit|apply_patch|ApplyPatch', executable: .claude/hooks/post-tool-validate.sh}
+    Stop: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"', timeout: 600, matcher: '*', executable: .claude/hooks/stop.sh}
+    SessionEnd: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/session-end.sh}
+    PreCompact: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/pre-compact.sh}
+    UserPromptSubmit: {command: 'bash "$CLAUDE_PROJECT_DIR/.claude/hooks/user-prompt-submit.sh"', timeout: 10, matcher: '*', executable: .claude/hooks/user-prompt-submit.sh}
+  codex:
+    SessionStart: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" SessionStart', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    PreToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreToolUse', timeout: 600, matcher: 'Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
+    PostToolUse: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PostToolUse', timeout: 600, matcher: 'Edit|Write|MultiEdit|apply_patch|ApplyPatch', executable: scripts/hooks/agent-event-hook.sh}
+    Stop: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
+    PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
+    UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
+agent_output_eval:
+  fixture_thresholds:
+    AOE-DOC-001: 0.50
+    AOE-PROVIDER-001: 0.50
+    AOE-INFRA-001: 0.50
+    AOE-ROUTING-001: 0.50
+    AOE-ROLE-001: 0.50
+    AOE-CLOSURE-001: 0.50
+    AOE-HOOK-001: 0.50
+    AOE-ADAPTER-001: 0.50
+    AOE-MODEL-001: 0.50
+    AOE-LOOP-001: 0.50
+generated_roots: [.claude/agents, .claude/skills, .codex/agents]

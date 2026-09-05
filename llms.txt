@@ -9,7 +9,7 @@ This file is the repo-local LLM entrypoint for `hy-home.docker`. It points agent
 - [Repository overview](README.md)
 - [Agent execution rules](AGENTS.md)
 - [Documentation index](docs/README.md)
-- [Agent governance hub](docs/00.agent-governance/README.md)
+- [Agent governance hub](.agents/README.md)
 - [Infrastructure index](infra/README.md)
 - [Script and validator index](scripts/README.md)
 - [Secret handling index](secrets/README.md)

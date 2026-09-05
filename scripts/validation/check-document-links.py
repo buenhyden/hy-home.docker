@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import pathlib
-import re
 import sys
 
 
@@ -21,47 +20,79 @@ from scripts.lib.document_governance.links import (  # noqa: E402
     run_mode,
     traceability_pair_total,
 )
+from scripts.lib.document_governance.frontmatter import (  # noqa: E402
+    FrontmatterError,
+    parse_frontmatter_text,
+)
+from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
+    OperationsAuthorityError,
+    read_bounded_regular,
+)
+from scripts.lib.document_governance.registry import (  # noqa: E402
+    DocumentRegistry,
+    classify_path,
+    declares_frozen_legacy_status,
+    load_registry,
+)
 
 
 DOC_ROOT = pathlib.Path("docs")
 SUPPORT_DOCS = (
+    pathlib.Path(".claude/provider.md"),
+    pathlib.Path(".codex/provider.md"),
     pathlib.Path("README.md"),
     pathlib.Path("scripts/README.md"),
 )
 # A document whose status records a past observation is not a current route.
 # Its links are evidence of what resolved when it was written.
 NON_ROUTING_STATUSES = frozenset({"superseded", "retired"})
-_STATUS = re.compile(r"^status:\s*(\S+)\s*$", re.MULTILINE)
 
 
-def _routing_status(path: pathlib.Path) -> bool:
+def _routing_status(
+    root: pathlib.Path, path: pathlib.Path, registry: DocumentRegistry | None = None
+) -> bool:
     """True when the document claims to be a current route."""
     try:
-        text = path.read_text(encoding="utf-8", errors="ignore")
-    except OSError:
-        return False
-    if not text.startswith("---"):
+        text = read_bounded_regular(
+            root, path.relative_to(root), max_bytes=4 * 1024 * 1024
+        ).decode("utf-8")
+    except (OSError, OperationsAuthorityError, UnicodeError):
+        # Keep unsafe inputs visible so the graph reports its input finding.
         return True
-    end = text.find("\n---", 3)
-    if end == -1:
+    try:
+        status = parse_frontmatter_text(text).get("status")
+    except FrontmatterError:
         return True
-    match = _STATUS.search(text[3:end])
-    return match is None or match.group(1) not in NON_ROUTING_STATUSES
+    if registry is not None:
+        relative = path.relative_to(root).as_posix()
+        profile_id = classify_path(relative, registry)
+        if profile_id is not None and declares_frozen_legacy_status(
+            registry.profiles[profile_id], relative, status
+        ):
+            return False
+    return not isinstance(status, str) or status not in NON_ROUTING_STATUSES
 
 
 def _paths(root: pathlib.Path) -> list[pathlib.Path]:
     paths: set[pathlib.Path] = set()
-    stage = root / DOC_ROOT
-    if stage.is_dir():
-        paths.update(
-            path
-            for path in stage.rglob("*.md")
-            if path.is_file() and _routing_status(path)
-        )
+    registry_path = root / "docs/99.templates/registry.json"
+    registry = load_registry(registry_path) if registry_path.exists() else None
+    for relative in (DOC_ROOT, pathlib.Path(".agents")):
+        stage = root / relative
+        if stage.is_symlink():
+            paths.add(stage)
+        elif stage.is_dir():
+            paths.update(
+                path
+                for path in stage.rglob("*.md")
+                if (path.is_file() or path.is_symlink())
+                and _routing_status(root, path, registry)
+            )
     paths.update(
         root / relative
         for relative in SUPPORT_DOCS
-        if (root / relative).is_file() and _routing_status(root / relative)
+        if ((root / relative).is_file() or (root / relative).is_symlink())
+        and _routing_status(root, root / relative, registry)
     )
     return sorted(paths)
 

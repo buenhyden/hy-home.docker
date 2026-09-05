@@ -1,10 +1,10 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Verification and Validation System
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -212,6 +219,7 @@ this Stage 90 leaf cannot grant that acceptance.
 Counts below were remeasured from the Task 9a base and candidate on 2026-08-09;
 historical leaf counts remain tied to their original commits.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | V&V area                                                                 | Canonical owner path(s)                                                                                    | Exact command or gate                                                                                                             | Re-measured result                                                                                                                                                  | Class                           | Current state or gap                                                                    | Runtime or authority limit                                                                                   |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Corpus and pack identity                                                 | Git index; both research-pack prefixes                                                                     | `git ls-files \| wc -l`; exact-prefix `git ls-files` counts                                                                       | Base 1,669; candidate 1,670; new 21; retiring 20                                                                                                                    | Verification                    | One safe tracked leaf added; retiring pack unchanged                                    | Path inventory only; no runtime implication                                                                  |

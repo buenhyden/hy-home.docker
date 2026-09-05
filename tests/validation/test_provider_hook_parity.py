@@ -17,7 +17,7 @@ SCRIPT = ROOT / "scripts/validation/report-provider-hook-parity.sh"
 
 def copy_fixture(root: pathlib.Path) -> None:
     for source in (
-        "docs/00.agent-governance/providers/registry.yaml",
+        ".agents/governance/providers/registry.yaml",
         ".claude/settings.json",
         ".codex/hooks.json",
     ):
@@ -25,7 +25,7 @@ def copy_fixture(root: pathlib.Path) -> None:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / source, target)
     registry = yaml.safe_load(
-        (root / "docs/00.agent-governance/providers/registry.yaml").read_text(
+        (root / ".agents/governance/providers/registry.yaml").read_text(
             encoding="utf-8"
         )
     )
@@ -140,9 +140,7 @@ class ProviderHookParityTests(unittest.TestCase):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
                 copy_fixture(root)
-                registry_path = (
-                    root / "docs/00.agent-governance/providers/registry.yaml"
-                )
+                registry_path = root / ".agents/governance/providers/registry.yaml"
                 registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
                 if case == "mode":
                     executable = (
@@ -171,9 +169,7 @@ class ProviderHookParityTests(unittest.TestCase):
             ):
                 root = pathlib.Path(directory)
                 copy_fixture(root)
-                registry_path = (
-                    root / "docs/00.agent-governance/providers/registry.yaml"
-                )
+                registry_path = root / ".agents/governance/providers/registry.yaml"
                 registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
                 command = registry["hook_contracts"][provider][event]["command"]
                 mutated = f"true; {command}"
@@ -196,7 +192,7 @@ class ProviderHookParityTests(unittest.TestCase):
             root = pathlib.Path(directory)
             copy_fixture(root)
             unsafe = "Stop;echo"
-            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry_path = root / ".agents/governance/providers/registry.yaml"
             registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             registry["semantic_events"]["codex"] = [
                 unsafe if event == "Stop" else event
@@ -232,7 +228,7 @@ class ProviderHookParityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry_path = root / ".agents/governance/providers/registry.yaml"
             registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             binding = registry["hook_contracts"]["codex"]["Stop"]
             original = binding["executable"]
@@ -256,7 +252,7 @@ class ProviderHookParityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry_path = root / ".agents/governance/providers/registry.yaml"
             registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             registry.update(
                 {

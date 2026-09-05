@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.0.2"
+version: "2.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "templates"
 ---
 
@@ -16,7 +16,7 @@ Stage 99 is the sole authority for document paths, profiles, identifiers,
 sections, lifecycle states and transitions, traceability shapes, and copyable
 templates. The machine authority is [`registry.json`](./registry.json); the two
 schemas under `contracts/` validate the registry and document
-frontmatter. Human and AI-agent policy remains in Stage 00, and executable gate
+frontmatter. Human and AI-agent policy remains in canonical agent governance, and executable gate
 behavior remains in registered `scripts/` modules.
 
 Predecessor contracts are recoverable through Git history; they are not current
@@ -110,8 +110,15 @@ document declares; `common.frontmatter_order` states the order;
 `frontmatter_values` declares profile-specific literal constraints;
 [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)
 states each value's shape. Authoring behavior, content versioning, and the
-meaning of the envelope are owned by the Stage 00
-[documentation protocol](../00.agent-governance/policies/documentation-protocol.md#authoring-rules).
+meaning of the envelope are owned by the canonical agent governance
+[documentation protocol](../../.agents/governance/documentation-protocol.md#authoring-rules).
+
+Canonical skills use `.agents/skills/{slug}/SKILL.md` with exactly `name`,
+`description`, and `metadata` at the top level. The registered
+`native-skill-envelope` exception projects nested metadata through the ordinary
+governance skill profile and common value schema. Name, folder and `function_id`
+must agree. This serialization contract grants no runtime permission. Other
+authored documents retain the common frontmatter envelope.
 
 `parent_ids` carries the Registry-declared structural relation; broader evidence
 and consumer relationships belong in `Traceability` or `Related Documents`.
@@ -179,4 +186,4 @@ profile. Changed validation uses the persisted Registry allocation state.
 ## Related Documents
 
 - [Template catalog](./templates/README.md)
-- [Workspace governance authority ADR](../02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)

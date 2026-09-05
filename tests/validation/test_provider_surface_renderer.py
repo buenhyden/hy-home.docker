@@ -4,6 +4,8 @@ import importlib.util
 import json
 import os
 import pathlib
+import re
+import stat
 import shutil
 import subprocess
 import sys
@@ -11,6 +13,8 @@ import tempfile
 import tomllib
 import unittest
 from unittest import mock
+from dataclasses import replace
+from types import SimpleNamespace
 
 import yaml
 
@@ -37,19 +41,89 @@ def load_renderer():
     return module
 
 
+def _copy_registered_file(
+    source_root: pathlib.Path, root: pathlib.Path, name: str
+) -> None:
+    """Read only a bounded regular registered fixture, without following links."""
+    relative = pathlib.PurePosixPath(name)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError(f"unsafe fixture path: {name}")
+    descriptor = os.open(source_root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        parts = pathlib.PurePosixPath(name).parts
+        for part in parts[:-1]:
+            child = os.open(
+                part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=descriptor
+            )
+            os.close(descriptor)
+            descriptor = child
+        source = os.open(
+            parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=descriptor
+        )
+        with os.fdopen(source, "rb") as handle:
+            before = os.fstat(handle.fileno())
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError(f"unsafe fixture input: {name}")
+            payload = handle.read(8 * 1024 * 1024 + 1)
+            after = os.fstat(handle.fileno())
+            if len(payload) > 8 * 1024 * 1024 or (
+                before.st_size,
+                before.st_mtime_ns,
+                before.st_ctime_ns,
+            ) != (after.st_size, after.st_mtime_ns, after.st_ctime_ns):
+                raise ValueError(f"unstable or oversized fixture input: {name}")
+    finally:
+        os.close(descriptor)
+    target = root / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(payload)
+    target.chmod(stat.S_IMODE(before.st_mode))
+
+
 def copy_fixture(root: pathlib.Path) -> None:
-    shutil.copytree(
-        ROOT / "docs/00.agent-governance", root / "docs/00.agent-governance"
+    from scripts.lib.agent_governance.agent_governance_contract import (
+        validate_canonical_agent_home,
+        canonical_source_paths,
     )
-    for directory in (".claude", ".codex"):
-        shutil.copytree(ROOT / directory, root / directory)
-    hook = root / "scripts/hooks/agent-event-hook.sh"
-    hook.parent.mkdir(parents=True)
-    shutil.copy2(ROOT / "scripts/hooks/agent-event-hook.sh", hook)
+
+    findings = validate_canonical_agent_home(ROOT)
+    if findings:
+        raise ValueError(f"invalid canonical fixture inventory: {findings}")
+    native_paths = (
+        subprocess.run(
+            ["git", "ls-files", "-z", "--", ".claude", ".codex"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        )
+        .stdout.decode()
+        .split("\0")
+    )
+    native_pattern = re.compile(
+        r"(?:[.]claude/agents/[a-z0-9-]+[.]md|[.]codex/agents/[a-z0-9-]+[.]toml|"
+        r"[.]claude/skills/[a-z0-9-]+/SKILL[.]md|[.]claude/hooks/[a-z0-9-]+[.]sh|"
+        r"[.]claude/output-styles/hy-home[.]md|"
+        r"[.]claude/(?:README[.]md|CLAUDE[.]md|settings[.]json)|"
+        r"[.]codex/(?:README[.]md|hooks[.]json))"
+    )
+    names = {name for name in native_paths if native_pattern.fullmatch(name)}
+    names.update(
+        {
+            ".agents/README.md",
+            ".agents/governance/providers/README.md",
+            ".agents/governance/providers/registry.yaml",
+            ".claude/provider.md",
+            ".codex/provider.md",
+            "scripts/hooks/agent-event-hook.sh",
+        }
+    )
+    names.update(path.as_posix() for path in canonical_source_paths(ROOT))
+    for name in sorted(names):
+        _copy_registered_file(ROOT, root, name)
 
 
 def mutate_registry(root: pathlib.Path, mutation) -> None:
-    path = root / "docs/00.agent-governance/providers/registry.yaml"
+    path = root / ".agents/governance/providers/registry.yaml"
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     mutation(data)
     path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
@@ -75,13 +149,47 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
-    def test_cli_preserves_empty_read_only_agent_directory(self) -> None:
+    def test_empty_agent_home_is_not_a_valid_canonical_source(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / ".agents").mkdir()
+            self.assertTrue(renderer.validate_canonical_agent_home(root))
+
+    def test_claude_skill_is_explicit_thin_adapter(self) -> None:
+        renderer = load_renderer()
+        skill = renderer.SkillRecord(
+            skill_id="sample",
+            scope="common",
+            owner_agent="code-reviewer",
+            description="Use when explicitly reviewing the sample.",
+            source_path=pathlib.PurePosixPath(".agents/skills/sample/SKILL.md"),
+            source_text="---\nname: sample\n---\n\nSecret canonical procedure body.\n",
+        )
+        payload = renderer._skill(
+            skill, pathlib.PurePosixPath(".claude/skills/sample/SKILL.md")
+        )
+        metadata = parse_frontmatter(payload)
+        body = payload.decode("utf-8").split("---", 2)[2]
+        visible_body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL).lstrip()
+        self.assertTrue(visible_body.startswith("# sample\n"))
+        self.assertIs(metadata.get("disable-model-invocation"), True)
+        self.assertNotIn("allowed-tools", metadata)
+        self.assertNotIn(b"Secret canonical procedure body", payload)
+        self.assertIn(b"../../../.agents/skills/sample/SKILL.md", payload)
+
+    def test_cli_preserves_read_only_canonical_agent_home(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            optional = root / ".agents"
-            optional.mkdir(mode=0o555)
-            for mode in ("--check", "--write"):
+            canonical = root / ".agents"
+            before = {
+                path.relative_to(root): path.read_bytes()
+                for path in canonical.rglob("*")
+                if path.is_file()
+            }
+            canonical.chmod(0o555)
+            for mode in ("--check", "--write", "--write"):
                 with self.subTest(mode=mode):
                     result = subprocess.run(
                         [sys.executable, str(RENDERER), mode, "--root", str(root)],
@@ -94,16 +202,22 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                     self.assertEqual(
                         0, result.returncode, result.stdout + result.stderr
                     )
-                    self.assertEqual([], list(optional.iterdir()))
-                    self.assertEqual(0o555, optional.stat().st_mode & 0o777)
+                    self.assertEqual(
+                        before,
+                        {
+                            path.relative_to(root): path.read_bytes()
+                            for path in canonical.rglob("*")
+                            if path.is_file()
+                        },
+                    )
+                    self.assertEqual(0o555, canonical.stat().st_mode & 0o777)
                     self.assertFalse((root / ".codex/skills").exists())
 
-    def test_cli_rejects_nonempty_agent_directory_before_writing(self) -> None:
+    def test_cli_rejects_unknown_canonical_input_before_writing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
             unowned = root / ".agents/unowned.md"
-            unowned.parent.mkdir()
             unowned.write_bytes(b"user-owned content\n")
             projection = root / ".codex/agents/code-reviewer.toml"
             original = projection.read_bytes() + b"\n# local drift\n"
@@ -121,17 +235,250 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                     self.assertEqual(
                         1, result.returncode, result.stdout + result.stderr
                     )
-                    self.assertIn("AGC-RETIRED-SURFACE", result.stderr)
+                    self.assertIn("AGC-CANONICAL-HOME", result.stderr)
                     self.assertEqual(b"user-owned content\n", unowned.read_bytes())
                     self.assertEqual(original, projection.read_bytes())
                     self.assertFalse((root / ".provider-surface-quarantine").exists())
+
+    def test_write_fixedpoint_preserves_sources_and_native_controls(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            protected = list((root / ".agents").rglob("*")) + [
+                root / ".claude/provider.md",
+                root / ".codex/provider.md",
+                root / ".claude/settings.json",
+                root / ".codex/hooks.json",
+            ]
+            before = {path: path.read_bytes() for path in protected if path.is_file()}
+            renderer.write_native_projection(root)
+            expected = renderer.expected_native_projection(root)
+            first = {path: (root / path).read_bytes() for path in expected}
+            renderer.write_native_projection(root)
+            self.assertEqual(
+                first, {path: (root / path).read_bytes() for path in expected}
+            )
+            self.assertEqual(before, {path: path.read_bytes() for path in before})
+            self.assertEqual([], renderer.find_native_projection_drift(root))
+            self.assertFalse((root / ".codex/config.toml").exists())
+            self.assertFalse((root / ".provider-surface-quarantine").exists())
+
+    def test_renderer_independently_rejects_canonical_outputs(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            state = renderer.load_agent_governance(root)
+            for kind in ("role", "skill", "static", "managed-root"):
+                with self.subTest(kind=kind):
+                    registry = dict(state.registry)
+                    providers = list(state.provider_records)
+                    if kind == "role":
+                        providers[0] = replace(
+                            providers[0], agent_pattern=".agents/roles/{agent_id}.md"
+                        )
+                    elif kind == "skill":
+                        providers[0] = replace(
+                            providers[0],
+                            skill_pattern=".agents/skills/{skill_id}/SKILL.md",
+                        )
+                    elif kind == "static":
+                        registry["projections"] = [
+                            {
+                                "provider_id": "claude",
+                                "path": ".agents/README.md",
+                                "source": ".claude/provider.md",
+                            }
+                        ]
+                    else:
+                        registry["generated_roots"] = [".agents/skills"]
+                    changed = replace(
+                        state, registry=registry, provider_records=tuple(providers)
+                    )
+                    if kind == "managed-root":
+                        with self.assertRaises(ValueError):
+                            renderer._managed_roots(changed)
+                    else:
+                        with mock.patch.object(
+                            renderer, "load_agent_governance", return_value=changed
+                        ):
+                            with self.assertRaisesRegex(ValueError, "native output"):
+                                renderer.render_all(root)
+
+    def test_native_provider_source_output_cycles_are_rejected(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            before = (root / ".claude/provider.md").read_bytes()
+            mutate_registry(
+                root,
+                lambda data: data["projections"][0].update(
+                    {"path": ".claude/provider.md"}
+                ),
+            )
+            with self.assertRaises(renderer.ContractLoadError):
+                renderer.write_native_projection(root)
+            self.assertEqual(before, (root / ".claude/provider.md").read_bytes())
+
+    def test_rebased_links_preserve_targets_queries_and_fragments(self) -> None:
+        renderer = load_renderer()
+        source = pathlib.PurePosixPath(".agents/roles/code-reviewer.md")
+        output = pathlib.PurePosixPath(".codex/agents/code-reviewer.toml")
+        text = (
+            '[Policy](../governance/agentic.md?q=1#scope "title")\n'
+            "[reference]: <../skills/code-review-dimensions/SKILL.md#inputs>\n"
+            "[external](https://example.com/read?q=1#part) [local](#inputs)\n"
+        )
+        rendered = renderer._rebase_links(text, source, output)
+        self.assertIn('../../.agents/governance/agentic.md?q=1#scope "title"', rendered)
+        self.assertIn(
+            "<../../.agents/skills/code-review-dimensions/SKILL.md#inputs>", rendered
+        )
+        self.assertIn(
+            "[external](https://example.com/read?q=1#part) [local](#inputs)", rendered
+        )
+        with self.assertRaisesRegex(ValueError, "escapes"):
+            renderer._rebase_links("[escape](../../../outside.md)", source, output)
+
+    def test_tracked_static_inventory_is_path_metadata_only(self) -> None:
+        renderer = load_renderer()
+        result = subprocess.CompletedProcess(
+            [],
+            0,
+            stdout=(
+                b".claude/README.md\0.codex/README.md\0.claude/settings.local.json\0"
+                b".claude/agents/reviewer.md\0.codex/provider.md\0.agents/README.md\0"
+            ),
+        )
+        with mock.patch.object(renderer, "run_bounded_git", return_value=result):
+            paths = renderer._tracked_static_paths(ROOT)
+        self.assertEqual(
+            (
+                pathlib.PurePosixPath(".claude/README.md"),
+                pathlib.PurePosixPath(".codex/README.md"),
+            ),
+            paths,
+        )
+
+    def test_tracked_static_inventory_rejects_unterminated_or_excessive_paths(
+        self,
+    ) -> None:
+        renderer = load_renderer()
+        for payload in (b".codex/README.md", b".codex/README.md\0\0", b"x\0" * 4097):
+            with self.subTest(payload_size=len(payload)):
+                result = subprocess.CompletedProcess([], 0, stdout=payload)
+                with mock.patch.object(
+                    renderer, "run_bounded_git", return_value=result
+                ):
+                    with self.assertRaises(ValueError):
+                        renderer._tracked_static_paths(ROOT)
+
+    def test_tracked_static_reader_bounds_noisy_and_stalled_children(self) -> None:
+        from scripts.lib.document_governance import git_provenance
+
+        renderer = load_renderer()
+        real_popen = subprocess.Popen
+        programs = (
+            "import os\nwhile True: os.write(1, b'x' * 65536)",
+            "import time; time.sleep(60)",
+        )
+        for program in programs:
+            with (
+                self.subTest(program=program),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                children = []
+
+                def spawn(_argv, **kwargs):
+                    child = real_popen([sys.executable, "-c", program], **kwargs)
+                    children.append(child)
+                    return child
+
+                with (
+                    mock.patch.object(
+                        git_provenance.subprocess, "Popen", side_effect=spawn
+                    ),
+                    mock.patch.object(git_provenance, "_GIT_TIMEOUT_SECONDS", 0.5),
+                ):
+                    with self.assertRaisesRegex(ValueError, "inventory is unavailable"):
+                        renderer._tracked_static_paths(pathlib.Path(directory))
+                self.assertEqual(1, len(children))
+                self.assertIsNotNone(children[0].poll())
+
+    def test_static_scan_never_reads_untracked_native_payloads(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for name in (
+                ".claude/settings.local.json",
+                ".claude/RESUME.md",
+                ".codex/private.md",
+            ):
+                path = root / name
+                path.parent.mkdir(exist_ok=True)
+                path.write_bytes(b"private synthetic input")
+            state = SimpleNamespace(
+                provider_records=tuple(
+                    SimpleNamespace(
+                        agent_pattern=f".{provider}/agents/{{agent_id}}.md",
+                        skill_pattern=None,
+                    )
+                    for provider in ("claude", "codex")
+                ),
+                registry={"projections": []},
+            )
+            with (
+                mock.patch.object(
+                    renderer,
+                    "_owned_projection_identity_at",
+                    wraps=renderer._owned_projection_identity_at,
+                ) as owned,
+                mock.patch.object(
+                    renderer,
+                    "_read_projection_prefix_at",
+                    wraps=renderer._read_projection_prefix_at,
+                ) as prefix,
+            ):
+                self.assertEqual(
+                    (), renderer._current_static_generated_files(root, state)
+                )
+            self.assertEqual([], owned.call_args_list)
+            self.assertEqual([], prefix.call_args_list)
+
+    def test_fixture_reader_rejects_links_and_nonregular_inputs(self) -> None:
+        for kind in ("symlink", "parent-symlink", "fifo", "oversized"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source = pathlib.Path(directory) / "source"
+                target = pathlib.Path(directory) / "target"
+                source.mkdir()
+                (source / "real").mkdir()
+                (source / "real/input").write_bytes(b"fixture")
+                if kind == "symlink":
+                    (source / "input").symlink_to(source / "real/input")
+                    name = "input"
+                elif kind == "parent-symlink":
+                    (source / "alias").symlink_to(
+                        source / "real", target_is_directory=True
+                    )
+                    name = "alias/input"
+                elif kind == "fifo":
+                    os.mkfifo(source / "input")
+                    name = "input"
+                else:
+                    (source / "input").write_bytes(b"x" * (8 * 1024 * 1024 + 1))
+                    name = "input"
+                with self.assertRaises((OSError, ValueError)):
+                    _copy_registered_file(source, target, name)
+                self.assertFalse(target.exists())
 
     def test_static_projection_routes_follow_registry_data(self) -> None:
         renderer = load_renderer()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            registry_path = root / "docs/00.agent-governance/providers/registry.yaml"
+            registry_path = root / ".agents/governance/providers/registry.yaml"
             registry = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
             self.assertIn("projections", registry)
             registry["projections"][2]["path"] = ".codex/ROUTE.md"
@@ -153,15 +500,21 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             copy_fixture(root)
             for relative, original in (
                 ("roles/code-reviewer.md", 'scope: "common"'),
-                ("skills/adr-writing.md", 'scope: "architecture"'),
+                ("skills/adr-writing/SKILL.md", None),
             ):
-                path = root / "docs/00.agent-governance" / relative
+                path = root / ".agents" / relative
                 text = path.read_text(encoding="utf-8")
-                self.assertIn(original, text)
-                path.write_text(
-                    text.replace(original, "scope: 'x: injected'", 1),
-                    encoding="utf-8",
-                )
+                if original is None:
+                    prefix, frontmatter, body = text.split("---", 2)
+                    values = yaml.safe_load(frontmatter)
+                    values["description"] = "Canonical x: injected procedure"
+                    text = (
+                        "---\n" + yaml.safe_dump(values, sort_keys=False) + "---" + body
+                    )
+                else:
+                    self.assertIn(original, text)
+                    text = text.replace(original, "scope: 'x: injected'", 1)
+                path.write_text(text, encoding="utf-8")
 
             def unsafe_but_valid_scalars(data):
                 model = data["models"].pop("claude-opus-5")
@@ -219,6 +572,9 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         self,
     ) -> None:
         renderer = load_renderer()
+        renderer._tracked_static_paths = mock.Mock(
+            return_value=(pathlib.PurePosixPath(".codex/README.md"),)
+        )
         for case in ("change", "remove"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
@@ -280,13 +636,11 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             values = {
                 "name": "retired-large-role",
                 "description": (
-                    "Canonical common role for retired-large-role; owned by Stage 00."
+                    "Canonical common role for retired-large-role; owned by canonical agent governance."
                 ),
                 "developer_instructions": (
                     "# Generated by scripts/operations/provider_surface_renderer.py; "
-                    "source: docs/00.agent-governance/roles/retired-large-role.md\n\n"
-                    + "x"
-                    * 9_000
+                    "source: .agents/roles/retired-large-role.md\n\n" + "x" * 9_000
                 ),
                 "model": "gpt-5.6-sol",
                 "model_reasoning_effort": "high",
@@ -383,11 +737,10 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             root = pathlib.Path(directory)
             copy_fixture(root)
             stale = pathlib.PurePosixPath(".codex/STALE.md")
+            renderer._tracked_static_paths = mock.Mock(return_value=(stale,))
             (root / stale).write_bytes(
                 b"<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                b"source: docs/00.agent-governance/providers/claude.md -->\n"
-                + b"x"
-                * 8_193
+                b"source: .claude/provider.md -->\n" + b"x" * 8_193
             )
             real_identity = renderer._owned_projection_identity_at
 
@@ -421,11 +774,10 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             root = pathlib.Path(directory)
             copy_fixture(root)
             stale = pathlib.PurePosixPath(".codex/CORRUPTED.md")
+            renderer._tracked_static_paths = mock.Mock(return_value=(stale,))
             (root / stale).write_bytes(
                 b"<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                b"source: docs/00.agent-governance/providers/claude.md -->\n"
-                + b"\xff"
-                + b"x" * 9_000
+                b"source: .claude/provider.md -->\n" + b"\xff" + b"x" * 9_000
             )
 
             self.assertIn(
@@ -464,9 +816,9 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             self.assertEqual(
                 set(
                     yaml.safe_load(
-                        (
-                            root / "docs/00.agent-governance/providers/registry.yaml"
-                        ).read_text(encoding="utf-8")
+                        (root / ".agents/governance/providers/registry.yaml").read_text(
+                            encoding="utf-8"
+                        )
                     )["generated_roots"]
                 ),
                 {path.as_posix() for path in roots},
@@ -524,7 +876,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.write_text(
                 "---\nname: stale\n---\n\n"
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n"
+                "source: .agents/skills/stale/SKILL.md -->\n"
             )
             with self.assertRaisesRegex(ValueError, "manual cleanup required"):
                 renderer.write_native_projection(root)
@@ -592,7 +944,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             unowned.write_text(
                 "# local file\n\n"
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/local.md -->\n",
+                "source: .agents/skills/local/SKILL.md -->\n",
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(ValueError, "unowned"):
@@ -609,7 +961,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n",
+                "source: .agents/skills/stale/SKILL.md -->\n",
                 encoding="utf-8",
             )
             identity = renderer._owned_projection_identity(root, relative)
@@ -629,7 +981,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n",
+                "source: .agents/skills/stale/SKILL.md -->\n",
                 encoding="utf-8",
             )
             identity = renderer._owned_projection_identity(root, relative)
@@ -672,7 +1024,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n",
+                "source: .agents/skills/stale/SKILL.md -->\n",
                 encoding="utf-8",
             )
             identity = renderer._owned_projection_identity(root, relative)
@@ -723,7 +1075,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n",
+                "source: .agents/skills/stale/SKILL.md -->\n",
                 encoding="utf-8",
             )
             identity = renderer._owned_projection_identity(root, relative)
@@ -811,7 +1163,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             stale.parent.mkdir(parents=True)
             stale.write_text(
                 "<!-- Generated by scripts/operations/provider_surface_renderer.py; "
-                "source: docs/00.agent-governance/skills/stale.md -->\n",
+                "source: .agents/skills/stale/SKILL.md -->\n",
                 encoding="utf-8",
             )
             identity = renderer._owned_projection_identity(root, relative)
@@ -824,6 +1176,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed"):
                 renderer._quarantine_owned_projection(root, relative, identity)
             self.assertEqual("# outside user file\n", outside_file.read_text())
+
 
 if __name__ == "__main__":
     unittest.main()

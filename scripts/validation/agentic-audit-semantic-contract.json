@@ -133,7 +133,7 @@
       "report": "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
       "required_state": "Implemented",
       "required_evidence_paths": [
-        "docs/00.agent-governance/policies/task-checklists.md",
+        ".agents/governance/task-checklists.md",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "tests/validation/test_run_agent_precommit_all_files.sh"
       ],
@@ -148,7 +148,7 @@
       "report": "docs/90.references/audits/0021-automation-candidates/README.md",
       "required_state": "Implemented",
       "required_evidence_paths": [
-        "docs/00.agent-governance/policies/task-checklists.md",
+        ".agents/governance/task-checklists.md",
         "scripts/validation/run-agent-precommit-all-files.sh",
         "tests/validation/test_run_agent_precommit_all_files.sh"
       ],

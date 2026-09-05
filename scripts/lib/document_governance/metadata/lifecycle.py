@@ -15,6 +15,10 @@ from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.git_provenance import resolve_git_provenance
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    read_bounded_regular,
+)
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     PRESERVED_RECORD_PREFIX,
@@ -35,6 +39,7 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_markdown,
 )
 from scripts.lib.document_governance.metadata.profile import (
+    _normalized_document_values,
     APPROVED_MIGRATION_PATHS,
     EXPECTED_ARCHIVE_DISPOSITIONS,
     EXPECTED_PRESERVATION_CLASSES,
@@ -42,6 +47,7 @@ from scripts.lib.document_governance.metadata.profile import (
     LEGACY_EXCEPTION_CODES,
     MIGRATION_TYPED_KEYS,
     TARGET_MARKDOWN_PREFIXES,
+    TARGET_MARKDOWN_FILES,
     TYPED_EXAMPLE_FIXTURE_PARENT_IDS,
     TYPED_EXAMPLE_FIXTURE_PATH,
     TYPED_EXAMPLE_FIXTURE_STATUS,
@@ -73,6 +79,10 @@ from scripts.lib.document_governance.metadata.profile import (
     infer_artifact_type,
     registered_generated_owner,
 )
+
+
+# Historical Git blob origins only; never a current filesystem authority.
+GOVERNANCE_RETIRED_PATHS = ("docs/00.agent-governance",)
 
 
 def _expected_document_type(profile_id: str) -> str:
@@ -220,7 +230,7 @@ def validate_record(
     )
     if specialization_type == "governance-hook-policy":
         # Hookify owns a native metadata schema. Its exact envelope is enforced
-        # by the focused Stage 00 validator, not duplicated here.
+        # by the focused governance validator, not duplicated here.
         return sorted(set(findings))
 
     specialization_keys = {
@@ -240,7 +250,9 @@ def validate_record(
     if not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
         findings.extend(
             _finding(record, item.code, f"{item.path}: {item.message}")
-            for item in validate_profile_values(record.metadata, raw_profile, record.path.as_posix())
+            for item in validate_profile_values(
+                record.metadata, raw_profile, record.path.as_posix()
+            )
         )
     global_forbidden = set(common.get("globally_forbidden", []))
     # `globally_forbidden` named three retired keys but was read only to pick a
@@ -312,12 +324,24 @@ def validate_record(
             )
     previous_status = record.previous_status
     initial_status = raw_profile.get("initial_status")
+    transitions = raw_profile.get("transitions", common.get("transitions", {}))
+    initial_transition_evidence = (
+        (
+            (record.path.as_posix(), initial_status, status)
+            in (transition_overrides or {})
+            and isinstance(transitions, dict)
+            and status in transitions.get(initial_status, ())
+        )
+        if isinstance(initial_status, str) and isinstance(status, str)
+        else False
+    )
     if (
         enforce_initial_status
         and isinstance(status, str)
         and previous_status is None
         and isinstance(initial_status, str)
         and status != initial_status
+        and not initial_transition_evidence
     ):
         findings.append(
             _finding(
@@ -327,7 +351,6 @@ def validate_record(
             )
         )
     if isinstance(status, str) and previous_status and status != previous_status:
-        transitions = raw_profile.get("transitions", common.get("transitions", {}))
         allowed_next = (
             transitions.get(previous_status, [])
             if isinstance(transitions, dict)
@@ -715,14 +738,16 @@ def validate_record(
                 )
             )
         current_replacement = record.metadata.get("current_replacement")
-        if current_replacement is not None and not _safe_repo_path(
-            current_replacement, "docs/"
+        if (
+            current_replacement is not None
+            and not _safe_repo_path(current_replacement, "docs/")
+            and not _safe_repo_path(current_replacement, ".agents/")
         ):
             findings.append(
                 _finding(
                     record,
                     "invalid-current-replacement",
-                    "current_replacement must be a safe canonical docs/ repository path",
+                    "current_replacement must be a safe canonical docs/ or .agents/ repository path",
                 )
             )
         archive_reason = record.metadata.get("archive_reason")
@@ -983,7 +1008,10 @@ def resolve_base_selection(
 
 
 def _metadata_at_ref(
-    root: pathlib.Path, path: pathlib.Path, base_ref: str | None
+    root: pathlib.Path,
+    path: pathlib.Path,
+    base_ref: str | None,
+    profiles: Mapping[str, object] | None = None,
 ) -> dict[str, object] | None:
     if not base_ref:
         return None
@@ -998,8 +1026,10 @@ def _metadata_at_ref(
     if result.returncode != 0:
         return None
     try:
-        return _parse_frontmatter_text(result.stdout)
-    except FrontmatterError:
+        return _normalized_document_values(
+            path, _parse_frontmatter_text(result.stdout), profiles
+        )
+    except (FrontmatterError, RegistryError):
         return None
 
 
@@ -1019,10 +1049,74 @@ def _text_at_ref(
     return result.stdout if result.returncode == 0 else None
 
 
+def _governance_moved_body_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: Mapping[str, object],
+    base_ref: str | None,
+) -> tuple[Record | None, str | None]:
+    """Recover the former governance home only from a verified historical blob.
+
+    This is a historical path translation, never a current loading alias. The
+    Registry still selects the destination; both records must retain its type
+    and identity before the source can establish status or body-deficit history.
+    """
+
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry) or not base_ref:
+        return None, None
+    profile_id = classify_registered_path(target.as_posix(), registry)
+    origins = {
+        "governance-policy": f"policies/{target.name}",
+        "governance-hook-policy": f"policies/hooks/{target.name}",
+        "governance-role": f"roles/{target.name}",
+        "governance-skill": f"skills/{target.parent.name}.md",
+        "governance-provider": f"providers/{target.parent.name.removeprefix('.')}.md",
+        "governance-provider-index": "providers/README.md",
+        "governance-sdlc": "sdlc.md",
+    }
+    origin = (
+        "README.md"
+        if target.as_posix() == ".agents/README.md"
+        else origins.get(profile_id)
+    )
+    if origin is None or profile_id is None:
+        return None, None
+    text = _text_at_ref(
+        root, pathlib.Path(GOVERNANCE_RETIRED_PATHS[0]) / origin, base_ref
+    )
+    if text is None:
+        return None, None
+    try:
+        previous = _parse_frontmatter_text(text)
+        current = _normalized_document_values(
+            target,
+            _parse_frontmatter_text(read_bounded_regular(root, target).decode("utf-8")),
+            profiles,
+        )
+    except (
+        FrontmatterError,
+        RegistryError,
+        OperationsAuthorityError,
+        UnicodeError,
+        OSError,
+    ):
+        return None, None
+    if previous.get("type") != registry.profiles[profile_id].get("type") or any(
+        previous.get(key) != current.get(key)
+        for key in ("type", "artifact_id", "function_id", "agent_id")
+    ):
+        return None, None
+    return Record(target, previous, profile_id, frontmatter_present=True), text
+
+
 def _previous_status(
-    root: pathlib.Path, path: pathlib.Path, base_ref: str | None
+    root: pathlib.Path,
+    path: pathlib.Path,
+    base_ref: str | None,
+    profiles: Mapping[str, object] | None = None,
 ) -> str | None:
-    loaded = _metadata_at_ref(root, path, base_ref)
+    loaded = _metadata_at_ref(root, path, base_ref, profiles)
     return (
         loaded.get("status")
         if isinstance(loaded, dict) and isinstance(loaded.get("status"), str)
@@ -1039,13 +1133,19 @@ def _record_from_text(
     lines = text.splitlines()
     frontmatter_present = bool(lines and lines[0].strip() == "---")
     try:
-        values = _parse_frontmatter_text(text)
+        values = _normalized_document_values(
+            relative_path, _parse_frontmatter_text(text), profiles
+        )
         parse_error = None
         parse_error_code = None
     except FrontmatterError as error:
         values = {}
         parse_error = str(error)
         parse_error_code = error.code
+    except RegistryError as error:
+        values = {}
+        parse_error = str(error)
+        parse_error_code = "native-skill-envelope-invalid"
     inferred_type = infer_artifact_type(relative_path, profiles)
     registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
     registered_package_readme = bool(
@@ -1085,7 +1185,19 @@ def collect_records_at_ref(
     excluded = set(common.get("inventory_excludes", []))
     result = _run_git(
         root,
-        ["ls-tree", "-r", "-z", "--name-only", base_ref, "--", "docs", "archive"],
+        [
+            "ls-tree",
+            "-r",
+            "-z",
+            "--name-only",
+            base_ref,
+            "--",
+            "docs",
+            "archive",
+            ".agents",
+            ".claude/provider.md",
+            ".codex/provider.md",
+        ],
         operation="base Markdown discovery",
     )
     if result.returncode != 0:
@@ -1095,7 +1207,10 @@ def collect_records_at_ref(
             path
             for path in _decode_git_paths(result.stdout, "base Markdown discovery")
             if path.as_posix().endswith(".md")
-            and path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            and (
+                path.as_posix() in TARGET_MARKDOWN_FILES
+                or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+            )
             and path.as_posix() not in excluded
         },
         key=lambda path: path.as_posix(),
@@ -1171,8 +1286,10 @@ def collect_records(
         if not absolute_path.is_file():
             continue
         try:
-            text = absolute_path.read_text(encoding="utf-8")
-        except (OSError, UnicodeError) as error:
+            text = read_bounded_regular(
+                root, relative_path, max_bytes=4 * 1024 * 1024
+            ).decode("utf-8")
+        except (OSError, UnicodeError, OperationsAuthorityError) as error:
             records.append(
                 Record(
                     relative_path,
@@ -1188,7 +1305,7 @@ def collect_records(
             previous_record.metadata.get("status")
             if previous_record
             and isinstance(previous_record.metadata.get("status"), str)
-            else _previous_status(root, relative_path, base_ref)
+            else _previous_status(root, relative_path, base_ref, profiles)
         )
         records.append(
             _record_from_text(

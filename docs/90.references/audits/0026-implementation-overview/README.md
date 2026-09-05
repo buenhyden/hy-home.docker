@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Implementation Overview"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0026"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Agentic Engineering Implementation Overview
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -33,7 +40,7 @@ turning audit findings into active policy.
 ## Repository Role
 
 This document supports Stage 03 and Stage 04 planning for future governance,
-automation, and provider work. It must not replace Stage 00 policy, Stage 04
+automation, and provider work. It must not replace canonical agent governance policy, Stage 04
 task evidence, Stage 05 operations procedures, CI workflow source, scripts, or
 runtime Compose files.
 
@@ -155,20 +162,21 @@ identities remain owned by the linked Stage 04 task records.
 > `2026-07-27T02:33:54+09:00`. The model policy had no active fallback graph or
 > implicit substitution.
 
-Current correction: the [provider registry](../../../00.agent-governance/providers/registry.yaml)
+Current correction: the [provider registry](../../../../.agents/governance/providers/registry.yaml)
 defines two providers and five model records, and the [agent-output evaluation
 fixture catalog](../../data/0064-agent-output-eval-fixtures/README.md) defines
 ten fixtures with fourteen regressions.
 
 ## Implementation Status Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Category | Status | Evidence | Summary |
 | --- | --- | --- | --- |
 | Harness engineering | Partial | [Harness audit](../0025-harness-engineering-implementation/README.md) | Exact model/control coupling and the deterministic synthetic eval loop are implemented; native acceptance, live isolation/entitlement facts, and comparative model quality remain incomplete. |
 | Loop engineering | Partial | [Loop audit](../0027-loop-engineering-implementation/README.md) | LOOP-03/04 now provide measured depth-4 synthetic evaluation and typed retry/stop enforcement; live provider parity, durable resume, and unified telemetry remain partial. |
 | Claude provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), `.claude/settings.json`, `.claude/agents/`, `.claude/hooks/` | Native agents/hooks and tracked adapters exist; actual global permissions, sandbox, MCP, entitlement, and complete semantic enforcement are unobserved. |
 | Codex provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), `.codex/hooks.json`, `.codex/agents/` | Strict native TOML adapters and six supported hook mappings are generated; `SessionEnd` is explicit N/A and live schema/event acceptance remains unproved. |
-| Provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), [provider registry](../../../00.agent-governance/providers/registry.yaml), `.agents/skills/` | Stage 00 registers exactly Claude and Codex; `.agents/skills` is the shared skill projection. Live acceptance and interception remain unproved. |
+| Provider harness/loop | Partial | [Provider audit](../0028-provider-harness-loop-implementation/README.md), [provider registry](../../../../.agents/governance/providers/registry.yaml), `.agents/skills/` | Stage 00 registers exactly Claude and Codex; `.agents/skills` is the shared skill projection. Live acceptance and interception remain unproved. |
 | Common provider-neutral rules/environment | Partial | [Workspace rules audit](../0032-workspace-rules-environment-implementation/README.md) | Authority, catalog parity, skills, and validation are strong; live/global environment facts and measured evidence closure remain incomplete. |
 | Agent instructions, catalogs, vibe coding, and model routing | Partial | [Instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md) | Sixteen AIV, seven AIC, and seven AMS rows cover authority, safe iteration, catalog add/merge/reject, exact literals, cutoff integrity, and eval gaps without importing identities or changing policy. |
 | Automation, pipeline, workflow | Partially Implemented | [scripts README](../../../../scripts/README.md), `.github/workflows/ci-quality.yml`, `.claude/hooks/`, `.codex/hooks.json`, [provider hook parity matrix](../../data/0072-provider-hook-parity-matrix/README.md), [agent-output eval fixtures](../../data/0064-agent-output-eval-fixtures/README.md) | Local scripts, CI gates, generated native adapters/hooks, exact `10/10` plus `14/14` semantic evaluation, indexes, sync checks, and the controlled pre-commit wrapper exist; live provider execution, remote enforcement, and CD remain partial or missing. |
@@ -210,6 +218,7 @@ ten fixtures with fourteen regressions.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap | Impact | Candidate Owner |
 | --- | --- | --- |
 | Native schema/event acceptance remains unproved. | Synchronized provider surfaces and parity checks do not prove live native acceptance or complete interception. | Separate approved provider/runtime verification |
@@ -241,7 +250,7 @@ tracked workflow/script surfaces.
 
 ## Source Rules
 
-- Prefer Stage 00, Stage 04, Stage 90 research, scripts, CI workflows, and
+- Prefer canonical agent governance, Stage 04, Stage 90 research, scripts, CI workflows, and
   infrastructure files for repo-local claims.
 - Prefer official vendor docs and standards for provider or framework facts.
 - Re-check provider docs before making current parity claims.
@@ -251,8 +260,8 @@ tracked workflow/script surfaces.
 
 - `Agentic engineering research pack` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `README` leaf) - criteria source.
 - Audit pack task evidence - source inventory and validation evidence.
-- [Stage 00 governance hub](../../../00.agent-governance/README.md) - governance SSoT.
-- [Provider capability matrix](../../../00.agent-governance/policies/provider-capability-matrix.md) - common capability mapping.
+- [Canonical governance governance hub](../../../../.agents/README.md) - governance SSoT.
+- [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) - common capability mapping.
 - Harness implementation map (retired path: `00.agent-governance/harness-implementation-map.md`) - harness surface routing.
 - [scripts README](../../../../scripts/README.md) - local automation and validation surface.
 - [infra README](../../../../infra/README.md) - Compose/infrastructure topology.
@@ -264,7 +273,7 @@ tracked workflow/script surfaces.
 ## Maintenance
 
 - **Owner**: Documentation Specialist / Agentic Workflow Specialist.
-- **Review Cadence**: Review after provider adapter, CI, scripts, Stage 00, or
+- **Review Cadence**: Review after provider adapter, CI, scripts, canonical agent governance, or
   infrastructure-harness changes.
 - **Update Trigger**: Update when the research pack changes, provider docs add
   or remove native capabilities, or validation scripts change coverage.

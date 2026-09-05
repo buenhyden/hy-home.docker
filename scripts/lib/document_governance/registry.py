@@ -586,6 +586,24 @@ def validate_registry(
         if isinstance(exceptions, list):
             for exception_index, exception in enumerate(exceptions):
                 if (
+                    isinstance(exception, Mapping)
+                    and exception.get("kind") == "native-skill-envelope"
+                ):
+                    if (
+                        profile.get("id") != "governance-skill"
+                        or profile.get("path_pattern")
+                        != ".agents/skills/{slug}/SKILL.md"
+                        or exception.get("owner")
+                        != "scripts/lib/document_governance/registry.py"
+                    ):
+                        findings.append(
+                            RegistryFinding(
+                                "native-skill-envelope-invalid",
+                                f"profiles.{index}",
+                                "native envelope belongs only to the canonical governance skill profile",
+                            )
+                        )
+                if (
                     not isinstance(exception, Mapping)
                     or exception.get("kind") != "frozen-legacy-status"
                 ):
@@ -664,23 +682,34 @@ def validate_registry(
                 )
         for status, keys in profile.get("required_frontmatter_by_status", {}).items():
             lifecycle = raw.get("lifecycles", {}).get(profile.get("lifecycle_id"), {})
-            if status not in lifecycle.get("statuses", ()) or set(keys) - set(optional_frontmatter or ()):
-                findings.append(RegistryFinding(
-                    "status-frontmatter-contract-invalid", f"profiles.{index}",
-                    "conditional requirements must use registered statuses and optional keys",
-                ))
+            if status not in lifecycle.get("statuses", ()) or set(keys) - set(
+                optional_frontmatter or ()
+            ):
+                findings.append(
+                    RegistryFinding(
+                        "status-frontmatter-contract-invalid",
+                        f"profiles.{index}",
+                        "conditional requirements must use registered statuses and optional keys",
+                    )
+                )
         routes = profile.get("frontmatter_routes", {})
         for route, values in routes.items():
             if (
                 not _safe_path_pattern(route)
                 or "{" in route
-                or not (route in profile.get("additional_paths", ()) or path_matches_pattern(route, path_pattern))
+                or not (
+                    route in profile.get("additional_paths", ())
+                    or path_matches_pattern(route, path_pattern)
+                )
                 or set(values) - set(required_frontmatter or ())
             ):
-                findings.append(RegistryFinding(
-                    "frontmatter-route-contract-invalid", f"profiles.{index}",
-                    "route literals must target an owned path and required keys",
-                ))
+                findings.append(
+                    RegistryFinding(
+                        "frontmatter-route-contract-invalid",
+                        f"profiles.{index}",
+                        "route literals must target an owned path and required keys",
+                    )
+                )
         if (
             isinstance(path_pattern, str)
             and path_pattern.endswith(".md")
@@ -1033,6 +1062,50 @@ def validate_frontmatter(
     )
 
 
+def normalize_profile_frontmatter(
+    values: Mapping[str, object],
+    profile: Mapping[str, object],
+    path: str | None = None,
+) -> dict[str, object]:
+    """Expose governance metadata only from the registered native skill envelope.
+
+    The envelope is a serialization boundary, not a metadata or permission
+    exemption. Its nested fields still pass the ordinary profile/schema checks.
+    A missing path is used only when validating the profile's copy template.
+    """
+
+    if not any(
+        item.get("kind") == "native-skill-envelope"
+        for item in profile.get("exceptions", ())
+    ):
+        return dict(values)
+    metadata = values.get("metadata")
+    name = values.get("name")
+    description = values.get("description")
+    if (
+        set(values) != {"name", "description", "metadata"}
+        or not isinstance(metadata, Mapping)
+        or not isinstance(name, str)
+        or not name.strip()
+        or not isinstance(description, str)
+        or not description.strip()
+        or metadata.get("type") != "governance/skill"
+        or metadata.get("function_id") != name
+        or (
+            path is not None
+            and (
+                not path_matches_pattern(path, profile.get("path_pattern"))
+                or pathlib.PurePosixPath(path).parent.name != name
+                or re.search(r"{{[A-Z][A-Z0-9_]*}}", description) is not None
+            )
+        )
+    ):
+        raise RegistryError(
+            "native skill requires exact name/description/metadata and matching folder/function identity"
+        )
+    return dict(metadata)
+
+
 def validate_profile_values(
     values: Mapping[str, object], profile: Mapping[str, object], path: str | None = None
 ) -> tuple[RegistryFinding, ...]:
@@ -1042,7 +1115,13 @@ def validate_profile_values(
     routes = profile.get("frontmatter_routes", {})
     if routes and path is not None:
         if path not in routes:
-            return (RegistryFinding("frontmatter-route-missing", path, "destination has no registered literal values"),)
+            return (
+                RegistryFinding(
+                    "frontmatter-route-missing",
+                    path,
+                    "destination has no registered literal values",
+                ),
+            )
         constants.update(routes[path])
     findings = [
         RegistryFinding(
@@ -1053,13 +1132,23 @@ def validate_profile_values(
     ]
     optional = profile.get("optional_frontmatter", profile.get("optional", ()))
     findings.extend(
-        RegistryFinding("empty-optional-frontmatter", key, "omit an empty optional value")
+        RegistryFinding(
+            "empty-optional-frontmatter", key, "omit an empty optional value"
+        )
         for key in optional
         if key in values and values[key] in (None, "", [], ())
     )
-    for key in profile.get("required_frontmatter_by_status", {}).get(values.get("status"), ()):
+    for key in profile.get("required_frontmatter_by_status", {}).get(
+        values.get("status"), ()
+    ):
         if key not in values or values[key] in (None, "", [], ()):
-            findings.append(RegistryFinding("status-frontmatter-required", key, "status requires a nonempty value"))
+            findings.append(
+                RegistryFinding(
+                    "status-frontmatter-required",
+                    key,
+                    "status requires a nonempty value",
+                )
+            )
     return tuple(sorted(findings))
 
 
@@ -1558,8 +1647,8 @@ def load_trusted_requirement_allocation_baseline(
     )
 
     try:
-        legacy_predecessor, declarations = (
-            parse_historical_requirement_declarations(package_texts)
+        legacy_predecessor, declarations = parse_historical_requirement_declarations(
+            package_texts
         )
     except IdentityHistoryError as error:
         raise RegistryError(str(error)) from error
@@ -1579,9 +1668,7 @@ def load_trusted_requirement_allocation_baseline(
                             f"trusted Requirement predecessor has a foreign child ID: {path}"
                         )
                     name = f"REQ-{package_number}.{expected_kind}"
-                    declarations.setdefault(name, set()).add(
-                        int(match.group("number"))
-                    )
+                    declarations.setdefault(name, set()).add(int(match.group("number")))
 
     states: dict[str, RequirementAllocationState] = {}
     expected_children = {
@@ -1812,9 +1899,10 @@ _ARTIFACT_TOKEN_PATTERN = re.compile(
 )
 
 
-# Registry authority reaches outside docs/ only for the repository entrypoint
-# surfaces that carry a registered README form. Every other root stays out.
+# Registry authority admits canonical governance plus explicitly registered
+# repository surfaces. Unrelated hidden roots stay outside the contract.
 _NON_DOCS_ROOTS = (
+    ".agents/",
     "examples/",
     "infra/",
     "projects/",
@@ -1822,7 +1910,9 @@ _NON_DOCS_ROOTS = (
 _NON_DOCS_FILES = frozenset(
     {
         ".claude/README.md",
+        ".claude/provider.md",
         ".codex/README.md",
+        ".codex/provider.md",
         ".github/repository-surface.md",
         "README.md",
         "_workspace/README.md",

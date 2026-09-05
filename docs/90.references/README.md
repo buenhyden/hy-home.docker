@@ -1,10 +1,10 @@
 ---
 title: "References"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 ---
 
@@ -12,7 +12,7 @@ layer: "references"
 
 ## Overview
 
-`docs/90.references/` stores supplementary evidence in exactly three package categories. It helps active lifecycle stages evaluate facts but never overrides Stage 00 policy, Stage 01 requirements, Stage 02 architecture, Stage 03 specifications, or Stage 05 operations.
+`docs/90.references/` stores supplementary evidence in exactly three package categories. It helps active lifecycle stages evaluate facts but never overrides canonical agent governance policy, Stage 01 requirements, Stage 02 architecture, Stage 03 specifications, or Stage 05 operations.
 
 ## Scope
 
@@ -34,9 +34,9 @@ Package paths are numeric, prefixless, and date-free. Stable IDs remain in front
 
 ### Authority Boundary
 
-Stage 90 is non-normative. When evidence conflicts with a current owner, follow the current Stage 00/01/02/03/05 document and update or supersede the reference package. Executable OpenAPI, GraphQL, or Proto contracts remain with their Stage 03 Spec Package.
+Stage 90 is non-normative. When evidence conflicts with a current owner, follow the current canonical governance and Stage 01/02/03/05 document and update or supersede the reference package. Executable OpenAPI, GraphQL, or Proto contracts remain with their Stage 03 Spec Package.
 
-[Stage 00 authoring policy](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)
+[canonical agent governance authoring policy](../../.agents/governance/documentation-protocol.md#role-specific-authoring)
 owns source, limitation, consumer, and freshness expectations. Diataxis technical
 reference describes a reader need and does not make a document Stage 90 evidence.
 Generated data is refreshed by its registered generator, never hand-edited into
@@ -67,8 +67,8 @@ Deprecated redirects, compatibility copies, `learning/`, and `llm-wiki/` are not
 
 ## Related Documents
 
-- [Documentation protocol](../00.agent-governance/policies/documentation-protocol.md)
-- [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
 - [Research template](../99.templates/templates/references/research-pack.template.md)
 - [Audit template](../99.templates/templates/references/audit-pack.template.md)

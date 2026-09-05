@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0020"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -31,7 +38,7 @@ third-party persona prose or changing active model policy.
 ## Repository Role
 
 This report provides Stage 90 evidence for Tasks 9-10 and future approved
-catalog/eval work. Stage 00 owns active agents, instructions, permissions, and
+catalog/eval work. canonical agent governance owns active agents, instructions, permissions, and
 model literals.
 
 ## Scope
@@ -62,7 +69,7 @@ model literals.
   `evidence-research`, `long-horizon-supervision`, and `routine-validation`.
   They map exactly to `claude-opus-5` / `claude-sonnet-5` /
   `claude-haiku-4-5-20251001` and `gpt-5.6-sol` / `gpt-5.6-terra` in the
-  [provider registry](../../../00.agent-governance/providers/registry.yaml).
+  [provider registry](../../../../.agents/governance/providers/registry.yaml).
   There is no active fallback graph and implicit substitution is prohibited.
 - The historical model catalog cutoff remains 2026-07-10 10:00 KST
   (01:00 UTC). The provider-model contract was retrieved at
@@ -80,6 +87,7 @@ corroborated against tracked source.
 
 ## Instruction and Vibe-Coding Criteria
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AIV-01 | Define one instruction authority and explicit precedence/projection. | Stage 00 is canonical; root/provider shims delegate; provider sync reports no drift; no GitHub-native policy layer is adopted. | Implemented | 3 | Retain | Stage 00 governance | Existing provider sync/contracts. | Inspect authority map and run sync check. | High. |
@@ -104,6 +112,7 @@ corroborated against tracked source.
 These `AIC-*` audit IDs stabilize the seven capability families already
 defined in the canonical Task 2 research; they do not create active catalog roles.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | AIC-01 | Product discovery, outcome ownership, and specification planning. | Workflow/doc/rules roles cover artifact mechanics; no role owns product discovery or outcome validation. | Missing | 0 | Add | Product scope and Stage 00 catalog | Add only after recurring demand, bounded IO, and representative eval; merge spec conversion into existing skills. | Compare 14 roles/24 functions with pinned product/spec family. | High. |
@@ -143,6 +152,7 @@ defined in the canonical Task 2 research; they do not create active catalog role
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap | Action | Boundary |
 | --- | --- | --- |
 | Product discovery/outcome capability | Add only after recurring demand and bounded eval. | Stage 03/04 plus Stage 00 catalog proposal |
@@ -174,7 +184,7 @@ nothing.
 - `Provider landscape` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-model-landscape` leaf)
 - Agent catalog (retired path: `00.agent-governance/agents/README.md`)
 - Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
-- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md)
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
 
 ## Maintenance
 

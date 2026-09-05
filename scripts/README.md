@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 created: "2026-02-21"
 ---
 
@@ -122,7 +122,7 @@ script.
 | Compose Core Readiness Operation       | [check-compose-core-readiness.sh](./operations/check-compose-core-readiness.sh)             | Preflight and execute the approved isolated five-service startup, recovery, timeout, typed-evidence, and owned-cleanup contract                                                                                  |
 | Compose Core Readiness Library         | [compose-core-readiness.sh](./lib/ops/compose-core-readiness.sh)                            | Shared fail-closed identity, path, render, readiness, recovery, evidence, redaction, and cleanup functions; source only through the operation or focused tests                                                    |
 | PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./operations/rehearse-postgres-logical-upgrade.sh)   | Check configuration with `--check-config-only` or run the approved pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
-| Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed Stage 00 artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
+| Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed canonical agent governance artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
@@ -152,7 +152,7 @@ script.
 | Docker Preflight Mode                  | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight`         | Real local prerequisite validation without dummy file creation                                                                                                                                                  |
 | Secret Generation                      | [gen-secrets.sh](./operations/gen-secrets.sh)                                               | Generate local Docker secret files; use `--check` or `--dry-run` before default generation                                                                                                                      |
 | Sample Service Delivery Rehearsal      | [rehearse-sample-service-delivery.sh](./operations/rehearse-sample-service-delivery.sh)     | Validate fixture contracts or run the canonical-gated local baseline/canary promotion, rollback, atomic evidence, and owned-cleanup state machine                                                              |
-| Provider Surface Renderer              | [provider_surface_renderer.py](./operations/provider_surface_renderer.py)                   | Deterministically render native Claude/Codex role adapters and Claude/Codex skill projections from typed Stage 00 sources with confined, bounded writes; `--check` is read-only and `--write` applies                                  |
+| Provider Surface Renderer              | [provider_surface_renderer.py](./operations/provider_surface_renderer.py)                   | Render native Claude/Codex roles and thin Claude skill adapters from canonical `.agents` sources with confined, bounded writes; Codex reads canonical native skill packages. `--check` is read-only and `--write` applies                                  |
 | Tech-Stack Version Sync                | [sync-tech-stack-versions.sh](./operations/sync-tech-stack-versions.sh)                     | Re-point curated `infra/tech-stack.versions.json` images to declared compose tags; default writes, `--check` verifies, `--dry-run` previews                                                                     |
 | Compose Profile Coverage Snapshot      | [generate-compose-profile-service-coverage.sh](./operations/generate-compose-profile-service-coverage.sh) | Generate the Stage 90 Docker Compose profile/service coverage reference with `--write`; use `--check` for read-only freshness verification                                                                     |
 | Tech-Stack Version Provenance Snapshot | [generate-tech-stack-version-provenance.sh](./operations/generate-tech-stack-version-provenance.sh) | Generate the Stage 90 tech-stack registry drift severity and source provenance reference with `--write`; use `--check` for read-only freshness verification                                                    |
@@ -349,7 +349,7 @@ not copy atomic validator commands.
 
 - **Idempotency**: All scripts MUST be safe to run multiple times without causing corrupted state.
 - **No Secrets**: Scripts must fetch credentials from environment variables; never hardcode them.
-- **Deterministic**: Any automation added must comply with repository governance in `../docs/00.agent-governance/policies/`.
+- **Deterministic**: Any automation added must comply with repository governance in `../.agents/governance/`.
 
 ### Usage Examples
 
@@ -398,7 +398,7 @@ python3 scripts/knowledge/generate-llm-wiki.py --check
 # Report advisory Graphify corpus health
 ./scripts/knowledge/report-graphify-health.sh
 
-# Verify or regenerate Stage 00-derived provider skill projections
+# Verify or regenerate canonical agent governance-derived provider skill projections
 python3 scripts/operations/provider_surface_renderer.py --check
 python3 scripts/operations/provider_surface_renderer.py --write
 
@@ -406,10 +406,10 @@ python3 scripts/operations/provider_surface_renderer.py --write
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
 # Run provider-neutral post-edit validation from a file-edit hook payload
-printf '{"tool_input":{"file_path":"docs/00.agent-governance/policies/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
+printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
 # Run provider-neutral post-edit validation without formatting writes
-printf '{"tool_input":{"file_path":"docs/00.agent-governance/policies/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
+printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
 
 # Enforce all tier hardening baselines
 ./scripts/hardening/check-all-hardening.sh
@@ -504,7 +504,7 @@ generators; it never invokes runtime-changing rows.
 - [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
 - [Public Suite Ownership Manifest](manifest.yaml)
 - [Agent Evaluation Harness](../evals/README.md) - the sibling automation root; `evals/README.md` owns the eval surface this manifest also registers
-- [Workspace Governance Authority](../docs/02.architecture/decisions/0029-workspace-governance-authority.md)
+- [Workspace Governance Authority](../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - [Document Profile Registry](../docs/99.templates/registry.json)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

@@ -1,10 +1,10 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0003"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: External AI-Agent Catalogs and Local Intake
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -50,7 +57,7 @@ boundary, permissions, evaluation, and approval rules.
 
 This Stage 90 reference may suggest capability gaps. It cannot add a role,
 function, scope, model, permission, provider adapter, or user-global install.
-Stage 00 and an approved lifecycle change remain the only adoption path.
+canonical agent governance and an approved lifecycle change remain the only adoption path.
 
 ## Scope
 
@@ -166,16 +173,18 @@ intake boundary concrete texture rather than only a general claim:
   RabbitMQ, Kubernetes, OAuth 2.0, and OpenAPI/AsyncAPI/protobuf
   specifications — without naming credentials or secrets.
 
-At roughly 1,100 lines, this one sample file is about 23 times the 48-line
-average of this repository's 14 canonical role files (672 tracked lines
-total across `docs/00.agent-governance/agents/agents/*.md`, confirmed by
-direct `wc -l` on 2026-08-14). A persona-voice import at that density would
-dwarf this repository's own role files, which is independent evidence for
-why the safe adaptation sequence requires rewriting only the
-job-to-be-done rather than importing the persona body wholesale.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> At roughly 1,100 lines, this one sample file is about 23 times the 48-line
+> average of this repository's 14 canonical role files (672 tracked lines
+> total across `docs/00.agent-governance/agents/agents/*.md`, confirmed by
+> direct `wc -l` on 2026-08-14). A persona-voice import at that density would
+> dwarf this repository's own role files, which is independent evidence for
+> why the safe adaptation sequence requires rewriting only the
+> job-to-be-done rather than importing the persona body wholesale.
 
-### Current local catalog
+### Recorded local catalog
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Concern             | Tracked state at Task 4 baseline                                    | Evidence limit                                                           |
 | ------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Canonical roles     | 14: one supervisor and thirteen workers                             | Definition only; no provider execution claim.                            |
@@ -194,6 +203,7 @@ Direct re-count at repository commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
 (2026-08-14) confirms every row above by file count rather than by trusting
 the table text:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface                        | Command                                                      | Count                    |
 | ------------------------------ | ------------------------------------------------------------ | ------------------------ |
 | Canonical role files           | `ls docs/00.agent-governance/agents/agents/*.md \| wc -l`    | 14                       |
@@ -214,6 +224,7 @@ landscape leaf's status axes.
 
 ### Intake decision boundary
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Concern              | Upstream pattern                                       | Required local disposition/control                                                                       |
 | -------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | Identity/personality | Strong persona voice and domain identity               | Do not import voice; rewrite only the job-to-be-done under an existing or approved owner.                |
@@ -267,7 +278,7 @@ a router rather than a duplicate policy body.
 4. Prefer merging a capability into an existing function/role.
 5. If a new role/function is still justified, define scope, permission,
    profile, handoff, fixtures, and failure behavior in approved Stage 03/04 work.
-6. Change the canonical Stage 00 catalog first, render projections, inspect the
+6. Change the canonical agent governance catalog first, render projections, inspect the
    diff, validate parity/evaluation, and obtain independent review.
 7. Keep upstream auto-update and user-global install paths outside adoption.
 
@@ -297,6 +308,7 @@ still be checked against the canonical role and its scoped permission profile.
 
 ## Scope Implications
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | Application and disposition                                                                                                        |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `agentic`      | Owns catalog/intake/profile/projection changes; external identities remain reference-only until approved and generated.            |
@@ -316,6 +328,7 @@ still be checked against the canonical role and its scoped permission profile.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                                                                       | Accessed                          | Class                       | Verification state                                                                                  |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
 | [agency-agents immutable tree](https://github.com/msitarzewski/agency-agents/tree/ebe9c99acb5c96f9468de368d8bead775387d1a7)                                                                  | 2026-08-08T16:18:04+09:00         | External fixed              | Default-branch SHA resolved by `git ls-remote`; detached tree counted 17 divisions / 270 agents.    |
@@ -353,6 +366,7 @@ Stage 00, with generated provider projections. The upstream agency-agents
 catalog now declares its division set in `divisions.json`; that moving catalog
 is an intake source, not a repository role authority.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Capability | Repository implementation | Evidence depth | Gap | Verification route |
 | --- | --- | --- | --- | --- |
 | Canonical role catalog | Stage 00 role files with generated native adapters | Repository-enforced | Runtime tool effectiveness varies | provider-surface renderer and contract checks |

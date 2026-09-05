@@ -66,7 +66,7 @@ Infra layer:
 {infra_entries}
 
 Key rules:
-- Use `AGENTS.md` and `docs/00.agent-governance/` as governance entry points.
+- Use `AGENTS.md` and `.agents/` as governance entry points.
 - Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` before completion.
 """
@@ -76,23 +76,30 @@ PY
 }
 
 pre_tool_use() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+  if python3 - "$PROJECT_DIR" 3<<<"$INPUT" <<'PY'
 import json
-import os
 import pathlib
 import re
 import sys
 
 project = pathlib.Path(sys.argv[1])
-raw = os.environ.get("HOOK_INPUT", "")
+raw = open(3, encoding="utf-8").read().removesuffix("\n")
+
+def deny_policy_failure(reason):
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": reason,
+    }}))
+    raise SystemExit(0)
 
 try:
-    data = json.loads(raw) if raw.strip() else {}
-except Exception:
-    data = {}
+    data = json.loads(raw)
+except (TypeError, ValueError):
+    deny_policy_failure("PreToolUse input is invalid; policy evaluation could not run.")
 
 if not isinstance(data, dict):
-    data = {}
+    deny_policy_failure("PreToolUse input is invalid; policy evaluation could not run.")
 
 tool_name = str(data.get("tool_name") or "")
 tool_input = data.get("tool_input", {})
@@ -141,7 +148,7 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
         "when report health is advisory for any reason, including ignored volumes, "
         "gitlink/submodule content, generated/minified artifacts, meaningless god nodes, "
         "or unrelated cross-root inferred edges, corroborate against tracked source files, "
-        "docs/00.agent-governance, and stage docs."
+        ".agents/governance, and stage docs."
     )
 
 edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
@@ -181,13 +188,11 @@ if not tool_name or tool_name in edit_tools:
         short_path = short_path.removeprefix("./")
         if short_path.startswith(".agents/"):
             system_messages.append(
-                "Non-authoritative .agents container edit detected.\n\n"
+                "Canonical agent governance edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "An absent or empty real `.agents/` directory is allowed, but it has no shared "
-                "roles, skills, generated README, or native picker route. Unknown or nonempty "
-                "contents fail closed and must be preserved; do not regenerate or delete them. "
-                "Load common policies, roles, and procedures from `docs/00.agent-governance/`; "
-                "do not infer a compatibility projection. "
+                "Load shared policy from `.agents/governance/`, role intent from `.agents/roles/`, "
+                "and callable procedures from `.agents/skills/`. Preserve canonical sources; "
+                "regenerate only registered native provider outputs. "
                 "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
             break
@@ -236,7 +241,7 @@ if not tool_name or tool_name in edit_tools:
                 )
             break
 
-# Evaluate the Stage 00 hook rules. Their frontmatter is the machine part and
+# Evaluate the canonical hook rules. Their frontmatter is the machine part and
 # their body is the message; before this they were enforced by nothing.
 denials = []
 try:
@@ -274,8 +279,10 @@ try:
     system_messages.extend(rule.message for rule in warnings)
     denials.extend(blocks)
 except Exception:
-    # A defect in rule evaluation must not break every tool call.
-    denials = []
+    deny_policy_failure(
+        "Repository hook policy could not be loaded or evaluated; resolve the "
+        "policy configuration before retrying."
+    )
 
 if denials:
     print(json.dumps({"hookSpecificOutput": {
@@ -299,6 +306,10 @@ if additional_context:
 
 print(json.dumps(output))
 PY
+  then
+    return 0
+  fi
+  return 2
 }
 
 post_tool_use() {
@@ -422,7 +433,7 @@ import os
 import pathlib
 import subprocess
 
-REGISTRY = "docs/00.agent-governance/policies/approval-boundaries.md"
+REGISTRY = ".agents/governance/approval-boundaries.md"
 SCHEMA = "agent-governance/deferred-paths/v1"
 
 
@@ -578,7 +589,7 @@ prompt = str(data.get("prompt", "")).lower()
 FUNCTIONS = [
     {
         "label": "compose-stack-agent",
-        "path": "docs/00.agent-governance/skills/compose-stack-agent.md",
+        "path": ".agents/skills/compose-stack-agent/SKILL.md",
         "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
         "keywords": [
             "healthcheck", "health check", "restart policy",
@@ -588,7 +599,7 @@ FUNCTIONS = [
     },
     {
         "label": "requirements-to-design-agent",
-        "path": "docs/00.agent-governance/skills/requirements-to-design-agent.md",
+        "path": ".agents/skills/requirements-to-design-agent/SKILL.md",
         "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
         "keywords": [
             "prd", "ard", "requirements to design", "architecture decision",
@@ -597,7 +608,7 @@ FUNCTIONS = [
     },
     {
         "label": "execution-plan-agent",
-        "path": "docs/00.agent-governance/skills/execution-plan-agent.md",
+        "path": ".agents/skills/execution-plan-agent/SKILL.md",
         "desc": "Stage 03 스펙→플랜 분해 및 실행 계획 작성",
         "keywords": [
             "execution plan", "spec to plan", "stage 03",
@@ -606,7 +617,7 @@ FUNCTIONS = [
     },
     {
         "label": "task-breakdown-agent",
-        "path": "docs/00.agent-governance/skills/task-breakdown-agent.md",
+        "path": ".agents/skills/task-breakdown-agent/SKILL.md",
         "desc": "플랜→태스크 분해 및 실행 증거 기록",
         "keywords": [
             "task breakdown", "task evidence", "plan to task",
@@ -615,7 +626,7 @@ FUNCTIONS = [
     },
     {
         "label": "ops-runbook-agent",
-        "path": "docs/00.agent-governance/skills/ops-runbook-agent.md",
+        "path": ".agents/skills/ops-runbook-agent/SKILL.md",
         "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
         "keywords": [
             "runbook", "stage 05", "05.operations", "backup procedure",
@@ -624,7 +635,7 @@ FUNCTIONS = [
     },
     {
         "label": "knowledge-map-agent",
-        "path": "docs/00.agent-governance/skills/knowledge-map-agent.md",
+        "path": ".agents/skills/knowledge-map-agent/SKILL.md",
         "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
         "keywords": [
             "graphify", "knowledge graph", "traceability gap", "orphaned doc",
@@ -633,7 +644,7 @@ FUNCTIONS = [
     },
     {
         "label": "policy-gate-agent",
-        "path": "docs/00.agent-governance/skills/policy-gate-agent.md",
+        "path": ".agents/skills/policy-gate-agent/SKILL.md",
         "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
         "keywords": [
             "policy gate", "validation suite", "public gate",
@@ -648,7 +659,7 @@ matched = [function for function in FUNCTIONS if any(keyword in prompt for keywo
 if not matched:
     sys.exit(0)
 
-lines = ["Canonical Stage 00 function routes that may apply to this prompt:"]
+lines = ["Canonical agent function routes that may apply to this prompt:"]
 for function in matched:
     lines.append(
         f"  - **{function['label']}** (`{function['path']}`): {function['desc']}"

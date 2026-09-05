@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0015"
 parent_ids:
@@ -17,11 +17,18 @@ review_cycle: "on-source-change"
 
 # Reference: Agentic Engineering Scope Application Matrix
 
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
 ## Overview
 
 This reference is the scope-axis entry point for the agentic engineering
 research pack. It dispositions all fourteen persona scopes defined by the
-[persona protocol](../../../00.agent-governance/policies/persona.md), maps them to
+[persona protocol](../../../../.agents/governance/persona.md), maps them to
 the twenty planned research leaves, and separates real workspace surfaces from
 typed catalog reachability.
 
@@ -65,19 +72,21 @@ enforcement.
 
 ### In scope
 
-- The tracked files under `docs/00.agent-governance/scopes/`. **Count corrected 2026-08-19: eight, not fourteen.** `scopes/frontend.md`, `backend.md` and `mobile.md` no longer exist; re-derive with `ls docs/00.agent-governance/scopes/*.md | wc -l` rather than trusting a stated number.
-- Persona-to-scope routing and the typed agent/function catalog.
-- The three tracked contracts under `docs/00.agent-governance/contracts/`,
-  including the path-authority records that earlier revisions did not cite.
-- Tracked workspace surfaces named or governed by each scope.
-- The validators and tests that do or do not assert the scope axis.
-- Applicability to all twenty leaves in the planned pack.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+>
+> - The tracked files under `docs/00.agent-governance/scopes/`. **Count corrected 2026-08-19: eight, not fourteen.** `scopes/frontend.md`, `backend.md` and `mobile.md` no longer exist; re-derive with `ls docs/00.agent-governance/scopes/*.md | wc -l` rather than trusting a stated number.
+> - Persona-to-scope routing and the typed agent/function catalog.
+> - The three tracked contracts under `docs/00.agent-governance/contracts/`,
+>   including the path-authority records that earlier revisions did not cite.
+> - Tracked workspace surfaces named or governed by each scope.
+> - The validators and tests that do or do not assert the scope axis.
+> - Applicability to all twenty leaves in the planned pack.
 
 ### Out of scope
 
 - Adding a missing scope value, agent, function, or provider projection.
-- Resolving ownership conflicts in Stage 00 policy. This matrix reports them;
-  the Stage 00 owner decides them.
+- Resolving ownership conflicts in canonical agent governance policy. This matrix reports them;
+  the canonical agent governance owner decides them.
 - Inspecting secrets/private state, starting services, proving runtime health,
   or reading remote provider/GitHub enforcement.
 - Treating this Stage 90 analysis as authority to adopt a recommendation.
@@ -128,18 +137,20 @@ adopting organization, so it cannot arbitrate a local scope disposition.
 
 The 2026-08-14 re-derivation ran the following against the tracked workspace:
 
-```bash
-git ls-files | wc -l
-find docs/00.agent-governance/scopes -maxdepth 1 -type f -name '*.md' \
-  -printf '%f\n' | sort
-find docs/03.specs -mindepth 1 -maxdepth 1 -type d | wc -l
-find docs/98.archive/03.specs -type f -name spec.md | wc -l
-python3 -c "import yaml; ..."   # full parse of all three typed contracts
-python3 scripts/validation/check-agent-governance-contract.py --mode contract
-python3 scripts/validation/check-agent-governance-contract.py \
-  --mode repository --section all
-python3 -m unittest tests.validation.test_agent_governance_contract
-```
+> Historical evidence (not current authority; source: Git history): Recorded command at the document observation baseline.
+>
+> ```bash
+> git ls-files | wc -l
+> find docs/00.agent-governance/scopes -maxdepth 1 -type f -name '*.md' \
+>   -printf '%f\n' | sort
+> find docs/03.specs -mindepth 1 -maxdepth 1 -type d | wc -l
+> find docs/98.archive/03.specs -type f -name spec.md | wc -l
+> python3 -c "import yaml; ..."   # full parse of all three typed contracts
+> python3 scripts/validation/check-agent-governance-contract.py --mode contract
+> python3 scripts/validation/check-agent-governance-contract.py \
+>   --mode repository --section all
+> python3 -m unittest tests.validation.test_agent_governance_contract
+> ```
 
 Results: 1,673 tracked paths; exactly 14 sorted scope filenames; 28 active Spec
 directories; 32 archived `spec.md` files. The complete typed catalog parse
@@ -299,6 +310,7 @@ nor the fourteen agents.
 Three assignment conflicts are visible in tracked text at this commit. They are
 reported, not resolved:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Path                            | Claim A                                                 | Claim B                                                                                                                  |
 | ------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `docs/05.operations/`           | `docs.md` §5 — `doc-writer` owns, all other agents read | `ops.md` §6 — `incident-responder` owns, all other agents read                                                           |
@@ -360,23 +372,25 @@ five remain undecided rather than deferred.
 The deferral covers one of the two capabilities the earlier analysis named, and
 the other two findings it carried are separate from it. Re-derived 2026-08-19:
 
-- **Only `product-discovery` is deferred.** `product-discovery` occurs once in
-  `docs/00.agent-governance/contracts/agent-catalog.yaml`, in the `defer` record
-  above. `outcome-validation` occurs **zero** times anywhere in that file, so it
-  is neither owned nor deferred. Reading the `defer` record as covering both
-  capabilities overstates it.
-- **The catalog does cover the adjacent work.** `workflow-supervisor`,
-  `doc-writer`, `rules-engineer` and the requirements, design and task functions
-  cover orchestration and document mechanics. The gap is discovery and outcome
-  validation specifically, not product work in general.
-- **No agent owns `docs/01.requirements/` in any File Ownership SSOT table.**
-  This is an ownership gap, not a capability gap, and the `defer` record does not
-  address it. Verified 2026-08-19 against the File Ownership sections of
-  `common.md`, `docs.md`, `infra.md`, `ops.md`, `qa.md` and `security.md`: none
-  of their 33 patterns matches `docs/01.requirements/`, while the directory holds
-  26 tracked documents. Ownership falls to the repository owner under the `*`
-  rule in `.github/CODEOWNERS`. PRD changes also cross the `docs/01` to `docs/99`
-  read-only boundary, so they need explicit approval regardless of who owns them.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+>
+> - **Only `product-discovery` is deferred.** `product-discovery` occurs once in
+>   `docs/00.agent-governance/contracts/agent-catalog.yaml`, in the `defer` record
+>   above. `outcome-validation` occurs **zero** times anywhere in that file, so it
+>   is neither owned nor deferred. Reading the `defer` record as covering both
+>   capabilities overstates it.
+> - **The catalog does cover the adjacent work.** `workflow-supervisor`,
+>   `doc-writer`, `rules-engineer` and the requirements, design and task functions
+>   cover orchestration and document mechanics. The gap is discovery and outcome
+>   validation specifically, not product work in general.
+> - **No agent owns `docs/01.requirements/` in any File Ownership SSOT table.**
+>   This is an ownership gap, not a capability gap, and the `defer` record does not
+>   address it. Verified 2026-08-19 against the File Ownership sections of
+>   `common.md`, `docs.md`, `infra.md`, `ops.md`, `qa.md` and `security.md`: none
+>   of their 33 patterns matches `docs/01.requirements/`, while the directory holds
+>   26 tracked documents. Ownership falls to the repository owner under the `*`
+>   rule in `.github/CODEOWNERS`. PRD changes also cross the `docs/01` to `docs/99`
+>   read-only boundary, so they need explicit approval regardless of who owns them.
 
 ## Scope Implications
 
@@ -387,9 +401,10 @@ the per-row leaf lists to keep the table readable. The `Catalog reachability`
 column now reports agent and function counts separately, because the two differ
 for `architecture`.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope and governance owner                                            | Governed or applicable paths/artifacts                                                                                                                       | Applicable topical leaves                                                                                                                                      | Current disposition                                                                                                                         | Adoption rules / exceptions                                                                                                                          | Evidence owner                                                                      | Validation owner                                                         | Catalog reachability          |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------- |
-| [`agentic`](../../../00.agent-governance/policies/agentic.md)           | Stage 00 catalogs/rules, root shims, `.claude/`, `.agents/`, `.codex/`, `.gemini/`, hooks; 4 of 7 typed path-authority records                               | harness, loop, provider comparison, instructions, provider/model landscape, model selection, AI catalogs, memory, automation, verification/validation          | **Implemented** as tracked contracts; provider loading/interception and model execution are **Unverified**                                  | Provider-neutral policy stays in Stage 00; provider-native mechanics stay in adapters; changes need approved Stage 03/04 ownership and parity checks | `hook-developer`, `skill-creator`; workflow supervision where applicable            | `rules-engineer`; repository contracts and provider-surface sync         | Enum · 4 agents · 4 functions |
+| [`agentic`](../../../../.agents/governance/agentic.md)           | Stage 00 catalogs/rules, root shims, `.claude/`, `.agents/`, `.codex/`, `.gemini/`, hooks; 4 of 7 typed path-authority records                               | harness, loop, provider comparison, instructions, provider/model landscape, model selection, AI catalogs, memory, automation, verification/validation          | **Implemented** as tracked contracts; provider loading/interception and model execution are **Unverified**                                  | Provider-neutral policy stays in Stage 00; provider-native mechanics stay in adapters; changes need approved Stage 03/04 ownership and parity checks | `hook-developer`, `skill-creator`; workflow supervision where applicable            | `rules-engineer`; repository contracts and provider-surface sync         | Enum · 4 agents · 4 functions |
 | `architecture` (retired path: `../../../00.agent-governance/scopes/architecture.md`) | `docs/02.architecture/{requirements,decisions}/`, downstream Specs; no prose or typed ownership row in this scope                                            | spec-driven SDLC, document roles, Compose/infrastructure, security, automation, verification/validation                                                        | **Partial**: 53 Stage 02 files, 28 active Spec directories, and 2 owned functions exist; both owners sit in other scopes                    | Trade-offs route to ADRs; service boundaries route to Specs; protocol claims require a real service and tracked decision                             | `doc-writer` for `adr-writing`; `rules-engineer` for `requirements-to-design-agent` | `rules-engineer` and `workflow-supervisor` per the function records      | Enum · 0 agents · 2 functions |
 | `backend` (retired path: `../../../00.agent-governance/scopes/backend.md`)           | Future Node/Python/Go services; negative enumeration found zero tracked files in any claimed stack                                                           | quality, security, Compose/infrastructure, automation, verification/validation when a backend exists                                                           | **Not Applicable** to the current corpus; catalog route is **Missing** and no intake decision exists                                        | Do not apply stack, latency, ASVS L2, or 90% coverage claims until a backend surface and Spec exist                                                  | Backend Engineer persona; no typed agent                                            | Future layer owner plus QA/security reviewers; current code checks N/A   | Outside enum · 0 · 0          |
 | `common` (retired path: `../../../00.agent-governance/scopes/common.md`)             | `.pre-commit-config.yaml` (10 repositories, 24 hooks), shared conventions, `scripts/lib/`; claimed root `common/`, `lib/`, `shared/` have zero tracked files | instructions, metadata lifecycle, documentation architecture, quality, security, verification/validation                                                       | **Partial**: typed review route and local gates exist; three of its three claimed shared roots do not                                       | Agents must not invoke direct pre-commit/lint/format; the controlled all-files wrapper is final-QA-only and approval-bound                           | Cross-layer implementer; shared review route is `code-reviewer`                     | `code-reviewer`, scoped checks, `git diff --check`                       | Enum · 1 agent · 2 functions  |
@@ -435,7 +450,7 @@ for `architecture`.
 1. Enter through the persona/scope file, then resolve a typed agent and a
    concrete ownership row before mutation. Check all three ownership surfaces,
    because they are disjoint and can disagree. If no typed route exists, use
-   the adjacent owner shown above only where Stage 00 already assigns it;
+   the adjacent owner shown above only where canonical agent governance already assigns it;
    otherwise stop for an ownership decision.
 2. Route research adoption to Stage 01 requirements, Stage 02 decisions, Stage
    03 specifications, Stage 04 execution, or Stage 05 policy/operations as
@@ -444,7 +459,7 @@ for `architecture`.
    enforcement, and provider behavior remain separate evidence classes.
 4. Preserve the secret/private/runtime/remote boundary. No scope disposition
    authorizes secret-value inspection, service mutation, or remote changes.
-5. Reconcile catalog scope values and agent records through the Stage 00 typed
+5. Reconcile catalog scope values and agent records through the canonical agent governance typed
    owner and provider projections; do not patch one adapter independently.
 6. Treat a scope's stated stack, threshold, or SLO as an aspiration until a
    tracked surface binds to it. Eight of the fourteen scope files are base-tier
@@ -464,9 +479,10 @@ tracked contract surface (`agentic`), one implemented corpus-and-validator
 surface (`docs`), one implemented definition surface (`infra`), and nine
 partial or tracked-with-unverified-outcome dispositions.
 
-The first owner of the reachability gap is the Stage 00 agent catalog, not this
+The first owner of the reachability gap is the canonical agent governance agent catalog, not this
 Stage 90 document. Named gaps and their closing observations:
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap                                                                        | First owner                   | Closing observation                                                                                                   |
 | -------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Six persona values unreachable from the typed enum                         | Stage 00 catalog owner        | A contract change, or a recorded decision that the axes are intentionally different sizes.                            |
@@ -482,15 +498,16 @@ Stage 90 document. Named gaps and their closing observations:
 Architecture protocol adoption routes through Stage 02/03; backend and mobile
 applicability requires a product and specification decision; product ownership
 is already deferred by a dated record; entry, meta, and frontend continue
-through their already-declared adjacent path owners unless Stage 00 changes.
+through their already-declared adjacent path owners unless canonical agent governance changes.
 Runtime, remote, private, and provider-native gaps remain unverified until
 separately approved evidence exists.
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                  |
 | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Persona protocol](../../../00.agent-governance/policies/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows at lines 25-38; unchanged since 2026-05-15.                                                                                                                                         |
+| [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows at lines 25-38; unchanged since 2026-05-15.                                                                                                                                         |
 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Fully parsed; 8 scope values, 14 agents, 24 functions, 9 intake decisions. Confirmed by an executed validator run.                                                                                                                  |
 | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 7 `path_authority` records, 25 artifact profiles, 3 README profiles, 3 governed families.                                                                                                                              |
 | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Parsed for projection targets; unchanged since 2026-07-26.                                                                                                                                                                          |
@@ -557,6 +574,7 @@ non-competing evidence. Current repository-baseline ownership is consolidated
 into m0020; RES-0085 supplies dated scope and identity-recovery evidence only.
 No category requires a new research identity or a member split.
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Capability | Repository implementation | Evidence depth | Gap | Verification route |
 | --- | --- | --- | --- | --- |
 | Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
@@ -584,5 +602,5 @@ explicit disposition for every scope and link back to this matrix.
 - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-- [Agent governance hub](../../../00.agent-governance/README.md)
+- [Agent governance hub](../../../../.agents/README.md)
 - [Research category router](../README.md)

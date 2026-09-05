@@ -5,6 +5,7 @@ from __future__ import annotations
 from scripts.lib.document_governance.metadata_validator import (
     EXPECTED_EXCEPTION_SCHEMA,
     TARGET_MARKDOWN_PREFIXES,
+    TARGET_MARKDOWN_FILES,
     Finding,
     FrontmatterError,
     ProfileError,
@@ -40,6 +41,7 @@ from scripts.lib.document_governance.registry import (
 __all__ = (
     "EXPECTED_EXCEPTION_SCHEMA",
     "TARGET_MARKDOWN_PREFIXES",
+    "TARGET_MARKDOWN_FILES",
     "Finding",
     "FrontmatterError",
     "ProfileError",

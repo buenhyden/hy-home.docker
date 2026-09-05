@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "operations"
 ---
 
@@ -65,13 +65,13 @@ layer: "operations"
 - Incident는 특정 사건의 관찰·영향·대응 타임라인을, Postmortem은 원인·교훈·
   재발 방지 조치를 소유한다.
 - 독자 목적, 역할별 작성 기준, Incident/Postmortem 후속 조치 기준은
-  [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)이 소유한다.
+  [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이 소유한다.
   Guide의 주된 독자 필요를 본문에 명시하며 Diátaxis의 technical reference를
   Stage 90의 증거 분류와 혼동하지 않는다.
 
 ### External Release Evidence
 
-이 저장소는 [Stage 00의 external-release-evidence 정책](../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary)을
+이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../../.agents/governance/documentation-protocol.md#release-evidence-boundary)을
 사용한다. [Release Runbook](catalog/00-workspace/0009-release-management/runbook.md)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
@@ -111,5 +111,5 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 - [Architecture](../02.architecture/README.md)
 - [Specs, Plans, and Tasks](../03.specs/README.md)
 - [Template catalog](../99.templates/templates/README.md)
-- [Documentation protocol](../00.agent-governance/policies/documentation-protocol.md)
-- [Stage authoring matrix](../00.agent-governance/policies/stage-authoring-matrix.md)
+- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)

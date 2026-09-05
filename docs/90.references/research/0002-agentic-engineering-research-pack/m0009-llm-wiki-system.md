@@ -1,10 +1,10 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0009"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: LLM Wiki Navigation, Safety, and Freshness System
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -79,6 +86,7 @@ generated evidence sets.
 
 ### LLM-facing convention boundary
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Convention             | Verified external intent                                                                                                                                                                             | Workspace implementation and boundary                                                                                                                                                                                      |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/llms.txt` proposal   | A root Markdown entrypoint for helping models use a website at inference time. The H1 is the only required section; summary, details, file lists, and an optional lower-priority section may follow. | Root `llms.txt` is a 30-line repo-local navigation file with relative links and stronger safety exclusions. It is not a claim of public-site or proposal-wide conformance.                                                 |
@@ -110,8 +118,9 @@ though neither changes this workspace's implementation:
   obligation, and this workspace's root `AGENTS.md` remains a seven-line
   shim regardless of upstream adoption scale.
 
-### Current navigation architecture
+### Recorded navigation architecture
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Layer                       | Current tracked owner                                                               | Function                                                                                                                                 | Evidence and limit                                                                                                                                                                                                                             |
 | --------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Human discovery             | `README.md` and seven README registration surfaces named by the repository contract | Routes contributors to the machine entrypoint, map, outputs, scripts, and maintenance docs.                                              | Literal registration is validator-checked; discoverability or usage is not observed.                                                                                                                                                           |
@@ -131,6 +140,7 @@ evidence for current byte-exact freshness.
 
 ### Generator comparison
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Dimension           | Index generator                                                                                                   | Coverage generator                                                               | Shared boundary                                                                                                                                            |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Source set          | `git ls-files`, plus required local contract paths only when they exist.                                          | Same.                                                                            | Git-visible paths plus named local contract files; ignored/private state is outside observation.                                                           |
@@ -141,10 +151,11 @@ evidence for current byte-exact freshness.
 | Rendered meaning    | Twelve navigation categories, relative links, and seven filename/suffix-derived roles.                            | Source-bucket/category/role counts and up to three examples per bucket/category. | Classification is navigational metadata, not semantic document quality or runtime truth.                                                                   |
 | Freshness           | Reads the committed output and compares it byte for byte with the full rendered string.                           | Same.                                                                            | `--check` is the named exact freshness proof.                                                                                                              |
 
-The coverage generator contains a `.agents/` source-bucket branch, but its
-shared admission predicate never admits `.agents/` paths. Neither generator
-admits `.gemini/`. This is a current coverage-design observation for the
-generator owner, not authorization to widen the allowlist.
+> Historical evidence (not current authority; source: Git history): Generator behavior at the recorded research baseline; this is not the current admission contract.
+> The coverage generator contains a `.agents/` source-bucket branch, but its
+> shared admission predicate never admits `.agents/` paths. Neither generator
+> admits `.gemini/`. This is a current coverage-design observation for the
+> generator owner, not authorization to widen the allowlist.
 
 ### Safety and metadata layers
 
@@ -241,6 +252,7 @@ and, where it matters more, what it does not.
 
 ## Scope Implications
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scope          | LLM Wiki implication                                                                                                                                              |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agentic`      | `AGENTS.md` instruction loading and `llms.txt` navigation are distinct; provider execution or actual context ingestion remains unverified.                        |

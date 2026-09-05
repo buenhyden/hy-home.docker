@@ -1,10 +1,10 @@
 ---
 title: "Reference: Security Framework Maturity Coverage"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0031"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: Security Framework Maturity Coverage
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -29,7 +36,7 @@ SSDF/SLSA maturity gap explicit and reusable for later security planning.
 
 ## Repository Role
 
-This document supports Stage 00 security governance, Stage 04 QA evidence,
+This document supports canonical agent governance security governance, Stage 04 QA evidence,
 Stage 90 research/audit references, and future security follow-up work. It does
 not replace `.github/workflows/**`, `.github/SECURITY.md`, repository
 protection settings, validation scripts, incident response procedures, or
@@ -135,6 +142,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 ## Criterion Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | SEC-01 | Publish a vulnerability reporting boundary and response expectations. | `.github/SECURITY.md` defines reporting channels and boundaries. | Implemented | 2 | Retain | Security governance owner | Document freshness review; no intake automation claimed. | Inspect policy links, contacts, and supported-version language. | High. |
@@ -154,33 +162,36 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 ## SSDF Coverage Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | SSDF Area | Status | Repo-local Evidence | Gap / Follow-up |
 | --- | --- | --- | --- |
-| Prepare the Organization (PO) | Implemented | security scope (retired path: `00.agent-governance/scopes/security.md`), [quality standards](../../../00.agent-governance/policies/quality-standards.md), [approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md), [GitHub governance](../../../00.agent-governance/policies/github-governance.md), [CODEOWNERS](../../../../.github/CODEOWNERS) | Governance exists locally, but formal external SSDF adoption and control-owner attestation are not claimed. |
+| Prepare the Organization (PO) | Implemented | security scope (retired path: `00.agent-governance/scopes/security.md`), [quality standards](../../../../.agents/governance/quality-standards.md), [approval boundaries](../../../../.agents/governance/approval-boundaries.md), [GitHub governance](../../../../.agents/governance/github-governance.md), [CODEOWNERS](../../../../.github/CODEOWNERS) | Governance exists locally, but formal external SSDF adoption and control-owner attestation are not claimed. |
 | Protect the Software (PS) | Partially Implemented | [Security Policy](../../../../.github/SECURITY.md), `.gitleaks.toml`, `.pre-commit-config.yaml`, [template security baseline](../../../../scripts/validation/check-template-security-baseline.sh), [hardening script](../../../../scripts/hardening/check-all-hardening.sh), security scope (retired path: `00.agent-governance/scopes/security.md`) | Secret scanning and secret-boundary rules exist; SBOM generation, artifact signing, provenance distribution, and release-asset protection are not implemented as framework controls. |
 | Produce Well-Secured Software (PW) | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), repo contracts (retired path: `scripts/validation/check-repo-contracts.sh`), [typed validation runner](../../../../scripts/validation/run-ci-gate.py), `.pre-commit-config.yaml`, [Dependabot](../../../../.github/dependabot.yml) | CI, lint, hardening, workflow-security, dependency-update, and scoped Storybook Next.js npm vulnerability audit surfaces exist; systematic SAST, container/image vulnerability scanning, threat-model evidence per change, and security regression suites are not complete across all surfaces. |
 | Respond to Vulnerabilities (RV) | Partially Implemented | [Security Policy](../../../../.github/SECURITY.md), [incident operations](../../../05.operations/incidents/README.md), security scope (retired path: `00.agent-governance/scopes/security.md`) | Disclosure intake and incident structure exist; no current evidence of vulnerability triage automation, advisory workflow drill evidence, SLA dashboards, or post-remediation vulnerability metrics. |
 
 ## SLSA Coverage Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | SLSA Area | Status | Repo-local Evidence | Gap / Follow-up |
 | --- | --- | --- | --- |
-| Source control and change review | Partially Implemented | [GitHub governance](../../../00.agent-governance/policies/github-governance.md), GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [CODEOWNERS](../../../../.github/CODEOWNERS), [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | Dated public evidence records a failed 15-job run; current authenticated protection/ruleset state and complete CODEOWNERS enforcement remain unverified. |
-| Workflow token and action integrity | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), repo contracts (retired path: `scripts/validation/check-repo-contracts.sh`), [GitHub governance](../../../00.agent-governance/policies/github-governance.md) | Workflows use explicit permissions and SHA-pinned actions; continue checking any new workflow action references through repo contracts and workflow review. |
+| Source control and change review | Partially Implemented | [GitHub governance](../../../../.agents/governance/github-governance.md), GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [CODEOWNERS](../../../../.github/CODEOWNERS), [CI quality workflow](../../../../.github/workflows/ci-quality.yml) | Dated public evidence records a failed 15-job run; current authenticated protection/ruleset state and complete CODEOWNERS enforcement remain unverified. |
+| Workflow token and action integrity | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), repo contracts (retired path: `scripts/validation/check-repo-contracts.sh`), [GitHub governance](../../../../.agents/governance/github-governance.md) | Workflows use explicit permissions and SHA-pinned actions; continue checking any new workflow action references through repo contracts and workflow review. |
 | Build track and artifact production | Gap | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [quality audit](../0030-sdlc-quality-formatting-implementation/README.md) | CI validates docs, Compose, hardening, frontend build, coverage, and workflow security, but does not publish SLSA build provenance or declare SLSA build-level compliance. |
 | Provenance, attestations, and verification | Gap | `security research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) | No tracked provenance, attestation, signing, verification summary, or consumer verification workflow was found. |
 | Dependency and image update hygiene | Partially Implemented | [Dependabot](../../../../.github/dependabot.yml), [tech-stack registry](../../../../infra/tech-stack.versions.json), [tech-stack sync script](../../../../scripts/operations/sync-tech-stack-versions.sh), [image tag policy](../../../../infra/image-tag-policy.exceptions.json), `.github/workflows/ci-quality.yml` | Dependency update, version-drift, and scoped Storybook Next.js npm vulnerability audit controls exist; SBOM, broad OSV/container vulnerability scanning, and signed dependency provenance are not implemented. |
 
 ## OpenSSF Scorecard Readiness Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Scorecard Signal | Status | Repo-local Evidence | Gap / Follow-up |
 | --- | --- | --- | --- |
 | Security Policy | Implemented | [Security Policy](../../../../.github/SECURITY.md) | Keep reporting contacts and response targets current. |
-| Token Permissions | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [GitHub governance](../../../00.agent-governance/policies/github-governance.md) | New workflows must preserve explicit least-privilege permissions. |
+| Token Permissions | Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [GitHub governance](../../../../.agents/governance/github-governance.md) | New workflows must preserve explicit least-privilege permissions. |
 | Dangerous Workflow Patterns | Implemented | repo contracts (retired path: `scripts/validation/check-repo-contracts.sh`), [zizmor CI job](../../../../.github/workflows/ci-quality.yml) | `zizmor==1.28.0` is pinned after the 1.27.0 advisory; continue treating `pull_request_target`, permission expansion, and untrusted interpolation as protected-surface findings. |
 | Dependency Update Tool | Implemented | [Dependabot](../../../../.github/dependabot.yml) | Dependabot coverage exists for GitHub Actions, Docker, Docker Compose, and Storybook npm dependencies. |
 | CI Tests | Partially Implemented | [CI quality workflow](../../../../.github/workflows/ci-quality.yml), [typed validation runner](../../../../scripts/validation/run-ci-gate.py) | CI is broad for docs, infra, frontend, and workflow security, but not a universal runtime or vulnerability test suite. |
-| Code Review | Partially Implemented | [GitHub governance](../../../00.agent-governance/policies/github-governance.md), GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [CODEOWNERS](../../../../.github/CODEOWNERS) | Public run metadata is dated evidence; current authenticated protection and complete CODEOWNERS enforcement remain separately unverified. |
+| Code Review | Partially Implemented | [GitHub governance](../../../../.agents/governance/github-governance.md), GitHub Actions control-plane observation (retired path: `data/governance/ref-0071-github-actions-control-plane-observation.yaml`), [CODEOWNERS](../../../../.github/CODEOWNERS) | Public run metadata is dated evidence; current authenticated protection and complete CODEOWNERS enforcement remain separately unverified. |
 | Vulnerabilities | Partially Implemented | `.pre-commit-config.yaml`, [Security Policy](../../../../.github/SECURITY.md), `.github/workflows/ci-quality.yml` | Secret scanning exists through gitleaks and Storybook Next.js has a high-severity npm audit gate; Scorecard vulnerability reporting, OSV/container scanning, and vulnerability dashboards are not implemented. |
 
 ## Findings
@@ -211,6 +222,7 @@ digests, reviews, and commits remain owned by the linked Stage 04 task records.
 
 ## Gap / Follow-up
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Gap ID | Gap | Suggested Future Stage |
 | --- | --- | --- |
 | SEC-MAT-001 | Broaden vulnerability automation beyond the scoped Storybook Next.js npm audit gate to cover OSV/SCA and container-image risk. | Draft Spec 126 |
@@ -256,8 +268,8 @@ SBOM generation, SLSA provenance, Scorecard reporting, or threat-model evidence.
 - `Security governance research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `security-governance` leaf) - prior secure SDLC and supply-chain reference analysis.
 - `Quality CI formatting research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `quality-ci-formatting` leaf) - QA/CI and secure quality gate criteria.
 - Security scope (retired path: `00.agent-governance/scopes/security.md`) - repo-local security and redaction scope.
-- [GitHub governance](../../../00.agent-governance/policies/github-governance.md) - workflow security and repository protection policy.
-- [Approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md) - protected-surface approval matrix.
+- [GitHub governance](../../../../.agents/governance/github-governance.md) - workflow security and repository protection policy.
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md) - protected-surface approval matrix.
 - [CI quality workflow](../../../../.github/workflows/ci-quality.yml) - repo-local CI and workflow-security gates.
 - [Dependabot config](../../../../.github/dependabot.yml) - dependency update automation coverage.
 - [Security Policy](../../../../.github/SECURITY.md) - repo-local vulnerability reporting boundary.

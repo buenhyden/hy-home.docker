@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "architecture"
 ---
 
@@ -71,7 +71,7 @@ docs/02.architecture/
   `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
-- View와 diagram은 [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)을 적용하고, 실제 이해에 필요한 수준만 사용한다.
+- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 적용하고, 실제 이해에 필요한 수준만 사용한다.
 
 ## Related Documents
 

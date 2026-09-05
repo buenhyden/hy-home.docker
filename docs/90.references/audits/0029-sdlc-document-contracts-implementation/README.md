@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC and Document Contracts Implementation Audit"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0029"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-12"
 ---
 
 # Reference: SDLC and Document Contracts Implementation Audit
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -48,7 +55,7 @@ It does not create a missing artifact, change a status, or authorize a release.
 
 ### Out of Scope
 
-- Stage 00/99 contract, template, validator, workflow, runtime, or status changes
+- canonical governance and Stage 99 contract, template, validator, workflow, runtime, or status changes
 - Inferring historical transition validity from the current status word
 - Creating incident, postmortem, release, or architecture artifacts without a trigger
 
@@ -69,6 +76,9 @@ It does not create a missing artifact, change a status, or authorize a release.
   event, artifact, deployment, or outcome record.
 
 ## Reproducible Current Snapshot
+
+This snapshot is dated audit evidence. "Current" refers to the recorded
+observation baseline; the routing note above identifies the present owners.
 
 All values below were reproduced from tracked files at baseline
 `e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb` on 2026-07-11.
@@ -116,9 +126,10 @@ baseline remains a later migration concern.
 
 ## Audit Criterion Records
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Criterion ID | External criterion | Workspace evidence | Implementation state | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SDLC-01 | Preserve an end-to-end intent → requirement → architecture → technical contract → plan → evidence → operations/release flow with feedback to the earliest owner. | [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md), `spec-driven SDLC research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf), and active stage indexes define the flow. | Implemented | 2 documented and broadly applied | Retain | Stage 00 documentation protocol and stage owners | Existing traceability/alignment checks should remain; typed parent automation is covered separately. | Review matrix and run traceability/alignment commands. | High: direct tracked contracts; semantic transition coverage remains separate. |
+| SDLC-01 | Preserve an end-to-end intent → requirement → architecture → technical contract → plan → evidence → operations/release flow with feedback to the earliest owner. | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md), `spec-driven SDLC research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf), and active stage indexes define the flow. | Implemented | 2 documented and broadly applied | Retain | Stage 00 documentation protocol and stage owners | Existing traceability/alignment checks should remain; typed parent automation is covered separately. | Review matrix and run traceability/alignment commands. | High: direct tracked contracts; semantic transition coverage remains separate. |
 | SDLC-02 | PRD owns problem, users, scope, requirements, and measurable success criteria. | 24 correctly named Stage 01 leaves use the PRD template/profile. | Implemented | 3 automated/enforced for naming and changed-template shape | Retain | Stage 01 requirements | Keep changed-document template enforcement; do not require a PRD when the approved Spec records a justified N/A. | Filename scan plus repository contracts. | High. |
 | SDLC-03 | ARD owns architecture boundaries, concerns, and quality attributes when enduring architecture requirements exist. | 24 correctly named ARDs and the Stage 02 requirements index/template exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture requirements | Retain type-aware parent semantics for migrated/changed documents; avoid manufacturing ARDs for audit-only work. | Filename/template scan, metadata checker, and repository contracts. | High for structure; Medium for necessity decisions. |
 | SDLC-04 | ADR records one significant decision, alternatives, rationale, and consequences. | 24 correctly named ADRs and an ADR template/index exist. | Implemented | 3 automated/enforced for naming and template shape | Retain | Stage 02 architecture decisions | Keep ADR conditional on a real trade-off; semantic decision supersession remains human-reviewed. | Filename/template scan and repository contracts. | High for structure; Medium for current decision validity. |
@@ -183,8 +194,8 @@ active until promotion and final closure reviews pass.
 - `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - source-backed role and trigger criteria
 - `Spec-driven SDLC` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `spec-driven-sdlc` leaf) - transition, gate, and feedback criteria
 - `Document metadata and lifecycle` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - numbering, parent, transition, README, and release criteria
-- [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md) - active stage ownership and done criteria
-- [Documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md) - naming, template, status, and routing contracts
+- [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md) - active stage ownership and done criteria
+- [Documentation protocol](../../../../.agents/governance/documentation-protocol.md) - naming, template, status, and routing contracts
 - [Lifecycle status](../../../99.templates/README.md) - current status meanings and supersession rule
 - Release management runbook (retired path: `05.operations/00-workspace/ops-0009-release-management/runbook.md`) - release readiness procedure
 

@@ -1,10 +1,10 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-09-01"
 
 ## Context and Stakeholders
 
-Stage 00은 거버넌스 문서가 언제 유지되고 언제 은퇴하는지를 규정합니다. 이
+`.agents/`는 거버넌스 문서가 언제 유지되고 언제 은퇴하는지를 규정합니다. 이
 description은 그 규정을 관측하고 강제하는 구조를 기록합니다. 즉 어떤 구성
 요소가 어떤 authority를 어떤 순서로 읽고, 각 구성 요소가 무엇을 판단할 수
 있는지를 기록합니다. 소비자는 거버넌스 문서를 변경하는 관리자와 완료 전에 그
@@ -102,7 +102,7 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   참여하지 않습니다.
 - Bounded: base snapshot, 파일 읽기, Git 출력은 byte와 entry 단위로 제한되어
   큰 history가 validator를 고갈시키지 않습니다.
-- 분리 가능: 보존 규칙은 Spec Package 없이 Stage 00에서 읽을 수 있고, 강제
+- 분리 가능: 보존 규칙은 Spec Package 없이 `.agents/`에서 읽을 수 있고, 강제
   방식은 Task 없이 이 description에서 읽을 수 있습니다.
 
 ## Risks
@@ -132,8 +132,8 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [ADR-0031 보존 기록으로서의 아카이브](../decisions/0031-preserved-archive-record.md)
-- [문서 보존 및 은퇴 정책](../../00.agent-governance/policies/documentation-protocol.md)
+- [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)
 
 ## Related Documents
 
-- [ADR-0029 Workspace governance authority](../decisions/0029-workspace-governance-authority.md)
+- [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)

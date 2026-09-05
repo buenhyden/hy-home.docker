@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "operations"
 ---
 
@@ -84,7 +84,7 @@ service names, environment variables는 원형을 유지합니다.
 6. 사실, 가설, 조치, 후속 액션을 분리해서 기록하고 관련 증거 링크를 남깁니다.
 7. 본문은 한국어로 쓰되 timestamp, ID, command, evidence label, service name,
    environment variable은 원형을 유지합니다.
-8. [Stage 00 작성 정책](../../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)에
+8. [공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)에
    따라 UTC offset을 포함한 ISO 8601 timestamp를 사용하고, 사실과 가설을
    구분합니다. Postmortem은 blameless 서술을 사용하며 각 corrective action에
    owner, due date, tracking ID/link, verification 조건을 기록합니다.

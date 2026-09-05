@@ -517,9 +517,7 @@ def _parse_document(
         )
     parent_ids = _string_tuple(record.metadata.get("parent_ids"), "parent_ids")
     receipts = (
-        _branch_integration_receipts(
-            record.metadata.get("branch_integration_receipts")
-        )
+        _branch_integration_receipts(record.metadata.get("branch_integration_receipts"))
         if profile_id == "task"
         else ()
     )
@@ -1049,7 +1047,7 @@ def validate_spec_package_lifecycle(
     retired_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
     preserved_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
 ) -> tuple[SpecPackageFinding, ...]:
-    """Enforce the Stage 00 retention contract on Spec Package removals.
+    """Enforce the canonical retention contract on Spec Package removals.
 
     A retained package keeps its non-terminal members. A package that leaves
     Stage 03 is either preserved or retired, and the two are not the same
@@ -1206,7 +1204,9 @@ def _safe_repository_path(value: str) -> bool:
             part not in {"", ".", ".."}
             and not part.startswith("-")
             and "\\" not in part
-            and not any(ord(character) < 32 or ord(character) == 127 for character in part)
+            and not any(
+                ord(character) < 32 or ord(character) == 127 for character in part
+            )
             for part in path.parts
         )
         and path.as_posix() == value
@@ -1415,13 +1415,17 @@ def _matches_existing_regular_blob(
         ):
             continue
         try:
-            size_text = _bounded_git(
-                root,
-                "cat-file",
-                "-s",
-                object_name,
-                byte_limit=64,
-            ).decode("ascii").strip()
+            size_text = (
+                _bounded_git(
+                    root,
+                    "cat-file",
+                    "-s",
+                    object_name,
+                    byte_limit=64,
+                )
+                .decode("ascii")
+                .strip()
+            )
             if not size_text.isdigit() or int(size_text) != len(payload):
                 continue
             committed = _bounded_git(
@@ -1482,9 +1486,7 @@ def _snapshot_document(
     if len(parent_ids) != len(parents):
         raise SpecPackageError(f"base Spec Package parents are malformed: {path}")
     receipts = (
-        _branch_integration_receipts(
-            record.metadata.get("branch_integration_receipts")
-        )
+        _branch_integration_receipts(record.metadata.get("branch_integration_receipts"))
         if profile_id == "task"
         else ()
     )
@@ -1712,14 +1714,14 @@ def _preserved_package_is_terminal(
 ) -> bool:
     source_members = {
         member.path.relative_to(source.spec.path.parent)
-        for member in (source.spec, *source.tasks, *((source.plan,) if source.plan else ()))
+        for member in (
+            source.spec,
+            *source.tasks,
+            *((source.plan,) if source.plan else ()),
+        )
     }
     package = next(
-        (
-            item
-            for item in packages
-            if item.spec.path.parent == source.spec.path.parent
-        ),
+        (item for item in packages if item.spec.path.parent == source.spec.path.parent),
         None,
     )
     if package is not None:
@@ -1740,9 +1742,7 @@ def _preserved_package_is_terminal(
         try:
             tree = _filesystem_package_tree(
                 root,
-                _standard_preserved_package_path(
-                    disposition, source.spec.path.parent
-                ),
+                _standard_preserved_package_path(disposition, source.spec.path.parent),
             )
             members = [
                 document
@@ -1767,9 +1767,7 @@ def _preserved_package_is_terminal(
         spec.artifact_id == source.spec.artifact_id
         and spec.status == required_status
         and source_members
-        <= {
-            member.path.relative_to(source.spec.path.parent) for member in members
-        }
+        <= {member.path.relative_to(source.spec.path.parent) for member in members}
         and all(member.status in _TERMINAL_STATUSES for member in members)
     )
 
@@ -1809,17 +1807,26 @@ def _validate_receipt_carrier(
         return _invalid_receipt(carrier, "source package remains in current Stage 03")
     expected_preserved = _standard_preserved_package_path("superseded", origin)
     if receipt.preserved_package_path != expected_preserved:
-        return _invalid_receipt(carrier, "preserved_package_path is not the exact handoff path")
+        return _invalid_receipt(
+            carrier, "preserved_package_path is not the exact handoff path"
+        )
     if not _canonical_package_path(receipt.target_package_path):
         return _invalid_receipt(carrier, "target_package_path is not canonical")
     if receipt.target_artifact_id == receipt.source_artifact_id:
-        return _invalid_receipt(carrier, "source and target artifact identities must differ")
+        return _invalid_receipt(
+            carrier, "source and target artifact identities must differ"
+        )
     if carrier.package.spec.path.parent != receipt.target_package_path:
         return _invalid_receipt(carrier, "receipt is hosted outside its target package")
     if carrier.package.spec.artifact_id != receipt.target_artifact_id:
-        return _invalid_receipt(carrier, "target_artifact_id does not match its package")
+        return _invalid_receipt(
+            carrier, "target_artifact_id does not match its package"
+        )
     if not carrier.completed_archive:
-        if carrier.package.spec.status != "active" or carrier.task.status != "in-progress":
+        if (
+            carrier.package.spec.status != "active"
+            or carrier.task.status != "in-progress"
+        ):
             return _invalid_receipt(
                 carrier,
                 "current carrier requires an active target Spec and in-progress Task",
@@ -1918,7 +1925,10 @@ def _validate_branch_integration_receipts(
         if package.spec.path.parts[2]
         not in {item.spec.path.parts[2] for item in current}
     }
-    carriers = (*_current_receipt_carriers(current), *_archive_receipt_carriers(completed))
+    carriers = (
+        *_current_receipt_carriers(current),
+        *_archive_receipt_carriers(completed),
+    )
     relevant = tuple(
         carrier
         for carrier in carriers
@@ -1943,9 +1953,10 @@ def _validate_branch_integration_receipts(
             )
             continue
         if not matching:
-            archived = root / _standard_preserved_package_path(
-                "superseded", source_path
-            ).as_posix()
+            archived = (
+                root
+                / _standard_preserved_package_path("superseded", source_path).as_posix()
+            )
             try:
                 present = os.lstat(archived) is not None
             except FileNotFoundError:

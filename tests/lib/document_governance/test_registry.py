@@ -60,7 +60,7 @@ def _child_env() -> dict[str, str]:
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
-_SPEC_SOURCE = '''---
+_SPEC_SOURCE = """---
 title: "Fixture Spec"
 version: "0.1.0"
 type: "sdlc/spec"
@@ -72,7 +72,7 @@ artifact_id: "SPEC-0001"
 parent_ids: []
 created: "2026-09-04"
 ---
-'''
+"""
 
 
 def _fixture_git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -129,38 +129,320 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_canonical_agent_home_routes_replace_active_stage00(self) -> None:
+        registry = load_registry()
+        expected = {
+            ".agents/README.md": "readme",
+            ".agents/governance/bootstrap.md": "governance-policy",
+            ".agents/governance/hooks/safety.md": "governance-hook-policy",
+            ".agents/roles/qa-engineer.md": "governance-role",
+            ".agents/skills/test-authoring/SKILL.md": "governance-skill",
+            ".agents/governance/providers/README.md": "governance-provider-index",
+            ".agents/governance/sdlc.md": "governance-sdlc",
+            ".claude/provider.md": "governance-provider",
+            ".codex/provider.md": "governance-provider",
+        }
+        for path, profile in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(profile, classify_path(path, registry))
+        for path in (
+            "docs/00.agent-governance/README.md",
+            "docs/00.agent-governance/policies/bootstrap.md",
+            ".agents/skills/test-authoring.md",
+            ".other/policy.md",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(classify_path(path, registry), (None, "unsupported"))
+
+    def test_native_skill_metadata_is_exact_and_profile_specific(self) -> None:
+        registry = load_registry()
+        profile = registry.profiles["governance-skill"]
+        values = {
+            "name": "test-authoring",
+            "description": "Write focused tests.",
+            "metadata": {"function_id": "test-authoring", "type": "governance/skill"},
+        }
+        path = ".agents/skills/test-authoring/SKILL.md"
+        normalize = registry_module.normalize_profile_frontmatter
+        self.assertEqual(values["metadata"], normalize(values, profile, path))
+        invalid_values = (
+            {**values, "allowed-tools": "Bash"},
+            {**values, "description": " "},
+            {**values, "description": "Write {{DESCRIPTION}} here."},
+            {**values, "name": "another"},
+            {**values, "metadata": []},
+            {
+                **values,
+                "metadata": {"function_id": "other", "type": "governance/skill"},
+            },
+        )
+        for invalid in invalid_values:
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(RegistryError):
+                    normalize(invalid, profile, path)
+        self.assertEqual(
+            values,
+            normalize(
+                values,
+                registry.profiles["governance-policy"],
+                ".agents/governance/test.md",
+            ),
+        )
+
+    def test_native_skill_reader_keeps_common_contract_enforcement(self) -> None:
+        import yaml
+
+        profiles = build_registry_profiles(load_registry())
+        metadata = {
+            "title": "Tests",
+            "version": "1.0.0",
+            "type": "governance/skill",
+            "status": "active",
+            "owner": "@fixture",
+            "updated": "2026-09-06",
+            "function_id": "test-authoring",
+            "scope": "common",
+            "owner_agent": "qa-engineer",
+        }
+        envelope = {
+            "name": "test-authoring",
+            "description": "Write tests.",
+            "metadata": metadata,
+        }
+
+        def record(values):
+            return metadata_validator._record_from_text(
+                pathlib.Path(".agents/skills/test-authoring/SKILL.md"),
+                "---\n" + yaml.safe_dump(values, sort_keys=False) + "---\n",
+                profiles=profiles,
+            )
+
+        self.assertEqual([], validate_record(record(envelope), profiles, {}))
+        invalid = {
+            **envelope,
+            "metadata": {
+                key: value for key, value in metadata.items() if key != "owner"
+            },
+        }
+        self.assertTrue(validate_record(record(invalid), profiles, {}))
+        invalid = {**envelope, "metadata": {**metadata, "allowed-tools": "Bash"}}
+        self.assertIn(
+            "frontmatter-schema-invalid",
+            {item.code for item in validate_record(record(invalid), profiles, {})},
+        )
+        self.assertIsNotNone(record({**envelope, "allowed-tools": "Bash"}).parse_error)
+
+    def test_native_skill_exception_cannot_exempt_other_profiles(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text())
+        policy = next(
+            profile
+            for profile in raw["profiles"]
+            if profile["id"] == "governance-policy"
+        )
+        policy["exceptions"] = [
+            {
+                "kind": "native-skill-envelope",
+                "owner": "scripts/lib/document_governance/registry.py",
+            }
+        ]
+        self.assertIn(
+            "native-skill-envelope-invalid",
+            {finding.code for finding in validate_registry(raw)},
+        )
+
+    def test_native_skill_ingestion_preserves_previous_lifecycle_status(self) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path(".agents/skills/test-authoring/SKILL.md")
+        source = "---\nname: test-authoring\ndescription: Write tests.\nmetadata:\n  type: governance/skill\n  function_id: test-authoring\n  status: active\n---\n"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / path).parent.mkdir(parents=True)
+            (root / path).write_text(source)
+            with (
+                mock.patch.object(lifecycle, "_tracked_markdown", return_value=[path]),
+                mock.patch.object(
+                    lifecycle,
+                    "resolve_git_provenance",
+                    return_value=mock.Mock(is_regular_blob=True),
+                ),
+                mock.patch.object(
+                    lifecycle,
+                    "_run_git",
+                    return_value=subprocess.CompletedProcess([], 0, source, ""),
+                ),
+            ):
+                records = lifecycle.collect_records(root, profiles, base_ref="a" * 40)
+            self.assertEqual(1, len(records))
+            self.assertEqual("active", records[0].metadata["status"])
+            self.assertEqual("active", records[0].previous_status)
+
+    def test_historical_corpus_discovery_admits_the_canonical_hidden_roots(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        with mock.patch.object(
+            lifecycle,
+            "_run_git",
+            return_value=subprocess.CompletedProcess([], 0, b"", b""),
+        ) as run:
+            self.assertEqual(
+                [], lifecycle.collect_records_at_ref(ROOT, profiles, "a" * 40)
+            )
+        arguments = run.call_args.args[1]
+        for path in (".agents", ".claude/provider.md", ".codex/provider.md"):
+            self.assertIn(path, arguments)
+
+    def test_governance_relocation_requires_matching_baseline_identity(self) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        target = pathlib.Path(".agents/skills/test-authoring/SKILL.md")
+        source = "---\ntype: governance/skill\nfunction_id: test-authoring\nstatus: active\n---\n# Tests\n"
+        current = b"---\nname: test-authoring\ndescription: Write tests.\nmetadata:\n  type: governance/skill\n  function_id: test-authoring\n  status: active\n---\n# Tests\n"
+        with (
+            mock.patch.object(
+                lifecycle, "_text_at_ref", return_value=source
+            ) as historical,
+            mock.patch.object(
+                lifecycle, "read_bounded_regular", return_value=current
+            ) as current_read,
+        ):
+            record, text = lifecycle._governance_moved_body_baseline(
+                ROOT, target, profiles, "a" * 40
+            )
+            self.assertEqual("active", record.metadata["status"])
+            self.assertEqual(source, text)
+            self.assertEqual(
+                pathlib.Path("docs/00.agent-governance/skills/test-authoring.md"),
+                historical.call_args.args[1],
+            )
+            self.assertEqual(target, current_read.call_args.args[1])
+            self.assertEqual("a" * 40, historical.call_args.args[2])
+            historical.return_value = source.replace(
+                "function_id: test-authoring", "function_id: another"
+            )
+            self.assertEqual(
+                (None, None),
+                lifecycle._governance_moved_body_baseline(
+                    ROOT, target, profiles, "a" * 40
+                ),
+            )
+            self.assertTrue(
+                all(call.args[1] == target for call in current_read.call_args_list)
+            )
+
+    def test_explicit_initial_transition_evidence_requires_exact_path_and_legal_edge(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata.profile import TransitionOverride
+
+        profiles = build_registry_profiles(load_registry())
+        path = "docs/02.architecture/decisions/0099-fixture.md"
+        values = {
+            "title": "Fixture",
+            "version": "1.0.0",
+            "type": "sdlc/architecture-decision",
+            "status": "accepted",
+            "owner": "@fixture",
+            "updated": "2026-09-06",
+            "layer": "architecture",
+            "artifact_id": "ADR-0099",
+            "parent_ids": ["AD-0027"],
+        }
+
+        def codes(status, evidence_path=None):
+            overrides = {}
+            if evidence_path is not None:
+                key = (evidence_path, "proposed", status)
+                overrides[key] = TransitionOverride(
+                    *key,
+                    "docs/03.specs/0001-fixture/tasks/tsk-0001-review.md",
+                    "Fixture review approval",
+                    "Reviewed transition within one uncommitted task",
+                )
+            record = Record(
+                pathlib.Path(path),
+                {**values, "status": status},
+                "adr",
+                frontmatter_present=True,
+            )
+            return {
+                finding.code
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    {},
+                    transition_overrides=overrides,
+                    enforce_initial_status=True,
+                )
+            }
+
+        self.assertIn("invalid-initial-status", codes("accepted"))
+        self.assertIn(
+            "invalid-initial-status",
+            codes("accepted", "docs/02.architecture/decisions/0098-other.md"),
+        )
+        self.assertIn("invalid-initial-status", codes("retired", path))
+        self.assertNotIn("invalid-initial-status", codes("accepted", path))
+
     def test_router_layer_is_selected_by_registered_destination(self) -> None:
         registry = load_registry()
         profiles = build_registry_profiles(registry)
-        for path in ("docs/03.specs/README.md", "docs/05.operations/catalog/00-workspace/README.md", "docs/90.references/research/README.md"):
+        for path in (
+            "docs/03.specs/README.md",
+            "docs/05.operations/catalog/00-workspace/README.md",
+            "docs/90.references/research/README.md",
+        ):
             with self.subTest(path=path):
                 source = (ROOT / path).read_text(encoding="utf-8")
-                source = re.sub(r'^layer: .*$', 'layer: "wrong-layer"', source, count=1, flags=re.M)
-                record = metadata_validator._record_from_text(pathlib.Path(path), source, profiles=profiles)
-                self.assertIn("frontmatter-value-invalid", {item.code for item in validate_record(record, profiles, {})})
+                source = re.sub(
+                    r"^layer: .*$", 'layer: "wrong-layer"', source, count=1, flags=re.M
+                )
+                record = metadata_validator._record_from_text(
+                    pathlib.Path(path), source, profiles=profiles
+                )
+                self.assertIn(
+                    "frontmatter-value-invalid",
+                    {item.code for item in validate_record(record, profiles, {})},
+                )
 
     def test_router_contract_requires_new_destination_registration(self) -> None:
         profile = load_registry().profiles["readme"]
-        codes = {item.code for item in registry_module.validate_profile_values(
-            {"layer": "unregistered"}, profile, "docs/77.unregistered/README.md"
-        )}
+        codes = {
+            item.code
+            for item in registry_module.validate_profile_values(
+                {"layer": "unregistered"}, profile, "docs/77.unregistered/README.md"
+            )
+        }
         self.assertEqual({"frontmatter-route-missing"}, codes)
 
     def test_router_contract_rejects_unowned_destination(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         profile = next(item for item in raw["profiles"] if item["id"] == "readme")
         profile["frontmatter_routes"] = {"outside/README.md": {"layer": "specs"}}
-        self.assertIn("frontmatter-route-contract-invalid", {item.code for item in validate_registry(raw)})
+        self.assertIn(
+            "frontmatter-route-contract-invalid",
+            {item.code for item in validate_registry(raw)},
+        )
 
     def test_superseded_adr_has_no_stale_retain_in_place_exception(self) -> None:
-        self.assertNotIn("retain-superseded-in-place", {item["kind"] for item in load_registry().profiles["adr"]["exceptions"]})
+        self.assertNotIn(
+            "retain-superseded-in-place",
+            {item["kind"] for item in load_registry().profiles["adr"]["exceptions"]},
+        )
 
     def test_authored_stage_layer_uses_registry_literal(self) -> None:
         path = pathlib.Path("docs/03.specs/0001-fixture/spec.md")
         profiles = build_registry_profiles(load_registry())
         source = _SPEC_SOURCE
         record = metadata_validator._record_from_text(
-            path, source.replace('layer: "specs"', 'layer: "wrong-layer"'), profiles=profiles
+            path,
+            source.replace('layer: "specs"', 'layer: "wrong-layer"'),
+            profiles=profiles,
         )
         codes = {item.code for item in validate_record(record, profiles, {})}
         self.assertIn("frontmatter-value-invalid", codes)
@@ -174,7 +456,9 @@ class DocumentRegistryTests(unittest.TestCase):
             {item.code for item in validate_registry(raw)},
         )
 
-    def test_optional_empty_values_are_rejected_without_banning_root_parents(self) -> None:
+    def test_optional_empty_values_are_rejected_without_banning_root_parents(
+        self,
+    ) -> None:
         path = pathlib.Path("docs/03.specs/0001-fixture/spec.md")
         profiles = build_registry_profiles(load_registry())
         source = _SPEC_SOURCE
@@ -184,7 +468,9 @@ class DocumentRegistryTests(unittest.TestCase):
                     'created: "2026-09-04"',
                     f'supersedes: {value}\ncreated: "2026-09-04"',
                 )
-                record = metadata_validator._record_from_text(path, changed, profiles=profiles)
+                record = metadata_validator._record_from_text(
+                    path, changed, profiles=profiles
+                )
                 self.assertIn(
                     "empty-optional-frontmatter",
                     {item.code for item in validate_record(record, profiles, {})},
@@ -195,12 +481,14 @@ class DocumentRegistryTests(unittest.TestCase):
         path = pathlib.Path("docs/99.templates/templates/specs/spec.template.md")
         profiles = build_registry_profiles(load_registry())
         source = (ROOT / path).read_text(encoding="utf-8")
-        source = source.replace('created: "{{CREATED}}"',
-                                'supersedes: []\ncreated: "{{CREATED}}"')
+        source = source.replace(
+            'created: "{{CREATED}}"', 'supersedes: []\ncreated: "{{CREATED}}"'
+        )
         record = metadata_validator._record_from_text(path, source, profiles=profiles)
-        self.assertIn("empty-optional-frontmatter", {
-            item.code for item in validate_record(record, profiles, {})
-        })
+        self.assertIn(
+            "empty-optional-frontmatter",
+            {item.code for item in validate_record(record, profiles, {})},
+        )
 
     def test_guide_handoff_is_optional_but_usage_is_required(self) -> None:
         registry = load_registry()
@@ -209,17 +497,39 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertNotIn("Runbook Handoff", guide["required_sections"])
         self.assertIn("Usage", guide["required_sections"])
 
-    def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(self) -> None:
+    def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(
+        self,
+    ) -> None:
         for rule in ({"imagined": ["reviewed_at"]}, {"published": ["imagined"]}):
             raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
-            next(item for item in raw["profiles"] if item["id"] == "postmortem")["required_frontmatter_by_status"] = rule
-            self.assertIn("status-frontmatter-contract-invalid", {item.code for item in validate_registry(raw)})
+            next(item for item in raw["profiles"] if item["id"] == "postmortem")[
+                "required_frontmatter_by_status"
+            ] = rule
+            self.assertIn(
+                "status-frontmatter-contract-invalid",
+                {item.code for item in validate_registry(raw)},
+            )
 
     def test_published_postmortem_requires_review_evidence(self) -> None:
         profile = load_registry().profiles["postmortem"]
-        self.assertEqual((), registry_module.validate_profile_values({"status": "draft"}, profile))
-        self.assertIn("status-frontmatter-required", {item.code for item in registry_module.validate_profile_values({"status": "published"}, profile)})
-        self.assertEqual((), registry_module.validate_profile_values({"status": "published", "reviewed_at": "2026-09-05"}, profile))
+        self.assertEqual(
+            (), registry_module.validate_profile_values({"status": "draft"}, profile)
+        )
+        self.assertIn(
+            "status-frontmatter-required",
+            {
+                item.code
+                for item in registry_module.validate_profile_values(
+                    {"status": "published"}, profile
+                )
+            },
+        )
+        self.assertEqual(
+            (),
+            registry_module.validate_profile_values(
+                {"status": "published", "reviewed_at": "2026-09-05"}, profile
+            ),
+        )
 
     def test_draft_postmortem_does_not_require_a_future_review_date(self) -> None:
         profile = load_registry().profiles["postmortem"]
@@ -402,6 +712,8 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         checked = 0
         for relative in listed.stdout.splitlines():
+            if not (ROOT / relative).is_file():
+                continue
             if relative.startswith(
                 (
                     "docs/98.archive/completed/",
@@ -420,7 +732,9 @@ class DocumentRegistryTests(unittest.TestCase):
             ) != "required" or _declares_provider_binding(profile):
                 continue
             with self.subTest(path=relative, profile_id=profile_id):
-                values = parse_frontmatter(ROOT / relative)
+                values = registry_module.normalize_profile_frontmatter(
+                    parse_frontmatter(ROOT / relative), profile, relative
+                )
                 if declares_frozen_legacy_status(
                     profile, relative, values.get("status")
                 ):
@@ -661,8 +975,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIs(schema["additionalProperties"], False)
         hook_values = _parse_frontmatter_text(
             (
-                ROOT / "docs/00.agent-governance/policies/hooks/"
-                "hookify.block-absolute-file-link.md"
+                ROOT / ".agents/governance/hooks/hookify.block-absolute-file-link.md"
             ).read_text(encoding="utf-8")
         )
         self.assertEqual((), validate_frontmatter(hook_values, schema_path))
@@ -680,8 +993,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "source_package_path": "docs/03.specs/0172-document-contract-convergence",
             "source_artifact_id": "SPEC-0172",
             "preserved_package_path": (
-                "docs/98.archive/superseded/03.specs/"
-                "0172-document-contract-convergence"
+                "docs/98.archive/superseded/03.specs/0172-document-contract-convergence"
             ),
             "target_package_path": (
                 "docs/03.specs/0173-governance-qa-surface-convergence"
@@ -693,8 +1005,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertIn("branch_integration_receipts", task["optional_frontmatter"])
         self.assertTrue(
             all(
-                "branch_integration_receipts"
-                not in profile["optional_frontmatter"]
+                "branch_integration_receipts" not in profile["optional_frontmatter"]
                 for profile_id, profile in registry.profiles.items()
                 if profile_id != "task"
             )
@@ -916,7 +1227,14 @@ class DocumentRegistryTests(unittest.TestCase):
                 else:
                     self.assertIn("type:", text)
                 self.assertEqual(
-                    (), validate_frontmatter(resolve_template_placeholders(values))
+                    (),
+                    validate_frontmatter(
+                        resolve_template_placeholders(
+                            registry_module.normalize_profile_frontmatter(
+                                values, profile
+                            )
+                        )
+                    ),
                 )
                 self.assertNotIn("docs/01.requirements/", text)
                 self.assertNotIn("docs/02.architecture/", text)
@@ -1720,7 +2038,7 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_null_template_profile_enforces_registry_native_body_sections(self) -> None:
         registry = load_registry()
         adapted = build_registry_profiles(registry)
-        path = pathlib.Path("docs/00.agent-governance/sdlc.md")
+        path = pathlib.Path(".agents/governance/sdlc.md")
         valid = Record(
             path,
             {"profile_id": "governance-sdlc"},
@@ -1829,7 +2147,7 @@ class FreeFormProfileTests(unittest.TestCase):
     def test_free_form_profile_permits_an_unregistered_heading(self) -> None:
         codes = self._codes(
             "governance-policy",
-            "docs/00.agent-governance/policies/quality-standards.md",
+            ".agents/governance/quality-standards.md",
             ("Anything At All", "Related Documents"),
         )
         self.assertNotIn("body-heading-forbidden", codes)
@@ -1837,7 +2155,7 @@ class FreeFormProfileTests(unittest.TestCase):
     def test_free_form_profile_still_requires_related_documents(self) -> None:
         codes = self._codes(
             "governance-policy",
-            "docs/00.agent-governance/policies/quality-standards.md",
+            ".agents/governance/quality-standards.md",
             ("Anything At All",),
         )
         self.assertIn("body-heading-missing", codes)
@@ -1845,7 +2163,7 @@ class FreeFormProfileTests(unittest.TestCase):
     def test_a_contracted_profile_still_rejects_an_unregistered_heading(self) -> None:
         codes = self._codes(
             "governance-role",
-            "docs/00.agent-governance/roles/qa-engineer.md",
+            ".agents/roles/qa-engineer.md",
             (
                 "Purpose",
                 "Use When",
@@ -1863,7 +2181,7 @@ class FreeFormProfileTests(unittest.TestCase):
     def test_every_governance_policy_document_satisfies_its_own_contract(self) -> None:
         policies = sorted(
             path
-            for path in (ROOT / "docs/00.agent-governance").rglob("*.md")
+            for path in (ROOT / ".agents").rglob("*.md")
             if re.search(
                 r'^type:\s*"?governance/policy"?\s*$',
                 path.read_text(encoding="utf-8"),

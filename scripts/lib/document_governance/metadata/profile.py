@@ -64,6 +64,7 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     RegistryError,
     classify_path as classify_registered_path,
     load_registry,
+    normalize_profile_frontmatter,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     requirement_package_identity,
@@ -73,6 +74,32 @@ from scripts.lib.document_governance.taxonomy import (  # noqa: E402
 # Retain the validator's established public parser name while keeping the
 # shared implementation imported under its canonical library name.
 parse_frontmatter = read_frontmatter_values
+
+
+def _normalized_document_values(
+    path: pathlib.Path,
+    values: Mapping[str, object],
+    profiles: Mapping[str, object] | None,
+) -> dict[str, object]:
+    """Apply only the Registry-selected native serialization boundary."""
+
+    registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
+    if not isinstance(registry, DocumentRegistry):
+        return dict(values)
+    normalized = path.as_posix()
+    for role in registry.template_roles.values():
+        if role.get("source") == normalized:
+            profile_ids = role.get("profiles", ())
+            if len(profile_ids) == 1:
+                return normalize_profile_frontmatter(
+                    values, registry.profiles[profile_ids[0]]
+                )
+    profile_id = classify_registered_path(normalized, registry)
+    if profile_id is None:
+        return dict(values)
+    return normalize_profile_frontmatter(
+        values, registry.profiles[profile_id], normalized
+    )
 
 
 DEFAULT_PROFILES = DEFAULT_REGISTRY
@@ -412,9 +439,9 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     ".pre-commit-config.yaml",
     ".prettierignore",
     "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
-    "docs/00.agent-governance/policies/documentation-protocol.md",
-    "docs/00.agent-governance/policies/stage-authoring-matrix.md",
-    "docs/00.agent-governance/policies/task-checklists.md",
+    ".agents/governance/documentation-protocol.md",
+    ".agents/governance/stage-authoring-matrix.md",
+    ".agents/governance/task-checklists.md",
     "docs/01.requirements/005-data-analytics.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
@@ -631,7 +658,7 @@ EXPECTED_ARCHIVE_CONDITIONS = {
         "forbidden_for": ["git-history"],
     },
 }
-EXPECTED_ARCHIVE_SOURCE_PREFIXES = ("docs/", "archive/")
+EXPECTED_ARCHIVE_SOURCE_PREFIXES = ("docs/", "archive/", ".agents/")
 TYPED_EXAMPLE_FIXTURE_PATH = "examples/sample-web-service/service.md"
 TYPED_EXAMPLE_FIXTURE_STATUS = "draft"
 TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
@@ -640,7 +667,7 @@ TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
 TARGET_MARKDOWN_PREFIXES = (
-    "docs/00.agent-governance/",
+    ".agents/",
     "docs/01.requirements/",
     "docs/02.architecture/",
     "docs/03.specs/",
@@ -649,6 +676,7 @@ TARGET_MARKDOWN_PREFIXES = (
     "docs/98.archive/",
     "docs/99.templates/",
 )
+TARGET_MARKDOWN_FILES = frozenset({".claude/provider.md", ".codex/provider.md"})
 MIGRATION_TYPED_KEYS = frozenset(
     {
         "artifact_id",
@@ -819,7 +847,7 @@ def _stage00_specialization_entry(
     path: pathlib.Path,
     contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_REGISTRY,
 ) -> Mapping[str, object] | None:
-    """Return the one Stage 99 profile registered for a Stage 00 path."""
+    """Return the one Stage 99 profile registered for a canonical governance path."""
 
     normalized = normalize_repo_relative_path(path)
     try:
@@ -827,7 +855,7 @@ def _stage00_specialization_entry(
     except RegistryError:
         return None
     profile_id = classify_registered_path(normalized, registry)
-    if profile_id is None or not normalized.startswith("docs/00.agent-governance/"):
+    if profile_id is None or not normalized.startswith(".agents/"):
         return None
     return registry.profiles.get(profile_id)
 
@@ -836,7 +864,7 @@ def infer_stage00_specialization(
     path: pathlib.Path,
     contract_path: pathlib.Path = DEFAULT_AGENT_GOVERNANCE_REGISTRY,
 ) -> str | None:
-    """Infer the exact Stage 99 profile for a registered Stage 00 path."""
+    """Infer the exact Stage 99 profile for a registered canonical governance path."""
 
     entry = _stage00_specialization_entry(path, contract_path)
     profile_id = entry.get("profile_id") if entry is not None else None
@@ -869,7 +897,7 @@ def infer_artifact_type(
         ".template.md"
     ):
         return "template-source"
-    if normalized.startswith("docs/00.agent-governance/"):
+    if normalized.startswith(".agents/"):
         return "governance"
     if normalized.startswith("docs/99.templates/support/"):
         return "governance"
@@ -1406,7 +1434,7 @@ NON_TARGET_PROFILE_IDS = frozenset(
 def _typed_target_types(profiles: dict[str, object]) -> set[str]:
     """Registry profiles that own a typed authoring target.
 
-    Stage 00 governance profiles and the provider-owned runtime projections are
+    Canonical governance profiles and the provider-owned runtime projections are
     not SDLC targets: their section contract is enforced from the Registry
     profile directly, whether or not the profile also registers a template.
     """
@@ -2174,7 +2202,9 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             "type": profile.get("type"),
             "frontmatter_values": _thaw(profile.get("frontmatter_values", {})),
             "frontmatter_routes": _thaw(profile.get("frontmatter_routes", {})),
-            "required_frontmatter_by_status": _thaw(profile.get("required_frontmatter_by_status", {})),
+            "required_frontmatter_by_status": _thaw(
+                profile.get("required_frontmatter_by_status", {})
+            ),
             "required": list(profile.get("required_frontmatter", ())),
             "optional": list(profile.get("optional_frontmatter", ())),
             "forbidden": [],
@@ -2260,6 +2290,8 @@ def _normalized_target_path(path_text: str) -> pathlib.Path | None:
     if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
         return None
     normalized = pure.as_posix()
-    if not normalized.startswith(TARGET_MARKDOWN_PREFIXES):
+    if normalized not in TARGET_MARKDOWN_FILES and not normalized.startswith(
+        TARGET_MARKDOWN_PREFIXES
+    ):
         return None
     return pathlib.Path(normalized)

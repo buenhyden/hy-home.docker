@@ -9,6 +9,7 @@ import unittest
 
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
+    normalize_profile_frontmatter,
     _declares_provider_binding,
     document_type,
 )
@@ -239,11 +240,11 @@ class TemplateMetadataTests(unittest.TestCase):
             "docs/99.templates/templates/governance/harness-task-contract.template.md"
         )
         active_route_files = (
-            "docs/00.agent-governance/README.md",
-            "docs/00.agent-governance/policies/approval-boundaries.md",
-            "docs/00.agent-governance/policies/documentation-protocol.md",
-            "docs/00.agent-governance/policies/stage-authoring-matrix.md",
-            "docs/00.agent-governance/policies/task-checklists.md",
+            ".agents/README.md",
+            ".agents/governance/approval-boundaries.md",
+            ".agents/governance/documentation-protocol.md",
+            ".agents/governance/stage-authoring-matrix.md",
+            ".agents/governance/task-checklists.md",
             "docs/99.templates/README.md",
             "docs/99.templates/registry.json",
             "docs/99.templates/templates/README.md",
@@ -256,9 +257,9 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
         self.assertEqual(("Related Documents",), profile["required_sections"])
-        text = (
-            ROOT / "docs/00.agent-governance/policies/approval-boundaries.md"
-        ).read_text(encoding="utf-8")
+        text = (ROOT / ".agents/governance/approval-boundaries.md").read_text(
+            encoding="utf-8"
+        )
         self.assertEqual(
             ["## Related Documents"],
             [line for line in text.splitlines() if line.startswith("## ")],
@@ -304,7 +305,9 @@ class TemplateMetadataTests(unittest.TestCase):
                 if source.suffix != ".md":
                     continue
                 profile = self.registry.profiles[str(role["profiles"][0])]
-                values = metadata.parse_frontmatter(source)
+                values = normalize_profile_frontmatter(
+                    metadata.parse_frontmatter(source), profile
+                )
                 if _declares_provider_binding(profile):
                     # A provider runtime owns this binding, so it carries no type.
                     self.assertIn("name", values)

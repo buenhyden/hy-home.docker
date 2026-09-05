@@ -25,7 +25,8 @@
     ],
     "archive_source_prefixes": [
       "docs/",
-      "archive/"
+      "archive/",
+      ".agents/"
     ],
     "frontmatter_order": [
       "title",
@@ -1509,13 +1510,20 @@
       "id": "readme",
       "type": "common/readme",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/{stage}/README.md",
+      "path_pattern": "docs/01.requirements/README.md",
       "additional_paths": [
+        "docs/02.architecture/README.md",
         "docs/02.architecture/decisions/README.md",
         "docs/02.architecture/descriptions/README.md",
+        "docs/03.specs/README.md",
+        "docs/05.operations/README.md",
         "docs/05.operations/catalog/README.md",
         "docs/05.operations/incidents/README.md",
-        "docs/99.templates/templates/README.md"
+        "docs/90.references/README.md",
+        "docs/98.archive/README.md",
+        "docs/99.templates/README.md",
+        "docs/99.templates/templates/README.md",
+        ".agents/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -1553,9 +1561,6 @@
         }
       ],
       "frontmatter_routes": {
-        "docs/00.agent-governance/README.md": {
-          "layer": "agent-governance"
-        },
         "docs/01.requirements/README.md": {
           "layer": "requirements"
         },
@@ -1591,6 +1596,9 @@
         },
         "docs/99.templates/templates/README.md": {
           "layer": "templates"
+        },
+        ".agents/README.md": {
+          "layer": "agent-governance"
         }
       }
     },
@@ -1598,7 +1606,7 @@
       "id": "governance-policy",
       "type": "governance/policy",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/policies/{slug}.md",
+      "path_pattern": ".agents/governance/bootstrap.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/policy",
@@ -1626,13 +1634,30 @@
       ],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "additional_paths": [
+        ".agents/governance/agentic.md",
+        ".agents/governance/approval-boundaries.md",
+        ".agents/governance/documentation-protocol.md",
+        ".agents/governance/environment-constraints.md",
+        ".agents/governance/git-workflow.md",
+        ".agents/governance/github-governance.md",
+        ".agents/governance/output-style.md",
+        ".agents/governance/persona.md",
+        ".agents/governance/postflight-checklist.md",
+        ".agents/governance/provider-capability-matrix.md",
+        ".agents/governance/quality-standards.md",
+        ".agents/governance/stage-authoring-matrix.md",
+        ".agents/governance/standards.md",
+        ".agents/governance/task-checklists.md",
+        ".agents/governance/workflows.md"
+      ]
     },
     {
       "id": "governance-hook-policy",
       "type": "governance/hook-policy",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/policies/hooks/{hook_slug}.md",
+      "path_pattern": ".agents/governance/hooks/{hook_slug}.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/hook-policy",
@@ -1669,7 +1694,7 @@
       "id": "governance-role",
       "type": "governance/role",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/roles/{slug}.md",
+      "path_pattern": ".agents/roles/{slug}.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/role",
@@ -1709,7 +1734,7 @@
       "id": "governance-skill",
       "type": "governance/skill",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/skills/{slug}.md",
+      "path_pattern": ".agents/skills/{slug}/SKILL.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/skill",
@@ -1739,13 +1764,18 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [
+        {
+          "kind": "native-skill-envelope",
+          "owner": "scripts/lib/document_governance/registry.py"
+        }
+      ]
     },
     {
       "id": "governance-provider",
       "type": "governance/provider",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/providers/{slug}.md",
+      "path_pattern": ".claude/provider.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/provider",
@@ -1771,13 +1801,16 @@
       "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "additional_paths": [
+        ".codex/provider.md"
+      ]
     },
     {
       "id": "governance-provider-index",
       "type": "governance/provider-index",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/providers/README.md",
+      "path_pattern": ".agents/governance/providers/README.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": null,
@@ -1806,7 +1839,7 @@
       "id": "governance-sdlc",
       "type": "governance/sdlc",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/00.agent-governance/sdlc.md",
+      "path_pattern": ".agents/governance/sdlc.md",
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/sdlc",
@@ -3709,8 +3742,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 31,
-      "next_number": 32,
+      "high_water": 32,
+      "next_number": 33,
       "child_spaces": {}
     },
     "spec": {

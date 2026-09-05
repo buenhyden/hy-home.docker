@@ -1,0 +1,56 @@
+---
+name: "incident-response"
+description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
+metadata:
+  title: "incident-response"
+  version: "1.1.0"
+  type: "governance/skill"
+  status: "active"
+  owner: "@buenhyden"
+  updated: "2026-09-06"
+  function_id: "incident-response"
+  scope: "ops"
+  owner_agent: "incident-responder"
+---
+
+# incident-response
+
+## Preconditions
+
+Invoke this procedure explicitly. Invocation does not select a role or grant the
+owning role's permissions. Use the already selected role's permission profile and
+approved Task scope; route to the owner when incompatible.
+
+An incident boundary, authorized response owner, current runbook, and safe evidence channel must be established.
+
+## Inputs
+
+- Bounded incident evidence and current runbook.
+- Affected services, timestamps, impact, authority, and escalation contacts.
+
+## Procedure
+
+1. Stabilize the evidence timeline and classify impact without copying secrets, raw auth data, or unrelated logs.
+2. Execute only authorized diagnostic or recovery steps, recording command class, expected result, and observed outcome.
+3. Escalate on blast-radius growth, hand off prevention work, and trigger a postmortem when the incident is stabilized.
+
+## Outputs
+
+- A sanitized response record with timeline, actions, decisions, outcome, and handoff.
+
+## Gates
+
+- Evidence is redacted and provenance-aware.
+- Response actions stay within the declared escalation boundary.
+- A paired postmortem is routed to
+  `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
+
+## Failure Handling
+
+Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain.
+
+## Related Documents
+
+- [Incident responder](../../roles/incident-responder.md)
+- [Operations scope](../../governance/quality-standards.md)
+- [Approval boundaries](../../governance/approval-boundaries.md)

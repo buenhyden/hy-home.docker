@@ -226,7 +226,7 @@ def main() -> None:
         "guidance="
         "Use Graphify as a navigation aid only when status=clean. "
         "When status=advisory, corroborate architecture and codebase claims "
-        "against tracked source files, docs/00.agent-governance, and stage docs."
+        "against tracked source files, .agents/governance, and stage docs."
     )
 
 

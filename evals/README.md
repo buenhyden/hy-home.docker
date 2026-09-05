@@ -1,10 +1,10 @@
 ---
 title: "Agent Evaluation Harness"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-06"
 created: "2026-09-03"
 ---
 
@@ -82,7 +82,7 @@ bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regression
 ## Related Documents
 
 - [Fixture reference](../docs/90.references/data/0064-agent-output-eval-fixtures/README.md)
-- [Provider model evaluation skill](../docs/00.agent-governance/skills/provider-model-evaluation.md)
+- [Provider model evaluation skill](../.agents/skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../scripts/manifest.yaml)
 - [Scripts surface](../scripts/README.md)
 - [Test surface](../tests/README.md)

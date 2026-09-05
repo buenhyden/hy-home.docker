@@ -249,10 +249,7 @@ def _branch_handoff_fixture(
         )
     elif completed_record != "uncommitted":
         raise AssertionError(f"unsupported completed record: {completed_record}")
-    preserved = (
-        root
-        / "docs/98.archive/superseded/03.specs/0001-source"
-    )
+    preserved = root / "docs/98.archive/superseded/03.specs/0001-source"
     preserved.parent.mkdir(parents=True)
     shutil.copytree(source, preserved)
     shutil.rmtree(source)
@@ -260,9 +257,7 @@ def _branch_handoff_fixture(
         "source_commit": commit,
         "source_package_path": "docs/03.specs/0001-source",
         "source_artifact_id": "SPEC-0001",
-        "preserved_package_path": (
-            "docs/98.archive/superseded/03.specs/0001-source"
-        ),
+        "preserved_package_path": ("docs/98.archive/superseded/03.specs/0001-source"),
         "target_package_path": "docs/03.specs/0002-target",
         "target_artifact_id": "SPEC-0002",
         "disposition": "historical-superseded",
@@ -271,10 +266,7 @@ def _branch_handoff_fixture(
     if carrier == "current":
         task = target / "tasks/tsk-0001-implement.md"
     elif carrier == "completed":
-        archived_target = (
-            root
-            / "docs/98.archive/completed/03.specs/0002-target"
-        )
+        archived_target = root / "docs/98.archive/completed/03.specs/0002-target"
         archived_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(target, archived_target)
         _set_status(archived_target / "spec.md", "active", "completed")
@@ -292,9 +284,9 @@ def _branch_handoff_fixture(
 
 class SpecPackageTests(unittest.TestCase):
     ACTIVE_ROUTE_FILES = (
-        ROOT / "docs/00.agent-governance/policies/documentation-protocol.md",
-        ROOT / "docs/00.agent-governance/policies/quality-standards.md",
-        ROOT / "docs/00.agent-governance/skills/execution-plan-agent.md",
+        ROOT / ".agents/governance/documentation-protocol.md",
+        ROOT / ".agents/governance/quality-standards.md",
+        ROOT / ".agents/skills/execution-plan-agent/SKILL.md",
         ROOT / ".claude/skills/execution-plan-agent/SKILL.md",
         ROOT / "README.md",
         ROOT / ".github/ISSUE_TEMPLATE/bug_report.yml",
@@ -325,7 +317,7 @@ class SpecPackageTests(unittest.TestCase):
                     .replace("PASS: focused check exit 0", result)
                     .replace(
                         "N/A: local validation only",
-                        "[Current policy](../../../00.agent-governance/policies/bootstrap.md)",
+                        "[Current policy](../../../../.agents/governance/bootstrap.md)",
                     )
                 )
                 spec = package / "spec.md"
@@ -1065,9 +1057,7 @@ class SpecPackageTests(unittest.TestCase):
                 tempfile.TemporaryDirectory() as directory,
             ):
                 root = pathlib.Path(directory)
-                stage, commit, receipt = _branch_handoff_fixture(
-                    root, carrier=carrier
-                )
+                stage, commit, receipt = _branch_handoff_fixture(root, carrier=carrier)
                 if carrier == "current":
                     archived_target = _write_package(
                         root / "docs/98.archive/completed/03.specs",
@@ -1133,9 +1123,7 @@ class SpecPackageTests(unittest.TestCase):
             root = pathlib.Path(directory)
             stage, _, _ = _branch_handoff_fixture(
                 root,
-                receipt_updates={
-                    "source_package_path": "docs/03.specs/../0001-source"
-                },
+                receipt_updates={"source_package_path": "docs/03.specs/../0001-source"},
             )
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "unsafe"):
                 spec_packages.load_spec_packages(stage)
@@ -1171,13 +1159,11 @@ class SpecPackageTests(unittest.TestCase):
                 )
                 if mutation == "missing-completed-origin":
                     shutil.rmtree(
-                        root
-                        / "docs/98.archive/completed/03.specs/0001-source"
+                        root / "docs/98.archive/completed/03.specs/0001-source"
                     )
                 elif mutation == "modified-completed-origin":
                     completed_spec = (
-                        root
-                        / "docs/98.archive/completed/03.specs/0001-source/spec.md"
+                        root / "docs/98.archive/completed/03.specs/0001-source/spec.md"
                     )
                     with completed_spec.open("a", encoding="utf-8") as file:
                         file.write("\nmodified\n")
@@ -1192,8 +1178,7 @@ class SpecPackageTests(unittest.TestCase):
                     )
                 elif mutation == "archived-target-missing-evidence":
                     task = (
-                        root
-                        / "docs/98.archive/completed/03.specs/0002-target/"
+                        root / "docs/98.archive/completed/03.specs/0002-target/"
                         "tasks/tsk-0001-implement.md"
                     )
                     text = task.read_text(encoding="utf-8")
@@ -1230,10 +1215,7 @@ class SpecPackageTests(unittest.TestCase):
             ):
                 root = pathlib.Path(directory)
                 stage, commit, _ = _branch_handoff_fixture(root)
-                preserved = (
-                    root
-                    / "docs/98.archive/superseded/03.specs/0001-source"
-                )
+                preserved = root / "docs/98.archive/superseded/03.specs/0001-source"
                 if mutation == "changed":
                     with (preserved / "spec.md").open("a", encoding="utf-8") as file:
                         file.write("\nchanged\n")
@@ -1307,7 +1289,9 @@ class SpecPackageTests(unittest.TestCase):
                 "completed",
             )
             task = mirror / "tasks/tsk-0001-implement.md"
-            receipt = "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+            receipt = (
+                "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+            )
             task_body = task.read_text(encoding="utf-8")
             task.write_text(task_body.replace(receipt, ""), encoding="utf-8")
             findings = spec_packages.validate_repository_spec_package_lifecycle(

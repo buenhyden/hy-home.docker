@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC Quality Formatting Implementation"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "AUD-0030"
 parent_ids:
@@ -15,6 +15,13 @@ reviewed_at: "2026-07-27"
 ---
 
 # Reference: SDLC Quality Formatting Implementation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -104,12 +111,13 @@ than current evidence. No remote setting was changed.
 
 ## Implementation Status Matrix
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Area | Status | Evidence | Notes |
 | --- | --- | --- | --- |
 | Spec-driven development | Partially Implemented | [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md), [Stage 03 README](../../../03.specs/README.md) | Stage roles, numbering, templates, tasks, broad traceability, and typed direct-parent/transition checks are implemented for the migrated active chain and changed/new documents. Historical lifecycle reconstruction and release execution records remain incomplete. |
 | Execution planning | Implemented | [Stage 04 plans README](../../../03.specs/README.md), audit pack plan | Plans define WBS, verification, risk, and completion criteria. |
 | Task evidence | Implemented | [Stage 04 tasks README](../../../03.specs/README.md), audit pack task | Task files record evidence, status, deviation, and validation results. |
-| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md), [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
+| Documentation contracts | Partially Implemented | [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md), [documentation protocol](../../../../.agents/governance/documentation-protocol.md), `scripts/validation/check-repo-contracts.sh` | Required headings, lifecycle syntax, links, typed identity/parents, deterministic serialization, freshness, transitions, template instantiation, and README profile/consumer classification are validator-backed. The historical inventory and 37 status-bearing README migration remain advisory. |
 | CI quality gates | Implemented | `.github/workflows/ci-quality.yml` | CI defines 16 docs, repo, Compose, hardening, template/security, pre-commit, frontend, coverage, dependency, supply-chain-fixture, and workflow-security jobs. The latest public remote observation saw 15 jobs in a failed run; tracked definitions do not prove current remote success or enforcement. |
 | Local QA orchestration | Implemented | `scripts/validation/run-ci-gate.py`, [scripts README](../../../../scripts/README.md) | The typed runner explains and executes registered local profiles while keeping hosted and remote-only responsibilities explicit. |
 | Formatting | Partially Implemented | `scripts/hooks/post-tool-validate.sh`, pre-commit workflow, provider notes | Text-file trim/newline and selected shell/frontend formatting/linting exist; global formatting across all languages is not complete. |
@@ -117,7 +125,7 @@ than current evidence. No remote setting was changed.
 | Syntax checks | Implemented | `python -m json.tool` examples in HAFE policy, `bash -n`, repo contracts, CI | JSON/YAML/workflow/script/document syntax checks are represented through scripts and CI. |
 | Docker Compose validation | Implemented | `scripts/validation/validate-docker-compose.sh`, `.github/workflows/ci-quality.yml`, [infra README](../../../../infra/README.md) | Default and all-profile validation are in CI; local validation script exists. |
 | Infrastructure hardening | Implemented | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml` | Hardening baseline is a CI gate and local script. |
-| Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../../00.agent-governance/policies/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
+| Security quality | Partially Implemented | `.github/workflows/ci-quality.yml`, [approval boundaries](../../../../.agents/governance/approval-boundaries.md), `.github/SECURITY.md` | Workflow security and secret boundaries exist; full SSDF/SLSA automation is partial. |
 | CD / promotion / deployment | Not Implemented | `.github/workflows/*.yml`, release runbook (retired path: `05.operations/00-workspace/ops-0009-release-management/runbook.md`) | No tracked environment, promotion, deployment, release asset, or automated rollback job exists; current authenticated remote environment state is unknown. |
 
 ## Findings

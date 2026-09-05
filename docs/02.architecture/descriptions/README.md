@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "architecture"
 ---
 
@@ -33,7 +33,7 @@ Operations 문서의 역할을 대체하지 않는다.
 ### C4 and arc42 Placement
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
-[Stage 00 작성 정책](../../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)이
+[공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
 소유한다. 현재 등록된 `System Boundaries`, `Components`, `Data Flow`,
 `Deployment View`, `Quality Attributes`에 해당 내용을 배치하고 필요할 때만
 optional `Risks`와 `Evolution`을 사용한다. 빈 framework section이나 병렬
@@ -57,7 +57,7 @@ docs/02.architecture/descriptions/
 - `AD-0001`부터 `AD-0014`: 기본 tier와 서비스 아키텍처.
 - `AD-0018`부터 `AD-0026`: hardening, HA와 network 후속 아키텍처.
 - [`AD-0027`](./0027-agent-governance-canonical-adapter.md):
-  Stage 00 adapter architecture.
+  canonical agent governance adapter architecture.
 - [`AD-0028`](./0028-operational-readiness-closure.md):
   local-isolated readiness evidence architecture.
 - [`AD-0030`](./0030-document-lifecycle-governance.md):

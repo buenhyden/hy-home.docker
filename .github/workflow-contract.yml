@@ -1448,8 +1448,7 @@
           ".claude/",
           ".codex/",
           "AGENTS.md",
-          "CLAUDE.md",
-          "docs/00.agent-governance/"
+          "CLAUDE.md"
         ],
         "suites": [
           "agent-governance",

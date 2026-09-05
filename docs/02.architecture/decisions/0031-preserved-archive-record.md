@@ -108,4 +108,4 @@ link의 해석 가능성은 보존 기록에 적용되지 않습니다. 들어�
 
 ## Related Documents
 
-- [문서 보존 및 은퇴 정책](../../00.agent-governance/policies/documentation-protocol.md)
+- [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)

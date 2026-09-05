@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.2.0"
+version: "2.2.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -15,6 +15,13 @@ observed_at: "2026-09-05"
 
 # Agentic Engineering Research Pack
 
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
 ## Question
 
 How should this repository structure an agentic workspace, spec-driven SDLC,
@@ -24,7 +31,7 @@ an explicit evidence depth?
 
 The detailed questions are:
 
-1. Which provider-neutral behavior belongs to Stage 00, and which Claude or
+1. Which provider-neutral behavior belongs to canonical agent governance, and which Claude or
    Codex behavior must remain a native adapter concern?
 2. How should instructions, model routing, catalogs, loops, memory, handoff,
    hooks, context, cost, and editor integration be governed and verified?
@@ -41,35 +48,37 @@ risk on behalf of their current owners.
 
 ## Scope
 
-- Repository: `buenhyden/hy-home.docker`.
-- Comparison branch and commit: `main` at
-  `71da6654e2fa3def174b238ad309c92fe46e9dae`. The earlier assessed baseline
-  `4c6d211129615eab372d720ebd209b6c27618c86` stays preserved in the dated
-  member revalidations and in RES-0085; it is not rewritten into current state.
-- Repository observation date and external-source confirmation date:
-  2026-09-05.
-- Observation checkout scope: an isolated `main`-only clone and a developer
-  clone holding unmerged local branches. The two disagree on one registered
-  check at the same commit, so both readings are recorded rather than one being
-  presented as the repository verdict.
-- Included: `docs/00.agent-governance/`, Stages 01, 02, 03, 05, 90, 98, and
-  99; root entrypoints; `.agents/`, `.claude/`, `.codex/`, workflows, Compose
-  declarations, scripts, tests, and generated navigation ownership.
-- Included external families: official Claude Code, OpenAI Codex, GitHub,
-  Docker, MCP, Diátaxis, C4, arc42, GitHub Spec Kit, ISO public definitions,
-  NIST SSDF, SLSA, and upstream agency-agents material.
-- Excluded: secret or credential values, user-global provider configuration,
-  shell history, raw logs, unapproved provider/runtime mutation, new live
-  deployment, tag, and release.
-- Evidence boundary: configuration is not execution; local execution is not
-  Hosted CI; Hosted CI is not deployment; point-in-time entitlement is not a
-  future guarantee; tracked protection intent is not remote enforcement.
-- [m0020](m0020-workspace-baseline.md) owns the current repository-local
-  baseline. [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
-  preserves the dated 2026-09-05 assessment scope and identity-recovery
-  evidence. [RES-0084](../0084-github-actions-platform/README.md) owns detailed
-  GitHub Actions platform mechanics. This package owns topical research and
-  their cross-category navigation.
+> Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+>
+> - Repository: `buenhyden/hy-home.docker`.
+> - Comparison branch and commit: `main` at
+>   `71da6654e2fa3def174b238ad309c92fe46e9dae`. The earlier assessed baseline
+>   `4c6d211129615eab372d720ebd209b6c27618c86` stays preserved in the dated
+>   member revalidations and in RES-0085; it is not rewritten into current state.
+> - Repository observation date and external-source confirmation date:
+>   2026-09-05.
+> - Observation checkout scope: an isolated `main`-only clone and a developer
+>   clone holding unmerged local branches. The two disagree on one registered
+>   check at the same commit, so both readings are recorded rather than one being
+>   presented as the repository verdict.
+> - Included: `docs/00.agent-governance/`, Stages 01, 02, 03, 05, 90, 98, and
+>   99; root entrypoints; `.agents/`, `.claude/`, `.codex/`, workflows, Compose
+>   declarations, scripts, tests, and generated navigation ownership.
+> - Included external families: official Claude Code, OpenAI Codex, GitHub,
+>   Docker, MCP, Diátaxis, C4, arc42, GitHub Spec Kit, ISO public definitions,
+>   NIST SSDF, SLSA, and upstream agency-agents material.
+> - Excluded: secret or credential values, user-global provider configuration,
+>   shell history, raw logs, unapproved provider/runtime mutation, new live
+>   deployment, tag, and release.
+> - Evidence boundary: configuration is not execution; local execution is not
+>   Hosted CI; Hosted CI is not deployment; point-in-time entitlement is not a
+>   future guarantee; tracked protection intent is not remote enforcement.
+> - [m0020](m0020-workspace-baseline.md) owns the current repository-local
+>   baseline. [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
+>   preserves the dated 2026-09-05 assessment scope and identity-recovery
+>   evidence. [RES-0084](../0084-github-actions-platform/README.md) owns detailed
+>   GitHub Actions platform mechanics. This package owns topical research and
+>   their cross-category navigation.
 
 ## Method
 
@@ -136,6 +145,7 @@ Requirement-to-Task chain rather than through this package.
 
 ### Member Navigation
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Category | Member | Core question | Repository state | Evidence depth | Priority |
 | --- | --- | --- | --- | --- | --- |
 | Instructions and prompt hierarchy | [m0001](m0001-agent-instructions-vibe-coding.md) | How are durable instructions separated from ad-hoc prompts? | Root adapters load Stage 00; hooks enforce selected boundaries | Defined, Configured, Repository-enforced | High |
@@ -297,7 +307,7 @@ Repository sources:
 - Baseline commit `71da6654e2fa3def174b238ad309c92fe46e9dae`, with the earlier
   assessed baseline `4c6d211129615eab372d720ebd209b6c27618c86` preserved as
   dated evidence.
-- [Stage 00](../../../00.agent-governance/README.md),
+- [Canonical governance](../../../../.agents/README.md),
   [Stage 99 Registry](../../../99.templates/registry.json),
   [Stage 03](../../../03.specs/README.md), and
   [Stage 05](../../../05.operations/README.md).
@@ -314,7 +324,7 @@ list contains only sources shared across categories.
 
 ## Implications
 
-1. Preserve Stage 00 as provider-neutral policy and Stage 99 as document
+1. Preserve canonical agent governance as provider-neutral policy and Stage 99 as document
    contract authority; do not promote Stage 90 findings into either owner.
 2. Keep the 20-member topical split. It maps the full request without adding a
    competing package or making the README repeat detailed analysis.
@@ -354,8 +364,8 @@ list contains only sources shared across categories.
 - Related research: [RES-0084](../0084-github-actions-platform/README.md) and
   dated baseline/recovery evidence in
   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
-- Policy: [Stage 00](../../../00.agent-governance/README.md) and
-  [documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md).
+- Policy: [canonical agent governance](../../../../.agents/README.md) and
+  [documentation protocol](../../../../.agents/governance/documentation-protocol.md).
 - Requirements: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0025](../../../01.requirements/0025-operational-readiness-closure.md), and
   [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md).
@@ -363,7 +373,7 @@ list contains only sources shared across categories.
   [AD-0028](../../../02.architecture/descriptions/0028-operational-readiness-closure.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
-  [ADR-0029](../../../02.architecture/decisions/0029-workspace-governance-authority.md), and
+  [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md), and
   [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
 - Implementation evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
   and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).

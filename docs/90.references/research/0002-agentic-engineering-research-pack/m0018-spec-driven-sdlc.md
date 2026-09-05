@@ -1,10 +1,10 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.1.1"
+version: "1.1.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-06"
 layer: "references"
 artifact_id: "RES-0002-m0018"
 parent_ids:
@@ -16,6 +16,13 @@ review_cycle: "on-source-change"
 ---
 
 # Reference: Spec-Driven Development and SDLC
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 ## Overview
 
@@ -30,7 +37,7 @@ The historical analysis measured the tree at HEAD `ece3eda9c3e1a603c6495dd55caba
 (2026-08-14, branch `docs/agentic-research-pack-deepening`). It does not reuse
 the predecessor pack's `59 specs / 0 archived specs` figure. The stale Graphify
 report was used only as a navigation aid and every relationship below was
-corroborated against tracked Stage 00, Stage 01-05, Stage 98, and Stage 99
+corroborated against tracked canonical agent governance, Stage 01-05, Stage 98, and Stage 99
 sources, re-derived with `find`/`rg` rather than trusted from the prior
 revision of this leaf.
 
@@ -39,16 +46,16 @@ revision of this leaf.
 Define REQ-06 and REQ-09: the workspace's spec-driven concepts, lifecycle,
 traceability, gates, feedback, ownership, evidence, and enforcement boundaries.
 The companion references examine document-role and metadata distinctions;
-current role, profile, and state authority remains in Stage 00 and Stage 99.
+current role, profile, and state authority remains in canonical agent governance and Stage 99.
 
 ## Repository Role
 
 This is advisory Stage 90 research. It distinguishes dated tracked observations from
 external comparisons; it does not approve a requirement, choose architecture,
 authorize implementation, establish policy, execute a release, prove runtime
-state, or change any Stage 00/99 contract. Canonical authority remains in the
-[Stage 00 SDLC](../../../00.agent-governance/sdlc.md),
-[documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md),
+state, or change any canonical governance and Stage 99 contract. Canonical authority remains in the
+[canonical agent governance SDLC](../../../../.agents/governance/sdlc.md),
+[documentation protocol](../../../../.agents/governance/documentation-protocol.md),
 and [Stage 99 Registry](../../../99.templates/registry.json). The current Task
 owns implementation and validation evidence; historical tables do not define
 current fields, paths, or gates.
@@ -142,7 +149,7 @@ and profile counts above are historical observations, not current inputs.
 
 ### Lifecycle and gates
 
-This explanatory flow follows [Stage 00 SDLC](../../../00.agent-governance/sdlc.md).
+This explanatory flow follows [Canonical governance SDLC](../../../../.agents/governance/sdlc.md).
 The Registry owns exact lifecycle values; no table here grants approval.
 
 ```text
@@ -224,6 +231,7 @@ therefore still requires metadata validation, Task evidence, and human review.
 
 ### External implementations and standards boundary
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                     | Verified observation                                                                                                                                                                                                                                                                                                                                            | Workspace disposition                                                                                                                                                                                                                                                                                                                                                                              |
 | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GitHub Spec Kit, re-pinned `83883a2ebad7e7de667fd00381b100d597faf846` (2026-08-14; was `684b3d8e0` on 2026-08-08)          | The flow grew from four phases to ten named phases/commands: `constitution` (governing principles; new first step), `specify`, `clarify`, `plan`, `tasks`, `analyze`, `checklist`, `taskstoissues` (new: converts tasks to GitHub Issues), `implement`, and `converge` (new: assesses codebase against spec/plan/tasks and appends remaining work).             | Its new `constitution` prefix and `converge` drift-detection step echo functions this workspace already separates into other owners (Stage 00 governance; QA/security drift routing). Still a comparative harness; this workspace's PRD/architecture prefixes, durable Task evidence, operations, archive, and feedback owners remain unadopted-but-analogous.                                     |
@@ -242,7 +250,7 @@ therefore still requires metadata validation, Task evidence, and human review.
 - A vulnerability can route to Policy, ADR, Spec, Plan, Task, Runbook, or all of
   them through links, but each fact has one earliest canonical owner.
 - Release evidence follows the current
-  [external-release-evidence policy](../../../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary),
+  [external-release-evidence policy](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary),
   not an independent Release profile. Notes, SemVer, tags, builds, and readiness
   evidence each prove only their own observed fact.
 - A reference, audit, graph, generated index, or template may inform work but
@@ -290,7 +298,7 @@ and, where it matters more, what it does not.
 | [RFC Editor](https://www.rfc-editor.org/)                                                                                                                | 2026-08-08 | External mutable catalog     | HTTP 200; official RFC series and publication classes only.                                                                                              |
 | [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final)                                                                                   | 2026-08-08 | External fixed               | HTTP 200; April 2025 final CSF 2.0 incident-response profile. Rev. 2 is superseded and not used.                                                         |
 | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                                                         | 2026-08-08 | External fixed publication   | HTTP 200; learning, triggers, blamelessness, review, and preventive actions.                                                                             |
-| [Stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md)                                                                   | 2026-08-08 | Workspace tracked            | Canonical stage purposes, inputs, templates, and done criteria at Task 5 baseline.                                                                       |
+| [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                                                                   | 2026-08-08 | Workspace tracked            | Canonical stage purposes, inputs, templates, and done criteria at Task 5 baseline.                                                                       |
 | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                                                        | 2026-08-08 | Workspace tracked            | Human lifecycle and feedback boundary.                                                                                                                   |
 | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                                                       | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                                                     |
 | [Document graph validator](../../../../scripts/validation/check-document-links.py)                                                                       | 2026-09-04 | Workspace tracked executable | The typed `--mode all` route owns both rendered-link traceability and current-path alignment checks.                                                      |

@@ -1,6 +1,6 @@
 # Pull Request
 
-> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.agent-governance/policies/git-workflow.md`.
+> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `.agents/governance/git-workflow.md`.
 > Human `feat/` and `fix/` source branches MUST include an issue ID segment, for example `feat/123-add-service`.
 
 ## Related Specification
@@ -57,12 +57,12 @@ List exact commands used and outcome.
 - [ ] `scripts/**` validation, hardening, hook, or operation command changed
 - [ ] `.github/workflows/**` changed
 - [ ] Root shims or `.claude/**`, `.codex/**` changed
-- [ ] `docs/00.agent-governance/**` changed
+- [ ] `.agents/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
 
 For affected surfaces, select checks from the
-[shared change-type verification matrix](../docs/00.agent-governance/policies/quality-standards.md#5-change-type-verification-matrix).
+[shared change-type verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix).
 Record the selected command, execution environment, result, and reason for any
 unexecuted check in Validation Evidence. This template adds no gate and does
 not require both public profiles for every harness change.
@@ -85,7 +85,7 @@ affected; otherwise record N/A and the reason in Validation Evidence):
 - [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when lifecycle or semantic-evaluation behavior changed
 - [ ] Provider configuration is not presented as proof of live native-event execution
 
-See [Approval Boundaries](../docs/00.agent-governance/policies/approval-boundaries.md) for protected surfaces.
+See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for protected surfaces.
 
 ## Risk Assessment
 
@@ -94,8 +94,8 @@ See [Approval Boundaries](../docs/00.agent-governance/policies/approval-boundari
 
 ## Validations
 
-- [ ] I have reviewed the relevant governance policies under `docs/00.agent-governance/policies`.
-- [ ] My source branch follows the governed branch policy in `docs/00.agent-governance/policies/git-workflow.md`.
+- [ ] I have reviewed the relevant governance policies under `.agents/policies`.
+- [ ] My source branch follows the governed branch policy in `.agents/governance/git-workflow.md`.
 - [ ] My code strictly follows the Implementation Specification.
 - [ ] Documentation has been added/updated using `docs/99.templates`, or marked N/A with a reason.
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.

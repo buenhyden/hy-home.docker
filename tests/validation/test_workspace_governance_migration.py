@@ -23,7 +23,10 @@ from scripts.lib.document_governance.links import parse_local_markdown_links
 
 
 ROOT = Path(__file__).resolve().parents[2]
-ADR = ROOT / "docs/02.architecture/decisions/0029-workspace-governance-authority.md"
+ADR = (
+    ROOT
+    / "docs/98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md"
+)
 MIGRATION = (
     ROOT / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 )
