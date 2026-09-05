@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -79,5 +79,5 @@ file, database state는 task-scoped transient resource다. 실행 전 exact targ
 - `examples/sample-web-service/`
 - `tests/validation/test_compose_core_readiness.py`
 - `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
-- `tests/validation/test_supply_chain_policy.py`
+- `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`

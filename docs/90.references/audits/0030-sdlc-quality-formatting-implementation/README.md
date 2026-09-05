@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC Quality Formatting Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0030"
 parent_ids:
@@ -145,7 +145,7 @@ than current evidence. No remote setting was changed.
 | Universal formatting/linting coverage | Partially Implemented | Add a scoped formatting/linting inventory before introducing new gates. |
 | Typed document identity, parents, lifecycle, and README profiles | Partially Implemented | Retain the implemented registry/checker/contract foundation and use the [frontmatter/template/README audit](../0024-frontmatter-template-readme-implementation/README.md) to bound later corpus migration. |
 | Actual Release record | Not Implemented | Keep the implemented Release profile/template/index, changelog communication, and release runbook distinct; create a record only from an actual event. |
-| Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the eleven fixtures, sixteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
+| Agent-output eval as QA | Synthetic Repository Eval Implemented | Retain the ten fixtures, fourteen regressions, exact CI markers, and deterministic runner; live comparative model scoring remains separately approval-gated. |
 | CI/CD release/deploy automation | Not Implemented / Out of Scope | Route deployment/release engineering through the separately approval-gated draft Spec 127 chain; keep it separate from validation CI. |
 | Security maturity framework mapping | Implemented / Tooling Partial | SSDF/SLSA/OpenSSF Scorecard mapping exists in [security framework maturity coverage](../0031-security-framework-maturity/README.md); SBOM, provenance, attestation, and vulnerability gates remain future work. |
 

@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "requirements"
 artifact_id: "REQ-0025"
 parent_ids: []
@@ -84,7 +84,7 @@ artifact trust, promotion/rollback 동작을 증명할 수 없다. 이 요구사
 
 ## Acceptance Criteria
 
-- `run-compose-core-readiness.sh`가 readiness, timeout, cleanup 경계를 검증한다.
+- `check-compose-core-readiness.sh`가 readiness, timeout, cleanup 경계를 검증한다.
 - `rehearse-postgres-logical-upgrade.sh`가 synthetic state의 backup/restore와
   integrity oracle을 검증한다.
 - `verify-sample-service-supply-chain.sh`와

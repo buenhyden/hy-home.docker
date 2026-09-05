@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Implementation Audit References"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0019"
 parent_ids: []
@@ -64,7 +64,7 @@ This README is for:
 - Repo-local evidence links for governance, providers, CI, scripts, templates,
   infrastructure, and operations.
 - Gap and automation-candidate summaries for future work.
-- Provider comparison across Claude, Codex, and Gemini.
+- Provider comparison across Claude and Codex.
 - Current criterion-level SDLC and document-metadata evidence, including
   syntax/semantic separation and typed-inventory requirements.
 - Criterion-level harness, loop, provider, workspace, instruction, catalog,
@@ -152,12 +152,19 @@ and left root cause plus authenticated ruleset, branch-protection, environment,
 secret, and variable state unverified. The older 12-context observation is
 historical evidence, not current remote truth.
 
-The 2026-07-27 canonical reconciliation retains 14 roles, 24 functions, five
-exact work profiles, 11 model records, eight harness layers, eight ordered
-workflow states, nine capability-intake decisions, 11 fixtures, and 16
-regressions. It does not change the 11-report / 161-row shape or the
-77/60/13/2/9 status distribution, and it makes no live-provider, remote-control,
-or deployment claim.
+> Historical evidence (not current authority; source: Git history): The
+> 2026-07-27 canonical reconciliation retained 14 roles, 24 functions, five
+> exact work profiles, 11 model records, eight harness layers, eight ordered
+> workflow states, nine capability-intake decisions, 11 fixtures, and 16
+> regressions. It did not change the 11-report / 161-row shape or the
+> 77/60/13/2/9 status distribution, and it made no live-provider, remote-control,
+> or deployment claim.
+
+Current correction: the [provider registry](../../../00.agent-governance/providers/registry.yaml)
+lists two providers and five model records; the [agent-output evaluation fixture
+catalog](../../data/0064-agent-output-eval-fixtures/README.md) defines ten
+fixtures and fourteen regressions. Those current cardinalities do not change
+this pack's historical criterion distribution.
 
 ### Contract and Evidence Boundary
 

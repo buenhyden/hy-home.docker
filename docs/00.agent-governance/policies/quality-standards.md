@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -131,9 +131,9 @@ optional cleanup.
 ## 7. Local QA/CI Orchestration
 
 Use `python3 scripts/validation/run-ci-gate.py --profile changed --explain` to render the
-selected public suite-to-validator mapping without execution. The wrapper
-contains no child-command inventory: `--changed`, `--full`, and `--explain`
-delegate once to the public runner. These routes do not
+selected public suite-to-validator mapping without execution. The public runner
+exposes `--profile changed`, `--profile full`, and `--explain` routes and contains
+no duplicated child-command inventory. These routes do not
 upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
 stage-document runtime version drift for implementation-pinned images and

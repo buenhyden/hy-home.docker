@@ -1,10 +1,10 @@
 ---
 title: "Reference: Loop Engineering Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0027"
 parent_ids:
@@ -49,7 +49,7 @@ Stage 00 workflow rules, provider hooks, validation scripts, CI, or task review.
 ## Definitions / Facts
 
 - A loop is depth 4 only when measured results feed a closed corrective cycle.
-- Eleven versioned fixtures and sixteen synthetic positive/negative regressions have
+- Ten versioned fixtures and fourteen synthetic positive/negative regressions have
   exact catalog fields, deterministic scorers, calibrated thresholds, bounded
   inputs, and automated freshness checks. They validate the repository harness,
   not live provider model quality.
@@ -68,8 +68,8 @@ and fixture checks. Graphify was stale/advisory and did not support any status.
 | Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | LOOP-01 | Run a bounded observe/action loop and return evidence to a controller. | Subagent protocol defines supervisor/worker handoff, scoped execution, result reporting, and separate review; provider-native execution differs and `.agents` remains pointer-based. | Partial | 2 | Improve | Stage 00 workflow supervisor and subagent protocol | Keep task review ledger; native execution compatibility is a provider follow-up. | Inspect `subagent-protocol.md`, active plan, task evidence, and provider role surfaces. | High for governance; medium for cross-provider runtime behavior. |
-| LOOP-02 | Apply pre/post action feedback without assuming event-name parity. | The typed event contract renders seven Claude and seven Gemini native mappings plus six Codex mappings; Codex `SessionEnd` is explicitly unsupported. Shared scripts and repository checks validate the tracked semantics, but live provider interception remains unproved. | Partial | 3 | Retain | Stage 00 hook contract and provider adapters | Retain synchronized semantic lifecycle, hook-parity checks, and the unsupported-event boundary. | Run provider sync and hook-parity checks; inspect `.claude/settings.json`, `.codex/hooks.json`, `.gemini/settings.json`, shared scripts, and provider notes. | High for tracked behavior; live/provider-native execution remains unproved. |
-| LOOP-03 | Combine validation with versioned semantic eval evidence. | Local validators, CI/local routing, Stage 04 review, eleven fixed fixtures, sixteen synthetic regressions, exact thresholds, and deterministic bounded scorers form a versioned repository feedback loop. No network model call or live comparative-quality claim is made. | Implemented | 4 | Retain | QA scope and eval owner | Retain calibrated fixture/regression checks; design live provider evaluation separately if later approved. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` reports exact pass markers for `11/11` and `16/16`. | High. |
+| LOOP-02 | Apply pre/post action feedback without assuming event-name parity. | The typed event contract renders seven Claude and six Codex native mappings; Codex `SessionEnd` is explicitly unsupported. Shared scripts and repository checks validate the tracked semantics, but live provider interception remains unproved. | Partial | 3 | Retain | Stage 00 hook contract and provider adapters | Retain synchronized semantic lifecycle, hook-parity checks, and the unsupported-event boundary. | Run the provider renderer and hook-parity checks; inspect `.claude/settings.json`, `.codex/hooks.json`, shared scripts, and provider notes. | High for tracked behavior; live/provider-native execution remains unproved. |
+| LOOP-03 | Combine validation with versioned semantic eval evidence. | Local validators, CI/local routing, Stage 04 review, ten fixed fixtures, fourteen synthetic regressions, exact thresholds, and deterministic bounded scorers form a versioned repository feedback loop. No network model call or live comparative-quality claim is made. | Implemented | 4 | Retain | QA scope and eval owner | Retain calibrated fixture/regression checks; design live provider evaluation separately if later approved. | `bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` reports exact pass markers for `10/10` and `14/14`. | High. |
 | LOOP-04 | Diagnose before retry, bound attempts, and stop/escalate on unchanged failure. | Four typed harness loops bind positive attempt limits, exact stop conditions, failure actions, event ownership, independent-review inequality, and a single controlled all-files attempt. The contract and synthetic regressions reject unbounded or unchanged retry semantics. | Implemented | 3 | Retain | Workflow supervisor and task owner | Preserve typed bounds and task evidence; do not add autonomous retry expansion. | Run the harness contract/evaluator suites and inspect the typed loop contract plus current SDD task ledger. | High for the enforced repository contract; provider runtime behavior remains separate. |
 | LOOP-05 | Pause protected actions for exact approval and refresh state on resume. | Approval boundaries and task checklists require concrete scope/evidence; actual provider prompt state and durable resume behavior vary and are not uniformly tracked. | Partial | 2 | Improve | Stage 00 approval boundaries | Add scoped approval/resume evidence where high-risk tasks require it; avoid global-state inference. | Inspect `approval-boundaries.md`, `task-checklists.md`, and high-risk task evidence contract. | High for policy; runtime prompt propagation is provider-dependent. |
 | LOOP-06 | Preserve reviewable observations while respecting redaction/privacy. | Diffs, commands, CI/SARIF, Stage 04 evidence, progress memory, and review packages exist, and the synthetic repository loop reaches depth 4. No unified trace backend, cross-task quality time series, or live comparative-quality telemetry is tracked. | Partial | 2 | Improve | Stage 04 evidence owner and QA | Prefer concise generated evidence; a trace backend is not required absent a justified use case. | Inspect task/review ledgers, memory policy, CI evidence surfaces, and exact evaluator markers. | High for tracked evidence; unified/live telemetry enablement is unknown. |

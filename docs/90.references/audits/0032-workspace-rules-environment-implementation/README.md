@@ -1,10 +1,10 @@
 ---
 title: "Reference: Workspace Rules and Environment Implementation"
-version: "1.0.0"
+version: "1.0.1"
 type: "reference/audit-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 artifact_id: "AUD-0032"
 parent_ids:
@@ -49,8 +49,8 @@ provider adapters, and actual executing environments remain authoritative.
 
 - Stage 00 is the provider-neutral policy authority; provider files are adapters.
 - The tracked catalog has one supervisor, thirteen workers, and 24 functions,
-  with name-set projections across four role surfaces: Claude, Codex, Gemini,
-  and shared `.agents` compatibility.
+  with native role projections for Claude and Codex; `.agents/skills` is the
+  shared skill projection.
 - No per-agent concrete model selector was available to the collaboration
   runtime for this implementation. The dispatch recorded the repository role
   (`code-reviewer`) and requested Senior tier while the platform chose
@@ -74,11 +74,11 @@ and was never treated as implementation truth.
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
 | WRE-01 | Maintain one provider-neutral instruction authority. | Stage 00 governance hub, bootstrap, agentic rule, and thin root/provider shims define canonical ownership. | Implemented | 3 | Retain | `docs/00.agent-governance/` | Existing repo contracts and provider sync. | Inspect shims and Stage 00 authority statements. | High. |
 | WRE-02 | Route work through explicit lifecycle stages and one primary scope. | Bootstrap, persona, task checklists, scopes, stage matrix, Spec 123, plan, and task evidence form a tracked chain. T-AER-008/012 now enforce typed changed/new lifecycle metadata. | Implemented | 2 | Retain | Stage 00 plus canonical lifecycle stages | Retain canonical routing and metadata enforcement without making this audit a policy source. | Trace current Spec/Plan/Task links, loaded scope, and changed/new metadata evidence. | High. |
-| WRE-03 | Keep agent role names and model tiers synchronized across adapters. | Four role surfaces each contain the same 14 canonical IDs; Claude, Codex, and Gemini use native generated schemas and `.agents` is the shared compatibility projection. The sync check reports three providers and zero drift. | Implemented | 3 | Retain | Stage 00 agent catalog and provider renderer | Existing exact name/model/schema validation; live native acceptance remains separate. | Provider role inventory and sync check. | High. |
-| WRE-04 | Keep reusable function/skill names synchronized across adapters. | Twenty-four canonical functions project to 24 Claude and 24 shared `.agents` skill directories; the absence of `.gemini/skills` is an intentional provider projection, not drift. | Implemented | 3 | Retain | Stage 00 function catalog and provider renderer | Existing generation/check mode. | Function/skill inventory and sync check. | High. |
+| WRE-03 | Keep agent role names and model tiers synchronized across adapters. | The two native role surfaces contain the same 14 canonical IDs for Claude and Codex; `.agents/skills` is the shared skill projection. The renderer check reports two providers and zero drift. | Implemented | 3 | Retain | Stage 00 agent catalog and provider renderer | Existing exact name/model/schema validation; live native acceptance remains separate. | Provider role inventory and renderer check. | High. |
+| WRE-04 | Keep reusable function/skill names synchronized across adapters. | Twenty-four canonical functions project to 24 Claude and 24 shared `.agents/skills` directories. | Implemented | 3 | Retain | Stage 00 function catalog and provider renderer | Existing generation/check mode. | Function/skill inventory and renderer check. | High. |
 | WRE-05 | Bind protected changes to explicit approval, evidence, rollback, and redaction. | Approval boundaries, task checklists, Spec 123, and the completed T-AER task chain bind protected mutations to scoped approval and prohibit secret/log persistence. | Implemented | 2 | Retain | Stage 00 approval boundaries and Stage 04 task owner | Future high-risk tasks may add denied-action tests; no audit-only gate. | Inspect approval/task contracts, protected-surface evidence, and changed paths. | High. |
 | WRE-06 | Maintain advisory memory and durable task/review evidence without making memory policy. | Memory README/progress, task evidence, SDD reports, final PASS/APPROVED review ledgers, and generated audit coverage exist; a unified quality/closure time series does not. | Partial | 2 | Improve | Stage 00 memory plus Stage 04 task owner | Retain deterministic ledgers and generated coverage; add metrics only under a separately defined contract. | Inspect progress/task/review records and audit coverage output. | High. |
-| WRE-07 | Provide deterministic local validation and CI routing by change type. | The typed runner derives full/changed profiles from the workflow contract, normalized-leaf tests reject duplicate execution, and the evaluator requires eleven fixtures plus sixteen regressions. The controlled all-files wrapper remains separate and evidence-gated. | Implemented | 3 | Retain | QA scope, workflow contract, and scripts catalog | Retain one canonical typed runner, exact CI markers, and the controlled-wrapper boundary. | Run `python3 scripts/validation/run-ci-gate.py --profile changed --explain`, selector tests, and repository contracts. | High. |
+| WRE-07 | Provide deterministic local validation and CI routing by change type. | The typed runner derives full/changed profiles from the workflow contract, normalized-leaf tests reject duplicate execution, and the evaluator requires ten fixtures plus fourteen regressions. The controlled all-files wrapper remains separate and evidence-gated. | Implemented | 3 | Retain | QA scope, workflow contract, and scripts catalog | Retain one canonical typed runner, exact CI markers, and the controlled-wrapper boundary. | Run `python3 scripts/validation/run-ci-gate.py --profile changed --explain`, selector tests, and repository contracts. | High. |
 | WRE-08 | Treat executing sandbox, network, provider entitlement, and global config as observed environment facts. | Rules state boundaries, but tracked files cannot prove the active provider profile, account access, egress, MCP servers, or global settings. | Needs Revalidation | 1 | Retain | Executing environment/provider owner | Explicit non-automation unless scoped observation is authorized. | Authorized runtime evidence only. | Medium by design. |
 | WRE-09 | Corroborate generated/navigation evidence against tracked canonical source. | Bootstrap/Spec 123 require tracked evidence; the advisory Graphify report is stale relative to this branch, so current claims are corroborated directly against tracked source and generated owner checks. `_workspace` is separately bounded to two tracked READMEs plus ignored non-secret scratch, excluded from docs metadata inference, and enforced by repository contracts. | Implemented | 2 | Retain | Audit/task owner and `_workspace` repository-contract owner | Keep Graphify advisory and `_workspace` independent from docs metadata; no status automation from graph edges or scratch files. | Compare Graphify commit metadata with `git rev-parse HEAD`, generators, cited tracked files, the `_workspace` allowlist, and repository-contract checks. | High. |
 | WRE-10 | Preserve implementation/review separation and honest lifecycle state. | The T-AER chain used fresh implementers and independent reviewers and closed only after final PASS/APPROVED, C0/I0/M0, and `READY_FOR_RECLOSURE: YES`; T-AHC-002 and T-DCC-004 remain Done/PASS/Approved. Spec 129 reopened after its failed post-closure review, resolved I-01 through I-03, reclosed after PASS/APPROVED C0/I0/M0 and `READY_FOR_RECLOSURE: YES`, and passed a new final whole-branch review with `READY_FOR_HANDOFF: YES`. | Implemented | 2 | Retain | Workflow supervisor and Stage 04 task owner | Preserve the completed lifecycle and keep later migration/runtime/remote waves independently approval-gated. | Inspect T-AER-012 final evidence, completed T-AHC-002/T-DCC-004 rows, the failed Spec 129 review, remediation commits, Attempt 4, reclosure, final C0/I0/M0 handoff review, and completed T-DCC-006 row. | High. |
@@ -88,7 +88,7 @@ and was never treated as implementation truth.
 - Name/model projection and skill projection are automated at depth 3.
 - Environment facts that live outside tracked scope remain `Needs Revalidation`;
   adding more policy text would not make them implemented.
-- The existing `eval-engineer` with QA owns eleven exact fixtures and sixteen
+- The existing `eval-engineer` with QA owns ten exact fixtures and fourteen
   synthetic regressions, whose corrective loop reaches repository-semantic
   depth 4. Live/comparative and cross-task quality, latency, and cost evaluation
   remains unimplemented.
