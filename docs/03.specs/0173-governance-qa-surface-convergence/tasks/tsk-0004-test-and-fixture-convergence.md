@@ -2,7 +2,7 @@
 title: "Test and Fixture Convergence Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -32,9 +32,11 @@ depending on the test tree.
 
 ## Work Log
 
-This planning artifact was created on 2026-09-05. No test or fixture has been
-moved, renamed, rewritten, or removed. During an authorized execution, retain
-a fixture only when an independent current test consumes its stable format.
+Task 3 aligned script and operation ownership at `174c29d9` and recorded its
+focused evidence at `74a8b05e`. Task 4 became ready at `22759ba6` and now
+starts from a clean worktree. No Task 4 test or fixture has been moved,
+renamed, rewritten, or removed; a fixture remains eligible only when an
+independent current test consumes its stable format.
 
 ## Verification Evidence
 
