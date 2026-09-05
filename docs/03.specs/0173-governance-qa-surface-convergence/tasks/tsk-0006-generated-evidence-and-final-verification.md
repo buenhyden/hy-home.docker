@@ -11,6 +11,14 @@ parent_ids:
 - "SPEC-0173"
 - "SPEC-0173-PLAN-0001"
 created: "2026-09-05"
+branch_integration_receipts:
+- source_commit: "c02fa282db30fa4576fa04bcd328a47fe7da8511"
+  source_package_path: "docs/03.specs/0172-document-contract-convergence"
+  source_artifact_id: "SPEC-0172"
+  preserved_package_path: "docs/98.archive/superseded/03.specs/0172-document-contract-convergence"
+  target_package_path: "docs/03.specs/0173-governance-qa-surface-convergence"
+  target_artifact_id: "SPEC-0173"
+  disposition: "historical-superseded"
 ---
 
 # Generated Evidence and Final Verification Task
@@ -84,6 +92,26 @@ and distinct active target through a typed Task receipt, and reject ordinary
 nonterminal archive shortcuts. This is design clearance only; implementation,
 negative tests, receipt verification and final independent review are pending.
 No per-ID/commit allowlist, frozen-body edit, or new artifact is authorized.
+
+The contract is now committed at `8165fb423`. Independent Python re-review
+closed its completed-record immutability finding with PASS and zero actionable
+findings. Seven focused contract methods passed; the narrow immutable-record
+regressions passed 2/2. The real SPEC-0172 receipt was then evaluated against
+the exact c02 source and existing completed lineage and returned PASS.
+
+All three divergent source files are preserved without metadata or body edits:
+
+| Member | Git blob at c02 and preserved copy |
+| --- | --- |
+| Spec | `51989e8acf66bb7b985aec1dbda90ab402f8608c` |
+| Plan | `22a6a18499f628771e2bde1cf9c557b48759022d` |
+| Task | `4c8a44c1488410e1c589932a69721543d2eda9c0` |
+
+The completed SPEC-0172 has no working diff. Its divergent packet retains its
+original draft statuses; the receipt records branch disposition only. Current
+obligations remain with the Stage 00/01/02/05 owners and integration acceptance
+belongs here. SPEC-0174 uses ordinary forward lifecycle disposition, not this
+same-ID divergent receipt.
 
 Main is clean at the fixed baseline; implementation continues in the existing
 feature worktree at `5547e07a2` plus the preserved task-owned patch. The requested
