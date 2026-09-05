@@ -141,7 +141,6 @@ class ProviderRecord:
 
 @dataclass(frozen=True)
 class CompatibilityRecord:
-    agent_pattern: str
     skill_pattern: str
 
 
@@ -456,15 +455,8 @@ def _validate_registry(
     compatibility_values = _mapping(
         registry.get("compatibility"), field="compatibility"
     )
-    _exact_keys(
-        compatibility_values, {"agent_pattern", "skill_pattern"}, field="compatibility"
-    )
+    _exact_keys(compatibility_values, {"skill_pattern"}, field="compatibility")
     compatibility = CompatibilityRecord(
-        agent_pattern=_projection_pattern(
-            compatibility_values.get("agent_pattern"),
-            token="agent_id",
-            field="compatibility.agent_pattern",
-        ),
         skill_pattern=_projection_pattern(
             compatibility_values.get("skill_pattern"),
             token="skill_id",
@@ -472,7 +464,6 @@ def _validate_registry(
         ),
     )
     if compatibility != CompatibilityRecord(
-        agent_pattern=".agents/agents/{agent_id}.md",
         skill_pattern=".agents/skills/{skill_id}/SKILL.md",
     ):
         raise ContractLoadError("AGC-COMPATIBILITY-PROJECTION-CROSS-REFERENCE")
@@ -716,7 +707,6 @@ def _validate_registry(
         raise ContractLoadError("AGC-GENERATED-ROOTS")
     generated_roots = {_safe_relative(item) for item in generated}
     required_roots = {
-        _projection_root(compatibility.agent_pattern, token="agent_id"),
         _projection_root(compatibility.skill_pattern, token="skill_id"),
     }
     for record in records:
@@ -1145,7 +1135,6 @@ def validate_repository(
         findings.extend(_validate_stage99_governance_profiles(root))
     if section in {"catalog", "providers", "all"}:
         for directory, suffix, expected, code in (
-            (".agents/agents", ".md", roles, "AGC-AGENT-PROJECTION"),
             (".claude/agents", ".md", roles, "AGC-AGENT-PROJECTION"),
             (".codex/agents", ".toml", roles, "AGC-AGENT-PROJECTION"),
             (".agents/skills", "SKILL.md", skills, "AGC-ORPHAN-SKILL"),

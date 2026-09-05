@@ -120,7 +120,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_governance_fixture(root)
-            generated = root / ".agents/agents/code-reviewer.md"
+            generated = root / ".claude/agents/code-reviewer.md"
             generated.write_text(
                 generated.read_text()
                 + "\nThis generated file is the policy source of truth.\n"
@@ -548,7 +548,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 dict(data["projections"][0])
             ),
             "projection-managed-collision": lambda data: data["projections"][0].update(
-                {"path": ".agents/agents/code-reviewer.md"}
+                {"path": ".claude/agents/code-reviewer.md"}
             ),
             "projection-native-config": lambda data: data["projections"][1].update(
                 {"path": ".claude/settings.json"}

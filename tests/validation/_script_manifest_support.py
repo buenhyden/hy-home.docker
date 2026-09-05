@@ -60,7 +60,6 @@ MUTATION_OVERRIDES = {
     "scripts/operations/generate-tech-stack-version-provenance.sh": "check-write",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
-    "scripts/operations/sync-provider-surfaces.sh": "check-write",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
     "scripts/security/generate-supply-chain-sample-service-summary.sh": "check-write",

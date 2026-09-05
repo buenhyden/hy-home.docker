@@ -35,7 +35,6 @@ SHELL_ENTRYPOINTS = (
     "scripts/operations/check-compose-core-readiness.sh",
     "scripts/operations/gen-secrets.sh",
     "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-    "scripts/operations/sync-provider-surfaces.sh",
     "scripts/operations/sync-tech-stack-versions.sh",
     "scripts/operations/use-qa-ci-tools.sh",
     "evals/run-agent-output-eval-fixtures.sh",

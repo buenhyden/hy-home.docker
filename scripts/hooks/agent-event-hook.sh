@@ -181,10 +181,10 @@ if not tool_name or tool_name in edit_tools:
         short_path = short_path.removeprefix("./")
         if short_path.startswith(".agents/"):
             system_messages.append(
-                ".agents compatibility surface edit detected.\n\n"
+                ".agents provider skill surface edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
                 "Keep `.agents/` aligned with `docs/00.agent-governance/` and the "
-                "canonical `.claude/` runtime catalog. It must not introduce a "
+                "registered Codex skill projection. It must not introduce a "
                 "parallel policy source, unknown skills, or stale runtime paths. "
                 "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
             )
@@ -201,8 +201,8 @@ if not tool_name or tool_name in edit_tools:
                 f"Path: `{short_path}`\n\n"
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
-                "target-relative links, and `## Related Documents` section. The PostToolUse and "
-                "Stop hooks run `python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
+                "target-relative links, and `## Related Documents` section. The Stop hook runs "
+                "`python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
                 "changed-doc template gate."
             )
             break
@@ -341,65 +341,16 @@ print(json.dumps({"systemMessage": msg.strip()}))
 PY
 }
 
-has_changed_target_stage_docs() {
-  python3 - <<'PY'
-from __future__ import annotations
-
-import pathlib
-import subprocess
-import sys
-
-stage_roots = (
-    pathlib.Path("docs/01.requirements"),
-    pathlib.Path("docs/02.architecture"),
-    pathlib.Path("docs/03.specs"),
-    pathlib.Path("docs/05.operations"),
-    pathlib.Path("docs/90.references"),
-)
-
-
-def run_git(args: list[str]) -> list[str]:
-    try:
-        result = subprocess.run(
-            ["git", *args],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-    except subprocess.CalledProcessError:
-        return []
-    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
-
-
-def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
-
-
-paths: set[pathlib.Path] = set()
-for git_args in (
-    ["diff", "--name-only", "--diff-filter=AM"],
-    ["diff", "--cached", "--name-only", "--diff-filter=AM"],
-    ["ls-files", "--others", "--exclude-standard"],
-):
-    paths.update(pathlib.Path(path) for path in run_git(git_args))
-
-for path in paths:
-    if path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
-        continue
-    if any(is_relative_to(path, root) for root in stage_roots):
-        sys.exit(0)
-
-sys.exit(1)
-PY
+has_git_visible_changes() {
+  local status
+  if ! status="$(git status --porcelain=v1 --untracked-files=normal 2>/dev/null)"; then
+    return 1
+  fi
+  [[ -n "$status" ]]
 }
 
-template_stop_gate() {
-  if ! has_changed_target_stage_docs; then
+changed_profile_stop_gate() {
+  if ! has_git_visible_changes; then
     return 0
   fi
 
@@ -414,8 +365,8 @@ import os
 
 output = os.environ.get("GATE_OUTPUT", "").strip()
 reason = (
-    "Changed target-stage documentation does not satisfy the docs/99.templates "
-    "contract. Continue the task, fix the document from the mapped template, "
+    "Changed repository state does not satisfy the changed validation profile. "
+    "Continue the task, fix the reported contract failure, "
     "and rerun `python3 scripts/validation/run-ci-gate.py --profile changed`."
 )
 if output:
@@ -587,7 +538,7 @@ PY
 }
 
 stop() {
-  if template_stop_gate && logical_commit_stop_gate; then
+  if changed_profile_stop_gate && logical_commit_stop_gate; then
     session_end
   fi
 }

@@ -31,6 +31,9 @@ class StopGateDeferredPathTests(unittest.TestCase):
         subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
         (repo / "docs/04.execution/tasks").mkdir(parents=True)
         (repo / OWNING_TASK_RELATIVE).write_text("# Owning Task\n", encoding="utf-8")
+        gate = repo / "scripts/validation/run-ci-gate.py"
+        gate.parent.mkdir(parents=True)
+        gate.write_text("raise SystemExit(0)\n", encoding="utf-8")
         (repo / "tracked-a.txt").write_text("original a\n", encoding="utf-8")
         (repo / "tracked-b.txt").write_text("original b\n", encoding="utf-8")
         subprocess.run(["git", "add", "-A"], cwd=repo, check=True)

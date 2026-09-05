@@ -181,17 +181,6 @@ def _marker(source: pathlib.PurePosixPath, *, comment: str = "html") -> str:
     return f"<!-- {text} -->" if comment == "html" else f"# {text}"
 
 
-def _shared_agent(role: RoleRecord, output: pathlib.PurePosixPath) -> bytes:
-    body = _rebase_links(_body(role.source_text), role.source_path, output)
-    return (
-        "---\n"
-        f"name: {_yaml_scalar(role.agent_id)}\n"
-        f"description: {_yaml_scalar(_description(role))}\n"
-        "---\n\n"
-        f"{_marker(role.source_path)}\n\n{body}"
-    ).encode()
-
-
 def _claude_agent(
     state: AgentGovernanceState, role: RoleRecord, output: pathlib.PurePosixPath
 ) -> bytes:
@@ -296,12 +285,6 @@ def render_all(
     records: list[RenderRecord] = []
     providers_by_id = {item.provider_id: item for item in state.provider_records}
     for role in state.roles:
-        shared_path = pathlib.PurePosixPath(
-            state.compatibility.agent_pattern.format(agent_id=role.agent_id)
-        )
-        records.append(
-            RenderRecord("shared", shared_path, _shared_agent(role, shared_path))
-        )
         for provider_id in SUPPORTED_PROVIDERS:
             provider = providers_by_id[provider_id]
             native_path = pathlib.PurePosixPath(
@@ -395,7 +378,6 @@ def _projection_namespaces(
     state: AgentGovernanceState,
 ) -> tuple[pathlib.PurePosixPath, ...]:
     patterns = (
-        state.compatibility.agent_pattern,
         state.compatibility.skill_pattern,
         *(record.agent_pattern for record in state.provider_records),
         *(record.skill_pattern for record in state.provider_records),

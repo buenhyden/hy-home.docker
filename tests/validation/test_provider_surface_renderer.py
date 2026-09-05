@@ -5,7 +5,6 @@ import json
 import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 import tomllib
@@ -17,15 +16,6 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 RENDERER = ROOT / "scripts/operations/provider_surface_renderer.py"
-WRAPPER = ROOT / "scripts/operations/sync-provider-surfaces.sh"
-
-
-def _child_env() -> dict[str, str]:
-    """Return an environment for a non-gate subprocess owned by this test."""
-
-    environment = dict(os.environ)
-    environment.pop("HYHOME_CI_GATE_ROOT", None)
-    return environment
 
 
 def load_renderer():
@@ -76,6 +66,36 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_projection_omits_provider_neutral_agent_compatibility_root(
+        self,
+    ) -> None:
+        projection = load_renderer().expected_native_projection(ROOT)
+
+        self.assertFalse(
+            any(
+                path.is_relative_to(pathlib.PurePosixPath(".agents/agents"))
+                for path in projection
+            )
+        )
+        self.assertTrue(
+            any(
+                path.is_relative_to(pathlib.PurePosixPath(".agents/skills"))
+                for path in projection
+            )
+        )
+        self.assertTrue(
+            any(
+                path.is_relative_to(pathlib.PurePosixPath(".claude"))
+                for path in projection
+            )
+        )
+        self.assertTrue(
+            any(
+                path.is_relative_to(pathlib.PurePosixPath(".codex"))
+                for path in projection
+            )
+        )
+
     def test_static_projection_routes_follow_registry_data(self) -> None:
         renderer = load_renderer()
         with tempfile.TemporaryDirectory() as directory:
@@ -132,9 +152,6 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
 
             mutate_registry(root, unsafe_but_valid_scalars)
             projection = renderer.expected_native_projection(root)
-            shared_role = parse_frontmatter(
-                projection[pathlib.Path(".agents/agents/code-reviewer.md")]
-            )
             claude_role = parse_frontmatter(
                 projection[pathlib.Path(".claude/agents/code-reviewer.md")]
             )
@@ -145,7 +162,6 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                 projection[pathlib.Path(".claude/skills/adr-writing/SKILL.md")]
             )
 
-            self.assertIn("Canonical x: injected role", shared_role["description"])
             self.assertIn("Canonical x: injected role", claude_role["description"])
             self.assertEqual("evil: true", claude_role["model"])
             self.assertEqual("high: injected", claude_role["effort"])
@@ -447,7 +463,6 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                     self.assertIsInstance(parsed, dict)
                 elif relative.startswith(
                     (
-                        ".agents/agents/",
                         ".agents/skills/",
                         ".claude/agents/",
                         ".claude/skills/",
@@ -471,7 +486,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            target = root / ".agents/agents/code-reviewer.md"
+            target = root / ".claude/agents/code-reviewer.md"
             target.write_text("drift\n")
             self.assertTrue(renderer.find_native_projection_drift(root))
             renderer.write_native_projection(root)
@@ -537,7 +552,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            managed = root / ".agents/agents"
+            managed = root / ".claude/agents"
             outside = root / "outside"
             shutil.rmtree(managed)
             outside.mkdir()
@@ -787,19 +802,6 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "changed"):
                 renderer._quarantine_owned_projection(root, relative, identity)
             self.assertEqual("# outside user file\n", outside_file.read_text())
-
-    def test_wrapper_check_is_clean(self) -> None:
-        result = subprocess.run(
-            ["bash", str(WRAPPER), "--check"],
-            cwd=ROOT,
-            env=_child_env(),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("providers=2", result.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()

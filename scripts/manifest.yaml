@@ -72,6 +72,8 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_agent_governance_ci_routing.py
+  - tests/validation/test_stop_gate_deferred_paths.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/hook_rules.py
   kind: library
@@ -87,13 +89,15 @@ files:
 - path: scripts/hooks/post-tool-validate.sh
   kind: hook
   authority: docs/99.templates/registry.json
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
   - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/knowledge/generate-llm-wiki.py
   kind: generator
@@ -587,15 +591,16 @@ files:
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
   authority: docs/00.agent-governance/providers/registry.yaml
-  lifecycle: transition
+  lifecycle: active
   mutation: check-write
   consumers:
-  - scripts/operations/sync-provider-surfaces.sh
+  - .github/workflow-contract.yml
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_provider_native_surfaces.py
+  - tests/validation/test_provider_surface_renderer.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/rehearse-postgres-logical-upgrade.sh
   kind: operations
@@ -620,19 +625,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_sample_service_delivery_rehearsal.py
-- path: scripts/operations/sync-provider-surfaces.sh
-  kind: operations
-  authority: .github/workflow-contract.yml
-  lifecycle: transition
-  mutation: check-write
-  consumers:
-  - .github/workflow-contract.yml
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_provider_surface_renderer.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/sync-tech-stack-versions.sh
   kind: operations
   authority: .github/workflow-contract.yml

@@ -218,5 +218,3 @@ done
 if [[ "$check_only" -eq 0 && "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
   shfmt -w "${SHELL_STYLE_FILES[@]}"
 fi
-
-python3 scripts/validation/run-ci-gate.py --profile changed

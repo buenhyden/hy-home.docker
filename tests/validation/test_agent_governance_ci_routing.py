@@ -12,6 +12,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 POST_TOOL = ROOT / "scripts/hooks/post-tool-validate.sh"
+EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
@@ -43,8 +44,58 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             "python3 -m json.tool docs/00.agent-governance/providers/registry.yaml",
             text,
         )
-        self.assertIn("run-ci-gate.py --profile changed", text)
+        self.assertNotIn("run-ci-gate.py --profile changed", text)
         self.assertNotIn("check-agent-governance-contract.py", text)
+
+    def test_stop_runs_changed_profile_once_for_git_visible_changes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "t@example.com"],
+                cwd=repo,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Test"], cwd=repo, check=True
+            )
+            gate = repo / "scripts/validation/run-ci-gate.py"
+            gate.parent.mkdir(parents=True)
+            gate.write_text(
+                "import pathlib, sys\n"
+                "path = pathlib.Path('.gate-calls')\n"
+                "path.write_text(path.read_text() + ' '.join(sys.argv[1:]) + '\\n' "
+                "if path.exists() else ' '.join(sys.argv[1:]) + '\\n')\n",
+                encoding="utf-8",
+            )
+            tracked = repo / "tracked.txt"
+            tracked.write_text("before\n", encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
+            subprocess.run(["git", "commit", "-qm", "seed"], cwd=repo, check=True)
+            tracked.write_text("after\n", encoding="utf-8")
+
+            environment = dict(os.environ)
+            environment.update(
+                {
+                    "AGENT_ALLOW_UNCOMMITTED_STOP": "1",
+                    "CLAUDE_PROJECT_DIR": str(repo),
+                }
+            )
+            result = subprocess.run(
+                ["bash", str(EVENT_HOOK), "Stop"],
+                cwd=repo,
+                input="{}",
+                capture_output=True,
+                text=True,
+                env=environment,
+                check=False,
+            )
+
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(
+                ["--profile changed"],
+                (repo / ".gate-calls").read_text(encoding="utf-8").splitlines(),
+            )
 
     def test_active_workflows_route_provider_validation(self) -> None:
         workflow_text = (ROOT / ".github/workflows/ci-quality.yml").read_text(

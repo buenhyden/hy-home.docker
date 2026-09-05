@@ -817,7 +817,7 @@
     {
       "gate_id": "leaf.local-provider-surface-drift",
       "kind": "leaf",
-      "entrypoint": "scripts/operations/sync-provider-surfaces.sh",
+      "entrypoint": "scripts/operations/provider_surface_renderer.py",
       "argv": [
         "--check"
       ],

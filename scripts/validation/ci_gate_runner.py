@@ -127,7 +127,7 @@ _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapter
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
-        ("scripts/operations/sync-provider-surfaces.sh", ("--check",)),
+        ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
         ("scripts/knowledge/generate-llm-wiki.py", ("--check",)),
         ("scripts/validation/generate-audit-implementation-matrix.sh", ("--check",)),

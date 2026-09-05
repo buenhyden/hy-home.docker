@@ -1,6 +1,6 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -207,11 +207,11 @@ aspirational:
 
 | Rule              | What it requires                                                                                                                 | Enforcement in this workspace                                                                                                                                                       |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Name-set parity   | Agent/function name sets identical across Stage 00 and every active projection                                                   | `scripts/validation/check-repo-contracts.sh` and `sync-provider-surfaces.sh` per `providers/agents-md.md`                                                                           |
+| Name-set parity   | Agent/function name sets identical across Stage 00 and every active projection                                                   | `scripts/lib/agent_governance/agent_governance_contract.py` and `python3 scripts/operations/provider_surface_renderer.py --check`                                                   |
 | Role parity       | Each adapter points back to its Stage 00 entry and preserves scope/role intent                                                   | Renderer/contract tests (name-set only; not a semantic-intent check)                                                                                                                |
 | Policy parity     | Adapters may change syntax/frontmatter/hook mechanics but not create separate governance, QA, template, model, or workflow rules | The current workspace enforces generated markers and Stage 00/Registry ownership through renderer and contract tests; the external comparison's broader semantic-intent limitation remains |
 | Model parity      | Only the model identifiers and controls `provider-models.yaml` allows                                                            | Renderer/contract tests plus the per-provider "never carry [other vendor] model names" rule in each `providers/*.md`                                                                |
-| Validation parity | `check-repo-contracts.sh` and `sync-provider-surfaces.sh` detect drift                                                           | Both scripts are tracked and referenced; this Task did not re-run them as fresh evidence                                                                                            |
+| Validation parity | The typed agent-governance contract and direct renderer detect drift                                                             | Both current owners are tracked; live provider acceptance remains outside repository validation                                                                                     |
 
 The practical answer to "what does it take": one canonical name/role/function
 registry that every adapter must name-match; one typed model/event/permission

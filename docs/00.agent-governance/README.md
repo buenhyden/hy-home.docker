@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # AI Agent Governance
@@ -51,7 +51,8 @@ No other active top-level entry is permitted.
 3. Load only the policy, role, skill, provider adapter, and stage documents
    needed for the active request.
 4. Record implementation and verification evidence in the active Task.
-5. Regenerate adapters with `scripts/operations/sync-provider-surfaces.sh`;
+5. Regenerate adapters with
+   `python3 scripts/operations/provider_surface_renderer.py --write`;
    treat any provider quarantine as a nonzero exact-path cleanup handoff under
    [Provider adapters](providers/README.md), then prove `--check` drift 0.
 
