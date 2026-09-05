@@ -5,6 +5,7 @@ import json
 import os
 import pathlib
 import shutil
+import subprocess
 import sys
 import tempfile
 import tomllib
@@ -66,6 +67,32 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_cli_rejects_retired_agent_projection_without_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+            retired = root / ".agents/agents/code-reviewer.md"
+            retired.parent.mkdir()
+            retired.write_bytes(b"unowned role content\n")
+            projection = root / ".agents/README.md"
+            original = projection.read_bytes() + b"\nlocal drift\n"
+            projection.write_bytes(original)
+
+            for mode in ("--check", "--write"):
+                with self.subTest(mode=mode):
+                    result = subprocess.run(
+                        [sys.executable, str(RENDERER), mode, "--root", str(root)],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=15,
+                    )
+                    self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                    self.assertIn("AGC-RETIRED-AGENT-PROJECTION", result.stderr)
+                    self.assertEqual(b"unowned role content\n", retired.read_bytes())
+                    self.assertEqual(original, projection.read_bytes())
+                    self.assertFalse((root / ".provider-surface-quarantine").exists())
+
     def test_projection_omits_provider_neutral_agent_compatibility_root(
         self,
     ) -> None:

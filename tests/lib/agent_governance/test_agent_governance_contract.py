@@ -45,6 +45,52 @@ def copy_governance_fixture(root: pathlib.Path) -> None:
 
 
 class AgentGovernanceContractTests(unittest.TestCase):
+    def test_retired_projection_absence_requires_a_safe_namespace(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual([], contract.validate_retired_agent_projection(root))
+            namespace = root / ".agents"
+            namespace.mkdir()
+            self.assertEqual([], contract.validate_retired_agent_projection(root))
+            namespace.rmdir()
+            outside = root / "outside"
+            outside.mkdir()
+            namespace.symlink_to(outside, target_is_directory=True)
+
+            findings = contract.validate_retired_agent_projection(root)
+
+            self.assertEqual(
+                ["AGC-RETIRED-AGENT-PROJECTION"],
+                [item.code for item in findings],
+            )
+            self.assertTrue(namespace.is_symlink())
+            self.assertEqual([], list(outside.iterdir()))
+
+    def test_retired_agent_projection_objects_are_rejected(self) -> None:
+        for kind in ("directory", "file", "dangling-symlink", "fifo"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                retired = root / ".agents/agents"
+                if kind == "directory":
+                    retired.mkdir()
+                elif kind == "file":
+                    retired.write_text("unowned content\n")
+                elif kind == "dangling-symlink":
+                    retired.symlink_to(root / "missing")
+                else:
+                    os.mkfifo(retired)
+
+                findings = contract.validate_repository(
+                    root, contract.load_contract_bundle(root), "providers"
+                )
+
+                self.assertIn(
+                    (".agents/agents", "AGC-RETIRED-AGENT-PROJECTION"),
+                    {(item.path, item.code) for item in findings},
+                )
+                retired.lstat()
+
     def test_provider_registry_does_not_restate_neutral_workflow_policy(self) -> None:
         registry = yaml.safe_load(
             (ROOT / "docs/00.agent-governance/providers/registry.yaml").read_text()

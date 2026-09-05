@@ -1122,6 +1122,32 @@ def _has_unsupported_active_token(relative: str, text: str) -> bool:
     return False
 
 
+def validate_retired_agent_projection(root: pathlib.Path) -> list[Finding]:
+    """Require the retired role namespace to be absent, without reading it."""
+    relative = pathlib.PurePosixPath(".agents/agents")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    try:
+        descriptor = os.open(root.absolute(), flags)
+        try:
+            try:
+                parent = os.open(".agents", flags, dir_fd=descriptor)
+            except FileNotFoundError:
+                return []
+            try:
+                os.stat("agents", dir_fd=parent, follow_symlinks=False)
+            except FileNotFoundError:
+                return []
+            finally:
+                os.close(parent)
+        finally:
+            os.close(descriptor)
+    except OSError:
+        message = "cannot verify retired agent projection absence"
+    else:
+        message = "retired agent projection exists; manual disposition required"
+    return [_finding(relative, "AGC-RETIRED-AGENT-PROJECTION", message)]
+
+
 def validate_repository(
     root: pathlib.Path, bundle: ContractBundle, section: str = "all"
 ) -> list[Finding]:
@@ -1134,6 +1160,7 @@ def validate_repository(
     if section == "all":
         findings.extend(_validate_stage99_governance_profiles(root))
     if section in {"catalog", "providers", "all"}:
+        findings.extend(validate_retired_agent_projection(root))
         for directory, suffix, expected, code in (
             (".claude/agents", ".md", roles, "AGC-AGENT-PROJECTION"),
             (".codex/agents", ".toml", roles, "AGC-AGENT-PROJECTION"),
