@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -441,10 +441,13 @@ unchanged frozen bodies and fresh generated outputs.
 | Checkpoint | Spec | Plan | Task |
 | --- | --- | --- | --- |
 | A | draft → review | draft → approved | draft → ready |
-| B | review → approved | approved → active | ready retained |
-| C | approved → active | active retained | ready → in-progress |
+| B | review → approved | approved retained | ready retained |
+| C | approved → active | approved → active | ready → in-progress |
 | D, only after verified transfer | active → superseded | active → cancelled | in-progress → cancelled |
 
+  An active Plan requires an active Spec. Checkpoint B therefore leaves the
+  Plan approved; checkpoint C activates Spec, Plan and Task atomically. This
+  corrects the rejected sequence without weakening the existing state contract.
   Check each nonterminal checkpoint before committing. Bind current owner
   SPEC-0173 with reciprocal lineage where the profiles allow it. At D,
   transition and full-package preservation are one atomic disposition; no

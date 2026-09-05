@@ -746,6 +746,7 @@ class SpecPackageTests(unittest.TestCase):
     def test_current_execution_states_require_consistent_parents(self) -> None:
         spec_packages = _spec_packages_module()
         cases = (
+            ("approved", "active", "ready", "active Plan requires active Spec"),
             ("completed", "active", "in-progress", "current Task requires active Spec"),
             ("active", "completed", "blocked", "current Task requires active Plan"),
             ("completed", "active", "completed", "active Plan requires active Spec"),
@@ -766,6 +767,26 @@ class SpecPackageTests(unittest.TestCase):
                 )
                 with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
                     spec_packages.load_spec_packages(stage)
+
+        for spec_status, plan_status, task_status in (
+            ("review", "approved", "ready"),
+            ("approved", "approved", "ready"),
+            ("active", "active", "in-progress"),
+        ):
+            with (
+                self.subTest(states=(spec_status, plan_status, task_status)),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                _write_package(
+                    stage,
+                    spec_status=spec_status,
+                    plan=True,
+                    plan_status=plan_status,
+                    task=True,
+                    task_status=task_status,
+                )
+                self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
 
     def test_recorded_terminal_retirement_needs_no_recovery_ledger(self) -> None:
         spec_packages = _spec_packages_module()

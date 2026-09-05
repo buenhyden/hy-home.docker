@@ -216,6 +216,17 @@ tree.
 
 ### Latest main integration checkpoint
 
+Renewed approval (2026-09-05): the user authorized minimal correction and
+independent review of both remaining contracts. Existing Task 0006 owns the
+work; no new execution document or identity is authorized. Allocation must
+verify genuine merged canonical issuance while continuing to reject collisions
+and unrelated branch claims. The lifecycle failure is a Plan ordering defect:
+an active Plan requires an active Spec. W5 checkpoint B keeps Plan approved,
+and checkpoint C activates Spec/Plan/Task atomically; production validation
+does not need relaxation. Focused regression covers the rejected combination
+and the three valid forward combinations. Final gate and cleanup stay pending
+until these corrections pass review.
+
 Latest disposition: **BLOCKED before final aggregate and cleanup**. Local merge
 `eb36be1c1` preserves both parents (`c9410cd11`, `1668027e5`); checkpoint
 `a052859eb` records SPEC-0174's approved closeout review, not completion.
