@@ -2,7 +2,7 @@
 title: "Gate Composition Convergence Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -31,10 +31,10 @@ that each canonical leaf invocation occurs once per public profile and context.
 
 ## Work Log
 
-This planning artifact was created on 2026-09-05. No gate composition,
-manifest field, workflow, or hook has been changed. During an authorized
-execution, record the RED result, the smallest composition edit, and the GREEN
-result for every semantic route.
+Task 1 completed its implementation milestone at `b7fb8911` after preserving
+SPEC-0172, proving recovery, and passing independent review. Task 2 starts from
+that clean state. No gate composition, manifest field, workflow, or hook has
+changed yet; RED evidence precedes the production cutover.
 
 ## Verification Evidence
 
