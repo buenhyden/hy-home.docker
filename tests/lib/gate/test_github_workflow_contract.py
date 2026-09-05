@@ -327,26 +327,26 @@ class GithubWorkflowContractTests(unittest.TestCase):
             REQUIRED_CI_JOBS,
             frozenset(job.job_id for job in contract.gate_registry.job_roots),
         )
-        self.assertEqual(3, len(contract.gate_registry.profile_roots))
+        public = self.module.parse_public_gate_contract(
+            self.load_contract_document(ROOT)
+        )
+        self.assertEqual(("changed", "full"), public.profile_names)
+        self.assertEqual(
+            self.module.public_root_gate_ids(public, public.suite_names),
+            contract.gate_registry.public_roots,
+        )
         self.assertEqual(
             (),
             self.module.validate_gate_registry(ROOT, contract.gate_registry),
         )
-        for profile in (
+        expanded = self.module.expand_gate_ids(
+            contract.gate_registry,
             "ci",
-            "local-script-backed",
-            "local-harness",
-            "local-all-profiles",
-        ):
-            with self.subTest(profile=profile):
-                expanded = self.module.expand_gate_ids(
-                    contract.gate_registry,
-                    profile,
-                    None,
-                    True,
-                )
-                self.assertTrue(expanded)
-                self.assertEqual(len(expanded), len(set(expanded)))
+            None,
+            True,
+        )
+        self.assertTrue(expanded)
+        self.assertEqual(len(expanded), len(set(expanded)))
 
     def test_schema_v1_and_duplicate_command_authority_fail_closed(
         self,
@@ -815,97 +815,30 @@ class GithubWorkflowContractTests(unittest.TestCase):
             {finding.code for finding in findings},
         )
 
-    def test_ci_and_local_profiles_share_node_definitions(self) -> None:
-        contract = self.module.load_workflow_contract(ROOT)
-        ci_nodes = {
-            node.gate_id: node
-            for node in contract.gate_registry.nodes
-            if node.gate_id
-            in self.module.expand_gate_ids(
-                contract.gate_registry,
-                "ci",
-                None,
-                True,
-            )
-        }
-        expected_shared = {
-            profile: tuple(
-                sorted(
-                    set(ci_nodes)
-                    & set(
-                        self.module.expand_gate_ids(
-                            contract.gate_registry,
-                            profile,
-                            None,
-                            True,
-                        )
-                    )
-                )
-            )
-            for profile in (
-                "local-script-backed",
-                "local-harness",
-                "local-all-profiles",
-            )
-        }
-        script_backed = set(expected_shared["local-script-backed"])
-        harness = set(expected_shared["local-harness"])
-        all_profiles = set(expected_shared["local-all-profiles"])
-        self.assertEqual({"leaf.quickwin-baseline"}, script_backed - harness)
-        self.assertEqual(set(), harness - script_backed)
+    def test_public_profiles_share_one_validator_definition(self) -> None:
+        document = self.load_contract_document(ROOT)
+        public = self.module.parse_public_gate_contract(document)
         self.assertEqual(
-            {"leaf.compose-all-profiles-validation"},
-            all_profiles - script_backed,
+            public.suite_names,
+            self.module.select_public_suites(public, "full", ()),
         )
-        self.assertEqual(set(), script_backed - all_profiles)
-        node_by_id = {node.gate_id: node for node in contract.gate_registry.nodes}
-        for profile, shared_ids in expected_shared.items():
-            profile_nodes = {
-                gate_id: node_by_id[gate_id]
-                for gate_id in self.module.expand_gate_ids(
-                    contract.gate_registry,
-                    profile,
-                    None,
-                    True,
-                )
-            }
-            for gate_id in shared_ids:
-                with self.subTest(profile=profile, gate_id=gate_id):
-                    self.assertIs(
-                        ci_nodes[gate_id],
-                        profile_nodes[gate_id],
-                    )
+        self.assertEqual(
+            len(public.validators),
+            len({route.entrypoint for route in public.validators}),
+        )
+        self.assertNotIn("profile_roots", document)
+        self.assertTrue(
+            all("profiles" not in node for node in document["gate_nodes"])
+        )
 
-    def test_local_parallel_node_substitution_fails_closed(self) -> None:
+    def test_legacy_profile_root_substitution_fails_closed(self) -> None:
         with self.workflow_fixture() as root:
             document = self.load_contract_document(root)
-            source = next(
-                node
-                for node in document["gate_nodes"]
-                if node["gate_id"] == "leaf.docs-traceability"
-            )
-            parallel = dict(source)
-            parallel["gate_id"] = "leaf.local-parallel-docs-traceability"
-            parallel["suite_key"] = "local-parallel-docs-traceability"
-            document["gate_nodes"].append(parallel)
-            profile = next(
-                record
-                for record in document["profile_roots"]
-                if record["profile"] == "local-script-backed"
-            )
-            profile["root_gate_ids"] = [
-                parallel["gate_id"] if gate_id == "ci.docs-traceability" else gate_id
-                for gate_id in profile["root_gate_ids"]
-            ]
+            document["profile_roots"] = []
             self.write_contract_document(root, document)
-            findings = self.module.validate_workflows(
-                root,
-                self.module.load_workflow_contract(root),
-            )
-        self.assertIn(
-            "ci-gate-profile-roots",
-            {finding.code for finding in findings},
-        )
+            with self.assertRaises(self.module.WorkflowContractError) as caught:
+                self.module.load_workflow_contract(root)
+        self.assertEqual("ci-gate-document-fields", caught.exception.code)
 
     def test_full_public_profile_owns_storybook_setup_and_coverage(
         self,
@@ -958,15 +891,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             nodes[gate_id]["argv"],
         )
-        self.assertEqual(
-            ["ci", "local-script-backed", "local-harness", "local-all-profiles"],
-            nodes[gate_id]["profiles"],
-        )
+        self.assertNotIn("profiles", nodes[gate_id])
         self.assertIn(gate_id, nodes["ci.repo-contracts"]["children"])
         self.assertNotIn(gate_id, nodes["ci.validation-full"]["children"])
-        for profile in document["profile_roots"]:
-            with self.subTest(profile=profile["profile"]):
-                self.assertIn(gate_id, profile["root_gate_ids"])
         self.assertIn(
             gate_id,
             document["public_gate"]["suite_roots"]["agent-governance"],

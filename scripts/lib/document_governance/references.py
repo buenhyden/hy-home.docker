@@ -823,7 +823,7 @@ def validate_active_reference_consumers(
 
 def generated_reference_owners(root: pathlib.Path) -> dict[str, str]:
     """Resolve bounded exact Data outputs from active declared producers."""
-    from scripts.lib.document_governance.suite_registry import load_manifest_document
+    from scripts.lib.gate.ci_gate_contract import load_manifest_document
 
     manifest = load_manifest_document(root / "scripts/manifest.yaml")
     if not isinstance(manifest, dict) or not isinstance(manifest.get("files"), list):

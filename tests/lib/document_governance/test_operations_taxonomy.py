@@ -13,7 +13,6 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
-    load_public_suite_registry,
     parse_public_gate_contract,
     select_public_suites,
 )
@@ -23,8 +22,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 def _public_suites_for(*changed_paths: str) -> tuple[str, ...]:
-    registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-    contract = parse_public_gate_contract(load_contract_document(ROOT), registry)
+    contract = parse_public_gate_contract(load_contract_document(ROOT))
     return select_public_suites(contract, "changed", changed_paths)
 
 
@@ -164,18 +162,15 @@ class OperationsAuthorityTests(unittest.TestCase):
     def test_public_operations_suite_owns_focused_validators_exactly_once(
         self,
     ) -> None:
-        registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-        operations = next(
-            suite for suite in registry.suites if suite.name == "operations"
+        contract = parse_public_gate_contract(load_contract_document(ROOT))
+        operations = tuple(
+            item.entrypoint
+            for item in contract.validators
+            if item.suite == "operations"
         )
         self.assertEqual(
-            (
-                pathlib.PurePosixPath(
-                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
-                ),
-                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
-            ),
-            operations.validators,
+            (pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),),
+            operations,
         )
         manifest = yaml.safe_load(
             (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
@@ -187,8 +182,10 @@ class OperationsAuthorityTests(unittest.TestCase):
         )
         self.assertEqual("validator", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])
-        self.assertEqual(["operations"], rehearsal["public_suites"])
-        self.assertEqual([], rehearsal["execution_contexts"])
+        self.assertFalse(
+            {"public_suites", "execution_argv", "execution_contexts"}
+            & set(rehearsal)
+        )
 
     def test_public_changed_profile_routes_operations_paths_fail_closed(
         self,
@@ -233,9 +230,9 @@ class OperationsAuthorityTests(unittest.TestCase):
                     self.assertIn(f"- **{role}**: [{href}]({href})", text)
 
     def test_public_script_changes_select_every_registered_suite(self) -> None:
-        registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
+        contract = parse_public_gate_contract(load_contract_document(ROOT))
         self.assertEqual(
-            registry.public_names,
+            contract.suite_names,
             _public_suites_for("scripts/lib/gate/ci_gate_contract.py"),
         )
 

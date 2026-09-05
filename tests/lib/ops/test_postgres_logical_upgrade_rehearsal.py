@@ -14,7 +14,7 @@ import textwrap
 import time
 import unittest
 
-from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
+import yaml
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -1074,13 +1074,12 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
         self.assertNotIn("postgresql-logical-upgrade-restore-rehearsal", result.stderr)
 
     def test_wrapper_is_in_the_exact_script_inventory(self) -> None:
-        registry = load_public_suite_registry(MANIFEST)
-        operations = next(
-            suite for suite in registry.suites if suite.name == "operations"
-        )
+        document = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
         self.assertEqual(
-            operations.validators.count(
-                Path("scripts/lib/ops/rehearse-postgres-logical-upgrade.sh")
+            sum(
+                row.get("path")
+                == "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
+                for row in document["files"]
             ),
             1,
         )

@@ -25,7 +25,6 @@ from scripts.lib.document_governance.taxonomy import (
 )
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
-    load_public_suite_registry,
     parse_public_gate_contract,
     select_public_suites,
 )
@@ -796,18 +795,15 @@ This paragraph explains how verification evidence will be interpreted.
             self.assertEqual("current\n", output.read_text(encoding="utf-8"))
 
     def test_public_gate_routes_incident_packets_through_operations(self) -> None:
-        suite_registry = load_public_suite_registry(ROOT / "scripts/manifest.yaml")
-        operations = next(
-            suite for suite in suite_registry.suites if suite.name == "operations"
+        contract = parse_public_gate_contract(load_contract_document(ROOT))
+        operations = tuple(
+            item.entrypoint
+            for item in contract.validators
+            if item.suite == "operations"
         )
         self.assertEqual(
-            1,
-            operations.validators.count(
-                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py")
-            ),
-        )
-        contract = parse_public_gate_contract(
-            load_contract_document(ROOT), suite_registry
+            (pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),),
+            operations,
         )
         self.assertEqual(
             (

@@ -79,7 +79,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :--------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/run-ci-gate.py`, `scripts/validation/run-local-qa-gates.sh`, `scripts/lib/gate/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/lib/gate/ci_gate_adapters.py`, and the focused validators registered in `scripts/manifest.yaml` |
+| Validation | `scripts/validation/run-ci-gate.py`, `scripts/validation/run-local-qa-gates.sh`, `scripts/lib/gate/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/lib/gate/ci_gate_adapters.py`, and the public validator routes registered in `.github/workflow-contract.yml` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki.py`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
@@ -186,22 +186,20 @@ tier. Without arguments, all supported tiers are checked.
 
 ## Validation ownership
 
-`scripts/manifest.yaml` is the executable ownership registry. Atomic validator
-rows declare exactly one public suite: `agent-governance`,
+`.github/workflow-contract.yml` is the executable composition registry. Its
+`public_gate.validators` rows declare exactly one public suite: `agent-governance`,
 `document-contract`, `document-graph`, `document-lifecycle`, `operations`, or
-`repository-integrity`. The 35 retained Task 11 validator identities and suite
-owners remain immutable. `execution_contexts` separately declares whether a
+`repository-integrity`. Each row's `contexts` declares whether a
 canonical standalone invocation is admitted locally, for a pull request, for a
-push, or for manual workflow dispatch. An empty list preserves ownership for
-library-only, argument-dependent, recursive-wrapper, or approved-runtime
-consumers without auto-launching them; registered internal adapter subcommands
-remain part of the context-filtered graph. Final-plan admission checks every
+push, or for manual workflow dispatch. `scripts/manifest.yaml` separately owns
+script inventory, lifecycle, consumers, and test evidence; executable suite,
+argv, and context fields are rejected there. Final-plan admission checks every
 inherited and canonical invocation: local plans omit CI-only hardening, and
 manual/runtime/recursive validator rebinding fails before execution. Internal
 calls require their exact path, argv, and execution context; neither an adapter
 path nor an unclassified path is an exemption. Explain validates this same
-complete plan before rendering its canonical validator rows. The registry
-rejects ownership and execution-policy drift. Focused document-governance tests
+complete plan before rendering its canonical validator rows. The workflow
+contract rejects composition and execution-policy drift. Focused document-governance tests
 mirror their modules
 under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
 `tests/validation/`.
@@ -237,7 +235,7 @@ validation; check-only mode disables whitespace writes and `shfmt -w` while
 preserving diff, syntax, and repo checks.
 
 `scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
-loads `.github/workflow-contract.yml` plus `scripts/manifest.yaml`, selects the
+loads `.github/workflow-contract.yml`, selects the
 closed `changed` or `full` public profile, and keeps `--explain` execution-free.
 Explain and execution use the same context-filtered, exact-once canonical plan.
 PR and non-initial push bases are validated and forwarded as

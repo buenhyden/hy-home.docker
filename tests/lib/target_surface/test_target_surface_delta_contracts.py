@@ -23,7 +23,7 @@ CLI = ROOT / "scripts/validation/check-target-surface-delta-contract.py"
 
 class LivePublicGateContractTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.manifest, self.gates, self.public = contract._load_models(ROOT)
+        self.gates, self.public = contract._load_models(ROOT)
 
     def test_repository_satisfies_live_contract(self) -> None:
         self.assertEqual((), contract.validate_repository(ROOT))
@@ -42,28 +42,27 @@ class LivePublicGateContractTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
 
     def test_exact_suites_profiles_and_explain_ownership(self) -> None:
-        self.assertEqual(contract.PUBLIC_SUITES, self.manifest.public_names)
         self.assertEqual(contract.PUBLIC_SUITES, self.public.suite_names)
         self.assertEqual(contract.PUBLIC_PROFILES, self.public.profile_names)
 
         plan = ci_gate_runner.build_public_validation_plan(
             self.gates,
             ci_gate_contract.public_root_gate_ids(self.public, self.public.suite_names),
-            self.manifest,
+            self.public,
             self.public.suite_names,
             ci_gate_runner.ExecutionContext.LOCAL,
         )
         lines = ci_gate_runner.render_public_validation_plan(
             plan,
-            self.manifest,
+            self.public,
             self.public.suite_names,
             ci_gate_runner.ExecutionContext.LOCAL,
         )
         rendered = tuple(line.split("\t", 1)[1] for line in lines)
         expected = tuple(
-            item.path.as_posix()
-            for item in self.manifest.validators
-            if "local" in item.execution_contexts
+            item.entrypoint.as_posix()
+            for item in self.public.validators
+            if "local" in item.contexts
         )
         self.assertCountEqual(expected, rendered)
         self.assertEqual(len(expected), len(set(rendered)))
@@ -74,7 +73,7 @@ class LivePublicGateContractTests(unittest.TestCase):
             plan = ci_gate_runner.build_public_validation_plan(
                 self.gates,
                 route.root_gate_ids,
-                self.manifest,
+                self.public,
                 (route.name,),
                 ci_gate_runner.ExecutionContext.LOCAL,
             )
@@ -173,21 +172,21 @@ class LivePublicGateContractTests(unittest.TestCase):
 
 class LivePublicGateMutationTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.manifest, self.gates, self.public = contract._load_models(ROOT)
+        self.gates, self.public = contract._load_models(ROOT)
         self.document = ci_gate_contract.load_contract_document(ROOT)
 
     def test_missing_suite_route_is_rejected(self) -> None:
         document = copy.deepcopy(self.document)
         del document["public_gate"]["suite_roots"]["operations"]
         with self.assertRaises(ci_gate_contract.GateContractError):
-            ci_gate_contract.parse_public_gate_contract(document, self.manifest)
+            ci_gate_contract.parse_public_gate_contract(document)
 
     def test_duplicate_suite_route_is_rejected(self) -> None:
         document = copy.deepcopy(self.document)
         roots = document["public_gate"]["suite_roots"]
         roots["document-contract"] = [roots["agent-governance"][0]]
         with self.assertRaises(ci_gate_contract.GateContractError):
-            ci_gate_contract.parse_public_gate_contract(document, self.manifest)
+            ci_gate_contract.parse_public_gate_contract(document)
 
     def test_unknown_changed_suite_is_rejected(self) -> None:
         document = copy.deepcopy(self.document)
@@ -195,7 +194,7 @@ class LivePublicGateMutationTests(unittest.TestCase):
             "unknown-suite"
         )
         with self.assertRaises(ci_gate_contract.GateContractError):
-            ci_gate_contract.parse_public_gate_contract(document, self.manifest)
+            ci_gate_contract.parse_public_gate_contract(document)
 
     def test_changed_rule_cannot_skip_an_owning_suite(self) -> None:
         rules = list(self.public.changed_rules)
@@ -207,11 +206,11 @@ class LivePublicGateMutationTests(unittest.TestCase):
             ),
         )
         mutated = dataclasses.replace(self.public, changed_rules=tuple(rules))
-        findings = contract._changed_impact_findings(self.manifest, mutated)
+        findings = contract._changed_impact_findings(mutated)
         self.assertIn("public-changed-impact-missing", {item.code for item in findings})
 
     def test_untracked_validator_fails_closed(self) -> None:
-        first = self.manifest.validators[0].path.as_posix()
+        first = self.public.validators[0].entrypoint.as_posix()
         original = contract._tracked
 
         def tracked(root: pathlib.Path, relative: str) -> bool:
@@ -220,7 +219,6 @@ class LivePublicGateMutationTests(unittest.TestCase):
         with mock.patch.object(contract, "_tracked", side_effect=tracked):
             findings = contract._suite_ownership_findings(
                 ROOT,
-                self.manifest,
                 self.gates,
                 self.public,
             )
@@ -238,7 +236,6 @@ class LivePublicGateMutationTests(unittest.TestCase):
         mutated = dataclasses.replace(self.public, suites=tuple(routes))
         findings = contract._suite_ownership_findings(
             ROOT,
-            self.manifest,
             self.gates,
             mutated,
         )
@@ -250,7 +247,6 @@ class LivePublicGateMutationTests(unittest.TestCase):
         mutated = dataclasses.replace(self.public, suites=tuple(routes))
         findings = contract._suite_ownership_findings(
             ROOT,
-            self.manifest,
             self.gates,
             mutated,
         )

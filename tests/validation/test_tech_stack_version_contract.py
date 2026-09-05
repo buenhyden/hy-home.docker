@@ -7,7 +7,10 @@ import subprocess
 import tempfile
 import unittest
 
-from scripts.lib.gate.ci_gate_contract import load_public_suite_registry
+from scripts.lib.gate.ci_gate_contract import (
+    load_contract_document,
+    parse_public_gate_contract,
+)
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 
@@ -16,7 +19,6 @@ REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
 OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
-MANIFEST_PATH = ROOT / "scripts/manifest.yaml"
 SUPPLY_CHAIN_SUMMARY_GENERATOR = (
     ROOT / "scripts/security/generate-supply-chain-sample-service-summary.sh"
 )
@@ -308,30 +310,16 @@ class TechStackVersionContractTests(unittest.TestCase):
             text,
         )
 
-    def test_public_operations_suite_owns_hardening_version_validation(
-        self,
-    ) -> None:
-        registry = load_public_suite_registry(MANIFEST_PATH)
-        operations = next(
-            suite for suite in registry.suites if suite.name == "operations"
+    def test_public_contract_owns_hardening_version_validation(self) -> None:
+        public = parse_public_gate_contract(load_contract_document(ROOT))
+        hardening = tuple(
+            item
+            for item in public.validators
+            if item.entrypoint
+            == pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
         )
-        self.assertEqual(
-            1,
-            operations.validators.count(
-                pathlib.PurePosixPath(
-                    "scripts/lib/ops/rehearse-postgres-logical-upgrade.sh"
-                )
-            ),
-        )
-        repository_integrity = next(
-            suite for suite in registry.suites if suite.name == "repository-integrity"
-        )
-        self.assertEqual(
-            1,
-            repository_integrity.validators.count(
-                pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
-            ),
-        )
+        self.assertEqual(1, len(hardening))
+        self.assertEqual("repository-integrity", hardening[0].suite)
 
     def test_compose_image_resolver_accepts_exact_safe_scalars(self) -> None:
         expected = "registry.example.test/team/app:1.2.3"

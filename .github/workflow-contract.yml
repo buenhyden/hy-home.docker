@@ -196,9 +196,6 @@
     {
       "gate_id": "ci.validation-changed",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "ci.docs-traceability",
@@ -209,7 +206,6 @@
         "ci.dependency-vulnerability-audit",
         "ci.git-flow-contract",
         "ci.compose-validation",
-        "ci.compose-all-profiles-validation",
         "ci.infrastructure-hardening",
         "ci.template-security-baseline",
         "ci.quickwin-baseline",
@@ -222,9 +218,6 @@
     {
       "gate_id": "ci.validation-full",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "ci.docs-traceability",
@@ -235,7 +228,6 @@
         "ci.dependency-vulnerability-audit",
         "ci.git-flow-contract",
         "ci.compose-validation",
-        "ci.compose-all-profiles-validation",
         "ci.infrastructure-hardening",
         "ci.template-security-baseline",
         "ci.quickwin-baseline",
@@ -248,12 +240,6 @@
     {
       "gate_id": "ci.agent-output-eval-fixture-gate",
       "kind": "aggregate",
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.agent-output-eval-fixture-regressions",
@@ -261,23 +247,8 @@
       ]
     },
     {
-      "gate_id": "ci.compose-all-profiles-validation",
-      "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.compose-all-profiles-validation"
-      ]
-    },
-    {
       "gate_id": "ci.compose-validation",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.compose-env",
@@ -287,9 +258,6 @@
     {
       "gate_id": "ci.dependency-vulnerability-audit",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.dependency-vulnerability-audit"
@@ -298,9 +266,6 @@
     {
       "gate_id": "ci.docs-implementation-alignment",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.docs-implementation-alignment"
@@ -309,12 +274,6 @@
     {
       "gate_id": "ci.docs-traceability",
       "kind": "aggregate",
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.docs-traceability"
@@ -323,12 +282,9 @@
     {
       "gate_id": "ci.frontend-quality",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
-        "setup.frontend-node-dependencies",
+        "setup.storybook-node-dependencies",
         "leaf.frontend-lint",
         "leaf.frontend-typecheck",
         "leaf.frontend-build",
@@ -338,9 +294,6 @@
     {
       "gate_id": "ci.git-flow-contract",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.git-flow-contract"
@@ -349,9 +302,6 @@
     {
       "gate_id": "ci.infrastructure-hardening",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.compose-env",
@@ -361,9 +311,6 @@
     {
       "gate_id": "ci.pre-commit",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.precommit-python-dependencies",
@@ -373,9 +320,6 @@
     {
       "gate_id": "ci.quickwin-baseline",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.compose-env",
@@ -385,9 +329,6 @@
     {
       "gate_id": "ci.repo-contracts",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.repo-metadata-base",
@@ -413,9 +354,6 @@
     {
       "gate_id": "ci.storybook-coverage",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.storybook-node-dependencies",
@@ -426,9 +364,6 @@
     {
       "gate_id": "ci.supply-chain-fixture-policy",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.supply-chain-fixture-policy",
@@ -439,9 +374,6 @@
     {
       "gate_id": "ci.template-security-baseline",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "setup.compose-env",
@@ -451,9 +383,6 @@
     {
       "gate_id": "ci.zizmor",
       "kind": "aggregate",
-      "profiles": [
-        "ci"
-      ],
       "opaque": false,
       "children": [
         "leaf.zizmor"
@@ -471,12 +400,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "agent-governance-regressions"
     },
@@ -490,12 +413,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "agent-output-eval-fixture-gate"
     },
@@ -511,12 +428,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "agent-output-eval-fixture-regressions"
     },
@@ -532,12 +443,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "ci-gate-adapter-regressions"
     },
@@ -553,12 +458,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "ci-gate-contract-regressions"
     },
@@ -574,12 +473,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "ci-gate-runner-regressions"
     },
@@ -591,12 +484,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "ci-precommit-regressions"
     },
@@ -617,38 +504,14 @@
         "tests.lib.document_governance.test_registry",
         "tests.lib.document_governance.test_requirements",
         "tests.lib.document_governance.test_spec_packages",
-        "tests.lib.document_governance.test_suite_registry",
         "tests.lib.document_governance.test_taxonomy",
         "-v"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 15,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "document-governance-library-regressions"
-    },
-    {
-      "gate_id": "leaf.compose-all-profiles-validation",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/validate-docker-compose.sh",
-      "argv": [],
-      "cwd": ".",
-      "allowed_env_keys": [
-        "HYHOME_COMPOSE_PROFILES"
-      ],
-      "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-all-profiles"
-      ],
-      "opaque": true,
-      "suite_key": "compose-all-profiles-validation"
     },
     {
       "gate_id": "leaf.compose-validation",
@@ -658,12 +521,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "compose-validation"
     },
@@ -681,9 +538,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "dependency-vulnerability-audit"
     },
@@ -701,12 +555,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 15,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "document-lifecycle-regressions"
     },
@@ -721,12 +569,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "docs-implementation-alignment"
     },
@@ -738,12 +580,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "operations-catalog"
     },
@@ -758,12 +594,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "docs-traceability"
     },
@@ -781,9 +611,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "frontend-build"
     },
@@ -801,9 +628,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "frontend-lint"
     },
@@ -821,9 +645,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "frontend-quality"
     },
@@ -841,9 +662,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "frontend-typecheck"
     },
@@ -860,9 +678,6 @@
         "HEAD_REF"
       ],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "git-flow-contract"
     },
@@ -874,12 +689,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "infrastructure-hardening"
     },
@@ -896,11 +705,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-agent-governance-contract"
     },
@@ -914,11 +718,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-audit-matrix-freshness"
     },
@@ -932,11 +731,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-diff-hygiene"
     },
@@ -952,11 +746,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-hook-rule-tests"
     },
@@ -968,11 +757,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-document-corpus-lifecycle"
     },
@@ -992,11 +776,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-document-metadata-tests"
     },
@@ -1016,11 +795,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-document-corpus-lifecycle-tests"
     },
@@ -1034,11 +808,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-llm-wiki-freshness"
     },
@@ -1050,11 +819,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-script-manifest"
     },
@@ -1068,11 +832,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-provider-surface-drift"
     },
@@ -1086,11 +845,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-security-readiness-freshness"
     },
@@ -1104,11 +858,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-shell-syntax"
     },
@@ -1123,11 +872,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-target-delta-contract"
     },
@@ -1143,11 +887,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-target-delta-regressions"
     },
@@ -1159,11 +898,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-target-surface-contract"
     },
@@ -1179,11 +913,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-target-surface-regressions"
     },
@@ -1197,10 +926,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "local-script-backed",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "local-tech-stack-version-drift"
     },
@@ -1215,9 +940,6 @@
         "GITHUB_ACTIONS"
       ],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "pre-commit"
     },
@@ -1236,12 +958,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 15,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "provider-governance-regressions"
     },
@@ -1253,11 +969,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "quickwin-baseline"
     },
@@ -1273,12 +984,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "compose-baseline-regressions"
     },
@@ -1300,12 +1005,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "repository-integrity-regressions"
     },
@@ -1317,12 +1016,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "repo-contracts"
     },
@@ -1338,12 +1031,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "repo-contracts-control-plane-regressions"
     },
@@ -1360,9 +1047,6 @@
         "TEMPLATE_GATE_BASE"
       ],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "repo-document-metadata"
     },
@@ -1378,9 +1062,6 @@
         "TEMPLATE_GATE_BASE"
       ],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "repo-metadata-base"
     },
@@ -1398,9 +1079,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "storybook-coverage"
     },
@@ -1414,12 +1092,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "supply-chain-deterministic-policy"
     },
@@ -1439,12 +1111,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "supply-chain-fixture-policy"
     },
@@ -1458,12 +1124,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 5,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "supply-chain-summary-freshness"
     },
@@ -1475,12 +1135,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "template-security-baseline"
     },
@@ -1492,12 +1146,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "workflow-contract"
     },
@@ -1513,12 +1161,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci",
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": true,
       "suite_key": "workflow-contract-regressions"
     },
@@ -1532,31 +1174,12 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
       "opaque": true,
       "suite_key": "zizmor"
     },
     {
-      "gate_id": "local.compose-all-profiles-validation",
-      "kind": "aggregate",
-      "profiles": [
-        "local-all-profiles"
-      ],
-      "opaque": false,
-      "children": [
-        "leaf.compose-all-profiles-validation"
-      ]
-    },
-    {
       "gate_id": "local.compose-validation",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.compose-validation"
@@ -1565,11 +1188,6 @@
     {
       "gate_id": "local.document-corpus-lifecycle",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.local-document-corpus-lifecycle-tests",
@@ -1581,30 +1199,8 @@
       ]
     },
     {
-      "gate_id": "local.generated-freshness",
-      "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
-      "opaque": false,
-      "children": [
-        "leaf.local-security-readiness-freshness",
-        "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-freshness",
-        "leaf.local-script-manifest",
-        "leaf.operations-catalog"
-      ]
-    },
-    {
       "gate_id": "local.infrastructure-hardening",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.infrastructure-hardening"
@@ -1613,10 +1209,6 @@
     {
       "gate_id": "local.quickwin-baseline",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.quickwin-baseline"
@@ -1625,11 +1217,6 @@
     {
       "gate_id": "local.supply-chain",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.supply-chain-fixture-policy",
@@ -1640,11 +1227,6 @@
     {
       "gate_id": "local.target-surface",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.local-target-surface-regressions",
@@ -1656,11 +1238,6 @@
     {
       "gate_id": "local.template-security-baseline",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.template-security-baseline",
@@ -1670,11 +1247,6 @@
     {
       "gate_id": "local.workflow-harness",
       "kind": "aggregate",
-      "profiles": [
-        "local-script-backed",
-        "local-harness",
-        "local-all-profiles"
-      ],
       "opaque": false,
       "children": [
         "leaf.ci-gate-contract-regressions",
@@ -1696,27 +1268,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
-      "opaque": false
-    },
-    {
-      "gate_id": "setup.frontend-node-dependencies",
-      "kind": "setup",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-npm",
-        "ci",
-        "--prefix",
-        "projects/storybook/nextjs"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": false
     },
     {
@@ -1730,9 +1281,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": false
     },
     {
@@ -1746,9 +1294,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
-      "profiles": [
-        "ci"
-      ],
       "opaque": false
     },
     {
@@ -1764,9 +1309,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": false
     },
     {
@@ -1779,9 +1321,6 @@
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 20,
-      "profiles": [
-        "ci"
-      ],
       "opaque": false
     }
   ],
@@ -1797,88 +1336,6 @@
       "job_id": "validation-full",
       "root_gate_id": "ci.validation-full",
       "classification": "required-quality"
-    }
-  ],
-  "profile_roots": [
-    {
-      "profile": "local-script-backed",
-      "root_gate_ids": [
-        "leaf.local-diff-hygiene",
-        "leaf.local-shell-syntax",
-        "leaf.local-provider-surface-drift",
-        "ci.agent-output-eval-fixture-gate",
-        "leaf.local-agent-governance-contract",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions",
-        "leaf.local-tech-stack-version-drift",
-        "ci.docs-traceability",
-        "leaf.docs-implementation-alignment",
-        "local.document-corpus-lifecycle",
-        "local.target-surface",
-        "local.workflow-harness",
-        "local.supply-chain",
-        "local.compose-validation",
-        "local.infrastructure-hardening",
-        "local.template-security-baseline",
-        "local.quickwin-baseline",
-        "local.generated-freshness",
-        "leaf.repository-integrity-regressions",
-        "leaf.repo-contracts"
-      ],
-      "classification": "local"
-    },
-    {
-      "profile": "local-harness",
-      "root_gate_ids": [
-        "leaf.local-diff-hygiene",
-        "leaf.local-shell-syntax",
-        "leaf.local-provider-surface-drift",
-        "ci.agent-output-eval-fixture-gate",
-        "leaf.local-agent-governance-contract",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions",
-        "ci.docs-traceability",
-        "leaf.docs-implementation-alignment",
-        "local.document-corpus-lifecycle",
-        "local.target-surface",
-        "local.workflow-harness",
-        "local.supply-chain",
-        "local.compose-validation",
-        "local.infrastructure-hardening",
-        "local.template-security-baseline",
-        "local.generated-freshness",
-        "leaf.repository-integrity-regressions",
-        "leaf.repo-contracts"
-      ],
-      "classification": "local"
-    },
-    {
-      "profile": "local-all-profiles",
-      "root_gate_ids": [
-        "leaf.local-diff-hygiene",
-        "leaf.local-shell-syntax",
-        "leaf.local-provider-surface-drift",
-        "ci.agent-output-eval-fixture-gate",
-        "leaf.local-agent-governance-contract",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions",
-        "leaf.local-tech-stack-version-drift",
-        "ci.docs-traceability",
-        "leaf.docs-implementation-alignment",
-        "local.document-corpus-lifecycle",
-        "local.target-surface",
-        "local.workflow-harness",
-        "local.supply-chain",
-        "local.compose-validation",
-        "local.infrastructure-hardening",
-        "local.template-security-baseline",
-        "local.quickwin-baseline",
-        "local.generated-freshness",
-        "leaf.repository-integrity-regressions",
-        "leaf.repo-contracts",
-        "local.compose-all-profiles-validation"
-      ],
-      "classification": "local"
     }
   ],
   "public_gate": {
@@ -1914,7 +1371,6 @@
         "leaf.operations-catalog",
         "local.supply-chain",
         "local.compose-validation",
-        "local.compose-all-profiles-validation",
         "local.infrastructure-hardening",
         "local.template-security-baseline",
         "local.quickwin-baseline"
@@ -1934,6 +1390,155 @@
         "leaf.repository-integrity-regressions"
       ]
     },
+    "validators": [
+      {
+        "suite": "agent-governance",
+        "gate_id": "public.validator.evals.agent_output_eval.py",
+        "entrypoint": "evals/agent_output_eval.py",
+        "argv": ["--check-fixtures", "--check-regressions"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.infrastructure-hardening",
+        "entrypoint": "scripts/hardening/check-all-hardening.sh",
+        "argv": [],
+        "contexts": ["pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "public.validator.scripts.validation.audit_criterion_contract.py",
+        "entrypoint": "scripts/validation/audit_criterion_contract.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "agent-governance",
+        "gate_id": "leaf.local-agent-governance-contract",
+        "entrypoint": "scripts/validation/check-agent-governance-contract.py",
+        "argv": ["--mode", "repository", "--section", "all"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "public.validator.scripts.validation.check-agentic-audit-semantic-freshness.py",
+        "entrypoint": "scripts/validation/check-agentic-audit-semantic-freshness.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-graph",
+        "gate_id": "public.validator.scripts.validation.check-doc-implementation-alignment.sh",
+        "entrypoint": "scripts/validation/check-doc-implementation-alignment.sh",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-graph",
+        "gate_id": "public.validator.scripts.validation.check-doc-traceability.sh",
+        "entrypoint": "scripts/validation/check-doc-traceability.sh",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-lifecycle",
+        "gate_id": "leaf.local-document-corpus-lifecycle",
+        "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-graph",
+        "gate_id": "leaf.docs-traceability",
+        "entrypoint": "scripts/validation/check-document-links.py",
+        "argv": ["--mode", "all"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-contract",
+        "gate_id": "leaf.repo-document-metadata",
+        "entrypoint": "scripts/validation/check-document-metadata.py",
+        "argv": ["--mode", "check-changed"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.workflow-contract",
+        "entrypoint": "scripts/validation/check-github-workflow-contract.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "operations",
+        "gate_id": "leaf.operations-catalog",
+        "entrypoint": "scripts/validation/check-operations-catalog.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.quickwin-baseline",
+        "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.local-script-manifest",
+        "entrypoint": "scripts/validation/check-script-manifest.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "public.validator.scripts.validation.check-storybook-contract.sh",
+        "entrypoint": "scripts/validation/check-storybook-contract.sh",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.supply-chain-deterministic-policy",
+        "entrypoint": "scripts/validation/check-supply-chain-policy.py",
+        "argv": ["--check"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-contract",
+        "gate_id": "leaf.local-target-surface-contract",
+        "entrypoint": "scripts/validation/check-target-surface-contract.py",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-contract",
+        "gate_id": "leaf.local-target-delta-contract",
+        "entrypoint": "scripts/validation/check-target-surface-delta-contract.py",
+        "argv": ["--mode", "advisory"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.template-security-baseline",
+        "entrypoint": "scripts/validation/check-template-security-baseline.sh",
+        "argv": [],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "document-lifecycle",
+        "gate_id": "public.validator.scripts.validation.report-audit-pack-coverage.sh",
+        "entrypoint": "scripts/validation/report-audit-pack-coverage.sh",
+        "argv": ["--check"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      },
+      {
+        "suite": "agent-governance",
+        "gate_id": "public.validator.scripts.validation.report-provider-hook-parity.sh",
+        "entrypoint": "scripts/validation/report-provider-hook-parity.sh",
+        "argv": ["--check"],
+        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+      }
+    ],
     "changed_path_rules": [
       {
         "prefixes": [

@@ -63,16 +63,6 @@ KINDS = frozenset(
 LIFECYCLES = frozenset({"active", "transition"})
 MUTATIONS = frozenset({"none", "check-write", "runtime"})
 DISPOSITIONS = frozenset({"retain", "merge", "delete", "rewrite"})
-PUBLIC_SUITE_NAMES = frozenset(
-    {
-        "agent-governance",
-        "document-contract",
-        "document-graph",
-        "document-lifecycle",
-        "operations",
-        "repository-integrity",
-    }
-)
 FORBIDDEN_EVIDENCE_PREFIXES = (
     "graphify-out/",
     "docs/98.archive/",
@@ -690,21 +680,11 @@ class ScriptManifestTests(unittest.TestCase):
                 and ("check_command" in row or "outputs" in row)
             ):
                 expected_fields = REQUIRED_FIELDS | {"check_command", "outputs"}
-            if row["kind"] == "validator":
-                expected_fields = expected_fields | {
-                    "public_suites",
-                    "execution_contexts",
-                }
-                if row.get("execution_argv"):
-                    expected_fields = expected_fields | {"execution_argv"}
             self.assertEqual(expected_fields, set(row))
             self.assertIn(row["kind"], KINDS)
             self.assertIn(row["lifecycle"], LIFECYCLES)
             self.assertIn(row["mutation"], MUTATIONS)
             self.assertIn(row["disposition"], DISPOSITIONS)
-            if row["kind"] == "validator":
-                self.assertEqual(1, len(row["public_suites"]))
-                self.assertIn(row["public_suites"][0], PUBLIC_SUITE_NAMES)
             self.assertIsInstance(row["authority"], str)
             self.assertTrue(row["authority"])
             self.assertNotEqual(row["authority"], "sdlc-taxonomy-convergence")
@@ -1377,13 +1357,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
         row: dict[str, object] = {
             "path": "scripts/example.py",
             "kind": "validator",
-            "public_suites": ["repository-integrity"],
-            "execution_contexts": [
-                "local",
-                "pull_request",
-                "push",
-                "workflow_dispatch",
-            ],
             "authority": "docs/authority.md",
             "lifecycle": "active",
             "mutation": "none",
@@ -1496,8 +1469,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             consumers=[],
             tests=[],
         )
-        library.pop("public_suites")
-        library.pop("execution_contexts")
         tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
         self.assertIn("tests-missing", self.codes(library, tracked))
 
@@ -1564,6 +1535,16 @@ class ScriptManifestValidationTests(unittest.TestCase):
             ),
         )
 
+    def test_manifest_rejects_executable_composition_fields(self) -> None:
+        values = {
+            "public_suites": ["repository-integrity"],
+            "execution_argv": ["--check"],
+            "execution_contexts": ["local"],
+        }
+        for field, value in values.items():
+            with self.subTest(field=field):
+                self.assertIn("fields-unknown", self.codes(self.row(**{field: value})))
+
     def test_manifest_rejects_unknown_fields_and_untracked_paths(self) -> None:
         self.assertIn("fields-unknown", self.codes(self.row(legacy=True)))
         self.assertIn(
@@ -1627,8 +1608,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             check_command=["python3", script_path, "--check"],
             outputs=["docs/output.md"],
         )
-        generator.pop("public_suites")
-        generator.pop("execution_contexts")
         manifest = {
             "schema_version": 1,
             "files": [
@@ -1690,14 +1669,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             producer = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
             next(row for row in producer["files"] if row["path"] == script_path).update(
                 kind="validator",
-                public_suites=["repository-integrity"],
-                execution_argv=["--check"],
-                execution_contexts=[
-                    "local",
-                    "pull_request",
-                    "push",
-                    "workflow_dispatch",
-                ],
             )
             manifest_path.write_text(
                 yaml.safe_dump(producer, sort_keys=False), encoding="utf-8"

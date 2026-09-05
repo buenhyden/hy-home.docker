@@ -11,8 +11,9 @@ import stat
 import subprocess
 from collections.abc import Mapping
 
-from scripts.lib.document_governance import suite_registry
+import yaml
 
+from scripts.lib.document_governance.frontmatter import safe_load_unique
 
 # One bootstrap step per job: the workflow contract admits exactly one
 # dependency install before the gate program, and `pre-commit` is now a
@@ -28,22 +29,51 @@ _MAX_JSON_DEPTH = 256
 _MAX_GATE_NODES = 2048
 _MAX_GATE_EDGES = 8192
 _GIT_TIMEOUT_SECONDS = 5
+MAX_MANIFEST_BYTES = 1_048_576
+MAX_MANIFEST_DEPTH = 64
+PUBLIC_SUITE_NAMES = (
+    "agent-governance",
+    "document-contract",
+    "document-graph",
+    "document-lifecycle",
+    "operations",
+    "repository-integrity",
+)
+EXECUTION_CONTEXT_NAMES = (
+    "local",
+    "pull_request",
+    "push",
+    "workflow_dispatch",
+)
+_MAX_EXECUTION_ARGV = 8
+_MAX_ARGUMENT_LENGTH = 64
+_LONG_OPTION = re.compile(r"^--[a-z][a-z0-9-]*$")
+_ARGUMENT_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
+_REJECTED_OPTIONS = frozenset({"--help"})
+_COMPLETE_CAPABILITY_ARGV = {
+    "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
+    "check-agent-governance-contract.py": (
+        "--mode",
+        "repository",
+        "--section",
+        "all",
+    ),
+    "check-document-links.py": ("--mode", "all"),
+    "check-document-metadata.py": ("--mode", "check-changed"),
+    "check-supply-chain-policy.py": ("--check",),
+    "check-target-surface-delta-contract.py": ("--mode", "advisory"),
+    "report-audit-pack-coverage.sh": ("--check",),
+    "report-provider-hook-parity.sh": ("--check",),
+}
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "schema_version",
         "workflows",
         "gate_nodes",
         "job_roots",
-        "profile_roots",
         "public_gate",
         "actions",
     }
-)
-_NODE_PROFILES = (
-    "ci",
-    "local-script-backed",
-    "local-harness",
-    "local-all-profiles",
 )
 _INTERNAL_CI_ROOTS = {
     "docs-traceability": "ci.docs-traceability",
@@ -54,7 +84,6 @@ _INTERNAL_CI_ROOTS = {
     "dependency-vulnerability-audit": "ci.dependency-vulnerability-audit",
     "git-flow-contract": "ci.git-flow-contract",
     "compose-validation": "ci.compose-validation",
-    "compose-all-profiles-validation": "ci.compose-all-profiles-validation",
     "infrastructure-hardening": "ci.infrastructure-hardening",
     "template-security-baseline": "ci.template-security-baseline",
     "quickwin-baseline": "ci.quickwin-baseline",
@@ -63,14 +92,6 @@ _INTERNAL_CI_ROOTS = {
     "storybook-coverage": "ci.storybook-coverage",
     "zizmor": "ci.zizmor",
 }
-
-
-def load_public_suite_registry(
-    manifest_path: pathlib.Path = pathlib.Path("scripts/manifest.yaml"),
-) -> suite_registry.SuiteRegistry:
-    """Expose the immutable validator-suite registry to gate contracts."""
-
-    return suite_registry.load(manifest_path)
 
 
 _INTERNAL_ROOT_CHILDREN = {
@@ -118,10 +139,6 @@ _INTERNAL_ROOT_CHILDREN = {
         "setup.compose-env",
         "leaf.compose-validation",
     ),
-    "ci.compose-all-profiles-validation": (
-        "setup.compose-env",
-        "leaf.compose-all-profiles-validation",
-    ),
     "ci.infrastructure-hardening": (
         "setup.compose-env",
         "leaf.infrastructure-hardening",
@@ -139,7 +156,7 @@ _INTERNAL_ROOT_CHILDREN = {
         "leaf.pre-commit",
     ),
     "ci.frontend-quality": (
-        "setup.frontend-node-dependencies",
+        "setup.storybook-node-dependencies",
         "leaf.frontend-lint",
         "leaf.frontend-typecheck",
         "leaf.frontend-build",
@@ -206,15 +223,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.supply-chain-deterministic-policy",
         "leaf.supply-chain-summary-freshness",
     ),
-    "local.generated-freshness": (
-        "leaf.local-security-readiness-freshness",
-        "leaf.local-audit-matrix-freshness",
-        "leaf.local-llm-wiki-freshness",
-        "leaf.local-script-manifest",
-        "leaf.operations-catalog",
-    ),
     "local.compose-validation": ("leaf.compose-validation",),
-    "local.compose-all-profiles-validation": ("leaf.compose-all-profiles-validation",),
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
@@ -224,64 +233,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.compose-baseline-regressions",
     ),
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
-}
-_LOCAL_FORBIDDEN_GATE_IDS = frozenset(
-    {
-        "setup.compose-env",
-        "setup.repo-python-dependencies",
-        "setup.precommit-python-dependencies",
-        "setup.frontend-node-dependencies",
-        "setup.storybook-node-dependencies",
-        "setup.storybook-playwright",
-        "leaf.dependency-vulnerability-audit",
-        "leaf.pre-commit",
-        "leaf.frontend-lint",
-        "leaf.frontend-typecheck",
-        "leaf.frontend-build",
-        "leaf.frontend-quality",
-        "leaf.storybook-coverage",
-        "leaf.zizmor",
-    }
-)
-_LOCAL_SCRIPT_BACKED_ROOTS = (
-    "leaf.local-diff-hygiene",
-    "leaf.local-shell-syntax",
-    "leaf.local-provider-surface-drift",
-    "ci.agent-output-eval-fixture-gate",
-    "leaf.local-agent-governance-contract",
-    "leaf.agent-governance-regressions",
-    "leaf.provider-governance-regressions",
-    "leaf.local-tech-stack-version-drift",
-    "ci.docs-traceability",
-    "leaf.docs-implementation-alignment",
-    "local.document-corpus-lifecycle",
-    "local.target-surface",
-    "local.workflow-harness",
-    "local.supply-chain",
-    "local.compose-validation",
-    "local.infrastructure-hardening",
-    "local.template-security-baseline",
-    "local.quickwin-baseline",
-    "local.generated-freshness",
-    "leaf.repository-integrity-regressions",
-    "leaf.repo-contracts",
-)
-_LOCAL_HARNESS_ROOTS = tuple(
-    gate_id
-    for gate_id in _LOCAL_SCRIPT_BACKED_ROOTS
-    if gate_id
-    not in {
-        "leaf.local-tech-stack-version-drift",
-        "local.quickwin-baseline",
-    }
-)
-_EXPECTED_PROFILE_ROOTS = {
-    "local-script-backed": _LOCAL_SCRIPT_BACKED_ROOTS,
-    "local-harness": _LOCAL_HARNESS_ROOTS,
-    "local-all-profiles": (
-        *_LOCAL_SCRIPT_BACKED_ROOTS,
-        "local.compose-all-profiles-validation",
-    ),
 }
 _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
@@ -296,7 +247,6 @@ _ADMITTED_ENV_KEYS = frozenset(
         "CI",
         "GITHUB_ACTIONS",
         "HEAD_REF",
-        "HYHOME_COMPOSE_PROFILES",
         "PR_TITLE",
         "TEMPLATE_GATE_BASE",
     }
@@ -325,6 +275,159 @@ class GateContractError(ValueError):
         self.message = message
 
 
+class ManifestContractError(ValueError):
+    """Raised when the bounded script-manifest input cannot be trusted."""
+
+
+def load_manifest_document(path: pathlib.Path) -> object:
+    """Read the manifest through one bounded, no-follow YAML boundary."""
+
+    def snapshot(value: os.stat_result) -> tuple[int, ...]:
+        return (
+            value.st_dev,
+            value.st_ino,
+            value.st_mode,
+            value.st_size,
+            value.st_mtime_ns,
+            value.st_ctime_ns,
+        )
+
+    def ancestor_snapshot(value: os.stat_result) -> tuple[int, ...]:
+        return (value.st_dev, value.st_ino, value.st_mode)
+
+    descriptors: list[int] = []
+    try:
+        absolute = path.absolute()
+        if ".." in absolute.parts:
+            raise ValueError("parent traversal is forbidden")
+        directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+        parent = os.open(os.path.sep, directory_flags)
+        descriptors.append(parent)
+        ancestors: list[tuple[int, str, int, os.stat_result]] = []
+        for name in absolute.parts[1:-1]:
+            child = os.open(name, directory_flags, dir_fd=parent)
+            descriptors.append(child)
+            ancestors.append((parent, name, child, os.fstat(child)))
+            parent = child
+        before = os.stat(absolute.name, dir_fd=parent, follow_symlinks=False)
+        if not stat.S_ISREG(before.st_mode) or before.st_size > MAX_MANIFEST_BYTES:
+            raise ValueError("expected a bounded regular file")
+        descriptor = os.open(
+            absolute.name,
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+            dir_fd=parent,
+        )
+        descriptors.append(descriptor)
+        if snapshot(os.fstat(descriptor)) != snapshot(before):
+            raise ValueError("file changed before read")
+        raw = bytearray()
+        while len(raw) <= MAX_MANIFEST_BYTES:
+            chunk = os.read(
+                descriptor,
+                min(65_536, MAX_MANIFEST_BYTES + 1 - len(raw)),
+            )
+            if not chunk:
+                break
+            raw.extend(chunk)
+        if len(raw) != before.st_size or len(raw) > MAX_MANIFEST_BYTES:
+            raise ValueError("file changed or exceeded its byte limit")
+        if snapshot(os.fstat(descriptor)) != snapshot(before) or snapshot(
+            os.stat(absolute.name, dir_fd=parent, follow_symlinks=False)
+        ) != snapshot(before):
+            raise ValueError("file changed during read")
+        for ancestor, name, child, expected in ancestors:
+            if ancestor_snapshot(os.fstat(child)) != ancestor_snapshot(
+                expected
+            ) or ancestor_snapshot(
+                os.stat(name, dir_fd=ancestor, follow_symlinks=False)
+            ) != ancestor_snapshot(expected):
+                raise ValueError("ancestor changed during read")
+        source = raw.decode("utf-8")
+        depth = 0
+        for event in yaml.parse(source):
+            if isinstance(event, yaml.events.AliasEvent) or getattr(
+                event, "anchor", None
+            ):
+                raise ValueError("YAML aliases and anchors are forbidden")
+            if isinstance(
+                event,
+                (yaml.events.MappingStartEvent, yaml.events.SequenceStartEvent),
+            ):
+                depth += 1
+                if depth > MAX_MANIFEST_DEPTH:
+                    raise ValueError("YAML depth limit exceeded")
+            elif isinstance(
+                event,
+                (yaml.events.MappingEndEvent, yaml.events.SequenceEndEvent),
+            ):
+                depth -= 1
+        return safe_load_unique(source)
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError, RecursionError) as error:
+        raise ManifestContractError(f"manifest input is invalid: {error}") from error
+    finally:
+        for descriptor in reversed(descriptors):
+            os.close(descriptor)
+
+
+def validate_public_execution_argv(
+    path: pathlib.PurePosixPath, argv: tuple[str, ...]
+) -> None:
+    """Admit bounded public-validator arguments and complete modal capability."""
+
+    if len(argv) > _MAX_EXECUTION_ARGV:
+        raise GateContractError(
+            "ci-gate-validator-arguments",
+            path.as_posix(),
+            f"execution arguments must not exceed {_MAX_EXECUTION_ARGV} tokens",
+        )
+    seen: set[str] = set()
+    expects_value = False
+    for token in argv:
+        if not token or len(token) > _MAX_ARGUMENT_LENGTH:
+            raise GateContractError(
+                "ci-gate-validator-arguments",
+                path.as_posix(),
+                "execution argument has an unbounded length",
+            )
+        if token.startswith("--"):
+            if not _LONG_OPTION.match(token) or token in _REJECTED_OPTIONS:
+                raise GateContractError(
+                    "ci-gate-validator-arguments",
+                    path.as_posix(),
+                    f"{token!r} is not an admitted long option",
+                )
+            if token in seen:
+                raise GateContractError(
+                    "ci-gate-validator-arguments",
+                    path.as_posix(),
+                    f"{token!r} is repeated",
+                )
+            seen.add(token)
+            expects_value = True
+            continue
+        if token.startswith("-"):
+            raise GateContractError(
+                "ci-gate-validator-arguments",
+                path.as_posix(),
+                "short options are not admitted",
+            )
+        if not expects_value or not _ARGUMENT_VALUE.match(token):
+            raise GateContractError(
+                "ci-gate-validator-arguments",
+                path.as_posix(),
+                f"{token!r} is not a safe long-option value",
+            )
+        expects_value = False
+
+    complete = _COMPLETE_CAPABILITY_ARGV.get(path.name)
+    if complete is not None and argv != complete:
+        raise GateContractError(
+            "ci-gate-validator-arguments",
+            path.as_posix(),
+            "execution arguments must preserve the complete validation capability",
+        )
+
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class GateNode:
     gate_id: str
@@ -335,7 +438,6 @@ class GateNode:
     cwd: pathlib.PurePosixPath | None
     allowed_env_keys: tuple[str, ...]
     timeout_minutes: int | None
-    profiles: tuple[str, ...]
     opaque: bool
     children: tuple[str, ...]
 
@@ -349,23 +451,25 @@ class JobRoot:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class ProfileRoot:
-    profile: str
-    root_gate_ids: tuple[str, ...]
-    classification: str
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
 class GateRegistry:
     nodes: tuple[GateNode, ...]
     job_roots: tuple[JobRoot, ...]
-    profile_roots: tuple[ProfileRoot, ...]
+    public_roots: tuple[str, ...]
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
 class PublicSuiteRoute:
     name: str
     root_gate_ids: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class PublicValidatorRoute:
+    suite: str
+    gate_id: str
+    entrypoint: pathlib.PurePosixPath
+    argv: tuple[str, ...]
+    contexts: tuple[str, ...]
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -378,6 +482,7 @@ class ChangedSuiteRule:
 class PublicGateContract:
     profile_names: tuple[str, ...]
     suites: tuple[PublicSuiteRoute, ...]
+    validators: tuple[PublicValidatorRoute, ...]
     changed_rules: tuple[ChangedSuiteRule, ...]
     changed_fallback_suites: tuple[str, ...]
 
@@ -559,7 +664,7 @@ def parse_gate_registry(
     _require_fields(
         document,
         _TOP_LEVEL_FIELDS,
-        {"schema_version", "gate_nodes", "job_roots", "profile_roots"},
+        {"schema_version", "gate_nodes", "job_roots"},
         "ci-gate-document-fields",
         path,
     )
@@ -604,21 +709,16 @@ def parse_gate_registry(
         _parse_job_root(record, f"{path}#job_roots[{index}]")
         for index, record in enumerate(raw_jobs)
     )
-    raw_profiles = _require_records(
-        document["profile_roots"],
-        "ci-gate-profile-roots-type",
-        path,
+    public = parse_public_gate_contract(document)
+    public_roots = public_root_gate_ids(
+        public,
+        public.suite_names,
     )
-    profile_roots = tuple(
-        _parse_profile_root(record, f"{path}#profile_roots[{index}]")
-        for index, record in enumerate(raw_profiles)
-    )
-    return GateRegistry(nodes, job_roots, profile_roots)
+    return GateRegistry(nodes, job_roots, public_roots)
 
 
 def parse_public_gate_contract(
     document: Mapping[str, object],
-    registry: suite_registry.SuiteRegistry,
 ) -> PublicGateContract:
     """Parse the closed public profile and changed-path selection contract."""
 
@@ -635,6 +735,7 @@ def parse_public_gate_contract(
             {
                 "profiles",
                 "suite_roots",
+                "validators",
                 "changed_path_rules",
                 "changed_fallback_suites",
             }
@@ -643,6 +744,7 @@ def parse_public_gate_contract(
             {
                 "profiles",
                 "suite_roots",
+                "validators",
                 "changed_path_rules",
                 "changed_fallback_suites",
             }
@@ -663,11 +765,11 @@ def parse_public_gate_contract(
         )
 
     raw_roots = raw["suite_roots"]
-    if not isinstance(raw_roots, Mapping) or tuple(raw_roots) != registry.public_names:
+    if not isinstance(raw_roots, Mapping) or tuple(raw_roots) != PUBLIC_SUITE_NAMES:
         raise GateContractError(
             "ci-gate-public-suites",
             "public_gate/suite_roots",
-            "public suite roots must match the exact manifest suite order",
+            "public suite roots must match the exact canonical suite order",
         )
     node_ids = {
         record.get("gate_id")
@@ -676,7 +778,7 @@ def parse_public_gate_contract(
     }
     routes: list[PublicSuiteRoute] = []
     assigned_roots: set[str] = set()
-    for name in registry.public_names:
+    for name in PUBLIC_SUITE_NAMES:
         roots = _strings(
             raw_roots[name],
             "ci-gate-public-suite-roots",
@@ -694,6 +796,68 @@ def parse_public_gate_contract(
             )
         assigned_roots.update(roots)
         routes.append(PublicSuiteRoute(name, roots))
+
+    raw_validators = _require_records(
+        raw["validators"],
+        "ci-gate-public-validators",
+        "public_gate/validators",
+    )
+    validators: list[PublicValidatorRoute] = []
+    seen_gate_ids: set[str] = set()
+    seen_entrypoints: set[pathlib.PurePosixPath] = set()
+    for index, record in enumerate(raw_validators):
+        validator_path = f"public_gate/validators[{index}]"
+        fields = frozenset({"suite", "gate_id", "entrypoint", "argv", "contexts"})
+        _require_fields(
+            record,
+            fields,
+            set(fields),
+            "ci-gate-public-validators",
+            validator_path,
+        )
+        suite = _string(
+            record["suite"], "ci-gate-public-validators", validator_path
+        )
+        gate_id = _string(
+            record["gate_id"], "ci-gate-public-validators", validator_path
+        )
+        entrypoint = _relative_path(
+            record["entrypoint"],
+            "ci-gate-public-validators",
+            validator_path,
+        )
+        argv = _strings(
+            record["argv"],
+            "ci-gate-public-validators",
+            validator_path,
+            unique=False,
+        )
+        contexts = _strings(
+            record["contexts"],
+            "ci-gate-public-validators",
+            validator_path,
+        )
+        expected_contexts = tuple(
+            name for name in EXECUTION_CONTEXT_NAMES if name in contexts
+        )
+        if (
+            suite not in PUBLIC_SUITE_NAMES
+            or not contexts
+            or contexts != expected_contexts
+            or gate_id in seen_gate_ids
+            or entrypoint in seen_entrypoints
+        ):
+            raise GateContractError(
+                "ci-gate-public-validators",
+                validator_path,
+                "public validators require one suite, gate, entrypoint, and canonical contexts",
+            )
+        validate_public_execution_argv(entrypoint, argv)
+        seen_gate_ids.add(gate_id)
+        seen_entrypoints.add(entrypoint)
+        validators.append(
+            PublicValidatorRoute(suite, gate_id, entrypoint, argv, contexts)
+        )
 
     raw_rules = _require_records(
         raw["changed_path_rules"],
@@ -722,7 +886,7 @@ def parse_public_gate_contract(
             f"{rule_path}/suites",
         )
         expected_suite_order = tuple(
-            name for name in registry.public_names if name in suites
+            name for name in PUBLIC_SUITE_NAMES if name in suites
         )
         if (
             not prefixes
@@ -746,7 +910,7 @@ def parse_public_gate_contract(
         "public_gate/changed_fallback_suites",
     )
     expected_fallback_order = tuple(
-        name for name in registry.public_names if name in fallback
+        name for name in PUBLIC_SUITE_NAMES if name in fallback
     )
     if not fallback or fallback != expected_fallback_order:
         raise GateContractError(
@@ -754,7 +918,13 @@ def parse_public_gate_contract(
             "public_gate/changed_fallback_suites",
             "changed fallback suites must be a nonempty canonical subset",
         )
-    return PublicGateContract(profiles, tuple(routes), tuple(rules), fallback)
+    return PublicGateContract(
+        profiles,
+        tuple(routes),
+        tuple(validators),
+        tuple(rules),
+        fallback,
+    )
 
 
 def select_public_suites(
@@ -880,11 +1050,7 @@ def validate_gate_registry(
             "gate identifiers must be unique",
         )
         return tuple(findings)
-    roots = tuple(job_mapping.values()) + tuple(
-        root_gate_id
-        for profile_root in registry.profile_roots
-        for root_gate_id in profile_root.root_gate_ids
-    )
+    roots = tuple(job_mapping.values()) + registry.public_roots
     missing_roots = {gate_id for gate_id in roots if gate_id not in node_by_id}
     missing_children = {
         child
@@ -986,31 +1152,6 @@ def validate_gate_registry(
             )
             return tuple(findings)
 
-    profile_mapping = {
-        profile.profile: profile.root_gate_ids for profile in registry.profile_roots
-    }
-    if (
-        len(profile_mapping) != len(registry.profile_roots)
-        or profile_mapping != _EXPECTED_PROFILE_ROOTS
-        or any(profile.classification != "local" for profile in registry.profile_roots)
-    ):
-        finding(
-            "ci-gate-profile-roots",
-            "profile_roots",
-            "local profile roots must match the exact ordered projections",
-        )
-        return tuple(findings)
-
-    for profile in registry.profile_roots:
-        local_reachable = set(_expanded_all_ids(node_by_id, profile.root_gate_ids))
-        if local_reachable & _LOCAL_FORBIDDEN_GATE_IDS:
-            finding(
-                "ci-gate-local-unsafe",
-                f"profile_roots/{profile.profile}",
-                "local profiles must exclude CI-only and networked gates",
-            )
-            return tuple(findings)
-
     for gate_id, expected_children in _LOCAL_AGGREGATE_CHILDREN.items():
         if node_by_id[gate_id].children != expected_children:
             finding(
@@ -1020,23 +1161,8 @@ def validate_gate_registry(
             )
             return tuple(findings)
 
-    computed_profiles: dict[str, list[str]] = {gate_id: [] for gate_id in node_by_id}
-    for profile in _NODE_PROFILES:
-        profile_roots = (
-            tuple(job_mapping.values()) if profile == "ci" else profile_mapping[profile]
-        )
-        for gate_id in _expanded_all_ids(node_by_id, profile_roots):
-            computed_profiles[gate_id].append(profile)
     tracked_files: dict[pathlib.PurePosixPath, bool] = {}
     canonical_directories: dict[pathlib.PurePosixPath, bool] = {}
-    for node in registry.nodes:
-        if node.profiles != tuple(computed_profiles[node.gate_id]):
-            finding(
-                "ci-gate-profile-drift",
-                f"gate_nodes/{node.gate_id}",
-                "node profiles must equal computed root reachability",
-            )
-
     for node in registry.nodes:
         if node.kind is GateKind.AGGREGATE:
             continue
@@ -1112,19 +1238,13 @@ def expand_gate_ids(
             "gate_nodes",
             "the gate graph must be acyclic",
         )
-    if profile == "ci":
-        roots = tuple(job.root_gate_id for job in registry.job_roots)
-    else:
-        matches = tuple(
-            item for item in registry.profile_roots if item.profile == profile
+    if profile != "ci":
+        raise GateContractError(
+            "ci-gate-profile-unknown",
+            "profile",
+            "the selected internal profile must be ci",
         )
-        if len(matches) != 1:
-            raise GateContractError(
-                "ci-gate-profile-unknown",
-                "profile",
-                "the selected profile is not registered",
-            )
-        roots = matches[0].root_gate_ids
+    roots = tuple(job.root_gate_id for job in registry.job_roots)
     selected = roots if all_roots else (gate_id,)
     if gate_id is not None:
         admitted = set(_expanded_all_ids(node_by_id, roots))
@@ -1207,7 +1327,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         raise GateContractError(
             "ci-gate-kind", path, "the gate kind is invalid"
         ) from None
-    common = {"gate_id", "kind", "profiles", "opaque"}
+    common = {"gate_id", "kind", "opaque"}
     if kind is GateKind.AGGREGATE:
         _require_fields(
             record,
@@ -1230,7 +1350,6 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
             None,
             (),
             None,
-            _profiles(record["profiles"], path),
             False,
             children,
         )
@@ -1283,19 +1402,9 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         _relative_path(record["cwd"], "ci-gate-cwd", path, dot=True),
         env_keys,
         timeout,
-        _profiles(record["profiles"], path),
         opaque,
         (),
     )
-
-
-def _profiles(value: object, path: str) -> tuple[str, ...]:
-    profiles = _strings(value, "ci-gate-profiles", path)
-    if any(profile not in _NODE_PROFILES for profile in profiles) or profiles != tuple(
-        profile for profile in _NODE_PROFILES if profile in profiles
-    ):
-        raise GateContractError("ci-gate-profiles", path, "node profiles are invalid")
-    return profiles
 
 
 def _parse_job_root(record: Mapping[str, object], path: str) -> JobRoot:
@@ -1306,28 +1415,6 @@ def _parse_job_root(record: Mapping[str, object], path: str) -> JobRoot:
         _string(record["job_id"], "ci-gate-job-value", path),
         _string(record["root_gate_id"], "ci-gate-job-value", path),
         _string(record["classification"], "ci-gate-job-value", path),
-    )
-
-
-def _parse_profile_root(record: Mapping[str, object], path: str) -> ProfileRoot:
-    fields = frozenset({"profile", "root_gate_ids", "classification"})
-    _require_fields(record, fields, set(fields), "ci-gate-profile-fields", path)
-    profile = _string(record["profile"], "ci-gate-profile-value", path)
-    classification = _string(
-        record["classification"],
-        "ci-gate-profile-value",
-        path,
-    )
-    if profile not in _EXPECTED_PROFILE_ROOTS or classification != "local":
-        raise GateContractError(
-            "ci-gate-profile-classification",
-            path,
-            "the local profile classification is invalid",
-        )
-    return ProfileRoot(
-        profile,
-        _strings(record["root_gate_ids"], "ci-gate-profile-value", path),
-        classification,
     )
 
 

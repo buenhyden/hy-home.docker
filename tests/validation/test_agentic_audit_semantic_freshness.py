@@ -65,6 +65,14 @@ def _assert_task5_integration_contract(
     case.assertEqual(["changed", "full"], public_gate["profiles"])
     integrity_roots = public_gate["suite_roots"]["repository-integrity"]
     case.assertEqual(1, integrity_roots.count("local.workflow-harness"))
+    semantic_routes = [
+        row
+        for row in public_gate["validators"]
+        if row.get("entrypoint")
+        == "scripts/validation/check-agentic-audit-semantic-freshness.py"
+    ]
+    case.assertEqual(1, len(semantic_routes))
+    case.assertEqual("repository-integrity", semantic_routes[0].get("suite"))
 
     manifest_data = yaml.safe_load(manifest)
     semantic_rows = [
@@ -74,9 +82,9 @@ def _assert_task5_integration_contract(
         == "scripts/validation/check-agentic-audit-semantic-freshness.py"
     ]
     case.assertEqual(1, len(semantic_rows))
-    case.assertEqual(
-        ["repository-integrity"],
-        semantic_rows[0].get("public_suites"),
+    case.assertFalse(
+        {"public_suites", "execution_argv", "execution_contexts"}
+        & set(semantic_rows[0])
     )
 
     build_start = generator.index("def build_output() -> tuple[str, list[str]]:")
@@ -230,16 +238,34 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             f'{semantic_call}\n    return "\\n".join(lines), failures\n',
             1,
         )
-        semantic_row = (
-            "- path: scripts/validation/check-agentic-audit-semantic-freshness.py\n"
-            "  kind: validator\n"
-            "  public_suites:\n"
-            "  - repository-integrity\n"
-        )
         missing_workflow_root = json.loads(workflow_contract)
         missing_workflow_root["public_gate"]["suite_roots"][
             "repository-integrity"
         ].remove("local.workflow-harness")
+        missing_public_validator = json.loads(workflow_contract)
+        missing_public_validator["public_gate"]["validators"] = [
+            row
+            for row in missing_public_validator["public_gate"]["validators"]
+            if row["entrypoint"]
+            != "scripts/validation/check-agentic-audit-semantic-freshness.py"
+        ]
+        duplicate_public_validator = json.loads(workflow_contract)
+        semantic_route = next(
+            row
+            for row in duplicate_public_validator["public_gate"]["validators"]
+            if row["entrypoint"]
+            == "scripts/validation/check-agentic-audit-semantic-freshness.py"
+        )
+        duplicate_public_validator["public_gate"]["validators"].append(
+            dict(semantic_route)
+        )
+        wrong_public_suite = json.loads(workflow_contract)
+        next(
+            row
+            for row in wrong_public_suite["public_gate"]["validators"]
+            if row["entrypoint"]
+            == "scripts/validation/check-agentic-audit-semantic-freshness.py"
+        )["suite"] = "operations"
         mutations = {
             "duplicate changed workflow route": (
                 workflow
@@ -266,36 +292,31 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
             ),
             "missing validator ownership": (
                 workflow,
-                workflow_contract,
-                manifest.replace(
-                    "scripts/validation/check-agentic-audit-semantic-freshness.py",
-                    "scripts/validation/missing-agentic-audit-semantic.py",
-                    1,
-                ),
+                json.dumps(missing_public_validator),
+                manifest,
                 generator,
                 matrix,
             ),
             "duplicate validator ownership": (
                 workflow,
-                workflow_contract,
-                manifest + semantic_row,
+                json.dumps(duplicate_public_validator),
+                manifest,
                 generator,
                 matrix,
             ),
             "wrong validator suite": (
                 workflow,
+                json.dumps(wrong_public_suite),
+                manifest,
+                generator,
+                matrix,
+            ),
+            "missing validator inventory": (
+                workflow,
                 workflow_contract,
                 manifest.replace(
-                    "- path: scripts/validation/"
-                    "check-agentic-audit-semantic-freshness.py\n"
-                    "  kind: validator\n"
-                    "  public_suites:\n"
-                    "  - repository-integrity\n",
-                    "- path: scripts/validation/"
-                    "check-agentic-audit-semantic-freshness.py\n"
-                    "  kind: validator\n"
-                    "  public_suites:\n"
-                    "  - operations\n",
+                    "scripts/validation/check-agentic-audit-semantic-freshness.py",
+                    "scripts/validation/missing-agentic-audit-semantic.py",
                     1,
                 ),
                 generator,

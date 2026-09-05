@@ -19,7 +19,6 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.lib.document_governance import suite_registry  # noqa: E402
 from scripts.lib.gate import ci_gate_contract  # noqa: E402
 from scripts.validation import ci_gate_runner  # noqa: E402
 
@@ -106,13 +105,9 @@ def _tracked(root: pathlib.Path, relative: str) -> bool:
 def _load_models(
     root: pathlib.Path,
 ) -> tuple[
-    suite_registry.SuiteRegistry,
     ci_gate_contract.GateRegistry,
     ci_gate_contract.PublicGateContract,
 ]:
-    manifest = ci_gate_contract.load_public_suite_registry(
-        root / "scripts/manifest.yaml"
-    )
     document = ci_gate_contract.load_contract_document(root)
     gates = ci_gate_contract.parse_gate_registry(
         document,
@@ -126,22 +121,21 @@ def _load_models(
             first.path,
             first.message,
         )
-    public = ci_gate_contract.parse_public_gate_contract(document, manifest)
-    return manifest, gates, public
+    public = ci_gate_contract.parse_public_gate_contract(document)
+    return gates, public
 
 
 def _suite_ownership_findings(
     root: pathlib.Path,
-    manifest: suite_registry.SuiteRegistry,
     gates: ci_gate_contract.GateRegistry,
     public: ci_gate_contract.PublicGateContract,
 ) -> list[DeltaFinding]:
     findings: list[DeltaFinding] = []
-    if manifest.public_names != PUBLIC_SUITES or public.suite_names != PUBLIC_SUITES:
+    if public.suite_names != PUBLIC_SUITES:
         findings.append(
             _finding(
                 "public-suites-not-exact",
-                "scripts/manifest.yaml",
+                ".github/workflow-contract.yml",
                 "the public suite set and order must be the six canonical suites",
             )
         )
@@ -154,7 +148,9 @@ def _suite_ownership_findings(
             )
         )
 
-    validator_paths = tuple(item.path.as_posix() for item in manifest.validators)
+    validator_paths = tuple(
+        item.entrypoint.as_posix() for item in public.validators
+    )
     duplicates = {
         path
         for path, count in collections.Counter(validator_paths).items()
@@ -168,16 +164,8 @@ def _suite_ownership_findings(
                 "an atomic validator must belong to exactly one public suite",
             )
         )
-    for validator in manifest.validators:
-        path = validator.path.as_posix()
-        if len(validator.public_suites) != 1:
-            findings.append(
-                _finding(
-                    "public-validator-owner-count",
-                    path,
-                    "an atomic validator must declare one public suite",
-                )
-            )
+    for validator in public.validators:
+        path = validator.entrypoint.as_posix()
         if not (root / path).is_file() or not _tracked(root, path):
             findings.append(
                 _finding(
@@ -202,7 +190,7 @@ def _suite_ownership_findings(
             plan = ci_gate_runner.build_public_validation_plan(
                 gates,
                 route.root_gate_ids,
-                manifest,
+                public,
                 (route.name,),
                 ci_gate_runner.ExecutionContext.LOCAL,
             )
@@ -233,7 +221,6 @@ def _suite_ownership_findings(
 
 
 def _changed_impact_findings(
-    manifest: suite_registry.SuiteRegistry,
     public: ci_gate_contract.PublicGateContract,
 ) -> list[DeltaFinding]:
     findings: list[DeltaFinding] = []
@@ -249,14 +236,14 @@ def _changed_impact_findings(
                 "the full profile must select all six public suites",
             )
         )
-    for validator in manifest.validators:
-        path = validator.path.as_posix()
+    for validator in public.validators:
+        path = validator.entrypoint.as_posix()
         try:
             selected = ci_gate_contract.select_public_suites(public, "changed", (path,))
         except ci_gate_contract.GateContractError as error:
             findings.append(_finding(error.code, error.path, error.message))
             continue
-        if validator.public_suites[0] not in selected:
+        if validator.suite not in selected:
             findings.append(
                 _finding(
                     "public-changed-impact-missing",
@@ -468,18 +455,15 @@ def validate_repository(root: pathlib.Path) -> tuple[DeltaFinding, ...]:
 
     root = root.resolve()
     try:
-        manifest, gates, public = _load_models(root)
-    except (
-        ci_gate_contract.GateContractError,
-        suite_registry.SuiteRegistryError,
-    ) as error:
+        gates, public = _load_models(root)
+    except ci_gate_contract.GateContractError as error:
         code = getattr(error, "code", "public-suite-registry")
         path = getattr(error, "path", "scripts/manifest.yaml")
         message = getattr(error, "message", "the public suite registry is invalid")
         return (_finding(code, path, message),)
     findings = [
-        *_suite_ownership_findings(root, manifest, gates, public),
-        *_changed_impact_findings(manifest, public),
+        *_suite_ownership_findings(root, gates, public),
+        *_changed_impact_findings(public),
         *_workflow_findings(root),
         *_precommit_findings(root),
         *_surface_findings(root, gates),
