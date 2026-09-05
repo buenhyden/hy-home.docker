@@ -26,6 +26,7 @@
     "observed_at": {"type": "string", "format": "date"},
     "identity_recovery": {"$ref": "#/$defs/identityRecovery"},
     "identity_recovery_decisions": {"$ref": "#/$defs/identityRecoveryDecisions"},
+    "branch_integration_receipts": {"$ref": "#/$defs/branchIntegrationReceipts"},
     "reviewed_at": {"type": "string", "format": "date"},
     "next_review_at": {"type": "string", "format": "date"},
     "occurred_at": {"type": "string", "format": "date-time"},
@@ -94,6 +95,26 @@
         "target_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
         "target_artifact_id": {"type": "string", "minLength": 1},
         "disposition": {"const": "consolidated"}
+      }
+    },
+    "branchIntegrationReceipts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/branchIntegrationReceipt"}
+    },
+    "branchIntegrationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_commit", "source_package_path", "source_artifact_id", "preserved_package_path", "target_package_path", "target_artifact_id", "disposition"],
+      "properties": {
+        "source_commit": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
+        "source_package_path": {"type": "string", "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
+        "source_artifact_id": {"type": "string", "pattern": "^SPEC-[0-9]{4}$"},
+        "preserved_package_path": {"type": "string", "pattern": "^docs/98\\.archive/superseded/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
+        "target_package_path": {"type": "string", "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
+        "target_artifact_id": {"type": "string", "pattern": "^SPEC-[0-9]{4}$"},
+        "disposition": {"const": "historical-superseded"}
       }
     },
     "hookConditions": {

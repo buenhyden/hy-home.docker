@@ -75,6 +75,19 @@ class SpecPackageError(ValueError):
 
 
 @dataclasses.dataclass(frozen=True)
+class BranchIntegrationReceipt:
+    """One typed handoff for an exact divergent historical package."""
+
+    source_commit: str
+    source_package_path: pathlib.PurePosixPath
+    source_artifact_id: str
+    preserved_package_path: pathlib.PurePosixPath
+    target_package_path: pathlib.PurePosixPath
+    target_artifact_id: str
+    disposition: str
+
+
+@dataclasses.dataclass(frozen=True)
 class SpecDocument:
     """One immutable registered Markdown member of a Spec Package."""
 
@@ -83,6 +96,7 @@ class SpecDocument:
     artifact_id: str
     status: str
     parent_ids: tuple[str, ...]
+    branch_integration_receipts: tuple[BranchIntegrationReceipt, ...] = ()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -111,6 +125,14 @@ class SpecPackageFinding:
 class _LoadBudget:
     entries: int = 0
     file_bytes: int = 0
+
+
+@dataclasses.dataclass(frozen=True)
+class _ReceiptCarrier:
+    receipt: BranchIntegrationReceipt
+    task: SpecDocument
+    package: SpecPackage
+    completed_archive: bool = False
 
 
 def _directory_snapshot(
@@ -380,6 +402,66 @@ def _string_tuple(value: object, field: str) -> tuple[str, ...]:
     return value
 
 
+_RECEIPT_FIELDS = frozenset(
+    {
+        "source_commit",
+        "source_package_path",
+        "source_artifact_id",
+        "preserved_package_path",
+        "target_package_path",
+        "target_artifact_id",
+        "disposition",
+    }
+)
+
+
+def _branch_integration_receipts(
+    value: object,
+) -> tuple[BranchIntegrationReceipt, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, tuple) or not value:
+        raise SpecPackageError(
+            "branch_integration_receipts must be a non-empty receipt list"
+        )
+    receipts: list[BranchIntegrationReceipt] = []
+    for item in value:
+        if not isinstance(item, Mapping) or set(item) != _RECEIPT_FIELDS:
+            raise SpecPackageError("branch integration receipt shape is invalid")
+        if not all(isinstance(item[field], str) and item[field] for field in item):
+            raise SpecPackageError("branch integration receipt values must be strings")
+        if _RECOVERY_COMMIT.fullmatch(item["source_commit"]) is None:
+            raise SpecPackageError(
+                "branch integration receipt source_commit must be a full object ID"
+            )
+        if any(
+            not _safe_repository_path(item[field])
+            for field in (
+                "source_package_path",
+                "preserved_package_path",
+                "target_package_path",
+            )
+        ):
+            raise SpecPackageError("branch integration receipt path is unsafe")
+        if item["disposition"] != "historical-superseded":
+            raise SpecPackageError("branch integration receipt disposition is invalid")
+        receipt = BranchIntegrationReceipt(
+            source_commit=item["source_commit"],
+            source_package_path=pathlib.PurePosixPath(item["source_package_path"]),
+            source_artifact_id=item["source_artifact_id"],
+            preserved_package_path=pathlib.PurePosixPath(
+                item["preserved_package_path"]
+            ),
+            target_package_path=pathlib.PurePosixPath(item["target_package_path"]),
+            target_artifact_id=item["target_artifact_id"],
+            disposition=item["disposition"],
+        )
+        if receipt in receipts:
+            raise SpecPackageError("branch integration receipt is duplicated")
+        receipts.append(receipt)
+    return tuple(receipts)
+
+
 def _allowed_statuses(
     registry: DocumentRegistry,
     profile_id: str,
@@ -433,7 +515,24 @@ def _parse_document(
             f"{relative} status is outside the {profile_id} lifecycle: {status!r}"
         )
     parent_ids = _string_tuple(record.metadata.get("parent_ids"), "parent_ids")
-    return SpecDocument(relative, profile_id, artifact_id, status, parent_ids), current
+    receipts = (
+        _branch_integration_receipts(
+            record.metadata.get("branch_integration_receipts")
+        )
+        if profile_id == "task"
+        else ()
+    )
+    return (
+        SpecDocument(
+            relative,
+            profile_id,
+            artifact_id,
+            status,
+            parent_ids,
+            receipts,
+        ),
+        current,
+    )
 
 
 def _validate_spec_parents(document: SpecDocument) -> None:
@@ -959,10 +1058,242 @@ def _safe_repository_path(value: str) -> bool:
     path = pathlib.PurePosixPath(value)
     return (
         bool(value)
+        and not value.startswith("-")
         and not path.is_absolute()
-        and ".." not in path.parts
+        and all(
+            part not in {"", ".", ".."}
+            and not part.startswith("-")
+            and "\\" not in part
+            and not any(ord(character) < 32 or ord(character) == 127 for character in part)
+            for part in path.parts
+        )
         and path.as_posix() == value
     )
+
+
+def _canonical_package_path(path: pathlib.PurePosixPath) -> bool:
+    return (
+        len(path.parts) == 3
+        and path.parts[:2] == ("docs", "03.specs")
+        and _PACKAGE_PATH.fullmatch(path.parts[2]) is not None
+        and _safe_repository_path(path.as_posix())
+    )
+
+
+def _filesystem_package_tree(
+    root: pathlib.Path,
+    package_path: pathlib.PurePosixPath,
+) -> Mapping[pathlib.PurePosixPath, bytes]:
+    if not _safe_repository_path(package_path.as_posix()):
+        raise SpecPackageError("preserved package path is unsafe")
+    absolute = pathlib.Path(root) / package_path.as_posix()
+    parent, descriptor, name, snapshot = _open_directory_path(
+        absolute,
+        "preserved Spec Package",
+    )
+    files: dict[pathlib.PurePosixPath, bytes] = {}
+    budget = _LoadBudget()
+
+    def visit(
+        directory_descriptor: int,
+        relative: pathlib.PurePosixPath,
+        depth: int,
+    ) -> None:
+        nonlocal budget
+        if depth > 3:
+            raise SpecPackageError("preserved Spec Package nesting is too deep")
+        entries, budget = _bounded_directory_names(
+            directory_descriptor,
+            label="preserved Spec Package",
+            limit=MAX_PACKAGE_ENTRIES,
+            limit_message="preserved Spec Package contains too many entries",
+            budget=budget,
+        )
+        for entry in entries:
+            entry_path = relative / entry
+            try:
+                metadata = os.stat(
+                    entry,
+                    dir_fd=directory_descriptor,
+                    follow_symlinks=False,
+                )
+            except OSError as error:
+                raise SpecPackageError(
+                    f"cannot stat preserved Spec Package entry: {error}"
+                ) from error
+            if stat.S_ISDIR(metadata.st_mode) and not stat.S_ISLNK(metadata.st_mode):
+                child, child_snapshot = _open_directory_at(
+                    directory_descriptor,
+                    entry,
+                    "preserved Spec Package directory",
+                )
+                try:
+                    visit(child, entry_path, depth + 1)
+                    _verify_directory_entry(
+                        directory_descriptor,
+                        entry,
+                        child,
+                        child_snapshot,
+                        "preserved Spec Package directory",
+                    )
+                finally:
+                    os.close(child)
+                continue
+            if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+                raise SpecPackageError(
+                    "preserved Spec Package entries must be regular files or directories"
+                )
+            text, budget = _read_regular_utf8_at(
+                directory_descriptor,
+                entry,
+                "preserved Spec Package file",
+                budget,
+            )
+            files[entry_path] = text.encode("utf-8")
+            if len(files) > MAX_PACKAGE_ENTRIES:
+                raise SpecPackageError("preserved Spec Package file limit exceeded")
+
+    try:
+        visit(descriptor, pathlib.PurePosixPath(), 0)
+        _verify_directory_entry(
+            parent,
+            name,
+            descriptor,
+            snapshot,
+            "preserved Spec Package",
+        )
+    finally:
+        os.close(descriptor)
+        os.close(parent)
+    return files
+
+
+def _git_package_tree(
+    root: pathlib.Path,
+    commit: str,
+    package_path: pathlib.PurePosixPath,
+) -> Mapping[pathlib.PurePosixPath, bytes]:
+    if not _canonical_package_path(package_path):
+        raise SpecPackageError("source package path is not canonical")
+    tree = _bounded_git(
+        root,
+        "ls-tree",
+        "-r",
+        "-z",
+        commit,
+        "--",
+        package_path.as_posix(),
+        byte_limit=4 * 1024 * 1024,
+    )
+    files: dict[pathlib.PurePosixPath, bytes] = {}
+    total_bytes = 0
+    prefix = package_path.as_posix() + "/"
+    for raw in tree.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            metadata, raw_path = raw.split(b"\t", 1)
+            mode, object_type, _ = metadata.split(b" ", 2)
+            source = raw_path.decode("utf-8")
+        except (ValueError, UnicodeDecodeError) as error:
+            raise SpecPackageError("source package Git tree is malformed") from error
+        if mode not in {b"100644", b"100755"} or object_type != b"blob":
+            raise SpecPackageError("source package contains a non-regular Git object")
+        if not source.startswith(prefix) or not _safe_repository_path(source):
+            raise SpecPackageError("source package Git path is unsafe")
+        relative = pathlib.PurePosixPath(source[len(prefix) :])
+        if not relative.parts or relative in files:
+            raise SpecPackageError("source package Git path is duplicated")
+        payload = _bounded_git(
+            root,
+            "show",
+            f"{commit}:{source}",
+            byte_limit=MAX_SPEC_FILE_BYTES,
+        )
+        total_bytes += len(payload)
+        if total_bytes > MAX_TOTAL_FILE_BYTES:
+            raise SpecPackageError("source package exceeds the aggregate byte limit")
+        files[relative] = payload
+        if len(files) > MAX_PACKAGE_ENTRIES:
+            raise SpecPackageError("source package file limit exceeded")
+    if pathlib.PurePosixPath("spec.md") not in files:
+        raise SpecPackageError("source package has no spec.md")
+    return files
+
+
+def _matches_existing_regular_blob(
+    root: pathlib.Path,
+    path: pathlib.PurePosixPath,
+    payload: bytes,
+) -> bool:
+    """Match an archive body only against an already committed lineage."""
+
+    for reference in ("HEAD", "MERGE_HEAD"):
+        try:
+            commit = (
+                _bounded_git(
+                    root,
+                    "rev-parse",
+                    "--verify",
+                    "--end-of-options",
+                    f"{reference}^{{commit}}",
+                    byte_limit=256,
+                )
+                .decode("ascii")
+                .strip()
+            )
+            if _RECOVERY_COMMIT.fullmatch(commit) is None:
+                continue
+            listing = _bounded_git(
+                root,
+                "ls-tree",
+                "-z",
+                commit,
+                "--",
+                path.as_posix(),
+                byte_limit=512,
+            )
+        except (SpecPackageError, UnicodeDecodeError):
+            continue
+        rows = tuple(row for row in listing.split(b"\0") if row)
+        if len(rows) != 1:
+            continue
+        try:
+            metadata, raw_path = rows[0].split(b"\t", 1)
+            mode, object_type, object_id = metadata.split(b" ", 2)
+            listed_path = raw_path.decode("utf-8")
+            object_name = object_id.decode("ascii")
+        except (ValueError, UnicodeDecodeError):
+            continue
+        if (
+            mode not in {b"100644", b"100755"}
+            or object_type != b"blob"
+            or listed_path != path.as_posix()
+            or _RECOVERY_COMMIT.fullmatch(object_name) is None
+        ):
+            continue
+        try:
+            size_text = _bounded_git(
+                root,
+                "cat-file",
+                "-s",
+                object_name,
+                byte_limit=64,
+            ).decode("ascii").strip()
+            if not size_text.isdigit() or int(size_text) != len(payload):
+                continue
+            committed = _bounded_git(
+                root,
+                "cat-file",
+                "blob",
+                object_name,
+                byte_limit=MAX_SPEC_FILE_BYTES,
+            )
+        except (SpecPackageError, UnicodeDecodeError):
+            continue
+        if committed == payload:
+            return True
+    return False
 
 
 def _snapshot_document(
@@ -999,12 +1330,30 @@ def _snapshot_document(
         ) from error
     status = record.metadata.get("status")
     parents = record.metadata.get("parent_ids")
-    if not isinstance(status, str) or not isinstance(parents, tuple):
+    if (
+        record.metadata.get("artifact_id") != artifact_id
+        or not isinstance(status, str)
+        or not isinstance(parents, tuple)
+    ):
         raise SpecPackageError(f"base Spec Package metadata is malformed: {path}")
     parent_ids = tuple(parent for parent in parents if isinstance(parent, str))
     if len(parent_ids) != len(parents):
         raise SpecPackageError(f"base Spec Package parents are malformed: {path}")
-    return SpecDocument(path, profile_id, artifact_id, status, parent_ids)
+    receipts = (
+        _branch_integration_receipts(
+            record.metadata.get("branch_integration_receipts")
+        )
+        if profile_id == "task"
+        else ()
+    )
+    return SpecDocument(
+        path,
+        profile_id,
+        artifact_id,
+        status,
+        parent_ids,
+        receipts,
+    )
 
 
 def _load_base_spec_packages(
@@ -1023,7 +1372,7 @@ def _load_base_spec_packages(
         .decode("ascii")
         .strip()
     )
-    if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+    if _RECOVERY_COMMIT.fullmatch(commit) is None:
         raise SpecPackageError("Spec Package base ref did not resolve to a commit")
     tree = _bounded_git(
         root,
@@ -1123,6 +1472,340 @@ def _load_base_spec_packages(
     return tuple(packages)
 
 
+def _standard_preserved_package_path(
+    disposition: str,
+    origin: pathlib.PurePosixPath,
+) -> pathlib.PurePosixPath:
+    if not _canonical_package_path(origin):
+        raise SpecPackageError("preserved origin package path is not canonical")
+    return pathlib.PurePosixPath("docs/98.archive", disposition, *origin.parts[1:])
+
+
+def _load_preserved_spec_packages(
+    root: pathlib.Path,
+    disposition: str,
+) -> tuple[SpecPackage, ...]:
+    stage = root / f"docs/98.archive/{disposition}/03.specs"
+    try:
+        metadata = os.lstat(stage)
+    except FileNotFoundError:
+        return ()
+    except OSError as error:
+        raise SpecPackageError(
+            f"cannot inspect {disposition} Spec archive: {error}"
+        ) from error
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISDIR(metadata.st_mode):
+        raise SpecPackageError(
+            f"{disposition} Spec archive must be a non-symlink directory"
+        )
+    return load_spec_packages(stage)
+
+
+def _archive_receipt_carriers(
+    completed: Sequence[SpecPackage],
+) -> tuple[_ReceiptCarrier, ...]:
+    return tuple(
+        _ReceiptCarrier(receipt, task, package, completed_archive=True)
+        for package in completed
+        for task in package.tasks
+        for receipt in task.branch_integration_receipts
+    )
+
+
+def _current_receipt_carriers(
+    current: Sequence[SpecPackage],
+) -> tuple[_ReceiptCarrier, ...]:
+    return tuple(
+        _ReceiptCarrier(receipt, task, package)
+        for package in current
+        for task in package.tasks
+        for receipt in task.branch_integration_receipts
+    )
+
+
+def _ordinary_preserved_paths(
+    root: pathlib.Path,
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    completed: Sequence[SpecPackage],
+) -> frozenset[pathlib.PurePosixPath]:
+    current_names = {package.spec.path.parts[2] for package in current}
+    preserved: set[pathlib.PurePosixPath] = set()
+    for source in previous:
+        if source.spec.path.parts[2] in current_names:
+            continue
+        for disposition, packages, required_status in (
+            ("completed", completed, "completed"),
+            ("superseded", (), "superseded"),
+        ):
+            if _preserved_package_is_terminal(
+                root, source, disposition, packages, required_status
+            ):
+                preserved.add(source.spec.path)
+                break
+    return frozenset(preserved)
+
+
+def _preserved_package_is_terminal(
+    root: pathlib.Path,
+    source: SpecPackage,
+    disposition: str,
+    packages: Sequence[SpecPackage],
+    required_status: str,
+) -> bool:
+    package = next(
+        (
+            item
+            for item in packages
+            if item.spec.path.parent == source.spec.path.parent
+        ),
+        None,
+    )
+    if package is not None:
+        spec = package.spec
+        members = [package.spec, *package.tasks]
+        if package.plan is not None:
+            members.append(package.plan)
+    else:
+        try:
+            tree = _filesystem_package_tree(
+                root,
+                _standard_preserved_package_path(
+                    disposition, source.spec.path.parent
+                ),
+            )
+            members = [
+                document
+                for relative, payload in tree.items()
+                if (
+                    document := _snapshot_document(
+                        source.spec.path.parent / relative,
+                        payload.decode("utf-8"),
+                    )
+                )
+                is not None
+            ]
+            spec = next(
+                (member for member in members if member.profile_id == "spec"),
+                None,
+            )
+        except (FileNotFoundError, SpecPackageError, UnicodeDecodeError):
+            return False
+        if spec is None:
+            return False
+    return (
+        spec.artifact_id == source.spec.artifact_id
+        and spec.status == required_status
+        and all(member.status in _TERMINAL_STATUSES for member in members)
+    )
+
+
+def _invalid_receipt(
+    carrier: _ReceiptCarrier,
+    message: str,
+) -> SpecPackageFinding:
+    return SpecPackageFinding(
+        "branch-integration-receipt-invalid",
+        carrier.task.path.as_posix(),
+        message,
+    )
+
+
+def _validate_receipt_carrier(
+    root: pathlib.Path,
+    base_commit: str,
+    source: SpecPackage,
+    current: Sequence[SpecPackage],
+    completed_packages: Sequence[SpecPackage],
+    carrier: _ReceiptCarrier,
+) -> SpecPackageFinding | None:
+    receipt = carrier.receipt
+    origin = source.spec.path.parent
+    current_by_path = {package.spec.path.parent: package for package in current}
+    if receipt.source_commit != base_commit:
+        return _invalid_receipt(carrier, "source_commit is not the lifecycle base")
+    if not _canonical_package_path(receipt.source_package_path):
+        return _invalid_receipt(carrier, "source_package_path is not canonical")
+    if receipt.source_package_path != origin:
+        return _invalid_receipt(carrier, "source_package_path does not name the source")
+    if receipt.source_artifact_id != source.spec.artifact_id:
+        return _invalid_receipt(carrier, "source_artifact_id does not match Git source")
+    if origin in current_by_path:
+        return _invalid_receipt(carrier, "source package remains in current Stage 03")
+    expected_preserved = _standard_preserved_package_path("superseded", origin)
+    if receipt.preserved_package_path != expected_preserved:
+        return _invalid_receipt(carrier, "preserved_package_path is not the exact handoff path")
+    if not _canonical_package_path(receipt.target_package_path):
+        return _invalid_receipt(carrier, "target_package_path is not canonical")
+    if receipt.target_artifact_id == receipt.source_artifact_id:
+        return _invalid_receipt(carrier, "source and target artifact identities must differ")
+    if carrier.package.spec.path.parent != receipt.target_package_path:
+        return _invalid_receipt(carrier, "receipt is hosted outside its target package")
+    if carrier.package.spec.artifact_id != receipt.target_artifact_id:
+        return _invalid_receipt(carrier, "target_artifact_id does not match its package")
+    if not carrier.completed_archive:
+        if carrier.package.spec.status != "active" or carrier.task.status != "in-progress":
+            return _invalid_receipt(
+                carrier,
+                "current carrier requires an active target Spec and in-progress Task",
+            )
+    else:
+        members = [carrier.package.spec, *carrier.package.tasks]
+        if carrier.package.plan is not None:
+            members.append(carrier.package.plan)
+        if (
+            carrier.package.plan is None
+            or not carrier.package.tasks
+            or any(member.status != "completed" for member in members)
+        ):
+            return _invalid_receipt(
+                carrier,
+                "archived carrier requires one full completed target package",
+            )
+    try:
+        source_tree = _git_package_tree(root, base_commit, origin)
+        preserved_tree = _filesystem_package_tree(
+            root,
+            receipt.preserved_package_path,
+        )
+    except (FileNotFoundError, SpecPackageError) as error:
+        return _invalid_receipt(carrier, str(error))
+    completed = next(
+        (
+            package
+            for package in completed_packages
+            if package.spec.path.parent == origin
+        ),
+        None,
+    )
+    if completed is None:
+        return _invalid_receipt(carrier, "same-origin completed record is missing")
+    completed_path = _standard_preserved_package_path("completed", origin)
+    try:
+        completed_spec_bytes = _filesystem_package_tree(root, completed_path)[
+            pathlib.PurePosixPath("spec.md")
+        ]
+    except (KeyError, FileNotFoundError, SpecPackageError) as error:
+        return _invalid_receipt(carrier, str(error))
+    if not _matches_existing_regular_blob(
+        root,
+        completed_path / "spec.md",
+        completed_spec_bytes,
+    ):
+        return _invalid_receipt(
+            carrier,
+            "completed Spec must match an existing regular Git blob",
+        )
+    completed_members = [completed.spec, *completed.tasks]
+    if completed.plan is not None:
+        completed_members.append(completed.plan)
+    if (
+        completed.spec.artifact_id != receipt.source_artifact_id
+        or completed.spec.status != "completed"
+        or any(member.status not in _TERMINAL_STATUSES for member in completed_members)
+    ):
+        return _invalid_receipt(
+            carrier,
+            "same-origin immutable completed record is missing or invalid",
+        )
+    if source_tree != preserved_tree:
+        return _invalid_receipt(
+            carrier,
+            "preserved package file set or bytes differ from the Git source",
+        )
+    return None
+
+
+def _validate_branch_integration_receipts(
+    root: pathlib.Path,
+    base_commit: str,
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    completed: Sequence[SpecPackage],
+    ordinary_preserved: frozenset[pathlib.PurePosixPath],
+) -> tuple[frozenset[pathlib.PurePosixPath], tuple[SpecPackageFinding, ...]]:
+    removed = {
+        package.spec.path.parent: package
+        for package in previous
+        if package.spec.path.parts[2]
+        not in {item.spec.path.parts[2] for item in current}
+    }
+    carriers = (*_current_receipt_carriers(current), *_archive_receipt_carriers(completed))
+    relevant = tuple(
+        carrier
+        for carrier in carriers
+        if carrier.receipt.source_package_path in removed
+        or carrier.receipt.source_commit == base_commit
+    )
+    findings: list[SpecPackageFinding] = []
+    accepted: set[pathlib.PurePosixPath] = set()
+    for source_path, source in sorted(removed.items(), key=lambda item: item[0]):
+        matching = [
+            carrier
+            for carrier in relevant
+            if carrier.receipt.source_package_path == source_path
+        ]
+        if len(matching) > 1:
+            findings.append(
+                SpecPackageFinding(
+                    "branch-integration-receipt-duplicate",
+                    source_path.as_posix(),
+                    "exactly one current or completed Task may carry the receipt",
+                )
+            )
+            continue
+        if not matching:
+            archived = root / _standard_preserved_package_path(
+                "superseded", source_path
+            ).as_posix()
+            try:
+                present = os.lstat(archived) is not None
+            except FileNotFoundError:
+                present = False
+            except OSError:
+                present = True
+            if present:
+                if _preserved_package_is_terminal(
+                    root,
+                    source,
+                    "superseded",
+                    (),
+                    "superseded",
+                ):
+                    continue
+                findings.append(
+                    SpecPackageFinding(
+                        "branch-integration-receipt-required",
+                        source_path.as_posix(),
+                        "a non-lifecycle branch preservation requires one typed Task receipt",
+                    )
+                )
+            elif source.spec.path in ordinary_preserved:
+                continue
+            continue
+        failure = _validate_receipt_carrier(
+            root,
+            base_commit,
+            source,
+            current,
+            completed,
+            matching[0],
+        )
+        if failure is None:
+            accepted.add(source.spec.path)
+        else:
+            findings.append(failure)
+    for carrier in relevant:
+        if carrier.receipt.source_package_path not in removed:
+            findings.append(
+                _invalid_receipt(
+                    carrier,
+                    "source_package_path does not name a package removed from the base",
+                )
+            )
+    return frozenset(accepted), tuple(findings)
+
+
 def validate_repository_spec_package_lifecycle(
     root: pathlib.Path,
     current: Sequence[SpecPackage],
@@ -1132,42 +1815,33 @@ def validate_repository_spec_package_lifecycle(
     """Validate current removals against a bounded Git snapshot."""
 
     root = pathlib.Path(root)
+    base_commit = resolve_lifecycle_base(root, base_ref)
     previous = _load_base_spec_packages(
         root,
-        base_ref=resolve_lifecycle_base(root, base_ref),
+        base_ref=base_commit,
     )
-    return validate_spec_package_lifecycle(
+    completed = _load_preserved_spec_packages(root, "completed")
+    ordinary_preserved = _ordinary_preserved_paths(
+        root,
+        previous,
+        current,
+        completed,
+    )
+    branch_preserved, receipt_findings = _validate_branch_integration_receipts(
+        root,
+        base_commit,
+        previous,
+        current,
+        completed,
+        ordinary_preserved,
+    )
+    lifecycle_findings = validate_spec_package_lifecycle(
         previous,
         current,
         retired_paths=_recorded_retirements(root),
-        preserved_paths=_preserved_records(root),
+        preserved_paths=ordinary_preserved | branch_preserved,
     )
-
-
-def _preserved_records(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
-    """Return the live paths of documents preserved under the archive.
-
-    A preserved record answers "where did this go" with a file rather than a
-    pointer, so a package that reappears here left Stage 03 by completion and
-    not by withdrawal.
-    """
-
-    from scripts.lib.document_governance.registry import (
-        PRESERVED_DISPOSITIONS,
-        preserved_origin_path,
-    )
-
-    preserved: set[pathlib.PurePosixPath] = set()
-    for disposition in PRESERVED_DISPOSITIONS:
-        subtree = root / "docs/98.archive" / disposition
-        if not subtree.is_dir():
-            continue
-        for path in subtree.rglob("*.md"):
-            relative = path.relative_to(root).as_posix()
-            origin = preserved_origin_path(relative)
-            if origin is not None:
-                preserved.add(pathlib.PurePosixPath(origin))
-    return frozenset(preserved)
+    return tuple(sorted((*receipt_findings, *lifecycle_findings)))
 
 
 def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:

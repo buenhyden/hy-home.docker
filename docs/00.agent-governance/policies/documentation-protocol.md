@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.1.0"
+version: "2.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Documentation Protocol
@@ -117,26 +117,18 @@ and its still-current meaning has moved to a canonical owner.
 
 ### Retention by status
 
-| Profile family | Current-bearing flow | Terminal or disposition state |
-| --- | --- | --- |
-| Requirement | `draft → review → approved` | `superseded`, `retired` |
-| Architecture Description, Guide, Runbook | `draft → review → active` | `superseded`, `retired` |
-| ADR | `proposed → accepted` or `rejected` | `rejected`, `superseded`, `retired` |
-| Spec | `draft → review → approved → active` | `completed`, `cancelled`, `superseded` |
-| Plan | `draft → approved → active` | `completed`, `cancelled` |
-| Task | `draft → ready → in-progress`; `blocked` returns to `in-progress` | `completed`, `cancelled` |
-| Policy | `draft → review → approved → active` | `superseded`, `retired` |
-| Incident | `detected → investigating → mitigated` | `resolved` |
-| Postmortem | `draft → review` | `published` |
-| Reference publication | `draft → review → published` | `superseded`, `retired` |
-| Migration or Tombstone | none; the record is immutable when created | `sealed` |
+The Registry owns each profile's entry state, transition edges, and terminal
+states. Apply that lifecycle before disposition; do not infer permission from
+age or a folder count. Completed packages and superseded documents move to their
+registered frozen archive routes. Withdrawal uses `retired/` with a Tombstone.
+Do not record completion or supersession as a withdrawal.
 
-Run the all-files QA wrapper before the change that completes a package. It
-binds its evidence to a Task under `docs/03.specs/`. After the Spec completion
-outcome is preserved under `docs/98.archive/completed/`, a Plan or Task with no
-current consumer is removed only after its exact Git regular-blob recovery is
-proved. Do not create a body clone or redirect solely to retain transient
-execution history.
+Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
+An all-files run requires its explicit approval and Git-visible, non-ignored
+Task-owned state, and uses only the controlled wrapper. It binds its evidence to
+a Task under `docs/03.specs/`, and completion preserves that Task under
+`docs/98.archive/completed/`, where it is a frozen record that must not take new
+evidence.
 
 An active stage may hold no package at all. Stage 03 is empty exactly when no
 change is in flight, which is a state to reach rather than avoid. A registered
@@ -151,18 +143,18 @@ Retire a package or a standalone document only when all of these hold.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical Stage 00, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.
-4. One Stage 98 Tombstone records the retirement, and the document itself is
-   preserved under `docs/98.archive/retired/`. Neither half is evidence alone.
+4. Preserve the original body in the matching Stage 98 disposition route.
+   Withdrawal additionally requires one Tombstone paired with `retired/`;
+   completion and supersession do not require a Tombstone.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
 investigate, not permission to delete.
 
-Preconditions 1 to 3 are authoring obligations and are recorded in the
-Tombstone's `Reason`. Precondition 4 is the enforced one: the comparison base
-of a change is its branch point, so a package that is `active` there can never
-be observed as terminal by the same change that retires it. The Tombstone is
-therefore the tracked evidence that the other three were met.
+Record the authoring obligations and consumer cutover in the current Task's
+promotion receipt. For withdrawal, the Tombstone's `Reason` also records the
+disposition rationale. Verification must compare preserved bytes with their
+recorded source without rewriting the frozen body to manufacture a later status.
 
 Age may trigger a disposition review. It never triggers a deletion.
 
@@ -178,6 +170,34 @@ A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
 namespace of the document it retires. Every stage that can retire a document has
 one. A missing namespace is a namespace to create, never a reason to remove a
 document without its Tombstone.
+
+### Divergent branch package handoff
+
+This rule applies only to an explicitly approved integration of divergent,
+committed lineages when the same source identity is already an immutable
+completed archive Spec record. It does not permit ordinary removal of a
+nonterminal package.
+
+Preserve the source packet's original status and bytes unchanged, and copy the
+full packet to `docs/98.archive/superseded/<original-path>`. The target current
+in-progress Task carries the integration receipt in
+`branch_integration_receipts`: the exact source commit, path, and identity plus
+a receipt for the distinct active integration owner. That active package owns
+the integration receipt and acceptance mapping. Before
+its atomic completion, every still-current obligation and inbound consumer is
+cut over to its canonical Stage 00, 01, 02, or 05 owner.
+
+There is exactly one carrier state. After target atomic completion and
+preservation, the matching Task under
+`docs/98.archive/completed/<target-package>/` is the durable carrier. Its
+receipt remains unchanged across the move; the archived Task is frozen evidence,
+not current policy.
+
+This handoff creates no Tombstone or new identity, does not reopen a terminal
+package, and never treats Git-only deletion or an allowlist as sufficient
+evidence. Machine guards verify the full source tree against the superseded
+mirror, the exact source commit/path/identity, the existing immutable completed
+same-ID Spec record, and the distinct target.
 
 ### Implementation coverage
 
