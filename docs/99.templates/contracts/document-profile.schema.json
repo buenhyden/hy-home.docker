@@ -21,7 +21,23 @@
     },
     "common": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
+        "allowed_statuses": { "$ref": "#/$defs/stringList" },
+        "archive_source_prefixes": { "$ref": "#/$defs/stringList" },
+        "frontmatter_order": { "$ref": "#/$defs/stringList" },
+        "generated_outputs": { "$ref": "#/$defs/stringMap" },
+        "globally_forbidden": { "$ref": "#/$defs/stringList" },
+        "inventory_excludes": { "$ref": "#/$defs/stringList" },
+        "root_exceptions": { "$ref": "#/$defs/stringMap" },
+        "template_placeholders": { "$ref": "#/$defs/stringMap" },
+        "template_required_placeholders": { "$ref": "#/$defs/stringList" },
+        "terminal_statuses": { "$ref": "#/$defs/stringList" },
+        "transitions": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/stringList" }
+        },
+        "typed_keys": { "$ref": "#/$defs/stringList" },
         "template_initial_version": {
           "type": "string",
           "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
@@ -118,6 +134,49 @@
     }
   },
   "$defs": {
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "profileException": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "const": "year-directory" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "owner"],
+          "properties": {
+            "kind": {
+              "enum": ["delegate-reference-members", "provider-owned-binding"]
+            },
+            "owner": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "status", "paths"],
+          "properties": {
+            "kind": { "const": "frozen-legacy-status" },
+            "status": { "type": "string", "minLength": 1 },
+            "paths": {
+              "$ref": "#/$defs/stringList",
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
     "stringList": {
       "type": "array",
       "items": {
@@ -220,7 +279,7 @@
         "exceptions": {
           "type": "array",
           "items": {
-            "type": "object"
+            "$ref": "#/$defs/profileException"
           }
         },
         "frontmatter_values": {

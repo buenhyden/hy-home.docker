@@ -572,6 +572,9 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
 
 
 class RegistrySchemaBoundaryTests(unittest.TestCase):
+    def test_current_registry_is_accepted_by_schema(self) -> None:
+        self.assertEqual([], self.schema_errors(lambda raw: None))
+
     def schema_errors(self, mutate) -> list[object]:
         raw = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")

@@ -297,6 +297,16 @@ active and its acceptance criterion 15 remains pending; the merged development
 branch/worktree is retained. The completed allocation and lifecycle corrections
 are not reopened by this separate baseline schema gap.
 
+Renewed schema approval (2026-09-05): the user explicitly authorized the
+minimal missing-rule correction and independent review. Only the existing
+registry schema was tightened: enumerate the existing common keys and their
+types, reject unknown common keys, and validate the four already-registered
+exception kinds and their existing fields. Registry values, lifecycle edges,
+IDs, historical bodies and negative assertions are unchanged. The three
+existing schema methods reproduced five failures; after correction all four
+methods passed in 0.079 seconds, including a new positive assertion that the
+current complete registry remains valid. This does not yet claim a full pass.
+
 The lifecycle correction is committed at `2d45f5cbd`: only the Plan sequence
 and its existing generic execution-state regression changed. The focused
 method passed in 0.390 seconds; policy/Python review passed with no actionable
