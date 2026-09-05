@@ -1,8 +1,8 @@
 ---
 title: "Governance and QA Convergence Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -16,6 +16,16 @@ created: "2026-09-05"
 # Governance and QA Convergence Specification
 
 ## Overview
+
+Closeout review checkpoint (2026-09-05): the user approved transferring this
+package's retained obligations to SPEC-0173 and preserving this entire packet.
+The original implementation narrative below is dated evidence, not a request
+to restore retired wrappers or execute remote delivery. Current Stage 00 policy
+allows an empty `.agents/` root and retains direct canonical Codex skill reads.
+The integrated workflow contract owns executable composition. Independent
+provider, gate, Python, and policy integration reviews passed; final aggregate
+acceptance remains with SPEC-0173 Task 0006. This is forward review for handoff,
+not retrospective completion of this package's original remote scope.
 
 Remove the retired shared runtime directory, converge provider-neutral governance
 and provider adapters, and make local and hosted validation follow the same

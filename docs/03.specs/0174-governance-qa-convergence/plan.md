@@ -1,8 +1,8 @@
 ---
 title: "Governance and QA Convergence Plan"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -15,6 +15,10 @@ created: "2026-09-05"
 # Governance and QA Convergence Plan
 
 ## Objective
+
+The user approved bounded closeout under SPEC-0173's existing W5 sequence.
+The earlier steps below are preserved as the original plan; they do not
+authorize renewed implementation, remote publication, or retired interfaces.
 
 Execute the bounded [specification](spec.md) with test-first logical units and
 explicit local/hosted evidence. Use the executing-plans workflow for this plan.

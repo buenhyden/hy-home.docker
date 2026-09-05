@@ -1,8 +1,8 @@
 ---
 title: "Governance and QA Convergence Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -35,6 +35,19 @@ other in-progress work and recording each verified logical change.
   revert or closing the unmerged PR. No runtime, secret, protection, or merge change.
 
 ## Work Log
+
+### Approved closeout review — 2026-09-05
+
+The user requested finishing existing packages without new Spec/Plan/Task IDs,
+merging local histories, and retaining a push-ready main without publishing.
+SPEC-0173 owns the accepted integration and final verification. Independent
+provider, gate, Python and policy reviews passed on the resolved main tree.
+The temporary `governance-audit-snapshot.yml` transport was removed as already
+required by this Task; no workflow was dispatched and no remote state changed.
+This checkpoint enters ready for the approved handoff only. The original
+execution and hosted observations below remain historical evidence.
+
+### Original execution observations
 
 - Retrieved committed repository objects through a read-only temporary Actions
   snapshot. The temporary workflow must be removed from the delivered tree.
