@@ -295,6 +295,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0172-document-contract-convergence/plan.md](../../../03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0172-document-contract-convergence/spec.md](../../../03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/plan.md](../../../03.specs/0173-governance-qa-surface-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/spec.md](../../../03.specs/0173-governance-qa-surface-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0002-gate-composition-convergence.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0002-gate-composition-convergence.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0003-script-and-operation-ownership.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0003-script-and-operation-ownership.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md) | Markdown reference |
+| [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
