@@ -328,7 +328,7 @@ git commit -m "docs(spec): preserve completed document convergence"
 - Modify: `tests/lib/gate/test_ci_gate_contract.py`
 - Modify: `tests/lib/gate/test_github_workflow_contract.py`
 - Modify: `tests/validation/test_script_manifest.py`
-- Modify: `tests/lib/document_governance/test_surface_ownership.py`
+- Modify: `tests/lib/test_surface_ownership.py`
 - Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0002-gate-composition-convergence.md`
 
 **Interfaces:**
@@ -338,7 +338,7 @@ git commit -m "docs(spec): preserve completed document convergence"
 - Produces: `canonical_invocation_key(...)`, a workflow-contract-owned public
   suite registry, and duplicate-free public plans.
 
-- [ ] **Step 1: Add a helper that builds every public plan without execution**
+- [x] **Step 1: Add a helper that builds every public plan without execution**
 
 In `tests/validation/test_ci_gate_runner.py`, add:
 
@@ -358,7 +358,7 @@ def build_public_plan(profile: str, context: runner.ExecutionContext):
 Update the production signatures in the same Task so the workflow contract,
 not a manifest-derived suite model, is passed to plan construction.
 
-- [ ] **Step 2: Add the failing canonical invocation uniqueness test**
+- [x] **Step 2: Add the failing canonical invocation uniqueness test**
 
 ```python
 def test_every_public_plan_has_unique_canonical_invocations(self) -> None:
@@ -380,7 +380,7 @@ def test_every_public_plan_has_unique_canonical_invocations(self) -> None:
         self.assertEqual(len(keys), len(set(keys)), (profile, context))
 ```
 
-- [ ] **Step 3: Verify RED against the two measured duplicates**
+- [x] **Step 3: Verify RED against the two measured duplicates**
 
 Run:
 
@@ -391,7 +391,7 @@ PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner.CiGateRunn
 Expected: FAIL for Compose under full/local and for `npm ci --prefix
 projects/storybook/nextjs` under pull-request/push/workflow-dispatch plans.
 
-- [ ] **Step 4: Move public suite composition into the workflow contract**
+- [x] **Step 4: Move public suite composition into the workflow contract**
 
 Make `public_gate` in `.github/workflow-contract.yml` own, for every validator:
 
@@ -410,7 +410,7 @@ second file. Remove `public_suites`, `execution_argv`, and
 `execution_contexts` from all manifest rows. Make the manifest validator reject
 those keys so executable ownership cannot drift back.
 
-- [ ] **Step 5: Implement canonical invocation identity and rejection**
+- [x] **Step 5: Implement canonical invocation identity and rejection**
 
 Add to `scripts/validation/ci_gate_runner.py`:
 
@@ -430,7 +430,7 @@ After plan construction, collect keys and raise
 `GateContractError("ci-gate-invocation-duplicate", gate_id, message)` when two
 gate IDs produce one key. Keep the diagnostic value stable in focused tests.
 
-- [ ] **Step 6: Remove the duplicate Compose aggregate path**
+- [x] **Step 6: Remove the duplicate Compose aggregate path**
 
 The current no-argument Compose validator already validates every declared
 profile independently. Keep one `leaf.compose-validation` invocation and remove
@@ -442,7 +442,7 @@ grammar after all callers use public `changed|full`.
 Do not set `HYHOME_COMPOSE_PROFILES` in full. The existing no-environment route
 continues to enumerate every declared profile.
 
-- [ ] **Step 7: Share the frontend dependency setup node**
+- [x] **Step 7: Share the frontend dependency setup node**
 
 Replace `setup.frontend-node-dependencies` and
 `setup.storybook-node-dependencies` with one setup node whose single command is:
@@ -454,14 +454,14 @@ scripts/lib/gate/ci_gate_adapters.py run-npm ci --prefix projects/storybook/next
 Point both frontend and Storybook aggregates at that node. DAG expansion must
 emit the shared node once by gate ID and once by canonical invocation identity.
 
-- [ ] **Step 8: Remove the manifest-backed suite parser**
+- [x] **Step 8: Remove the manifest-backed suite parser**
 
 Move reusable bounded parsing into `scripts/lib/gate/ci_gate_contract.py`, update
 imports, and delete `scripts/lib/document_governance/suite_registry.py` only
 after `rg -n 'document_governance.*suite_registry|load_public_suite_registry'`
 returns no current consumer.
 
-- [ ] **Step 9: Run focused GREEN tests and inspect all plans**
+- [x] **Step 9: Run focused GREEN tests and inspect all plans**
 
 Run:
 
