@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.1.0"
+version: "2.2.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -43,9 +43,15 @@ risk on behalf of their current owners.
 
 - Repository: `buenhyden/hy-home.docker`.
 - Comparison branch and commit: `main` at
-  `4c6d211129615eab372d720ebd209b6c27618c86`.
+  `71da6654e2fa3def174b238ad309c92fe46e9dae`. The earlier assessed baseline
+  `4c6d211129615eab372d720ebd209b6c27618c86` stays preserved in the dated
+  member revalidations and in RES-0085; it is not rewritten into current state.
 - Repository observation date and external-source confirmation date:
   2026-09-05.
+- Observation checkout scope: an isolated `main`-only clone and a developer
+  clone holding unmerged local branches. The two disagree on one registered
+  check at the same commit, so both readings are recorded rather than one being
+  presented as the repository verdict.
 - Included: `docs/00.agent-governance/`, Stages 01, 02, 03, 05, 90, 98, and
   99; root entrypoints; `.agents/`, `.claude/`, `.codex/`, workflows, Compose
   declarations, scripts, tests, and generated navigation ownership.
@@ -98,6 +104,33 @@ risk on behalf of their current owners.
 | RES-0084 | GitHub Actions, CI, remote enforcement | Platform analysis predated the aggregate-check rollout | Update adoption and evidence boundary in place | RES-0084 |
 | RES-0085 | Current `main` baseline | Its question duplicated the current-baseline purpose already owned by m0020 | Consolidate current ownership into m0020; preserve RES-0085 as dated recovery evidence in `review` | RES-0002-m0020 and RES-0085 evidence |
 | New RES-0096 candidate | Same question set | Would duplicate existing owners and observation cycle | Do not create | None |
+
+### 2026-09-05 Baseline 71da6654 Decision Record
+
+This pass re-observed the same question set at
+`main@71da6654e2fa3def174b238ad309c92fe46e9dae` and made no structural change.
+Every requested category already resolved to exactly one owning member, so the
+package identity, member identities, `created` values, and the member
+allocation below are unchanged.
+
+| Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
+| --- | --- | --- | --- | --- |
+| RES-0002 README | A–G navigation | Scope cited a baseline three commits behind `main` | Advance the current-baseline pointer; preserve the dated one | RES-0002 README, same identity |
+| RES-0002-m0006 | B12, D10, D11 | Identity-space evidence for `SPEC-0173` was unrecorded | Leave the member untouched while SPEC-0172 work is in flight; record the observation with the verification owner instead | RES-0002-m0019 |
+| RES-0002-m0014 | F1–F13 | A quoted gate verdict carried no checkout identity | Add a dated reproduction qualifier; route analysis to m0019 | RES-0002-m0014 |
+| RES-0002-m0019 | F14–F18 | Verification determinism across checkouts was unanalyzed | Add the three-environment comparison as the canonical analysis | RES-0002-m0019 |
+| RES-0002-m0020 | A3, A20 | Current-baseline pointer lagged the delta | Advance the pointer and record the delta effect | RES-0002-m0020 |
+| RES-0002-m0001–m0005, m0007–m0013, m0015–m0018 | Remaining categories | No owner changed in the delta | Preserve unchanged; no re-dating without re-observation | Same members |
+| RES-0084 | E7, E9 | Its dated observations are outside this delta | Leave unchanged | RES-0084 |
+| RES-0085 | Dated request scope | Its `4c6d2111` citations are its purpose | Do not update; preserving the dated baseline is the reason it exists | RES-0085 |
+| New research package candidate | Same question set | Would duplicate owners that already exist | Do not create | None |
+
+The one substantive addition is that a local gate verdict is checkout-relative:
+at this single commit the full profile passes in an isolated `main`-only clone
+and fails in a developer clone that can reach an unmerged branch. Both readings
+are recorded. The repository contract that this observation touches belongs to
+Stage 00 and Stage 99, so the follow-up runs through the normal
+Requirement-to-Task chain rather than through this package.
 
 ## Findings
 
@@ -261,7 +294,9 @@ Common official sources re-opened on 2026-09-05:
 
 Repository sources:
 
-- Baseline commit `4c6d211129615eab372d720ebd209b6c27618c86`.
+- Baseline commit `71da6654e2fa3def174b238ad309c92fe46e9dae`, with the earlier
+  assessed baseline `4c6d211129615eab372d720ebd209b6c27618c86` preserved as
+  dated evidence.
 - [Stage 00](../../../00.agent-governance/README.md),
   [Stage 99 Registry](../../../99.templates/registry.json),
   [Stage 03](../../../03.specs/README.md), and

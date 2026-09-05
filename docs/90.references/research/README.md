@@ -1,6 +1,6 @@
 ---
 title: "Research Packages"
-version: "1.2.0"
+version: "1.3.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
@@ -36,10 +36,18 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 
 The current workspace baseline is consolidated in
 [RES-0002-m0020](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
-against `main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b`, observed on
-2026-09-05. RES-0085 preserves the earlier assessment boundary at
-`main@4c6d211129615eab372d720ebd209b6c27618c86` and its binding request and
-identity-recovery evidence while moving through publication review.
+against `main@71da6654e2fa3def174b238ad309c92fe46e9dae`, observed on
+2026-09-05. The consolidation baseline
+`main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b` and the assessed baseline
+`main@4c6d211129615eab372d720ebd209b6c27618c86` remain preserved as dated
+evidence; RES-0085 continues to own the latter together with its binding
+request and identity-recovery evidence while moving through publication review.
+
+A local gate verdict at that baseline is checkout-relative: the full profile
+passes in an isolated `main`-only clone and fails in a developer clone that can
+reach an unmerged branch. Quote a verdict with its commit and reachable-ref
+scope. [RES-0002-m0019](./0002-agentic-engineering-research-pack/m0019-verification-validation.md)
+owns that analysis.
 
 Topical research remains owned by RES-0002 and RES-0084. Repository-specific
 implementation truth remains in Stage 00 policies, provider adapters, Stage 03

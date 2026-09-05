@@ -1,6 +1,6 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.1.0"
+version: "1.2.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -434,6 +434,57 @@ deployment, provider quality, cost, or operator outcomes.
 Recommendation: every acceptance claim needs a named intended use, target,
 observer, command or evidence, date, and residual risk owner. Official basis:
 [ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en).
+
+## 2026-09-05 Reproduction-Environment Revalidation
+
+Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. Three commits
+separate this baseline from `main@4c6d211129615eab372d720ebd209b6c27618c86`:
+`6201fa04`, the merge `a89c600c`, and `71da6654`. They changed Stage 90
+research, the two generated LLM Wiki data packages, the SPEC-0172 Task, and
+`.github/rulesets/main-protection.md`, which advanced from a proposal to a
+tracked record of the approved 2026-09-05 read-back. No policy, script,
+workflow, or infrastructure owner changed, so the topical conclusions recorded
+above still hold at this revision.
+
+This pass adds one finding the earlier revalidation could not see: a local gate
+verdict is reproducible only together with the checkout that produced it.
+`scripts/lib/document_governance/identity_history.py` resolves issued
+identities through `git rev-list --objects --all`, so the observed high water
+depends on which refs the clone can reach rather than on the commit under test.
+Three observations of the same commit on 2026-09-05:
+
+| Observation environment | Refs reachable | `run-ci-gate.py --profile full` | Distinguishing evidence |
+| --- | --- | --- | --- |
+| Isolated clone, `main` only | `refs/heads/main`, origin mirrors, tags | Pass, exit `0` | Registry `identity_spaces.spec` high water `172` equals observed `172` |
+| Developer clone holding unmerged work | Adds `codex/0173-governance-qa-surface-convergence` | Fail, 1 failure of 329 | `identity-history-regression`: `registry high_water=172 observed=173` |
+| Developer working tree | Same refs plus 48 uncommitted SPEC-0172 files | Fail, 7 failures of 86, aborting before the identity step | Registry schema suites are written test-first and not yet satisfied |
+
+The number the check calls "observed" is `173`, contributed by commit
+`575d866b` on the unmerged local branch
+`codex/0173-governance-qa-surface-convergence`. No `docs/03.specs/0173*`
+package exists at this baseline and no tracked document references `SPEC-0173`,
+so a clone without that branch observes `172` and the same check passes.
+Whether `173` must stay reserved is an identity and Spec ownership question,
+not a Stage 90 ruling.
+
+The isolated result verifies the commit. The other two report workstation
+state: an unmerged local branch in one case, in-flight test-first work in the
+other. None of the three validates deployment, provider quality, cost, or
+operator outcome, and the `4c6d2111` revalidation above remains valid as
+recorded rather than being corrected by this observation.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Verification determinism | Registered profiles run identical steps for every caller | Local-executed | Identity history reads `--all` refs, so one commit yields two verdicts | rerun the failure in an isolated single-branch clone before accepting it |
+| Regression signal quality | The finding names the exact space, registry value, and observed value | Local-executed, Repository-enforced | A local-only branch is reported exactly like a committed regression | compare an isolated clone before routing a defect to an owner |
+| In-flight work isolation | Uncommitted work is checked by the same profile as the baseline | Local-executed | A red gate does not separate test-first work from real drift | run the committed baseline and the working tree as separate observations |
+| Hosted comparability | Hosted checkout fetches a narrower ref set than a developer clone | Hosted-executed at cutoff | Local and Hosted verdicts can legitimately disagree | compare only same-scope checkouts |
+
+Recommendation: record the checkout identity, meaning the commit together with
+the reachable-ref scope, next to every local gate verdict, and reproduce a
+failure in an isolated clone before treating it as a repository defect. Acting
+on this finding requires a separate Requirement-to-Task chain; Stage 90 states
+the observation and does not own the identity or gate contract.
 
 ## Maintenance
 
