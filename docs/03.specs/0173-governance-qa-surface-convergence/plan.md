@@ -477,7 +477,7 @@ python3 scripts/validation/run-ci-gate.py --profile full --explain
 Expected: all tests PASS; the five context plans have zero duplicate canonical
 keys; the six suite names and two public profiles are unchanged.
 
-- [ ] **Step 10: Commit the gate cutover**
+- [x] **Step 10: Commit the gate cutover**
 
 ```bash
 git add .github/workflow-contract.yml scripts/lib/gate scripts/validation/ci_gate_runner.py scripts/manifest.yaml tests
