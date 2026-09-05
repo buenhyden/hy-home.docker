@@ -2,7 +2,7 @@
 title: "Governance and QA Convergence Specification"
 version: "0.2.0"
 type: "sdlc/spec"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -10,6 +10,7 @@ artifact_id: "SPEC-0174"
 parent_ids:
 - "REQ-0024"
 - "AD-0027"
+superseded_by: "SPEC-0173"
 created: "2026-09-05"
 ---
 

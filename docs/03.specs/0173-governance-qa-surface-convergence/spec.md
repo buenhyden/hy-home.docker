@@ -14,6 +14,8 @@ parent_ids:
 - "AD-0030"
 - "ADR-0029"
 - "ADR-0031"
+supersedes:
+- "SPEC-0174"
 created: "2026-09-05"
 ---
 

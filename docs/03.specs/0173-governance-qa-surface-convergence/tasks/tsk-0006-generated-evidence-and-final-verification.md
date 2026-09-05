@@ -227,7 +227,7 @@ does not need relaxation. Focused regression covers the rejected combination
 and the three valid forward combinations. Final gate and cleanup stay pending
 until these corrections pass review.
 
-Latest disposition: **BLOCKED before final aggregate and cleanup**. Local merge
+Prior disposition: **BLOCKED before final aggregate and cleanup**. Local merge
 `eb36be1c1` preserves both parents (`c9410cd11`, `1668027e5`); checkpoint
 `a052859eb` records SPEC-0174's approved closeout review, not completion.
 The uncommitted next lifecycle checkpoint returned `spec-package-invalid` and
@@ -264,6 +264,33 @@ check instruction. The manifest and workflow checks passed; generated wiki and
 security readiness checks passed. Corpus lifecycle against c02 passed after
 removing the empty source directory left by exact packet preservation.
 No remote query, push, PR, deployment, secret access, or global mutation occurred.
+
+### Approved correction execution
+
+The lifecycle correction is committed at `2d45f5cbd`: only the Plan sequence
+and its existing generic execution-state regression changed. The focused
+method passed in 0.390 seconds; policy/Python review passed with no actionable
+findings. SPEC-0174 then followed `6ec521308` and `be0d09e0f`; each focused
+corpus lifecycle check passed. The subsequent full-packet superseded/cancelled
+handoff also passed with zero violations and 151 preserved bodies.
+
+The allocation correction verifies actual non-first merge-parent lineage,
+the fork's unissued number, the parent's issued number, regular canonical
+identity declarations, and conflicting canonical ownership across merged
+parents. Preserved paths use the same origin mapping in both predecessor and
+current inputs. The original new regression failed before implementation.
+The identity owner suite passed 25/25 in 26.561 seconds after the symmetric
+archive correction. The independently requested two-parent conflict case
+then passed with its covering regression (2 tests, 3.307 seconds); unchanged
+full owner tests were not repeated. Scoped Ruff, compilation and diff checks
+passed. The actual SPEC-0173 mapping against pinned `c02fa282d` returned no
+allocation findings. No high-water reduction, per-ID exception, changed
+comparison base or frozen-body modification was used.
+
+During execution, the local `origin/main` reflog changed to `be0d09e0f` with
+`update by push`; this agent did not run a push. Regression remained pinned
+to c02 so that the independently changed tracking ref could not mask the
+original defect. Remote runtime and hosted checks are still unverified here.
 
 Checkpoint recorded 2026-09-05: local `main` is at
 `c9410cd11060007288fc07179bfa4b475ed6db3f` while merging the approved feature

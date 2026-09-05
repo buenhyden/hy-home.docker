@@ -300,9 +300,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) | Markdown reference |
-| [docs/03.specs/0174-governance-qa-convergence/plan.md](../../../03.specs/0174-governance-qa-convergence/plan.md) | Markdown reference |
-| [docs/03.specs/0174-governance-qa-convergence/spec.md](../../../03.specs/0174-governance-qa-convergence/spec.md) | Markdown reference |
-| [docs/03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md](../../../03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
@@ -1097,6 +1094,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |
+| [docs/98.archive/superseded/03.specs/0174-governance-qa-convergence/plan.md](../../../98.archive/superseded/03.specs/0174-governance-qa-convergence/plan.md) | Markdown reference |
+| [docs/98.archive/superseded/03.specs/0174-governance-qa-convergence/spec.md](../../../98.archive/superseded/03.specs/0174-governance-qa-convergence/spec.md) | Markdown reference |
+| [docs/98.archive/superseded/03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md](../../../98.archive/superseded/03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md) | Markdown reference |
 | [docs/98.archive/superseded/90.references/audits/0033-readme/README.md](../../../98.archive/superseded/90.references/audits/0033-readme/README.md) | folder index |
 | [docs/98.archive/superseded/90.references/research/0080-roadmap-v1/README.md](../../../98.archive/superseded/90.references/research/0080-roadmap-v1/README.md) | folder index |
 

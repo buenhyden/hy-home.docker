@@ -2,7 +2,7 @@
 title: "Governance and QA Convergence Task"
 version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "cancelled"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -35,6 +35,18 @@ other in-progress work and recording each verified logical change.
   revert or closing the unmerged PR. No runtime, secret, protection, or merge change.
 
 ## Work Log
+
+### Terminal handoff — 2026-09-05
+
+The approved closeout followed real forward checkpoints `a052859eb`,
+`6ec521308`, and `be0d09e0f`. Their corpus lifecycle checks passed. The corrected
+checkpoint order and its regression passed independent policy/Python review.
+The retained provider, Compose, gate, documentation and preservation obligations
+are integrated on main under SPEC-0173. Its Task 0006 owns final acceptance and
+the approved allocation correction. This Spec is superseded and its Plan/Task
+are cancelled, not retrospectively completed. The full packet is preserved;
+the original local/hosted observations below remain dated evidence. No new
+remote operation or native-runtime acceptance is claimed by this handoff.
 
 ### Approved closeout review — 2026-09-05
 
