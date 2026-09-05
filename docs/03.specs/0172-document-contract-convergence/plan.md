@@ -2,7 +2,7 @@
 title: "Document Contract Convergence Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-04"
 layer: "specs"
