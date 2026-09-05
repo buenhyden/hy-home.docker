@@ -818,7 +818,7 @@ git commit -m "refactor(test): converge fixture and ownership boundaries"
   migration data, native provider projections, and one completion-time changed
   aggregate route.
 
-- [ ] **Step 1: Add paired current-versus-history path tests**
+- [x] **Step 1: Add paired current-versus-history path tests**
 
 Add focused tests with one shared legacy sample:
 
@@ -837,7 +837,7 @@ def test_history_reader_recovers_legacy_requirement_identity(self) -> None:
 The current classifier and historical reader must be distinct imported
 functions. Do not add an active compatibility option.
 
-- [ ] **Step 2: Verify RED for legacy current classification**
+- [x] **Step 2: Verify RED for legacy current classification**
 
 Run:
 
@@ -849,7 +849,7 @@ PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_metadata_val
 Expected: the new current-classifier assertion fails while the history reader
 continues to recover the issued identity.
 
-- [ ] **Step 3: Isolate historical grammar**
+- [x] **Step 3: Isolate historical grammar**
 
 Move `prd-`, `srs-`, `ifr-`, `spec-*`, and legacy `chg-*` parsing used only for
 issued-ID or archive recovery into `identity_history.py` or `archive.py`.
@@ -857,14 +857,14 @@ Remove `_legacy_profiles`, `_PRD_PATH`, `_SRS_PATH`, `_IFR_PATH`, and legacy
 relation fallback from active metadata/profile code. Update synthetic current
 tests to use numeric current paths and owner-qualified Requirement IDs.
 
-- [ ] **Step 4: Correct current operator examples**
+- [x] **Step 4: Correct current operator examples**
 
 Replace `docs/03.specs/spec-*/plan.md` and `spec-*/task.md` in the harness policy
 with the registered numeric package and `tasks/tsk-####-*.md` paths. Replace the
 release runbook's `spec126-*` command with the generic operation example path
 created in Task 4.
 
-- [ ] **Step 5: Prove target-surface data has no current semantic consumer**
+- [x] **Step 5: Prove target-surface data has no current semantic consumer**
 
 Run:
 
@@ -877,7 +877,7 @@ python3 scripts/validation/check-document-corpus-lifecycle.py
 Update current code, tests, indexes, and generated consumers until only the four
 packages and their retirement patch remain.
 
-- [ ] **Step 6: Retire the four completed migration DATA packages**
+- [x] **Step 6: Retire the four completed migration DATA packages**
 
 Recheck that the Tombstone high-water is still `0198` and stop on any collision.
 In one atomic retirement patch, advance the Registry high-water to `0202` and
@@ -898,7 +898,7 @@ is recorded. Update the current data and archive indexes in the same patch. Do
 not change publication frontmatter before the move and do not edit the archived
 body after it enters Stage 98.
 
-- [ ] **Step 7: Add a failing provider compatibility-root test**
+- [x] **Step 7: Add a failing provider compatibility-root test**
 
 In `tests/validation/test_provider_surface_renderer.py`, assert the expected
 projection has only native/shared roots:
@@ -915,7 +915,7 @@ def test_projection_omits_provider_neutral_agent_compatibility_root(self) -> Non
 Expected before implementation: FAIL because `.agents/agents` is still
 generated.
 
-- [ ] **Step 8: Cut provider consumers to the direct renderer**
+- [x] **Step 8: Cut provider consumers to the direct renderer**
 
 Replace every current command with:
 
@@ -930,7 +930,7 @@ Remove the compatibility section's `agent_pattern`, remove `.agents/agents` from
 stale projection files. Delete `sync-provider-surfaces.sh` after zero current
 inbound references.
 
-- [ ] **Step 9: Converge PostToolUse and Stop responsibilities**
+- [x] **Step 9: Converge PostToolUse and Stop responsibilities**
 
 Keep PostToolUse formatting/syntax behavior but remove its unconditional public
 changed aggregate. Make Stop detect any in-scope Git-visible change and execute
@@ -938,7 +938,7 @@ the changed profile once. Preserve the retry guard and logical-commit safety
 gate. Update both Claude and Codex generated hook projections from the Stage 00
 registry and add parity tests for the single completion-time aggregate.
 
-- [ ] **Step 10: Run focused GREEN checks**
+- [x] **Step 10: Run focused GREEN checks**
 
 Run:
 
@@ -956,7 +956,7 @@ python3 scripts/validation/check-document-links.py --mode all
 Expected: PASS; current classifiers reject legacy paths; history recovery
 passes; `.agents/agents` and compatibility wrapper references are absent.
 
-- [ ] **Step 11: Commit document and provider retirement**
+- [x] **Step 11: Commit document and provider retirement**
 
 ```bash
 git add docs scripts tests .agents .claude .codex .github/workflow-contract.yml
@@ -968,7 +968,8 @@ git commit -m "refactor(governance): retire compatibility residue"
 **Files:**
 
 - Modify through generators: declared current outputs under `docs/90.references/data/**`
-- Modify through generator: `llms.txt`, `llms-full.txt`, DATA-0076, and DATA-0082
+- Modify through generator: DATA-0076 and DATA-0082
+- Verify: authored `llms.txt` entrypoint; do not create excluded `llms-full.txt`
 - Modify: `docs/03.specs/README.md`
 - Modify: `docs/90.references/data/README.md`
 - Modify: `scripts/README.md`, `tests/README.md`, `.github/repository-surface.md`
@@ -1000,11 +1001,12 @@ Run the applicable write modes in dependency order:
 
 ```bash
 python3 scripts/operations/provider_surface_renderer.py --write
-bash scripts/operations/generate-compose-profile-service-coverage.sh
-bash scripts/operations/generate-tech-stack-version-provenance.sh
-bash scripts/validation/generate-audit-implementation-matrix.sh
-bash scripts/validation/generate-security-automation-readiness.sh
-bash scripts/security/generate-supply-chain-sample-service-summary.sh
+bash scripts/operations/generate-compose-profile-service-coverage.sh --write
+bash scripts/operations/generate-tech-stack-version-provenance.sh --write
+bash scripts/validation/generate-audit-implementation-matrix.sh --write
+bash scripts/validation/generate-security-automation-readiness.sh --write
+bash scripts/security/generate-supply-chain-sample-service-summary.sh --write
+bash scripts/validation/report-provider-hook-parity.sh --write
 python3 scripts/knowledge/generate-llm-wiki.py --write
 ```
 
@@ -1022,6 +1024,7 @@ bash scripts/operations/generate-tech-stack-version-provenance.sh --check
 bash scripts/validation/generate-audit-implementation-matrix.sh --check
 bash scripts/validation/generate-security-automation-readiness.sh --check
 bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
+bash scripts/validation/report-provider-hook-parity.sh --check
 python3 scripts/knowledge/generate-llm-wiki.py --check
 ```
 
@@ -1197,6 +1200,12 @@ The completion evidence must contain:
   consumer.
 - Treat completed Specs as evidence. Current policy, Registry, architecture,
   operation, and executable contracts remain authoritative.
+- Task 6 generator commands use explicit `--write` after Task 3 changed their
+  default to non-mutating check mode. The original unflagged write commands
+  were stale Plan grammar, not permission to restore default mutation.
+- LLM Wiki generation owns only DATA-0076 and DATA-0082. Its manifest and the
+  authored `llms.txt` entrypoint explicitly exclude a full-content export;
+  verify the entrypoint but do not generate `llms-full.txt`.
 
 ## Related Documents
 

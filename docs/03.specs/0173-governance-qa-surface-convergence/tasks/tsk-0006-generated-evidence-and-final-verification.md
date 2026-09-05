@@ -2,7 +2,7 @@
 title: "Generated Evidence and Final Verification Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
@@ -31,14 +31,22 @@ without expanding into remote delivery.
 
 ## Work Log
 
-This planning artifact was created on 2026-09-05. No generator, aggregate gate,
-or independent implementation review has run for SPEC-0173. During an
-authorized execution, record each generator write together with its check mode
-and avoid rerunning an aggregate against unchanged input.
+Task 5's implementation milestone passed independent code, Python, and policy
+review; its corrections are committed as `0b237043`, `0fbbb962`, and `3fbb62aa`.
+The user authorized proceeding with final verification and cleaning the feature
+branch/worktree after local integration. No remote mutation is authorized.
+
+The Task 5 read-only preflight identified two stale outputs: DATA-0059's
+generator emits an obsolete metadata envelope, and DATA-0078 has old inventory
+counts. DATA-0065 must preserve the corrected source audits' historical
+designation in derived tables. Correct these reproduced generator defects at
+their existing source owners with RED/GREEN tests before regeneration; never
+hand-edit generated output or weaken validators. No Task 6 write or aggregate
+has run at this ready checkpoint.
 
 ## Verification Evidence
 
-No execution evidence exists in this draft. Final acceptance requires all
+Final execution evidence is pending. Final acceptance requires all
 focused checks in the Plan, `git diff --check`, and exactly one successful
 `python3 scripts/validation/run-ci-gate.py --profile full` on the final local
 tree.
