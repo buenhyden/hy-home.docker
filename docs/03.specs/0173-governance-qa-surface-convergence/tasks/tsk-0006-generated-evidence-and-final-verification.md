@@ -272,6 +272,31 @@ document-link leaf: acceptance row 11 linked a directory instead of a regular
 file. Metadata contracts had zero violations. The link now names the actual
 Spec-package validator; this is a receipt-link correction, not a waived check.
 
+The retry at `86997497d` passed metadata and link checks, then stopped at the
+metadata unittest leaf (75 tests; 7 failures and 1 error). Existing tests still
+read current SPEC-0172 after its preservation and assert prior schema/template
+or inventory forms. This is the existing test-consumer cutover obligation,
+not permission to alter production policy or waive assertions. Correct only
+the stale test inputs/references where the current canonical contract proves
+the replacement, obtain focused review, then resume final verification.
+
+Consumer correction: the removed Spec dependency now uses a stable synthetic
+Spec and Registry-derived body sections; the README fixture and expected
+template envelope include their canonical layer. Those three focused classes
+passed 28 tests in 0.631 seconds. Production and schema files were unchanged.
+
+Current blocker after the two approved corrections: the independent diagnosis
+confirmed that `document-profile.schema.json` accepts unknown `common` keys,
+wrong types for `template_placeholders`, `frontmatter_order`, and
+`generated_outputs`, and unknown profile exception kinds. The negative schema
+assertions remain intact; they reveal a production contract gap rather than
+stale expectations. This schema has no diff against c02. Its protected-rule
+correction is outside the renewed two-contract approval and requires direction.
+No full aggregate was repeated on this known-rejected tree. SPEC-0173 remains
+active and its acceptance criterion 15 remains pending; the merged development
+branch/worktree is retained. The completed allocation and lifecycle corrections
+are not reopened by this separate baseline schema gap.
+
 The lifecycle correction is committed at `2d45f5cbd`: only the Plan sequence
 and its existing generic execution-state regression changed. The focused
 method passed in 0.390 seconds; policy/Python review passed with no actionable

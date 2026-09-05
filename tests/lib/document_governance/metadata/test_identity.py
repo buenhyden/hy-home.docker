@@ -106,6 +106,7 @@ class IdentityBehaviorTests(unittest.TestCase):
                     "status": "active",
                     "owner": "@buenhyden",
                     "updated": "2026-08-01",
+                    "layer": "specs",
                 },
                 "readme",
                 frontmatter_present=True,

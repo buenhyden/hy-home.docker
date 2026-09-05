@@ -368,6 +368,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "status": "draft",
                 "owner": "{{OWNER}}",
                 "updated": "{{UPDATED}}",
+                "layer": "{{LAYER}}",
             },
             values,
         )

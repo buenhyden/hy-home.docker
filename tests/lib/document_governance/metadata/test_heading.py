@@ -306,12 +306,28 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.profiles = current_profiles()
         cls.spec_path = pathlib.Path(
-            "docs/03.specs/0172-document-contract-convergence/spec.md"
+            "docs/03.specs/0001-residue-fixture/spec.md"
         )
-        cls.spec_text = (ROOT / cls.spec_path).read_text(encoding="utf-8")
+        required_sections = cls.profiles["_registry"].profiles["spec"][
+            "required_sections"
+        ]
+        cls.spec_text = body_with_headings(
+            *(f"## {section}" for section in required_sections)
+        )
         cls.spec_record = metadata.Record(
             cls.spec_path,
-            heading_module._parse_frontmatter_text(cls.spec_text),
+            {
+                "title": "Residue Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/spec",
+                "status": "active",
+                "owner": "@fixture",
+                "updated": "2026-08-01",
+                "layer": "specs",
+                "artifact_id": "SPEC-0001",
+                "parent_ids": [],
+                "created": "2026-08-01",
+            },
             "spec",
             frontmatter_present=True,
         )
