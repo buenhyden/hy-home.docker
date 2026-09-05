@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "requirements"
 artifact_id: "REQ-0024"
 parent_ids: []
@@ -16,7 +16,7 @@ created: "2026-06-01"
 
 이 저장소의 AI Agent는 provider별 실행 형식이 달라도 하나의 거버넌스와
 SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실행 증거의
-소유자를 분리하고 `.agents/`, `.claude/`, `.codex/`가 독립 정책 소스로
+소유자를 분리하고 `.claude/`, `.codex/`가 독립 정책 소스로
 변질되지 않도록 하는 것이다.
 
 ## Stakeholders and User Needs
@@ -35,9 +35,12 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 - **REQ-0024-FR-0002**: Stage 00 Provider Registry는 provider identity,
   projection route, model·permission translation, hook binding만 소유하며,
   Stage 99의 문서 profile·path·template 권한을 침범하지 않아야 한다.
-- **REQ-0024-FR-0003**: `.agents/`, `.claude/`, `.codex/`는 Stage 00 정본을
+- **REQ-0024-FR-0003**: `.claude/`, `.codex/`는 Stage 00 정본을
   provider 또는 runtime 형식으로 투영하는 adapter여야 하며 별도 정책,
   lifecycle, 완료 기준을 정의해서는 안 된다.
+  공통 호환 디렉터리는 폐기한다. Claude는 기본 스킬 투영을 사용하고,
+  Codex는 Stage 00의 스킬 원문을 명시적으로 읽는다. 자동 검색과 원문 로딩을
+  같은 기능으로 주장하지 않는다.
 - **REQ-0024-FR-0004**: canonical role과 skill은 Stage 00에 한 번만 정의되고,
   생성·추적되는 provider surface는 이름, 역할, scope, source 관계를 보존해야
   한다.
@@ -81,7 +84,7 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 ## Acceptance Criteria
 
 - Stage 00과 provider surface 사이에 이름·source·scope drift가 없다.
-- `.agents/`, `.claude/`, `.codex/`의 tracked 파일이 Provider Registry가 허용한
+- `.claude/`, `.codex/`의 tracked 파일이 Provider Registry가 허용한
   projection 또는 native runtime mechanics로만 분류된다.
 - active Task의 Spec/Plan parent가 모두 active이며 terminal parent에 active
   child가 없다.

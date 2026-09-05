@@ -1801,7 +1801,6 @@ _ARTIFACT_TOKEN_PATTERN = re.compile(
 # Registry authority reaches outside docs/ only for the repository entrypoint
 # surfaces that carry a registered README form. Every other root stays out.
 _NON_DOCS_ROOTS = (
-    ".agents/",
     "examples/",
     "infra/",
     "projects/",

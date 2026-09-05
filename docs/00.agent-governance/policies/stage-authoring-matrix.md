@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Stage Authoring Matrix
@@ -42,8 +42,10 @@ document; the kind names its role inside that family.
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`
 member inside it.
 
-Provider discovery uses generated `.claude/skills/` and `.agents/skills/`, but
-canonical reusable procedures remain in Stage 00 `skills/`.
+Claude discovers its generated `.claude/skills/` projection. Codex reads the
+canonical Stage 00 `skills/` files explicitly through its adapter and role
+instructions. Native discovery and canonical instruction loading are distinct;
+neither makes a provider projection a second policy source.
 
 ## Related Documents
 

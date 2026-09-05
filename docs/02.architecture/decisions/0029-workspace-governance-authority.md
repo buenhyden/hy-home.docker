@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "ADR-0029"
 parent_ids:
@@ -56,7 +56,7 @@ scripts와 provider surface는 각각의 consumer가 된다.
   boundary의 유일한 규범적 권한이다.
 - Stage 99 Registry와 schema는 docs path, profile, stable ID, required section,
   lifecycle, traceability, template의 유일한 machine authority다.
-- `.agents/`, `.claude/`, `.codex/`는 generated projection 또는 native runtime
+- `.claude/`, `.codex/`는 generated projection 또는 native runtime
   mechanics이며 정책 소스가 아니다.
 - Git의 regular-blob history가 삭제된 본문의 recovery mechanism이다. Current
   authority는 Stage 98 historical record를 입력이나 필수 링크로 사용하지

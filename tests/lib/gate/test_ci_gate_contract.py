@@ -152,7 +152,7 @@ PROFILE_ROOTS = (
     contract.ProfileRoot("local-harness", LOCAL_HARNESS_ROOTS, "local"),
     contract.ProfileRoot(
         "local-all-profiles",
-        (*LOCAL_SCRIPT_ROOTS, "local.compose-all-profiles-validation"),
+        LOCAL_SCRIPT_ROOTS,
         "local",
     ),
 )
@@ -1096,7 +1096,6 @@ class CiGateContractTests(unittest.TestCase):
                 "CI",
                 "GITHUB_ACTIONS",
                 "HEAD_REF",
-                "HYHOME_COMPOSE_PROFILES",
                 "PR_TITLE",
                 "TEMPLATE_GATE_BASE",
             },

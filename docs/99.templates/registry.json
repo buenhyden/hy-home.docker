@@ -1404,9 +1404,8 @@
       "id": "runtime-governance-readme",
       "type": "common/runtime-governance-readme",
       "frontmatter_policy": "required",
-      "path_pattern": ".agents/README.md",
+      "path_pattern": ".claude/README.md",
       "additional_paths": [
-        ".claude/README.md",
         ".codex/README.md"
       ],
       "artifact_id_pattern": null,
@@ -3598,8 +3597,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 172,
-      "next_number": 173,
+      "high_water": 174,
+      "next_number": 175,
       "child_spaces": {}
     },
     "operations-subject": {

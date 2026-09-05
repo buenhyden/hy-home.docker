@@ -20,7 +20,6 @@ secrets/
 _workspace/
 .agent/
 .agent-work/
-.agents/
 .claude/
 .codex/
 .github/

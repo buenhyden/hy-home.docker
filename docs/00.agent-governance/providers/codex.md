@@ -23,8 +23,15 @@ Spec Package and current Task when repository state changes.
 ## Runtime Boundary
 
 - `.codex/agents/*.toml` is a generated role adapter surface.
-- `.agents/skills/*/SKILL.md` is the generated shared skill projection used by
-  Codex; `.codex/skills/` is not a separate source.
+- Reusable procedures are read directly from
+  `docs/00.agent-governance/skills/<skill_id>.md`. Select the role in `roles/`,
+  read its `skill_ids`, and explicitly load those canonical files before acting.
+  Generated Codex role instructions contain the same repository-relative paths.
+- The registry declares `native_skill_pattern: null` for Codex. No shared skill
+  projection or `.codex/skills/` substitute is generated. This intentionally does
+  not provide native `$skill` picker discovery; explicit canonical loading is
+  the supported repository route. Do not recreate the retired `.agents/` tree,
+  install global copies, or claim runtime acceptance from static configuration.
 - `.codex/hooks.json` and repository-local Codex configuration provide runtime
   mechanics only.
 - Provider/model selections, reasoning controls, and sandbox translations come
