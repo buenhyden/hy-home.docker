@@ -630,7 +630,11 @@ def validate_allocation_transition(
 ) -> tuple[RegistryFinding, ...]:
     """Compare stable package issuance with one pinned, regular Git predecessor."""
 
-    from scripts.lib.document_governance.registry import RegistryFinding, classify_path
+    from scripts.lib.document_governance.registry import (
+        RegistryFinding,
+        classify_path,
+        preserved_origin_path,
+    )
 
     if re.fullmatch(r"[0-9a-f]{40}", base_commit) is None:
         raise IdentityHistoryError("allocation predecessor must be a full commit")
@@ -670,6 +674,18 @@ def validate_allocation_transition(
                 f"{subject} {ancestor} does not precede {descendant}"
             )
 
+    def is_ancestor(ancestor: str, descendant: str) -> bool:
+        nonlocal remaining_bytes
+        output = _run_git(
+            root,
+            ("merge-base", "--is-ancestor", ancestor, descendant),
+            max_output_bytes=min(MAX_TRANSITION_GIT_OUTPUT_BYTES, remaining_bytes),
+            timeout_seconds=_remaining_scan_seconds(deadline),
+            answer_codes=frozenset({0, 1}),
+        )
+        remaining_bytes -= output.bytes_read
+        return output.returncode == 0
+
     require_ancestor(base_commit, "HEAD", "allocation predecessor")
     listing = git(
         "ls-tree",
@@ -699,7 +715,8 @@ def validate_allocation_transition(
             raise IdentityHistoryError(
                 "allocation predecessor frontmatter is invalid"
             ) from error
-        if isinstance(identity, str) and _path_accepts_identity(path, identity):
+        origin = preserved_origin_path(path) or path
+        if isinstance(identity, str) and _path_accepts_identity(origin, identity):
             _record(identity, previous)
     registry_oid = entries.get("docs/99.templates/registry.json")
     # Exact reviewed renames preserve identity even when the predecessor's
@@ -783,6 +800,224 @@ def validate_allocation_transition(
             raise IdentityHistoryError(
                 "allocation predecessor Registry is invalid"
             ) from error
+
+    observed: dict[str, set[int]] = {}
+    candidate_current: dict[str, str] = {}
+    candidate_slots: dict[str, dict[str, set[int]]] = {}
+    candidate_origins: dict[str, str] = {}
+
+    def identity_owner(path: str, identity: str) -> str:
+        numbers = re.findall(r"[0-9]{4}", identity)
+        if not numbers:
+            return path
+        for offset, part in enumerate(pathlib.PurePosixPath(path).parts):
+            if part.startswith(numbers[0]):
+                return pathlib.PurePosixPath(*pathlib.PurePosixPath(path).parts[: offset + 1]).as_posix()
+        return path
+
+    for path, identity in current.items():
+        origin = preserved_origin_path(path) or path
+        if not _path_accepts_identity(origin, identity):
+            continue
+        slots: dict[str, set[int]] = {}
+        _record(identity, slots)
+        for name, numbers in slots.items():
+            if name in high_water and any(
+                number <= high_water[name]
+                and number not in previous.get(name, set())
+                for number in numbers
+            ):
+                candidate_current[path] = identity
+                candidate_slots[path] = slots
+                candidate_origins[path] = origin
+        for name, numbers in slots.items():
+            observed.setdefault(name, set()).update(numbers)
+
+    merged_proven_paths: set[str] = set()
+    merged_owners: dict[tuple[str, int], set[str]] = {}
+    merge_rows = git(
+        "rev-list",
+        "--parents",
+        "--merges",
+        "--ancestry-path",
+        f"{base_commit}..HEAD",
+    )
+    for row in merge_rows.splitlines():
+        commits = row.split()
+        if len(commits) < 3 or not all(_OBJECT_ID.fullmatch(item) for item in commits):
+            raise IdentityHistoryError("merged allocation lineage is malformed")
+        first_parent = commits[1]
+        if not is_ancestor(base_commit, first_parent):
+            continue
+        for merged_parent in commits[2:]:
+            if is_ancestor(merged_parent, base_commit):
+                continue
+            fork = git("merge-base", first_parent, merged_parent).strip()
+            if _OBJECT_ID.fullmatch(fork) is None:
+                raise IdentityHistoryError("merged allocation fork is malformed")
+            fork_listing = git(
+                "ls-tree",
+                "-z",
+                fork,
+                "--",
+                "docs/99.templates/registry.json",
+            )
+            fork_entry = re.fullmatch(
+                r"(100644|100755) blob ([0-9a-f]{40,64})\t"
+                r"docs/99\.templates/registry\.json\0?",
+                fork_listing,
+            )
+            if fork_entry is None:
+                raise IdentityHistoryError(
+                    "merged allocation fork lacks a regular Registry"
+                )
+            declarations = git(
+                "grep",
+                "-z",
+                "-I",
+                "-i",
+                "-E",
+                _ARTIFACT_ID_GREP,
+                merged_parent,
+                "--",
+                *GIT_HISTORY_QUERIES,
+            )
+            for declaration in declarations.splitlines():
+                label, separator, line = declaration.partition("\0")
+                prefix = f"{merged_parent}:"
+                if not separator or not label.startswith(prefix):
+                    raise IdentityHistoryError(
+                        "merged allocation declaration is malformed"
+                    )
+                path = label.removeprefix(prefix)
+                candidate_path = pathlib.PurePosixPath(path)
+                if (
+                    candidate_path.as_posix() != path
+                    or candidate_path.is_absolute()
+                    or any(part in {"", ".", ".."} for part in candidate_path.parts)
+                    or not path.startswith(IDENTITY_SOURCE_PREFIXES)
+                ):
+                    raise IdentityHistoryError(
+                        "merged allocation declaration path is unsafe"
+                    )
+                origin = preserved_origin_path(path) or path
+                for match in HISTORICAL_ID_PATTERN.finditer(line):
+                    declared_identity = match.group(0)
+                    if not _path_accepts_identity(origin, declared_identity):
+                        continue
+                    slots: dict[str, set[int]] = {}
+                    _record(declared_identity, slots)
+                    owner = identity_owner(origin, declared_identity)
+                    for name, numbers in slots.items():
+                        for number in numbers:
+                            merged_owners.setdefault((name, number), set()).add(owner)
+            snapshot = git(
+                "ls-tree",
+                "-r",
+                "-z",
+                merged_parent,
+                "--",
+                "docs/99.templates/registry.json",
+                *candidate_origins.values(),
+            )
+            snapshot_entries: dict[str, str] = {}
+            for snapshot_row in filter(None, snapshot.split("\0")):
+                match = re.fullmatch(
+                    r"(100644|100755) blob ([0-9a-f]{40,64})\t([^\0]+)",
+                    snapshot_row,
+                )
+                if match is None:
+                    raise IdentityHistoryError(
+                        "merged allocation lineage contains a nonregular blob"
+                    )
+                snapshot_entries[match[3]] = match[2]
+            merged_registry_oid = snapshot_entries.get(
+                "docs/99.templates/registry.json"
+            )
+            if merged_registry_oid is None:
+                continue
+            try:
+                from scripts.lib.document_governance.registry import _unique_object
+
+                merged_registry = json.loads(
+                    git("cat-file", "blob", merged_registry_oid),
+                    object_pairs_hook=_unique_object,
+                )["identity_spaces"]
+                fork_registry = json.loads(
+                    git("cat-file", "blob", fork_entry[2]),
+                    object_pairs_hook=_unique_object,
+                )["identity_spaces"]
+                merged_marks: dict[str, int] = {}
+                fork_marks: dict[str, int] = {}
+                for name in registry.identity_spaces:
+                    merged_space = merged_registry[name]
+                    fork_space = fork_registry[name]
+                    merged_mark = merged_space["high_water"]
+                    fork_mark = fork_space["high_water"]
+                    if (
+                        type(merged_mark) is not int
+                        or merged_mark < 0
+                        or merged_space["next_number"] != merged_mark + 1
+                        or type(fork_mark) is not int
+                        or fork_mark < 0
+                        or fork_space["next_number"] != fork_mark + 1
+                    ):
+                        raise ValueError("invalid allocation")
+                    merged_marks[name] = merged_mark
+                    fork_marks[name] = fork_mark
+            except (KeyError, TypeError, ValueError) as error:
+                raise IdentityHistoryError(
+                    "merged allocation lineage Registry is invalid"
+                ) from error
+            for path, identity in candidate_current.items():
+                identity_oid = snapshot_entries.get(candidate_origins[path])
+                if identity_oid is None:
+                    continue
+                try:
+                    merged_identity = parse_frontmatter_text(
+                        git(
+                            "cat-file",
+                            "blob",
+                            identity_oid,
+                            maximum=MAX_IDENTITY_SOURCE_BYTES,
+                        )
+                    ).get("artifact_id")
+                except ValueError as error:
+                    raise IdentityHistoryError(
+                        "merged allocation lineage frontmatter is invalid"
+                    ) from error
+                if merged_identity != identity:
+                    continue
+                issued_slots: dict[str, set[int]] = {}
+                _record(identity, issued_slots)
+                if all(
+                    name not in high_water
+                    or name in merged_marks
+                    and all(
+                        fork_marks[name] < number <= merged_marks[name]
+                        for number in numbers
+                    )
+                    for name, numbers in issued_slots.items()
+                ):
+                    merged_proven_paths.add(path)
+    merged_issuance: dict[str, set[int]] = {}
+    for path, slots in candidate_slots.items():
+        if path not in merged_proven_paths:
+            continue
+        for name, numbers in slots.items():
+            for number in numbers:
+                claimants = {
+                    candidate_path
+                    for candidate_path, candidate_numbers in candidate_slots.items()
+                    if number in candidate_numbers.get(name, set())
+                }
+                if claimants <= merged_proven_paths:
+                    current_owners = {
+                        identity_owner(candidate_origins[claimant], candidate_current[claimant])
+                        for claimant in claimants
+                    }
+                    if merged_owners.get((name, number), set()) == current_owners:
+                        merged_issuance.setdefault(name, set()).add(number)
     recovery_findings: list[RegistryFinding] = []
     for target_path, raw in sorted((recovery_evidence or {}).items()):
         finding = RegistryFinding(
@@ -910,10 +1145,6 @@ def validate_allocation_transition(
         for name, numbers in source_slots.items():
             previous.setdefault(name, set()).update(numbers)
 
-    observed: dict[str, set[int]] = {}
-    for path, identity in current.items():
-        if _path_accepts_identity(path, identity):
-            _record(identity, observed)
     findings: list[RegistryFinding] = list(recovery_findings)
     for name, space in registry.identity_spaces.items():
         mark = high_water[name]
@@ -925,7 +1156,8 @@ def validate_allocation_transition(
                     "allocation cannot move below its trusted predecessor",
                 )
             )
-        added = observed.get(name, set()) - previous.get(name, set())
+        issued_before = previous.get(name, set()) | merged_issuance.get(name, set())
+        added = observed.get(name, set()) - issued_before
         if any(number <= mark for number in added):
             findings.append(
                 RegistryFinding(

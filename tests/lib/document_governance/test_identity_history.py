@@ -179,6 +179,183 @@ class IdentityHistoryTests(unittest.TestCase):
                 ),
             )
 
+    def test_merged_lineage_proves_canonical_identity_issuance_only(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q", "-b", "main")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            registry_path = root / "docs/99.templates/registry.json"
+            registry_path.parent.mkdir(parents=True)
+            raw_registry = json.loads(registry_module.DEFAULT_REGISTRY.read_text())
+            issued = raw_registry["identity_spaces"]["spec"]["high_water"] + 10
+
+            def write_registry(high_water: int) -> None:
+                raw_registry["identity_spaces"]["spec"].update(
+                    {"high_water": high_water, "next_number": high_water + 1}
+                )
+                registry_path.write_text(json.dumps(raw_registry), encoding="utf-8")
+
+            write_registry(issued - 1)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "allocation baseline")
+            fork = self._git(root, "rev-parse", "HEAD").strip()
+
+            self._git(root, "checkout", "-qb", "issued-lineage")
+            canonical = root / f"docs/03.specs/{issued:04d}-fixture/spec.md"
+            canonical.parent.mkdir(parents=True)
+            canonical.write_text(
+                f"---\nartifact_id: SPEC-{issued:04d}\n---\n", encoding="utf-8"
+            )
+            write_registry(issued)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue identity")
+
+            self._git(root, "checkout", "-qb", "conflicting-lineage", fork)
+            conflicting = root / f"docs/03.specs/{issued:04d}-other/spec.md"
+            conflicting.parent.mkdir(parents=True)
+            conflicting.write_text(
+                f"---\nartifact_id: SPEC-{issued:04d}\n---\n", encoding="utf-8"
+            )
+            write_registry(issued)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "issue conflicting identity")
+
+            self._git(root, "checkout", "-q", "main")
+            write_registry(issued + 1)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "reserve later identity")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            merge = subprocess.run(
+                ["git", "merge", "-qm", "merge issued lineage", "issued-lineage"],
+                cwd=root,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(1, merge.returncode)
+            write_registry(issued + 1)
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "merge issued lineage")
+
+            registry = load_registry(registry_path)
+            current = {
+                canonical.relative_to(root).as_posix(): f"SPEC-{issued:04d}"
+            }
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root, registry, current, base
+                ),
+            )
+            preserved = {
+                (
+                    "docs/98.archive/completed/03.specs/"
+                    f"{issued:04d}-fixture/spec.md"
+                ): f"SPEC-{issued:04d}"
+            }
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root, registry, preserved, base
+                ),
+            )
+
+            collision = dict(current)
+            collision[
+                f"docs/03.specs/{issued:04d}-collision/spec.md"
+            ] = f"SPEC-{issued:04d}"
+            findings = identity_history.validate_allocation_transition(
+                root, registry, collision, base
+            )
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+            merge = subprocess.run(
+                [
+                    "git",
+                    "merge",
+                    "--no-ff",
+                    "-qm",
+                    "merge conflicting lineage",
+                    "conflicting-lineage",
+                ],
+                cwd=root,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(1, merge.returncode)
+            conflicting.unlink()
+            write_registry(issued + 1)
+            self._git(root, "add", "-A")
+            self._git(root, "commit", "-qm", "resolve conflicting issuance")
+            findings = identity_history.validate_allocation_transition(
+                root, registry, current, base
+            )
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+            self._git(root, "checkout", "-qb", "post-reservation", base)
+            canonical.parent.mkdir(parents=True)
+            canonical.write_text(
+                f"---\nartifact_id: SPEC-{issued:04d}\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "reuse reserved identity")
+            self._git(root, "checkout", "-qb", "laundering-main", base)
+            self._git(
+                root,
+                "merge",
+                "--no-ff",
+                "-qm",
+                "merge post-reservation reuse",
+                "post-reservation",
+            )
+            findings = identity_history.validate_allocation_transition(
+                root, registry, current, base
+            )
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+            self._git(root, "checkout", "-q", "--detach", base)
+            findings = identity_history.validate_allocation_transition(
+                root, registry, current, base
+            )
+            self.assertIn("identity-reuse-forbidden", {item.code for item in findings})
+
+    def test_predecessor_archive_identity_is_not_new_issuance(self) -> None:
+        from scripts.lib.document_governance import registry as registry_module
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Identity Fixture")
+            self._git(root, "config", "user.email", "identity@example.invalid")
+            registry_path = root / "docs/99.templates/registry.json"
+            registry_path.parent.mkdir(parents=True)
+            registry_path.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
+            registry = load_registry(registry_path)
+            issued = registry.identity_spaces["spec"].high_water
+            preserved = root / (
+                "docs/98.archive/completed/03.specs/"
+                f"{issued:04d}-fixture/spec.md"
+            )
+            preserved.parent.mkdir(parents=True)
+            preserved.write_text(
+                f"---\nartifact_id: SPEC-{issued:04d}\n---\n", encoding="utf-8"
+            )
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "preserve issued identity")
+            base = self._git(root, "rev-parse", "HEAD").strip()
+            current = {
+                preserved.relative_to(root).as_posix(): f"SPEC-{issued:04d}"
+            }
+
+            self.assertEqual(
+                (),
+                identity_history.validate_allocation_transition(
+                    root, registry, current, base
+                ),
+            )
+
     def test_deleted_package_identity_requires_exact_git_recovery(self) -> None:
         from scripts.lib.document_governance import registry as registry_module
 
