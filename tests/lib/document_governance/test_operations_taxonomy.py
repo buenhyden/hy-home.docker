@@ -169,7 +169,14 @@ class OperationsAuthorityTests(unittest.TestCase):
             if item.suite == "operations"
         )
         self.assertEqual(
-            (pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),),
+            (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-operations-catalog.py"
+                ),
+                pathlib.PurePosixPath(
+                    "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+                ),
+            ),
             operations,
         )
         manifest = yaml.safe_load(
@@ -180,7 +187,7 @@ class OperationsAuthorityTests(unittest.TestCase):
             for row in manifest["files"]
             if row["path"] == "scripts/operations/rehearse-postgres-logical-upgrade.sh"
         )
-        self.assertEqual("validator", rehearsal["kind"])
+        self.assertEqual("operations", rehearsal["kind"])
         self.assertEqual("runtime", rehearsal["mutation"])
         self.assertFalse(
             {"public_suites", "execution_argv", "execution_contexts"}

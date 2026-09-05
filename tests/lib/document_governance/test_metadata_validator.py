@@ -802,7 +802,14 @@ This paragraph explains how verification evidence will be interpreted.
             if item.suite == "operations"
         )
         self.assertEqual(
-            (pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),),
+            (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-operations-catalog.py"
+                ),
+                pathlib.PurePosixPath(
+                    "scripts/operations/rehearse-postgres-logical-upgrade.sh"
+                ),
+            ),
             operations,
         )
         self.assertEqual(

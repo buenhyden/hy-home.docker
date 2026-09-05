@@ -1,0 +1,1 @@
+"""Document metadata library tests."""
