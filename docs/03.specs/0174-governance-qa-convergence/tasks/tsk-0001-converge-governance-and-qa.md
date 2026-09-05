@@ -2,7 +2,7 @@
 title: "Governance and QA Convergence Task"
 version: "0.2.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"

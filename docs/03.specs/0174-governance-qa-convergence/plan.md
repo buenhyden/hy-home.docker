@@ -2,7 +2,7 @@
 title: "Governance and QA Convergence Plan"
 version: "0.2.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
