@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 ---
 
@@ -32,11 +32,12 @@ Operations 문서의 역할을 대체하지 않는다.
 
 ### C4 and arc42 Placement
 
-C4의 context, container, component view는 Description의 `Viewpoints and Views`
-안에서 필요한 수준까지만 사용한다. arc42의 context, building blocks, runtime,
-deployment, quality, risk 관점은 같은 Description의 등록 section에 배치한다.
-둘 다 별도 profile, 병렬 architecture 문서, 또는 자동으로 요구되는 전체
-template가 아니다. material choice와 대안·근거는 계속 별도 ADR이 소유한다.
+C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
+[Stage 00 작성 정책](../../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)이
+소유한다. 현재 등록된 `System Boundaries`, `Components`, `Data Flow`,
+`Deployment View`, `Quality Attributes`에 해당 내용을 배치하고 필요할 때만
+optional `Risks`와 `Evolution`을 사용한다. 빈 framework section이나 병렬
+문서를 만들지 않으며 선택·대안·근거는 ADR이 소유한다.
 
 ## Structure
 
@@ -67,7 +68,7 @@ docs/02.architecture/descriptions/
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.
 3. 새 문서는
-   [`architecture-description.template.md`](../../99.templates/templates/architecture/description.template.md)를 사용한다.
+   [`description.template.md`](../../99.templates/templates/architecture/description.template.md)를 사용한다.
 4. 현재 구현과 저장소 사실만 설명하고 확인되지 않은 runtime 구조를 만들지
    않는다.
 5. material choice는 [ADR](../decisions/README.md)에 기록한다.

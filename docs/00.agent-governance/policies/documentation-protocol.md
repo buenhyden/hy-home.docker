@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # Documentation Protocol
@@ -44,7 +44,8 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 7. Name a Stage 90 package member `m####-<slug>.md`; a Stage 03 Task keeps its
    `tsk-####-<slug>.md` name and an incident packet keeps `inc-####-<slug>/`.
 8. Give a tombstone the retired document's identity under a `tomb-` prefix
-   instead of allocating a new number.
+   instead of issuing a new artifact identity. Its numbered filename still
+   uses the Registry's separate monotonic `tombstone` allocation.
 9. Declare the frontmatter its registry profile requires, in the registry's
    `common.frontmatter_order`. The registry owns which keys a profile requires
    and permits; `contracts/document-frontmatter.schema.json` owns their value shapes.
@@ -65,6 +66,11 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
    without an identity declares no `artifact_id` and never invents one. A
    provider-owned runtime projection is exempt from this envelope entirely,
    because its shape belongs to the runtime that reads it.
+   The existing lineage graph permits multiple predecessors in `supersedes`
+   and one reciprocal successor in `superseded_by`. Preserve that singular
+   successor contract; changing it to an array requires a coordinated graph and
+   lineage contract change. A Registry-required root `parent_ids: []` records
+   structural root identity and is not optional placeholder metadata.
 10. Title a Stage 03 Spec as `<Subject> Specification`. The subject names what
     the change contracts, not the document class, so `Technical`, `Capability`,
     and other class words do not appear in it.
@@ -92,6 +98,80 @@ For machine-consumed historical tables, place
 immediately before the table header and separator. Only that contiguous table is
 evidence; surrounding instructions remain current and validated normally.
 
+### Role-Specific Authoring
+
+- A Requirement Package combines PRD, SRS, and implementation-independent
+  interface perspectives. A Description owns current structure; an ADR owns one
+  consequential choice. Preserve accepted decisions and use explicit
+  supersession when the choice changes.
+- Use existing Description sections for architecture views: context and scope
+  in `System Boundaries`, building blocks in `Components`, runtime interaction
+  in `Data Flow`, topology in `Deployment View`, and quality scenarios in
+  `Quality Attributes`. Add registered optional content only when it helps the
+  reader; do not impose an empty full architecture framework.
+- Consider system context and container diagrams for system-level Descriptions.
+  Use component detail only when useful, dynamic diagrams for interactions, and
+  deployment diagrams for environment topology. A diagram identifies its title,
+  scope, audience, legend, element responsibilities, and labeled relationships.
+  Keep editable diagram source; a generated image alone is not the authority.
+- A Guide states its primary reader need: tutorial, how-to, technical reference,
+  or explanation. Include prerequisites, intended outcome, checks, and relevant
+  troubleshooting within its registered sections. Hand off repeatable operator
+  procedures to an actual Runbook. Diataxis technical reference is a reader
+  purpose, not the Stage 90 evidence family.
+- An Operations Policy owns obligations, prohibitions, exceptions, accountable
+  owners, enforcement, and review cadence. It does not own command sequences or
+  redefine Stage 00 rules governing agents.
+- A Runbook states its trigger, prerequisites, approval and safety boundaries,
+  blast radius, ordered actions, expected signals, verification, recovery,
+  escalation, and evidence handoff. Place these in its registered sections;
+  do not copy a past execution result into a reusable instruction.
+- An Incident records observed impact, severity, affected service, coordination,
+  timeline, hypotheses, mitigation, and the next responsible action. Put
+  severity and service details in the body unless the Registry declares a
+  metadata field. Distinguish observation from unconfirmed cause. Use ISO 8601
+  timestamps with explicit UTC offset consistently throughout the packet.
+- A Postmortem follows stabilization and separates confirmed root cause,
+  contributing factors, detection/response, and learning from the incident's
+  factual record. Use blameless language. Corrective actions identify an owner,
+  due date, tracking ID or link, and verification condition; link their execution
+  owner instead of leaving untracked checkboxes.
+- Research records source-backed claims and limitations; Audit records criteria
+  and dated observations; Data records schema, provenance, consumers, and
+  refresh ownership. State evidence limitations and freshness triggers where
+  applicable. Registered generators own generated outputs, whose freshness is
+  verified without turning evidence into current policy.
+
+### Release Evidence Boundary
+
+The repository uses `external-release-evidence`: the Release Runbook owns the
+repeatable readiness procedure; the current Task owns a particular execution's
+approval, checks, outcome, and recovery evidence. Link its Spec and affected
+Operations documents, exact version/commit, CHANGELOG entry, and observed tag or
+CI result when those exist. Record unavailable external evidence explicitly.
+CHANGELOG summarizes user changes; a tag or CI result proves only its observed
+event. Neither local readiness nor a Runbook proves deployment occurred.
+
+There is no separate Release Record profile. Add one only if a distinct audit
+consumer requires it, through an approved ADR and a coordinated Registry change.
+Do not change an existing accepted decision silently. Remote release and
+deployment actions require separate authorization.
+
+### Reference Framework Adoption
+
+These sources inform the rules above; they do not replace stage taxonomy or
+machine contracts. Templates use concise repository-specific forms, not copies
+of external templates.
+
+| Framework | Adoption | Location and limit |
+| --- | --- | --- |
+| [Spec Kit](https://github.com/github/spec-kit) | partial | Stage 03 clarify, Spec, Plan, Tasks, analyze, implement, verify flow in [SDLC](../sdlc.md); retain individual Task records |
+| [Diataxis](https://diataxis.fr/) | partial | Guide reader purpose; do not create parallel stage categories |
+| [C4](https://c4model.com/) | partial | Description diagram choice and communication checks; code-level diagrams are not a default requirement |
+| [ADR](https://adr.github.io/) | adopted | one significant decision, alternatives, consequences, and explicit supersession |
+| [arc42](https://arc42.org/) | partial | proportionate context, structure, flow, deployment, quality, and risk views in registered Description sections |
+| [Google SRE incident management](https://sre.google/resources/practices-and-processes/incident-management-guide/) | partial | factual Incident coordination and blameless Postmortem follow-through; no implied live-response authority |
+
 ### Gap-to-Stage Routing
 
 | Gap Type | Owner | Rule |
@@ -117,22 +197,16 @@ and its still-current meaning has moved to a canonical owner.
 
 ### Retention by status
 
-| Profile family | Current-bearing flow | Terminal or disposition state |
-| --- | --- | --- |
-| Requirement | `draft → review → approved` | `superseded`, `retired` |
-| Architecture Description, Guide, Runbook | `draft → review → active` | `superseded`, `retired` |
-| ADR | `proposed → accepted` or `rejected` | `rejected`, `superseded`, `retired` |
-| Spec | `draft → review → approved → active` | `completed`, `cancelled`, `superseded` |
-| Plan | `draft → approved → active` | `completed`, `cancelled` |
-| Task | `draft → ready → in-progress`; `blocked` returns to `in-progress` | `completed`, `cancelled` |
-| Policy | `draft → review → approved → active` | `superseded`, `retired` |
-| Incident | `detected → investigating → mitigated` | `resolved` |
-| Postmortem | `draft → review` | `published` |
-| Reference publication | `draft → review → published` | `superseded`, `retired` |
-| Migration or Tombstone | none; the record is immutable when created | `sealed` |
+The Registry owns each profile's entry state, transition edges, and terminal
+states. Apply that lifecycle before disposition; do not infer permission from
+age or a folder count. Completed packages and superseded documents move to their
+registered frozen archive routes. Withdrawal uses `retired/` with a Tombstone.
+Do not record completion or supersession as a withdrawal.
 
-Run the all-files QA wrapper before the change that completes a package. It
-binds its evidence to a Task under `docs/03.specs/`, and completion preserves
+Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
+An all-files run requires its explicit approval and Git-visible, non-ignored
+Task-owned state, and uses only the controlled wrapper. It binds its evidence to
+a Task under `docs/03.specs/`, and completion preserves
 that Task under `docs/98.archive/completed/`, where it is a frozen record that
 must not take new evidence.
 
@@ -149,18 +223,18 @@ Retire a package or a standalone document only when all of these hold.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical Stage 00, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.
-4. One Stage 98 Tombstone records the retirement, and the document itself is
-   preserved under `docs/98.archive/retired/`. Neither half is evidence alone.
+4. Preserve the original body in the matching Stage 98 disposition route.
+   Withdrawal additionally requires one Tombstone paired with `retired/`;
+   completion and supersession do not require a Tombstone.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
 investigate, not permission to delete.
 
-Preconditions 1 to 3 are authoring obligations and are recorded in the
-Tombstone's `Reason`. Precondition 4 is the enforced one: the comparison base
-of a change is its branch point, so a package that is `active` there can never
-be observed as terminal by the same change that retires it. The Tombstone is
-therefore the tracked evidence that the other three were met.
+Record the authoring obligations and consumer cutover in the current Task's
+promotion receipt. For withdrawal, the Tombstone's `Reason` also records the
+disposition rationale. Verification must compare preserved bytes with their
+recorded source without rewriting the frozen body to manufacture a later status.
 
 Age may trigger a disposition review. It never triggers a deletion.
 

@@ -1,10 +1,10 @@
 ---
 title: "03.specs"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "specs"
 ---
 
@@ -12,14 +12,15 @@ layer: "specs"
 
 ## Overview
 
-docs/03.specs는 current capability contract와 승인된 변경의 일시적 실행
-packet을 관리합니다. 각 package의 spec.md는 구현 경계와 acceptance를
-소유합니다. plan.md와 tasks/는 변경이 실제로 진행되는 동안에만 존재합니다.
+docs/03.specs는 범위가 정해진 변경의 명세와 실행 packet을 관리합니다.
+각 package의 spec.md는 관찰 가능한 동작과 acceptance를, plan.md는 구현
+순서와 위험을, tasks/는 실제 실행·검증·검토 증거를 소유합니다. 장기적인
+구조와 운영 의미는 Stage 01/02/05의 현재 문서로 승격합니다.
 
 ## Scope
 
-- 포함: 현재 capability Spec, 완료된 change outcome Spec, 진행 중인 변경의
-  active Plan·Task, Spec이 직접 소유하는 executable contract.
+- 포함: 진행 중인 변경의 Spec·Plan·Task와 Spec이 직접 소유하는 executable
+  contract. 완료된 package는 보존 경로를 통해 찾습니다.
 - 제외: 운영 절차, 감사·조사 데이터, 과거 실행 본문, 이전 경로의 복제본과
   redirect. 해당 자료는 각 Stage의 현재 owner 또는 Git history가 소유합니다.
 
@@ -36,6 +37,9 @@ packet을 관리합니다. 각 package의 spec.md는 구현 경계와 acceptance
 design.md, tests.md, singular task.md는 package role이 아닙니다.
 
 ### Current Package Index
+
+이 인덱스는 진행 중인 package와 과거 package의 보존 경로를 함께 안내합니다.
+`completed` 행은 역사적 실행 증거이며 현재 구현 권한이 아닙니다.
 
 | ID | Package | Current roles |
 | --- | --- | --- |
@@ -63,7 +67,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0169 | [Document Lifecycle Convergence](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 | SPEC-0170 | [Archive Preservation Model](../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) and [Task](../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 | SPEC-0171 | [Compose Sibling Pair Resolution](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) and [Task](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) |
-| SPEC-0172 | [Document Contract Convergence](0172-document-contract-convergence/spec.md) | active with [Plan](0172-document-contract-convergence/plan.md) and [Task](0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) |
+| SPEC-0172 | [Document Contract Convergence](0172-document-contract-convergence/spec.md) | in flight with [Plan](0172-document-contract-convergence/plan.md) and [Task](0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) |
 
 ## How to Work in This Area
 
@@ -71,28 +75,30 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 2. Create or update spec.md with the registered Spec template.
 3. Add a Plan and numbered Tasks only for an approved active change.
 4. Record actual work only in the current Task.
-5. Write durable behavior back to the Spec, Stage 01/02, and Stage 05 owners.
+5. Record acceptance coverage and the promotion receipt in the current Task,
+   linking durable updates in Stage 01/02/05 or an explicit N/A rationale.
 6. Validate metadata, lifecycle, links, implementation alignment, and the
    registered Gate profile.
-7. Terminalize the Spec and remove execution bodies only after recovery and
-   inbound-consumer checks.
+7. Complete and preserve the package only after promotion, recovery, and
+   inbound-consumer checks. Follow the [SDLC](../00.agent-governance/sdlc.md)
+   for clarify, analyze, implementation, and verification order.
 
 ### Package Lifecycle
 
-- Capability Spec은 구현이 current인 동안 active로 유지할 수 있으며 Plan이나
-  Task가 없어도 됩니다.
-- Change Spec은 승인 후 active가 되고 current Plan과 Task를 사용합니다.
-- Active Task는 active Spec과 active Plan을 parent로 가집니다.
-- 변경이 끝나면 outcome을 Spec과 다른 current owner에 먼저 write back하고
-  Spec을 completed로 전환합니다.
-- Terminal Plan과 Task는 current consumer가 없고 Git regular-blob recovery가
-  확인되면 삭제합니다. Body clone이나 redirect는 만들지 않습니다.
+- 현재 Requirement와 Architecture가 변경 범위를 충족하면 재사용합니다.
+- Spec·Plan·Task의 정확한 상태와 전이는 Registry가 소유합니다.
+- 완료 전에 acceptance와 실제 검증 결과를 연결하고 장기 의미를 현재
+  Stage 01/02/05 owner에 승격합니다. 승격 근거는 현재 Task의
+  `Verification Evidence` 한 곳에 기록합니다.
+- 완료 package의 Spec·Plan·Task는 Stage 98의 해당 보존 경로로 이동합니다.
+  Git recovery만을 근거로 실행 본문을 삭제하거나 frozen 내용을 다시 쓰지
+  않습니다. 철회와 완료의 처분 기록은 [문서 보존 정책](../00.agent-governance/policies/documentation-protocol.md#document-retention-and-retirement)을 따릅니다.
 
 ### Role Contract
 
 | Role | Responsibility |
 | --- | --- |
-| Spec | current capability or completed change outcome |
+| Spec | bounded observable behavior, scope, failure modes, and acceptance contract |
 | Plan | approved prospective sequence, risk, rollback, completion criteria |
 | Task | actual work log, command result, review, commit, and deferral evidence |
 | Contract | registered executable interface owned by the Spec |

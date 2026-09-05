@@ -26,6 +26,8 @@ created: "{{CREATED}}"
 
 ## Execution Sequence
 
+<!-- Author prompt: Use numbered entries with stable W-number labels, for example W1 followed by a colon, so Task evidence can refer to each work unit. -->
+
 {{TASKS_AND_ORDER}}
 
 ## Risk and Rollback

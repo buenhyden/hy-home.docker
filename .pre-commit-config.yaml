@@ -20,9 +20,14 @@ repos:
       - id: check-symlinks
       - id: check-toml
       - id: end-of-file-fixer
+        # Registry-preserved payloads stay byte-identical; read-only checks
+        # still run on them. Reuse this boundary for all text mutators.
+        exclude: &frozen_archive_payloads '^docs/98\.archive/(?:(?:completed|superseded|retired)/|migrations/(?:0001-sdlc-taxonomy-convergence|0002-operations-catalog-convergence|0003-workspace-governance-simplification)\.md$)'
       - id: check-json
       - id: mixed-line-ending
+        exclude: *frozen_archive_payloads
       - id: trailing-whitespace
+        exclude: *frozen_archive_payloads
 
   # --- 2. Linting (YAML, Markdown, Shell) ---
   - repo: https://github.com/adrienverge/yamllint.git

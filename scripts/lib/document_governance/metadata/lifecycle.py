@@ -25,6 +25,7 @@ from scripts.lib.document_governance.registry import (
     declares_frozen_legacy_status,
     document_type,
     validate_frontmatter,
+    validate_profile_values,
 )
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 from scripts.lib.document_governance.metadata.heading import _validate_template_source
@@ -250,6 +251,11 @@ def validate_record(
     }
     required = set(raw_profile.get("required", []))
     optional = set(raw_profile.get("optional", []))
+    if not declares_frozen_legacy_record(raw_profile, record.path.as_posix()):
+        findings.extend(
+            _finding(record, item.code, f"{item.path}: {item.message}")
+            for item in validate_profile_values(record.metadata, raw_profile, record.path.as_posix())
+        )
     global_forbidden = set(common.get("globally_forbidden", []))
     # `globally_forbidden` named three retired keys but was read only to pick a
     # finding code inside a loop no profile could enter, because no profile

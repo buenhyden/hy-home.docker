@@ -64,6 +64,10 @@ ignores:
   - "docs/98.archive/completed/"
   - "docs/98.archive/superseded/"
   - "docs/98.archive/retired/"
+  # The three legacy migration ledgers are frozen by the Registry as well.
+  - "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
+  - "docs/98.archive/migrations/0002-operations-catalog-convergence.md"
+  - "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
 
 # Markdown auto-fix remains the canonical document formatter in pre-commit.
 fix: true

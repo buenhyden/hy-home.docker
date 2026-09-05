@@ -1,10 +1,11 @@
 ---
 title: "Template Catalog"
-version: "2.0.0"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
+layer: "templates"
 ---
 
 # Template Catalog
@@ -91,7 +92,11 @@ Replaced sources are recoverable through Git history.
    `__UPPER_SNAKE__` tokens instead.
 3. Keep the declared `type`; allocate an identity above the persisted
    high-water mark where the profile declares one.
-4. Run `python3 scripts/validation/run-ci-gate.py --profile full`.
+4. Select applicable checks through the Stage 00
+   [verification matrix](../../00.agent-governance/policies/quality-standards.md#5-change-type-verification-matrix).
+   Inspect the selected gate with `--explain` before execution; record an unsafe
+   or unavailable leaf as DEFER with its exact reason. A full or all-files run
+   still follows the Task scope and controlled-wrapper approval boundary.
 
 Do not select a template by scanning directories, and do not copy a historical
 template out of Git into current authoring.

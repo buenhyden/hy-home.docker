@@ -92,7 +92,11 @@
     "globally_forbidden": [
       "document_type",
       "template_type",
-      "links"
+      "links",
+      "profile",
+      "profile_id",
+      "artifact_type",
+      "doc_type"
     ],
     "inventory_excludes": [
       "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
@@ -122,12 +126,20 @@
       "title": "{{TITLE}}",
       "work_profile": "{{WORK_PROFILE}}",
       "year": "{{YEAR}}",
-      "updated": "{{UPDATED}}"
+      "updated": "{{UPDATED}}",
+      "artifact_id": "{{ARTIFACT_ID}}",
+      "created": "{{CREATED}}",
+      "observed_at": "{{OBSERVED_AT}}",
+      "occurred_at": "{{OCCURRED_AT}}"
     },
     "template_required_placeholders": [
       "title",
       "owner",
-      "updated"
+      "updated",
+      "artifact_id",
+      "created",
+      "observed_at",
+      "occurred_at"
     ],
     "terminal_statuses": [
       "superseded",
@@ -161,7 +173,19 @@
       "occurred_at",
       "resolved_at",
       "archived_at"
-    ]
+    ],
+    "template_initial_version": "0.1.0",
+    "spec_completion_evidence": {
+      "spec_section": "Acceptance Contract",
+      "plan_section": "Execution Sequence",
+      "task_section": "Verification Evidence",
+      "table_headers": [
+        "Acceptance criterion",
+        "Plan work unit",
+        "Task result",
+        "Durable owner"
+      ]
+    }
   },
   "profiles": [
     {
@@ -212,7 +236,10 @@
           "IF"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "requirements"
+      }
     },
     {
       "id": "architecture-description",
@@ -258,7 +285,10 @@
           "requirements-package"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "architecture"
+      }
     },
     {
       "id": "adr",
@@ -304,11 +334,10 @@
           "architecture-description"
         ]
       },
-      "exceptions": [
-        {
-          "kind": "retain-superseded-in-place"
-        }
-      ]
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "architecture"
+      }
     },
     {
       "id": "spec",
@@ -360,7 +389,10 @@
           "spec"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "specs"
+      }
     },
     {
       "id": "data-model-contract",
@@ -400,7 +432,10 @@
           "spec"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "specs"
+      }
     },
     {
       "id": "openapi-contract",
@@ -509,7 +544,10 @@
         {
           "kind": "transient-after-completion"
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "specs"
+      }
     },
     {
       "id": "task",
@@ -560,7 +598,10 @@
         {
           "kind": "transient-after-completion"
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "specs"
+      }
     },
     {
       "id": "operations-domain-readme",
@@ -576,10 +617,10 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "layer"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -595,7 +636,10 @@
       ],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
     },
     {
       "id": "guide",
@@ -626,13 +670,13 @@
       "required_sections": [
         "Usage",
         "Common Checks",
-        "Runbook Handoff",
         "Traceability",
         "Related Documents"
       ],
       "optional_sections": [
         "Overview",
-        "Troubleshooting"
+        "Troubleshooting",
+        "Runbook Handoff"
       ],
       "lifecycle_id": "living",
       "traceability": {
@@ -642,7 +686,10 @@
           "runbook"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
     },
     {
       "id": "policy",
@@ -692,7 +739,10 @@
           "spec"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
     },
     {
       "id": "runbook",
@@ -743,7 +793,10 @@
           "task"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
     },
     {
       "id": "incident",
@@ -793,7 +846,10 @@
         {
           "kind": "year-directory"
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
     },
     {
       "id": "postmortem",
@@ -813,12 +869,12 @@
         "layer",
         "artifact_id",
         "parent_ids",
-        "created",
-        "reviewed_at"
+        "created"
       ],
       "optional_frontmatter": [
         "supersedes",
-        "superseded_by"
+        "superseded_by",
+        "reviewed_at"
       ],
       "required_sections": [
         "Summary",
@@ -845,7 +901,15 @@
         {
           "kind": "year-directory"
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "operations"
+      },
+      "required_frontmatter_by_status": {
+        "published": [
+          "reviewed_at"
+        ]
+      }
     },
     {
       "id": "reference-category-readme",
@@ -861,10 +925,10 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "layer"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -881,7 +945,10 @@
       ],
       "lifecycle_id": "living",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "research",
@@ -933,7 +1000,10 @@
           "research"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "audit",
@@ -985,7 +1055,10 @@
           "audit"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "data",
@@ -1037,7 +1110,10 @@
           "task"
         ]
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "research-member",
@@ -1079,8 +1155,10 @@
           "research"
         ]
       },
-      "exceptions": [
-      ]
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "audit-member",
@@ -1125,7 +1203,10 @@
           "kind": "delegate-reference-members",
           "owner": "scripts/lib/document_governance/references.py"
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "migration",
@@ -1188,7 +1269,10 @@
             "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
           ]
         }
-      ]
+      ],
+      "frontmatter_values": {
+        "layer": "archive"
+      }
     },
     {
       "id": "tombstone",
@@ -1228,7 +1312,10 @@
       "traceability": {
         "allowed_parent_profiles": []
       },
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "archive"
+      }
     },
     {
       "id": "documentation-readme",
@@ -1247,7 +1334,6 @@
         "updated"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -1304,7 +1390,6 @@
         "updated"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -1350,7 +1435,6 @@
         "updated"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -1421,7 +1505,6 @@
         "updated"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by"
       ],
@@ -1452,10 +1535,10 @@
         "type",
         "status",
         "owner",
-        "updated"
+        "updated",
+        "layer"
       ],
       "optional_frontmatter": [
-        "layer",
         "created",
         "generated_by",
         "runtime"
@@ -1477,7 +1560,48 @@
           "kind": "delegate-reference-members",
           "owner": "scripts/lib/document_governance/references.py"
         }
-      ]
+      ],
+      "frontmatter_routes": {
+        "docs/00.agent-governance/README.md": {
+          "layer": "agent-governance"
+        },
+        "docs/01.requirements/README.md": {
+          "layer": "requirements"
+        },
+        "docs/02.architecture/README.md": {
+          "layer": "architecture"
+        },
+        "docs/02.architecture/decisions/README.md": {
+          "layer": "architecture"
+        },
+        "docs/02.architecture/descriptions/README.md": {
+          "layer": "architecture"
+        },
+        "docs/03.specs/README.md": {
+          "layer": "specs"
+        },
+        "docs/05.operations/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/catalog/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/incidents/README.md": {
+          "layer": "operations"
+        },
+        "docs/90.references/README.md": {
+          "layer": "references"
+        },
+        "docs/98.archive/README.md": {
+          "layer": "archive"
+        },
+        "docs/99.templates/README.md": {
+          "layer": "templates"
+        },
+        "docs/99.templates/templates/README.md": {
+          "layer": "templates"
+        }
+      }
     },
     {
       "id": "governance-policy",
@@ -1845,7 +1969,10 @@
       ],
       "lifecycle_id": "publication",
       "traceability": {},
-      "exceptions": []
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "references"
+      }
     },
     {
       "id": "unsupported",

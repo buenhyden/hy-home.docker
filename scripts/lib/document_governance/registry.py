@@ -668,6 +668,37 @@ def validate_registry(
                         ",".join(sorted(missing_order)),
                     )
                 )
+            constants = profile.get("frontmatter_values", {})
+            invalid_constants = set(constants) - (
+                set(required_frontmatter) | set(optional_frontmatter)
+            )
+            if invalid_constants:
+                findings.append(
+                    RegistryFinding(
+                        "frontmatter-value-contract-invalid",
+                        f"profiles.{index}",
+                        "literal values must belong to declared frontmatter keys",
+                    )
+                )
+        for status, keys in profile.get("required_frontmatter_by_status", {}).items():
+            lifecycle = raw.get("lifecycles", {}).get(profile.get("lifecycle_id"), {})
+            if status not in lifecycle.get("statuses", ()) or set(keys) - set(optional_frontmatter or ()):
+                findings.append(RegistryFinding(
+                    "status-frontmatter-contract-invalid", f"profiles.{index}",
+                    "conditional requirements must use registered statuses and optional keys",
+                ))
+        routes = profile.get("frontmatter_routes", {})
+        for route, values in routes.items():
+            if (
+                not _safe_path_pattern(route)
+                or "{" in route
+                or not (route in profile.get("additional_paths", ()) or path_matches_pattern(route, path_pattern))
+                or set(values) - set(required_frontmatter or ())
+            ):
+                findings.append(RegistryFinding(
+                    "frontmatter-route-contract-invalid", f"profiles.{index}",
+                    "route literals must target an owned path and required keys",
+                ))
         if (
             isinstance(path_pattern, str)
             and path_pattern.endswith(".md")
@@ -1018,6 +1049,36 @@ def validate_frontmatter(
             key=lambda item: tuple(map(str, item.path)),
         )
     )
+
+
+def validate_profile_values(
+    values: Mapping[str, object], profile: Mapping[str, object], path: str | None = None
+) -> tuple[RegistryFinding, ...]:
+    """Check present literals and optional values from the selected profile."""
+
+    constants = dict(profile.get("frontmatter_values", {}))
+    routes = profile.get("frontmatter_routes", {})
+    if routes and path is not None:
+        if path not in routes:
+            return (RegistryFinding("frontmatter-route-missing", path, "destination has no registered literal values"),)
+        constants.update(routes[path])
+    findings = [
+        RegistryFinding(
+            "frontmatter-value-invalid", key, "value differs from the profile literal"
+        )
+        for key, expected in constants.items()
+        if key in values and values[key] != expected
+    ]
+    optional = profile.get("optional_frontmatter", profile.get("optional", ()))
+    findings.extend(
+        RegistryFinding("empty-optional-frontmatter", key, "omit an empty optional value")
+        for key in optional
+        if key in values and values[key] in (None, "", [], ())
+    )
+    for key in profile.get("required_frontmatter_by_status", {}).get(values.get("status"), ()):
+        if key not in values or values[key] in (None, "", [], ()):
+            findings.append(RegistryFinding("status-frontmatter-required", key, "status requires a nonempty value"))
+    return tuple(sorted(findings))
 
 
 def _json_schema_value(value: object) -> object:

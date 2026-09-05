@@ -1,10 +1,10 @@
 ---
 title: "References"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "references"
 ---
 
@@ -35,6 +35,12 @@ Package paths are numeric, prefixless, and date-free. Stable IDs remain in front
 ### Authority Boundary
 
 Stage 90 is non-normative. When evidence conflicts with a current owner, follow the current Stage 00/01/02/03/05 document and update or supersede the reference package. Executable OpenAPI, GraphQL, or Proto contracts remain with their Stage 03 Spec Package.
+
+[Stage 00 authoring policy](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)
+owns source, limitation, consumer, and freshness expectations. Diataxis technical
+reference describes a reader need and does not make a document Stage 90 evidence.
+Generated data is refreshed by its registered generator, never hand-edited into
+a current version or runtime authority.
 
 Deprecated redirects, compatibility copies, `learning/`, and `llm-wiki/` are not current categories. Learning material is classified by meaning as a Stage 05 Guide or Research package; LLM navigation outputs are registered Data packages.
 

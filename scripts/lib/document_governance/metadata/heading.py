@@ -16,7 +16,12 @@ from scripts.lib.document_governance.registry import (
     _declares_provider_binding,
     document_type,
     DocumentRegistry,
+    RegistryError,
     classify_path as classify_registered_path,
+    declares_frozen_legacy_record,
+    resolve_template_placeholders,
+    validate_frontmatter,
+    validate_profile_values,
 )
 from scripts.lib.document_governance.metadata.profile import (
     CREDENTIAL_KEY_NAME,
@@ -111,6 +116,48 @@ def _validate_template_source(
                 )
             )
         return sorted(set(findings))
+    try:
+        schema_findings = validate_frontmatter(
+            resolve_template_placeholders(record.metadata)
+        )
+    except RegistryError:
+        findings.append(
+            _finding(
+                record,
+                "frontmatter-schema-unavailable",
+                "frontmatter value schema cannot be trusted",
+            )
+        )
+    else:
+        findings.extend(
+            _finding(record, finding.code, finding.message)
+            for finding in schema_findings
+        )
+    for finding in validate_profile_values(record.metadata, target_profile):
+        findings.append(_finding(record, finding.code, finding.message))
+    order = common_contract.get("frontmatter_order", [])
+    order_index = {key: index for index, key in enumerate(order)}
+    present_keys = [key for key in record.metadata if key in order_index]
+    if present_keys != sorted(present_keys, key=order_index.__getitem__):
+        findings.append(
+            _finding(
+                record,
+                "frontmatter-order",
+                "frontmatter keys do not follow deterministic canonical serialization order",
+            )
+        )
+    initial_version = common_contract.get("template_initial_version")
+    if (
+        initial_version is not None
+        and record.metadata.get("version") != initial_version
+    ):
+        findings.append(
+            _finding(
+                record,
+                "invalid-template-version",
+                "template must use the registered initial document version",
+            )
+        )
     required = set(target_profile.get("required", []))
     optional = set(target_profile.get("optional", []))
     forbidden = set(target_profile.get("forbidden", []))
@@ -199,11 +246,9 @@ def _validate_template_source(
         if key == "parent_ids":
             continue
         placeholder = placeholders.get(key)
-        if placeholder is None:
-            continue
         value = record.metadata.get(key)
         if key in required_placeholder_keys:
-            if value != placeholder:
+            if placeholder is None or value != placeholder:
                 findings.append(
                     _finding(
                         record,
@@ -212,15 +257,13 @@ def _validate_template_source(
                     )
                 )
             continue
-        # Other keys may be fixed by the profile -- a Spec template's layer is
-        # always `specs`. Demanding the placeholder there reported 22 templates
-        # that were correct. Only a placeholder-shaped value is constrained,
-        # and then only to be one the Registry actually registers.
+        # Profile literals were checked above. Remaining placeholder-shaped
+        # values, including shared forms, must use a registered placeholder.
         if (
             isinstance(value, str)
             and value.startswith("{{")
             and value.endswith("}}")
-            and value not in registered_placeholder_values
+            and (placeholder is None or value not in registered_placeholder_values)
         ):
             findings.append(
                 _finding(
@@ -313,6 +356,60 @@ def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
 
 def _body_target_scan_text(text: str) -> str:
     return _strip_inline_code_spans("\n".join(_markdown_unfenced_lines(text)))
+
+
+AUTHOR_PROMPT = re.compile(r"<!--\s*Author prompt:(?:[\s\S]*?-->|[\s\S]*$)")
+
+
+def _authored_body_target(record: Record, profiles: dict[str, object]) -> bool:
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry):
+        return False
+    profile_id = classify_registered_path(record.path.as_posix(), registry)
+    profile = registry.profiles.get(profile_id)
+    if profile_id != record.artifact_type or not isinstance(profile, Mapping):
+        return False
+    if (
+        profile.get("frontmatter_policy") in {"absent", "unmanaged"}
+        or _declares_provider_binding(profile)
+        or declares_frozen_legacy_record(profile, record.path.as_posix())
+        or _source_roles_for_path(record.path, profiles)
+    ):
+        return False
+    owner = registered_generated_owner(record.path, profiles)
+    return owner is None or record.metadata.get("generated_by") != owner
+
+
+def _authored_residue_scan_text(text: str) -> str:
+    return _strip_inline_code_spans(
+        "\n".join(
+            line
+            for line in _markdown_unfenced_lines(text)
+            if re.match(r"^ {0,3}>", line) is None
+        )
+    )
+
+
+def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
+    scan_text = _authored_residue_scan_text(text)
+    findings = []
+    if AUTHOR_PROMPT.search(scan_text):
+        findings.append(
+            _finding(
+                record,
+                "template-instruction-in-target",
+                "authored document retains an author prompt",
+            )
+        )
+    if MARKDOWN_BODY_TOKEN.search(scan_text):
+        findings.append(
+            _finding(
+                record,
+                "template-body-token-in-target",
+                "authored document retains an unresolved Markdown body token",
+            )
+        )
+    return findings
 
 
 def _machine_template_path(path: pathlib.Path) -> bool:
@@ -690,12 +787,16 @@ def validate_body_contract(
     profiles: dict[str, object],
     changed_boundary: bool,
 ) -> list[Finding]:
-    """Validate role headings, source tokens, and changed-target residue."""
+    """Validate role headings, source tokens, and current authored residue."""
 
     if _machine_template_path(record.path):
         return _machine_template_findings(record, text)
 
-    section_findings: list[Finding] = []
+    section_findings = (
+        _authored_residue_findings(record, text)
+        if _authored_body_target(record, profiles)
+        else []
+    )
     registry = profiles.get("_registry")
     if isinstance(registry, DocumentRegistry):
         owner = registered_generated_owner(record.path, profiles)
@@ -706,7 +807,7 @@ def validate_body_contract(
         registered_profile = classify_registered_path(record.path.as_posix(), registry)
         profile = registry.profiles.get(record.artifact_type)
         if registered_profile == record.artifact_type and isinstance(profile, Mapping):
-            section_findings = _registered_section_findings(record, text, profile)
+            section_findings.extend(_registered_section_findings(record, text, profile))
             # A profile that also registers a template used to be exempt here
             # and checked only through its template role, which runs on changed
             # paths alone. That left the declared sections of every SDLC target
@@ -858,14 +959,6 @@ def validate_body_contract(
                         "changed target retains a template-only instruction literal",
                     )
                 )
-        if MARKDOWN_BODY_TOKEN.search(target_scan_text):
-            findings.append(
-                _finding(
-                    record,
-                    "template-body-token-in-target",
-                    "changed target retains an unresolved Markdown body token",
-                )
-            )
     return sorted(set(findings))
 
 
@@ -913,21 +1006,27 @@ def _body_deficit_multiset(
     if is_template_source:
         scan_text = "\n".join(_markdown_unfenced_lines(text))
         instruction_code = "template-instruction-in-source"
-    elif changed_boundary:
+    elif _authored_body_target(record, profiles):
         scan_text = _body_target_scan_text(text)
         instruction_code = "template-instruction-in-target"
     else:
         return deficits
 
-    for literal in TARGET_TEMPLATE_LITERALS:
+    for literal in (
+        TARGET_TEMPLATE_LITERALS if is_template_source or changed_boundary else ()
+    ):
         identity = _private_deficit_identity(instruction_code, literal)
         count = len(tuple(re.finditer(re.escape(literal), scan_text)))
         if count:
             deficits[(instruction_code, identity, "template instruction", "error")] += (
                 count
             )
-    if not is_template_source and changed_boundary:
-        for match in MARKDOWN_BODY_TOKEN.finditer(scan_text):
+    if not is_template_source:
+        authored_scan_text = _authored_residue_scan_text(text)
+        for match in AUTHOR_PROMPT.finditer(authored_scan_text):
+            identity = _private_deficit_identity(instruction_code, match.group(0))
+            deficits[(instruction_code, identity, "author prompt", "error")] += 1
+        for match in MARKDOWN_BODY_TOKEN.finditer(authored_scan_text):
             identity = _private_deficit_identity(
                 "template-body-token-in-target",
                 match.group(0),

@@ -1,10 +1,11 @@
 ---
 title: "AI Agent Governance"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
+layer: "agent-governance"
 ---
 
 # AI Agent Governance

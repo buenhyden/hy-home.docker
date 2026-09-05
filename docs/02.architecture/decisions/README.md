@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 ---
 
@@ -60,7 +60,7 @@ docs/02.architecture/decisions/
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
-3. 새 ADR은 [`adr.template.md`](../../99.templates/templates/architecture/decision.template.md)를 사용한다.
+3. 새 ADR은 [`decision.template.md`](../../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. 선택, alternatives, rationale와 consequences를 보존한다.
 5. 이전 결정을 대체하면 stable `supersedes` metadata와 양방향 문서 링크로
    supersession을 명시한다.

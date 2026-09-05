@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 ---
 
@@ -77,11 +77,17 @@ service names, environment variables는 원형을 유지합니다.
    경로에서 시작합니다.
 2. 사고 기록은 [incident template](../../99.templates/templates/operations/incident.template.md)을 복사해 `incident.md`로 작성합니다.
 3. 사후 분석은 [postmortem template](../../99.templates/templates/operations/postmortem.template.md)을 복사해 `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`로 작성합니다.
-4. Incident와 Postmortem pair는 같은 Incident ID, severity, primary service metadata를 사용합니다.
+4. Postmortem은 자신의 등록된 stable ID를 가지며 `parent_ids`로 해당
+   Incident를 연결합니다. Severity와 affected service는 body의 `Impact`에
+   기록하고 Registry에 없는 frontmatter key를 추가하지 않습니다.
 5. 사고 대응 절차는 이 폴더에 직접 쓰지 말고 관련 runbook으로 연결합니다.
 6. 사실, 가설, 조치, 후속 액션을 분리해서 기록하고 관련 증거 링크를 남깁니다.
 7. 본문은 한국어로 쓰되 timestamp, ID, command, evidence label, service name,
    environment variable은 원형을 유지합니다.
+8. [Stage 00 작성 정책](../../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)에
+   따라 UTC offset을 포함한 ISO 8601 timestamp를 사용하고, 사실과 가설을
+   구분합니다. Postmortem은 blameless 서술을 사용하며 각 corrective action에
+   owner, due date, tracking ID/link, verification 조건을 기록합니다.
 
 ## Related Documents
 

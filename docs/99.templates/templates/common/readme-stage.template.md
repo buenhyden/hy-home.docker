@@ -5,6 +5,7 @@ type: "common/readme"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
+layer: "{{LAYER}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->

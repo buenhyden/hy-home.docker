@@ -1,10 +1,11 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.0.0"
+version: "2.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
+layer: "templates"
 ---
 
 # Stage 99 Document Contracts and Templates
@@ -91,8 +92,8 @@ Markdown artifact must carry a `type` equal to its Registry-classified profile
 type; this also applies to package, domain, subject, stage, governance,
 generated, and repository-support Markdown without a dedicated copy template.
 `absent` is reserved for executable machine contracts that do not use Markdown
-frontmatter. `unmanaged` is reserved for the unsupported fallback and never
-defines a canonical target artifact.
+frontmatter. `unmanaged` covers the unsupported fallback and registered frozen
+archive payloads; neither is a current authoring target.
 
 ### Identity and Lifecycle Rules
 
@@ -106,33 +107,17 @@ those fields express, not the fields themselves.
 
 A profile's `required_frontmatter` and `optional_frontmatter` state which keys a
 document declares; `common.frontmatter_order` states the order;
+`frontmatter_values` declares profile-specific literal constraints;
 [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)
-states each value's shape. The reasons behind that envelope are:
-Every authored Markdown profile requires the common six fields `title`,
-`version`, `type`, `status`, `owner`, and `updated` in that order.
-Profile-specific identity, relation, supersession, and provenance fields follow
-them. String, date, version, identifier, and placeholder scalar values use
-double quotes. Provider-owned runtime projections retain their native envelope.
+states each value's shape. Authoring behavior, content versioning, and the
+meaning of the envelope are owned by the Stage 00
+[documentation protocol](../00.agent-governance/policies/documentation-protocol.md#authoring-rules).
 
-- `type` carries the `family/kind` document role, so a reader learns a
-  document's family without resolving its path.
-- `title` never repeats the artifact identity, because the identity is already
-  a field.
-- `layer` names the owning stage without its numeric prefix, and is omitted
-  wherever the canonical path already states the authority.
-- `parent_ids` records the structural owner or container relation required by
-  identity composition. Broader evidence, decision, consumer, and operational
-  connections belong in the document's `Traceability` or `Related Documents`
-  links and are not duplicated into `parent_ids`.
-- `owner` is sourced from `.github/CODEOWNERS`, so accountability has one home.
-- `version` starts at `0.1.0`; approval of the first stable contract promotes it
-  to `1.0.0`. Patch, minor, and major increments represent compatible correction,
-  compatible meaning growth, and incompatible contract change. Lifecycle status
-  is independent from this content version.
-- A profile without an identity declares no `artifact_id`, and no domain alias
-  duplicates one that exists.
-- A provider-owned runtime projection is exempt from the envelope entirely,
-  because its shape belongs to the runtime that reads it.
+`parent_ids` carries the Registry-declared structural relation; broader evidence
+and consumer relationships belong in `Traceability` or `Related Documents`.
+Ownership comes from `.github/CODEOWNERS` or the applicable canonical role.
+The short Registry profile `id` maps explicitly to one unique `type`; it is not
+an additional authored classifier.
 
 - Standalone package paths use four numeric digits and omit semantic prefixes.
 - A member identity is its container's identity plus that container's own
@@ -140,9 +125,11 @@ double quotes. Provider-owned runtime projections retain their native envelope.
 - Stage 90 package members are named `m####-<slug>.md`; the Registry profile
   path owns that rule and `scripts/lib/document_governance/references.py`
   executes the resulting classification.
-- Tombstones use `identity_relation: inherited` and reuse the retired
-  document's identity, so the `tombstone` space no longer issues numbers;
-  `scripts/lib/document_governance/archive.py` derives the exact value.
+- Tombstones use `identity_relation: inherited`: `artifact_id` is
+  `tomb-{retired_artifact_id}`, derived by
+  `scripts/lib/document_governance/archive.py`. The four-digit filename uses a
+  separate monotonic allocation in the Registry's `tombstone` space; inherited
+  artifact identity does not remove its `high_water` or `next_number` checks.
 - Incident numbers restart inside each year partition, so the year belongs to
   the identity and not only to the path.
 - Stable package IDs retain their registered prefix and case.
@@ -178,6 +165,10 @@ profile. Changed validation uses the persisted Registry allocation state.
 - Markdown placeholders use `{{UPPER_SNAKE_CASE}}`. Template-only authoring
   prompts may appear in HTML comments but must not survive promotion. Native
   machine contract templates use `__UPPER_SNAKE__` tokens instead.
+- The shared stage README form is a deliberate destination-bound exception:
+  its `layer` placeholder resolves from the exact Registry `frontmatter_routes`
+  entry. A source shared across stages cannot use one stage literal; target
+  documents must use the registered literal and cannot invent a stage.
 - Replace every placeholder before promotion to a target document.
 - Executable OpenAPI, GraphQL, and Proto contracts belong to the owning Stage 03
   Spec package. Their deterministic filenames and media types are Registry

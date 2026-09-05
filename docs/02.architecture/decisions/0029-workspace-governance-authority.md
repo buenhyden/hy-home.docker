@@ -1,17 +1,16 @@
 ---
 title: "Workspace Governance Authority"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "ADR-0029"
 parent_ids:
 - "AD-0027"
 supersedes:
 - "ADR-0027"
-superseded_by: null
 created: "2026-08-20"
 ---
 # ADR-0029: Workspace Governance Authority

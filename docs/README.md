@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 ---
 
 # docs
@@ -82,12 +82,13 @@ docs/
 | execute recovery or repeatable procedures | `05.operations/catalog/` |
 | record incidents or postmortems | `05.operations/incidents/<year>/inc-####-<slug>/` |
 | provide LLM-facing repository navigation | `90.references/data/0082-llm-wiki-index/` |
-| inspect a manifest-first validated tombstone result | `98.archive/` |
+| inspect a preserved body or its disposition record | `98.archive/` |
 
 ## Migration Map
 
-이전 stage 경로의 이관 매핑은 [Stage 98 migrations](98.archive/migrations/)가
-단일 권위입니다. 이 README는 매핑 사본을 두지 않습니다.
+이전 stage 경로의 이관 매핑은 [Stage 98 README](98.archive/README.md)를
+통해 historical Migration에서 찾습니다. 그 기록은 과거 이동의 근거이며
+현재 경로나 작성 계약은 Stage 99 Registry가 소유합니다.
 
 ## How to Work in This Area
 
@@ -119,7 +120,7 @@ docs/
 | `05.operations/catalog/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | manifest-approved 간결한 tombstone; full typed provenance and preservation, disposition-conditional relation, identifier 원문 보존 |
+| `98.archive/` | frozen 원문 보존; 현재 README와 migration/tombstone의 기록 계약은 분리 |
 | `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract
@@ -159,9 +160,14 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 `run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-document-links.py --mode alignment`은 현재 소유자 문서와 operations 문서 간 추적성 동기화를 확인합니다.
 
-## Current Refresh Evidence
+## Historical Refresh Evidence
 
-현재 infra/secrets/docs refresh 작업은 기존 spec/plan/task 문서를 새 taxonomy 안에서 in-place로 재사용합니다.
+이전 infra/secrets/docs refresh의 실행 기록은 아래 보존 package에 있습니다.
+현재 구조와 운영 안내는 [infra README](../infra/README.md)와
+[Operations](05.operations/README.md)가 소유하며 완료 package를 새 작업 기록으로
+재사용하지 않습니다.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 
 | Evidence | Current State |
 | --- | --- |
@@ -169,11 +175,11 @@ python3 scripts/validation/check-document-links.py --mode traceability
 | Plan and Task evidence | co-located in the owning Spec Package |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
-## Current LLM Wiki Evidence
+## LLM Wiki Ownership and Historical Evidence
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/0096-llm-wiki-agent-first-completion/spec.md](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
+| Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md); current procedure: [LLM Wiki guide](05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
 | Plan and Task evidence | co-located in the owning Spec Package |
 | Repository map | [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md) |
 | Generated index | [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md) |

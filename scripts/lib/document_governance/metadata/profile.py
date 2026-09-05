@@ -2291,6 +2291,9 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
         )
         translated[profile_id] = {
             "type": profile.get("type"),
+            "frontmatter_values": _thaw(profile.get("frontmatter_values", {})),
+            "frontmatter_routes": _thaw(profile.get("frontmatter_routes", {})),
+            "required_frontmatter_by_status": _thaw(profile.get("required_frontmatter_by_status", {})),
             "required": list(profile.get("required_frontmatter", ())),
             "optional": list(profile.get("optional_frontmatter", ())),
             "forbidden": [],

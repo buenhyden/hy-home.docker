@@ -42,6 +42,8 @@ created: "{{CREATED}}"
 
 ## Acceptance Contract
 
+<!-- Author prompt: Use a numbered list of observable criteria; keep those numbers stable while Plan and Task evidence refers to them. -->
+
 {{ACCEPTANCE_CONTRACT}}
 
 ## Traceability

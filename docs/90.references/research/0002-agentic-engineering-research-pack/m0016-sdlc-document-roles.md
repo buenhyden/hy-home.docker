@@ -1,6 +1,6 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -19,28 +19,25 @@ review_cycle: "on-source-change"
 
 ## Overview
 
-The workspace uses twelve distinct lifecycle document roles. Each role owns a
-different question, trigger, handoff, and evidence boundary. Similar subject
-matter does not make the roles interchangeable: a Plan cannot report executed
-results, a Guide cannot impose Policy, an Incident cannot contain reviewed
-Postmortem causality, and a Release cannot stand in for deployment/runtime
-proof.
+Each document role owns a distinct question, trigger, handoff, and evidence
+boundary. Current roles and their copy sources are declared by the
+[Stage 99 Registry](../../../99.templates/registry.json); the
+[Stage 00 documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)
+owns their meaning. Requirement Package combines PRD/SRS perspectives;
+Architecture Description replaces the older ARD name and remains distinct
+from ADR. Release
+uses external evidence rather than an independent document profile.
 
-This reference reflects the current Stage 00 and Stage 99 contracts, re-read
-directly at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` (2026-08-14),
-superseding the Task 5 baseline `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`
-this leaf previously cited. `ARD` is explicitly repository-local coinage
-rather than an industry-standard document name. The twelve roles below are a
-proper subset of a larger 21-profile metadata registry; the metadata
-reference owns that wider catalog, while this reference stays scoped to the
-human lifecycle roles a document author actually chooses between.
+The historical role survey below was read at
+`ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` on 2026-08-14, following the Task 5
+baseline `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`. Its twelve-role and
+21-profile counts describe that boundary, not today's authoring choices.
 
 ## Purpose
 
-Satisfy REQ-10 through REQ-21 with one separate row for PRD, ARD, ADR,
-Spec/child contract, Plan, Task, Guide, Incident, Postmortem, Policy, Release,
-and Runbook. Make ownership and forbidden substitutions explicit so authors
-select a role by the question it owns rather than by a convenient template.
+Preserve the REQ-10 through REQ-21 research survey and distinguish it from
+current ownership. Select current documents by the question they own and the
+Registry mapping, not by a historical table or convenient template.
 
 ## Repository Role
 
@@ -71,42 +68,18 @@ role nor authorizes a target document.
 
 ### Complete role contract
 
-This workspace's twelve roles split into two families that this reference
-previously narrated in one undifferentiated table. Re-read directly this
-revision rather than assumed: `docs/99.templates/templates/sdlc/` holds
-exactly six role templates (`prd`, `ard`, `adr`, `spec`, `plan`,
-`task.template.md`, alongside its own `README.md`), and
-`docs/99.templates/templates/operations/` holds exactly six role templates
-(`guide`, `incident`, `policy`, `postmortem`, `release`,
-`runbook.template.md`, alongside its own `README.md`). The split is not this
-leaf's invention; it is the directory boundary the templates already carry.
-The [stage authoring matrix](../../../00.agent-governance/policies/stage-authoring-matrix.md),
-re-read directly this revision, assigns the first family to Stages 01-04 and
-the second to Stage 05: PRD to Stage 01, ARD/ADR to Stage 02, Spec to Stage
-03, and Plan/Task to Stage 04 execution — each triggered by a discovery,
-decision, contract-readiness, or in-progress-work event that precedes or
-constitutes building the thing. Guide/Policy/Runbook/Incident/Postmortem/
-Release all sit in Stage 05, triggered instead by "operational guidance,
-controls, or repeatable procedures" changing, or by a real incident/release
-event occurring after something already exists to operate. The typed
-artifact-profile registry (`docs/99.templates/support/document-metadata-profiles.yaml`,
-re-read this revision) preserves the same split at the field level: PRD,
-ARD, ADR, Spec, Plan, and Task each require a direct parent drawn only from
-other SDLC-family profiles or Archive (see the companion metadata-lifecycle
-reference's profile table), while Guide, Policy, and Runbook admit Spec/
-Plan/Task as parents but never the reverse — no SDLC profile accepts a
-Guide, Policy, Runbook, Incident, Postmortem, or Release as a `parent_ids`
-entry. Substitution across the boundary is therefore not just a style
-violation but a typed-relation violation: an operations document cannot
-serve as an SDLC lifecycle document's parent, and neither the stage
-authoring matrix nor the metadata registry gives an SDLC document (PRD
-through Task) a path into `docs/05.operations/`. The reverse failure mode is
-equally concrete — an operations document cannot _substitute for_ an SDLC
-document, because Stage 05 artifacts describe how to run or govern
-something that Stage 01-04 artifacts must already have specified, decided,
-contracted, planned, and evidenced; a Guide or Runbook with no upstream
-Spec/Plan/Task to link is describing a service this workspace has not
-actually built through its own lifecycle.
+The current model places Requirement Packages in Stage 01, Architecture
+Descriptions and ADRs in Stage 02, and Spec/Plan/Task/native contracts together
+in Stage 03. Stage 05 owns Guide, Policy, Runbook, Incident, and Postmortem.
+Use the [template catalog](../../../99.templates/templates/README.md) for
+registered copy sources and the Registry for structural parent relations.
+An Operations document cannot replace requirements, architecture, or Task
+execution evidence merely because it describes the same subject.
+
+> Historical evidence (not current authority; source: Git history):
+> On 2026-08-14 the survey recorded six SDLC templates and six Operations
+> templates, including a separate Release template, with Plan/Task in Stage 04.
+> The tables below preserve those observed roles, paths, and relations.
 
 #### Historical SDLC lifecycle role matrix
 
@@ -118,6 +91,10 @@ paths come from the Stage 99 Registry; the revalidation section near the end of
 this member summarizes the present Requirement, Architecture/ADR, co-located
 Spec/Plan/Task, and Operations model.
 
+Historical table: 2026-08-14 role survey; current roles and paths are owned by the
+[Registry](../../../99.templates/registry.json).
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Role                  | Purpose                                                                                                                                                | Question owned                                                                                                                | Trigger                                                                                                      | Owner                                                           | Consumer                                                 | Stage / path                                                                                                                             | Template                                                                                                            | Lifecycle                                                                                                                           | Relations                                                                                                          | Forbidden substitutions                                                                                                |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
 | PRD                   | Capture approved product intent, value, scope, requirements, and acceptance.                                                                           | What problem, users, value, constraints, requirements, and success criteria should be addressed?                              | New or materially changed stakeholder intent or acceptance criteria.                                         | Product Manager / human stakeholder owner.                      | ARD/ADR authors, Spec owners, reviewers.                 | Stage 01: `docs/01.requirements/NNN-feature-or-system.md`.                                                                               | `docs/99.templates/templates/sdlc/prd.template.md`.                                                                 | `draft -> active -> completed` or `active/completed -> superseded`; current path until reviewed archive migration.                  | Root role; downstream ARD, ADR, and Spec links.                                                                    | Not an implementation design, architecture decision, task list, test result, or policy.                                |
@@ -129,6 +106,10 @@ Spec/Plan/Task, and Operations model.
 
 #### Operations roles (Guide, Incident, Postmortem, Policy, Release, Runbook)
 
+Historical table: 2026-08-14 Operations role survey; current roles and paths are owned by the
+[Registry](../../../99.templates/registry.json).
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Role       | Purpose                                                                                                                                           | Question owned                                                                              | Trigger                                                                        | Owner                                                                                      | Consumer                                                      | Stage / path                                                                  | Template                                                         | Lifecycle                                                                                                                           | Relations                                                                                            | Forbidden substitutions                                                                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Guide      | Explain routine use, context, prerequisites, common checks, and handoff to authoritative controls/procedures.                                     | How should a person understand or routinely use the service or process?                     | User/operator usage context materially changes.                                | Documentation Specialist with service/operations owner.                                    | Users, operators, developers.                                 | Stage 05: `docs/05.operations/guides/**/*.md`.                                | `docs/99.templates/templates/operations/guide.template.md`.      | Current guidance uses active-family lifecycle and must track current implementation.                                                | Parent Spec/Plan/Task/Policy as evidenced; links Policy and Runbook instead of copying them.         | Not mandatory Policy, ordered recovery Runbook, Incident response, or proof a service is live.                                                             |
@@ -149,11 +130,16 @@ not a standards-conformance claim.
 
 ### Current typed-role coverage
 
-The prior revision of this reference described role paths but did not
-directly re-measure typed `artifact_type` migration depth per role. Direct
-`grep -l 'artifact_type: <role>'` counts against each family's canonical path
-on 2026-08-14 give:
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 typed-coverage measurement.
+> The prior revision of this reference described role paths but did not
+> directly re-measure typed `artifact_type` migration depth per role. Direct
+> `grep -l 'artifact_type: <role>'` counts against each family's canonical path
+> on 2026-08-14 give:
 
+Historical table: 2026-08-14 typed coverage.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Role    | Path count | Typed count | Typed depth                                                                     |
 | ------- | ---------- | ----------- | ------------------------------------------------------------------------------- |
 | PRD     | 25         | 1           | One current leaf exposes `artifact_type: prd`; the rest are path-only evidence. |
@@ -165,26 +151,37 @@ on 2026-08-14 give:
 | Policy  | 64         | 1           | Same shallow pattern.                                                           |
 | Runbook | 62         | 2           | Marginally deeper than Guide/Policy; still shallow in absolute terms.           |
 
-Two conclusions follow directly from this table, not from inference. First,
-canonical **path** remains the dominant role-evidence signal for this corpus
-today; typed-field coverage is real but shallow everywhere except Plan and
-Task. Second, the shallowness is uniform enough (roughly 1-2% for PRD/ARD/
-ADR/Guide/Policy, roughly 15% for Plan/Task, roughly 3% for Runbook) that no
-single role's typed migration should be read as "further along" in a way that
-changes how an author should choose a role — path-based role selection
-remains correct and required everywhere in this corpus today.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 coverage interpretation.
+> Two conclusions follow directly from this table, not from inference. First,
+> canonical **path** remains the dominant role-evidence signal for this corpus
+> today; typed-field coverage is real but shallow everywhere except Plan and
+> Task. Second, the shallowness is uniform enough (roughly 1-2% for PRD/ARD/
+> ADR/Guide/Policy, roughly 15% for Plan/Task, roughly 3% for Runbook) that no
+> single role's typed migration should be read as "further along" in a way that
+> changes how an author should choose a role — path-based role selection
+> remains correct and required everywhere in this corpus today.
+
+Current documents follow the Registry classifier and envelope, not this old
+path-only migration boundary.
 
 ### Registered focused Spec-contract types
 
-The Spec row's "optional focused contracts" claim has eight concrete
-registered templates under `docs/99.templates/templates/spec-contracts/`,
-re-listed directly this revision: `agent-design.template.md`,
-`api-spec.template.md`, `data-model.template.md`,
-`openapi.template.yaml`, `schema.template.graphql`, `service.template.md`,
-`service.template.proto`, and `tests.template.md`. Each remains part of the
-Spec role rather than a new lifecycle stage — a focused child contract shares
-the parent Spec's lifecycle and evidence obligations and is not independently
-promotable to `active`/`completed` outside its parent's disposition.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 focused-contract inventory.
+> The Spec row's "optional focused contracts" claim has eight concrete
+> registered templates under `docs/99.templates/templates/spec-contracts/`,
+> re-listed directly this revision: `agent-design.template.md`,
+> `api-spec.template.md`, `data-model.template.md`,
+> `openapi.template.yaml`, `schema.template.graphql`, `service.template.md`,
+> `service.template.proto`, and `tests.template.md`. Each remains part of the
+> Spec role rather than a new lifecycle stage — a focused child contract shares
+> the parent Spec's lifecycle and evidence obligations and is not independently
+> promotable to `active`/`completed` outside its parent's disposition.
+
+Current native contracts use the registered sources under
+`docs/99.templates/templates/specs/contracts/`; no historical template path
+is an authoring fallback.
 
 ### Decision, event, and procedure separations
 
@@ -205,32 +202,44 @@ promotable to `active`/`completed` outside its parent's disposition.
 GitHub describes releases as tag-based packaged software iterations with notes
 and assets. Semantic Versioning describes compatibility signals for a declared
 public API. Neither proves that this repository performed a rollout or that a
-runtime accepted it. A workspace Release target is valid only after the real
-event has immutable artifacts, validation, approval, rollout/rollback evidence,
-outcome, and known issues. Deployment environments, secrets, promotion rules,
-and observed runtime state remain in their separately authorized chain.
+runtime accepted it. The workspace now uses
+[external-release-evidence](../../../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary):
+the Runbook owns the procedure, the current Task owns actual execution evidence,
+and version/tag/CI links prove only the observed event. No independent Release
+profile or deployment authority is implied.
 
 ### Unexercised contracts
 
-The current tree has zero Incident, zero Postmortem, and zero Release targets,
-even though Stage 99 registers all three profiles/templates. Their contract is
-implemented as tracked schema but not validated by a real event document. A
-future first target should expect focused template/profile review and must not
-be created merely to exercise the schema. Re-counted directly on 2026-08-14 by
-`find`ing `docs/05.operations/incidents`, `docs/05.operations/releases`, and
-any `postmortem.md` leaf: the count is still 0/0/0, unchanged since the
-2026-08-08 baseline. This is now two independent zero-observations six days
-apart, which strengthens confidence that the gap is structural (no qualifying
-event has occurred) rather than a stale one-time measurement.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 event inventory.
+> The current tree has zero Incident, zero Postmortem, and zero Release targets,
+> even though Stage 99 registers all three profiles/templates. Their contract is
+> implemented as tracked schema but not validated by a real event document. A
+> future first target should expect focused template/profile review and must not
+> be created merely to exercise the schema. Re-counted directly on 2026-08-14 by
+> `find`ing `docs/05.operations/incidents`, `docs/05.operations/releases`, and
+> any `postmortem.md` leaf: the count is still 0/0/0, unchanged since the
+> 2026-08-08 baseline. This is now two independent zero-observations six days
+> apart, which strengthens confidence that the gap is structural (no qualifying
+> event has occurred) rather than a stale one-time measurement.
 
-### Operations path convergence in progress
+No event is inferred from a template. The first real Incident or Postmortem
+still requires actual evidence and the current registered contract.
 
-The operations paths recorded in the role contract above are the paths tracked
-on the current branch. A taxonomy convergence is underway on the separate
-`codex/sdlc-taxonomy-convergence` branch, unmerged as of 2026-08-14, that moves
-every operations role to a different layout. A reader creating a document today
-follows the current column; a reader planning structure should expect the target.
+### Historical Operations path convergence
 
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 branch comparison.
+> The operations paths recorded in the role contract above are the paths tracked
+> on the current branch. A taxonomy convergence is underway on the separate
+> `codex/sdlc-taxonomy-convergence` branch, unmerged as of 2026-08-14, that moves
+> every operations role to a different layout. A reader creating a document today
+> follows the current column; a reader planning structure should expect the target.
+
+Historical table: 2026-08-14 branch comparison; current roles and paths are owned by the
+[Registry](../../../99.templates/registry.json).
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Role       | Current tracked path                                               | Convergence target                                                    |
 | ---------- | ------------------------------------------------------------------ | --------------------------------------------------------------------- |
 | Guide      | `docs/05.operations/guides/<NN>-<domain>/<slug>.md`                | `docs/05.operations/catalog/<NN>-<domain>/ops-####-<slug>/guide.md`   |
@@ -240,25 +249,31 @@ follows the current column; a reader planning structure should expect the target
 | Postmortem | paired incident folder `postmortem.md`                             | unchanged: paired incident folder `postmortem.md`                     |
 | Release    | `docs/05.operations/releases/YYYY-MM-DD-release-name.md`           | directory retained; no target instance observed on either branch      |
 
-Two structural changes drive this. Document type moves from the directory name
-into a fixed file name, so `guide.md`, `policy.md`, and `runbook.md` identify the
-role while the enclosing `ops-####-<slug>` directory identifies the subject. And
-the subject, not the role, becomes the grouping key: `llm-wiki-maintenance`
-currently exists as three files under three separate role directories, and
-converges into one `catalog/00-workspace/ops-0007-llm-wiki-maintenance/`
-directory holding all three. The incident packet already worked this way, which
-is why only its identifier form and inner file name change.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 branch comparison.
+> Two structural changes drive this. Document type moves from the directory name
+> into a fixed file name, so `guide.md`, `policy.md`, and `runbook.md` identify the
+> role while the enclosing `ops-####-<slug>` directory identifies the subject. And
+> the subject, not the role, becomes the grouping key: `llm-wiki-maintenance`
+> currently exists as three files under three separate role directories, and
+> converges into one `catalog/00-workspace/ops-0007-llm-wiki-maintenance/`
+> directory holding all three. The incident packet already worked this way, which
+> is why only its identifier form and inner file name change.
+>
+> The identifier form also normalizes. The current tree uses an upper-case
+> three-digit `INC-###`; the target uses a lower-case four-digit `inc-####`,
+> matching the `ops-####`, `ref-####`, `chg-####`, and `spec-####` series used
+> elsewhere in the convergence branch.
+>
+> This entry records an observed in-flight migration. It does not authorize either
+> layout, and the convergence branch owns its own sequencing, validators, and
+> review. `tests/validation/test_document_metadata.py` still asserts the current
+> form on this branch, so the two contracts are not simultaneously satisfiable and
+> the merge, not this reference, resolves them.
 
-The identifier form also normalizes. The current tree uses an upper-case
-three-digit `INC-###`; the target uses a lower-case four-digit `inc-####`,
-matching the `ops-####`, `ref-####`, `chg-####`, and `spec-####` series used
-elsewhere in the convergence branch.
-
-This entry records an observed in-flight migration. It does not authorize either
-layout, and the convergence branch owns its own sequencing, validators, and
-review. `tests/validation/test_document_metadata.py` still asserts the current
-form on this branch, so the two contracts are not simultaneously satisfiable and
-the merge, not this reference, resolves them.
+Current Operations routes come from the Registry and
+[Operations index](../../../05.operations/README.md); neither column above
+is an alternative current layout.
 
 ### Carried source-evidence claims
 
@@ -273,22 +288,23 @@ and, where it matters more, what it does not.
 | Scope          | Application and disposition                                                                                                                                          |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agentic`      | Agents select the role by owned question, preserve evidence boundaries, and must not compress Plan, Task, review, and event records into chat or provider artifacts. |
-| `architecture` | ARD and ADR remain separate: enduring constraints versus one significant decision; Specs consume both without replacing them.                                        |
+| `architecture` | Architecture Description and ADR remain separate: enduring constraints versus one significant decision; Specs consume both without replacing them.                                        |
 | `backend`      | Backend APIs, data, and service behavior belong in parent/focused Specs; operator usage and recovery split into Guide/Runbook.                                       |
 | `common`       | Common standards guide clarity and review but do not redefine role ownership or machine profiles.                                                                    |
 | `docs`         | Owns template-first role selection, metadata/link checks, language boundaries, and advisory Stage 90 framing.                                                        |
 | `entry`        | Gateway intent, architecture, implementation, operations, and incidents use the same separate roles and explicit runtime boundary.                                   |
 | `frontend`     | UI requirements and contracts belong upstream; usage in Guide, repeatable recovery in Runbook, and observed failures in Incident/Task evidence.                      |
 | `infra`        | Compose/runtime implementation cannot substitute for Spec, Plan, Task, Policy, Runbook, Release, or Incident evidence.                                               |
-| `meta`         | Exact fields, parents, headings, and lifecycle semantics remain in the registry/templates; this row model is explanatory only.                                       |
+| `meta`         | Exact fields, parents, headings, and lifecycle values remain in the Registry; templates are copy sources and this row is explanatory.                                       |
 | `mobile`       | No current mobile target exists; future work requires the same role separation plus mobile-specific verification evidence.                                           |
-| `ops`          | Owns Guide, Policy, Runbook, Incident, Postmortem, and Release distinctions and their human/event evidence.                                                          |
-| `product`      | Human stakeholders own PRD approval; architecture, Specs, and agent output cannot silently manufacture product intent.                                               |
+| `ops`          | Owns Guide, Policy, Runbook, Incident, Postmortem, and external release evidence distinctions.                                                          |
+| `product`      | Human stakeholders own Requirement approval; architecture, Specs, and agent output cannot silently manufacture product intent.                                               |
 | `qa`           | QA consumes acceptance/contracts, records actual evidence in Tasks, reviews Postmortem/Release verification, and keeps intended versus actual results separate.      |
 | `security`     | Security controls belong in Policy/Spec, response state in Incident, learning in Postmortem, and executable recovery in Runbook with redaction and approval.         |
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; one significant decision, context, status, consequences, monotonic numbering, and supersession.  |

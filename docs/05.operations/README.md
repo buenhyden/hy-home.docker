@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 ---
 
@@ -64,15 +64,18 @@ layer: "operations"
 - Runbook은 순서 있는 실행, 관찰 증거, rollback/recovery, escalation을 소유한다.
 - Incident는 특정 사건의 관찰·영향·대응 타임라인을, Postmortem은 원인·교훈·
   재발 방지 조치를 소유한다.
-- Diátaxis의 explanation과 reference가 필요한 경우 Guide 안에서 독자 목적별
-  섹션으로 구분한다. 별도 Stage 05 문서 프로필을 만들지 않는다.
+- 독자 목적, 역할별 작성 기준, Incident/Postmortem 후속 조치 기준은
+  [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)이 소유한다.
+  Guide의 주된 독자 필요를 본문에 명시하며 Diátaxis의 technical reference를
+  Stage 90의 증거 분류와 혼동하지 않는다.
 
 ### External Release Evidence
 
-이 저장소의 배포 모드는 `external-release-evidence`다. 릴리스 근거는 관련
-Runbook, `CHANGELOG.md`, Git tag 또는 CI 결과, 그리고 소유 Stage 03 Task의
-검증 행으로 결합한다. 독립 Release 문서 프로필은 현재 존재하지 않는다.
-그 권위가 실제로 필요해지면 새 ADR과 Registry 변경을 먼저 승인한다.
+이 저장소는 [Stage 00의 external-release-evidence 정책](../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary)을
+사용한다. [Release Runbook](catalog/00-workspace/0009-release-management/runbook.md)은
+반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
+CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
+별도 Release 문서 프로필은 도입하지 않는다.
 
 ## How to Work in This Area
 
@@ -103,7 +106,7 @@ Runbook, `CHANGELOG.md`, Git tag 또는 CI 결과, 그리고 소유 Stage 03 Tas
 
 ## Related Documents
 
-- [Docs index](README.md)
+- [Docs index](../README.md)
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Specs, Plans, and Tasks](../03.specs/README.md)

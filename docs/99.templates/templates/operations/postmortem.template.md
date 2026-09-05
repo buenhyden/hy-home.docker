@@ -10,7 +10,6 @@ artifact_id: "{{ARTIFACT_ID}}"
 parent_ids:
 - "{{PARENT_ID}}"
 created: "{{CREATED}}"
-reviewed_at: "{{REVIEWED_AT}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
@@ -26,6 +25,8 @@ reviewed_at: "{{REVIEWED_AT}}"
 {{IMPACT}}
 
 ## Timeline
+
+<!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
 
 {{TIMELINE}}
 
@@ -43,7 +44,11 @@ reviewed_at: "{{REVIEWED_AT}}"
 
 ## Corrective Actions
 
-{{CORRECTIVE_ACTIONS}}
+<!-- Author prompt: Each action needs an owner, due date, tracking ID and verification; avoid blame. -->
+
+| Action | Owner | Due date | Tracking ID | Verification |
+| --- | --- | --- | --- | --- |
+| {{ACTION}} | {{ACTION_OWNER}} | {{DUE_DATE}} | {{TRACKING_ID}} | {{VERIFICATION}} |
 
 ## Learning
 

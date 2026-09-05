@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import pathlib
 import subprocess
 import unittest
+
+from jsonschema import Draft202012Validator
 
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.registry import classify_path
@@ -296,3 +299,305 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 self.assertIn(
                     "body-h1-count", self._findings(profile_id, body + "\n# Second\n")
                 )
+
+
+class TemplateAndAuthoredResidueTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = current_profiles()
+        cls.spec_path = pathlib.Path(
+            "docs/03.specs/0172-document-contract-convergence/spec.md"
+        )
+        cls.spec_text = (ROOT / cls.spec_path).read_text(encoding="utf-8")
+        cls.spec_record = metadata.Record(
+            cls.spec_path,
+            heading_module._parse_frontmatter_text(cls.spec_text),
+            "spec",
+            frontmatter_present=True,
+        )
+        cls.template_path = pathlib.Path(
+            "docs/99.templates/templates/specs/spec.template.md"
+        )
+        cls.template_values = heading_module._parse_frontmatter_text(
+            (ROOT / cls.template_path).read_text(encoding="utf-8")
+        )
+
+    def template_codes(self, values: dict[str, object]) -> set[str]:
+        record = metadata.Record(
+            self.template_path, values, "template-source", frontmatter_present=True
+        )
+        return {
+            item.code
+            for item in heading_module._validate_template_source(record, self.profiles)
+        }
+
+    def test_template_rejects_unknown_placeholder_without_key_mapping(self) -> None:
+        self.assertNotIn(
+            "next_review_at", self.profiles["common"]["template_placeholders"]
+        )
+        self.assertIn(
+            "invalid-template-placeholder",
+            self.template_codes(
+                {**self.template_values, "next_review_at": "{{UNREGISTERED_VALUE}}"}
+            ),
+        )
+
+    def test_incident_template_uses_registered_timestamp_placeholder(self) -> None:
+        path = pathlib.Path(
+            "docs/99.templates/templates/operations/incident.template.md"
+        )
+        values = heading_module._parse_frontmatter_text(
+            (ROOT / path).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            self.profiles["common"]["template_placeholders"]["occurred_at"],
+            values["occurred_at"],
+        )
+        record = metadata.Record(
+            path, values, "template-source", frontmatter_present=True
+        )
+        self.assertEqual(
+            [], heading_module._validate_template_source(record, self.profiles)
+        )
+
+    def test_shared_router_template_retains_registered_layer_placeholder(self) -> None:
+        path = pathlib.Path(
+            "docs/99.templates/templates/common/readme-stage.template.md"
+        )
+        values = heading_module._parse_frontmatter_text(
+            (ROOT / path).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            self.profiles["common"]["template_placeholders"]["layer"], values["layer"]
+        )
+        record = metadata.Record(
+            path, values, "template-source", frontmatter_present=True
+        )
+        self.assertEqual(
+            [], heading_module._validate_template_source(record, self.profiles)
+        )
+
+    def test_template_rejects_wrong_or_placeholder_layer(self) -> None:
+        for layer in ("wrong-layer", "{{LAYER}}"):
+            with self.subTest(layer=layer):
+                self.assertIn(
+                    "frontmatter-value-invalid",
+                    self.template_codes({**self.template_values, "layer": layer}),
+                )
+
+    def test_template_literals_follow_profile_data_without_parallel_taxonomy(
+        self,
+    ) -> None:
+        profiles = current_profiles()
+        profiles["profiles"]["spec"]["frontmatter_values"] = {"layer": "fixture-layer"}
+        values = {**self.template_values, "layer": "fixture-layer"}
+        record = metadata.Record(
+            self.template_path, values, "template-source", frontmatter_present=True
+        )
+        self.assertEqual([], heading_module._validate_template_source(record, profiles))
+
+    def test_template_rejects_key_order_concrete_identity_and_bad_version(self) -> None:
+        cases = (
+            (dict(reversed(tuple(self.template_values.items()))), "frontmatter-order"),
+            (
+                {**self.template_values, "artifact_id": "SPEC-0001"},
+                "invalid-template-placeholder",
+            ),
+            (
+                {**self.template_values, "version": "not-semver"},
+                "frontmatter-schema-invalid",
+            ),
+            ({**self.template_values, "version": "1.0.0"}, "invalid-template-version"),
+        )
+        for values, code in cases:
+            with self.subTest(code=code):
+                self.assertIn(code, self.template_codes(values))
+        self.assertEqual(set(), self.template_codes(dict(self.template_values)))
+
+    def test_author_prompt_and_token_are_rejected_in_full_and_changed_modes(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "<!-- Author prompt: Fill this section. -->",
+                "template-instruction-in-target",
+            ),
+            ("{{UNFILLED_BODY}}", "template-body-token-in-target"),
+        )
+        for changed in (False, True):
+            for residue, code in cases:
+                with self.subTest(changed=changed, code=code):
+                    findings = heading_module.validate_body_contract(
+                        self.spec_record,
+                        self.spec_text + "\n" + residue + "\n",
+                        self.profiles,
+                        changed,
+                    )
+                    self.assertIn(code, {item.code for item in findings})
+                    self.assertNotIn(
+                        residue, "\n".join(item.message for item in findings)
+                    )
+
+    def test_residue_examples_are_not_unfilled_authored_content(self) -> None:
+        examples = (
+            "`<!-- Author prompt: Example. -->` and `{{BODY_TOKEN}}`.",
+            "```markdown\n<!-- Author prompt: Example. -->\n{{BODY_TOKEN}}\n```",
+            "> <!-- Author prompt: Example. -->\n> {{BODY_TOKEN}}",
+        )
+        for changed in (False, True):
+            for example in examples:
+                with self.subTest(changed=changed, example=example):
+                    findings = heading_module.validate_body_contract(
+                        self.spec_record,
+                        self.spec_text + "\n" + example + "\n",
+                        self.profiles,
+                        changed,
+                    )
+                    self.assertFalse(
+                        {
+                            "template-instruction-in-target",
+                            "template-body-token-in-target",
+                        }
+                        & {item.code for item in findings}
+                    )
+
+    def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
+        path = pathlib.Path(
+            "docs/00.agent-governance/policies/documentation-protocol.md"
+        )
+        text = (ROOT / path).read_text(encoding="utf-8")
+        record = metadata.Record(
+            path,
+            heading_module._parse_frontmatter_text(text),
+            classify_path(path.as_posix(), self.profiles["_registry"]),
+            frontmatter_present=True,
+        )
+        findings = heading_module.validate_body_contract(
+            record,
+            text + "\n<!-- Author prompt: Fill this. -->\n{{UNFILLED}}\n",
+            self.profiles,
+            False,
+        )
+        self.assertTrue(
+            {"template-instruction-in-target", "template-body-token-in-target"}
+            <= {item.code for item in findings}
+        )
+
+    def test_native_frozen_generated_and_template_bodies_keep_their_exemptions(
+        self,
+    ) -> None:
+        registry = self.profiles["_registry"]
+        paths = (
+            "docs/99.templates/templates/runtime/claude-agent.template.md",
+            "docs/03.specs/0001-example/contracts/openapi.yaml",
+            "docs/98.archive/retired/03.specs/0001-example/spec.md",
+            "docs/90.references/data/0066-foundation-summary/README.md",
+        )
+        for relative in paths:
+            with self.subTest(path=relative):
+                profile_id = classify_path(relative, registry)
+                self.assertIsNotNone(profile_id)
+                values = {}
+                owner = heading_module.registered_generated_owner(
+                    pathlib.Path(relative), self.profiles
+                )
+                if owner is not None:
+                    values["generated_by"] = owner
+                record = metadata.Record(pathlib.Path(relative), values, profile_id)
+                findings = heading_module.validate_body_contract(
+                    record,
+                    "# Example\n\n<!-- Author prompt: Example. -->\n{{BODY_TOKEN}}\n",
+                    self.profiles,
+                    False,
+                )
+                self.assertFalse(
+                    {"template-instruction-in-target", "template-body-token-in-target"}
+                    & {item.code for item in findings}
+                )
+        template = metadata.Record(
+            self.template_path,
+            dict(self.template_values),
+            "template-source",
+            frontmatter_present=True,
+        )
+        findings = heading_module.validate_body_contract(
+            template,
+            (ROOT / self.template_path).read_text(encoding="utf-8"),
+            self.profiles,
+            False,
+        )
+        self.assertFalse(
+            {"template-instruction-in-target", "template-body-token-in-target"}
+            & {item.code for item in findings}
+        )
+
+    def test_changed_author_prompt_deficits_are_private_and_counted(self) -> None:
+        original = self.spec_text + "\n<!-- Author prompt: Original prompt. -->\n"
+        replacement = self.spec_text + "\n<!-- Author prompt: Replacement prompt. -->\n"
+        self.assertEqual(
+            [],
+            heading_module._introduced_body_findings(
+                self.spec_record,
+                original + "\nEditorial change.\n",
+                self.spec_record,
+                original,
+                self.profiles,
+            ),
+        )
+        findings = heading_module._introduced_body_findings(
+            self.spec_record, replacement, self.spec_record, original, self.profiles
+        )
+        self.assertEqual(
+            ["template-instruction-in-target"], [item.code for item in findings]
+        )
+        self.assertNotIn(
+            "Replacement prompt", "\n".join(item.message for item in findings)
+        )
+
+
+class RegistrySchemaBoundaryTests(unittest.TestCase):
+    def schema_errors(self, mutate) -> list[object]:
+        raw = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        schema = json.loads(
+            (
+                ROOT / "docs/99.templates/contracts/document-profile.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        mutate(raw)
+        return list(Draft202012Validator(schema).iter_errors(raw))
+
+    def test_unknown_common_property_is_rejected_by_schema(self) -> None:
+        errors = self.schema_errors(
+            lambda raw: raw["common"].update(unknown_common_policy=True)
+        )
+        self.assertTrue(
+            any(
+                list(error.path) == ["common"]
+                and error.validator == "additionalProperties"
+                for error in errors
+            )
+        )
+
+    def test_common_value_types_are_enforced_by_schema(self) -> None:
+        for key, value in (
+            ("template_placeholders", []),
+            ("frontmatter_order", "title"),
+            ("generated_outputs", []),
+        ):
+            with self.subTest(key=key):
+                errors = self.schema_errors(
+                    lambda raw: raw["common"].update({key: value})
+                )
+                self.assertTrue(
+                    any(list(error.path)[:2] == ["common", key] for error in errors)
+                )
+
+    def test_unknown_exception_kind_is_rejected_by_schema(self) -> None:
+        errors = self.schema_errors(
+            lambda raw: raw["profiles"][0]["exceptions"].append(
+                {"kind": "unregistered-exemption"}
+            )
+        )
+        self.assertTrue(any("exceptions" in error.path for error in errors))

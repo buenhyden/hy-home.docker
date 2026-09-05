@@ -20,7 +20,51 @@
       "const": 1
     },
     "common": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "template_initial_version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        },
+        "spec_completion_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "spec_section",
+            "plan_section",
+            "task_section",
+            "table_headers"
+          ],
+          "properties": {
+            "spec_section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "plan_section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "task_section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "table_headers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true
+            }
+          }
+        }
+      },
+      "required": [
+        "template_initial_version",
+        "spec_completion_evidence"
+      ]
     },
     "profiles": {
       "type": "array",
@@ -177,6 +221,32 @@
           "type": "array",
           "items": {
             "type": "object"
+          }
+        },
+        "frontmatter_values": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "frontmatter_routes": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required_frontmatter_by_status": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/stringList"
           }
         }
       }

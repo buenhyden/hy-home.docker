@@ -17,6 +17,8 @@ created: "{{CREATED}}"
 
 ## Usage
 
+<!-- Author prompt: State the reader goal and primary tutorial, how-to, reference or explanation need. -->
+
 {{USAGE}}
 
 ## Common Checks
@@ -24,6 +26,8 @@ created: "{{CREATED}}"
 {{COMMON_CHECKS}}
 
 ## Runbook Handoff
+
+<!-- Author prompt: Keep this optional section only when an actual runbook owns executable steps; link it without copying commands. -->
 
 {{RUNBOOK_HANDOFF}}
 

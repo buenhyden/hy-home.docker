@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "requirements"
 ---
 
@@ -74,9 +74,12 @@ high-water를 낮추지 않는다.
 
 - `type: sdlc/requirement`와 안정 ID를 사용한다. Registry profile `id`는
   template binding과 validator routing에만 사용하며 문서 frontmatter에 복제하지 않는다.
-- Requirement Package의 `parent_ids`는 비어 있다.
+- `parent_ids`는 Registry가 요구하는 구조적 관계만 기록한다. 더 넓은
+  설계·명세·운영 연결은 본문의 Traceability가 소유한다. Requirement Package의
+  필수 `parent_ids: []`는 구조적 root를 표시한다.
 - 구현 방법이나 실행 순서를 요구사항으로 복사하지 않는다.
 - 비어 있는 분류를 위해 별도 요구사항 문서를 만들지 않는다.
+- 작성 의미와 역할 경계는 [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)을 따른다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 

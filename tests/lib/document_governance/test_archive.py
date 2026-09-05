@@ -54,6 +54,40 @@ class MigrationStateTests(unittest.TestCase):
             "planned_creations": [],
         }
 
+    def test_mutating_format_hooks_exclude_frozen_records_only(self) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        hooks = {hook["id"]: hook for repo in config["repos"] for hook in repo["hooks"]}
+        frozen = [
+            "docs/98.archive/completed/03.specs/0001-test/spec.md",
+            "docs/98.archive/superseded/01.requirements/0001-test.md",
+            "docs/98.archive/retired/90.references/data/0001-test/README.md",
+            "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md",
+            "docs/98.archive/migrations/0002-operations-catalog-convergence.md",
+            "docs/98.archive/migrations/0003-workspace-governance-simplification.md",
+        ]
+        current = [
+            "docs/98.archive/README.md",
+            "docs/98.archive/tombstones/03.specs/0001-test.md",
+            "docs/98.archive/migrations/0004-new-migration.md",
+            "docs/03.specs/0172-document-contract-convergence/spec.md",
+        ]
+        for name in ("end-of-file-fixer", "mixed-line-ending", "trailing-whitespace"):
+            with self.subTest(hook=name):
+                pattern = hooks[name].get("exclude", "$^")
+                self.assertTrue(all(re.search(pattern, path) for path in frozen))
+                self.assertTrue(all(not re.search(pattern, path) for path in current))
+        # Read-only checks must still inspect preserved content.
+        self.assertTrue(all(not re.search(hooks["check-merge-conflict"].get("exclude", "$^"), path) for path in frozen))
+
+    def test_markdown_formatter_excludes_frozen_legacy_migrations(self) -> None:
+        config = yaml.safe_load((ROOT / ".markdownlint-cli2.yaml").read_text())
+        for name in (
+            "0001-sdlc-taxonomy-convergence.md",
+            "0002-operations-catalog-convergence.md",
+            "0003-workspace-governance-simplification.md",
+        ):
+            self.assertIn(f"docs/98.archive/migrations/{name}", config["ignores"])
+
     def read(self, document):
         raw = ("```yaml\n" + yaml.safe_dump(document) + "```\n").encode()
         with (

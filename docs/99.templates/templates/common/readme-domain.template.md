@@ -5,6 +5,7 @@ type: "operation/domain-readme"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
+layer: "operations"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->

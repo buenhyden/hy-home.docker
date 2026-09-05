@@ -1,6 +1,6 @@
 ---
 title: "Document Contract Convergence Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -24,11 +24,15 @@ identity_recovery_decisions:
 
 ## Objective
 
-Execute SPEC-0172 as a reviewed repository change, integrate it through a
-feature branch and pull request, and retain exact local, hosted, provider,
-runtime, protection, review, deferral, and Git evidence.
+Revalidate SPEC-0172 and close remaining local document-contract gaps under the
+current request. Preserve earlier dated evidence without reusing its external
+authorizations or acceptance claims.
 
 ## Inputs
+
+The following authorization history describes the earlier run. The current
+local follow-up below controls this run and prohibits staging, commits and
+remote/runtime operations.
 
 - Initial authorization covered local documents and validators. Follow-up user
   instructions on 2026-09-04 authorized the previously deferred RES-0085,
@@ -45,6 +49,46 @@ runtime, protection, review, deferral, and Git evidence.
   and `scripts/**`.
 
 ## Work Log
+
+### Current local follow-up (2026-09-05)
+
+This request authorizes local documents and validators on current `main`; it
+supersedes previous remote/runtime/commit instructions for this run. The earlier
+sections below preserve dated observations, not current execution authority.
+
+- Root: `/home/hy/projects/hy-home.docker`; origin:
+  `https://github.com/buenhyden/hy-home.docker.git`.
+- Branch/HEAD: `main`, `71da6654e2fa3def174b238ad309c92fe46e9dae`; initial
+  staged/unstaged/untracked state empty (NUL-delimited Git status).
+- Prior provider-cutover clone/branch remains untouched; no changes imported.
+- Inventory: 896 tracked Markdown/native template inputs, 38 template sources,
+  143 frozen records; per-file metadata/profile/source/sections/relationships,
+  generator, index route and classification written to a temporary audit view.
+  This view is diagnostic output, not a new Registry or permanent inventory.
+- Raw unclassified paths include native projections, root shims, graph outputs,
+  native template sources and fixture paths; their dedicated consumers must be
+  considered before diagnosing an orphan profile.
+- Baseline active metadata: PASS exit 0, 372 selected, zero violations. Registry
+  and metadata-profile baseline: PASS exit 0, 90 tests, 59.433 seconds.
+- The baseline public full selection was inspected with `--explain` (exit 0).
+  It admits Compose validation, whose source may consume real `.env` values
+  and create dummy secret files. Those actions are outside this request; no
+  operational invocation is authorized by its name or an earlier Task PASS.
+- Required lifecycle command has no `--mode` option. Use its current union
+  route; do not restore a removed compatibility flag just to match the prompt.
+
+| Current state | Target state | Affected files | Migration | Validator | Test |
+| --- | --- | --- | --- | --- | --- |
+| Wrong literal layer accepted | Registry-owned profile literal | Registry/schema/metadata | no stage renumbering | authored and template values | wrong layer rejected |
+| Template early return skips shape rules | one placeholder-aware contract | template validator | retain valid copy sources | order/schema/identity placeholders | wrong order/date/ID/version |
+| Author prompt and full-corpus body token accepted | reject unfilled authored content | body validator | retain quoted syntax examples | full and changed residue | prompt/token/exemption |
+| Optional empty fields accepted | omit empty optional values | profile validator | exact null metadata only | profile-aware presence | empty value vs root parent |
+| README retention and role drift | Stage00 semantics, Stage99 shape | Stage READMEs/policy | preserve historical evidence | links/lifecycle/profile | current owner/frozen checks |
+
+Implementation and final verification results are recorded after execution;
+this section does not promote baseline checks or historical Hosted observations
+to acceptance of the current diff. No staging, commit or remote action occurs.
+
 
 ### Safety and baseline (2026-09-04)
 
@@ -311,6 +355,22 @@ runtime, protection, review, deferral, and Git evidence.
 
 ## Verification Evidence
 
+### Current acceptance and promotion receipt (2026-09-05)
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: current baseline and gap inventory recorded above | [Documentation Protocol](../../../00.agent-governance/policies/documentation-protocol.md) |
+| 2 | W3 | PASS: current classifier prose retained; no frozen body migration | [Stage 99](../../../99.templates/README.md) |
+| 3 | W2 | PASS: literal and optional-value RED/GREEN cases; final combined review pending | [Registry](../../../99.templates/registry.json) |
+| 4 | W4 | DEFER: final contract, coverage, lifecycle and preservation evidence pending | [SDLC](../../../00.agent-governance/sdlc.md) |
+| 5 | W4 | DEFER: public aggregate selects Compose inputs excluded by this request | N/A: no operational acceptance is claimed |
+| 6 | W5 | DEFER: final diff and review pending; HEAD/index remain unchanged | N/A: evidence-only local completion boundary |
+
+This in-progress receipt intentionally includes DEFER. It cannot satisfy a
+completed Spec's coverage contract. Earlier tables below retain their original
+observations and do not upgrade these current results.
+
+
 | Check | Outcome | Evidence |
 | --- | --- | --- |
 | Registry, operations, and placeholder unit tests | PASS | 107 tests, exit 0 |
@@ -454,6 +514,9 @@ transitions remain post-merge work; they are not compressed into the initial PR
 history.
 
 ## Rulings
+
+The following rulings are retained from the earlier run. Current local scope
+and the no-commit instruction above take precedence for this follow-up.
 
 - Preserve user changes; the initial worktree was clean.
 - Never read secret values, credentials, certificates, auth files, shell history,

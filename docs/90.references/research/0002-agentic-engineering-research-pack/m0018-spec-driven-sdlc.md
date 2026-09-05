@@ -1,6 +1,6 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.1.0"
+version: "1.1.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -26,7 +26,7 @@ evidence remain separate artifacts with named owners. Implementation is
 acceptable only when the applicable contract, change boundary, validation,
 review, and evidence chain agree.
 
-This analysis re-measured the current tree at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
+The historical analysis measured the tree at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
 (2026-08-14, branch `docs/agentic-research-pack-deepening`). It does not reuse
 the predecessor pack's `59 specs / 0 archived specs` figure. The stale Graphify
 report was used only as a navigation aid and every relationship below was
@@ -38,17 +38,20 @@ revision of this leaf.
 
 Define REQ-06 and REQ-09: the workspace's spec-driven concepts, lifecycle,
 traceability, gates, feedback, ownership, evidence, and enforcement boundaries.
-The companion role reference owns document-by-document distinctions, while the
-metadata reference owns profile and state semantics.
+The companion references examine document-role and metadata distinctions;
+current role, profile, and state authority remains in Stage 00 and Stage 99.
 
 ## Repository Role
 
-This is advisory Stage 90 research. It explains current tracked contracts and
+This is advisory Stage 90 research. It distinguishes dated tracked observations from
 external comparisons; it does not approve a requirement, choose architecture,
 authorize implementation, establish policy, execute a release, prove runtime
 state, or change any Stage 00/99 contract. Canonical authority remains in the
-stage matrix, documentation protocol, typed metadata registry, lifecycle
-contracts, active Spec/Plan/Task chain, implementation, and validation evidence.
+[Stage 00 SDLC](../../../00.agent-governance/sdlc.md),
+[documentation protocol](../../../00.agent-governance/policies/documentation-protocol.md),
+and [Stage 99 Registry](../../../99.templates/registry.json). The current Task
+owns implementation and validation evidence; historical tables do not define
+current fields, paths, or gates.
 
 ## Scope
 
@@ -76,7 +79,8 @@ contract the controlling input to implementation and keeping bidirectional
 traceability among intent, decisions, design, work, validation, and outcomes.
 The contract must be specific enough to reject an implementation, not merely
 describe it after the fact. In this workspace, that principle spans more than a
-single `spec.md`: PRD, ARD/ADR, Spec and child contracts, Plan, Task evidence,
+single `spec.md`: Requirement Package, Architecture Description/ADR, Spec
+and native contracts, Plan, Task evidence,
 and Operations each own a different question.
 
 The lifecycle is iterative rather than a one-way waterfall. A failed check,
@@ -85,23 +89,26 @@ back to the earliest canonical owner whose truth must change. The downstream
 artifact links the correction; it does not copy the upstream contract and
 become a competing source of truth.
 
-### Current corpus measurement
+### Historical corpus measurement
 
-Counts below exclude `README.md` navigation files. They are path and parsed
-frontmatter measurements, not claims that every legacy leaf has completed typed
-metadata migration. Re-verified at the 2026-08-14 boundary with `find`/`rg`
-against HEAD `ece3eda9c3e1a60`: the leaf-count is now two higher than the prior
-source-refresh baseline, and the `draft` bucket that previously held 2 leaves
-is now empty. Both movements trace to the cause the prior revision of this
-leaf predicted: this deepening effort's own governing Task,
-`docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
-(`status: active`, `artifact_type: task`), is itself a Stage 04 leaf, and it
-entered the corpus already `active` rather than `draft`. This analysis's own
-evidence trail is therefore part of the population it measures and will move
-again the next time any Task in the corpus changes `status`.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14, corrected 2026-08-19.
+> Counts below exclude `README.md` navigation files. They are path and parsed
+> frontmatter measurements, not claims that every legacy leaf has completed typed
+> metadata migration. Re-verified at the 2026-08-14 boundary with `find`/`rg`
+> against HEAD `ece3eda9c3e1a60`: the leaf-count is now two higher than the prior
+> source-refresh baseline, and the `draft` bucket that previously held 2 leaves
+> is now empty. Both movements trace to the cause the prior revision of this
+> leaf predicted: this deepening effort's own governing Task,
+> `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
+> (`status: active`, `artifact_type: task`), is itself a Stage 04 leaf, and it
+> entered the corpus already `active` rather than `draft`. This analysis's own
+> evidence trail is therefore part of the population it measures and will move
+> again the next time any Task in the corpus changes `status`.
+>
+> **Superseded 2026-08-19; read this table as a dated snapshot, not as current state.** A seat measured it against the working tree and the figures below are falsified by the taxonomy convergence, which moved Stage 04 evidence into `docs/03.specs/spec-*/task.md` and grew `docs/98.archive`. Re-derived at the review tree: `ls docs/03.specs/*/spec.md | wc -l` returns **32** against a stated 28; `find docs/98.archive -name '*.md' | wc -l` returns **275**, of which 274 carry `status: archived`, against a stated 52; `find docs/04.execution -name '*.md' | wc -l` returns **7** against stated Plan 103 and Task 133; and the registry's `profiles:` key has **23** children against a stated 21. The identical defect in the sibling leaf `document-metadata-lifecycle.md` was marked on 2026-08-19 and this one was missed. Any current figure must be re-derived with the commands above.
 
-**Superseded 2026-08-19; read this table as a dated snapshot, not as current state.** A seat measured it against the working tree and the figures below are falsified by the taxonomy convergence, which moved Stage 04 evidence into `docs/03.specs/spec-*/task.md` and grew `docs/98.archive`. Re-derived at the review tree: `ls docs/03.specs/*/spec.md | wc -l` returns **32** against a stated 28; `find docs/98.archive -name '*.md' | wc -l` returns **275**, of which 274 carry `status: archived`, against a stated 52; `find docs/04.execution -name '*.md' | wc -l` returns **7** against stated Plan 103 and Task 133; and the registry's `profiles:` key has **23** children against a stated 21. The identical defect in the sibling leaf `document-metadata-lifecycle.md` was marked on 2026-08-19 and this one was missed. Any current figure must be re-derived with the commands above.
-
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Surface                            | Current measured result                                                                       | Interpretation                                                                                                                                                                                                                                                                                       |
 | ---------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Stage 01-05 lifecycle leaves       | 533                                                                                           | 25 requirements, 50 architecture, 30 Spec-stage, 236 execution, and 192 operations leaves.                                                                                                                                                                                                           |
@@ -115,47 +122,55 @@ again the next time any Task in the corpus changes `status`.
 | Metadata-profile catalog           | 21 profiles under `profiles:`; 17 `readme_profiles:` entries                                  | `prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit, readme, repo-support, generated, template-source, governance, archive, unsupported`. Nine of the 21 sit outside the twelve human-named SDLC roles the companion role reference documents. |
 | Event roles                        | Incident 0; Postmortem 0; Release 0                                                           | Registered templates/profiles are not proof that an event occurred or that the contracts have been exercised by a real target.                                                                                                                                                                       |
 
-The measured status total is deliberately not called an "active document"
-count: `active`, `completed`, and `draft` are different lifecycle states, yet
-all 533 leaves still reside in current Stage 01-05 paths. Likewise, Stage 98
-tombstones preserve provenance and are not current guidance. The
-metadata-profile catalog row is a fresh re-derivation this revision adds: the
-registry's typed surface (21 profiles) is materially larger than the
-lifecycle-document surface this pack narrates in prose (12 roles), because the
-registry also types non-lifecycle governance surfaces such as README
-variants, generated outputs, template sources, and archive tombstones. Do not
-read "21 profiles" as "21 SDLC document roles"; the extra nine exist to type
-things this workspace produces but does not treat as spec-driven-lifecycle
-artifacts.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 measurement interpretation.
+> The measured status total is deliberately not called an "active document"
+> count: `active`, `completed`, and `draft` are different lifecycle states, yet
+> all 533 leaves still reside in current Stage 01-05 paths. Likewise, Stage 98
+> tombstones preserve provenance and are not current guidance. The
+> metadata-profile catalog row is a fresh re-derivation this revision adds: the
+> registry's typed surface (21 profiles) is materially larger than the
+> lifecycle-document surface this pack narrates in prose (12 roles), because the
+> registry also types non-lifecycle governance surfaces such as README
+> variants, generated outputs, template sources, and archive tombstones. Do not
+> read "21 profiles" as "21 SDLC document roles"; the extra nine exist to type
+> things this workspace produces but does not treat as spec-driven-lifecycle
+> artifacts.
+
+Current corpus counts must be remeasured against registered paths. The commands
+and profile counts above are historical observations, not current inputs.
 
 ### Lifecycle and gates
 
+This explanatory flow follows [Stage 00 SDLC](../../../00.agent-governance/sdlc.md).
+The Registry owns exact lifecycle values; no table here grants approval.
+
 ```text
 stakeholder intent
-  -> PRD
-  -> ARD + decision-specific ADRs
+  -> Requirement Package
+  -> Architecture Description + decision-specific ADRs
   -> parent Spec + focused child contracts
   -> prospective Plan
   -> Task implementation/validation/review evidence
-  -> Operations and evidenced Release events
+  -> Operations and Task-owned release evidence
   -> feedback to the earliest owner that must change
 ```
 
 | Transition                                        | Entry evidence                                                                 | Owner and exit evidence                                                                                            | Gate and failure route                                                                                                    |
 | ------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
-| Intent -> PRD                                     | Stakeholder problem, users, value, constraints, and verified current state     | Product owner; numbered PRD with testable requirements, scope, success criteria, and links                         | Human approval plus template/metadata/repository checks; ambiguity returns to intent.                                     |
-| PRD -> ARD/ADR                                    | Approved intent and current architecture constraints                           | System Architect; enduring boundaries/quality attributes plus one ADR per significant choice                       | Architecture review and traceability; infeasibility returns to PRD, while a changed decision creates/supersedes an ADR.   |
-| ARD/ADR -> Spec                                   | Approved upstream constraints and applicable implementation evidence           | Engineering owner; implementable behavior, interfaces, failure modes, verification, and optional focused contracts | Spec and contract checks; gaps return to the earliest requirement/architecture owner.                                     |
+| Intent -> Requirement Package                                     | Stakeholder problem, users, value, constraints, and verified current state     | Product owner; numbered Requirement Package with testable requirements, scope, success criteria, and links                         | Human approval plus template/metadata/repository checks; ambiguity returns to intent.                                     |
+| Requirement Package -> Architecture Description/ADR                                    | Approved intent and current architecture constraints                           | System Architect; enduring boundaries/quality attributes plus one ADR per significant choice                       | Architecture review and traceability; infeasibility returns to Requirement Package, while a changed decision creates/supersedes an ADR.   |
+| Architecture Description/ADR -> Spec                                   | Approved upstream constraints and applicable implementation evidence           | Engineering owner; implementable behavior, interfaces, failure modes, verification, and optional focused contracts | Spec and contract checks; gaps return to the earliest requirement/architecture owner.                                     |
 | Spec -> Plan                                      | Stable technical contract and known dependencies                               | Engineering/Project Lead; prospective sequence, risk, intended checks, rollback, and completion criteria           | Plan review and traceability; no executed-result claim belongs here.                                                      |
 | Plan -> Task evidence                             | Approved scope, authority, baseline, dependencies, and approvals               | Implementer/QA; actual changes, commands/results, impact, reviews, commits, deferrals, and blockers                | Focused checks and independent review; failure returns to Task implementation or an earlier contract.                     |
-| Task -> Operations/Release                        | Completed implementation evidence and operator/release impact                  | Operations/Release owner; changed guidance/control/procedure or a real release-event record                        | Runtime-specific checks and event evidence; a document, tag, changelog, or CI definition alone does not prove deployment. |
-| Incident/Postmortem/QA/Security -> earliest owner | Observed impact, reviewed learning, failed validation, vulnerability, or drift | Owner selected by gap-to-stage routing; corrected PRD/ARD/ADR/Spec/Plan/Task/Operations artifact                   | Re-run the applicable gate and retain the causal evidence; Stage 90 analysis cannot close the loop.                       |
+| Task -> Operations/release evidence                        | Completed implementation evidence and operator/release impact                  | Operations owner; changed guidance/control/procedure or Task-owned release evidence                        | Runtime-specific checks and event evidence; a document, tag, changelog, or CI definition alone does not prove deployment. |
+| Incident/Postmortem/QA/Security -> earliest owner | Observed impact, reviewed learning, failed validation, vulnerability, or drift | Owner selected by gap-to-stage routing; corrected Requirement Package/Architecture Description/ADR/Spec/Plan/Task/Operations artifact                   | Re-run the applicable gate and retain the causal evidence; Stage 90 analysis cannot close the loop.                       |
 
 ### Traceability model
 
 Traceability has four distinct forms that must agree:
 
-1. `artifact_id`, `artifact_type`, `parent_ids`, and `supersedes` encode typed
+1. `artifact_id`, `type`, `parent_ids`, and `supersedes` encode typed
    identity and direct relations where the target profile admits them.
 2. Human `Related Documents` links explain the broader upstream/downstream
    context; they are not a substitute for direct typed parents.
@@ -180,22 +195,28 @@ later artifact merely to make a check pass.
 | CI/workflow configuration                 | A tracked automation definition                                                                       | A successful run, required-check configuration, branch protection, or production outcome.  |
 | Release/operations evidence               | A bounded event or operating contract                                                                 | Deployment/runtime proof outside the separately evidenced chain.                           |
 
-Two named scripts implement the traceability/alignment slice of this table
-and were re-read directly this revision rather than assumed from their names.
-`check-doc-traceability.sh` (90 lines) is **not** requirement-ID or
-artifact-graph tracing; it checks reciprocal README links between
-`docs/04.execution/` and `docs/05.operations/`, priority-Plan links to the
-operations policy catalog/index, and that catalog `OPER`/`RUN` targets exist —
-a link-literal check, not a `parent_ids`/requirement-ID verifier.
-`check-doc-implementation-alignment.sh` (261 lines, inline Python) walks
-active Stage 01-05 Markdown, extracts referenced repository paths, and
-confirms each resolves against a fixed prefix/file allowlist (`docs/`,
-`infra/`, `scripts/`, `.github/`, `.claude/`, `.codex/`, `secrets/`,
-`projects/`, `tests/`, named root files) — it catches a doc citing a path no
-longer in the tree, not whether the cited path's content matches the doc's
-claim about it. Neither performs end-to-end requirement-to-commit tracing;
-both are narrower verifiers this repository composes with the metadata
-checker and human review to approximate full traceability.
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: 2026-08-14 checker inspection.
+> Two named scripts implement the traceability/alignment slice of this table
+> and were re-read directly this revision rather than assumed from their names.
+> `check-doc-traceability.sh` (90 lines) is **not** requirement-ID or
+> artifact-graph tracing; it checks reciprocal README links between
+> `docs/04.execution/` and `docs/05.operations/`, priority-Plan links to the
+> operations policy catalog/index, and that catalog `OPER`/`RUN` targets exist —
+> a link-literal check, not a `parent_ids`/requirement-ID verifier.
+> `check-doc-implementation-alignment.sh` (261 lines, inline Python) walks
+> active Stage 01-05 Markdown, extracts referenced repository paths, and
+> confirms each resolves against a fixed prefix/file allowlist (`docs/`,
+> `infra/`, `scripts/`, `.github/`, `.claude/`, `.codex/`, `secrets/`,
+> `projects/`, `tests/`, named root files) — it catches a doc citing a path no
+> longer in the tree, not whether the cited path's content matches the doc's
+> claim about it. Neither performs end-to-end requirement-to-commit tracing;
+> both are narrower verifiers this repository composes with the metadata
+> checker and human review to approximate full traceability.
+
+Current traceability and alignment are selected through
+`scripts/validation/check-document-links.py`; current behavior is verified
+against its registered implementation and tests, not the old script sizes.
 
 ### External implementations and standards boundary
 
@@ -216,9 +237,10 @@ checker and human review to approximate full traceability.
   and preventive actions after stabilization.
 - A vulnerability can route to Policy, ADR, Spec, Plan, Task, Runbook, or all of
   them through links, but each fact has one earliest canonical owner.
-- A Release record requires actual event evidence and remains distinct from
-  deployment/runtime proof. Release notes, SemVer, a tag, a successful build,
-  and readiness evidence each prove only their own fact.
+- Release evidence follows the current
+  [external-release-evidence policy](../../../00.agent-governance/policies/documentation-protocol.md#release-evidence-boundary),
+  not an independent Release profile. Notes, SemVer, tags, builds, and readiness
+  evidence each prove only their own observed fact.
 - A reference, audit, graph, generated index, or template may inform work but
   cannot authorize a lifecycle transition or protected mutation.
 
@@ -235,7 +257,7 @@ and, where it matters more, what it does not.
 | Scope          | Application and disposition                                                                                                                                                          |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `agentic`      | Agents must load the applicable contract, preserve stage ownership, use bounded loops, record evidence, and stop on missing authority; automation does not collapse lifecycle roles. |
-| `architecture` | Architecture constraints belong in ARDs and significant choices in ADRs before Specs consume them; runtime architecture remains separately evidenced.                                |
+| `architecture` | Architecture constraints belong in Architecture Descriptions and significant choices in ADRs before Specs consume them; runtime architecture remains separately evidenced.                                |
 | `backend`      | API, data, failure, and service behavior requires a parent Spec and focused contracts/tests where complexity warrants them.                                                          |
 | `common`       | Shared standards and review conventions support every gate but cannot create a parallel lifecycle or bypass canonical owners.                                                        |
 | `docs`         | Owns template-first authoring, metadata/link validation, archive boundaries, and Stage 90 advisory framing; Stage 01-99 writes still require explicit scope.                         |
@@ -244,13 +266,14 @@ and, where it matters more, what it does not.
 | `infra`        | Compose and infrastructure definitions are implementation evidence and require Spec, validation, rollback, and operations handoff; they are not the SDLC owner.                      |
 | `meta`         | The registry, templates, validators, and taxonomy encode lifecycle semantics; changes require their own approved metadata/docs chain rather than edits in this reference.            |
 | `mobile`       | No current mobile implementation is established; any future work needs an approved product/architecture/Spec chain plus device-specific evidence.                                    |
-| `ops`          | Owns guides, policies, runbooks, incidents, postmortems, and releases; event evidence feeds upstream owners without turning operations prose into product intent.                    |
+| `ops`          | Owns guides, policies, runbooks, incidents, postmortems, and Task-owned release evidence; event evidence feeds upstream owners without turning operations prose into product intent.                    |
 | `product`      | Human stakeholders own intent, value, scope, requirements, and acceptance; an agent or external tool cannot infer approval.                                                          |
 | `qa`           | Owns verification strategy, focused evidence, failure routing, and independent quality review; a passing local check is bounded to its command/environment.                          |
 | `security`     | Security requirements, decisions, controls, tests, incidents, and remediation remain traceable with least privilege, redaction, and approval boundaries.                             |
 
 ## Sources
 
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Source                                                                                                                                                   | Accessed   | Class                        | Use and verification state                                                                                                                               |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [GitHub Spec Kit documentation](https://github.github.com/spec-kit/)                                                                                     | 2026-08-08 | External mutable             | HTTP 200; current phase flow and artifact handoff.                                                                                                       |

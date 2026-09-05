@@ -115,6 +115,103 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_router_layer_is_selected_by_registered_destination(self) -> None:
+        registry = load_registry()
+        profiles = build_registry_profiles(registry)
+        for path in ("docs/03.specs/README.md", "docs/05.operations/catalog/00-workspace/README.md", "docs/90.references/research/README.md"):
+            with self.subTest(path=path):
+                source = (ROOT / path).read_text(encoding="utf-8")
+                source = re.sub(r'^layer: .*$', 'layer: "wrong-layer"', source, count=1, flags=re.M)
+                record = metadata_validator._record_from_text(pathlib.Path(path), source, profiles=profiles)
+                self.assertIn("frontmatter-value-invalid", {item.code for item in validate_record(record, profiles, {})})
+
+    def test_router_contract_requires_new_destination_registration(self) -> None:
+        profile = load_registry().profiles["readme"]
+        codes = {item.code for item in registry_module.validate_profile_values(
+            {"layer": "unregistered"}, profile, "docs/77.unregistered/README.md"
+        )}
+        self.assertEqual({"frontmatter-route-missing"}, codes)
+
+    def test_router_contract_rejects_unowned_destination(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        profile = next(item for item in raw["profiles"] if item["id"] == "readme")
+        profile["frontmatter_routes"] = {"outside/README.md": {"layer": "specs"}}
+        self.assertIn("frontmatter-route-contract-invalid", {item.code for item in validate_registry(raw)})
+
+    def test_superseded_adr_has_no_stale_retain_in_place_exception(self) -> None:
+        self.assertNotIn("retain-superseded-in-place", {item["kind"] for item in load_registry().profiles["adr"]["exceptions"]})
+
+    def test_authored_stage_layer_uses_registry_literal(self) -> None:
+        path = pathlib.Path("docs/03.specs/0172-document-contract-convergence/spec.md")
+        profiles = build_registry_profiles(load_registry())
+        source = (ROOT / path).read_text(encoding="utf-8")
+        record = metadata_validator._record_from_text(
+            path, source.replace('layer: "specs"', 'layer: "wrong-layer"'), profiles=profiles
+        )
+        codes = {item.code for item in validate_record(record, profiles, {})}
+        self.assertIn("frontmatter-value-invalid", codes)
+
+    def test_registry_rejects_constant_for_undeclared_frontmatter_key(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        profile = next(item for item in raw["profiles"] if item["id"] == "spec")
+        profile["frontmatter_values"] = {"unregistered_key": "specs"}
+        self.assertIn(
+            "frontmatter-value-contract-invalid",
+            {item.code for item in validate_registry(raw)},
+        )
+
+    def test_optional_empty_values_are_rejected_without_banning_root_parents(self) -> None:
+        path = pathlib.Path("docs/03.specs/0172-document-contract-convergence/spec.md")
+        profiles = build_registry_profiles(load_registry())
+        source = (ROOT / path).read_text(encoding="utf-8")
+        for value in ("[]", "null", '""'):
+            with self.subTest(value=value):
+                changed = source.replace(
+                    'created: "2026-09-04"',
+                    f'supersedes: {value}\ncreated: "2026-09-04"',
+                )
+                record = metadata_validator._record_from_text(path, changed, profiles=profiles)
+                self.assertIn(
+                    "empty-optional-frontmatter",
+                    {item.code for item in validate_record(record, profiles, {})},
+                )
+        self.assertEqual((), validate_frontmatter({"parent_ids": []}))
+
+    def test_template_optional_empty_value_uses_same_profile_guard(self) -> None:
+        path = pathlib.Path("docs/99.templates/templates/specs/spec.template.md")
+        profiles = build_registry_profiles(load_registry())
+        source = (ROOT / path).read_text(encoding="utf-8")
+        source = source.replace('created: "{{CREATED}}"',
+                                'supersedes: []\ncreated: "{{CREATED}}"')
+        record = metadata_validator._record_from_text(path, source, profiles=profiles)
+        self.assertIn("empty-optional-frontmatter", {
+            item.code for item in validate_record(record, profiles, {})
+        })
+
+    def test_guide_handoff_is_optional_but_usage_is_required(self) -> None:
+        registry = load_registry()
+        guide = registry.profiles["guide"]
+        self.assertIn("Runbook Handoff", guide["optional_sections"])
+        self.assertNotIn("Runbook Handoff", guide["required_sections"])
+        self.assertIn("Usage", guide["required_sections"])
+
+    def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(self) -> None:
+        for rule in ({"imagined": ["reviewed_at"]}, {"published": ["imagined"]}):
+            raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+            next(item for item in raw["profiles"] if item["id"] == "postmortem")["required_frontmatter_by_status"] = rule
+            self.assertIn("status-frontmatter-contract-invalid", {item.code for item in validate_registry(raw)})
+
+    def test_published_postmortem_requires_review_evidence(self) -> None:
+        profile = load_registry().profiles["postmortem"]
+        self.assertEqual((), registry_module.validate_profile_values({"status": "draft"}, profile))
+        self.assertIn("status-frontmatter-required", {item.code for item in registry_module.validate_profile_values({"status": "published"}, profile)})
+        self.assertEqual((), registry_module.validate_profile_values({"status": "published", "reviewed_at": "2026-09-05"}, profile))
+
+    def test_draft_postmortem_does_not_require_a_future_review_date(self) -> None:
+        profile = load_registry().profiles["postmortem"]
+        self.assertNotIn("reviewed_at", profile["required_frontmatter"])
+        self.assertIn("reviewed_at", profile["optional_frontmatter"])
+
     def test_required_markdown_profiles_share_the_canonical_common_six(self) -> None:
         registry = load_registry()
         common_six = ["title", "version", "type", "status", "owner", "updated"]
@@ -1251,6 +1348,10 @@ class DocumentRegistryTests(unittest.TestCase):
                     if key not in {"type", "artifact_id"}
                 }
                 unordered_values["type"] = document_type(profile_id)
+                unordered_values.update(profile.get("frontmatter_values", {}))
+                destination = next(iter(profile.get("frontmatter_routes", {})), None)
+                if destination is not None:
+                    unordered_values.update(profile["frontmatter_routes"][destination])
                 artifact_pattern = profile.get("artifact_id_pattern")
                 if "artifact_id" in required and isinstance(artifact_pattern, str):
                     unordered_values["artifact_id"] = render(artifact_pattern)
@@ -1279,7 +1380,7 @@ class DocumentRegistryTests(unittest.TestCase):
                         if key not in metadata_values
                     }
                 )
-                path = pathlib.Path(render(str(profile["path_pattern"])))
+                path = pathlib.Path(destination or render(str(profile["path_pattern"])))
                 record = Record(
                     path,
                     metadata_values,

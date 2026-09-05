@@ -83,6 +83,7 @@ class SpecDocument:
     artifact_id: str
     status: str
     parent_ids: tuple[str, ...]
+    body: str = ""
 
 
 @dataclasses.dataclass(frozen=True)
@@ -433,7 +434,9 @@ def _parse_document(
             f"{relative} status is outside the {profile_id} lifecycle: {status!r}"
         )
     parent_ids = _string_tuple(record.metadata.get("parent_ids"), "parent_ids")
-    return SpecDocument(relative, profile_id, artifact_id, status, parent_ids), current
+    return SpecDocument(
+        relative, profile_id, artifact_id, status, parent_ids, record.body
+    ), current
 
 
 def _validate_spec_parents(document: SpecDocument) -> None:
@@ -490,6 +493,142 @@ def _validate_execution_states(
             raise SpecPackageError(f"{task.path} current Task requires active Plan")
     if plan is not None and plan.status == "active" and spec.status != "active":
         raise SpecPackageError(f"{plan.path} active Plan requires active Spec")
+
+
+def _completion_visible_lines(body: str) -> list[str]:
+    """Exclude fenced examples and HTML comments without mixing their states."""
+    visible: list[str] = []
+    fence: str | None = None
+    comment = False
+    for line in body.splitlines():
+        if fence is not None:
+            if re.fullmatch(
+                rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line
+            ):
+                fence = None
+            continue
+        opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        if not comment and opening and not (opening[1][0] == "`" and "`" in opening[2]):
+            fence = opening[1]
+            continue
+        parts: list[str] = []
+        for token in re.split(r"(<!--|-->)", line):
+            if comment:
+                if token == "-->":
+                    comment = False
+            elif token == "<!--":
+                comment = True
+                parts.append(" ")
+            else:
+                parts.append(token)
+        visible.append("".join(parts))
+    return visible
+
+
+def _validate_completion_evidence(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+    registry: DocumentRegistry,
+) -> None:
+    """Check structural coverage only; reported results are not execution proof."""
+    if spec.status != "completed":
+        return
+    contract = registry.common.get("spec_completion_evidence")
+    if not isinstance(contract, Mapping):
+        raise SpecPackageError("completion evidence contract is missing from Registry")
+    if plan is None or plan.status != "completed" or not tasks:
+        raise SpecPackageError("completion requires a completed Plan and Task evidence")
+
+    if any(
+        task.status not in registry.lifecycle_terminal_statuses["task"]
+        for task in tasks
+    ):
+        raise SpecPackageError(
+            "completion requires every remaining Task to be terminal"
+        )
+
+    def section(document: SpecDocument, key: str) -> list[str]:
+        heading = "## " + str(contract[key])
+        lines = _completion_visible_lines(document.body)
+        starts = [index for index, line in enumerate(lines) if line == heading]
+        if len(starts) != 1:
+            raise SpecPackageError(
+                f"completion requires one {heading} in {document.path}"
+            )
+        start = starts[0] + 1
+        end = next(
+            (i for i in range(start, len(lines)) if lines[i].startswith("## ")),
+            len(lines),
+        )
+        return lines[start:end]
+
+    criteria = re.findall(
+        r"^([1-9][0-9]*)\. \S", "\n".join(section(spec, "spec_section")), re.M
+    )
+    work = re.findall(
+        r"^[1-9][0-9]*\. (W[1-9][0-9]*): \S",
+        "\n".join(section(plan, "plan_section")),
+        re.M,
+    )
+    if (
+        not criteria
+        or len(criteria) != len(set(criteria))
+        or not work
+        or len(work) != len(set(work))
+    ):
+        raise SpecPackageError(
+            "completion requires unique numbered criteria and Plan work units"
+        )
+    headers = tuple(contract["table_headers"])
+    covered: set[str] = set()
+    pairs: set[tuple[str, str]] = set()
+    for task in tasks:
+        lines = section(task, "task_section")
+        for index, line in enumerate(lines):
+            cells = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+            if not line.startswith("|") or cells != headers:
+                continue
+            if task.status != "completed":
+                raise SpecPackageError("completion receipt Task must be completed")
+            if (
+                index + 1 >= len(lines)
+                or re.fullmatch(r"\|(?: *:?-+:? *\|){4}", lines[index + 1]) is None
+            ):
+                raise SpecPackageError(
+                    "completion receipt requires a four-column table"
+                )
+            for row in lines[index + 2 :]:
+                if not row.startswith("|"):
+                    break
+                values = tuple(
+                    cell.strip() for cell in row.strip().strip("|").split("|")
+                )
+                if len(values) != 4:
+                    raise SpecPackageError("completion receipt has malformed columns")
+                criterion, unit, result, owner = values
+                if criterion not in criteria or unit not in work:
+                    raise SpecPackageError(
+                        "completion receipt has an unknown criterion or Plan work unit"
+                    )
+                if (criterion, unit) in pairs:
+                    raise SpecPackageError(
+                        "completion receipt duplicates a criterion/work pair"
+                    )
+                if re.fullmatch(r"PASS: \S.*", result) is None:
+                    raise SpecPackageError(
+                        "completion result needs PASS evidence; SKIP does not satisfy acceptance"
+                    )
+                if re.fullmatch(r"N/A: \S.*|\[[^]\n]+\]\([^()\s]+\)", owner) is None:
+                    raise SpecPackageError(
+                        "completion needs a durable owner link or N/A reason"
+                    )
+                pairs.add((criterion, unit))
+                covered.add(criterion)
+    if covered != set(criteria) or {unit for _, unit in pairs} != set(work):
+        raise SpecPackageError(
+            "completion evidence must cover every acceptance criterion and Plan work unit"
+        )
 
 
 def _load_contracts(
@@ -676,6 +815,7 @@ def _load_package(
                 task_ids=task_ids,
             )
         _validate_execution_states(spec, plan, tasks)
+        _validate_completion_evidence(spec, plan, tasks, registry)
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
         if "contracts" in entries:
             contracts, current = _load_contracts(

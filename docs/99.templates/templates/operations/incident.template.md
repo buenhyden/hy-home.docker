@@ -31,6 +31,8 @@ occurred_at: "{{OCCURRED_AT}}"
 
 ## Timeline
 
+<!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
+
 {{TIMELINE}}
 
 ## Mitigation
@@ -42,6 +44,8 @@ occurred_at: "{{OCCURRED_AT}}"
 {{CURRENT_STATUS}}
 
 ## Corrective Actions
+
+<!-- Author prompt: Record observed mitigation and tracked next actions; move causal analysis and durable follow-up to the postmortem after stabilization. -->
 
 {{CORRECTIVE_ACTIONS}}
 

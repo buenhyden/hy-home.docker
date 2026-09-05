@@ -1,14 +1,13 @@
 ---
 title: "Release Management Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "operations"
 artifact_id: "RUN-0009"
-parent_ids:
-- "SPEC-0097"
+parent_ids: []
 created: "2026-06-04"
 ---
 <!-- Target: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md -->
@@ -53,7 +52,7 @@ created: "2026-06-04"
    git diff --check
    ```
 
-3. Confirm local repository documentation and validation gates relevant to the release candidate.
+3. Confirm local repository documentation and validation gates relevant to the release candidate. Inspect the selected commands first; a document-only request does not authorize environment or secret reads.
 
    ```bash
    python3 scripts/validation/run-ci-gate.py --profile changed
@@ -61,7 +60,7 @@ created: "2026-06-04"
    python3 scripts/knowledge/generate-llm-wiki.py --check
    ```
 
-4. Confirm Compose readiness without starting or stopping runtime services.
+4. Confirm Compose readiness only when the operation-specific approval permits its inputs and temporary files. Preflight sources a real `.env`; normal validation may create dummy inputs. Neither command is part of a document-only validation scope.
 
    ```bash
    bash scripts/validation/validate-docker-compose.sh --preflight
@@ -117,16 +116,13 @@ created: "2026-06-04"
    포함한다. Pair v3 (`hyhome-verification-verdict-pair-v3`)는 두 verdict의
    exact byte hash와 role별 전체 tuple을 고정한다. 하나라도 없거나 legacy,
    stale, mixed, substituted이면 class `10`에서 중단하며 Docker/Compose 호출,
-   project, record를 만들지 않는다. 현재 Spec 126 accepted pair는 존재하며,
-   승인된 Task 5 positive promotion 및 injected rollback 순서는 완료되었다.
-   현재 실행 상태와 정확한 project, timestamp, record hash/inode, cleanup
-   증거는
-   Deployment/release Task가
-   소유한다. 과거 14-Critical 결과와 missing-seed 결과는 superseded
-   history이며 현재 blocker가 아니다.
+   project, record를 만들지 않는다. 위 경로의 파일 존재와 pair 수락 여부는
+   승인된 실행 때 다시 검증한다. 현재 project, timestamp, record hash/inode,
+   cleanup 증거는 해당 변경의 실제 Task가 소유하며 이 런북이 실행 성공을
+   선언하지 않는다.
 
-10. 승인된 Task 5 runtime은 positive `rehearse` 후 injected-rollback
-    `rehearse` 순서로 정확히 한 번씩 완료되었다. Baseline/canary는
+10. 실제 rehearsal의 positive/negative 순서와 횟수는 해당 실행 Task에서
+    승인한다. Baseline/canary는
     `hyhome-dre-20260719-<decimal-pid>-baseline|canary`, loopback
     `18080`/`18081`, exact ownership labels로 제한된다. Canary 실패 시 previous
     runtime image ID와 baseline health를 확인한 뒤 in-process cleanup한다.
@@ -135,11 +131,11 @@ created: "2026-06-04"
     topology에는 build path가 없고 `pull_policy: never`, `--pull never`,
     `--no-build`가 필수다. 각 run은 cleanup 후 schema-v4 record를 publish한다.
     Canonical record가 하나이므로 positive record hash/요약 필드를 먼저 Task에
-    기록한 다음 negative run이 이를 교체했다. Standalone `cleanup --task-id`는
+    기록한 다음 negative run의 교체 결과를 별도로 기록한다. Standalone `cleanup --task-id`는
     interrupted/partial exact owned pair를 위한 rescue-only 명령이며 성공 run
     후에는 실행하지 않는다. 이미 cleanup된 상태에서는 의도대로 class `60`을
-    반환한다. Stateful impact는 즉시 Spec 125로 handoff한다. 이 런북은 완료된
-    sequence의 재실행을 승인하지 않는다. 재실행이 필요하면 owning Spec에
+    반환한다. Stateful impact는 해당 서비스의 승인된 recovery 절차로
+    handoff한다. 이 런북은 실행이나 재실행을 승인하지 않는다. 필요하면 owning Spec에
     co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.
 
 ### Steps
@@ -184,10 +180,8 @@ created: "2026-06-04"
   full portable identity tuple의 concise fields, marker presence, decision,
   `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
   runtime log, secret, credential, token은 기록하지 않는다.
-- 현재 canonical local-delivery record는 injected-negative 결과이며, positive
-  record의 교체 전 hash/inode와 negative record의 교체 후 hash/inode는
-  Deployment/release Task에서
-  확인한다. 이 상태 확인은 rehearsal 재실행 지시가 아니다.
+- Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
+  Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
 
 ## Rollback or Recovery
 
@@ -208,7 +202,8 @@ created: "2026-06-04"
 
 ## Traceability
 
-- Declared parent: [Workspace Revalidation Outcome](../../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
+- Current policy: [Documentation Protocol](../../../../00.agent-governance/policies/documentation-protocol.md), including external-release-evidence ownership.
+- Historical implementation evidence only: [Workspace Revalidation Outcome](../../../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). This completed record is not current execution authority.
 - Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
 
 ## Related Documents
@@ -217,5 +212,4 @@ created: "2026-06-04"
 - [Runbooks index](../../../README.md)
 - [LLM Wiki maintenance runbook](../0007-llm-wiki-maintenance/runbook.md)
 - [Co-located Plans and Tasks](../../../../03.specs/README.md)
-- Deployment/release Task
-- Spec 127
+- [Current Spec Package selection](../../../../03.specs/README.md)

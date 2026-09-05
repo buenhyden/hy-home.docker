@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "archive"
 ---
 
@@ -17,7 +17,10 @@ Stage 98은 활성 스테이지를 떠난 문서를 보관합니다. 완료된 �
 가능성입니다: 보존된 기록은 파일로 존재하므로 읽고 검증할 수 있고, Git
 history는 그 파일이 삭제 당시 문서와 동일함을 증명하는 근거로만 쓰입니다.
 
-Stage 98은 현재 규칙이나 구현 지침을 소유하지 않습니다. 여기 있는 어떤
+이 README는 현재 archive 탐색과 작업 안내를 소유하며 보존 정책은
+[Stage 00](../00.agent-governance/policies/documentation-protocol.md#document-retention-and-retirement),
+경로·profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가 소유합니다.
+보존 기록은 현재 규칙이나 구현 지침을 소유하지 않습니다. 여기 있는 어떤
 문서도 `docs/00.agent-governance/`, `docs/01.requirements/`,
 `docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`의 현재 규칙을
 덮어쓰지 않습니다.
@@ -38,13 +41,13 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
 
 | 폴더 | 보존 사유 | 짝이 되는 결정 기록 |
 | --- | --- | --- |
-| `completed/` | 변경 패키지가 완료됨 | 없음 — `status: completed`가 자기 서술 |
-| `superseded/` | 더 새로운 문서로 대체됨 | 없음 — `superseded_by`가 자기 서술 |
+| `completed/` | 변경 패키지가 완료됨 | 없음 — 완료는 철회가 아니며 현재 Task가 완료 근거를 기록 |
+| `superseded/` | 더 새로운 문서로 대체됨 | 없음 — 현재 successor가 대체 관계를 기록 |
 | `retired/` | 철회됨 | `tombstones/`의 해당 Tombstone |
 
-철회만 결정 기록을 따로 요구합니다. 문서는 자신이 왜 철회되었는지 말하지
-않으므로 그 사실은 어디에도 남지 않습니다. 완료와 대체는 문서 자신의
-frontmatter가 이미 말합니다.
+철회만 Tombstone을 따로 요구합니다. 완료와 대체를 철회로 기록하지 않습니다.
+보존 후 처분은 경로로 구분하며, 원문 frontmatter를 나중 상태에 맞춰 고치지
+않습니다. 원래 상태와 검증 근거는 보존된 본문 및 Git history에서 확인합니다.
 
 `README.md`는 이 스테이지에서 유일하게 현재 유효한 문서이며 보존 기록이
 아닙니다.
@@ -79,13 +82,12 @@ frontmatter가 이미 말합니다.
 ## How to Work in This Area
 
 1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 삭제 당시 값 그대로이며
-   처분을 뜻하지 않습니다. 현재 `retired/` 104건 중 49건이 `status: active`를
-   담고 있습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는 사실과
+   처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는 사실과
    해당 Tombstone이 결정하며, frontmatter가 결정하지 않습니다.
 2. **보존 기록은 수정하지 않습니다.** 삭제 또는 이동 당시 본문과
    byte-identical해야 하고, 현재 계약에 맞추기 위한 편집은 보존하려던 대상을
-   훼손합니다. 그래서 이 기록들은 frontmatter가 관리되지 않는 프로파일로
-   등록되며, 104건 중 83건은 타입 분류 체계 이전 문서라 `type`이 없습니다.
+   훼손합니다. 그래서 이 기록들은 frontmatter가 관리되지 않는 보존 프로파일로
+   등록됩니다. 현재 envelope나 새 metadata를 본문에 덧붙이지 않습니다.
    자동 포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로
    동작하므로 `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에
    두어야 하며, 그러지 않으면 all-files 실행이 보존 본문을 조용히 다시
@@ -99,6 +101,16 @@ frontmatter가 이미 말합니다.
 5. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,
    tombstone, frozen preserved body, decision link, recovery blob을 한 번에
    검증합니다. 이 CLI는 별도 `--mode`를 제공하지 않습니다.
+
+> Historical evidence (not current authority; source: Git history):
+> ADR-0031 채택 시 보존된 철회 문서 104건 중 49건은 `status: active`,
+> 83건은 `type` 없이 남아 있었습니다. 이는 당시 원문을 보존한 결과이며
+> 현재 인벤토리 수나 작성 기준이 아닙니다.
+
+현재 보존 방식과 archive route는 Registry와 accepted ADR-0031을 따릅니다.
+새 처분 방식이나 `resolved/` 경로가 필요하면 별도 계약 변경으로 검토하며
+기존 frozen 본문을 일괄 이관하지 않습니다. 교정은 successor나 적절한 현재
+기록에 남기고 보존 원문을 수정하지 않습니다.
 
 활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 링크할
 수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 Stage 00/01/02/05

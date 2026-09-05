@@ -34,7 +34,7 @@ def _document_text(
     status: str = "active",
 ) -> str:
     parents = "\n".join(f"  - {parent}" for parent in parent_ids)
-    return f"""---
+    text = f"""---
 title: Fixture {profile_id}
 version: 1.0.0
 type: sdlc/{profile_id}
@@ -74,6 +74,18 @@ Fixture review evidence.
 
 Fixture commit ledger.
 """
+    if profile_id == "spec":
+        text += "\n## Acceptance Contract\n\n1. Validate the fixture.\n"
+    elif profile_id == "plan":
+        text += "\n## Execution Sequence\n\n1. W1: Validate the fixture.\n"
+    elif profile_id == "task":
+        text = text.replace(
+            "Fixture verification evidence.",
+            "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
+            "| --- | --- | --- | --- |\n"
+            "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
+        )
+    return text
 
 
 def _write_package(
@@ -141,6 +153,168 @@ class SpecPackageTests(unittest.TestCase):
         ROOT / ".github/ISSUE_TEMPLATE/bug_report.yml",
         ROOT / "scripts/validation/run-agent-precommit-all-files.sh",
     )
+
+    def test_completed_coverage_accepts_pass_and_ignores_examples(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        for result in ("PASS: focused check exit 0",):
+            with (
+                self.subTest(result=result),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    spec_status="completed",
+                    plan=True,
+                    plan_status="completed",
+                    task=True,
+                    task_status="completed",
+                )
+                task = package / "tasks/tsk-0001-implement.md"
+                task.write_text(
+                    task.read_text()
+                    .replace("PASS: focused check exit 0", result)
+                    .replace(
+                        "N/A: local validation only",
+                        "[Current policy](../../../00.agent-governance/policies/bootstrap.md)",
+                    )
+                )
+                spec = package / "spec.md"
+                spec.write_text(
+                    spec.read_text()
+                    + "\n```markdown\n## Acceptance Contract\n2. Example only.\n```\n> 3. Historical example.\n"
+                )
+                loaded = spec_packages.load_spec_packages(stage)
+                self.assertIn("1. Validate the fixture.", loaded[0].spec.body)
+
+    def test_completion_comments_and_fences_do_not_hide_visible_evidence(self) -> None:
+        spec_packages = _spec_packages_module()
+        for example in (
+            "```markdown\n<!--\n```\n",
+            "~~~~markdown\n<!--\n~~~~\n",
+            "<!--\n```markdown\n-->\n",
+        ):
+            with (
+                self.subTest(example=example),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    spec_status="completed",
+                    plan=True,
+                    plan_status="completed",
+                    task=True,
+                    task_status="completed",
+                )
+                for relative in ("spec.md", "plan.md", "tasks/tsk-0001-implement.md"):
+                    path = package / relative
+                    path.write_text(
+                        path.read_text().replace(
+                            "\n# Fixture", "\n" + example + "\n# Fixture", 1
+                        )
+                    )
+                self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+
+    def test_completed_package_allows_cancelled_task_without_receipt(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            cancelled = _document_text(
+                "task",
+                "SPEC-0001-TSK-0002",
+                ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                status="cancelled",
+            )
+            (package / "tasks/tsk-0002-cancelled.md").write_text(
+                re.sub(r"(?m)^\|.*\n?", "", cancelled)
+            )
+            self.assertEqual(2, len(spec_packages.load_spec_packages(stage)[0].tasks))
+
+    def test_completed_package_requires_structural_acceptance_evidence(self) -> None:
+        spec_packages = _spec_packages_module()
+        rows = "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |"
+        cases = {
+            "missing-criterion": ("spec.md", "2. Another criterion.\n"),
+            "uncovered-work": ("plan.md", "2. W2: Additional planned work.\n"),
+            "skipped-criterion": (
+                "row",
+                rows.replace("PASS: focused check exit 0", "SKIP: runtime unavailable"),
+            ),
+            "draft-unreceipted-task": ("extra-task", "draft"),
+            "commented-task": ("comment", "tasks/tsk-0001-implement.md"),
+            "commented-spec": ("comment", "spec.md"),
+            "commented-plan": ("comment", "plan.md"),
+            "unknown-work": ("row", rows.replace("W1", "W9")),
+            "unknown-criterion": ("row", rows.replace("| 1 |", "| 9 |")),
+            "empty-result": ("row", rows.replace("PASS: focused check exit 0", "")),
+            "bare-pass": ("row", rows.replace("PASS: focused check exit 0", "PASS")),
+            "empty-owner": ("row", rows.replace("N/A: local validation only", "")),
+            "bare-na": ("row", rows.replace("N/A: local validation only", "N/A")),
+            "unlinked-owner": (
+                "row",
+                rows.replace("N/A: local validation only", "some owner"),
+            ),
+            "fenced-receipt": ("row", "```markdown\n" + rows + "\n```"),
+            "quoted-receipt": ("row", "> " + rows),
+            "duplicate-receipt": ("row", rows + "\n" + rows),
+            "draft-task": ("status", "task"),
+            "draft-plan": ("status", "plan"),
+        }
+        for label, (surface, value) in cases.items():
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    spec_status="completed",
+                    plan=True,
+                    plan_status="completed",
+                    task=True,
+                    task_status="completed",
+                )
+                task = package / "tasks/tsk-0001-implement.md"
+                if surface == "row":
+                    task.write_text(task.read_text().replace(rows, value))
+                elif surface == "extra-task":
+                    (package / "tasks/tsk-0002-follow-up.md").write_text(
+                        re.sub(
+                            r"(?m)^\|.*\n?",
+                            "",
+                            _document_text(
+                                "task",
+                                "SPEC-0001-TSK-0002",
+                                ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                                status=value,
+                            ),
+                        )
+                    )
+                elif surface == "comment":
+                    path = package / value
+                    body = path.read_text()
+                    prefix, _, content = body.partition("\n# Fixture")
+                    path.write_text(prefix + "\n<!--\n# Fixture" + content + "\n-->\n")
+                elif surface == "status":
+                    path = task if value == "task" else package / "plan.md"
+                    path.write_text(
+                        path.read_text().replace("status: completed", "status: draft")
+                    )
+                else:
+                    path = package / surface
+                    path.write_text(path.read_text() + value)
+                with self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "completion"
+                ):
+                    spec_packages.load_spec_packages(stage)
 
     def test_spec_package_roles_are_frozen_and_exact(self) -> None:
         spec_packages = _spec_packages_module()
@@ -531,7 +705,7 @@ class SpecPackageTests(unittest.TestCase):
                     {(finding.code, finding.path) for finding in findings},
                 )
 
-    def test_retained_package_may_drop_terminal_execution_evidence(self) -> None:
+    def test_retained_completed_package_keeps_execution_evidence(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -546,13 +720,9 @@ class SpecPackageTests(unittest.TestCase):
                 task_status="completed",
             )
             _write_package(after_stage, spec_status="completed")
-            self.assertEqual(
-                (),
-                spec_packages.validate_spec_package_lifecycle(
-                    spec_packages.load_spec_packages(before_stage),
-                    spec_packages.load_spec_packages(after_stage),
-                ),
-            )
+            spec_packages.load_spec_packages(before_stage)
+            with self.assertRaisesRegex(spec_packages.SpecPackageError, "completion"):
+                spec_packages.load_spec_packages(after_stage)
 
     def test_whole_package_retirement_requires_a_tombstone(self) -> None:
         """Stage 00 retires a package with a Tombstone, not by silent deletion."""
@@ -607,7 +777,14 @@ class SpecPackageTests(unittest.TestCase):
             root = pathlib.Path(directory)
             before_stage = root / "before/docs/03.specs"
             after_stage = root / "after/docs/03.specs"
-            _write_package(before_stage, spec_status="completed")
+            _write_package(
+                before_stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
             after_stage.mkdir(parents=True, exist_ok=True)
             before = spec_packages.load_spec_packages(before_stage)
             after = spec_packages.load_spec_packages(after_stage)

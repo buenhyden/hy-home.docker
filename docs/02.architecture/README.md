@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 ---
 
@@ -56,8 +56,8 @@ docs/02.architecture/
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은
-   [`architecture-description.template.md`](../99.templates/templates/architecture/description.template.md)를 사용한다.
-3. 새 결정은 [`adr.template.md`](../99.templates/templates/architecture/decision.template.md)를 사용한다.
+   [`description.template.md`](../99.templates/templates/architecture/description.template.md)를 사용한다.
+3. 새 결정은 [`decision.template.md`](../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. Description은 실제 상위 요구사항, ADR은 실제 Description을
    `parent_ids`로 연결한다.
 5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고, 확인되지
@@ -71,6 +71,7 @@ docs/02.architecture/
   `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
+- View와 diagram은 [Stage 00 작성 정책](../00.agent-governance/policies/documentation-protocol.md#role-specific-authoring)을 적용하고, 실제 이해에 필요한 수준만 사용한다.
 
 ## Related Documents
 
