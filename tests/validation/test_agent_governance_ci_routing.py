@@ -232,6 +232,79 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertIn("git status", result.stdout.lower())
                 self.assertFalse((repo / ".gate-calls").exists())
 
+    def test_stop_long_path_diagnostics_are_byte_bounded(self) -> None:
+        cases = {
+            "ascii": "/".join(["x" * 200] * 18),
+            "multibyte": "/".join(["가" * 60] * 18),
+        }
+        for provider in ("claude", "codex"):
+            for name, segments in cases.items():
+                with (
+                    self.subTest(provider=provider, path_kind=name),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    repo = self._hook_repo(directory)
+                    porcelain = "\n".join(
+                        f"?? {segments}/file-{index:03d}.txt" for index in range(80)
+                    )
+                    self.assertGreater(len(porcelain.encode("utf-8")), 131072)
+                    (repo / ".fake-status").write_text(
+                        porcelain + "\n", encoding="utf-8"
+                    )
+                    fake_bin = repo / "fake-bin"
+                    fake_bin.mkdir()
+                    self._write_executable(
+                        fake_bin / "git",
+                        "#!/bin/sh\n"
+                        "if [ \"$1\" = status ]; then exec /bin/cat .fake-status; fi\n"
+                        "exec /usr/bin/git \"$@\"\n",
+                    )
+                    result = self._run_stop(
+                        repo,
+                        provider,
+                        allow_uncommitted=False,
+                        path=f"{fake_bin}:/usr/bin:/bin",
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertNotIn("Session ending", result.stdout)
+                    response = json.loads(result.stdout.splitlines()[-1])
+                    self.assertEqual("block", response["decision"])
+                    reason = response["reason"]
+                    self.assertIn("Uncommitted paths", reason)
+                    self.assertIn("[additional changed-path bytes omitted]", reason)
+                    displayed_paths = reason.split("Uncommitted paths:\n", 1)[1]
+                    self.assertLessEqual(len(displayed_paths.encode("utf-8")), 6000)
+                    self.assertLess(len(reason.encode("utf-8")), 8000)
+                    self.assertEqual(
+                        1, len((repo / ".gate-calls").read_text().splitlines())
+                    )
+
+    def test_stop_malformed_git_status_blocks_as_parser_failure(self) -> None:
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider), tempfile.TemporaryDirectory() as name:
+                repo = self._hook_repo(name)
+                fake_bin = repo / "fake-bin"
+                fake_bin.mkdir()
+                self._write_executable(
+                    fake_bin / "git",
+                    "#!/bin/sh\n"
+                    "if [ \"$1\" = status ]; then printf '%s\\n' malformed; exit 0; fi\n"
+                    "exec /usr/bin/git \"$@\"\n",
+                )
+                result = self._run_stop(
+                    repo,
+                    provider,
+                    allow_uncommitted=False,
+                    path=f"{fake_bin}:/usr/bin:/bin",
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertNotIn("Session ending", result.stdout)
+                self.assertIn("could not be parsed", result.stdout.lower())
+                self.assertIn("manual", result.stdout.lower())
+                self.assertEqual(
+                    1, len((repo / ".gate-calls").read_text().splitlines())
+                )
+
     def test_stop_timeout_blocks_and_reserves_diagnostic_budget(self) -> None:
         with tempfile.TemporaryDirectory() as name:
             repo = self._hook_repo(name)

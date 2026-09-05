@@ -357,11 +357,11 @@ PY
 emit_stop_block() {
   local reason="$1"
   local retry="${2:-0}"
-  STOP_REASON="$reason" STOP_RETRY="$retry" python3 - <<'PY'
+  STOP_RETRY="$retry" python3 3<<<"$reason" <<'PY'
 import json
 import os
 
-reason = os.environ["STOP_REASON"]
+reason = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
 retry = os.environ.get("STOP_RETRY") == "1"
 if retry:
     reason = f"Stop retry limit reached. {reason}"
@@ -412,8 +412,8 @@ logical_commit_stop_gate() {
   fi
 
   local output git_status="$1"
-  output="$(
-    GIT_STATUS="$git_status" python3 - <<'PY'
+  if ! output="$(
+    python3 3<<<"$git_status" <<'PY'
 from __future__ import annotations
 
 import os
@@ -483,9 +483,11 @@ def deferred_paths() -> set[str]:
 exempt = deferred_paths()
 
 paths: list[str] = []
-for line in os.environ.get("GIT_STATUS", "").splitlines():
+for line in os.fdopen(3, encoding="utf-8").read().splitlines():
     if not line.strip():
         continue
+    if len(line) < 4 or line[2] != " ":
+        raise SystemExit(2)
     path = line[3:]
     if " -> " in path:
         path = path.split(" -> ", 1)[1]
@@ -493,9 +495,20 @@ for line in os.environ.get("GIT_STATUS", "").splitlines():
         continue
     paths.append(path)
 
-print("\n".join(paths[:80]))
+display_limit = 6000
+notice = "\n[additional changed-path bytes omitted]"
+payload = "\n".join(paths[:80]).encode("utf-8")
+if len(payload) > display_limit:
+    prefix_limit = display_limit - len(notice.encode("utf-8"))
+    display = payload[:prefix_limit].decode("utf-8", errors="ignore") + notice
+else:
+    display = payload.decode("utf-8")
+print(display)
 PY
-  )"
+  )"; then
+    emit_stop_block "Git status could not be parsed, so repository cleanliness and completion cannot be proven. Resolve the malformed status output, manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, and continue the task."
+    return 1
+  fi
 
   if [[ -z "$output" ]]; then
     return 0
@@ -503,9 +516,9 @@ PY
 
   local reason
   reason="$(
-    GATE_OUTPUT="$output" python3 - <<'PY'
+    python3 3<<<"$output" <<'PY'
 import os
-paths = os.environ.get("GATE_OUTPUT", "").strip()
+paths = os.fdopen(3, encoding="utf-8").read().removesuffix("\n")
 reason = (
     "Repository-modifying work still has uncommitted task-owned changes. "
     "Before the final response, inspect the diff, run the relevant checks, "
