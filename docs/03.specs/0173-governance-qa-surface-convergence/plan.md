@@ -620,7 +620,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
 Expected: PASS and zero current inbound references to deleted entrypoints.
 
-- [ ] **Step 10: Commit the script ownership change**
+- [x] **Step 10: Commit the script ownership change**
 
 ```bash
 git add scripts .github tests docs/05.operations
