@@ -216,6 +216,44 @@ tree.
 
 ### Latest main integration checkpoint
 
+Latest disposition: **BLOCKED before final aggregate and cleanup**. Local merge
+`eb36be1c1` preserves both parents (`c9410cd11`, `1668027e5`); checkpoint
+`a052859eb` records SPEC-0174's approved closeout review, not completion.
+The uncommitted next lifecycle checkpoint returned `spec-package-invalid` and
+was not retained after discovering the allocation blocker. Restoring the last
+committed review/approved/ready checkpoint made the direct current-package
+lifecycle validation return no findings. No new Spec, Plan, Task, or identity
+was created. The remaining forward checkpoint compatibility must be reconciled
+before terminal handoff; no failed state was committed as accepted.
+
+Independent integration reviews passed for provider behavior, gate composition,
+and policy. Document review corrected two integration defects: newly completed
+preserved packets now require the current completion mapping, and preservation
+requires all baseline members while allowing later valid terminal members.
+The three affected regression methods passed in 16.979 seconds; independent
+Python re-review reported zero actionable findings. Registry Plan/Task retain
+schema-required empty exception lists, with transient-deletion claims removed.
+
+The remaining blocker is not an actual ID reissue: tracked `origin/main`
+(`c02fa282db30fa4576fa04bcd328a47fe7da8511`) reserves Spec high-water 174 but
+does not contain SPEC-0173, while merged parent `1668027e5` contains its original
+canonical issuance with high-water 173. `identity_history.py` compares observed
+issuance only with the selected base, so it rejects 173 as already reserved.
+The push runner uses `PUSH_BEFORE_SHA`; a local HEAD-only pass cannot establish
+push readiness. Existing research-member recovery and migration mappings do
+not authorize this divergent merge-ancestry case. Independent read-only review
+confirmed this source/Git-object mismatch without changing the comparison base.
+
+Resolving this requires separately approved generic merge-lineage issuance
+verification and its regression, not an ID allowlist, lower high-water, frozen
+archive edit, or validator waiver. Until then final acceptance criterion 15,
+terminal package disposition and branch/worktree cleanup remain pending.
+No known-rejected full aggregate was repeated, respecting the user's minimum
+check instruction. The manifest and workflow checks passed; generated wiki and
+security readiness checks passed. Corpus lifecycle against c02 passed after
+removing the empty source directory left by exact packet preservation.
+No remote query, push, PR, deployment, secret access, or global mutation occurred.
+
 Checkpoint recorded 2026-09-05: local `main` is at
 `c9410cd11060007288fc07179bfa4b475ed6db3f` while merging the approved feature
 packet `1668027e515148311c3265afe6e7e168dadac3bc`. The user authorized semantic
