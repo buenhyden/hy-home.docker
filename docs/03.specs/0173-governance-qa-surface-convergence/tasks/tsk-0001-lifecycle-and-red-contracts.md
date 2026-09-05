@@ -1,6 +1,6 @@
 ---
 title: "Lifecycle Reconciliation and RED Contracts Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -95,7 +95,7 @@ that SPEC-0173 will change.
 | Document links | 689 documents, 5,759 links, 0 failures |
 | LLM Wiki freshness | both generated outputs fresh |
 | Whitespace | `git diff --check`, exit 0 |
-| Controlled all-files candidate | First exact-tree run failed because Ruff rewrote one comprehension in `test_spec_packages.py`; changed paths 1, unexpected paths 0. Second run exposed MD001. The initial h2 correction conflicted with the Plan body contract, so constraints now belong to `Objective` and `Related Documents` is restored as h2. Tree `b112999b` passed all-files before the metadata correction; the preservation commit procedure validates its final exact tree again |
+| Controlled all-files candidate | First exact-tree run failed because Ruff rewrote one comprehension in `test_spec_packages.py`; changed paths 1, unexpected paths 0. Second run exposed MD001. The initial h2 correction conflicted with the Plan body contract, so constraints now belong to `Objective` and `Related Documents` is restored as h2. Final exact tree `9eb55bbd` passed with hook exit 0 and before/after/changed/unexpected counts all 0 |
 
 The formatter and heading corrections are applied. The final full profile
 belongs to Task 6 after all Tasks change the same aggregate surfaces.
@@ -120,9 +120,10 @@ P0, P1, P2, or P3 finding.
 | `726e5e2d` | Refresh planning-package generated indexes after the baseline freshness failure |
 | `03968b23`, `5f15a01e`, `69375b24` | Advance SPEC-0173 through review, approval, and activation |
 | `2aa6a40c`, `d9d03685`, `10e0d016` | Advance SPEC-0172 through review, approval, and activation without skipping lifecycle edges |
+| `0cb24199` | Preserve the completed SPEC-0172 outcome, remove recoverable transient bodies, cut over consumers, and align the retention authorities |
 
-The atomic preservation and Task-completion commit SHAs are recorded after
-those commits exist; this Task does not predict its own commit identity.
+This Task-completion lifecycle commit records the preservation SHA and does not
+predict its own commit identity.
 
 ## Rulings
 
@@ -134,14 +135,18 @@ those commits exist; this Task does not predict its own commit identity.
   Stage 03 index, and the Registry agree on transient Plan/Task removal.
 - Add RED contracts before changing gate, script, test, fixture, document, or
   provider behavior.
+- Record this Task's implementation milestone in the Plan checklist, focused
+  evidence, independent review, and commit ledger. Active-stage occupancy
+  forbids a terminal Task in current Stage 03, so its frontmatter remains
+  `in-progress` until the package's atomic terminal disposition.
 
 ## Deferred Items
 
 - Hosted execution, remote control-plane mutation, provider entitlement,
   deployment, release, push, pull request, and merge are outside this Task.
 - The final full gate, Task 6 review, and branch-finish decision occur only
-  after Tasks 2-6 complete. This Task's pre-completion all-files wrapper runs
-  against an exact clean candidate tree before the preservation commit.
+  after Tasks 2-6 complete. This Task's pre-completion all-files wrapper passed
+  against the exact clean preservation tree recorded above.
 
 ## Related Documents
 

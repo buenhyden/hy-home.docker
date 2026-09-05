@@ -126,9 +126,13 @@ docs(spec): activate governance QA convergence
 
 Before each commit, run `check-document-metadata.py --mode check-changed
 --base-ref HEAD`, the canonical lifecycle checker, the focused Spec-package
-test, and `git diff --check`. Do not activate Tasks 2 through 6 early:
-transition each Task through `draft→ready→in-progress` only after its
-predecessor is completed.
+test, and `git diff --check`. Do not activate Tasks 2 through 6 early: advance
+each Task through `draft→ready→in-progress` only after its predecessor's Plan
+steps, focused checks, independent review, and logical commit are complete.
+Active-stage occupancy forbids a terminal Task in current Stage 03, so record
+intermediate completion in the Plan checklist and Task evidence; keep those
+Task frontmatter states `in-progress` until the package's atomic terminal
+disposition.
 
 ### Task 1: Reconcile lifecycle state and establish RED contracts
 
@@ -161,7 +165,7 @@ predecessor is completed.
 - Produces: a completed SPEC-0172 outcome Spec in Stage 98, recoverable transient
   Plan/Task history, and RED tests used by Tasks 2 through 5.
 
-- [ ] **Step 1: Capture a fresh execution baseline**
+- [x] **Step 1: Capture a fresh execution baseline**
 
 Run:
 
@@ -180,7 +184,7 @@ Expected: clean worktree, exact SHAs recorded in Task 1, and full exit `0`. If
 the tree is not clean or full fails, record the pre-existing condition and stop
 without changing lifecycle state.
 
-- [ ] **Step 2: Add a failing index/frontmatter agreement test**
+- [x] **Step 2: Add a failing index/frontmatter agreement test**
 
 Add this helper and assertion to
 `tests/lib/document_governance/test_spec_packages.py` using the file's existing
@@ -204,7 +208,7 @@ def test_current_index_does_not_claim_active_for_draft_spec(self) -> None:
     self.assertFalse(metadata["status"] == "draft" and "active" in rows["SPEC-0172"])
 ```
 
-- [ ] **Step 3: Run the lifecycle test and verify RED**
+- [x] **Step 3: Run the lifecycle test and verify RED**
 
 Run:
 
@@ -214,7 +218,7 @@ PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_package
 
 Expected: FAIL identifying `SPEC-0172` as draft while the index claims active.
 
-- [ ] **Step 4: Record and commit each valid forward transition**
+- [x] **Step 4: Record and commit each valid forward transition**
 
 Use only registered transitions and keep the package in the current tree until
 its terminal move:
@@ -237,7 +241,7 @@ into one commit. There is no standalone terminal-state commit: the corpus
 lifecycle rejects terminal documents that remain in current Stage 03, so the
 terminal Spec transition and preservation occur atomically in Step 6.
 
-- [ ] **Step 5: Prove transient Plan and Task recovery before removal**
+- [x] **Step 5: Prove transient Plan and Task recovery before removal**
 
 Run exact blob checks from the active-state `HEAD` produced by Commit C:
 
@@ -251,7 +255,7 @@ rg -n '0172-document-contract-convergence/(plan|tasks/)' --glob '!docs/98.archiv
 Expected: both blobs are regular and recoverable; current inbound references are
 limited to indexes or documents being updated in this same step.
 
-- [ ] **Step 6: Preserve the completed Spec and remove transient execution bodies**
+- [x] **Step 6: Preserve the completed Spec and remove transient execution bodies**
 
 In one atomic patch, transition `spec.md` from `active` to `completed` and move
 it to
@@ -269,7 +273,7 @@ preserved so it agrees with the current Stage 03 and Registry
 Stage 03, and the Registry describe the same terminal Plan/Task disposition.
 This Stage 00 policy change requires independent rules-engineer review.
 
-- [ ] **Step 7: Run focused lifecycle, archive, and recovery GREEN checks**
+- [x] **Step 7: Run focused lifecycle, archive, and recovery GREEN checks**
 
 Run:
 
@@ -284,7 +288,7 @@ python3 scripts/validation/check-document-corpus-lifecycle.py
 Expected: PASS with SPEC-0172 absent from current packages and recoverable from
 its preserved Spec plus Git history.
 
-- [ ] **Step 8: Commit the reconciled predecessor**
+- [x] **Step 8: Commit the reconciled predecessor**
 
 After the transition commits above, create the terminal preservation commit:
 

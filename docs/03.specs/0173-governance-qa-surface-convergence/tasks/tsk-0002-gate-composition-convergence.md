@@ -2,7 +2,7 @@
 title: "Gate Composition Convergence Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "specs"
