@@ -607,9 +607,9 @@ class SpecPackageTests(unittest.TestCase):
     def test_preserved_package_is_not_a_retirement(self) -> None:
         """Completion and withdrawal are different events with different records.
 
-        A package moved to the archive keeps every document, so demanding a
-        Tombstone for it would record a withdrawal that never happened. A
-        package that leaves without being preserved still needs one.
+        A completed Spec preserves the durable outcome while Plan and Task are
+        transient. Demanding a Tombstone for that package would record a
+        withdrawal that never happened.
         """
 
         spec_packages = _spec_packages_module()
@@ -617,7 +617,14 @@ class SpecPackageTests(unittest.TestCase):
             root = pathlib.Path(directory)
             before_stage = root / "before/docs/03.specs"
             after_stage = root / "after/docs/03.specs"
-            _write_package(before_stage, spec_status="completed")
+            _write_package(
+                before_stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
             after_stage.mkdir(parents=True, exist_ok=True)
             before = spec_packages.load_spec_packages(before_stage)
             after = spec_packages.load_spec_packages(after_stage)
@@ -851,17 +858,48 @@ class SpecPackageTests(unittest.TestCase):
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
 
-    def test_current_index_does_not_claim_active_for_draft_spec(self) -> None:
+    def test_current_index_status_matches_each_current_spec(self) -> None:
         rows = _current_spec_rows(
             (ROOT / "docs/03.specs/README.md").read_text(encoding="utf-8")
         )
         for spec_path in sorted((ROOT / "docs/03.specs").glob("*/spec.md")):
             metadata = parse_frontmatter_text(spec_path.read_text(encoding="utf-8"))
             artifact_id = metadata["artifact_id"]
-            self.assertFalse(
-                metadata["status"] == "draft" and "active" in rows[artifact_id],
+            row = rows[artifact_id]
+            self.assertIn(metadata["status"], row, artifact_id)
+            self.assertEqual(
+                metadata["status"] == "active",
+                re.search(r"\bactive\b", row) is not None,
                 artifact_id,
             )
+
+    def test_terminal_plan_and_task_disposition_is_aligned(self) -> None:
+        registry = load_registry(ROOT / "docs/99.templates/registry.json")
+        for profile_id in ("plan", "task"):
+            self.assertIn(
+                {"kind": "transient-after-completion"},
+                registry.profiles[profile_id]["exceptions"],
+            )
+
+        authority_paths = (
+            "docs/00.agent-governance/policies/documentation-protocol.md",
+            "docs/01.requirements/0026-document-retention-and-retirement.md",
+            "docs/02.architecture/descriptions/0030-document-lifecycle-governance.md",
+            "docs/02.architecture/decisions/0031-preserved-archive-record.md",
+            "docs/03.specs/README.md",
+            "docs/98.archive/README.md",
+        )
+        authorities = {
+            path: (ROOT / path).read_text(encoding="utf-8") for path in authority_paths
+        }
+        for path, body in authorities.items():
+            with self.subTest(path=path):
+                self.assertRegex(body, r"(?:Plan|Plan/Task).*(?:Task|transient)")
+                self.assertRegex(body, r"Git regular[- ]blob")
+        self.assertNotIn(
+            "completion preserves\nthat Task",
+            authorities[authority_paths[0]],
+        )
 
     def test_active_route_authority_uses_only_canonical_spec_execution_paths(
         self,

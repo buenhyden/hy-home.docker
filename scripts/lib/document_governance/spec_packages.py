@@ -810,11 +810,12 @@ def validate_spec_package_lifecycle(
     """Enforce the Stage 00 retention contract on Spec Package removals.
 
     A retained package keeps its non-terminal members. A package that leaves
-    Stage 03 is either preserved or retired, and the two are not the same
-    event: preservation moves a finished package to the archive and keeps every
-    document, while retirement withdraws one and records a Tombstone saying
-    why. A Tombstone is required for the second, and asking for one after a
-    completion would record a withdrawal that never happened.
+    Stage 03 is either completed or retired, and the two are not the same
+    event: completion preserves the finished Spec outcome while transient Plan
+    and Task bodies are recoverable from Git; retirement withdraws a package
+    and records a Tombstone saying why. A Tombstone is required for the second,
+    and asking for one after a completion would record a withdrawal that never
+    happened.
 
     The Spec's terminal status is an authoring obligation recorded in the
     Tombstone's `Reason`, not a predicate here: the comparison base is the

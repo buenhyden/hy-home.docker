@@ -12,7 +12,7 @@ settings by itself.
 - On 2026-09-05, the repository owner approved a PATCH limited to
   `branches/main/protection/required_status_checks`. The applied state and full
   protection read-back are recorded in
-  `docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md`.
+  [the completed SPEC-0172 outcome](../../docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md#remote-control-plane-evidence).
 - That read-back verified `strict=true`, required contexts
   `validation-changed` and `validation-full`, and GitHub Actions app ID 15368.
   Review, CODEOWNERS, conversation-resolution, admin, signature,

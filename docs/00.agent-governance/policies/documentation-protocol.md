@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -132,9 +132,11 @@ and its still-current meaning has moved to a canonical owner.
 | Migration or Tombstone | none; the record is immutable when created | `sealed` |
 
 Run the all-files QA wrapper before the change that completes a package. It
-binds its evidence to a Task under `docs/03.specs/`, and completion preserves
-that Task under `docs/98.archive/completed/`, where it is a frozen record that
-must not take new evidence.
+binds its evidence to a Task under `docs/03.specs/`. After the Spec completion
+outcome is preserved under `docs/98.archive/completed/`, a Plan or Task with no
+current consumer is removed only after its exact Git regular-blob recovery is
+proved. Do not create a body clone or redirect solely to retain transient
+execution history.
 
 An active stage may hold no package at all. Stage 03 is empty exactly when no
 change is in flight, which is a state to reach rather than avoid. A registered

@@ -1,10 +1,10 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -69,11 +69,17 @@ bounded snapshot으로 Git에서 적재합니다. base에 존재하고 현재 tr
 status로 판단하고, 통째로 사라진 package는 Stage 98을 근거로 판단합니다.
 
 `validate_spec_package_lifecycle`은 Stage 98에서 분리해 읽은 Tombstone
-retired-path와 frozen preserved-path 집합을 받습니다. 대응하는 Tombstone이
-없는 retirement는 `package-retirement-unrecorded`를 산출하고, terminal
-disposition에 맞는 frozen path가 없으면 preservation 위반을 산출합니다.
-Tombstone은 처분을, preserved path는 본문 존재를, recovery blob은 원본 동일성을
+retired-path와 frozen preserved-path 집합을 받습니다. completed Spec 경로가
+preserved-path에 있으면 completion으로 판정하고, 그렇지 않은 package 이탈은
+retirement로 판정합니다. 대응하는 Tombstone이 없는 retirement는
+`package-retirement-unrecorded`를 산출합니다. Tombstone은 철회를, completed
+Spec은 영구 outcome을, recovery blob은 제거된 transient Plan/Task의 복구를
 각각 증명하며 어느 한 기록이 다른 기록을 대신하지 않습니다.
+
+완료 순서는 outcome과 current consumer를 먼저 Spec 또는 다른 현재 정본으로
+write back하고, Plan/Task의 exact Git regular blob을 확인한 뒤, Spec의 terminal
+전환·archive 이동과 transient body 제거를 한 결과 tree에 적용하는 것입니다.
+이 순서 때문에 active Stage 03에는 terminal 중간 상태가 생기지 않습니다.
 
 link validator와 metadata validator는 결과 tree 위에서 독립적으로 실행됩니다.
 따라서 은퇴한 경로를 여전히 가리키는 잔존 문서는 lifecycle 술어를 거치지 않고

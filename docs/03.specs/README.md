@@ -63,7 +63,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0169 | [Document Lifecycle Convergence](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0169-document-lifecycle-convergence/tasks/tsk-0001-document-lifecycle-convergence.md) |
 | SPEC-0170 | [Archive Preservation Model](../98.archive/completed/03.specs/0170-archive-preservation-model/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0170-archive-preservation-model/plan.md) and [Task](../98.archive/completed/03.specs/0170-archive-preservation-model/tasks/tsk-0001-archive-preservation-model.md) |
 | SPEC-0171 | [Compose Sibling Pair Resolution](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/plan.md) and [Task](../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) |
-| SPEC-0172 | [Document Contract Convergence](0172-document-contract-convergence/spec.md) | active with active [Plan](0172-document-contract-convergence/plan.md) and in-progress [Task](0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) |
+| SPEC-0172 | [Document Contract Convergence](../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | completed, preserved under the archive; transient Plan and Task are recoverable from Git |
 | SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md), Task 1 in progress, and Tasks 2-6 draft |
 
 ## How to Work in This Area
@@ -86,8 +86,8 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 - Active Task는 active Spec과 active Plan을 parent로 가집니다.
 - 변경이 끝나면 outcome을 Spec과 다른 current owner에 먼저 write back하고
   Spec을 completed로 전환합니다.
-- Terminal Plan과 Task는 current consumer가 없고 Git regular-blob recovery가
-  확인되면 삭제합니다. Body clone이나 redirect는 만들지 않습니다.
+- Plan과 Task는 Spec completion 이후 current consumer가 없고 Git regular-blob
+  recovery가 확인되면 삭제합니다. Body clone이나 redirect는 만들지 않습니다.
 
 ### Role Contract
 

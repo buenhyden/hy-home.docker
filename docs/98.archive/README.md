@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "archive"
 ---
 
@@ -12,10 +12,11 @@ layer: "archive"
 
 ## Overview
 
-Stage 98은 활성 스테이지를 떠난 문서를 보관합니다. 완료된 것, 대체된 것,
-철회된 것은 모두 보존되며 삭제되지 않습니다. 보존과 삭제의 차이는 조회
-가능성입니다: 보존된 기록은 파일로 존재하므로 읽고 검증할 수 있고, Git
-history는 그 파일이 삭제 당시 문서와 동일함을 증명하는 근거로만 쓰입니다.
+Stage 98은 활성 스테이지를 떠난 durable outcome, 대체 문서, 철회 문서를
+보관합니다. 보존 대상으로 선택된 기록은 파일로 존재하므로 읽고 검증할 수
+있습니다. Stage 03의 Plan과 Task는 outcome이 completed Spec 또는 다른 current
+owner로 이전되고 current consumer가 없으면 exact Git regular blob으로 복구하는
+transient 실행 운반체이며, 별도 보존본을 만들지 않습니다.
 
 Stage 98은 현재 규칙이나 구현 지침을 소유하지 않습니다. 여기 있는 어떤
 문서도 `docs/00.agent-governance/`, `docs/01.requirements/`,
@@ -38,7 +39,7 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
 
 | 폴더 | 보존 사유 | 짝이 되는 결정 기록 |
 | --- | --- | --- |
-| `completed/` | 변경 패키지가 완료됨 | 없음 — `status: completed`가 자기 서술 |
+| `completed/` | 변경 패키지의 Spec outcome이 완료됨 | 없음 — `status: completed`가 자기 서술 |
 | `superseded/` | 더 새로운 문서로 대체됨 | 없음 — `superseded_by`가 자기 서술 |
 | `retired/` | 철회됨 | `tombstones/`의 해당 Tombstone |
 
@@ -99,6 +100,10 @@ frontmatter가 이미 말합니다.
 5. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,
    tombstone, frozen preserved body, decision link, recovery blob을 한 번에
    검증합니다. 이 CLI는 별도 `--mode`를 제공하지 않습니다.
+6. **Stage 03 completion은 Spec outcome을 보존합니다.** Plan/Task를 제거하기
+   전에 current consumer cutover와 exact Git regular-blob recovery를 증명합니다.
+   기존 `completed/` 아래의 Plan/Task는 이미 frozen인 legacy evidence이므로
+   수정하거나 일괄 정리하지 않습니다.
 
 활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 링크할
 수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 Stage 00/01/02/05

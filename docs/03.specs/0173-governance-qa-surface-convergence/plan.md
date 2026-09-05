@@ -32,7 +32,7 @@ repository's Stage 00/03/90/98/99 document governance.
 
 **Spec:** `docs/03.specs/0173-governance-qa-surface-convergence/spec.md`
 
-### Global Constraints
+## Objective
 
 - Keep public profiles exactly `changed` and `full` and public suites exactly
   `agent-governance`, `document-contract`, `document-graph`,
@@ -63,7 +63,7 @@ repository's Stage 00/03/90/98/99 document governance.
 
 ---
 
-## Objective
+### Success Criteria
 
 Deliver six bounded changes: reconcile the predecessor lifecycle, establish one
 typed executable owner, remove obsolete script and operation routes, align tests
@@ -134,16 +134,24 @@ predecessor is completed.
 
 **Files:**
 
+- Modify: `.github/rulesets/main-protection.md`
 - Modify: `docs/00.agent-governance/policies/documentation-protocol.md`
+- Modify: `docs/01.requirements/0026-document-retention-and-retirement.md`
+- Modify: `docs/02.architecture/descriptions/0030-document-lifecycle-governance.md`
+- Modify: `docs/02.architecture/decisions/0031-preserved-archive-record.md`
 - Modify: `docs/03.specs/README.md`
 - Modify then preserve: `docs/03.specs/0172-document-contract-convergence/spec.md`
 - Remove after recovery proof: `docs/03.specs/0172-document-contract-convergence/plan.md`
 - Remove after recovery proof: `docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md`
 - Create by move: `docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`
-- Modify: `docs/98.archive/README.md` and the exact completed-Spec index selected by the archive validator
+- Modify: `docs/98.archive/README.md`
+- Modify: the exact RES-0002, RES-0084, and RES-0085 consumers of SPEC-0172 evidence
+- Regenerate: `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`
+- Regenerate: `docs/90.references/data/0082-llm-wiki-index/README.md`
+- Modify: `scripts/lib/document_governance/spec_packages.py`
 - Modify: `tests/lib/document_governance/test_spec_packages.py`
-- Modify: `tests/lib/document_governance/test_archive.py`
-- Modify: `tests/lib/document_governance/test_identity_history.py`
+- Verify: `tests/lib/document_governance/test_archive.py`
+- Verify: `tests/lib/document_governance/test_identity_history.py`
 - Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md`
 
 **Interfaces:**
@@ -215,7 +223,6 @@ its terminal move:
 Commit A: Spec draft→review; Plan draft→approved; Task draft→ready
 Commit B: Spec review→approved; Plan and Task remain approved/ready
 Commit C: Spec approved→active; Plan approved→active; Task ready→in-progress
-Commit D: Task in-progress→completed; Plan active→completed; Spec active→completed
 ```
 
 For each commit, run:
@@ -226,16 +233,18 @@ python3 scripts/validation/check-document-corpus-lifecycle.py
 ```
 
 Expected: exit `0` at every intermediate state. Do not combine a missing edge
-into one commit.
+into one commit. There is no standalone terminal-state commit: the corpus
+lifecycle rejects terminal documents that remain in current Stage 03, so the
+terminal Spec transition and preservation occur atomically in Step 6.
 
 - [ ] **Step 5: Prove transient Plan and Task recovery before removal**
 
-Run exact blob checks from the parent of Commit D:
+Run exact blob checks from the active-state `HEAD` produced by Commit C:
 
 ```bash
-git ls-tree -r --name-only HEAD^ -- docs/03.specs/0172-document-contract-convergence
-git cat-file -e HEAD^:docs/03.specs/0172-document-contract-convergence/plan.md
-git cat-file -e HEAD^:docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md
+git ls-tree -r --name-only HEAD -- docs/03.specs/0172-document-contract-convergence
+git cat-file -e HEAD:docs/03.specs/0172-document-contract-convergence/plan.md
+git cat-file -e HEAD:docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md
 rg -n '0172-document-contract-convergence/(plan|tasks/)' --glob '!docs/98.archive/**' .
 ```
 
@@ -244,11 +253,15 @@ limited to indexes or documents being updated in this same step.
 
 - [ ] **Step 6: Preserve the completed Spec and remove transient execution bodies**
 
-Move only `spec.md` to
+In one atomic patch, transition `spec.md` from `active` to `completed` and move
+it to
 `docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`.
-Remove current `plan.md` and Task after Step 5 succeeds. Update the Stage 03 and
-Stage 98 indexes to link the completed Spec without creating redirect files or
-copying the transient bodies into the archive.
+Remove the current active `plan.md` and Task after Step 5 succeeds; their exact
+regular blobs remain recoverable from the Step 5 commit. Transfer the live
+RES-0085 identity-recovery decision tuple to SPEC-0173 Task 1, update every
+current inbound consumer, and update the Stage 03 and Stage 98 indexes to link
+the completed Spec without creating redirect files or copying transient bodies
+into the archive.
 
 Correct the stale Stage 00 sentence that requires terminal Task bodies to be
 preserved so it agrees with the current Stage 03 and Registry
@@ -276,7 +289,24 @@ its preserved Spec plus Git history.
 After the transition commits above, create the terminal preservation commit:
 
 ```bash
-git add docs/00.agent-governance/policies/documentation-protocol.md docs/03.specs/README.md docs/98.archive tests/lib/document_governance
+git add .github/rulesets/main-protection.md \
+  docs/00.agent-governance/policies/documentation-protocol.md \
+  docs/01.requirements/0026-document-retention-and-retirement.md \
+  docs/02.architecture/descriptions/0030-document-lifecycle-governance.md \
+  docs/02.architecture/decisions/0031-preserved-archive-record.md \
+  docs/03.specs/README.md \
+  docs/03.specs/0172-document-contract-convergence \
+  docs/03.specs/0173-governance-qa-surface-convergence/plan.md \
+  docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md \
+  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md \
+  docs/90.references/data/0082-llm-wiki-index/README.md \
+  docs/90.references/research/0002-agentic-engineering-research-pack/README.md \
+  docs/90.references/research/0084-github-actions-platform \
+  docs/90.references/research/0085-workspace-engineering-main-baseline-assessment \
+  docs/98.archive/README.md \
+  docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md \
+  scripts/lib/document_governance/spec_packages.py \
+  tests/lib/document_governance/test_spec_packages.py
 git commit -m "docs(spec): preserve completed document convergence"
 ```
 
@@ -1164,7 +1194,7 @@ The completion evidence must contain:
 - Treat completed Specs as evidence. Current policy, Registry, architecture,
   operation, and executable contracts remain authoritative.
 
-### Related Documents
+## Related Documents
 
 - [Specification](spec.md)
 - [Task 1](tasks/tsk-0001-lifecycle-and-red-contracts.md)

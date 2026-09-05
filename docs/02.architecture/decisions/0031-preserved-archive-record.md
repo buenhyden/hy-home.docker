@@ -1,10 +1,10 @@
 ---
 title: "보존 기록으로서의 아카이브"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "architecture"
 artifact_id: "ADR-0031"
 parent_ids:
@@ -54,7 +54,11 @@ ADR-0030은 은퇴를 삭제로 정의하고 Tombstone을 그 복구 포인터�
 
 `docs/98.archive/`는 두 종류를 담습니다. `migrations/`와 `tombstones/`는
 결정의 기록이며 본문을 담지 않습니다. `completed/`, `superseded/`,
-`retired/`는 문서 본문을 원문 그대로 담으며 처분 사유를 담지 않습니다.
+`retired/`는 보존 대상으로 선택된 문서 본문을 원문 그대로 담으며 처분 사유를
+담지 않습니다. Stage 03 completion의 영구 보존 단위는 실행 결과를 write back한
+Spec입니다. Plan과 Task는 current consumer cutover와 exact Git regular-blob
+recovery 후 제거되는 transient 실행 운반체이며, solely for retention인 archive
+copy나 redirect를 만들지 않습니다.
 
 보존 기록의 경로는 원래 경로에서 선행 루트만 바꾼 것이며 `docs/` 재편 이전에
 철회된 문서는 당시 루트를 유지합니다. 처분은 경로가 결정하고 보존본의
@@ -76,7 +80,10 @@ link의 해석 가능성은 보존 기록에 적용되지 않습니다. 들어�
   byte-identical합니다. 그 결과 archive는 이질적입니다. 104건 중 49건이
   `status: active`를, 83건이 `type` 없음을 담고 있으며 이는 제거 당시의
   사실입니다.
-- 완료 package 21건과 대체 문서 3건이 활성 스테이지를 떠났습니다.
+- 기존 완료 package 21건과 대체 문서 3건이 활성 스테이지를 떠났습니다. 이미
+  보존된 legacy Plan/Task는 frozen body이므로 이 결정의 후속 정합화로 수정하거나
+  제거하지 않습니다. 이후 completion은 completed Spec outcome만 새 보존본으로
+  추가합니다.
 - `validate_spec_package_lifecycle`은 `preserved_paths`를 함께 받아 완료에
   의한 이탈과 철회에 의한 이탈을 구분합니다. 완료에 Tombstone을 요구하면
   일어나지 않은 철회를 기록하게 됩니다.
@@ -84,8 +91,9 @@ link의 해석 가능성은 보존 기록에 적용되지 않습니다. 들어�
   수 있지만 같은 문맥에서 현재 Stage 00/01/02/05 owner를 함께 가리킵니다.
   `retired/` 보존본, Tombstone, Migration은 현재 권위의 의존성이 아니며 Stage 98
   인덱스를 통해 탐색합니다.
-- ADR-0030이 금지했던 "두 번째 복제본"은 이제 의도된 결과입니다. 중복은
-  Tombstone의 `Retired Path` 하나이며 그것은 두 기록을 잇는 조인 키입니다.
+- ADR-0030이 금지했던 "두 번째 복제본"은 durable outcome과 철회 본문에 한해
+  의도된 결과입니다. transient Plan/Task까지 복제하지 않습니다. Tombstone의
+  `Retired Path`는 철회 기록과 보존 본문을 잇는 조인 키입니다.
 
 ## Compliance
 

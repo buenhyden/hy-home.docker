@@ -292,9 +292,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0028-operational-readiness-closure.md](../../../02.architecture/descriptions/0028-operational-readiness-closure.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0030-document-lifecycle-governance.md](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Markdown reference |
 | [docs/02.architecture/descriptions/README.md](../../../02.architecture/descriptions/README.md) | folder index |
-| [docs/03.specs/0172-document-contract-convergence/plan.md](../../../03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
-| [docs/03.specs/0172-document-contract-convergence/spec.md](../../../03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
-| [docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/plan.md](../../../03.specs/0173-governance-qa-surface-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/spec.md](../../../03.specs/0173-governance-qa-surface-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md) | Markdown reference |

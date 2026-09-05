@@ -1,10 +1,10 @@
 ---
 title: "Document Contract Convergence Specification"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-05"
 layer: "specs"
 artifact_id: "SPEC-0172"
 parent_ids:
@@ -182,12 +182,68 @@ Keep legacy archive payloads on unmanaged preservation profiles.
     stacks; no profile, collision check, validator, threshold, or required job
     is removed.
 
+## Completion Outcome
+
+### Repository and Hosted verification
+
+- The final local changed and full public profiles passed without weakening a
+  validator. Focused Registry, metadata, lifecycle, identity-recovery,
+  hardening, dependency, formatting, build, and traceability checks also
+  passed; the execution Task retained the diagnostic sequence that led to the
+  final candidate.
+- Pull-request run `33899619212`, changed job `101110351847`, executed exact
+  candidate `17a5564ca8527944b0da50a53e611e2093dbedc6` and passed in 12m51s.
+- Workflow-dispatch run `33899635117`, full job `101110407893`, executed the
+  same candidate and passed in 19m57s, including both public suites and the
+  SARIF upload. These dated runs prove those revisions only; they do not prove
+  future Hosted runner state.
+
+### Provider and runtime boundary
+
+- On 2026-09-04 the active Codex task had direct account access. A bounded
+  Claude CLI probe ran from `/tmp` in safe/restricted mode, with no tools, no
+  session persistence, and a USD 0.05 ceiling; it returned exactly
+  `ENTITLEMENT_OK` with exit 0. This is point-in-time direct entitlement
+  evidence, not model equivalence, performance, cost, or future availability.
+- Docker Engine and Compose were reachable and no active Compose project was
+  observed. Five `k3d-hyhome` containers did not establish that this
+  repository's stack was deployed. No deployment or runtime-state mutation was
+  performed.
+
+### Remote control-plane evidence
+
+- On 2026-09-05 the repository owner approved a PATCH limited to
+  `branches/main/protection/required_status_checks`. The before-state was
+  `strict=true` with the exact 12 leaf contexts retained in the tracked
+  [main-protection record](../../../../../.github/rulesets/main-protection.md).
+- The applied and authenticated read-back state was `strict=true` with only
+  `validation-changed` and `validation-full`, both bound to GitHub Actions app
+  ID 15368. Pull-request review, CODEOWNERS, conversation resolution, admin,
+  signature, linear-history, force-push, deletion, creation, lock, and
+  fork-sync settings were read back unchanged. No rollback was required.
+- The tracked record owns the exact 12-context rollback and current intended
+  state. This completed Spec owns the dated implementation outcome; neither
+  document claims that later remote state remains unchanged.
+
+### Evidence retention
+
+- The completed Spec retains the durable outcome. The transient Plan and Task
+  remain exact Git regular blobs at active-state commit
+  `10e0d016fd83763db477c3d4375eb6a3e8daad1e`: Plan blob
+  `0d92744d3beae1db8438eea7942aebe80bf6b7ce`, Task blob
+  `2a5778517aa8e84013d8c0ed2fc70671dfc9ecff`.
+- The RES-0085 identity-recovery decision moved to the active SPEC-0173 Task
+  before the transient Task was removed. No redirect or duplicate archived Task
+  body was created.
+
 ## Traceability
 
 - Requirements: REQ-0024 and REQ-0026.
 - Architecture: AD-0027 and AD-0030.
 - Decisions: ADR-0029 and ADR-0031.
-- Execution: SPEC-0172-PLAN-0001 and SPEC-0172-TSK-0001.
+- Historical execution bodies: SPEC-0172-PLAN-0001 and SPEC-0172-TSK-0001,
+  recoverable through the exact Git blobs recorded above.
+- Completion reconciliation: [SPEC-0173 Task 1](../../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 
 ## Operational Impact
 
@@ -204,5 +260,6 @@ approved.
 
 ## Related Documents
 
-- [Implementation plan](plan.md)
-- [Execution task](tasks/tsk-0001-document-contract-convergence.md)
+- [Current Stage 03 index](../../../../03.specs/README.md)
+- [Main protection tracked state and rollback](../../../../../.github/rulesets/main-protection.md)
+- [Lifecycle reconciliation task](../../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)
