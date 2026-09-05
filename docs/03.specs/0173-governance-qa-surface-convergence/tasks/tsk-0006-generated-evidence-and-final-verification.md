@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -193,6 +193,53 @@ The all-files wrapper can install remote hook environments and run container
 linters, so it remains NOT_RUN under the unchanged no-install/no-runtime scope.
 No clean-worktree `changed` success is claimed as commit verification. Task 0006
 stays in-progress. The work branch and both worktrees are retained.
+
+#### Follow-up commit checkpoint
+
+The reviewed repair and tracked-input Wiki refresh were committed as
+`c265bacc544db66205300f51c8012f8dbd46c915` (`fix(qa): make clean-worktree
+verification reproducible`). Normal Git commit exited 0 with the existing
+credential hook active. All 13 selected paths had identical reviewed,
+working-tree and index hashes, and `git diff --cached --check` exited 0.
+The original worktree became clean; main remains at the recorded e568 baseline.
+Independent final Python review found no new defect, confirmed explicit
+Manifest use evidence, and verified 21/25/0 discovery when importing CLI first.
+The final six-document Markdown snapshot and two YAML files passed (exit 0);
+metadata selected 154 with zero violations, and all-document links selected
+695 documents and 5,938 links with zero failures (exit 0 each).
+
+The clean QA worktree was advanced normally, without force, to this commit.
+Only the initial Task checkpoint above was applied there to select the document
+follow-up through the existing public changed profile. That result cannot establish
+acceptance of the entire migration's operating-input selectors or native calls.
+
+The exact command `python3 scripts/validation/run-ci-gate.py --profile changed`
+exited 0 in 304.322 seconds from the QA cwd and allowlisted environment recorded
+above. Its preceding `--explain` exited 0 and selected 11 public validators:
+metadata, links, lifecycle, Script Manifest, workflow contract, criterion
+contract, audit freshness, QuickWin, Storybook, supply-chain and template-security.
+Unittest execution counts were 15, 89, 26, 42, 357, 16, 32, 15, 50, 18 and 135:
+795 executions across those groups, all PASS. Expected rejection diagnostics
+inside the CI-wrapper negative tests are test evidence, not failed leaf exits;
+no caller set CI variables or skip controls to bypass the wrapper.
+
+This observation is pinned to `c265bacc544db66205300f51c8012f8dbd46c915` plus the
+Task-only diff with SHA-256
+`bffd92b073e728a8f3a24236354e41abde32c58f436a9ac0763e74e3dc97785e`.
+The final Task adds this outcome and current acceptance/commit links afterward;
+its changed bytes receive focused metadata, Markdown and link checks. It does
+not retroactively become the input of the earlier aggregate.
+The exact owned QA patch was reversed after `git apply --reverse --check`
+succeeded; QA tracked state is clean, its task Docker config remains empty,
+and no real `.env` was created. Original ignored files remain preserved.
+
+Committed-state renderer, Wiki and repository/all governance-contract checks
+also exited 0. The former governance root is absent by `lstat` and Git tracking;
+98 canonical tracked files are regular, all 262 pre-existing archive records
+retain baseline bytes, and both native hook-setting files retain baseline bytes.
+No fixture count, evaluation threshold, permission or operating source changed
+in this follow-up. Branch and both worktrees are retained; whole-migration
+aggregate and native acceptance remain BLOCKED as recorded in Deferred Items.
 
 #### Pre-commit review and correction
 
@@ -971,16 +1018,20 @@ historical results do not prove the relocated candidate. BLOCKED/NOT_RUN is not 
 | 6 | W3 | PASS: named obsolete wrapper candidates have no tracked current consumer in the reviewed surface. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 7 | W3 | PASS: retained-command ownership and aggregate routing were checked by the manifest and gate regressions. | [Script manifest](../../../../scripts/manifest.yaml) |
 | 8 | W3 | PASS: residue scan found no production `scripts/` reference to `tests/` or `tests/fixtures/`. | [Surface-ownership test](../../../../tests/lib/test_surface_ownership.py) |
-| 9 | W3 | PASS: focused library/validation discovery and full-profile reachability regression passed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 9 | W3 | PASS after clean-checkout repair: tracked behavioral ownership, 25/21 Compose case discovery and full-profile exact-once registration passed in the 115-test follow-up. | [Clean-worktree ownership repair](#clean-worktree-ownership-repair) |
 | 10 | W3 | PASS: retained supply-chain fixture and validation boundary evidence is recorded in the focused suites. | [Supply-chain tests](../../../../tests/lib/supply_chain/test_supply_chain_policy.py) |
 | 11 | W1 | PASS: current-path grammar and full-history recovery remain separately enforced by the focused document-governance checks. | [Spec package validator](../../../../scripts/lib/document_governance/spec_packages.py) |
 | 12 | W1 | PASS: the exact SPEC-0172 source receipt and superseded full-packet mirror are recorded on this Task; ordinary SPEC-0174 disposition remains a registered lifecycle route. | [Branch-integration receipt](tsk-0006-generated-evidence-and-final-verification.md) |
 | 13 | W5 | PASS: DATA-0068, DATA-0069, DATA-0073, and DATA-0074 disposition evidence retains byte-preserved bodies and paired Tombstones. | [Archive records](../../../98.archive/) |
 | 14 | W2 | PASS for implemented canonical/provider contract: 100 authored inputs, 77 source dispositions, independent review and 92 actual-root regression tests; native runtime acceptance remains explicitly unverified. | [Current verification ledger](#current-verification-ledger) |
-| 15 | W6 | BLOCKED aggregate: 16-leaf selection inspected; 13 safe leaf commands executed separately, three operational-input leaves not run. Focused document suite passed 439 tests after the recorded generator correction. | [Current verification ledger](#current-verification-ledger) |
+| 15 | W6 | BLOCKED whole-migration aggregate: PostgreSQL still requires unauthorized operating/image inputs. Both Compose baseline leaves now pass with isolated tracked example inputs; those results do not establish PostgreSQL, native or deployment acceptance. | [Local commit authorization and follow-up](#local-commit-authorization-and-follow-up-2026-09-06) |
 | 16 | W6 | PASS: the Task distinguishes local/configured evidence from unverified runtime, entitlement, and remote state. | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
 
 ## Review Evidence
+
+The current relocation and clean-checkout reviews are recorded in the latest
+Work Log above. The following paragraphs preserve earlier reviews and their
+dated correction sequence; superseded open findings are not new current ones.
 
 Read-only `task5_policy_review` accepted the ready transition and bounded
 generator correction scope: PASS, quality A, 0 Critical, 0 Important, 0 Minor.
@@ -1042,6 +1093,8 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 | `3059a277c` | Byte-bounded Stop diagnostics and descriptor transport; independent specification/quality PASS, 18 routing tests passed in 21.122 seconds |
 | `4eee3e58f` | Register promoted lifecycle behavior exactly once and restore discovery |
 | `4aa319a40` | Reviewed manifest transition guards and explicit generator write guidance with regression coverage |
+| `6c283d395` | Atomic canonical-home relocation, provider/document consumer transition and reviewed regression evidence |
+| `c265bacc5` | Clean-checkout tracked test ownership, preserved Compose case split, post-index Wiki freshness and bounded follow-up evidence |
 
 ### Historical correction and cleanup checkpoint (2026-09-05)
 
@@ -1103,6 +1156,15 @@ No completed archive packet or new Spec/Plan/Task was created.
   follow-up retains the work branch/workspace and authorizes reviewed local
   commits only. It does not authorize remote integration or cleanup.
 - Runtime and remote observations remain explicitly unverified.
+- The whole-migration aggregate remains BLOCKED by the PostgreSQL operating/image
+  leaf. QuickWin and template-security have isolated example-input PASS evidence;
+  neither proves actual host, service or volume readiness.
+- Normal native discovery is BLOCKED before acceptance; skill calls, live hook
+  delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
+  change, model call or installation is authorized by this follow-up.
+- The all-files wrapper remains NOT_RUN because it can install hook environments
+  and invoke container linters. Whole-file Ruff retains inherited diagnostics
+  (FAIL); the reviewed changed-file comparison found no new diagnostics.
 
 ## Related Documents
 
