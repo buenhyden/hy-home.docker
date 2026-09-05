@@ -54,6 +54,47 @@ class MigrationStateTests(unittest.TestCase):
             "planned_creations": [],
         }
 
+    def test_archive_reader_recovers_legacy_parent_identities(self) -> None:
+        records = {
+            "records": [
+                {
+                    "action": "move",
+                    "legacy_path": "docs/03.specs/042-example/spec.md",
+                    "artifact_id": "spec-042-example",
+                },
+                {
+                    "action": "move",
+                    "legacy_path": "docs/04.execution/tasks/example-task.md",
+                    "artifact_id": "task-example",
+                },
+            ]
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            ledger = (
+                root
+                / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
+            )
+            ledger.parent.mkdir(parents=True)
+            ledger.write_text(
+                "## Archive Ledger\n```yaml\n"
+                + yaml.safe_dump(records, sort_keys=False)
+                + "```\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                {"spec:042-example", "task:example-task"},
+                self.archive.recover_legacy_parent_identities(root),
+            )
+        lifecycle_source = (
+            ROOT / "scripts/lib/document_governance/metadata/lifecycle.py"
+        ).read_text(encoding="utf-8")
+        reference_source = (
+            ROOT / "scripts/lib/document_governance/metadata/reference.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("def _task5_legacy_parent_ids", lifecycle_source)
+        self.assertIn("recover_legacy_parent_identities(root)", reference_source)
+
     def read(self, document):
         raw = ("```yaml\n" + yaml.safe_dump(document) + "```\n").encode()
         with (

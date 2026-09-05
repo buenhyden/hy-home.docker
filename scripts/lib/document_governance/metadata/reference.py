@@ -12,6 +12,7 @@ import stat
 import sys
 from collections.abc import Mapping, Sequence
 
+from scripts.lib.document_governance.archive import recover_legacy_parent_identities
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
     load_architecture_documents,
@@ -71,7 +72,6 @@ from scripts.lib.document_governance.metadata.lifecycle import (
     _link_target_neutral_text,
     _record_from_text,
     _task10_archive_moved_body_baseline,
-    _task5_legacy_parent_ids,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
     _text_at_ref,
@@ -1581,7 +1581,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
     )
     selected_paths = directly_selected_paths | set(relation_impact_findings)
-    task5_legacy_parent_ids = _task5_legacy_parent_ids(root)
+    task5_legacy_parent_ids = recover_legacy_parent_identities(root)
     legacy_exception_evidence = {
         path: evidence
         for path in selected_paths

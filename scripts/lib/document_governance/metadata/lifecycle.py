@@ -1407,46 +1407,6 @@ def _task5_move_body_sources(root: pathlib.Path) -> dict[str, tuple[str, str]]:
     return mappings
 
 
-def _task5_legacy_parent_ids(root: pathlib.Path) -> set[str]:
-    """Derive retired pre-taxonomy parent IDs only from frozen ledger rows."""
-
-    ledger = root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
-    try:
-        text = ledger.read_text(encoding="utf-8")
-        fenced = (
-            text.split("## Archive Ledger", 1)[1]
-            .split("```yaml", 1)[1]
-            .split("```", 1)[0]
-        )
-        document = _safe_load_unique(fenced)
-    except (OSError, UnicodeError, IndexError, yaml.YAMLError):
-        return set()
-    records = document.get("records") if isinstance(document, dict) else None
-    if not isinstance(records, list):
-        return set()
-    identities: set[str] = set()
-    for row in records:
-        if not isinstance(row, dict):
-            return set()
-        legacy = row.get("legacy_path")
-        artifact_id = row.get("artifact_id")
-        if not isinstance(legacy, str) or not isinstance(artifact_id, str):
-            continue
-        spec_match = re.fullmatch(
-            r"docs/(?:98\.archive/03\.specs/|03\.specs/)(\d{3})-([^/]+)/spec\.md",
-            legacy,
-        )
-        if artifact_id.startswith("spec-") and spec_match:
-            identities.add(f"spec:{spec_match.group(1)}-{spec_match.group(2)}")
-        execution_match = re.fullmatch(
-            r"docs/04\.execution/(plans|tasks)/([^/]+)\.md", legacy
-        )
-        if execution_match:
-            role = "plan" if execution_match.group(1) == "plans" else "task"
-            identities.add(f"{role}:{execution_match.group(2)}")
-    return identities
-
-
 def _task5_moved_body_baseline(
     root: pathlib.Path,
     target: pathlib.Path,
