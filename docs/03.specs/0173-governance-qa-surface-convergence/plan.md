@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -14,1205 +14,568 @@ created: "2026-09-05"
 
 # Governance and QA Surface Convergence Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans for
+> a separately approved implementation. Steps use checkbox syntax; an unchecked
+> step is prospective, not evidence of execution.
 
-**Goal:** Converge the repository's gate, script, test, fixture, document, and
-provider surfaces around current owners while removing completed migration and
-compatibility residue without weakening validation.
+**Goal:** Plan a selective integration onto the user-fixed main baseline while
+allowing an empty `.agents/` directory, retaining direct canonical skill reads,
+and preserving both implementation histories without duplicate authority.
 
-**Architecture:** `.github/workflow-contract.yml` becomes the single executable
-DAG owner, while `scripts/manifest.yaml` remains a non-executable ownership
-inventory. Current document and provider adapters remain projections from Stage
-99 and Stage 00; historical readers and retired evidence are isolated from
-current validation.
+**Architecture:** Stage 00 owns policy; Stage 99 owns document and lifecycle
+contracts. The target executable-composition owner is
+`.github/workflow-contract.yml`; `scripts/manifest.yaml` owns file inventory.
+Only native Claude/Codex surfaces are generated. An allowed empty `.agents/`
+root is not a role, skill, policy, or memory authority.
 
-**Tech Stack:** Python 3 standard library and PyYAML, Bash, JSON/YAML contracts,
-`unittest`, Git, Docker Compose structural validation, pre-commit, and the
-repository's Stage 00/03/90/98/99 document governance.
+**Tech Stack:** Python 3, PyYAML, Bash, Git, unittest, typed gate contracts,
+repository-native document validators, and static Docker Compose checks.
 
 **Spec:** `docs/03.specs/0173-governance-qa-surface-convergence/spec.md`
 
 ## Objective
 
-- Keep public profiles exactly `changed` and `full` and public suites exactly
-  `agent-governance`, `document-contract`, `document-graph`,
-  `document-lifecycle`, `operations`, and `repository-integrity`.
-- Keep GitHub job names `validation-changed` and `validation-full`; preserve the
-  tracked `strict=true` and GitHub Actions app ID `15368` protection contract.
-- Do not add dependencies, validator exceptions, threshold reductions,
-  migration allowlists, compatibility fallbacks, or new parallel registries.
-- Do not edit a body under `docs/98.archive/{completed,superseded,retired}/`.
-- When a current artifact is retired, preserve its registered body byte for
-  byte, record the disposition in one package Tombstone, and do not rewrite
-  frontmatter before the archive move.
-- Preserve issued identity high-water and historical Git/archive recovery.
-- Do not read secrets, credentials, certificates, user-global provider state,
-  shell history, or raw log databases.
-- Do not run Compose services, deploy, mutate provider entitlement or remote
-  protection, push, open a PR, merge, tag, or release under this plan.
-- Production code must not read `tests/` after Task 4.
-- Every deletion follows a tracked-consumer cutover and a zero-inbound-reference
-  check in the same Task.
-- Each Task starts RED, reaches focused GREEN, records a logical commit, and is
-  independently reviewable before the next Task begins.
-- Implementation requires a separate execution approval; this planning package
-  does not authorize its own execution.
-- Before Task 1 implementation, advance SPEC-0173, this Plan, and Task 1 only
-  through valid Registry lifecycle edges. Later Tasks remain draft until their
-  predecessor is complete and they are ready to execute.
+This revision replaces the old prospective sequence, not its historical evidence.
+Task 0001 through Task 0005 retain their actual RED/GREEN, review, and commit
+records. The prior Plan is recoverable at `5547e07a2`; do not re-execute its
+completed steps or use its shared-skill/transient-deletion instructions as the
+integration contract.
 
----
+The user subsequently authorized finishing this existing package, local main
+integration and safe feature cleanup without new Spec/Plan/Task documents or
+IDs. The latest approval explicitly includes adjusting the existing disposition
+policy and correcting the two remaining Stop/README defects with independent
+re-review. This supersedes the earlier planning-only checkpoint, not its
+historical evidence. No remote or runtime action is authorized.
 
-### Success Criteria
+The rules-engineer cleared a generic typed divergent-branch handoff design.
+W1 must implement and verify its exact preservation guards before predecessor
+disposition. W4's independent bounded fixes can proceed while that contract is
+implemented; neither their focused success nor policy clearance is final
+integration acceptance.
 
-Deliver six bounded changes: reconcile the predecessor lifecycle, establish one
-typed executable owner, remove obsolete script and operation routes, align tests
-and fixtures, retire current document/provider residue, then regenerate and
-validate the resulting repository once.
+### Global constraints
+
+- Integration baseline: `c02fa282db30fa4576fa04bcd328a47fe7da8511`.
+- Feature checkpoint: `5547e07a2ef0b5a8d5b16c2d96af02167f46a8ab`, plus the
+  pre-existing task-owned working patch. Neither is a final green tree.
+- Common ancestor: `71da6654e2fa3def174b238ad309c92fe46e9dae`.
+- Preserve six suites: `agent-governance`, `document-contract`,
+  `document-graph`, `document-lifecycle`, `operations`,
+  `repository-integrity`.
+- Preserve profiles `changed` and `full`, required jobs
+  `validation-changed`/`validation-full`, `strict=true`, and app ID `15368`.
+- Keep main's direct Stage 00 skill loading and Codex
+  `native_skill_pattern: null`. Change only the whole-root prohibition:
+  absence or an empty real `.agents/` directory is permitted.
+- Do not restore `.agents/agents/`, `.agents/skills/`, generated
+  `.agents/README.md`, or a `.codex/skills/` substitute. Unknown contents are
+  preserved and reported for manual disposition, never automatically deleted.
+- Empty directories are not tracked by Git. Do not add a placeholder file,
+  unowned content, or a generator solely to force directory presence.
+- Preserve main's substantive metadata/schema/SDLC changes and independent
+  Compose selections; no whole-file "ours/theirs" resolution.
+- Keep all frozen archive bytes unchanged, including completed SPEC-0172 and
+  retired DATA-0068/0069/0073/0074 with Tombstones 0199-0202.
+- Keep Spec allocation at least high-water 174/next 175 and Tombstone allocation
+  at least high-water 202/next 203. Do not issue an ID in this planning turn.
+- No validator exception, parallel registry, credential access, global setting
+  change, service execution, push, PR, remote mutation, force operation, stash,
+  reset, or clean. Existing cleanup requests remain conditional on verified
+  integration and do not authorize discarding unmerged work.
 
 ## Dependencies
 
-- REQ-0024, AD-0027, and ADR-0029 own agent-governance source/projection
-  separation.
-- REQ-0026, AD-0030, and ADR-0031 own lifecycle, retirement, recovery, and
-  frozen archive behavior.
-- SPEC-0155, SPEC-0157, SPEC-0159, SPEC-0161, SPEC-0167, SPEC-0169, and
-  SPEC-0170 are historical evidence of promised outcomes, not current authority.
-- SPEC-0172 supplies the predecessor execution record whose lifecycle must be
-  reconciled before its completed Spec can leave the current Stage 03 index.
-- The approved audit baseline is local `main` at
-  `71da6654e2fa3def174b238ad309c92fe46e9dae`; a new baseline is captured at
-  execution time rather than reusing that SHA as a permanent invariant.
-- `docs/99.templates/registry.json` owns profile, path, identity, lifecycle, and
-  section grammar. `.github/workflow-contract.yml` owns the current gate graph.
+The current authorities to reconcile are REQ-0024/0026, AD-0027/0030,
+ADR-0029/0031, Stage 00 bootstrap/provider/documentation/quality/approval/workflow
+policies, Stage 99, and the two branch histories.
 
-### File Structure
+The main baseline adds SPEC-0174 and changes SPEC-0172's draft follow-up.
+The feature already preserves a completed SPEC-0172. The earlier unqualified
+draft-to-archive proposal was withdrawn. The approved generic divergent-branch
+handoff now requires exact preservation and a verified receipt; ordinary
+disposition still requires registered terminal transitions.
 
-| Responsibility | Resulting owner | Main change |
+The current root checkout exposes an empty read-only tmpfs at `.agents`.
+The old main whole-root check fails there while renderer parity passes.
+Do not remove/unmount it or hide it with an exemption. After W2 implements the
+explicitly requested empty-root contract, that real empty directory is a valid
+input; it is not evidence of native runtime acceptance.
+
+### Source selection and owned paths
+
+| Unit | Future implementation owner | Exact primary surfaces |
 | --- | --- | --- |
-| Executable gate DAG | `.github/workflow-contract.yml` | Own suites, nodes, argv, context, order, environment, timeout, roots |
-| Gate parser and execution | `scripts/lib/gate/**`, `scripts/validation/ci_gate_runner.py` | Reject duplicate canonical invocation identities |
-| Script inventory | `scripts/manifest.yaml` | Retain file/lifecycle/consumer/test/output data only |
-| Public validation CLI | `scripts/validation/run-ci-gate.py` | Remain the only changed/full entrypoint |
-| Provider projection | `scripts/operations/provider_surface_renderer.py` | Own direct check/write interface |
-| Operation entrypoints | `scripts/operations/**` | Own rehearsal/runtime-facing commands |
-| Operation examples | `examples/operations/**` | Own reusable synthetic rehearsal input |
-| Library tests | `tests/lib/<domain>/**` | Test importable/sourceable domain behavior |
-| CLI/context tests | `tests/validation/**` | Test entrypoints and aggregate routing |
-| Historical document evidence | Stage 98 and isolated history readers | Never classify current authored documents |
-| Current execution evidence | SPEC-0173 Task documents | Record actual commands only during execution |
+| W1 | doc-writer, independently reviewed by rules-engineer | SPEC-0173 Spec/Plan/Task 0006; current SPEC-0172/0174 packages; Stage 03/98 indexes; Stage 99 Registry; document-governance Spec/archive/lifecycle tests |
+| W2 | ci-cd-engineer, policy review first | Stage 00 provider/policy sources; agent-governance library; provider renderer; native surface tests and generated adapters |
+| W3 | ci-cd-engineer | workflow contract; gate libraries/runner; manifest/checker; relocated operation/examples and their existing tests |
+| W4 | hook-developer and doc-writer, separate diffs | event hook/routing tests; scripts README and existing generator guidance tests |
+| W5 | doc-writer | validated predecessor package disposition; current reference corrections; declared generator outputs and indexes |
+| W6 | qa-engineer plus independent reviewers | checks and Task 0006 evidence; no unrelated implementation |
 
 ## Execution Sequence
 
-### Execution activation
+1. W1: Implement the approved identity-preservation rule and integration ledger.
+2. W2: Reconcile the allowed-directory/direct-skill policy and its consumers.
+3. W3: Integrate gate invariants and PostgreSQL operation ownership.
+4. W4: Perform separately authorized Stop and README correction units.
+5. W5: Close lifecycle handoff and regenerate only affected evidence.
+6. W6: Verify the final content and obtain independent acceptance.
 
-Commit the planning package on the approved feature branch, create the isolated
-worktree, and require a clean full-gate baseline before lifecycle activation.
-Then record these valid Registry transitions as three reviewable commits:
+### W1: Identity decision and integration ledger
 
-```text
-Commit A: Spec draft→review; Plan draft→approved; Task 1 draft→ready
-Commit B: Spec review→approved; Plan remains approved
-Commit C: Spec approved→active; Plan approved→active; Task 1 ready→in-progress
-```
+**Files:** Read both histories of
+`docs/03.specs/0172-document-contract-convergence/`,
+`docs/03.specs/0174-governance-qa-convergence/`,
+`docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`,
+`docs/99.templates/registry.json`,
+`scripts/lib/document_governance/spec_packages.py`,
+`scripts/lib/document_governance/archive.py`, and
+`scripts/lib/document_governance/lifecycle/contract.py`.
+Policy and machine owners are
+`docs/00.agent-governance/policies/documentation-protocol.md`,
+`docs/99.templates/contracts/document-frontmatter.schema.json`, Registry,
+`scripts/lib/document_governance/spec_packages.py`, and existing Spec-package
+and Registry tests. Record decisions in this package's Task 0006.
 
-Use these commit subjects:
+**Interfaces:** Consumes immutable baseline/feature objects and current Registry
+edges. Produces a user-approved path/identity/disposition ledger and
+acceptance-to-owner mapping; no implicit lifecycle permission.
 
-```text
-docs(spec): record governance QA convergence review
-docs(spec): approve governance QA convergence
-docs(spec): activate governance QA convergence
-```
-
-Before each commit, run `check-document-metadata.py --mode check-changed
---base-ref HEAD`, the canonical lifecycle checker, the focused Spec-package
-test, and `git diff --check`. Do not activate Tasks 2 through 6 early: advance
-each Task through `draft→ready→in-progress` only after its predecessor's Plan
-steps, focused checks, independent review, and logical commit are complete.
-Active-stage occupancy forbids a terminal Task in current Stage 03, so record
-intermediate completion in the Plan checklist and Task evidence; keep those
-Task frontmatter states `in-progress` until the package's atomic terminal
-disposition.
-
-### Task 1: Reconcile lifecycle state and establish RED contracts
-
-**Files:**
-
-- Modify: `.github/rulesets/main-protection.md`
-- Modify: `docs/00.agent-governance/policies/documentation-protocol.md`
-- Modify: `docs/01.requirements/0026-document-retention-and-retirement.md`
-- Modify: `docs/02.architecture/descriptions/0030-document-lifecycle-governance.md`
-- Modify: `docs/02.architecture/decisions/0031-preserved-archive-record.md`
-- Modify: `docs/03.specs/README.md`
-- Modify then preserve: `docs/03.specs/0172-document-contract-convergence/spec.md`
-- Remove after recovery proof: `docs/03.specs/0172-document-contract-convergence/plan.md`
-- Remove after recovery proof: `docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md`
-- Create by move: `docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`
-- Modify: `docs/98.archive/README.md`
-- Modify: the exact RES-0002, RES-0084, and RES-0085 consumers of SPEC-0172 evidence
-- Regenerate: `docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md`
-- Regenerate: `docs/90.references/data/0082-llm-wiki-index/README.md`
-- Modify: `scripts/lib/document_governance/spec_packages.py`
-- Modify: `tests/lib/document_governance/test_spec_packages.py`
-- Verify: `tests/lib/document_governance/test_archive.py`
-- Verify: `tests/lib/document_governance/test_identity_history.py`
-- Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md`
-
-**Interfaces:**
-
-- Consumes: Registry `spec`, `plan`, and `task` lifecycle graphs; Git regular
-  blobs; current Stage 03 index.
-- Produces: a completed SPEC-0172 outcome Spec in Stage 98, recoverable transient
-  Plan/Task history, and RED tests used by Tasks 2 through 5.
-
-- [x] **Step 1: Capture a fresh execution baseline**
-
-Run:
+- [ ] Capture main, feature, worktree, staged and unstaged state again:
 
 ```bash
-git status --short --branch
-git rev-parse HEAD
-git rev-parse main
-git rev-parse origin/main
-git rev-list --left-right --count origin/main...main
+git rev-parse main HEAD
 git worktree list --porcelain
-git stash list
-python3 scripts/validation/run-ci-gate.py --profile full
+git status --short
+git diff --check
+git diff --name-status c02fa282d HEAD
+git diff --name-status
 ```
 
-Expected: clean worktree, exact SHAs recorded in Task 1, and full exit `0`. If
-the tree is not clean or full fails, record the pre-existing condition and stop
-without changing lifecycle state.
+- [ ] Inventory each c02 SPEC-0172/0174 Spec/Plan/Task obligation and assign its
+  still-current behavior to Stage 00/01/02/05 plus an integration acceptance
+  criterion in SPEC-0173. Keep source commit, blob, owner, created date and
+  full artifact ID. Obtain exact objects using:
 
-- [x] **Step 2: Add a failing index/frontmatter agreement test**
+```bash
+git ls-tree -r c02fa282d -- docs/03.specs/0172-document-contract-convergence docs/03.specs/0174-governance-qa-convergence
+git ls-tree -r 5547e07a2 -- docs/98.archive/completed/03.specs/0172-document-contract-convergence
+git show c02fa282d:docs/99.templates/registry.json
+```
 
-Add this helper and assertion to
-`tests/lib/document_governance/test_spec_packages.py` using the file's existing
-frontmatter loader:
+- [ ] Resolve **SPEC-0172 through the approved branch-handoff rule**. The feature's completed
+  identity has no outgoing lifecycle edge. Do not reopen it, relabel main's
+  draft as completed/superseded, overwrite its completed archive, or allocate
+  SPEC-0175 merely to escape the conflict. Leave main's package and the existing
+  archive unchanged. Register typed `branch_integration_receipts` on Task only:
+  full source commit, original package path/ID, superseded preservation path,
+  distinct target package path/ID, and `historical-superseded` disposition.
+  Verify the exact source base, complete regular-file tree and byte equality,
+  absence from current Stage 03, immutable same-ID completed Spec, and one valid
+  target Task carrier. No per-ID or commit allowlist is permitted.
+- [ ] Before any eventual archive mutation, add isolated regression cases in
+  `tests/lib/document_governance/test_archive.py`,
+  `tests/lib/document_governance/test_identity_history.py`, and
+  `tests/lib/document_governance/test_spec_packages.py`:
+  reject terminal-ID reopening and unreceipted draft-to-archive shortcuts; preserve the
+  original completed body; prove every full package member's recovery.
+  Example negative invariant using the actual Registry:
 
 ```python
-def current_spec_rows(index_text: str) -> dict[str, str]:
-    rows: dict[str, str] = {}
-    for line in index_text.splitlines():
-        if line.startswith("| SPEC-"):
-            cells = [cell.strip() for cell in line.strip("|").split("|")]
-            rows[cells[0]] = cells[2]
-    return rows
+registry = json.loads((ROOT / "docs/99.templates/registry.json").read_text())
+edges = registry["lifecycles"]["spec"]["transitions"]
+self.assertEqual([], edges["completed"])
+self.assertNotIn("superseded", edges["draft"])
+self.assertIn("superseded", edges["active"])
+```
 
+  Keep the lifecycle graph unchanged. Test current and completed-archive Task
+  receipt carriers, missing/duplicate carrier, wrong base/path/identity, invalid
+  target, changed/missing/extra/unsafe members, and ordinary terminal
+  preservation. The completed carrier is the unchanged receipt preserved after
+  atomic target completion, not current policy authority.
+- [ ] Freeze an exact per-path keep/merge/move/disposition ledger covering both
+  commit deltas and the existing WIP. Preserve both histories and future recovery
+  references; no rebase/squash or whole-side conflict selection. Agree how to
+  checkpoint each WIP logical unit before any Git merge; do not overwrite dirty
+  paths or hide them in stash. Execution uses the existing isolated feature
+  worktree, not direct main edits.
+- [x] Obtain explicit implementation approval and independent policy design clearance.
+  Proposed evidence commit: `docs(spec): approve bounded main integration`.
+  Stage only reviewed package evidence; do not commit rejected code as complete.
 
-def test_current_index_does_not_claim_active_for_draft_spec(self) -> None:
-    rows = current_spec_rows((ROOT / "docs/03.specs/README.md").read_text())
-    metadata = load_frontmatter(
-        ROOT / "docs/03.specs/0172-document-contract-convergence/spec.md"
+### W2: Allow an empty directory without restoring duplicate authority
+
+**Files:** Modify canonical sources first:
+`docs/00.agent-governance/providers/codex.md`,
+`docs/00.agent-governance/providers/registry.yaml`,
+`docs/00.agent-governance/policies/agentic.md`,
+`docs/00.agent-governance/policies/provider-capability-matrix.md`,
+`docs/00.agent-governance/policies/stage-authoring-matrix.md`,
+`docs/00.agent-governance/policies/approval-boundaries.md`,
+`docs/01.requirements/0024-agent-governance-standardization.md`,
+`docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
+and `docs/02.architecture/decisions/0029-workspace-governance-authority.md`.
+If an accepted ADR needs supersession rather than a compatible clarification,
+stop for that separate decision instead of silently rewriting its choice.
+Code owners:
+`scripts/lib/agent_governance/agent_governance_contract.py`,
+`scripts/operations/provider_surface_renderer.py`,
+`scripts/hooks/agent-event-hook.sh`.
+Tests:
+`tests/lib/agent_governance/test_agent_governance_contract.py`,
+`tests/validation/test_provider_native_surfaces.py`,
+`tests/validation/test_provider_surface_renderer.py`.
+Only affected `.claude/` and `.codex/` outputs are generated.
+
+**Interfaces:** One agent-governance library rule returns findings for the
+optional root and is consumed by governance validation and renderer check/write.
+Do not copy feature commit `5547e07a2` wholesale: its subtree-only assumption is
+not the new directory-without-projections contract.
+
+- [ ] Add an empty-root acceptance test before changing the whole-root rule:
+
+```python
+with tempfile.TemporaryDirectory() as directory:
+    root = pathlib.Path(directory)
+    copy_governance_fixture(root)
+    (root / ".agents").mkdir(exist_ok=True)
+    findings = contract.validate_repository(
+        root, contract.load_contract_bundle(root), "providers"
     )
-    self.assertFalse(metadata["status"] == "draft" and "active" in rows["SPEC-0172"])
+    self.assertFalse(any(item.path.startswith(".agents") for item in findings))
 ```
 
-- [x] **Step 3: Run the lifecycle test and verify RED**
-
-Run:
+  Run the library test on c02 behavior and record the retired-root RED finding.
+  Adapt the existing fixture copier to main's native-only surfaces, not to a
+  second shared projection.
+- [ ] Add file, symlink (including broken link), FIFO, nonempty root, forbidden
+  `agents`/`skills` child, and permission-denied cases. Absence and an empty
+  real directory pass; unreadable/unverifiable or nonempty roots fail without
+  following children or reading their contents. A read-only empty root also
+  passes. Use temporary input, never chmod/remove the host mount.
+- [ ] Implement the rule in the existing library with no-follow descriptor
+  operations. Distinguish missing root, directory, unsupported object and
+  enumeration failure. Inspect child names only; preserve unknown objects.
+  Both renderer modes call this same owner; write refuses before any generated
+  write/quarantine when the root fails validation.
+- [ ] Update the named current policy/architecture consumers to permit this
+  root without granting it authority. Keep Registry v2, native Claude skills,
+  direct Codex skill reads, `native_skill_pattern: null`, and no generated
+  `.agents/README.md`/shared skills. Do not introduce a placeholder or new
+  runtime README profile. Update the hook's whole-root edit warning to the new
+  empty-root/non-authority rule without changing Stop behavior in this unit.
+- [ ] Run RED/GREEN and then native projection generation and checks:
 
 ```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages -v
-```
-
-Expected: FAIL identifying `SPEC-0172` as draft while the index claims active.
-
-- [x] **Step 4: Record and commit each valid forward transition**
-
-Use only registered transitions and keep the package in the current tree until
-its terminal move:
-
-```text
-Commit A: Spec draft→review; Plan draft→approved; Task draft→ready
-Commit B: Spec review→approved; Plan and Task remain approved/ready
-Commit C: Spec approved→active; Plan approved→active; Task ready→in-progress
-```
-
-For each commit, run:
-
-```bash
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
-python3 scripts/validation/check-document-corpus-lifecycle.py
-```
-
-Expected: exit `0` at every intermediate state. Do not combine a missing edge
-into one commit. There is no standalone terminal-state commit: the corpus
-lifecycle rejects terminal documents that remain in current Stage 03, so the
-terminal Spec transition and preservation occur atomically in Step 6.
-
-- [x] **Step 5: Prove transient Plan and Task recovery before removal**
-
-Run exact blob checks from the active-state `HEAD` produced by Commit C:
-
-```bash
-git ls-tree -r --name-only HEAD -- docs/03.specs/0172-document-contract-convergence
-git cat-file -e HEAD:docs/03.specs/0172-document-contract-convergence/plan.md
-git cat-file -e HEAD:docs/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md
-rg -n '0172-document-contract-convergence/(plan|tasks/)' --glob '!docs/98.archive/**' .
-```
-
-Expected: both blobs are regular and recoverable; current inbound references are
-limited to indexes or documents being updated in this same step.
-
-- [x] **Step 6: Preserve the completed Spec and remove transient execution bodies**
-
-In one atomic patch, transition `spec.md` from `active` to `completed` and move
-it to
-`docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md`.
-Remove the current active `plan.md` and Task after Step 5 succeeds; their exact
-regular blobs remain recoverable from the Step 5 commit. Transfer the live
-RES-0085 identity-recovery decision tuple to SPEC-0173 Task 1, update every
-current inbound consumer, and update the Stage 03 and Stage 98 indexes to link
-the completed Spec without creating redirect files or copying transient bodies
-into the archive.
-
-Correct the stale Stage 00 sentence that requires terminal Task bodies to be
-preserved so it agrees with the current Stage 03 and Registry
-`transient-after-completion` contract. Add a focused assertion that Stage 00,
-Stage 03, and the Registry describe the same terminal Plan/Task disposition.
-This Stage 00 policy change requires independent rules-engineer review.
-
-- [x] **Step 7: Run focused lifecycle, archive, and recovery GREEN checks**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_spec_packages -v
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive -v
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_identity_history -v
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
-python3 scripts/validation/check-document-corpus-lifecycle.py
-```
-
-Expected: PASS with SPEC-0172 absent from current packages and recoverable from
-its preserved Spec plus Git history.
-
-- [x] **Step 8: Commit the reconciled predecessor**
-
-After the transition commits above, create the terminal preservation commit:
-
-```bash
-git add .github/rulesets/main-protection.md \
-  docs/00.agent-governance/policies/documentation-protocol.md \
-  docs/01.requirements/0026-document-retention-and-retirement.md \
-  docs/02.architecture/descriptions/0030-document-lifecycle-governance.md \
-  docs/02.architecture/decisions/0031-preserved-archive-record.md \
-  docs/03.specs/README.md \
-  docs/03.specs/0172-document-contract-convergence \
-  docs/03.specs/0173-governance-qa-surface-convergence/plan.md \
-  docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md \
-  docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md \
-  docs/90.references/data/0082-llm-wiki-index/README.md \
-  docs/90.references/research/0002-agentic-engineering-research-pack/README.md \
-  docs/90.references/research/0084-github-actions-platform \
-  docs/90.references/research/0085-workspace-engineering-main-baseline-assessment \
-  docs/98.archive/README.md \
-  docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md \
-  scripts/lib/document_governance/spec_packages.py \
-  tests/lib/document_governance/test_spec_packages.py
-git commit -m "docs(spec): preserve completed document convergence"
-```
-
-### Task 2: Converge executable gate composition
-
-**Files:**
-
-- Modify: `.github/workflow-contract.yml`
-- Modify: `scripts/lib/gate/ci_gate_contract.py`
-- Modify: `scripts/lib/gate/github_workflow_contract.py`
-- Modify: `scripts/validation/ci_gate_runner.py`
-- Modify: `scripts/manifest.yaml`
-- Delete after cutover: `scripts/lib/document_governance/suite_registry.py`
-- Modify: `tests/validation/test_ci_gate_runner.py`
-- Modify: `tests/lib/gate/test_ci_gate_contract.py`
-- Modify: `tests/lib/gate/test_github_workflow_contract.py`
-- Modify: `tests/validation/test_script_manifest.py`
-- Modify: `tests/lib/test_surface_ownership.py`
-- Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0002-gate-composition-convergence.md`
-
-**Interfaces:**
-
-- Consumes: six suite names and two public profiles from the Spec; current
-  `GateNode`, `GateRegistry`, and `GateInvocation` contracts.
-- Produces: `canonical_invocation_key(...)`, a workflow-contract-owned public
-  suite registry, and duplicate-free public plans.
-
-- [x] **Step 1: Add a helper that builds every public plan without execution**
-
-In `tests/validation/test_ci_gate_runner.py`, add:
-
-```python
-def build_public_plan(profile: str, context: runner.ExecutionContext):
-    root = ROOT
-    document = runner.load_contract_document(root)
-    registry = runner.parse_gate_registry(document, ".github/workflow-contract.yml")
-    public_contract = runner.parse_public_gate_contract(document)
-    suites = runner.select_public_suites(public_contract, profile, ())
-    roots = runner.public_root_gate_ids(public_contract, suites)
-    return runner.build_public_validation_plan(
-        registry, roots, suites, context, profile=profile
-    )
-```
-
-Update the production signatures in the same Task so the workflow contract,
-not a manifest-derived suite model, is passed to plan construction.
-
-- [x] **Step 2: Add the failing canonical invocation uniqueness test**
-
-```python
-def test_every_public_plan_has_unique_canonical_invocations(self) -> None:
-    cases = (
-        ("changed", runner.ExecutionContext.LOCAL),
-        ("changed", runner.ExecutionContext.PULL_REQUEST),
-        ("full", runner.ExecutionContext.LOCAL),
-        ("full", runner.ExecutionContext.PUSH),
-        ("full", runner.ExecutionContext.WORKFLOW_DISPATCH),
-    )
-    for profile, context in cases:
-        plan = build_public_plan(profile, context)
-        keys = [
-            runner.canonical_invocation_key(
-                ROOT, item, profile=profile, context=context
-            )
-            for item in plan
-        ]
-        self.assertEqual(len(keys), len(set(keys)), (profile, context))
-```
-
-- [x] **Step 3: Verify RED against the two measured duplicates**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner.CiGateRunnerContractTests.test_every_public_plan_has_unique_canonical_invocations -v
-```
-
-Expected: FAIL for Compose under full/local and for `npm ci --prefix
-projects/storybook/nextjs` under pull-request/push/workflow-dispatch plans.
-
-- [x] **Step 4: Move public suite composition into the workflow contract**
-
-Make `public_gate` in `.github/workflow-contract.yml` own, for every validator:
-
-```json
-{
-  "suite": "document-graph",
-  "gate_id": "leaf.document-links",
-  "entrypoint": "scripts/validation/check-document-links.py",
-  "argv": ["--mode", "all"],
-  "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-}
-```
-
-Extend the existing bounded JSON parser and schema checks rather than adding a
-second file. Remove `public_suites`, `execution_argv`, and
-`execution_contexts` from all manifest rows. Make the manifest validator reject
-those keys so executable ownership cannot drift back.
-
-- [x] **Step 5: Implement canonical invocation identity and rejection**
-
-Add to `scripts/validation/ci_gate_runner.py`:
-
-```python
-def canonical_invocation_key(
-    root: pathlib.Path,
-    invocation: GateInvocation,
-    *,
-    profile: str,
-    context: ExecutionContext,
-) -> tuple[pathlib.Path, tuple[str, ...], str, str]:
-    resolved = (root / invocation.entrypoint).resolve(strict=True)
-    return resolved, tuple(invocation.argv), profile, context.value
-```
-
-After plan construction, collect keys and raise
-`GateContractError("ci-gate-invocation-duplicate", gate_id, message)` when two
-gate IDs produce one key. Keep the diagnostic value stable in focused tests.
-
-- [x] **Step 6: Remove the duplicate Compose aggregate path**
-
-The current no-argument Compose validator already validates every declared
-profile independently. Keep one `leaf.compose-validation` invocation and remove
-`ci.compose-all-profiles-validation`, `leaf.compose-all-profiles-validation`,
-and `local.compose-all-profiles-validation`. Remove the retired
-`local-harness`, `local-script-backed`, and `local-all-profiles` profile-root
-grammar after all callers use public `changed|full`.
-
-Do not set `HYHOME_COMPOSE_PROFILES` in full. The existing no-environment route
-continues to enumerate every declared profile.
-
-- [x] **Step 7: Share the frontend dependency setup node**
-
-Replace `setup.frontend-node-dependencies` and
-`setup.storybook-node-dependencies` with one setup node whose single command is:
-
-```text
-scripts/lib/gate/ci_gate_adapters.py run-npm ci --prefix projects/storybook/nextjs
-```
-
-Point both frontend and Storybook aggregates at that node. DAG expansion must
-emit the shared node once by gate ID and once by canonical invocation identity.
-
-- [x] **Step 8: Remove the manifest-backed suite parser**
-
-Move reusable bounded parsing into `scripts/lib/gate/ci_gate_contract.py`, update
-imports, and delete `scripts/lib/document_governance/suite_registry.py` only
-after `rg -n 'document_governance.*suite_registry|load_public_suite_registry'`
-returns no current consumer.
-
-- [x] **Step 9: Run focused GREEN tests and inspect all plans**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_contract -v
-PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_runner -v
-PYTHONPATH=. python3 -m unittest tests.lib.gate.test_github_workflow_contract -v
-PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
-python3 scripts/validation/run-ci-gate.py --profile changed --explain
-python3 scripts/validation/run-ci-gate.py --profile full --explain
-```
-
-Expected: all tests PASS; the five context plans have zero duplicate canonical
-keys; the six suite names and two public profiles are unchanged.
-
-- [x] **Step 10: Commit the gate cutover**
-
-```bash
-git add .github/workflow-contract.yml scripts/lib/gate scripts/validation/ci_gate_runner.py scripts/manifest.yaml tests
-git commit -m "refactor(gate): converge executable composition"
-```
-
-### Task 3: Align script and operation ownership
-
-**Files:**
-
-- Delete: `scripts/validation/check-doc-implementation-alignment.sh`
-- Delete: `scripts/validation/check-doc-traceability.sh`
-- Delete: `scripts/validation/run-local-qa-gates.sh`
-- Delete: `scripts/lib/ops/validate-harness.sh`
-- Delete: `scripts/lib/target_surface/target_surface_contract.py`
-- Delete: `scripts/lib/target_surface/target_surface_delta_contract.py`
-- Delete: `scripts/validation/check-target-surface-contract.py`
-- Delete: `scripts/validation/check-target-surface-delta-contract.py`
-- Move: `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` to `scripts/operations/rehearse-postgres-logical-upgrade.sh`
-- Move: `scripts/validation/compose-core-readiness.lib.sh` to `scripts/lib/ops/compose-core-readiness.sh`
-- Move and rename: `scripts/validation/run-compose-core-readiness.sh` to `scripts/operations/check-compose-core-readiness.sh`
-- Merge then delete: `scripts/validation/report-audit-pack-coverage.sh`
-- Modify: `scripts/validation/generate-audit-implementation-matrix.sh`
-- Modify: `scripts/validation/check-script-manifest.py`
-- Modify: `scripts/manifest.yaml`
-- Modify: `scripts/README.md`, `.github/repository-surface.md`, and tracked callers
-- Modify: focused entrypoint, manifest, operation, and document-link tests
-- Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0003-script-and-operation-ownership.md`
-
-**Interfaces:**
-
-- Consumes: Task 2 workflow-owned suite and invocation records.
-- Produces: one direct document-link validator, one typed public gate CLI,
-  purpose-owned operation entrypoints, and a manifest with bounded transitions.
-
-- [x] **Step 1: Add manifest tests for bounded transitions and consumers**
-
-Add to `tests/validation/test_script_manifest.py`:
-
-```python
-def test_transition_successor_is_distinct(self) -> None:
-    for row in load_manifest_rows():
-        if row["lifecycle"] == "transition":
-            self.assertNotEqual(row["path"], row.get("successor"), row["path"])
-
-
-def test_retained_public_entrypoint_has_current_consumer(self) -> None:
-    for row in load_manifest_rows():
-        if row["kind"] in {"validator", "runner", "operations"}:
-            if row["disposition"] == "retain":
-                self.assertTrue(row["consumers"], row["path"])
-```
-
-- [x] **Step 2: Run the manifest tests and verify RED**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
-```
-
-Expected: FAIL for the measured self-successors and consumerless retained or
-transition entrypoints.
-
-- [x] **Step 3: Cut document-link consumers to one validator**
-
-Replace every current call of either shell wrapper with:
-
-```bash
-python3 scripts/validation/check-document-links.py --mode all
-```
-
-Remove the two wrapper rows and duplicate document-graph gate nodes only after:
-
-```bash
-rg -n 'check-doc-(implementation-alignment|traceability)\.sh' --glob '!docs/98.archive/**' .
-```
-
-returns no current consumer.
-
-- [x] **Step 4: Remove obsolete local and harness dispatchers**
-
-Replace current `run-local-qa-gates.sh` callers with `run-ci-gate.py` and replace
-`--explain` callers with the typed CLI's own `--explain`. Delete
-`validate-harness.sh` instead of restoring the removed `--harness` profile.
-
-Expected public commands after cutover:
-
-```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/run-ci-gate.py --profile changed --explain
-python3 scripts/validation/run-ci-gate.py --profile full
-```
-
-- [x] **Step 5: Retire the target-surface executable subsystem**
-
-Delete the target-surface libraries, CLI wrappers, workflow nodes, manifest
-rows, and focused tests after Task 2 covers current invocation ownership and
-the Stage 99 metadata/lifecycle validators cover current documents. Keep no
-redirect wrapper or compatibility import.
-
-- [x] **Step 6: Move operation entrypoints out of library and validation trees**
-
-Move the PostgreSQL rehearsal and Compose readiness files to the paths listed
-above. Update script-relative root resolution, runbooks, manifest entries, and
-tests atomically. Register the PostgreSQL public operation check with explicit
-argv `--check-config-only`; no runtime mode runs from a validation aggregate.
-
-- [x] **Step 7: Merge audit coverage into the matrix check**
-
-Move the current coverage predicate from `report-audit-pack-coverage.sh` into
-`generate-audit-implementation-matrix.sh --check`. Keep a single generated
-output owner and remove the standalone report wrapper, manifest row, and gate
-leaf.
-
-- [x] **Step 8: Resolve every remaining manifest disposition**
-
-For each former self-successor row, choose exactly one result:
-
-- `active + retain` when the current path is the final interface;
-- a distinct successor plus a tracked removal condition during this Task; or
-- deletion after consumer cutover.
-
-No manifest row may remain `transition` solely because earlier Specs used that
-label.
-
-- [x] **Step 9: Run focused GREEN checks**
-
-Run:
-
-```bash
-python3 scripts/validation/check-script-manifest.py
-PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_links -v
-PYTHONPATH=. python3 -m unittest tests.validation.test_validator_entrypoints -v
-bash -n scripts/operations/rehearse-postgres-logical-upgrade.sh
-bash -n scripts/operations/check-compose-core-readiness.sh
-python3 scripts/validation/run-ci-gate.py --profile changed --explain
-```
-
-Expected: PASS and zero current inbound references to deleted entrypoints.
-
-- [x] **Step 10: Commit the script ownership change**
-
-```bash
-git add scripts .github tests docs/05.operations
-git commit -m "refactor(scripts): align current command ownership"
-```
-
-### Task 4: Converge test placement and fixture ownership
-
-**Files:**
-
-- Move CLI cases from `tests/lib/document_governance/metadata/test_identity.py` to `tests/validation/test_document_metadata_identity_cli.py`
-- Split: `tests/validation/test_ci_gate_runner.py` into model, plan, and execution-context modules where responsibilities already have separate production owners
-- Split: `tests/validation/test_supply_chain_policy.py` into policy, wrapper, and secure-output modules
-- Split: `tests/validation/test_script_manifest.py` into current inventory and historical migration tests, then delete the completed-migration portion after Task 5 cutover
-- Move: `tests/lib/ops/test_postgres_logical_upgrade_rehearsal.py` to `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
-- Delete: `tests/validation/lifecycle/test_promoted.py`
-- Create: `tests/lib/supply_chain/_fixtures.py`
-- Create: `tests/validation/_sample_delivery_fixtures.py`
-- Move: `tests/fixtures/compose-core-readiness/**` to `examples/operations/compose-core-readiness/**`
-- Move: `tests/fixtures/postgres-logical-upgrade/**` to `examples/operations/postgres-logical-upgrade/**`
-- Move and rename retained sample-delivery goldens to `examples/operations/sample-service-delivery/**`
-- Move retained external supply-chain schema goldens to `examples/operations/supply-chain/**`
-- Delete after replacement: `tests/fixtures/agentic-audit/task-evidence.md`
-- Modify: every production and test consumer of these paths
-- Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md`
-
-**Interfaces:**
-
-- Consumes: purpose-owned entrypoints from Task 3 and the test layout contract
-  in `tests/README.md`.
-- Produces: test-only builders, operation-owned examples, focused test modules,
-  and a zero production-to-tests dependency invariant.
-
-- [ ] **Step 1: Add a failing production-to-tests dependency test**
-
-Add to the current inventory test module:
-
-```python
-def test_production_scripts_do_not_reference_tests_tree(self) -> None:
-    violations: list[str] = []
-    for path in sorted((ROOT / "scripts").rglob("*")):
-        if path.is_file() and path.suffix in {".py", ".sh"}:
-            text = path.read_text(encoding="utf-8")
-            if "tests/fixtures/" in text or 'ROOT / "tests"' in text:
-                violations.append(path.relative_to(ROOT).as_posix())
-    self.assertEqual([], violations)
-```
-
-- [ ] **Step 2: Verify RED lists the four measured production consumers**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
-```
-
-Expected: FAIL naming supply-chain, Compose readiness, PostgreSQL rehearsal, and
-sample-service delivery consumers.
-
-- [ ] **Step 3: Create deterministic supply-chain fixture builders**
-
-In `tests/lib/supply_chain/_fixtures.py`, define one pure builder per external
-shape. For example:
-
-```python
-def grype_report(*, severity: str = "Low", exception_expires: str | None = None) -> dict[str, object]:
-    match: dict[str, object] = {
-        "vulnerability": {"id": "CVE-2099-0001", "severity": severity},
-        "artifact": {"name": "sample", "version": "1.0.0"},
-    }
-    if exception_expires is not None:
-        match["matchDetails"] = [{"searchedBy": {"exception_expires": exception_expires}}]
-    return {"matches": [match]}
-```
-
-Retain one readable golden for each serialized external contract actually parsed:
-CycloneDX, in-toto provenance, Cosign verification, Grype, and Scorecard. Build
-single-field valid/invalid variants in temporary directories.
-
-- [ ] **Step 4: Remove completed Spec identity from sample fixtures**
-
-Rename retained files to generic names:
-
-```text
-verdict.baseline.accepted.json
-verdict.candidate.accepted.json
-verification-verdict.pair.json
-```
-
-Generate rejected and digest-mismatch variants from
-`tests/validation/_sample_delivery_fixtures.py`. Assert schema and digest
-behavior, not the former `spec126` producer label or 2026-07-19 task date.
-
-- [ ] **Step 5: Move reusable operation inputs to `examples/operations`**
-
-Move the Compose readiness, PostgreSQL SQL/topology, sample delivery, and
-supply-chain goldens. Update operation defaults and runbook links in the same
-patch. Compare SHA-256 before and after every pure move; only generic sample
-identity changes may alter content.
-
-- [ ] **Step 6: Replace the agentic Task evidence file with a local builder**
-
-Construct a minimal temporary Task body inside
-`test_agentic_audit_semantic_freshness.py` and manifest tests:
-
-```python
-def task_evidence(*, task_id: str = "SPEC-9999-TSK-0001") -> str:
-    return (
-        "# Synthetic Task Evidence\n\n"
-        f"| Task | Result |\n| --- | --- |\n| {task_id} | PASS |\n"
-    )
-```
-
-Delete `tests/fixtures/agentic-audit/task-evidence.md` after both consumers use
-the builder.
-
-- [ ] **Step 7: Enforce library/CLI placement**
-
-Move subprocess, argument, exit-code, generated-output, and execution-context
-tests to `tests/validation/`. Keep pure parsing, state, and transformation tests
-under `tests/lib/`. Delete the empty promoted placeholder; place real promoted
-library assertions under `tests/lib/document_governance/lifecycle/` and keep
-entrypoint mode assertions under `tests/validation/lifecycle/`.
-
-- [ ] **Step 8: Split only multi-responsibility large modules**
-
-Use the existing class boundaries as file boundaries. Preserve test method
-names and assertions during pure moves, then update the workflow test inventory
-so each module executes once. Do not split the one-class agent-output evaluator
-module solely because of line count.
-
-- [ ] **Step 9: Run focused GREEN checks**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/supply_chain -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/validation -p 'test_*fixture*.py'
-PYTHONPATH=. python3 -m unittest tests.validation.test_script_manifest -v
-rg -n 'tests/fixtures/' scripts
-rg -n 'spec126|T-AER-' tests examples scripts docs/05.operations
-```
-
-Expected: tests PASS; both searches return no current production or fixture
-identity residue.
-
-- [x] **Step 10: Commit the test and fixture convergence**
-
-```bash
-git add tests examples scripts docs/05.operations .github/workflow-contract.yml
-git commit -m "refactor(test): converge fixture and ownership boundaries"
-```
-
-### Task 5: Retire document and provider compatibility residue
-
-**Files:**
-
-- Modify: `scripts/lib/document_governance/metadata/identity.py`
-- Modify: `scripts/lib/document_governance/metadata/lifecycle.py`
-- Modify: `scripts/lib/document_governance/metadata/profile.py`
-- Modify: `scripts/lib/document_governance/lifecycle/promoted.py`
-- Modify: `scripts/lib/document_governance/registry.py`
-- Modify: `scripts/lib/document_governance/identity_history.py`
-- Modify: `scripts/lib/document_governance/archive.py`
-- Modify: related document-governance tests
-- Modify: `docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md`
-- Modify: `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
-- Retire: `docs/90.references/data/0068-target-surface-convergence-summary/**`
-- Retire: `docs/90.references/data/0069-target-surface-convergence/**`
-- Retire: `docs/90.references/data/0073-target-surface-delta-manifest/**`
-- Retire: `docs/90.references/data/0074-target-surface-delta-summary/**`
-- Modify: `docs/90.references/data/README.md`
-- Modify: `docs/99.templates/registry.json`
-- Create: `docs/98.archive/tombstones/90.references/0199-target-surface-convergence-summary.md`
-- Create: `docs/98.archive/tombstones/90.references/0200-target-surface-convergence.md`
-- Create: `docs/98.archive/tombstones/90.references/0201-target-surface-delta-manifest.md`
-- Create: `docs/98.archive/tombstones/90.references/0202-target-surface-delta-summary.md`
-- Modify: `docs/98.archive/README.md`
-- Delete: `scripts/operations/sync-provider-surfaces.sh`
-- Modify: `scripts/operations/provider_surface_renderer.py`
-- Modify: `docs/00.agent-governance/providers/registry.yaml`
-- Modify: provider contracts, policies, READMEs, workflow node, manifest, and tests
-- Remove through renderer: `.agents/agents/**`
-- Keep and regenerate: `.agents/skills/**`, `.claude/**`, `.codex/**`
-- Modify: `scripts/hooks/post-tool-validate.sh`, `scripts/hooks/agent-event-hook.sh`
-- Update evidence: `docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md`
-
-**Interfaces:**
-
-- Consumes: Stage 99 current grammar, archive/history recovery contract, Stage
-  00 provider Registry, and direct renderer CLI.
-- Produces: strict current classifiers, isolated historical readers, retired
-  migration data, native provider projections, and one completion-time changed
-  aggregate route.
-
-- [x] **Step 1: Add paired current-versus-history path tests**
-
-Add focused tests with one shared legacy sample:
-
-```python
-LEGACY_REQUIREMENT = pathlib.PurePosixPath(
-    "docs/01.requirements/prd-0042-preserved.md"
-)
-
-def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
-    self.assertIsNone(classify_current_path(LEGACY_REQUIREMENT))
-
-def test_history_reader_recovers_legacy_requirement_identity(self) -> None:
-    self.assertEqual("REQ-0042", recover_historical_identity(LEGACY_REQUIREMENT))
-```
-
-The current classifier and historical reader must be distinct imported
-functions. Do not add an active compatibility option.
-
-- [x] **Step 2: Verify RED for legacy current classification**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_identity_history -v
-PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_metadata_validator -v
-```
-
-Expected: the new current-classifier assertion fails while the history reader
-continues to recover the issued identity.
-
-- [x] **Step 3: Isolate historical grammar**
-
-Move `prd-`, `srs-`, `ifr-`, `spec-*`, and legacy `chg-*` parsing used only for
-issued-ID or archive recovery into `identity_history.py` or `archive.py`.
-Remove `_legacy_profiles`, `_PRD_PATH`, `_SRS_PATH`, `_IFR_PATH`, and legacy
-relation fallback from active metadata/profile code. Update synthetic current
-tests to use numeric current paths and owner-qualified Requirement IDs.
-
-- [x] **Step 4: Correct current operator examples**
-
-Replace `docs/03.specs/spec-*/plan.md` and `spec-*/task.md` in the harness policy
-with the registered numeric package and `tasks/tsk-####-*.md` paths. Replace the
-release runbook's `spec126-*` command with the generic operation example path
-created in Task 4.
-
-- [x] **Step 5: Prove target-surface data has no current semantic consumer**
-
-Run:
-
-```bash
-rg -n '(0068-target-surface|0069-target-surface|0073-target-surface|0074-target-surface)' --glob '!docs/98.archive/**' .
-python3 scripts/validation/check-document-links.py --mode all
-python3 scripts/validation/check-document-corpus-lifecycle.py
-```
-
-Update current code, tests, indexes, and generated consumers until only the four
-packages and their retirement patch remain.
-
-- [x] **Step 6: Retire the four completed migration DATA packages**
-
-Recheck that the Tombstone high-water is still `0198` and stop on any collision.
-In one atomic retirement patch, advance the Registry high-water to `0202` and
-next allocation to `0203`, then create these sealed disposition records:
-
-```text
-0199-target-surface-convergence-summary.md -> tomb-DATA-0068
-0200-target-surface-convergence.md -> tomb-DATA-0069
-0201-target-surface-delta-manifest.md -> tomb-DATA-0073
-0202-target-surface-delta-summary.md -> tomb-DATA-0074
-```
-
-For each package, move its registered `README.md` byte for byte to the
-deterministic Stage 98 retired reference-data path selected by the archive
-validator and record the exact regular-blob recovery commit in its Tombstone.
-Delete unregistered generated payloads only after their exact Git recovery proof
-is recorded. Update the current data and archive indexes in the same patch. Do
-not change publication frontmatter before the move and do not edit the archived
-body after it enters Stage 98.
-
-- [x] **Step 7: Add a failing provider compatibility-root test**
-
-In `tests/validation/test_provider_surface_renderer.py`, assert the expected
-projection has only native/shared roots:
-
-```python
-def test_projection_omits_provider_neutral_agent_compatibility_root(self) -> None:
-    projection = expected_native_projection(ROOT)
-    self.assertFalse(any(path.is_relative_to(pathlib.PurePosixPath(".agents/agents")) for path in projection))
-    self.assertTrue(any(path.is_relative_to(pathlib.PurePosixPath(".agents/skills")) for path in projection))
-    self.assertTrue(any(path.is_relative_to(pathlib.PurePosixPath(".claude")) for path in projection))
-    self.assertTrue(any(path.is_relative_to(pathlib.PurePosixPath(".codex")) for path in projection))
-```
-
-Expected before implementation: FAIL because `.agents/agents` is still
-generated.
-
-- [x] **Step 8: Cut provider consumers to the direct renderer**
-
-Replace every current command with:
-
-```bash
-python3 scripts/operations/provider_surface_renderer.py --check
+PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract tests.validation.test_provider_native_surfaces tests.validation.test_provider_surface_renderer -v
 python3 scripts/operations/provider_surface_renderer.py --write
-```
-
-Update the workflow leaf, manifest, Stage 00 policies, scripts README, and tests.
-Remove the compatibility section's `agent_pattern`, remove `.agents/agents` from
-`generated_roots`, then run renderer write mode to remove only renderer-owned
-stale projection files. Delete `sync-provider-surfaces.sh` after zero current
-inbound references.
-
-- [x] **Step 9: Converge PostToolUse and Stop responsibilities**
-
-Keep PostToolUse formatting/syntax behavior but remove its unconditional public
-changed aggregate. Make Stop detect any in-scope Git-visible change and execute
-the changed profile once. Preserve the retry guard and logical-commit safety
-gate. Update both Claude and Codex generated hook projections from the Stage 00
-registry and add parity tests for the single completion-time aggregate.
-
-- [x] **Step 10: Run focused GREEN checks**
-
-Run:
-
-```bash
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest tests.validation.test_provider_surface_renderer -v
-PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract -v
-PYTHONPATH=. python3 -m unittest tests.validation.test_provider_hook_parity -v
 python3 scripts/operations/provider_surface_renderer.py --check
-python3 scripts/validation/check-document-metadata.py --mode check-active
-python3 scripts/validation/check-document-corpus-lifecycle.py
-python3 scripts/validation/check-document-links.py --mode all
+python3 scripts/validation/check-agent-governance-contract.py --section providers
+git diff --check
 ```
 
-Expected: PASS; current classifiers reject legacy paths; history recovery
-passes; `.agents/agents` and compatibility wrapper references are absent.
+- [ ] Obtain independent code and policy review. Commit canonical source, tests,
+  and generated adapters atomically:
+  `fix(governance): allow empty agent directory with direct skills`.
 
-- [x] **Step 11: Commit document and provider retirement**
+### W3: Select gate and operation improvements without reverting main
 
-```bash
-git add docs scripts tests .agents .claude .codex .github/workflow-contract.yml
-git commit -m "refactor(governance): retire compatibility residue"
-```
+**Files:** `.github/workflow-contract.yml`,
+`scripts/lib/gate/ci_gate_contract.py`,
+`scripts/lib/gate/github_workflow_contract.py`,
+`scripts/validation/ci_gate_runner.py`,
+`scripts/manifest.yaml`,
+`scripts/validation/check-script-manifest.py`,
+`scripts/operations/rehearse-postgres-logical-upgrade.sh`,
+`examples/operations/postgres-logical-upgrade/`;
+tests in `tests/lib/gate/`,
+`tests/validation/test_ci_gate_model.py`,
+`tests/validation/test_ci_gate_plan.py`,
+`tests/validation/test_ci_gate_execution_context.py`,
+`tests/validation/test_postgres_logical_upgrade_rehearsal.py`,
+`tests/validation/test_script_manifest.py`,
+`tests/lib/test_surface_ownership.py`, and
+`tests/lib/document_governance/lifecycle/__init__.py`.
+Remove the old `scripts/lib/ops/rehearse-postgres-logical-upgrade.sh` and
+`tests/fixtures/postgres-logical-upgrade/` only with their existing operation,
+manifest, runbook, test and workflow consumers cut over in that atomic change.
+Runbook: `docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md`.
 
-### Task 6: Regenerate evidence and run final verification
+**Interfaces:** Preserve main's one Compose leaf and
+`setup.frontend-node-dependencies` identifier. Port feature's
+`canonical_invocation_key(root, invocation, profile=..., context=...)` and
+`ci-gate-invocation-duplicate` rejection; keep descriptor execution intact.
 
-**Files:**
-
-- Modify through generators: declared current outputs under `docs/90.references/data/**`
-- Modify through generator: DATA-0076 and DATA-0082
-- Verify: authored `llms.txt` entrypoint; do not create excluded `llms-full.txt`
-- Modify: `docs/03.specs/README.md`
-- Modify: `docs/90.references/data/README.md`
-- Modify: `scripts/README.md`, `tests/README.md`, `.github/repository-surface.md`
-- Modify with actual evidence: all six SPEC-0173 Task documents
-- Modify with durable outcomes: `docs/03.specs/0173-governance-qa-surface-convergence/spec.md`
-
-**Interfaces:**
-
-- Consumes: Tasks 1 through 5 at focused GREEN.
-- Produces: fresh generated outputs, exact Task evidence, one final full-gate
-  result, independent review findings, and an implementation-ready completion
-  decision.
-
-- [ ] **Step 1: List every declared generator and its check/write command**
-
-Run:
-
-```bash
-python3 scripts/validation/check-script-manifest.py
-rg -n 'check_command:|outputs:' scripts/manifest.yaml
-```
-
-Expected: every current generated output has one owner and every retired output
-has no current generator consumer.
-
-- [ ] **Step 2: Regenerate only outputs made stale by Tasks 1 through 5**
-
-Run the applicable write modes in dependency order:
-
-```bash
-python3 scripts/operations/provider_surface_renderer.py --write
-bash scripts/operations/generate-compose-profile-service-coverage.sh --write
-bash scripts/operations/generate-tech-stack-version-provenance.sh --write
-bash scripts/validation/generate-audit-implementation-matrix.sh --write
-bash scripts/validation/generate-security-automation-readiness.sh --write
-bash scripts/security/generate-supply-chain-sample-service-summary.sh --write
-bash scripts/validation/report-provider-hook-parity.sh --write
-python3 scripts/knowledge/generate-llm-wiki.py --write
-```
-
-Skip a generator only when its tracked inputs and output paths are unchanged;
-record that exact reason in Task 6.
-
-- [ ] **Step 3: Run every generated freshness check**
-
-Run:
+- [ ] Exercise feature's existing canonical-key negative tests against the
+  pre-integration runner; record RED or exact already-present behavior. Use
+  resolved entrypoint plus normalized argv, public profile and execution context;
+  semantic modes remain explicit argv, not ambient environment.
+- [ ] Merge the workflow-owned public composition and inventory-only manifest
+  as a single gate slice. Preserve c02 Greeting permissions and unrelated
+  workflow fixes. Keep no-env independent Compose selection and one frontend
+  setup node; adapt feature's old Storybook node-ID assertions to main's ID.
+- [ ] Carry the reviewed transition contract: final sample-delivery operation is
+  active; transitioning rows require a distinct tracked successor, non-retain
+  disposition and nonblank `removal_condition`. Active rows omit the condition.
+  Do not restore a second composition registry.
+- [ ] Register the promoted lifecycle module exactly once and preserve its
+  discovery initializer. Verify every test module's reachability:
 
 ```bash
-python3 scripts/operations/provider_surface_renderer.py --check
-bash scripts/operations/generate-compose-profile-service-coverage.sh --check
-bash scripts/operations/generate-tech-stack-version-provenance.sh --check
-bash scripts/validation/generate-audit-implementation-matrix.sh --check
-bash scripts/validation/generate-security-automation-readiness.sh --check
-bash scripts/security/generate-supply-chain-sample-service-summary.sh --check
-bash scripts/validation/report-provider-hook-parity.sh --check
-python3 scripts/knowledge/generate-llm-wiki.py --check
-```
-
-Expected: all exit `0` without modifying files.
-
-- [ ] **Step 4: Run focused ownership and governance suites**
-
-Run:
-
-```bash
-python3 scripts/validation/check-script-manifest.py
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
+PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_plan.CiGateRunnerContractTests.test_every_public_plan_has_unique_canonical_invocations tests.lib.test_surface_ownership.SurfaceOwnershipTests.test_every_test_module_is_reachable_from_the_full_profile -v
 PYTHONPATH=. python3 -m unittest discover -s tests/lib/gate -p 'test_*.py'
 PYTHONPATH=. python3 -m unittest discover -s tests/validation -p 'test_ci_gate*.py'
-PYTHONPATH=. python3 -m unittest tests.validation.test_provider_surface_renderer -v
-python3 scripts/validation/check-document-links.py --mode all
-python3 scripts/validation/check-document-corpus-lifecycle.py
-```
-
-Expected: all PASS. Record test counts from output rather than encoding them as
-permanent assertions.
-
-- [ ] **Step 5: Verify path, identity, fixture, and compatibility residue is zero**
-
-Run:
-
-```bash
-rg -n 'docs/03\.specs/spec-|docs/01\.requirements/(prd-|srs-|ifr-)' --glob '!docs/98.archive/**' docs scripts tests examples
-rg -n 'artifact_id:[[:space:]]*(FR-|NFR-|IF-)' docs
-rg -n 'tests/fixtures/' scripts
-rg -n '(run-local-qa-gates|validate-harness|sync-provider-surfaces|check-doc-implementation-alignment|check-doc-traceability)' --glob '!docs/98.archive/**' .
-rg -n '\.agents/agents' --glob '!docs/98.archive/**' .
-```
-
-Expected: no current ownership or invocation residue. Explicit historical
-recovery fixtures may appear only in isolated history tests and must be named as
-such in the Task evidence.
-
-- [ ] **Step 6: Run the pre-review candidate aggregate once**
-
-Run:
-
-```bash
-git diff --check
-python3 scripts/validation/run-ci-gate.py --profile full
-git status --short --branch
-```
-
-Expected: diff check and full exit `0`; status lists only approved Task-owned
-paths. Do not separately rerun workloads already executed by this full profile
-on the same input. This is a review candidate, not final completion evidence,
-because Step 8 will change the evidence documents.
-
-- [ ] **Step 7: Perform independent policy and code review**
-
-Review the exact branch diff for:
-
-- validation coverage loss;
-- executable ownership duplication;
-- archive-body mutation;
-- current/historical grammar leakage;
-- unsafe provider deletion;
-- operation/test fixture coupling;
-- missing generated outputs or inbound links.
-
-Record Critical, Important, and Minor counts plus every remediation rerun in
-Task 6. Do not mark complete while a blocking finding remains.
-
-- [ ] **Step 8: Write durable outcomes and final evidence**
-
-Update the Spec only with behavior that is actually current. Update each Task's
-Work Log, Verification Evidence, Review Evidence, and Commit Ledger with exact
-commands, exit codes, and commit SHAs. Runtime, entitlement, Hosted CI, and
-remote protection remain `UNVERIFIED` unless separately authorized and observed.
-
-- [ ] **Step 9: Regenerate evidence-derived outputs and verify the final tree**
-
-Rerun only generators whose tracked inputs include the Spec or Task evidence,
-then run their check modes. On that final content, execute at least:
-
-```bash
 python3 scripts/validation/check-script-manifest.py
-PYTHONPATH=. python3 -m unittest discover -s tests -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
-PYTHONPATH=. python3 -m unittest tests.validation.test_provider_surface_renderer -v
-PYTHONPATH=. python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract -v
-PYTHONPATH=. python3 -m unittest tests.validation.test_provider_hook_parity -v
-python3 scripts/operations/provider_surface_renderer.py --check
-python3 scripts/validation/check-document-metadata.py --mode check-active
-python3 scripts/validation/check-document-corpus-lifecycle.py
-python3 scripts/validation/check-document-links.py --mode all
-git diff --check
-python3 scripts/validation/run-ci-gate.py --profile full
-git status --short --branch
 ```
 
-Repeat the residue scans from Step 5 and the canonical-invocation uniqueness
-test from Task 2. The Step 6 candidate and this final aggregate have different
-inputs; never repeat the heavy aggregate on an unchanged tree. Make no content
-change after this final verification except the commit object created by the
-next step.
-
-- [ ] **Step 10: Commit the final generated and evidence state**
+- [ ] Obtain independent gate review; commit `refactor(gate): integrate canonical invocation ownership`.
+- [ ] In a separate operation slice, preserve `f8ce954cc` with its relocation,
+  example bytes, `leaf.postgres-logical-upgrade-config` check-only route and
+  consumer cutover. Root discovery must remain:
 
 ```bash
-git add docs scripts tests examples .agents .claude .codex .github llms.txt llms-full.txt
-git commit -m "docs(spec): record governance QA convergence evidence"
+SCRIPT_PATH="$(readlink -f -- "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd -P)"
+ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd -P)"
 ```
 
-Do not push, open a PR, merge, tag, release, or terminalize SPEC-0173 without a
-separate approval covering that action and its exact target.
+- [ ] Reproduce old held-descriptor failure only in the existing temporary
+  fixture, then run the actual corrected runner test and full operation owner:
+
+```bash
+PYTHONPATH=. python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v
+```
+
+  Require exit 0, `status=check-passed`, `cleanup_status=passed`, and no real
+  Docker service. Do not add source-only evidence as a substitute for the real
+  `execute_execution_plan` regression. Review and commit
+  `fix(operations): integrate verified PostgreSQL entrypoint`.
+
+### W4: Approved renewed bounded corrections
+
+**Files:** `scripts/hooks/agent-event-hook.sh`,
+`tests/validation/test_agent_governance_ci_routing.py`,
+`scripts/README.md`, `tests/validation/test_script_manifest.py`.
+The user's latest explicit approval renews these two named corrections and
+their independent re-review; it does not authorize unrelated fixes.
+
+**Interfaces:** Stop emits a blocking JSON result when dirty/error state cannot
+be cleared; README write instructions invoke the existing explicit write mode.
+
+- [x] Obtain explicit approval separately naming the downstream Stop byte-bound
+  and the remaining README write examples, plus independent re-review. Do not
+  classify these as automatically authorized by W1 integration.
+- [ ] Extend the existing fake-Git routing regression for both providers with
+  80 path rows that approach a legal relative PATH_MAX length:
+
+```python
+segments = "/".join(["x" * 200] * 18)
+porcelain = "\n".join(f"?? {segments}/file-{i:03d}.txt" for i in range(80))
+self.assertGreater(len(porcelain.encode("utf-8")), 131072)
+```
+
+  Feed this to the current fake-Git helper; require parseable blocking JSON,
+  no SessionEnd, and at most one changed aggregate. Add a multibyte path case
+  and retain malformed Git, timeout and retry tests. Witness RED before fixing.
+- [ ] Preserve feature's FD input and parser failure guard, 540-second gate
+  timeout plus five-second termination bound, both-provider retry guard, and
+  600-second Claude hook contract. Bound displayed path diagnostics to 6000
+  UTF-8 bytes before any remaining environment transport; bound the final
+  reason as well or send it over a descriptor. Preserve a nonempty explicit
+  truncation notice. Never let truncation produce an empty clean-state result.
+  A byte-aware display core can use:
+
+```python
+payload = "\n".join(paths[:80]).encode("utf-8")
+display = payload[:6000].decode("utf-8", errors="ignore")
+if len(payload) > 6000:
+    display += "\n[additional changed-path bytes omitted]"
+```
+
+  This is diagnostic display only: full dirty-state detection is not truncated.
+  Do not discard W2's revised directory warning while applying the hook slice.
+- [ ] Run the routing suite and independent review. Commit
+  `fix(hooks): bound completion diagnostics by bytes`.
+- [ ] In a separate documentation slice, change the maintenance entries for
+  `generate-audit-implementation-matrix.sh`,
+  `generate-security-automation-readiness.sh`, and
+  `generate-supply-chain-sample-service-summary.sh` to explicit `--write`.
+  The first audit “generate and check” example also needs `--write`; leave
+  read-only advisory/check listings unchanged. Exact executable examples:
+
+```bash
+bash scripts/validation/generate-audit-implementation-matrix.sh --write
+bash scripts/validation/generate-audit-implementation-matrix.sh --check
+bash scripts/validation/generate-security-automation-readiness.sh --write
+bash scripts/security/generate-supply-chain-sample-service-summary.sh --write
+```
+
+- [ ] Add a focused README contract test, scoped to the “Generated index
+  maintenance” row and audit refresh code block, so checking only DATA-0059/0061
+  cannot mask these omissions. Assert each exact command above in its write
+  context; verify the audit check command still exists. Witness RED, fix prose,
+  run the manifest test owner, and get independent documentation review.
+  Commit `docs(qa): correct remaining generator write routes`.
+
+### W5: Lifecycle closeout and derived evidence
+
+**Files:** Current SPEC-0174 Spec/Plan/Task and eventual matching package paths
+under `docs/98.archive/superseded/03.specs/0174-governance-qa-convergence/`;
+`docs/03.specs/README.md`, `docs/98.archive/README.md`,
+`docs/99.templates/registry.json`; Task 0006 promotion receipt.
+Reference source corrections: AUD-0019/0020/0026/0027/0030/0032 READMEs,
+REQ-0025, ADR-0028, AD-0028, scripts/tests READMEs.
+Do not overwrite main's additional metadata/SDLC work with these feature files.
+
+**Interfaces:** Consumes W1's approved identity decision and verified owner
+transfer. Produces registered terminal disposition, complete preserved packages,
+unchanged frozen bodies and fresh generated outputs.
+
+- [ ] SPEC-0172 disposition remains controlled by W1, not by this generic
+  closeout. Do not supply a fabricated route in its place.
+- [ ] For SPEC-0174, obtain real review/approval for closeout and use separate
+  registered edges; these are not retrospective approvals of old implementation:
+
+| Checkpoint | Spec | Plan | Task |
+| --- | --- | --- | --- |
+| A | draft → review | draft → approved | draft → ready |
+| B | review → approved | approved → active | ready retained |
+| C | approved → active | active retained | ready → in-progress |
+| D, only after verified transfer | active → superseded | active → cancelled | in-progress → cancelled |
+
+  Check each nonterminal checkpoint before committing. Bind current owner
+  SPEC-0173 with reciprocal lineage where the profiles allow it. At D,
+  transition and full-package preservation are one atomic disposition; no
+  terminal documents remain in current Stage 03. Preserve the approved
+  terminal source bytes, not an edited frozen body. Keep c02 source objects
+  reachable as the earlier observation. Only W1's verified divergent-source
+  receipt permits nonterminal preservation; never claim unobserved acceptance
+  as completed.
+- [ ] Prove archive/lineage/identity behavior in isolated fixtures first.
+  If dual historical SPEC-0172 disposition or SPEC-0174 package-member rules
+  reject the proposed route, stop for a lifecycle decision; no new exception,
+  speculative ID, or alternate path. Commands:
+
+```bash
+PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_archive tests.lib.document_governance.test_identity_history tests.lib.document_governance.test_spec_packages -v
+PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'
+python3 scripts/validation/check-document-corpus-lifecycle.py
+python3 scripts/validation/check-document-links.py --mode all
+```
+
+- [ ] Reconcile Registry max-issued values, current indexes, references and
+  promotion receipt atomically. Correct archive README wording to distinguish
+  the three Registry-frozen legacy migration ledgers from normally linted
+  authored migrations/tombstones; do not edit those frozen ledgers.
+- [ ] Preserve the feature's accepted current-vs-historical audit corrections,
+  but re-evaluate every current provider statement against W2 (no shared
+  skills). Do not treat past two-provider parity as current native acceptance.
+- [ ] Regenerate only changed-input outputs, in this order: provider native
+  projections; DATA-0059/0061 owner outputs; DATA-0065 audit matrix;
+  DATA-0078 security readiness; DATA-0079 supply-chain summary; DATA-0072 hook
+  parity if dispatch inputs changed; DATA-0076/0082 LLM Wiki.
+  Use each existing manifest-declared owner and explicit `--write`, followed
+  by `--check`. If inputs did not change, record the skip and run check mode.
+  Do not write authored `llms.txt`, excluded `llms-full.txt`, or Graphify
+  output by hand.
+- [ ] Review source/disposition and derived-output changes independently.
+  Use logical commits `docs(spec): preserve approved predecessor handoff`
+  and `chore(data): refresh integrated governance evidence`.
+
+### W6: Final verification and handoff
+
+**Files:** Task 0006 owns exact acceptance mapping, command outcomes, review
+findings, rollback references, and limitations. The Spec owns durable target
+behavior; none of the earlier candidate runs proves this integrated tree.
+
+**Interfaces:** Consumes accepted W1-W5 and committed executable entrypoints.
+Produces independently reviewed final-tree evidence, not deployment claims.
+
+- [ ] In Task 0006 map Spec acceptance 1-16 to W1-W6 and Stage 00/01/02/05
+  owners. Use observed PASS or justified SKIP; never a count-only policy or
+  candidate success copied from another tree.
+- [ ] Run focused suites, then source-derived freshness checks before the
+  heavy aggregate. Commit reviewed executable changes before descriptor
+  identity admission; do not bypass the tracked-object check.
+- [ ] Execute on final content. The latest minimum-check instruction replaces
+  separate repeat discoveries below with the canonical full profile's existing
+  leaf coverage. Run a direct focused check only for a changed integration
+  boundary or to diagnose the first failing leaf:
+
+```bash
+git diff --check
+python3 scripts/validation/run-ci-gate.py --profile full
+git status --short
+```
+
+  Run the canonical-key and full-profile reachability tests from W3 as well.
+  Scan current script/docs/template examples for forbidden basename prefixes,
+  shorthand Requirement IDs, old operation routes and shared generated skills.
+  Classify actual historical quotations separately; do not delete them by age.
+  No production script may read `tests/`; no generator runs write mode in a
+  validation aggregate.
+- [ ] Record first failure and stop at the applicable retry bound. Never rerun
+  unchanged heavy aggregates for reassurance. After evidence edits, regenerate
+  only affected derived outputs and verify their new content once.
+- [ ] Obtain independent code, Python and policy review for exact final diff
+  and evidence. A separate reviewer owns each verdict.
+- [ ] Only after green acceptance, invoke finishing-a-development-branch under
+  the user's current integration/cleanup instruction. Preserve recovery commits.
+  Merge reviewed feature commits into local main, resolve conflicts there under
+  the user's latest instruction, verify the result, and clean only fully
+  integrated feature state. Prepare for push without performing a remote push.
+  Reuse unchanged focused evidence and avoid duplicate heavy aggregates under
+  the user's minimum-check instruction; retain the final mandatory gate.
 
 ## Risk and Rollback
 
-| Risk | Prevention | Rollback |
+| Risk | Guard | Recovery |
 | --- | --- | --- |
-| Missing validation leaf | Before/after semantic leaf inventory; duplicate rejection | Revert Task 2 commit |
-| Wrapper external consumer | Tracked zero-inbound proof; external boundary recorded unverified | Revert Task 3 or Task 5 commit |
-| Changed Compose coverage | Keep one no-env every-declared invocation and existing profile assertions | Revert gate-node consolidation |
-| Lost historical identity | Paired current reject/history recover tests | Revert only history isolation commit |
-| Fixture semantic drift | SHA-256 or parsed-payload comparison across moves | Revert Task 4 commit |
-| Archive corruption | Never edit frozen bodies; use registered transitions before move | Revert pre-terminal commit; never patch frozen body |
-| Provider projection loss | Keep native Claude/Codex/shared-skill roots and direct renderer checks | Restore compatibility registry route and rerender through normal revert |
-| Hook validation gap | Focused event parity tests and one completion-time changed gate | Revert hook portion of Task 5 |
-| Generated stale output | One declared owner and write/check pair | Rerun only owning generator or revert Task 6 |
-
-Rollback uses normal `git revert` for committed logical slices or a reviewed
-inverse patch before commit. The plan never uses reset, clean, stash, force
-push, validator bypass, or frozen archive editing.
+| Terminal SPEC-0172 reopened | W1 hard identity gate | Keep both existing histories untouched; request decision |
+| Main changes lost in wide merge | Per-path ledger and semantic review | Reviewed inverse patch or logical revert; no whole-side resolution |
+| Empty root becomes duplicate policy tree | W2 single rule and negative tests | Revert source/projection logical commit; preserve unknown contents |
+| Read-only root causes unsafe cleanup | Enumerate names without mutation | Report unverifiable state; never remove/unmount |
+| Stop appears clean after truncation | Dirty detection separate from byte-bounded display | Revert hook slice; completion remains blocked |
+| Gate coverage drops | All-module reachability and canonical uniqueness | Revert gate slice with consumer map |
+| Frozen evidence rewritten | Exact Git blob comparison and legal terminal disposition | Stop; restore only through approved recovery, never patch frozen bodies |
+| Stale generated data | One owner and explicit write/check | Regenerate from reviewed source or revert that logical output |
 
 ## Verification
 
-The completion evidence must contain:
+Revision checks are metadata/profile, internal links, whitespace, and independent
+policy/code review. W1 requires a tested generic preservation contract before
+integration; W4 requires new RED/GREEN evidence and independent re-review.
+No validation exception is authorized. Run the full gate only on the final
+integrated content after focused findings have been resolved.
 
-1. Fresh branch, HEAD, main, cached origin/main, worktree, stash, and status.
-2. Pre-change and post-change public plans for five profile/context cases.
-3. Zero duplicate canonical invocation identities.
-4. Exact removed and retained leaf inventory.
-5. Manifest ownership and transition checks.
-6. Metadata and lifecycle focused discovery results.
-7. Gate, provider, operation, supply-chain, and fixture focused results.
-8. Zero production reference to `tests/fixtures`.
-9. Current-path rejection and historical-recovery acceptance evidence.
-10. Provider renderer write/check and native projection parity.
-11. Generated write/check results and LLM Wiki freshness.
-12. `git diff --check` and one final full profile result.
-13. Independent review result and remediation reruns.
-14. Explicit `UNVERIFIED` labels for runtime, entitlement, Hosted CI, and remote
-    state not observed under an additional approval.
+Implementation acceptance is W6, not these planning checks. Preserve test counts
+as dated Task evidence, including pre-existing skips; never promote them into
+permanent policy. Hosted CI, remote protection, runtime, deployment and provider
+entitlement remain unverified.
 
 ## Rulings
 
-- Use SPEC-0173 because the Registry and Git history show SPEC high-water 172
-  and no issued SPEC-0173 or higher artifact.
-- Do not expand SPEC-0172 with the new work; reconcile and preserve its completed
-  outcome first.
-- Prefer `.github/workflow-contract.yml` over the manifest as executable DAG
-  owner because it already owns nodes, roots, ordering, setup, environment,
-  timeout, workflow, and job bindings.
-- Keep `scripts/manifest.yaml` as the sole file inventory but remove executable
-  composition fields from it.
-- Remove obsolete modes and wrappers rather than restoring compatibility.
-- Keep one canonical Compose full-coverage invocation; do not use an inherited
-  environment value to manufacture a second mode.
-- Retire target-surface snapshots because they describe a completed migration,
-  not a present-tense repository invariant.
-- Preserve static fixture files only where the serialized external format is
-  part of the contract; generate single-field negative variants in tests.
-- Preserve `.agents/skills`, Claude adapters, and Codex adapters; retire only the
-  provider-neutral agent compatibility projection with no tracked runtime
-  consumer.
-- Treat completed Specs as evidence. Current policy, Registry, architecture,
-  operation, and executable contracts remain authoritative.
-- Task 6 generator commands use explicit `--write` after Task 3 changed their
-  default to non-mutating check mode. The original unflagged write commands
-  were stale Plan grammar, not permission to restore default mutation.
-- LLM Wiki generation owns only DATA-0076 and DATA-0082. Its manifest and the
-  authored `llms.txt` entrypoint explicitly exclude a full-content export;
-  verify the entrypoint but do not generate `llms-full.txt`.
+- Existing SPEC-0173/Task 0006 owns integration planning; no new package or ID.
+- The current user direction changes the target policy to permit an empty
+  `.agents/` directory while retaining direct skill loading. It authorizes
+  implementing that bounded change as part of the approved integration.
+- W4 correction approvals are distinct from integration approval and from the
+  exhausted prior attempt. No agent handoff resets the retry bound.
+- W1's approved route is exact divergent-source preservation with a typed Task
+  receipt, not a lifecycle edge or ID-specific exception. Implementation and
+  negative tests must prove the route before any package is moved.
+- No `docs/superpowers/plans/` artifact is created; this co-located Plan is the
+  canonical execution design.
 
 ## Related Documents
 
 - [Specification](spec.md)
-- [Task 1](tasks/tsk-0001-lifecycle-and-red-contracts.md)
-- [Task 2](tasks/tsk-0002-gate-composition-convergence.md)
-- [Task 3](tasks/tsk-0003-script-and-operation-ownership.md)
-- [Task 4](tasks/tsk-0004-test-and-fixture-convergence.md)
-- [Task 5](tasks/tsk-0005-document-and-provider-residue.md)
-- [Task 6](tasks/tsk-0006-generated-evidence-and-final-verification.md)
+- [Task 0006 evidence](tasks/tsk-0006-generated-evidence-and-final-verification.md)
+- [Task 0001 historical lifecycle evidence](tasks/tsk-0001-lifecycle-and-red-contracts.md)
+- [Task 0002 gate evidence](tasks/tsk-0002-gate-composition-convergence.md)
+- [Task 0003 operation evidence](tasks/tsk-0003-script-and-operation-ownership.md)
+- [Task 0004 fixture evidence](tasks/tsk-0004-test-and-fixture-convergence.md)
+- [Task 0005 provider evidence](tasks/tsk-0005-document-and-provider-residue.md)
+- [Stage 03 index](../README.md)

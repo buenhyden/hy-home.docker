@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -57,7 +57,8 @@ distinct.
 - Out of scope: dependency upgrades unrelated to a reproduced gate failure,
   application behavior, service topology, live Compose execution, deployment,
   provider entitlement mutation, remote branch-protection mutation, tag,
-  release, push, pull request, and merge.
+  release, push, and pull request. The later user authorization permits local
+  main integration and this feature's cleanup only after verified acceptance.
 - Out of scope: secrets, credentials, certificates, user-global provider
   settings, shell history, raw log databases, and edits to preserved archive
   bodies.
@@ -107,9 +108,11 @@ distinct.
     validation authorities. Their historical evidence is retired through the
     registered lifecycle after all current consumers are cut over.
 13. Stage 00 remains the canonical role, skill, provider, permission, and hook
-    owner. `.claude/**`, `.codex/**`, and `.agents/skills/**` remain generated
-    adapters; the unconsumed `.agents/agents/**` compatibility projection is
-    removed only with its Registry route and tests in the same change.
+    owner. Native `.claude/**` and `.codex/**` remain generated adapters.
+    Codex reads canonical Stage 00 skills directly. An absent or empty real
+    `.agents/` directory is allowed, but shared role/skill/README projections
+    and `.codex/skills/` are not restored. Nonempty or unverifiable roots fail
+    closed without deleting unknown contents.
 14. A manifest transition has a different successor and a bounded removal
     condition. A self-successor cannot justify an indefinite transition state.
 15. Local configuration, tests, and generated parity do not prove Hosted CI,
@@ -190,15 +193,16 @@ def canonical_invocation_key(
   Stage 98, record disposition in one sealed package Tombstone, and rely on
   exact Git recovery proof for unregistered generated payloads.
 - Provider compatibility removal can affect an external untracked consumer.
-  Record that boundary as unverified and retain the native Claude, Codex, and
-  shared-skill projections.
+  Record that boundary as unverified and retain native Claude/Codex interfaces
+  and direct canonical skill loading, not shared projections.
 - A broad test split can create duplicate execution. The gate inventory must
   prove every discovered test module is reached once and every production
   responsibility has a focused owner.
-- SPEC-0172 cannot jump directly from draft to completed. Apply only registered
-  forward transitions in distinct commits, then preserve the completed Spec and
-  remove transient Plan/Task bodies only after recovery and inbound-consumer
-  checks.
+- SPEC-0172's completed record is immutable. Its divergent main follow-up must
+  not reopen that identity or receive a fabricated terminal status. The approved
+  branch-reconciliation rule requires exact source-package preservation and a
+  typed Task receipt binding the source and distinct active integration owner.
+  Ordinary live packages still require registered lifecycle transitions.
 
 ## Acceptance Contract
 
@@ -226,16 +230,21 @@ def canonical_invocation_key(
 11. Current document validators reject legacy basenames and abbreviated
     Requirement IDs while full-history identity allocation and archive recovery
     continue to pass.
-12. SPEC-0172 is reconciled through valid transitions. Its completed Spec is
-    preserved according to current Stage 03 and Stage 98 rules, and transient
-    execution bodies are removed only after their recovery is proven.
+12. SPEC-0172's completed record remains unchanged. Every file of main's
+    divergent follow-up is preserved byte-for-byte under the approved generic
+    branch-handoff rule, with a verified Task receipt and obligation transfer.
+    SPEC-0174 follows registered transitions and full-package preservation.
+    No new Spec/Plan/Task or artifact ID is allocated; no current package is
+    dropped solely because Git can recover it.
 13. DATA-0068, DATA-0069, DATA-0073, and DATA-0074 leave the current data index
     through registered lifecycle transitions. Their archived `README.md` bodies
     are byte-identical and Tombstones `tomb-DATA-0068`, `tomb-DATA-0069`,
     `tomb-DATA-0073`, and `tomb-DATA-0074` own their disposition without any
     frozen archive body edit.
-14. `.agents/agents/**` and its compatibility Registry route are absent;
-    `.agents/skills/**`, `.claude/**`, and `.codex/**` match renderer output.
+14. `.agents/agents/**`, `.agents/skills/**`, generated `.agents/README.md`,
+    and `.codex/skills/**` are absent. An empty real `.agents/` directory,
+    including a read-only one, passes the same library rule in renderer and
+    provider validation; native projections match renderer output.
 15. Focused tests, script manifest validation, metadata discovery, lifecycle
     discovery, generated checks, `git diff --check`, and the canonical full gate
     pass after all cutovers.
