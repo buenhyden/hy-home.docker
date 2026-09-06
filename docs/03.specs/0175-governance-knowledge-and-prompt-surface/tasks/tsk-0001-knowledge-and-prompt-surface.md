@@ -468,6 +468,32 @@ performed, so every division and agent count in the member stays bound to the
 now links to the restored canonical intake owner and states that it supplies
 evidence for that decision without owning it.
 
+### W11: Generated artifacts (2026-09-06)
+
+The LLM Wiki outputs were regenerated and staged inside each source commit
+rather than in a separate unit, because the generator reads the staged index:
+generating before staging leaves the outputs stale, and a separate commit leaves
+them stale in between. `generate-llm-wiki.py --check` reports both outputs fresh
+at every commit in this package.
+
+`graphify update .` is NOT_RUN as a write. The command was invoked and refused
+its own overwrite:
+
+```text
+[graphify] WARNING: new graph has 17882 nodes but existing graph.json has 22689.
+Refusing to overwrite - you may be missing chunk files from a previous session.
+Pass --force to override.
+```
+
+`--force` was not passed. The tool is reporting that this run's corpus is
+smaller than the stored graph and naming missing chunk files as the likely
+cause; forcing would replace a tracked 22689-node artifact with a 17882-node one
+on the strength of a run the tool itself distrusts. `git status --porcelain`
+after the invocation returns empty, so nothing was written. The graph therefore
+stays at its recorded build commit `f8a72211` and remains advisory, exactly as
+the baseline section already states, and every conclusion in this Task is
+corroborated against tracked sources rather than against the graph.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)
@@ -500,6 +526,29 @@ Acceptance mapping is completed before package completion, not per work unit.
 | 12 | W6, W7, W12 | NOT_RUN | pending |
 | 13 | W12 | NOT_RUN | pending |
 | 14 | W12 | NOT_RUN | pending |
+
+### Acceptance mapping (2026-09-06)
+
+Each criterion is mapped to what was actually observed, with its evidence class.
+A criterion whose check did not run is recorded as such, never promoted.
+
+| # | Criterion | Observed | Class |
+| --- | --- | --- | --- |
+| 1 | Root inventory exact | `ROOT_ENTRIES` is `('README.md', 'governance', 'knowledge', 'prompts', 'roles', 'skills')`; contract check `PASS failures=0` | local-executed |
+| 2 | Four profiles registered | all four present, each `transitions` entry `living`, each with a `template_roles` source | local-executed |
+| 3 | Templates and catalog | both template files exist; the catalog lists two new rows | local-executed |
+| 4 | Knowledge members exact | `README.md`, `glossary.md`, `repository-map.md`, `verification-surface-map.md`; each declares `observed_at` and `review_cycle` and a `Provenance` section | local-executed |
+| 5 | Prompt members exact | `README.md`, `commit-message.md`, `diff-review.md`, `handoff.md`, `test-design.md`; each declares the seven registered sections | local-executed |
+| 6 | Inventory and drift | nine new `canonical_sources` entries; `provider_surface_renderer --check` `PASS providers=2 drift=0`; `generated_roots` untouched | local-executed |
+| 7 | Output style repaired | `keep-coding-instructions: true` present; the conversational-language rule now stated in `output-style.md`; the artifact-language paragraph describes the measured corpus | local-parser, configured |
+| 8 | Selector alignment | routed-but-not-admitted was `['_workspace/', 'evals/']` at `HEAD` and is now empty; the relation is owned by a test | local-executed |
+| 9 | Intake decision owner | `agentic.md` carries `External Capability Intake`; the Stage 90 member links to it and disclaims ownership | local-executed |
+| 10 | External re-observation | the 2026-09-06 head is recorded and the `2026-09-05 Revalidation` section is preserved | official-source |
+| 11 | Preserved invariants | 14 roles, 23 skills, 6 public suites, 2 public profiles unchanged | local-executed |
+| 12 | Prompts used in this work | `commit-message` drafted the W6 message and caught two unaccounted paths; `diff-review` drove the independent review; `test-design` shaped the three RED-then-GREEN assertions; `repository-map` and `verification-surface-map` were verified against their sources | local-executed |
+| 13 | Focused validators and changed profile | every commit passed the changed public profile at pre-commit; focused validators recorded per unit | local-executed |
+| 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
+| 15 | Closing | pending the integration unit | NOT_RUN |
 
 ## Review Evidence
 
