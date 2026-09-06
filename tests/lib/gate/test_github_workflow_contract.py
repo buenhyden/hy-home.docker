@@ -68,6 +68,54 @@ def load_contract_module():
 
 
 class GithubWorkflowContractTests(unittest.TestCase):
+    def test_precommit_selector_admits_every_contract_changed_prefix(self) -> None:
+        """A prefix the workflow contract routes must be able to reach the gate.
+
+        The workflow contract decides which suites a changed path needs. The
+        pre-commit `files` selector decides whether the public gate hook runs
+        at all. A prefix present in the first and absent from the second
+        produces a change that needs suites and runs none locally. The reverse
+        asymmetry is safe: a broader hook selector only runs the gate more
+        often.
+        """
+
+        sys.path.insert(0, str(ROOT))
+        try:
+            from scripts.lib.gate import ci_gate_contract
+        finally:
+            sys.path.remove(str(ROOT))
+
+        public_gate = ci_gate_contract.parse_public_gate_contract(
+            ci_gate_contract.load_contract_document(ROOT)
+        )
+        contract_prefixes = {
+            prefix for rule in public_gate.changed_rules for prefix in rule.prefixes
+        }
+        self.assertTrue(contract_prefixes)
+
+        pre_commit = self.module._read_bounded_yaml(
+            ROOT, pathlib.PurePosixPath(".pre-commit-config.yaml")
+        )[1]
+        selectors = tuple(
+            hook["files"]
+            for repository in pre_commit["repos"]
+            if repository["repo"] == "local"
+            for hook in repository["hooks"]
+            if hook["entry"].startswith("python3 scripts/validation/run-ci-gate.py")
+        )
+        self.assertEqual(2, len(selectors), "both public profiles need a selector")
+
+        for selector in selectors:
+            pattern = re.compile(selector)
+            for prefix in sorted(contract_prefixes):
+                probe = f"{prefix}probe.md" if prefix.endswith("/") else prefix
+                with self.subTest(selector=selector, prefix=prefix):
+                    self.assertIsNotNone(
+                        pattern.fullmatch(probe),
+                        f"{prefix} is routed by the workflow contract but the "
+                        f"pre-commit selector does not admit {probe}",
+                    )
+
     def setUp(self) -> None:
         self.module = load_contract_module()
 
@@ -287,8 +335,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         compose = [
             node
             for node in nodes.values()
-            if str(node.entrypoint)
-            == "scripts/validation/validate-docker-compose.sh"
+            if str(node.entrypoint) == "scripts/validation/validate-docker-compose.sh"
         ]
         self.assertEqual(
             ["leaf.compose-validation"],
@@ -876,9 +923,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             len({route.entrypoint for route in public.validators}),
         )
         self.assertNotIn("profile_roots", document)
-        self.assertTrue(
-            all("profiles" not in node for node in document["gate_nodes"])
-        )
+        self.assertTrue(all("profiles" not in node for node in document["gate_nodes"]))
 
     def test_legacy_profile_root_substitution_fails_closed(self) -> None:
         with self.workflow_fixture() as root:

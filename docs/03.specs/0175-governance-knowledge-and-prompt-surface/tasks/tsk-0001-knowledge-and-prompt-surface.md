@@ -401,6 +401,47 @@ Stage 01, 02 and 05 are Korean; Stage 03, 90 and 99 are English; `.agents` holds
 after nine files were added to it. The promoted statement describes this rather
 than mandating a stage-to-language mapping the corpus would contradict.
 
+### W9: Selector alignment and the intake decision owner (2026-09-06, local-executed)
+
+The workflow contract routes `_workspace/` and `evals/`, but neither
+`.pre-commit-config.yaml` public-gate selector admitted them, so a change
+confined to either needed suites and ran none locally.
+
+RED, by running the new assertion's own logic against the config stored at
+`HEAD`, and GREEN on the working tree:
+
+```text
+HEAD (before W9): routed but not admitted = ['_workspace/', 'evals/']
+assertion would fail at HEAD: True
+after W9, routed but not admitted: none
+```
+
+Both selectors were widened rather than the contract narrowed, because the safe
+asymmetry runs the gate more often and the unsafe one runs it not at all. The
+relation is now owned by
+`test_precommit_selector_admits_every_contract_changed_prefix` in
+`tests/lib/gate/test_github_workflow_contract.py`, so a future divergence fails
+instead of passing quietly.
+`python3 -m unittest tests.lib.gate.test_github_workflow_contract` returns
+`Ran 51 tests` `OK (skipped=11)`.
+
+The first attempt was rejected by `ruff format`. The formatter runs over each
+changed file rather than each changed hunk, so adding a method brought two
+pre-existing expressions in the same module into its scope and it rewrote them,
+five lines becoming two. The added method itself was already conformant. The
+reformat is carried rather than reverted, because the hook is the repository's
+own formatting authority and a file it rejects cannot be committed; the two
+lines are named here so a reviewer knows they are the formatter's work and not
+an unrequested edit.
+
+The same unit returned the external capability-intake decision to
+[agentic policy](../../../../.agents/governance/agentic.md#external-capability-intake).
+That boundary lost its canonical owner when the former catalog format was
+retired, leaving only a Stage 90 research member describing it; evidence
+describes, it never decides. `git-workflow.md` now also documents the commit
+shape `.cz.toml` enforces, which previously existed only in that configuration
+and rejected messages after the expensive gate had already run.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

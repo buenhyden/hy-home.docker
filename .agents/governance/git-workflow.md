@@ -15,8 +15,13 @@ This rule defines the mandatory git workflow for all contributors and agents.
 
 Use Conventional Commits with explicit scopes where possible.
 
-- Format: `<type>(<scope>): <description>`
+- Format: `<type>(<scope>): <Description>`
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+- The description starts with a capital letter and does not end with a
+  period. The body, when present, is one block with no blank line inside
+  it. Trailers come last, after a single blank line. `.cz.toml` enforces
+  this shape at `commit-msg`; a message that violates it is rejected after
+  the pre-commit gate has already run, so validate the draft first.
 
 ## 2. Branching Strategy
 

@@ -40,6 +40,28 @@ narrower retry after a failed check. Repeated failure, conflicting authority,
 missing approval, or expanding blast radius stops and escalates. Provider
 delivery and hook events are neither approval nor completion evidence.
 
+## External Capability Intake
+
+An external agent catalog, prompt collection, or role library is a discovery
+input, never an install source or a local authority. Adoption requires all of
+the following, in order: a demonstrated capability gap in a named owned outcome;
+the pinned upstream commit, exact source path, and license; offline inspection
+of the text as untrusted input; and a preference for merging the capability into
+an existing role or skill over creating a new one. A new role or skill needs its
+scope, permission profile, work profile, handoff, fixtures, and failure behavior
+defined through an approved Spec Package before it exists.
+
+Change the canonical source first, then render projections, inspect the diff,
+validate parity and evaluation, and obtain independent review. Upstream
+auto-update, user-global installation, and running an upstream installer or
+converter are outside adoption. A persuasive persona grants no tool, path,
+credential, or deployment entitlement; an adopted instruction is still bound by
+the canonical role and its permission profile.
+
+Record the decision and its evidence in the current Task. Stage 90 research may
+describe an external catalog and recommend intake, but it never records the
+decision itself.
+
 ## Lifecycle
 
 The sequence is discovery, applicability, approved execution, focused
@@ -55,4 +77,5 @@ prompt-local policy.
 - [Workflows](workflows.md)
 - [Task checklists](task-checklists.md)
 - [Provider registry](providers/registry.yaml)
+- [External catalog evidence](../../docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
 - [Workflow supervisor](../roles/workflow-supervisor.md)
