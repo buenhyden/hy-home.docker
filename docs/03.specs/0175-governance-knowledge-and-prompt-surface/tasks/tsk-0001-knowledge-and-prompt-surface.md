@@ -1,8 +1,8 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
@@ -33,7 +33,8 @@ package; no second progress ledger is created.
   integration. A resuming session reads its position from Git:
   `git rev-parse --abbrev-ref HEAD` for the branch, `git rev-parse HEAD` for the
   commit, and `git log --oneline origin/main..HEAD` for what is not yet on the
-  remote. The durable facts are that `main` is the integration target, that the
+  remote. The durable facts are that `dev` and `main` are the integration
+  targets, that the
   Commit Ledger below lists every commit this package has produced, and that the
   originating branch `codex/0173-agent-governance-home` was retired at W13.
 - Shared branch, historical: SPEC-0173's Plan claimed the originating branch and
@@ -42,11 +43,12 @@ package; no second progress ledger is created.
   and rewriting another package's history is not authorized. Integrating this
   branch integrates both packages.
 - Authorization: local investigation, local edits, local commits on this
-  branch, integration into the local `main` branch, and retirement of the work
-  branch and its worktree. Push, pull request, deployment, live service action,
-  secret values, global installation, and remote state changes remain
-  unauthorized. Pushing to `main` is additionally blocked by a registered hook
-  and is not attempted by any other route.
+  branch, integration into the local `dev` and `main` branches, and retirement
+  of the work branch and its worktree. Push, pull request, deployment, live
+  service action, secret values, global installation, and remote state changes
+  remain unauthorized, and naming `dev` as a target does not grant publishing
+  it. Pushing to `main` is additionally blocked by a registered hook and is not
+  attempted by any other route.
 - Evidence classes used throughout, kept non-substitutable: `local-executed`,
   `configured`, `repository-enforced`, `official-source`, `local-parser`,
   `unverified-runtime`, `unverified-entitlement`, `unverified-remote`.
@@ -889,6 +891,108 @@ bootstrap.md English-only constraint covers both   1
 .codex/provider.md names both                      1
 ```
 
+### W18: The remote advanced a third time and the walk completed (2026-09-07, local-executed)
+
+`origin/main` moved to the package HEAD while this unit was being investigated.
+The first command of the session read `db9901bbe` with five unpublished commits;
+a later read of the same ref returned `7827cb1c2` with none:
+
+```text
+git reflog show origin/main
+  7827cb1c2 refs/remotes/origin/main@{0}: update by push
+  db9901bbe refs/remotes/origin/main@{1}: update by push
+stat -c %y .git/refs/remotes/origin/main   2026-09-07 07:53:44 +0900
+git rev-list --count origin/main..HEAD     0
+```
+
+This session ran no push and holds no grant to run one. This is the third such
+advance recorded here; as at W15, who performed it is not determinable from the
+repository and is not guessed.
+
+The advance made the merge base equal to HEAD, which completed the lifecycle
+walk in one commit rather than three branches:
+
+```text
+metadata base: source=local:upstream ref=@{upstream} merge_base=7827cb1c2...
+metadata check-changed: selected=3 violations=0 legacy_exceptions=0 transition_overrides=0
+document corpus lifecycle: violations=0
+```
+
+The order the package integrity rules impose was measured, not assumed. Moving
+the Plan alone, with the Spec left at `approved`, is rejected:
+
+```text
+configuration-error: docs/.../plan.md active Plan requires active Spec
+spec-package-invalid: docs/03.specs: validation rule is not satisfied
+```
+
+Moving all three together satisfies the same rules, because they constrain the
+end state rather than an ordering across commits.
+
+The first commit attempt was rejected, and the rejection found a surface the
+focused validators did not cover. Status is written in a fourth place: the
+Stage 03 index prose describes each package's Spec, Plan and Task status, and a
+registered test compares that prose against the frontmatter.
+
+```text
+FAIL: test_current_index_status_matches_each_current_spec
+AssertionError: 'active' not found in 'approved package defining the canonical
+  .agents/knowledge/ and .agents/prompts/ categories, with an approved Plan and
+  ready Task' : SPEC-0175
+```
+
+The metadata, corpus-lifecycle, links, contract, renderer and freshness checks
+all passed on the same tree, so running them is not equivalent to running the
+gate. The index row was corrected and `tests.lib.document_governance.test_spec_packages`
+returned `Ran 33 tests OK`. The staged diff was reviewed after the rejection
+before retrying, because an earlier rejected run in this package left a
+canonical source damaged; this one changed only the four intended files.
+
+The earlier claim that each remaining transition needs its own later branch is
+withdrawn. It sat one paragraph away from its own correction, which already
+said that cutting a local branch changes nothing and only the remote advancing
+does. The operative condition was never the branch. On `main` the base resolved
+as `source=local:upstream ref=@{upstream}`; on a freshly cut
+`docs/0175-dev-integration`, which has no upstream, it resolved one candidate
+later as `source=local:origin/main ref=origin/main`. Both returned
+`merge_base=7827cb1c27c8043c11791c3d1c6fbcdeba68fb39`, so the selected source
+differs between branches while the base does not.
+
+`--transition-override-file` was re-examined as a possible shortcut and
+rejected on two independent grounds. It appears in no gate, hook, or workflow
+file, so a local pass obtained with it would not be reproducible by the check
+that gates the commit; and its loader documents it as reverse-transition
+evidence requiring a named approval, which no one has given. Manufacturing one
+would defeat the check rather than satisfy it.
+
+### The `dev` target measured against the policy that does not name it (2026-09-07, local-executed)
+
+The current request names `dev` as the integration target. A local `dev` did not
+exist, and an earlier report in this session concluded from `git branch --list`
+that no `dev` branch existed at all. That conclusion was wrong: the command
+lists local branches only, and `origin/dev` is present.
+
+```text
+git rev-parse origin/dev                       cd13457528347437702c9cabb539efc0f11c22d8
+git log -1 --format=%ci origin/dev             2026-06-01 09:47:27 +0900
+git rev-list --count origin/main..origin/dev   0
+git rev-list --count origin/dev..origin/main   1903
+git merge-base HEAD origin/dev                 cd13457528347437702c9cabb539efc0f11c22d8
+```
+
+`origin/dev` is a strict ancestor of the integration history and carries no
+commit of its own, so bringing it forward is a fast-forward and can lose
+nothing. It is also undescribed by governance: `git-workflow.md` names `main` as
+the only protected baseline, and the git-flow contract's head-branch pattern at
+`scripts/lib/gate/ci_gate_adapters.py:740` admits the Conventional Commit
+prefixes plus `dependabot` and `codex` but not `dev`, so `dev` can be a merge
+target here and never a pull-request head. That gap is recorded in Deferred
+Items and routed to the policy owner rather than closed by this package, which
+owns no branching policy.
+
+Updating `origin/dev` is a push and was not performed. The local refs are
+fast-forwarded and the remote is left where it stands.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -950,6 +1054,7 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `7cbc71e21` | W16 | `fix(spec): State the query wherever a Git value was written` |
 | `b22fe6fa5` | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
 | `9c3a5f32c` | W16 | `docs(task): Fill the ledger row that a commit cannot write for itself` |
+| `7827cb1c2` | W17 | `docs(spec): Require the entry path to name both categories` |
 
 The ledger is updated in the commit that closes each unit, because a reader
 deciding what this package has produced has no other authority for it. It fell
@@ -981,7 +1086,8 @@ changes without any edit to this file.
 | Fixture reduction | Requires a separate duplication and maintenance-cost comparison; safety negative tests must be preserved |
 | REQ-0026, AD-0030, ADR-0031 retention-owner promotion | Owned by SPEC-0173 as its declared open design dependency |
 | Role-system import, consolidation, or retirement from the external catalog | Each change moves a permission profile and a handoff contract; this package's acceptance contract preserves 14 role IDs, so the change would be unreviewable here. This package restores the canonical owner of the intake decision instead |
-| Spec to `active`, Plan to `active`, Task to `in-progress` | Each needs its own branch after the remote advances, because previous status is read from the merge base and only one transition per document is observable per branch. The package integrity rules add an order: an `active` Plan and an `in-progress` Task each require an `active` Spec, both measured as `configuration-error` rather than assumed. The transitions already taken are recorded in the acceptance mapping |
+| `dev` as an integration target that governance does not describe | `git-workflow.md` names only `main` as the protected baseline and the git-flow head-branch pattern excludes `dev`, so the target the request names has no policy owner. Closing the gap edits a policy this package does not own; it is routed to that owner rather than decided here |
+| Retiring or refreshing the stale `origin/dev` and the two remote `codex/**` branches | Every option is a remote reference change, which no grant here covers |
 
 ## Related Documents
 

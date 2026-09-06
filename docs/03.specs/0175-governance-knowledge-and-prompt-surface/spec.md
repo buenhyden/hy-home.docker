@@ -1,8 +1,8 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
@@ -96,14 +96,26 @@ agent catalog is stale.
   deployment, live Compose or service action, credential values, user-global
   settings, global installation, model entitlement change, and hook trust
   change.
-- Integration into the local `main` branch and retirement of the work branch
-  and its worktree are authorized. Publishing to the remote is not part of that
-  grant: a registered hook blocks pushing to `main`, and a blocked action is not
-  performed by another route. No work under this Spec pushes. The remote has
-  nonetheless advanced more than once from outside it; the position is read with
-  `git rev-parse origin/main` and `git reflog show origin/main --date=iso`
-  rather than stated here, and every claim about Hosted CI, branch protection
-  and entitlement stays unverified regardless of where the branch points.
+- Integration into the local `dev` and `main` branches and retirement of the
+  work branch and its worktree are authorized. `dev` is the target the current
+  request names; `main` remains the target every earlier grant named, and
+  neither supersedes the other because the two refs are fast-forwarded to the
+  same commit. Publishing to the remote is not part of that grant: a registered
+  hook blocks pushing to `main`, a blocked action is not performed by another
+  route, and no push is attempted to any other ref either. No work under this
+  Spec pushes. The remote has nonetheless advanced more than once from outside
+  it; the position is read with `git rev-parse origin/main` and
+  `git reflog show origin/main --date=iso` rather than stated here, and every
+  claim about Hosted CI, branch protection and entitlement stays unverified
+  regardless of where the branch points.
+- `dev` is an integration target this repository's governance does not describe.
+  The branching strategy in `git-workflow.md` names only `main` as the protected
+  baseline, and the git-flow contract's head-branch pattern admits `feat`, `fix`,
+  `hotfix`, the remaining Conventional Commit prefixes, `dependabot` and `codex`
+  but not `dev`, so `dev` can be a merge target here and never a pull-request
+  head. What `origin/dev` holds is a Git query rather than a claim in this
+  document; the gap between a target the request names and a target the policy
+  describes is recorded in the Task and routed to the policy owner.
 - Deferred with a named reason rather than silently dropped: consolidating the
   Stage 90 curated repository map into `knowledge/`, extending model rows with
   context, cost, latency, and output ceilings, binding Codex `skills.config`,
@@ -277,9 +289,9 @@ reject the output-style change while accepting the new categories.
     entitlement, and unverified remote state. A cost that was not measured is
     recorded as unmeasured, never as zero.
 15. The branch closes through the finishing procedure. With integration
-    authorized, the work is merged into the local `main` branch and the work
-    branch is retired only after that merge is verified to contain it. No work
-    under this Spec performs a push; where `origin/main` points is a Git query,
+    authorized, the work is merged into the local `dev` and `main` branches and
+    the work branch is retired only after each merge is verified to contain it.
+    No work under this Spec performs a push; where `origin/main` points is a Git query,
     not a criterion, and an advance made outside this Spec is recorded and
     routed rather than treated as a violation of it. The user's pre-existing
     changes are left untouched.
@@ -328,7 +340,7 @@ configuration appears.
 
 This package changes tracked Markdown, JSON, YAML, and Python plus their tests.
 It starts, stops, and reconfigures nothing. The close is a local merge into
-`main` followed by branch retirement, with no remote publication. The
+`dev` and `main` followed by branch retirement, with no remote publication. The
 output-style change takes effect
 at the next provider session rather than the current one. Rollback is a reviewed
 revert of the affected logical commit; no reset, clean, force push, or archive

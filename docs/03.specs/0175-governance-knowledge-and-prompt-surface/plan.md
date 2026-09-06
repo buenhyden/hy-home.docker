@@ -1,8 +1,8 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
@@ -90,6 +90,7 @@ evidence is in the Task.
 | W15 Remote advance and lifecycle promotion | partly done; the Spec reached `approved` and ADR-0034 `accepted`, and the remaining transitions wait on the resume condition in W16 |
 | W16 Durable position and the remaining walk | partly done; the position substitution and the two document audits are complete, and the walk continues |
 | W17 Acceptance contract completeness | done; criterion 16 requires the entry path to name both categories, which no earlier criterion did |
+| W18 Lifecycle promotion and `dev` integration | done; the remote reached the package HEAD, so all three transitions landed in one commit, and `dev` receives the work alongside `main` |
 
 ### W1: Decision and durable owners
 
@@ -401,6 +402,42 @@ These remain outside this Plan and are never inferred from a local result:
 Hosted CI, remote branch protection, provider entitlement, native runtime
 discovery and invocation, the controlled all-files wrapper, and any cost
 measurement. Record each as NOT_RUN or unverified with its missing input.
+
+### W18: Lifecycle promotion and `dev` integration
+
+Two conditions changed at once. `origin/main` advanced to the package HEAD from
+outside this Plan, making the merge base equal to HEAD, and the current request
+named `dev` as an integration target.
+
+Because the base equals HEAD, every package document sits exactly one lifecycle
+edge from its own base status, so the Spec's `approved` to `active`, the Plan's
+`approved` to `active`, and the Task's `ready` to `in-progress` are all provable
+in a single commit. The package integrity rules are satisfied by the end state
+rather than by an ordering across commits: an `active` Plan and an
+`in-progress` Task each require an `active` Spec, and all three are active
+together. Measure this before committing it, and record the measured base with
+the reported `merge_base` rather than assuming which ref was selected.
+
+The earlier conclusion that each transition needs its own later branch is
+withdrawn by this measurement. A branch was never the operative condition; the
+base is, and `resolve_base_selection` reaches the same base from any local
+branch cut off the same remote ref.
+
+Integration then closes the branch:
+
+1. Verify the working tree is clean and the changed public profile passes on the
+   final path set.
+2. Create a local `dev` from `origin/dev` and fast-forward it onto the work
+   branch. `origin/dev` carries no commit that `main` lacks, so this is a
+   fast-forward and no merge commit is created.
+3. Fast-forward `main` onto the same commit, so the two targets name one
+   reviewed history rather than diverging.
+4. Prove each target contains every commit of this package before retiring
+   anything, by comparing revisions rather than trusting a merge's exit code.
+5. Delete the work branch only after that proof.
+6. Leave `origin/dev` and `origin/main` untouched. Publishing either is a push,
+   which no grant in this package covers, so integration stops at the local
+   refs and every statement about the remote stays unverified.
 
 ## Rulings
 
