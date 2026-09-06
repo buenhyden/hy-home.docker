@@ -47,6 +47,35 @@ package; no second progress ledger is created.
 | Worktrees | `git worktree list` | one entry; the existing feature branch is reused rather than creating a second isolated tree |
 | Graph advisory | `graphify-out/GRAPH_REPORT.md` built from `f8a72211` | differs from HEAD, so the graph is advisory only and conclusions are corroborated against tracked sources |
 
+### Current branch and worktree re-verification (2026-09-06)
+
+The baseline above is the package's starting point and is preserved as written.
+This section records the state as re-measured after five commits, so a reader
+resumes from current Git state rather than from the starting snapshot.
+
+| Check | Command | Result |
+| --- | --- | --- |
+| Branch and HEAD | `git rev-parse HEAD` | `5af741ce0b87fc1a4d157f639fbb5d06589f3e4c` on `codex/0173-agent-governance-home` |
+| Worktree | `git status --porcelain` | empty |
+| Worktrees | `git worktree list` | one entry at the primary path; no second tree was created |
+| Remote main | `git fetch origin` then `git rev-parse origin/main` | `8176cdee732954415bc5462d6d4d43da4e319394`, unchanged by the fetch |
+| Remote truth | `git ls-remote origin refs/heads/main` | `8176cdee732954415bc5462d6d4d43da4e319394`, identical to the local ref |
+| Merge base | `git merge-base origin/main HEAD` | `8176cdee732954415bc5462d6d4d43da4e319394` |
+| Divergence | `git rev-list --left-right --count origin/main...HEAD` | `0 12`; nothing to integrate from main |
+
+Refreshing the merge base is therefore not available: the local `origin/main`
+already equals the remote branch, so the fetch moved nothing and the lifecycle
+constraint recorded under the W2 correction is not an artifact of a stale ref.
+
+`resolve_base_selection` in `scripts/lib/document_governance/metadata/lifecycle.py`
+picks its base from `TEMPLATE_GATE_BASE`, then `GITHUB_BASE_REF`, then
+`@{upstream}`, then `origin/main`, then `main`. The current-branch basis the
+repository already supports is `@{upstream}`, and it does not resolve here
+because this branch has no remote tracking ref. Establishing one requires a
+push, which is outside this Task's authorization and is recorded as a blocked
+option rather than taken. Setting `TEMPLATE_GATE_BASE` locally would forge the
+gate's comparison base and is prohibited, so it is not used either.
+
 ### External observations (2026-09-06)
 
 | Subject | Method | Result | Evidence class |
@@ -218,9 +247,15 @@ before it is actually performed.
 
 ## Commit Ledger
 
-| Unit | Type and scope | State |
+| Commit | Unit | Subject |
 | --- | --- | --- |
-| W1 | `docs(architecture)` | pending |
+| `1befc0ed4` | W1 | `docs(architecture): Adopt knowledge and prompt canonical categories` |
+| `ed0e71d24` | W2a | `docs(spec): Define governance knowledge and prompt surface package` |
+| `e6b109b94` | W2 correction | `docs(spec): Correct the package lifecycle plan to what the gate allows` |
+| `4fe3c8601` | W4 | `feat(governance): Register knowledge and prompt document shapes` |
+| `5af741ce0` | Spec alignment | `docs(spec): Align the acceptance contract with the request and the gate` |
+
+W5 through W12 are not committed yet.
 
 ## Rulings
 
