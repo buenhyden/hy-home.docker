@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.14.0"
+version: "0.15.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1038,9 +1038,9 @@ The watcher also left an untracked `graphify-out/2026-09-07/` snapshot, which a
 Reading `git diff --cached --numstat` before every commit is what caught it, and
 that is the reason the step exists.
 
-It was unstaged and stays uncommitted, on a measurement rather than on the
-separate-unit rule alone. Dated snapshot directories are tracked here, nine of
-them, so the path itself is conventional; this one is truncated:
+It was unstaged, on a measurement rather than on the separate-unit rule alone.
+Dated snapshot directories are tracked here, nine of them, so the path itself is
+conventional; this one is truncated:
 
 ```text
 graphify-out/2026-07-10/graph.json   21209 nodes   (last tracked snapshot)
@@ -1051,9 +1051,39 @@ graphify-out/2026-09-07/graph.json    2412 nodes   (this byproduct)
 At roughly a tenth of the corpus it agrees with the tool's own refusal to
 overwrite the top-level graph, which named missing chunk files as the likely
 cause. Committing it would publish a navigation graph that is missing ninety
-percent of the repository while looking like a routine daily snapshot, so the
-stop was allowed with this reason recorded instead. Regenerating it belongs to
-the graph CLI and to the rebuild already deferred, not to this package.
+percent of the repository while looking like a routine daily snapshot.
+
+It was removed from the working tree rather than committed or left lying in it.
+Nothing referenced it: the top-level graph and report name it zero times, and
+the only tracked mentions are the two lines of this record. The nine tracked
+snapshots were not touched, and the directory was created by the graph watcher
+as a side effect of the branch switches above rather than by any authored
+change, so removing it is cleanup of this session's own byproduct. Regenerating
+a sound one belongs to the graph CLI and to the rebuild already deferred, not to
+this package.
+
+The commit that recorded this was itself rejected, for a file no authored change
+had touched. The graph watcher had rewritten `.gitignore`, broadening
+`graphify-out/.graphify*` to `graphify-out/` and deleting the three negations
+that keep the tracked snapshots visible:
+
+```text
+-graphify-out/.graphify*
++graphify-out/
+-!graphify-out/graph.html
+-!graphify-out/GRAPH_REPORT.md
+-!graphify-out/graph.json
+```
+
+The deleted lines carry their own comment saying they come last so they override
+every graphify rule above them, so the rewrite contradicts the committed intent
+of the file it edited, and it would have made the repository's own tracked
+snapshots ignored. It was reverted with `git checkout -- .gitignore` and reached
+no commit; `git show --name-only` over every commit of this unit reports zero
+occurrences of the path. The diff hygiene hook caught it on a trailing blank
+line, which is a weaker signal than the change deserved: what made it visible
+was reading the working tree after the rejection rather than retrying, the same
+step that caught a damaged canonical source earlier in this package.
 
 `origin/dev` and `origin/main` were not touched. Publishing either target is a
 push, which no grant covers, so `origin/dev` still points at
