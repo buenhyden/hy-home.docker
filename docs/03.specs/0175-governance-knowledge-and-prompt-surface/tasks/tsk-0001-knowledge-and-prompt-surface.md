@@ -118,6 +118,34 @@ index row.
 This operational fact is carried into the canonical verification surface map
 when W7 creates it, so the next session does not rediscover it.
 
+### W2 plan correction (2026-09-06, local-executed)
+
+The Plan's original W2 split the package into four commits so the Spec could
+walk `draft` to `active` inside this branch. That walk is not reachable. Setting
+the Spec to `review` and the Task to `ready` and running the changed-mode
+metadata check returned:
+
+```text
+metadata base: source=local:origin/main ref=origin/main merge_base=8176cdee732954415bc5462d6d4d43da4e319394
+docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md: invalid-initial-status: new spec documents must start at draft
+docs/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md: invalid-initial-status: new task documents must start at draft
+metadata check-changed: selected=19 violations=2 legacy_exceptions=0 transition_overrides=0
+```
+
+`previous_status` is read from the merge base, not from the previous commit, so
+splitting the transitions across commits changes nothing. `git show
+8176cdee:docs/03.specs/0173-governance-qa-surface-convergence/spec.md` returns
+`status: "active"`, which is why the comparison package is exempt: it predates
+the merge base. `scripts/lib/gate/ci_gate_contract.py` invokes the check with
+`("--mode", "check-changed")` only, so `--transition-override-file` is
+unreachable from the gate.
+
+The transitions were reverted with `git checkout HEAD -- docs/03.specs/`, the
+working tree returned to clean, and W2b through W2d were removed from the Plan.
+The package remains at `draft` for this branch. Every later work unit in this
+Task therefore executes under a `draft` package, and this entry is the recorded
+reason.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

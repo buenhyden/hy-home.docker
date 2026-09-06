@@ -75,13 +75,20 @@ Verify: `check-document-metadata.py`, `check-document-links.py --mode all`,
 `check-agent-governance-contract.py --mode repository`, the taxonomy test
 module, `git diff --check`, and the changed public profile.
 
-### W2: Package creation and lifecycle walk
+### W2: Package creation
 
 `check-document-metadata.py --mode check-changed` runs in the public gate with
-`enforce_initial_status` on, so a new Spec must appear at its lifecycle's
-initial status and reach `active` through separate observable transitions. This
-work unit is therefore four commits, matching the walk SPEC-0173's own history
-records.
+`enforce_initial_status` on, and a document's previous status is read from the
+merge base with `origin/main`. That merge base is fixed at
+`8176cdee732954415bc5462d6d4d43da4e319394` for this branch, so every member of a
+package created here stays new for as long as the branch lives and can never
+record an observed transition, no matter how the commits are split. SPEC-0173
+reaches `active` only because it already existed at that merge base.
+`--transition-override-file` would carry named approval evidence, but
+`scripts/lib/gate/ci_gate_contract.py` does not pass the flag, so the gate never
+reads an override.
+
+This work unit is therefore one commit.
 
 - **W2a**: create `docs/03.specs/0175-governance-knowledge-and-prompt-surface/`
   with `spec.md`, `plan.md`, and
@@ -89,14 +96,13 @@ records.
   (`draft`). Allocate `SPEC-0175` in the Stage 99 spec identity space, add the
   package row to the Stage 03 index, and add ADR-0034's implementation link now
   that its target exists.
-- **W2b**: Spec `draft` to `review`; Task `draft` to `ready`.
-- **W2c**: Spec `review` to `approved`; Plan `draft` to `approved`.
-- **W2d**: Spec `approved` to `active`; Plan `approved` to `active`; Task
-  `ready` to `in-progress`. A current Task requires an active Spec and Plan, so
-  this transition is last.
 
-Each commit carries at most one transition per document, because the walk is
-proved from Git history rather than asserted in frontmatter.
+The package stays at `draft` for the life of this branch. Promoting it to
+`review`, `approved`, and `active` belongs to the first branch taken after this
+one is integrated, where the merge base carries the `draft` statuses and each
+transition becomes observable. Recording the package as `active` here would
+assert in frontmatter a walk that no Git history proves, which is the failure the
+rule exists to prevent.
 
 Verify per commit: metadata in `check-changed` mode, links, corpus lifecycle,
 `git diff --check`.
