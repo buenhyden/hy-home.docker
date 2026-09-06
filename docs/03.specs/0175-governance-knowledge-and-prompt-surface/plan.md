@@ -2,7 +2,7 @@
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
 version: "0.5.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
@@ -302,6 +302,16 @@ with its evidence, correct the acceptance criterion that assumed it had not, and
 then walk the lifecycle that the advance makes observable: ADR-0034 to
 `accepted`, and the Spec, Plan and Task through their own transitions, at most
 one per document per commit.
+
+Exactly one transition per document per branch is provable, not one per commit.
+`previous_status` is read from the merge base, so a document already advanced in
+the working tree is still compared against the status it had at that base.
+Advancing the Spec twice on one branch returns
+`invalid-transition: lifecycle transition requires explicit override:
+draft -> approved`. The remaining transitions belong to the branch taken after
+this one is integrated, one per branch. The Plan advances here only because its
+lifecycle defines `draft` to `approved` as a single step, so that is its first
+transition rather than its second.
 
 Verify: metadata in `check-changed` mode is the gate that proves each
 transition; a rejected transition is recorded, never overridden.

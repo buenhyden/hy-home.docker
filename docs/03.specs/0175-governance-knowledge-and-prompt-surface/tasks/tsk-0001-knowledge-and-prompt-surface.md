@@ -689,6 +689,32 @@ The changed public profile also admitted the W14 commit at pre-commit, which is
 what allowed it to exist. Recording the evidence only after a reviewer asked is
 the defect; the commit was gated, but the Task did not say so.
 
+### Lifecycle walk, and its measured rate (2026-09-07, local-executed)
+
+With the merge base carrying the package, the transition rejected at W2 now
+passes: the Spec moved `draft` to `review` and the Task `draft` to `ready` with
+`violations=0`.
+
+A second transition on the same branch does not pass. Setting the Spec from
+`review` to `approved` in the same working tree returns:
+
+```text
+docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md: invalid-transition: lifecycle transition requires explicit override: draft -> approved
+```
+
+`previous_status` comes from the merge base, not from the previous commit, so an
+already-advanced working-tree status is invisible to the check. The rate is one
+transition per document per branch, not per commit. The W2 entry concluded zero
+transitions; the complete rule is zero when the document is absent from the
+merge base and one when it is present.
+
+The Plan reaches `approved` in the same commit because its lifecycle defines
+`draft` to `approved` as a single step, so that is its first transition. The
+Spec's `approved` and `active`, the Plan's `active`, and the Task's
+`in-progress` each need their own later branch. No override was requested: the
+gate does not pass `--transition-override-file`, and manufacturing one to move
+faster would defeat the check rather than satisfy it.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
