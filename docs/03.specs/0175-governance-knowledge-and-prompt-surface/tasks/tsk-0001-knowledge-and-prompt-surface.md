@@ -548,8 +548,41 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 12 | Prompts used in this work | `commit-message` drafted the W6 message and caught two unaccounted paths; `diff-review` drove the independent review; `test-design` shaped the three RED-then-GREEN assertions; `repository-map` and `verification-surface-map` were verified against their sources | local-executed |
 | 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
-| 15 | Closing | pending the integration unit | NOT_RUN |
+| 15 | Closing | local `main` fast-forwarded to the reviewed head and the work branch retired after the containment proof; `origin/main` unchanged | local-executed |
 | — | ADR-0034 promotion to `accepted` | attempted and rejected with `invalid-initial-status: new adr documents must start at proposed`; the decision is new relative to the merge base, so it stays `proposed` here and is promoted with the package after integration | local-executed |
+
+### W13: Integration and branch retirement (2026-09-06, local-executed)
+
+The final `run-ci-gate.py --profile changed` on the reviewed head returned exit
+`0` with no `FAILED` block.
+
+`main` was verified to be an ancestor of the work branch, then fast-forwarded,
+so the reviewed commits reach `main` unchanged and no merge commit is
+introduced. Containment was proved before anything was deleted, rather than
+inferred from the merge's exit code:
+
+```text
+commits on branch not in main: 0
+commits in main not on branch: 0
+tree identical? yes
+```
+
+All nine new canonical files are present under `main` at
+`5a84eb5fc8673ccdec09ef9c14e358eafd8010e8`. The work branch
+`codex/0173-agent-governance-home` was then deleted with `git branch -d`, which
+refuses a branch that is not merged, so the delete is itself a second
+containment check. No worktree was removed: one primary worktree is in use and
+none was created for this work.
+
+`origin/main` remains `8176cdee732954415bc5462d6d4d43da4e319394`. Nothing was
+pushed. A registered hook blocks pushing to `main`, and that block was respected
+rather than routed around, so every statement about remote state, Hosted CI, and
+branch protection remains unverified.
+
+Because `origin/main` did not move, the lifecycle constraint recorded under the
+W2 correction still holds: `resolve_base_selection` reaches `origin/main` before
+`main`, so this package and ADR-0034 stay at their initial statuses until the
+remote branch advances.
 
 ## Review Evidence
 
