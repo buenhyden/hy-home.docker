@@ -366,6 +366,41 @@ the key the corpus and two existing Stage 99 profiles already use. The profile
 was corrected to the repository's actual key rather than the members being
 rewritten to an invented one, and the check returns `violations=0`.
 
+### W8: Language authority repaired, output style reduced (2026-09-06)
+
+`standards.md` routes the conversational-language rule to `output-style.md`,
+which did not state it, leaving the Claude adapter as its only owner. The rule
+now lives in its canonical owner, the artifact-language rule in
+`documentation-protocol.md` describes the corpus as measured instead of
+asserting a per-stage mandate, and the adapter is reduced to Claude Code
+rendering plus routing.
+
+The `keep-coding-instructions` field was verified against the installed release
+before being used, not assumed (`local-parser`). `claude --version` reports
+`2.1.263`. Both `keepCodingInstructions` and `keep-coding-instructions` appear
+in that executable, and its own help text reads: `If true, the default coding
+instructions stay in the system prompt alongside this style.` Whether the value
+takes effect is `unverified-runtime`: an output style is read at session start,
+so this change is reviewed as text and observed at the next session.
+
+Corpus re-measured at this commit, counting files containing any Hangul
+(`local-executed`):
+
+```text
+docs/01.requirements       korean=  18 / total=  18
+docs/02.architecture       korean=  56 / total=  57
+docs/03.specs              korean=   1 / total=  12
+docs/05.operations         korean= 196 / total= 209
+docs/90.references         korean=   2 / total=  59
+docs/99.templates          korean=   0 / total=  38
+.agents                    korean=   0 / total=  83
+```
+
+Stage 01, 02 and 05 are Korean; Stage 03, 90 and 99 are English; `.agents` holds
+83 files and none contains Hangul, so the English-only constraint still holds
+after nine files were added to it. The promoted statement describes this rather
+than mandating a stage-to-language mapping the corpus would contradict.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

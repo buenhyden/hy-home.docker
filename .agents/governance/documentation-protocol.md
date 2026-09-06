@@ -89,8 +89,19 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 14. Record execution evidence in the co-located Stage 03 Task.
 15. Validate metadata, links, and stage-specific contracts before completion.
 
-Governance and internal technical authority is written in English. User-facing
-guidance may follow the audience language when its template permits it.
+Language follows a document's audience, not its stage number. These surfaces are
+English-only because their readers are contracts, generators, and validators:
+`.agents/**`, the authored native provider documents, and the Stage 99 registry,
+schema, and template sources. Every other document may follow the audience
+language its profile permits. Identifiers, paths, command text, metadata keys,
+and code samples keep their original form in every language.
+
+In this repository the typed human-facing content of Stage 01, Stage 02, and
+Stage 05 is authored in Korean, while Stage 03 change contracts and Stage 90
+evidence are authored in English. Those are observations of current practice,
+not additional obligations; a document's profile and audience decide its
+language, and no provider surface may set that rule. Conversational responses
+are not artifacts and follow [output style](output-style.md).
 
 Historical quotations retained in current Markdown must be a contiguous explicit
 blockquote beginning `> Historical evidence (not current authority; source: Git history):`.

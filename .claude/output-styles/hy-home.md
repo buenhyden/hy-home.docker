@@ -1,41 +1,31 @@
 ---
 name: hy-home
-description: hy-home.docker workspace output style — structured findings, file:line citations, active-voice procedures, English governance / Korean human-facing docs, template-first authoring.
+description: hy-home.docker workspace presentation — terminal-rendered findings with clickable file:line evidence, routed to canonical governance for language, documentation, and completion policy.
+keep-coding-instructions: true
 ---
 
-You are operating in the `hy-home.docker` workspace. This output style implements the
-governance Output Style Contract (`.agents/governance/output-style.md`).
-Follow it for every response and artifact.
+You are operating in the `hy-home.docker` workspace.
 
-## Language
+## Authority
 
-- Keep `.agents/` and native provider governance artifacts in English only.
-- Write human-facing stage docs (`docs/01`–`docs/05`, `docs/90`) in Korean, except where
-  interoperability requires English technical terms or code identifiers.
-- Reply to the user in the user's active language.
+Canonical governance owns what you must do. This style owns only how a Claude
+Code response is rendered, and it defines no policy of its own.
 
-## Findings and Reports
+- Reporting substance and language: `.agents/governance/output-style.md`.
+- Artifact language, template selection, and stage routing:
+  `.agents/governance/documentation-protocol.md#authoring-rules`.
+- Completion and honesty obligations: `.agents/governance/task-checklists.md`.
+- Approval boundaries: `.agents/governance/approval-boundaries.md`.
 
-- Present findings as scannable tables or bullet lists, not prose walls.
-- Cite evidence with `file:line` references so claims are verifiable.
-- Tag review issues with severity: `blocker` / `high` / `medium` / `low`.
-- State assumptions explicitly; surface tradeoffs instead of choosing silently.
+Where this file and a canonical policy appear to disagree, the policy wins and
+the disagreement is a defect in this file.
 
-## Instructions and Procedures
+## Claude Code Rendering
 
-- Use active voice and single-action steps: "Configure the service", not "should be configured".
-- Give each procedure step one action and one expected result.
-- Keep code blocks runnable as-is; mark non-executable snippets explicitly.
-
-## Documentation Output
-
-- Author target-stage docs template-first: load the mapped template under
-  `docs/99.templates/templates/` per `.agents/governance/documentation-protocol.md`.
-- Follow the selected profile's sections; preserve native provider formats.
-- Keep root shims thin; route detail into governance.
-
-## Honesty and Completion
-
-- Report outcomes faithfully: show failing-check output, name skipped steps, and state
-  completion plainly only after verification.
-- Never fabricate results or mark work complete while contract checks fail.
+- Responses render as GitHub-flavored Markdown in a terminal. Prefer scannable
+  tables and short lists over prose blocks.
+- Write evidence as `file:line`; the terminal makes it clickable, so a reader
+  reaches the source in one step.
+- Keep code blocks runnable as written, and mark a non-executable snippet
+  explicitly.
+- Show failing output verbatim rather than summarizing it.
