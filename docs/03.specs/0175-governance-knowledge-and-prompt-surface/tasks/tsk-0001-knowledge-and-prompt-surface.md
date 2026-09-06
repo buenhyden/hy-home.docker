@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -825,6 +825,37 @@ Plan can say what remains, and it was not saying. The Execution Sequence now
 carries a per-unit state table, with `done` defined as the commit existing and
 the evidence being in this Task.
 
+### A commit cannot name its own SHA (2026-09-07, local-executed)
+
+The previous commit tried to pre-fill its own ledger row to stop the row from
+being forgotten again, and wrote `this commit` as a placeholder. A commit's SHA
+is not known until the commit exists, so the row could not be completed in the
+commit it describes, and the placeholder survived into the tree.
+
+The rule that stops the recurrence is not a placeholder but an ordering: a
+unit's row is written in the next commit, which is also where its predecessor's
+verification evidence lands. That is what happened here, and it is the only
+order that produces a true row without a second edit to the same commit.
+
+Writing this entry reproduced the error one line further on: the draft filled in
+a SHA for the commit that was about to be made, which is the same invention in a
+different place. It was removed before the commit. The ledger row for this
+commit lands in the next one, which is what the ordering above requires; the row
+above it, `b22fe6fa5`, is exact because that commit exists.
+
+The acceptance contract was re-verified against the current tree at the same
+time, from the files rather than from this Task:
+
+```text
+1 roots: ('README.md', 'governance', 'knowledge', 'prompts', 'roles', 'skills')
+2 profiles registered: True
+3 templates present: True
+4 knowledge: README.md, glossary.md, repository-map.md, verification-surface-map.md
+5 prompts: README.md, commit-message.md, diff-review.md, handoff.md, test-design.md
+6 knowledge and prompt entries in canonical_sources: 9
+11 roles: 14   skills: 23
+```
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -884,7 +915,7 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `db9901bbe` | W15 | `docs(spec): Approve the Plan and record the provable transition rate` |
 | `f39080c7b` | W16 | `fix(spec): Record position from Git instead of a branch that dies` |
 | `7cbc71e21` | W16 | `fix(spec): State the query wherever a Git value was written` |
-| this commit | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
+| `b22fe6fa5` | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
 
 The ledger is updated in the commit that closes each unit, because a reader
 deciding what this package has produced has no other authority for it. It fell
