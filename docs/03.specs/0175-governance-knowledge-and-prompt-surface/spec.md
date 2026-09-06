@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -88,9 +88,14 @@ agent catalog is stale.
   first branch taken after integration, where each transition is observable.
 - Out of scope: REQ-0026, AD-0030, and ADR-0031 retention-owner promotion,
   which SPEC-0173 owns as a separate open design dependency. Also out of scope:
-  push, pull request, merge, deployment, live Compose or service action,
-  credential values, user-global settings, global installation, model
-  entitlement change, and hook trust change.
+  deployment, live Compose or service action, credential values, user-global
+  settings, global installation, model entitlement change, and hook trust
+  change.
+- Integration into the local `main` branch and retirement of the work branch
+  and its worktree are authorized. Publishing to the remote is not part of that
+  grant: a registered hook blocks pushing to `main`, and a blocked action is not
+  performed by another route. `origin/main` therefore stays where it is, and
+  every claim about remote state stays unverified.
 - Deferred with a named reason rather than silently dropped: consolidating the
   Stage 90 curated repository map into `knowledge/`, extending model rows with
   context, cost, latency, and output ceilings, binding Codex `skills.config`,
@@ -263,9 +268,10 @@ reject the output-style change while accepting the new categories.
     repository-enforced, official-source, unverified runtime, unverified
     entitlement, and unverified remote state. A cost that was not measured is
     recorded as unmeasured, never as zero.
-15. The branch closes through the finishing procedure with the branch and its
-    worktree preserved. No push, pull request, or merge occurs without separate
-    approval, and the user's pre-existing changes are left untouched.
+15. The branch closes through the finishing procedure. With integration
+    authorized, the work is merged into the local `main` branch and the work
+    branch is retired only after that merge is verified to contain it. Nothing
+    is pushed, and the user's pre-existing changes are left untouched.
 
 ## Traceability
 
@@ -296,8 +302,9 @@ observation or an owner decision this package does not supply.
 ## Operational Impact
 
 This package changes tracked Markdown, JSON, YAML, and Python plus their tests.
-It starts, stops, and reconfigures nothing. The default close is local commits
-with the branch and worktree preserved; integration is a separate decision. The output-style change takes effect
+It starts, stops, and reconfigures nothing. The close is a local merge into
+`main` followed by branch retirement, with no remote publication. The
+output-style change takes effect
 at the next provider session rather than the current one. Rollback is a reviewed
 revert of the affected logical commit; no reset, clean, force push, or archive
 body rewrite is part of the plan.

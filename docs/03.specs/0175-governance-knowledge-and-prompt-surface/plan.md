@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -21,9 +21,12 @@ author their members, use them inside this package's own execution, and close
 the five defects SPEC-0175 names. Deliver each work unit as a separately
 reviewable logical commit so a reviewer can accept one and reject its neighbor.
 
-Authorization covers local work on `codex/0173-agent-governance-home` and local
-commits. It does not cover push, pull request, merge, deployment, live service
-action, credential values, global installation, or remote state.
+Authorization covers local work on `codex/0173-agent-governance-home`, local
+commits, integration into the local `main` branch, and retirement of the work
+branch and its worktree. It does not cover push, pull request, deployment, live
+service action, credential values, global installation, or remote state. A
+registered hook blocks pushing to `main`; that block is respected rather than
+routed around, so `origin/main` is unchanged by this work.
 
 ## Dependencies
 
@@ -251,6 +254,29 @@ ADR-0034 from `proposed` to `accepted` only after the contract, registry, and
 suite evidence is recorded.
 
 Deferred items are listed with their reason, not silently dropped.
+
+### W13: Integration and branch retirement
+
+Integration is authorized, so the branch closes rather than being preserved.
+
+1. Verify the working tree is clean and the changed public profile passes on the
+   final path set.
+2. Fast-forward the local `main` branch onto the work branch. A merge commit is
+   avoided where the history already allows a fast-forward, so the reviewed
+   commits reach `main` unchanged.
+3. Prove `main` contains every commit of this package before retiring anything,
+   by comparing the two revisions rather than trusting the merge's exit code.
+4. Delete the work branch only after that proof, and remove the worktree only if
+   one was created for this work. A single primary worktree is in use here, so
+   nothing is removed.
+5. Leave `origin/main` untouched. Pushing to `main` is blocked by a registered
+   hook, so integration stops at the local branch and every statement about the
+   remote stays unverified.
+
+The lifecycle constraint is unchanged by this: `resolve_base_selection` reaches
+`origin/main` before `main`, so a local merge does not make the package's
+`draft` statuses transitionable. Promotion still waits for the remote branch to
+advance.
 
 ## Risk and Rollback
 
