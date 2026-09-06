@@ -84,7 +84,7 @@ hy-home.docker/
 | --- | --- | --- |
 | Orchestration | Docker Compose | 루트 `include` 기반 통합 실행 |
 | Infrastructure | 계층형 Compose 스택 | `infra/01`~`infra/11` 서비스 정의 |
-| Documentation | Markdown + stage-based docs | `docs/00`, `docs/01`~`docs/05`, `docs/90`, `docs/99` |
+| Documentation | Markdown + stage-based docs | `docs/01`~`docs/05`, `docs/90`, `docs/98`, `docs/99` |
 | Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
 | Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | 주요 Docker image 선언과 Compose source of truth 동기화 |
@@ -199,8 +199,7 @@ docker compose --profile core up -d
 | --- | --- |
 | [`docs/01.requirements/`](./docs/01.requirements) | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
 | [`docs/02.architecture/`](./docs/02.architecture) | 아키텍처 요구사항과 결정 기록 |
-| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세, 인터페이스, 구현 계약 |
-| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세와 co-located Plan/Task evidence |
+| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세, 인터페이스, 구현 계약과 co-located Plan/Task evidence |
 | [`docs/05.operations/`](./docs/05.operations) | 운영 가이드, 정책, 런북, 사고 기록 |
 | [`docs/90.references/`](./docs/90.references) | 느리게 변하는 참고 지식, 용어, source-backed reference |
 | [`docs/99.templates/`](./docs/99.templates) | 새 문서와 README의 canonical template |

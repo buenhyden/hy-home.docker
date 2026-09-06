@@ -37,7 +37,7 @@ created: "2026-01-12"
 ### Out of Scope
 
 - `infra/` 서비스 정의와 운영 절차
-- `docs/00`부터 `docs/05`, `docs/90`, `docs/98`, `docs/99`까지의 공식 stage 산출물 본문
+- `docs/01`부터 `docs/05`, `docs/90`, `docs/98`, `docs/99`까지의 공식 stage 산출물 본문
 - gitlink/submodule 내부 파일의 직접 수정
 - package manager 캐시, 빌드 산출물, `node_modules/`
 
