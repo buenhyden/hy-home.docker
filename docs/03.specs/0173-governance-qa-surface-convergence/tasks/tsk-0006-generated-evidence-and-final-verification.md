@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.5"
+version: "0.4.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -41,6 +41,34 @@ remain outside scope.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Preservation-owner alignment (2026-09-06)
+
+The reviewed package reconciliation was committed normally as
+`00a72d38f5edf81de367ceee17352dc9c00b2d20`; root and retained QA worktrees are
+clean at that checkpoint. Local main remains 8176cdee7. The eight staged blobs
+matched the reviewed final bytes, staged diff checks passed, and the existing
+Git hook was not bypassed. Final metadata selected eight documents with zero
+violations and zero overrides; link, Markdown and Wiki checks passed.
+The independent evidence/dependency re-review approved specification and quality
+with no findings. This is a local documentation commit, not further integration.
+
+The next bounded unit addresses the upstream promotion dependency identified
+by that review. Its approval context is the user's explicit requirement to
+preserve Spec/Plan/Task bodies and reconcile conflicting current governance,
+together with the latest instruction to execute remaining work after local-main
+integration. It introduces no new preservation semantics or execution permission:
+the canonical policy and existing validator already require full-package
+preservation. The defect is contradictory current Requirement/Description and
+accepted-decision wording. The Plan calls for an actual proposed successor and
+independent review before acceptance; existing ADR-0031's decision body and all
+already frozen records must remain unchanged.
+
+Root owns this Task and package planning/evidence. A bounded documentation
+implementer initially owns only the proposed successor; a separate read-only
+design reviewer maps its lifecycle, consumers and verification. Source/consumer
+cutover follows the reviewed proposal through existing registered lifecycle
+mechanisms, never by fabricating a human approval or deleting historical bodies.
 
 ### Post-integration package review (2026-09-06)
 
@@ -1375,6 +1403,7 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 | `c265bacc5` | Clean-checkout tracked test ownership, preserved Compose case split, post-index Wiki freshness and bounded follow-up evidence |
 | `a8c6ede82` | Isolated Task-only public gate evidence, distinct from whole-migration and native acceptance |
 | `8176cdee7` | Reviewed ten-file static cleanup: preserved calls, facade exports and test bodies; scoped Ruff PASS and 563 direct test executions; now integrated on local main |
+| `00a72d38f` | Reconcile the active package with integrated main; retain original Task evidence, close stale dependencies and record remaining upstream preservation-owner alignment |
 
 ### Historical correction and cleanup checkpoint (2026-09-05)
 
