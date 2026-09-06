@@ -238,6 +238,34 @@ class AgentGovernanceContractTests(unittest.TestCase):
         ):
             self.assertEqual("read-only", permissions[role_id])
 
+    def test_knowledge_and_prompt_profiles_are_registered(self) -> None:
+        """Stage 99 owns the document shape of every canonical category."""
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        profiles = {profile["id"]: profile for profile in registry["profiles"]}
+        expected = {
+            "governance-knowledge": ".agents/knowledge/{slug}.md",
+            "governance-knowledge-index": ".agents/knowledge/README.md",
+            "governance-prompt": ".agents/prompts/{slug}.md",
+            "governance-prompt-index": ".agents/prompts/README.md",
+        }
+        for profile_id, path_pattern in sorted(expected.items()):
+            with self.subTest(profile=profile_id):
+                self.assertIn(profile_id, profiles)
+                profile = profiles[profile_id]
+                self.assertEqual(path_pattern, profile["path_pattern"])
+                self.assertEqual("living", profile["lifecycle_id"])
+                self.assertEqual("living", registry["transitions"][profile_id])
+                # A canonical category routes and declares; it never carries a
+                # traceable artifact identity of its own.
+                self.assertIsNone(profile["artifact_id_pattern"])
+                self.assertEqual("none", profile["identity_relation"])
+        for role in ("governance/knowledge", "governance/prompt"):
+            with self.subTest(template_role=role):
+                source = registry["template_roles"][role]["source"]
+                self.assertTrue((ROOT / source).is_file())
+
     def test_supported_providers_and_governance_roots_are_exact(self) -> None:
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)

@@ -1866,6 +1866,136 @@
       "exceptions": []
     },
     {
+      "id": "governance-knowledge",
+      "type": "governance/knowledge",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/knowledge/{slug}.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/knowledge",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "observed_at",
+        "reviewed_at",
+        "next_review_at"
+      ],
+      "free_form_sections": true,
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Provenance",
+        "Refresh Triggers",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
+      "id": "governance-knowledge-index",
+      "type": "governance/knowledge-index",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/knowledge/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "created"
+      ],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
+      "id": "governance-prompt",
+      "type": "governance/prompt",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/prompts/{slug}.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/prompt",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "created"
+      ],
+      "required_sections": [
+        "Purpose",
+        "Required Inputs",
+        "Output Contract",
+        "Prohibited",
+        "Failure Handling",
+        "Applies To",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
+      "id": "governance-prompt-index",
+      "type": "governance/prompt-index",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/prompts/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "created"
+      ],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Structure",
+        "How to Work in This Area",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "id": "runtime-projection-claude",
       "type": "governance/claude-agent",
       "frontmatter_policy": "required",
@@ -2132,10 +2262,22 @@
         "governance-hook-policy"
       ]
     },
+    "governance/knowledge": {
+      "source": "docs/99.templates/templates/governance/knowledge.template.md",
+      "profiles": [
+        "governance-knowledge"
+      ]
+    },
     "governance/policy": {
       "source": "docs/99.templates/templates/governance/control.template.md",
       "profiles": [
         "governance-policy"
+      ]
+    },
+    "governance/prompt": {
+      "source": "docs/99.templates/templates/governance/prompt.template.md",
+      "profiles": [
+        "governance-prompt"
       ]
     },
     "governance/provider": {
@@ -3814,7 +3956,11 @@
     "documentation-readme": "living",
     "generated": "publication",
     "governance-hook-policy": "living",
+    "governance-knowledge": "living",
+    "governance-knowledge-index": "living",
     "governance-policy": "living",
+    "governance-prompt": "living",
+    "governance-prompt-index": "living",
     "governance-provider": "living",
     "governance-provider-index": "living",
     "governance-role": "living",
@@ -3838,8 +3984,8 @@
     "runtime-governance-readme": "living",
     "spec": "spec",
     "task": "task",
-    "tombstone": "sealed-record",
-    "template-source": "template"
+    "template-source": "template",
+    "tombstone": "sealed-record"
   },
   "indexes": {
     "docs/03.specs/README.md": "spec",

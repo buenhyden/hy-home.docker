@@ -28,7 +28,7 @@ finished document must satisfy live with its owning stage.
 
 | Category | Directory | Registered roles |
 | :--- | :--- | :--- |
-| Governance | `governance/` | Contract, Control, Rule, Provider, Role, Skill |
+| Governance | `governance/` | Contract, Control, Rule, Provider, Role, Skill, Knowledge, Prompt |
 | Runtime | `runtime/` | Claude agent projection, Codex agent projection |
 | Requirements | `requirements/` | Requirement Package |
 | Architecture | `architecture/` | Architecture Description, Architecture Decision |
@@ -48,6 +48,8 @@ finished document must satisfy live with its owning stage.
 | `governance/provider` | [governance/provider.template.md](./governance/provider.template.md) |
 | `governance/role` | [governance/role.template.md](./governance/role.template.md) |
 | `governance/skill` | [governance/skill.template.md](./governance/skill.template.md) |
+| `governance/knowledge` | [governance/knowledge.template.md](./governance/knowledge.template.md) |
+| `governance/prompt` | [governance/prompt.template.md](./governance/prompt.template.md) |
 | `governance/claude-agent` | [runtime/claude-agent.template.md](./runtime/claude-agent.template.md) |
 | `governance/codex-agent` | [runtime/codex-agent.template.toml](./runtime/codex-agent.template.toml) |
 | `sdlc/requirement` | [requirements/requirement-package.template.md](./requirements/requirement-package.template.md) |

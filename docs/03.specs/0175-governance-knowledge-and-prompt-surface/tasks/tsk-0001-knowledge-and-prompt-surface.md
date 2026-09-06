@@ -146,6 +146,37 @@ The package remains at `draft` for this branch. Every later work unit in this
 Task therefore executes under a `draft` package, and this entry is the recorded
 reason.
 
+### W4: Stage 99 registration (2026-09-06, local-executed)
+
+Registered four profiles, two template roles, four `living` transitions, two
+copyable template sources, and the two catalog rows. `registry.json` round-trips
+byte-identically under `json.dumps(data, indent=2, ensure_ascii=False) + "\n"`
+before and after, so the edit is a minimal diff rather than a reformat.
+
+RED before GREEN, without a commit that carries a failing test: the assertion's
+own logic was run against the registry as stored at `HEAD` and against the
+working tree.
+
+```text
+HEAD (before W4): failures=4
+  governance-knowledge: profile is not registered
+  governance-knowledge-index: profile is not registered
+  governance-prompt: profile is not registered
+  governance-prompt-index: profile is not registered
+working tree (after W4): failures=0
+```
+
+The assertion then landed in
+`tests/lib/agent_governance/test_agent_governance_contract.py` as
+`test_knowledge_and_prompt_profiles_are_registered`.
+`python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract`
+returns `Ran 38 tests` `OK`.
+
+The `GOVERNANCE_PROFILES` subset assertion is deliberately not here.
+`agent_governance_contract.py:973` reads that set with `issubset`, so the
+registry may register a profile the contract has not yet admitted, but not the
+reverse. That assertion ships in W5, the commit that admits the roots.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)
