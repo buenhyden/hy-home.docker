@@ -1,10 +1,10 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0175"
 parent_ids:
@@ -81,11 +81,14 @@ agent catalog is stale.
   public profiles, permission profiles, work profiles, model rows, hook
   contracts, `generated_roots`, and every frozen archive body.
 - Lifecycle constraint: `check-document-metadata.py --mode check-changed` reads
-  a document's previous status from the merge base with `origin/main`, which is
-  fixed for this branch. Every document this package creates is therefore new
-  for the branch's whole life and stays at its initial status. This package and
-  the nine new canonical files remain at `draft` here; promotion belongs to the
-  first branch taken after integration, where each transition is observable.
+  a document's previous status from the merge base with `origin/main`, never
+  from the previous commit. A document absent from that base admits no
+  transition; a document present there admits exactly one per branch, and the
+  package integrity rules narrow that further, since an `active` Plan and an
+  `in-progress` Task each require an `active` Spec. The current statuses are
+  read from the files, and what the base holds is read with
+  `git show "$(git merge-base origin/main HEAD)":<path>`; neither is asserted
+  here, because both change whenever the remote moves.
 - Out of scope: REQ-0026, AD-0030, and ADR-0031 retention-owner promotion,
   which SPEC-0173 owns as a separate open design dependency. Also out of scope:
   deployment, live Compose or service action, credential values, user-global
@@ -94,8 +97,11 @@ agent catalog is stale.
 - Integration into the local `main` branch and retirement of the work branch
   and its worktree are authorized. Publishing to the remote is not part of that
   grant: a registered hook blocks pushing to `main`, and a blocked action is not
-  performed by another route. `origin/main` therefore stays where it is, and
-  every claim about remote state stays unverified.
+  performed by another route. No work under this Spec pushes. The remote has
+  nonetheless advanced more than once from outside it; the position is read with
+  `git rev-parse origin/main` and `git reflog show origin/main --date=iso`
+  rather than stated here, and every claim about Hosted CI, branch protection
+  and entitlement stays unverified regardless of where the branch points.
 - Deferred with a named reason rather than silently dropped: consolidating the
   Stage 90 curated repository map into `knowledge/`, extending model rows with
   context, cost, latency, and output ceilings, binding Codex `skills.config`,
@@ -270,8 +276,11 @@ reject the output-style change while accepting the new categories.
     recorded as unmeasured, never as zero.
 15. The branch closes through the finishing procedure. With integration
     authorized, the work is merged into the local `main` branch and the work
-    branch is retired only after that merge is verified to contain it. Nothing
-    is pushed, and the user's pre-existing changes are left untouched.
+    branch is retired only after that merge is verified to contain it. No work
+    under this Spec performs a push; where `origin/main` points is a Git query,
+    not a criterion, and an advance made outside this Spec is recorded and
+    routed rather than treated as a violation of it. The user's pre-existing
+    changes are left untouched.
 
 ## Traceability
 

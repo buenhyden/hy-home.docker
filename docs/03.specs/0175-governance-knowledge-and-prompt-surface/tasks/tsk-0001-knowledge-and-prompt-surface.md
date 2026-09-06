@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -557,7 +557,7 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 12 | Prompts used in this work | `commit-message` drafted the W6 message and caught two unaccounted paths; `diff-review` drove the independent review; `test-design` shaped the three RED-then-GREEN assertions; `repository-map` and `verification-surface-map` were verified against their sources | local-executed |
 | 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
-| 15 | Closing | local `main` fast-forwarded to the reviewed head and the work branch retired after the containment proof. This Task pushed nothing; `origin/main` has since advanced to `2a939c68a` by a push made outside it, recorded in W15 with its evidence and routed for a ruling | local-executed |
+| 15 | Closing | each branch fast-forwarded into local `main` and retired after a containment proof. This Task performs no push. The remote has advanced more than once from outside it; the entries are read with `git reflog show origin/main --date=iso` and are routed for a ruling rather than counted here | local-executed |
 | — | ADR-0034 promotion to `accepted` | attempted and rejected with `invalid-initial-status: new adr documents must start at proposed`; the decision is new relative to the merge base, so it stays `proposed` here and is promoted with the package after integration | local-executed |
 
 ### W13: Integration and branch retirement (2026-09-06, local-executed)
@@ -746,13 +746,52 @@ Required Inputs already asked for branch and HEAD from Git rather than from the
 Task; it now says explicitly that a branch name found in a Task is treated as
 historical and that Git is the only current source.
 
-The remaining lifecycle transitions were re-measured on a fresh branch and are
-still unreachable. `resolve_base_selection` selects the merge base with
-`origin/main`, which is `2a939c68a` regardless of which local branch is checked
-out, and `spec.md` is `draft` there, so `review` to `approved` returns
-`invalid-transition: draft -> approved`. Cutting a new branch changes nothing;
-only the remote advancing does. Local `main` is ahead of `origin/main`, and
-publishing it is outside this Task's authorization.
+The remaining lifecycle transitions were re-measured on a fresh branch and were
+unreachable at that time. `resolve_base_selection` selects the merge base with
+`origin/main`, so cutting a local branch changes nothing and only the remote
+advancing does. That measurement is not restated as a current fact: what the
+base holds is read with `git show "$(git merge-base origin/main HEAD)":<path>`,
+and where the remote points with `git rev-parse origin/main`.
+
+### W16: The re-test found the substitution was applied to one claim only (2026-09-07, local-executed)
+
+A second handoff rehearsal, run with no conversation context against the
+remediated tree, closed one gap and reopened three. Its verdicts are accepted as
+given.
+
+Gap 1, the branch name, is closed, and closed correctly: the Task states the
+query instead of the value, and the branch name is absent from every tracked
+file by design rather than by omission.
+
+Gaps 2, 3 and 4 were still open, and the reason is one sentence: the same
+substitution was applied to the branch name and to nothing else. Remote heads,
+ahead-and-behind counts, commit lists and merge-base SHAs were still written as
+literals, so each went stale on the next push. The Commit Ledger had fallen four
+behind, including the commit that rewrote the ledger's own rule and then omitted
+its row. Every remaining literal in this Task and in the Spec is now replaced by
+the command that answers it, in the file that owns the claim, and `plan.md`
+gained the W16 unit and a stated resume condition, which is what Gap 4 asked for.
+
+Gap 3 is closed with evidence rather than with a claim. The previous HEAD changed
+`.agents/prompts/handoff.md`, a registered canonical source, with nothing
+recorded. Re-run here, each with its exit code:
+
+```text
+check-agent-governance-contract.py --mode repository   PASS failures=0        exit 0
+provider_surface_renderer.py --check                   PASS providers=2 drift=0 exit 0
+check-document-links.py --mode all                     PASS                   exit 0
+check-document-corpus-lifecycle.py                     violations=0           exit 0
+unittest tests.lib.agent_governance.test_agent_governance_contract   OK
+```
+
+The remote advanced a third time, to the commit this session integrated. That
+moved the merge base again, which admitted one further transition: the Spec
+reaches `approved`. The Plan and Task cannot follow yet, and this was measured
+rather than assumed. Setting the Task to `in-progress` returns
+`configuration-error: current Task requires active Spec`, and setting the Plan to
+`active` returns `configuration-error: active Plan requires active Spec`. The
+package integrity rules, not just the merge base, set the order: the Spec must
+reach `active` before either.
 
 ## Review Evidence
 
@@ -808,6 +847,10 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `5a84eb5fc` | W12 | `fix(governance): Act on the independent review's four findings` |
 | `2a939c68a` | W13 | `docs(task): Record the integration and branch retirement` |
 | `7374c96e5` | W14 | `fix(governance): Route the entry path to the new canonical categories` |
+| `e5e87f451` | W15 | `fix(spec): Correct the remote claim and close the handoff rehearsal gaps` |
+| `569e14276` | W15 | `docs(spec): Advance the package to review and the Task to ready` |
+| `db9901bbe` | W15 | `docs(spec): Approve the Plan and record the provable transition rate` |
+| `f39080c7b` | W16 | `fix(spec): Record position from Git instead of a branch that dies` |
 
 The ledger is updated in the commit that closes each unit, because a reader
 deciding what this package has produced has no other authority for it. It fell

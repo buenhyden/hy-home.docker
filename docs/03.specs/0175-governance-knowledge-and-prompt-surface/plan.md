@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -315,6 +315,24 @@ transition rather than its second.
 
 Verify: metadata in `check-changed` mode is the gate that proves each
 transition; a rejected transition is recorded, never overridden.
+
+### W16: Durable position and the remaining walk
+
+Two rehearsals found the same class of defect: a point-in-time Git value written
+into prose is false within hours. Replace each remaining value with the query
+that answers it, in the file that owns the claim. Add the ledger rows and the
+verification evidence each preceding unit owed, and take whatever lifecycle
+transition the current merge base admits.
+
+Resume condition, stated once so a later session does not have to infer it: this
+package is complete when the Spec reaches `active`, the Plan `active`, and the
+Task `in-progress`, which the package integrity rules allow only in that order
+and at one transition per document per branch. Until then the next action is
+always the same: integrate, let the remote advance, cut a branch, take the one
+transition the base now admits, and record it.
+
+Verify: metadata in `check-changed` mode, links, the agent governance contract,
+renderer parity, and the changed public profile.
 
 ## Risk and Rollback
 
