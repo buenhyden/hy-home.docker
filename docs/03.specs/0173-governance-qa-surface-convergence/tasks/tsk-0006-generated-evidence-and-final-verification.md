@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.6"
+version: "0.4.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,8 +47,10 @@ remain outside scope.
 The reviewed package reconciliation was committed normally as
 `00a72d38f5edf81de367ceee17352dc9c00b2d20`; root and retained QA worktrees are
 clean at that checkpoint. Local main remains 8176cdee7. The eight staged blobs
-matched the reviewed final bytes, staged diff checks passed, and the existing
-Git hook was not bypassed. Final metadata selected eight documents with zero
+matched the reviewed final bytes, staged diff checks passed, and no hook was
+bypassed with `--no-verify`. That statement is narrower than it reads: the
+hook-path correction below records which hooks could execute at the time.
+Final metadata selected eight documents with zero
 violations and zero overrides; link, Markdown and Wiki checks passed.
 The independent evidence/dependency re-review approved specification and quality
 with no findings. This is a local documentation commit, not further integration.
@@ -69,6 +71,48 @@ implementer initially owns only the proposed successor; a separate read-only
 design reviewer maps its lifecycle, consumers and verification. Source/consumer
 cutover follows the reviewed proposal through existing registered lifecycle
 mechanisms, never by fabricating a human approval or deleting historical bodies.
+
+### Local hook-path correction (2026-09-06)
+
+A read-only baseline audit established that the repository pre-commit suite had
+never executed locally. `core.hooksPath` in the user gitconfig pointed at an
+external hook directory, and `git help config` states that Git then looks there
+"instead of" `$GIT_DIR/hooks`. The pre-commit framework had installed
+`pre-commit`, `commit-msg` and `pre-push` under `.git/hooks`, and Graphify had
+installed `post-commit` there, so all four were unreachable. Only two external
+hooks ran: a six-pattern secret scan and a light pre-push flow. Two independent
+observations confirm this rather than the config alone: the Graphify graph had
+not advanced for 1385 commits, and no commit subject in recent history satisfies
+the repository's own commitizen pattern, which requires an uppercase subject.
+
+Every earlier "hooks were not bypassed" statement in this Task therefore means
+only that `--no-verify` was not used. It does not mean gitleaks, the formatters,
+`run-ci-gate.py`, or the commit-message contract ran on those commits. Hosted CI
+remains unaffected, because it invokes the gates directly rather than through
+Git hooks.
+
+The user approved a repository-local resolution: `core.hooksPath` is set to
+`.git/hooks` in `.git/config`, which wins over the user-global value.
+`git rev-parse --git-path hooks` now returns `.git/hooks`, and the full suite
+plus the commit-message contract executed on every commit recorded below. No
+user-global or tracked file was changed for this, and
+`git config --local --unset core.hooksPath` reverts it.
+
+### Baseline audit follow-up commits (2026-09-06)
+
+The same audit produced bounded corrections, each verified by the restored local
+suite and by a manual `run-ci-gate.py --profile changed` run on a clean tree.
+
+| Commit | Outcome |
+| --- | --- |
+| `150b15614` | Register proposed ADR-0033 with its two identity registration points and refresh the affected generated Wiki data |
+| `e1efc3ca3` | Record the preservation-owner alignment unit in this Task |
+| `99f881747` | Correct the Codex reasoning-effort enum and rename the parity state that claimed provider capability |
+| `3a2026e31` | Remove the duplicate specification row and the retired `docs/00` route from navigation |
+
+The audit left open items that are not part of this package: cost observability,
+editor actions, the commit-message contract's divergence from existing history,
+and the reading cost of this Task. They belong to a separate specification.
 
 ### Post-integration package review (2026-09-06)
 
