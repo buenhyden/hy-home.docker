@@ -31,6 +31,10 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
   `agents/openai.yaml` sets `policy.allow_implicit_invocation: false`.
   Explicit canonical reads remain the loading fallback; discovery never grants
   tools, broader permissions, or implementation approval.
+- `.agents/knowledge/` and `.agents/prompts/` are canonical categories read
+  directly from the shared home, in the order the bootstrap policy sets. Codex
+  has no generated projection of either, and their absence under `.codex/` is
+  not a defect, for the same reason `.codex/skills/` is absent.
 - The Provider Registry distinguishes canonical skill discovery from generated
   outputs. Codex has no generated skill projection and no `.codex/skills/` copy.
   Canonical `.agents/` is a real repository-owned source tree. Unknown entries

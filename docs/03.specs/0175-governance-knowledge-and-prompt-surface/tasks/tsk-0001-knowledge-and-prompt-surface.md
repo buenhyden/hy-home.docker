@@ -584,6 +584,48 @@ W2 correction still holds: `resolve_base_selection` reaches `origin/main` before
 `main`, so this package and ADR-0034 stay at their initial statuses until the
 remote branch advances.
 
+### W14: The entry path did not reach the new categories (2026-09-07, local-executed)
+
+A post-integration gap review found that the two categories existed, were
+enforced by the contract, and were indexed, but no entry path routed to them:
+
+```text
+grep -c "knowledge\|prompts" .claude/provider.md .codex/provider.md
+  .claude/provider.md:0
+  .codex/provider.md:0
+```
+
+`bootstrap.md` is the sole owner of the canonical load order, and its step 3
+resolved "the agent governance policies, canonical role, and skills needed for
+the request" only. Its English-only constraint enumerated governance, roles and
+skills. An agent following the entry sequence exactly would therefore never
+open `.agents/knowledge/` or `.agents/prompts/`, and would not know the new
+files were bound by the language rule.
+
+This is the failure the governing request names directly: a category that exists
+but is not used is not delivered. The earlier acceptance evidence measured the
+files, the registrations and the guards, and none of those checks can observe an
+unrouted category, because every one of them starts from the registry rather
+than from the reader.
+
+Fixed in the owners rather than in the members. `bootstrap.md` step 3 now states
+when to read each category and repeats that neither grants a tool, path,
+permission or approval. Its English-only constraint names both. Each authored
+provider adapter states that the categories are read directly from the shared
+home and that the absence of a projection under `.claude/` or `.codex/` is not a
+defect, matching the existing statement about `.codex/skills/`.
+
+Two other deferrals were re-checked rather than carried forward on trust. Editor
+workspace-task integration stays deferred and the reason is confirmed: `git
+ls-files` matches no `.vscode/`, `.idea/` or `.code-workspace` path, and neither
+directory exists on disk, so there is no tracked editor surface to wire and
+inventing command identifiers is prohibited. The sweep for count-dependent and
+SHA-dependent checks found no further defect of the kind corrected in W5: the
+remaining `len(x) == len(set(x))` comparisons are duplicate-detection
+invariants, the pinned forty-character commits in the archive and link tests are
+recovery bases that must stay reachable, and the `903` row count describes a
+frozen completed migration rather than a growing corpus.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)

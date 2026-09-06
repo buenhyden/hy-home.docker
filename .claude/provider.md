@@ -20,6 +20,9 @@ Root `CLAUDE.md` imports the shared
 [bootstrap policy](../.agents/governance/bootstrap.md) and this authored adapter.
 Load the active Spec Package and current Task when repository state changes.
 Read the selected canonical role and procedure before acting.
+`.agents/knowledge/` and `.agents/prompts/` are canonical categories read
+directly, in the order the bootstrap policy sets. Claude has no generated
+projection of either, and their absence under `.claude/` is not a defect.
 
 ## Runtime Boundary
 

@@ -20,7 +20,12 @@ Provide the sole repository bootstrap sequence for supported agents.
    `.codex/provider.md` adapter, and only the provider facts required from
    `.agents/governance/providers/registry.yaml`.
 3. Resolve only the agent governance policies, canonical role, and skills needed for
-   the request.
+   the request. Read `.agents/knowledge/` when the request needs to find which
+   surface owns something, and `.agents/prompts/` when it produces a handoff, a
+   diff review, a commit message, or a test design. Neither grants a tool, a
+   path, a permission, or an approval; the selected role's permission profile
+   still governs, and the canonical owner a knowledge member routes to remains
+   the authority for what it says.
 4. For repository changes, load the governing Requirements, Architecture, and
    Spec Package plus its current Task.
 5. Execute the applicable registered gates and record evidence in that Task.
@@ -51,7 +56,8 @@ that preserved record is what was removed.
 
 ## Hard Constraints
 
-- Canonical governance, roles, skills, and native provider sources remain English-only.
+- Canonical governance, roles, skills, knowledge, prompts, and native provider
+  sources remain English-only.
 - Stage documents are read-only unless the request authorizes change.
 - Keep root shims concise.
 - Never write plaintext credentials or secret values.
