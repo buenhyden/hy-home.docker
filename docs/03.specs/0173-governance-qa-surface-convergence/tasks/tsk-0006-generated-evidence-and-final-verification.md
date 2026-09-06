@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.7"
+version: "0.4.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -31,6 +31,13 @@ package against that implementation without repeating completed milestones or
 reinterpreting historical results. Local documentation changes, scoped commits
 and safe verification remain authorized; remote delivery and operational actions
 remain outside scope.
+
+Reading order: Work Log entries run newest first, so the current state is the
+first entry under that heading and nothing below it needs to be read to learn
+it. Verification Evidence, Review Evidence, Commit Ledger, Rulings and Deferred
+Items each hold one kind of fact and are the entry points for that kind. Older
+Work Log entries are a preserved chronological record and are not restated
+elsewhere.
 
 ## Inputs
 
