@@ -442,6 +442,32 @@ describes, it never decides. `git-workflow.md` now also documents the commit
 shape `.cz.toml` enforces, which previously existed only in that configuration
 and rejected messages after the expensive gate had already run.
 
+### W10: External re-observation (2026-09-06, official-source)
+
+`git ls-remote https://github.com/msitarzewski/agency-agents.git HEAD
+refs/heads/main` at 2026-09-06T23:15:33+09:00 returns
+`1454492577d1af4884722837f491fef14b501e21` for both refs. The upstream default
+branch has moved off the pinned `ebe9c99acb5c96f9468de368d8bead775387d1a7`, so
+the 2026-08-14 statement that it had not moved is now a closed historical
+observation.
+
+The new section is added beside the earlier ones, never over them. The member
+still carries the `2026-09-05 Revalidation` section, the pinned SHA still
+appears eleven times, and `git diff` shows the only removed lines are the three
+frontmatter fields the version and date bump replaces:
+
+```text
+-version: "1.1.1"
+-observed_at: "2026-09-05"
+-reviewed_at: "2026-09-05"
+```
+
+No clone, checkout, count derivation, converter run, or installer execution was
+performed, so every division and agent count in the member stays bound to the
+`ebe9c99a` pin and is explicitly not carried forward to the new head. The member
+now links to the restored canonical intake owner and states that it supplies
+evidence for that decision without owning it.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

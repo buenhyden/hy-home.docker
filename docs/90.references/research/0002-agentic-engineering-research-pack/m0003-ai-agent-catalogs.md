@@ -1,6 +1,6 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: "1.1.1"
+version: "1.2.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -10,8 +10,8 @@ artifact_id: "RES-0002-m0003"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
-observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+observed_at: "2026-09-06"
+reviewed_at: "2026-09-06"
 review_cycle: "on-source-change"
 ---
 
@@ -58,6 +58,13 @@ boundary, permissions, evaluation, and approval rules.
 This Stage 90 reference may suggest capability gaps. It cannot add a role,
 function, scope, model, permission, provider adapter, or user-global install.
 canonical agent governance and an approved lifecycle change remain the only adoption path.
+
+The current intake decision boundary is owned by
+[agentic policy](../../../../.agents/governance/agentic.md#external-capability-intake).
+This reference supplies dated upstream evidence for that decision; it does not
+own the decision. The `capability_intake` ledger described below belonged to a
+superseded catalog format and is preserved here as dated evidence, not as a
+current registry key.
 
 ## Scope
 
@@ -376,6 +383,29 @@ is an intake source, not a repository role authority.
 Recommendation: admit an external role only when it fills a proved capability
 gap and can be expressed with existing permissions and ownership. Re-opened
 upstream authority: [agency-agents divisions](https://github.com/msitarzewski/agency-agents/blob/main/divisions.json).
+
+## 2026-09-06 Revalidation
+
+Baseline: `codex/0173-agent-governance-home@9051977aa`, re-confirmed at
+2026-09-06T23:15:33+09:00.
+
+Re-resolving the upstream default branch at 2026-09-06T16:36:25+09:00 with
+`git ls-remote https://github.com/msitarzewski/agency-agents.git HEAD refs/heads/main`
+returns `1454492577d1af4884722837f491fef14b501e21`. The upstream default branch
+has advanced from the pinned `ebe9c99acb5c96f9468de368d8bead775387d1a7`, so the
+2026-08-14 statement that the branch had not moved is now a closed historical
+observation rather than a current fact.
+
+No clone, checkout, count derivation, converter run, or installer execution was
+performed in this pass. Every division and agent count in this member therefore
+remains bound to the `ebe9c99a` pin and is not carried forward to the new head.
+Refreshing those counts requires the exact immutable-tree derivation recorded
+above, under a separate authorized pass.
+
+The repository side of the comparison is unchanged in kind: 14 canonical roles
+and 23 canonical skills under the canonical agent governance home, with
+generated provider projections for Claude and canonical skill packages read
+directly by Codex.
 
 ## Maintenance
 
