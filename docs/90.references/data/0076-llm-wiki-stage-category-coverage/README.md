@@ -43,7 +43,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `1030`
+- Safe tracked source paths: `1033`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -52,7 +52,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 | Source Bucket | Paths | Representative Paths |
 | --- | ---: | --- |
-| `.agents` | 104 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
+| `.agents` | 107 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
 | `.claude` | 49 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/README.md](../../../../.claude/README.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md) |
 | `.codex` | 17 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
@@ -76,7 +76,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: | --- |
 | Root entrypoints | 7 | [.pre-commit-config.yaml](../../../../.pre-commit-config.yaml)<br>[AGENTS.md](../../../../AGENTS.md)<br>[CLAUDE.md](../../../../CLAUDE.md) |
 | LLM Wiki reference | 1 | [docs/90.references/data/0083-repository-map/README.md](../0083-repository-map/README.md) |
-| Agent governance | 104 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
+| Agent governance | 107 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
 | Runtime surfaces | 66 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/README.md](../../../../.claude/README.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md) |
 | Active stage docs | 87 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
@@ -92,7 +92,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 77 |
-| Markdown reference | 578 |
+| Markdown reference | 581 |
 | YAML config | 123 |
 | folder index | 173 |
 | script | 47 |

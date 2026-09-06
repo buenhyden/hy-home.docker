@@ -331,6 +331,41 @@ came from reading the message text against the staged set instead. The prompt's
 "list any staged path the message does not account for" step is what makes this
 a check rather than a formality.
 
+### W7: Knowledge members, verified against their sources (2026-09-06, local-executed)
+
+Added [repository-map](../../../../.agents/knowledge/repository-map.md),
+[glossary](../../../../.agents/knowledge/glossary.md) and
+[verification-surface-map](../../../../.agents/knowledge/verification-surface-map.md),
+registered all three, and asserted the exact knowledge member set.
+
+The category requires each claim to trace to a tracked source, so the routing
+table in the verification surface map was checked by loading the contract rather
+than by reading it:
+
+```text
+['.agents/', '.claude/', '.codex/', 'AGENTS.md', 'CLAUDE.md'] -> ['agent-governance', 'document-contract', 'document-graph', 'document-lifecycle']
+['README.md', '_workspace/', 'docs/01.requirements/', 'docs/02.architecture/', 'docs/03.specs/', 'docs/90.references/', 'docs/98.archive/', 'docs/99.templates/'] -> ['document-contract', 'document-graph', 'document-lifecycle']
+['docker-compose.yml', 'docs/05.operations/', 'examples/', 'infra/', 'secrets/'] -> ['document-contract', 'document-graph', 'document-lifecycle', 'operations']
+['.github/', '.pre-commit-config.yaml', 'evals/', 'projects/', 'scripts/', 'tests/'] -> ['agent-governance', 'document-contract', 'document-graph', 'document-lifecycle', 'operations', 'repository-integrity']
+fallback: ['repository-integrity']
+```
+
+All five rows match the member's table. One row listed its prefixes in a
+different order than the contract does; the member now follows the contract's
+order so a later re-verification compares the two directly. No count is asserted
+anywhere in these members, so none can go stale against a growing repository.
+
+No hardcoded totals were introduced: the members route and define, and the
+numbers that would date them live in the sources they point at.
+
+Writing the members also exposed a defect in the W4 profile. The metadata check
+reported `type-inappropriate-key: key is not declared for governance-knowledge:
+review_cycle` for all three. The profile had declared `next_review_at`, a key
+that appears in no tracked document in this repository, while `review_cycle` is
+the key the corpus and two existing Stage 99 profiles already use. The profile
+was corrected to the repository's actual key rather than the members being
+rewritten to an invented one, and the check returns `violations=0`.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

@@ -59,6 +59,9 @@ canonical_sources:
   - .agents/governance/task-checklists.md
   - .agents/governance/workflows.md
   - .agents/knowledge/README.md
+  - .agents/knowledge/glossary.md
+  - .agents/knowledge/repository-map.md
+  - .agents/knowledge/verification-surface-map.md
   - .agents/prompts/README.md
   - .agents/prompts/commit-message.md
   - .agents/prompts/diff-review.md

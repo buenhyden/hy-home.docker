@@ -1885,7 +1885,7 @@
         "created",
         "observed_at",
         "reviewed_at",
-        "next_review_at"
+        "review_cycle"
       ],
       "free_form_sections": true,
       "required_sections": [

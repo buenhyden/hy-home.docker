@@ -291,6 +291,15 @@ class AgentGovernanceContractTests(unittest.TestCase):
             },
             {path.name for path in (ROOT / ".agents/prompts").glob("*.md")},
         )
+        self.assertEqual(
+            {
+                "README.md",
+                "glossary.md",
+                "repository-map.md",
+                "verification-surface-map.md",
+            },
+            {path.name for path in (ROOT / ".agents/knowledge").glob("*.md")},
+        )
         # The contract requires an exact bijection between the files on disk
         # under the canonical home and the registered source inventory, so a
         # member that is not declared fails the home scan rather than passing

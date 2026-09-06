@@ -107,6 +107,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.agents/governance/task-checklists.md](../../../../.agents/governance/task-checklists.md) | Markdown reference |
 | [.agents/governance/workflows.md](../../../../.agents/governance/workflows.md) | Markdown reference |
 | [.agents/knowledge/README.md](../../../../.agents/knowledge/README.md) | folder index |
+| [.agents/knowledge/glossary.md](../../../../.agents/knowledge/glossary.md) | Markdown reference |
+| [.agents/knowledge/repository-map.md](../../../../.agents/knowledge/repository-map.md) | Markdown reference |
+| [.agents/knowledge/verification-surface-map.md](../../../../.agents/knowledge/verification-surface-map.md) | Markdown reference |
 | [.agents/prompts/README.md](../../../../.agents/prompts/README.md) | folder index |
 | [.agents/prompts/commit-message.md](../../../../.agents/prompts/commit-message.md) | Markdown reference |
 | [.agents/prompts/diff-review.md](../../../../.agents/prompts/diff-review.md) | Markdown reference |
