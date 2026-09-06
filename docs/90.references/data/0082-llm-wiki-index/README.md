@@ -325,6 +325,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) | Markdown reference |
+| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) | Markdown reference |
+| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Markdown reference |
+| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
