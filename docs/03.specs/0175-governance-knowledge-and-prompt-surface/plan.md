@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -33,6 +33,11 @@ action, credential values, global installation, or remote state.
   and proposed ADR-0034.
 - Concurrent package: SPEC-0173 stays active and unmodified. No file inside
   `docs/03.specs/0173-governance-qa-surface-convergence/` is touched.
+- Shared branch: SPEC-0173's Plan claims this work branch and has open Tasks on
+  it, and this package's commits sit on top of that package's commits. A branch
+  cut from the integration baseline would drop them, and rewriting them is not
+  authorized, so the branch is shared deliberately. Integrating it integrates
+  both packages; the integration decision and the review therefore cover both.
 - Executable owners keep their current responsibilities:
   `.github/workflow-contract.yml` owns executable composition,
   `scripts/manifest.yaml` owns file inventory, `docs/99.templates/registry.json`

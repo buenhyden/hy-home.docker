@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -27,6 +27,11 @@ package; no second progress ledger is created.
   `origin/main` at `8176cdee732954415bc5462d6d4d43da4e319394`; package baseline
   `9ede309a5b1feba91e6f8b973a729716b14c55ab` with a clean worktree.
 - Governing owners: REQ-0024, AD-0027, ADR-0034, SPEC-0175, SPEC-0175-PLAN-0001.
+- Shared branch: SPEC-0173's Plan claims this branch and has six open Tasks on
+  it. This package appends its commits rather than cutting a second branch,
+  because a branch from the integration baseline would drop SPEC-0173's commits
+  and rewriting another package's history is not authorized. Integrating this
+  branch integrates both packages.
 - Authorization: local investigation, local edits, and local commits on this
   branch. Push, pull request, merge, deployment, live service action, secret
   values, global installation, and remote state changes are not authorized.
