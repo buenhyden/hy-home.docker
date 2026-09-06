@@ -287,6 +287,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
 | [docs/02.architecture/decisions/0031-preserved-archive-record.md](../../../02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
 | [docs/02.architecture/decisions/0032-canonical-agent-governance-home.md](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) | Markdown reference |
+| [docs/02.architecture/decisions/0033-full-spec-package-preservation.md](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Markdown reference |
 | [docs/02.architecture/decisions/README.md](../../../02.architecture/decisions/README.md) | folder index |
 | [docs/02.architecture/descriptions/0001-gateway-architecture.md](../../../02.architecture/descriptions/0001-gateway-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0002-auth-architecture.md](../../../02.architecture/descriptions/0002-auth-architecture.md) | Markdown reference |

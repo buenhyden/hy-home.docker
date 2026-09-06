@@ -43,7 +43,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `1017`
+- Safe tracked source paths: `1018`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -57,7 +57,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `.codex` | 17 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
 | `.github` | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | `docs/01.requirements` | 18 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
-| `docs/02.architecture` | 55 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
+| `docs/02.architecture` | 56 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
 | `docs/03.specs` | 9 | [docs/03.specs/0173-governance-qa-surface-convergence/plan.md](../../../03.specs/0173-governance-qa-surface-convergence/plan.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/spec.md](../../../03.specs/0173-governance-qa-surface-convergence/spec.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md) |
 | `docs/05.operations` | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
 | `docs/90.references` | 59 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
@@ -78,7 +78,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | LLM Wiki reference | 1 | [docs/90.references/data/0083-repository-map/README.md](../0083-repository-map/README.md) |
 | Agent governance | 98 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
 | Runtime surfaces | 66 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/README.md](../../../../.claude/README.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md) |
-| Active stage docs | 82 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
+| Active stage docs | 83 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | Operations docs | 209 | [docs/05.operations/README.md](../../../05.operations/README.md)<br>[docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md](../../../05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md)<br>[docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md](../../../05.operations/catalog/00-workspace/0002-developer-environment/guide.md) |
 | Reference and template docs | 102 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
 | Infrastructure source | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
@@ -92,7 +92,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Role | Paths |
 | --- | ---: |
 | JSON registry | 77 |
-| Markdown reference | 567 |
+| Markdown reference | 568 |
 | YAML config | 123 |
 | folder index | 171 |
 | script | 47 |

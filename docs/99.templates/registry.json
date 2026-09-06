@@ -3742,8 +3742,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 32,
-      "next_number": 33,
+      "high_water": 33,
+      "next_number": 34,
       "child_spaces": {}
     },
     "spec": {
