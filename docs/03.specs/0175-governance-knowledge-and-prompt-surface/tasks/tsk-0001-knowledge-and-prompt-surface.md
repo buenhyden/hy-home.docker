@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -27,11 +27,15 @@ package; no second progress ledger is created.
   `origin/main` at `8176cdee732954415bc5462d6d4d43da4e319394`; package baseline
   `9ede309a5b1feba91e6f8b973a729716b14c55ab` with a clean worktree.
 - Governing owners: REQ-0024, AD-0027, ADR-0034, SPEC-0175, SPEC-0175-PLAN-0001.
-- Current branch: `codex/0175-bootstrap-routing`, cut from `main` after the W13
-  integration. The originating branch `codex/0173-agent-governance-home` was
-  retired at W13 and no longer exists; a reader resuming from this Task uses the
-  branch named here plus `git rev-parse --abbrev-ref HEAD`, and the two must
-  agree.
+- Position, recorded durably rather than by branch name. Work on this package
+  happens on a short branch cut from `main` and retired into `main` as soon as
+  it is verified, so any branch name written here is dead by the next
+  integration. A resuming session reads its position from Git:
+  `git rev-parse --abbrev-ref HEAD` for the branch, `git rev-parse HEAD` for the
+  commit, and `git log --oneline origin/main..HEAD` for what is not yet on the
+  remote. The durable facts are that `main` is the integration target, that the
+  Commit Ledger below lists every commit this package has produced, and that the
+  originating branch `codex/0173-agent-governance-home` was retired at W13.
 - Shared branch, historical: SPEC-0173's Plan claimed the originating branch and
   has six open Tasks on it. This package appends its commits rather than cutting a second branch,
   because a branch from the integration baseline would drop SPEC-0173's commits
@@ -715,6 +719,41 @@ Spec's `approved` and `active`, the Plan's `active`, and the Task's
 gate does not pass `--transition-override-file`, and manufacturing one to move
 faster would defeat the check rather than satisfy it.
 
+### A branch name in a Task is stale by construction (2026-09-07, local-executed)
+
+The handoff rehearsal reported that the current branch appeared in no tracked
+file, so W15 wrote the branch name into `Inputs`. That fix was wrong in kind. The
+branch was retired into `main` in the same session, and the Task immediately
+pointed at a branch that no longer exists:
+
+```text
+grep -n "codex/0175-bootstrap-routing" <task>   two hits
+git branch --list "codex/*"                     zero branches
+git rev-parse --abbrev-ref HEAD                 main
+```
+
+This is the third occurrence of the same class of defect: the independent review
+found the Commit Ledger stale, the handoff rehearsal found the branch absent, and
+this pass found the branch present but dead. Writing the name a fourth time would
+produce the same result, because a short branch that is retired at integration
+cannot be described by a value that only changes when someone remembers to edit
+it.
+
+The Task now records what does not expire: `main` is the integration target, the
+Commit Ledger is the authority for what this package produced, and position is
+read from Git with the three commands named in `Inputs`. The handoff prompt's
+Required Inputs already asked for branch and HEAD from Git rather than from the
+Task; it now says explicitly that a branch name found in a Task is treated as
+historical and that Git is the only current source.
+
+The remaining lifecycle transitions were re-measured on a fresh branch and are
+still unreachable. `resolve_base_selection` selects the merge base with
+`origin/main`, which is `2a939c68a` regardless of which local branch is checked
+out, and `spec.md` is `draft` there, so `review` to `approved` returns
+`invalid-transition: draft -> approved`. Cutting a new branch changes nothing;
+only the remote advancing does. Local `main` is ahead of `origin/main`, and
+publishing it is outside this Task's authorization.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -770,12 +809,13 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `2a939c68a` | W13 | `docs(task): Record the integration and branch retirement` |
 | `7374c96e5` | W14 | `fix(governance): Route the entry path to the new canonical categories` |
 
-Commits through `2a939c68a` are on `main`; `7374c96e5` and later are on
-`codex/0175-bootstrap-routing`. The ledger is updated in the commit that closes
-each unit, because a reader deciding what a branch contains has no other
-authority for it. It fell three commits behind between W12 and W15 even after
-the independent review named exactly that defect, so the rule is restated here:
-a unit is not closed until its row exists.
+The ledger is updated in the commit that closes each unit, because a reader
+deciding what this package has produced has no other authority for it. It fell
+three commits behind between W12 and W15 even after the independent review named
+exactly that defect, so the rule is restated here: a unit is not closed until its
+row exists. Which commits have reached the remote is read from
+`git log --oneline origin/main..HEAD`, not from this table, because that answer
+changes without any edit to this file.
 
 ## Rulings
 
