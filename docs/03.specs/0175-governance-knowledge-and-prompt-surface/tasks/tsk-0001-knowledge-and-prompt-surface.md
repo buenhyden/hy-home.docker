@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -558,6 +558,7 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
 | 15 | Closing | each branch fast-forwarded into local `main` and retired after a containment proof. This Task performs no push. The remote has advanced more than once from outside it; the entries are read with `git reflog show origin/main --date=iso` and are routed for a ruling rather than counted here | local-executed |
+| 16 | Entry path names both categories | `bootstrap.md` names them twice in its load order and once in its English-only constraint; each authored adapter states it reads them directly and expects no projection | local-executed |
 | — | ADR-0034 promotion to `accepted` | rejected on the first attempt with `invalid-initial-status: new adr documents must start at proposed`, then admitted once the package reached the merge base; the decision now carries `accepted`, and the two runs together are what show the rule rather than the outcome alone | local-executed |
 
 ### W13: Integration and branch retirement (2026-09-06, local-executed)
@@ -856,6 +857,38 @@ time, from the files rather than from this Task:
 11 roles: 14   skills: 23
 ```
 
+### Second document audit: the contract did not require the route (2026-09-07, local-executed)
+
+A second pass over the three documents, after the obvious superseded statements
+were corrected, found two items that the first pass missed because both are
+absences rather than false claims.
+
+The acceptance contract had fifteen criteria and none of them required the two
+categories to be reachable. Criteria 1 through 6 require the files, the
+registrations, the templates and the inventory; 7 through 10 require the defect
+fixes; 11 through 15 require preservation, usage, verification, evidence classes
+and closing. W14 corrected a high-severity defect — no entry path named either
+category — and nothing in the contract would have caught its regression. That is
+the same blind spot the defect itself had: every registration-side check begins
+at the registry, so none can see whether a reader ever arrives. Criterion 16 now
+states it, appended rather than inserted so the existing numbering is unchanged.
+
+The in-scope list omitted four files this package changed:
+`.agents/governance/bootstrap.md`, `.claude/provider.md`, `.codex/provider.md`,
+and `.agents/prompts/handoff.md`. The first three are now declared; the fourth
+is already covered by `.agents/prompts/**`. An independent reviewer had flagged
+the first three as outside the declared scope, and the scope was corrected here
+rather than the change being defended as implied.
+
+Criterion 16 measured at this tree:
+
+```text
+bootstrap.md names knowledge/ or prompts/          2 occurrences
+bootstrap.md English-only constraint covers both   1
+.claude/provider.md names both                     1
+.codex/provider.md names both                      1
+```
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -916,6 +949,7 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `f39080c7b` | W16 | `fix(spec): Record position from Git instead of a branch that dies` |
 | `7cbc71e21` | W16 | `fix(spec): State the query wherever a Git value was written` |
 | `b22fe6fa5` | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
+| `9c3a5f32c` | W16 | `docs(task): Fill the ledger row that a commit cannot write for itself` |
 
 The ledger is updated in the commit that closes each unit, because a reader
 deciding what this package has produced has no other authority for it. It fell

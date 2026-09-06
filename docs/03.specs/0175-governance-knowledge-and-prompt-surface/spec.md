@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -59,10 +59,12 @@ agent catalog is stale.
   - `docs/99.templates/registry.json`, the two new governance templates, and the
     template catalog `README.md`.
   - `.agents/governance/providers/registry.yaml`: `canonical_sources` only.
-  - `.agents/governance/output-style.md`, `documentation-protocol.md`,
-    `agentic.md`, `git-workflow.md`, `stage-authoring-matrix.md`, and
-    `.agents/README.md`.
-  - `.claude/output-styles/hy-home.md`.
+  - `.agents/governance/bootstrap.md`, `output-style.md`,
+    `documentation-protocol.md`, `agentic.md`, `git-workflow.md`,
+    `stage-authoring-matrix.md`, and `.agents/README.md`.
+  - `.claude/output-styles/hy-home.md`, and the authored adapters
+    `.claude/provider.md` and `.codex/provider.md`, which name the categories
+    they load without gaining a projection of them.
   - `.pre-commit-config.yaml`: the two public-gate `files` selectors.
   - Governing upstream documents this package amends rather than reuses
     unchanged: `docs/01.requirements/0024-agent-governance-standardization.md`,
@@ -281,6 +283,14 @@ reject the output-style change while accepting the new categories.
     not a criterion, and an advance made outside this Spec is recorded and
     routed rather than treated as a violation of it. The user's pre-existing
     changes are left untouched.
+16. The canonical load order in `bootstrap.md` names both categories and states
+    when each is read, both authored provider adapters state that they read
+    them directly from the shared home and expect no projection, and the
+    English-only constraint covers them. A category that is registered,
+    enforced and indexed but named by no entry path is not delivered. No
+    registration-side check can observe that, because every one of them starts
+    from the registry rather than from the reader, which is why this is a
+    criterion rather than a note.
 
 ## Traceability
 

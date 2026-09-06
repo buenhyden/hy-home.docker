@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -88,7 +88,8 @@ evidence is in the Task.
 | W13 Integration and branch retirement | done, and repeated per branch since |
 | W14 Entry-path routing | done |
 | W15 Remote advance and lifecycle promotion | partly done; the Spec reached `approved` and ADR-0034 `accepted`, and the remaining transitions wait on the resume condition in W16 |
-| W16 Durable position and the remaining walk | partly done; the position substitution is complete and the walk continues |
+| W16 Durable position and the remaining walk | partly done; the position substitution and the two document audits are complete, and the walk continues |
+| W17 Acceptance contract completeness | done; criterion 16 requires the entry path to name both categories, which no earlier criterion did |
 
 ### W1: Decision and durable owners
 
@@ -357,6 +358,17 @@ transition the base now admits, and record it.
 
 Verify: metadata in `check-changed` mode, links, the agent governance contract,
 renderer parity, and the changed public profile.
+
+### W17: Acceptance contract completeness
+
+The contract required the categories to exist, be registered, be enforced and be
+indexed, and required nothing about a reader reaching them. Add the criterion
+that closes that, and declare the entry-path surfaces the package already
+changed. Append rather than insert, so the existing criteria keep their numbers
+and the Task's mapping rows stay aligned.
+
+Verify: metadata, links, the agent governance contract, and the changed public
+profile; and measure the new criterion from the files rather than asserting it.
 
 ## Risk and Rollback
 
