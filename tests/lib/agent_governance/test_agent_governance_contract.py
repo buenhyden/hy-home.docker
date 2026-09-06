@@ -281,6 +281,16 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 root = ROOT / directory
                 self.assertTrue(root.is_dir())
                 self.assertIn("README.md", {path.name for path in root.glob("*.md")})
+        self.assertEqual(
+            {
+                "README.md",
+                "commit-message.md",
+                "diff-review.md",
+                "handoff.md",
+                "test-design.md",
+            },
+            {path.name for path in (ROOT / ".agents/prompts").glob("*.md")},
+        )
         # The contract requires an exact bijection between the files on disk
         # under the canonical home and the registered source inventory, so a
         # member that is not declared fails the home scan rather than passing

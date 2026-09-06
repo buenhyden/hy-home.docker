@@ -44,10 +44,10 @@ role's permission profile and the approved Task scope continue to govern.
 
 | Prompt | Answers |
 | --- | --- |
-| `handoff.md` | How does the next session resume from files and Git state alone? |
-| `diff-review.md` | How is an exact diff reviewed independently of its author? |
-| `commit-message.md` | How is a commit message drafted from the staged diff? |
-| `test-design.md` | How are tests derived from a requirement and its failure conditions? |
+| [handoff](handoff.md) | How does the next session resume from files and Git state alone? |
+| [diff-review](diff-review.md) | How is an exact diff reviewed independently of its author? |
+| [commit-message](commit-message.md) | How is a commit message drafted from the staged diff? |
+| [test-design](test-design.md) | How are tests derived from a requirement and its failure conditions? |
 
 Prompt slugs are kept distinct from skill ids so a name never resolves to two
 different things.

@@ -60,6 +60,10 @@ canonical_sources:
   - .agents/governance/workflows.md
   - .agents/knowledge/README.md
   - .agents/prompts/README.md
+  - .agents/prompts/commit-message.md
+  - .agents/prompts/diff-review.md
+  - .agents/prompts/handoff.md
+  - .agents/prompts/test-design.md
   - .agents/roles/ci-cd-engineer.md
   - .agents/roles/code-reviewer.md
   - .agents/roles/doc-writer.md

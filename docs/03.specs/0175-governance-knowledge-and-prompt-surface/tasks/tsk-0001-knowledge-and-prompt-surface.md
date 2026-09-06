@@ -307,6 +307,30 @@ This is why a rejected gate run is followed by a diff review rather than by an
 immediate retry: the rejection left a canonical input invalid, and retrying
 would have committed the damage.
 
+### W6: Prompt contracts, and first use of one (2026-09-06, local-executed)
+
+Added `handoff.md`, `diff-review.md`, `commit-message.md` and `test-design.md`,
+registered all four in `canonical_sources`, restored the index links now that
+their targets exist, and asserted the exact prompt member set.
+
+This commit's own message was drafted through
+[commit-message](../../../../.agents/prompts/commit-message.md), which is the
+first actual use of the new category rather than a claim about it. Following its
+Required Inputs, `git diff --staged --stat` and `git status --porcelain` were
+read first; the staged set held nine paths and nothing was unstaged. Following
+its Output Contract, the draft was checked against the enforced `.cz.toml`
+pattern before the expensive gate ran, and every staged path was matched against
+the message.
+
+That last step caught a real gap. The first draft accounted for seven of the
+nine paths and said nothing about the two regenerated LLM Wiki inventory
+outputs, so a bullet naming them and the reason they travel in this commit was
+added. The check that produced this finding was initially written against a
+hand-declared list of paths, which is circular and proves nothing; the finding
+came from reading the message text against the staged set instead. The prompt's
+"list any staged path the message does not account for" step is what makes this
+a check rather than a formality.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)
