@@ -177,7 +177,7 @@ models:
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
     control: model_reasoning_effort
-    supported_values: [high, low, max, medium, none, xhigh]
+    supported_values: [high, low, medium, minimal, xhigh]
     work_profiles: [adversarial-review, complex-implementation, long-horizon-supervision]
     source_url: https://developers.openai.com/api/docs/models
   gpt-5.6-terra:
@@ -186,7 +186,7 @@ models:
     entitlement: needs_revalidation
     runtime_acceptance: needs_revalidation
     control: model_reasoning_effort
-    supported_values: [high, low, max, medium, none, xhigh]
+    supported_values: [high, low, medium, minimal, xhigh]
     work_profiles: [evidence-research, routine-validation]
     source_url: https://developers.openai.com/api/docs/models
 model_catalog_policy:

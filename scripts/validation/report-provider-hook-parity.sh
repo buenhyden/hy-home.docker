@@ -225,9 +225,9 @@ rows = [
     (
         semantic_id(event),
         event if event in semantic_events["claude"] else "N/A",
-        "configured" if event in semantic_events["claude"] else "unsupported",
+        "configured" if event in semantic_events["claude"] else "not-adopted",
         event if event in semantic_events["codex"] else "N/A",
-        "configured" if event in semantic_events["codex"] else "unsupported",
+        "configured" if event in semantic_events["codex"] else "not-adopted",
     )
     for event in event_order
 ]
@@ -268,7 +268,7 @@ lines = [
     "",
     "## Definitions / Facts",
     "",
-    "Configured means a tracked native hook entry exists; unsupported means no native mapping is registered.",
+    "Configured means a tracked native hook entry exists; not-adopted means this repository registers no native mapping. Neither value states whether the provider supports the event.",
     "",
     "## Data",
     "",

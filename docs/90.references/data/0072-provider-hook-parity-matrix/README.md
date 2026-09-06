@@ -34,7 +34,7 @@ Tracked Claude and Codex event configuration only; runtime observation is out of
 
 ## Definitions / Facts
 
-Configured means a tracked native hook entry exists; unsupported means no native mapping is registered.
+Configured means a tracked native hook entry exists; not-adopted means this repository registers no native mapping. Neither value states whether the provider supports the event.
 
 ## Data
 
@@ -44,7 +44,7 @@ Configured means a tracked native hook entry exists; unsupported means no native
 | `pre-tool-use` | `PreToolUse` | `configured` | `PreToolUse` | `configured` |
 | `post-tool-use` | `PostToolUse` | `configured` | `PostToolUse` | `configured` |
 | `stop` | `Stop` | `configured` | `Stop` | `configured` |
-| `session-end` | `SessionEnd` | `configured` | `N/A` | `unsupported` |
+| `session-end` | `SessionEnd` | `configured` | `N/A` | `not-adopted` |
 | `pre-compact` | `PreCompact` | `configured` | `PreCompact` | `configured` |
 | `user-prompt-submit` | `UserPromptSubmit` | `configured` | `UserPromptSubmit` | `configured` |
 
