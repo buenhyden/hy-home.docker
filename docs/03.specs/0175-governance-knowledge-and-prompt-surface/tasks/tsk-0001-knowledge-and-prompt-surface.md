@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1055,9 +1055,15 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `b22fe6fa5` | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
 | `9c3a5f32c` | W16 | `docs(task): Fill the ledger row that a commit cannot write for itself` |
 | `7827cb1c2` | W17 | `docs(spec): Require the entry path to name both categories` |
+| `4da883e1f` | W18 | `docs(spec): Promote the package to active and retarget integration at dev` |
 
 The ledger is updated in the commit that closes each unit, because a reader
-deciding what this package has produced has no other authority for it. It fell
+deciding what this package has produced has no other authority for it. One row
+is always outstanding and this is not a defect to be fixed by another commit: a
+commit cannot contain its own hash, so the last commit's row would need a
+further commit, whose row would need another. The last row is therefore recovered
+by query rather than written in advance, with
+`git log --oneline <last row in this table>..HEAD`. It fell
 three commits behind between W12 and W15 even after the independent review named
 exactly that defect, so the rule is restated here: a unit is not closed until its
 row exists. Which commits have reached the remote is read from
