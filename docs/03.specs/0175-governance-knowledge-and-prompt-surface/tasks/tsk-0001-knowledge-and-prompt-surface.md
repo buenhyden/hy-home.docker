@@ -1,10 +1,10 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0175-TSK-0001"
 parent_ids:
@@ -27,8 +27,13 @@ package; no second progress ledger is created.
   `origin/main` at `8176cdee732954415bc5462d6d4d43da4e319394`; package baseline
   `9ede309a5b1feba91e6f8b973a729716b14c55ab` with a clean worktree.
 - Governing owners: REQ-0024, AD-0027, ADR-0034, SPEC-0175, SPEC-0175-PLAN-0001.
-- Shared branch: SPEC-0173's Plan claims this branch and has six open Tasks on
-  it. This package appends its commits rather than cutting a second branch,
+- Current branch: `codex/0175-bootstrap-routing`, cut from `main` after the W13
+  integration. The originating branch `codex/0173-agent-governance-home` was
+  retired at W13 and no longer exists; a reader resuming from this Task uses the
+  branch named here plus `git rev-parse --abbrev-ref HEAD`, and the two must
+  agree.
+- Shared branch, historical: SPEC-0173's Plan claimed the originating branch and
+  has six open Tasks on it. This package appends its commits rather than cutting a second branch,
   because a branch from the integration baseline would drop SPEC-0173's commits
   and rewriting another package's history is not authorized. Integrating this
   branch integrates both packages.
@@ -548,7 +553,7 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 12 | Prompts used in this work | `commit-message` drafted the W6 message and caught two unaccounted paths; `diff-review` drove the independent review; `test-design` shaped the three RED-then-GREEN assertions; `repository-map` and `verification-surface-map` were verified against their sources | local-executed |
 | 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
-| 15 | Closing | local `main` fast-forwarded to the reviewed head and the work branch retired after the containment proof; `origin/main` unchanged | local-executed |
+| 15 | Closing | local `main` fast-forwarded to the reviewed head and the work branch retired after the containment proof. This Task pushed nothing; `origin/main` has since advanced to `2a939c68a` by a push made outside it, recorded in W15 with its evidence and routed for a ruling | local-executed |
 | — | ADR-0034 promotion to `accepted` | attempted and rejected with `invalid-initial-status: new adr documents must start at proposed`; the decision is new relative to the merge base, so it stays `proposed` here and is promoted with the package after integration | local-executed |
 
 ### W13: Integration and branch retirement (2026-09-06, local-executed)
@@ -574,15 +579,14 @@ refuses a branch that is not merged, so the delete is itself a second
 containment check. No worktree was removed: one primary worktree is in use and
 none was created for this work.
 
-`origin/main` remains `8176cdee732954415bc5462d6d4d43da4e319394`. Nothing was
-pushed. A registered hook blocks pushing to `main`, and that block was respected
-rather than routed around, so every statement about remote state, Hosted CI, and
-branch protection remains unverified.
+At the moment this section was written, `origin/main` remained
+`8176cdee732954415bc5462d6d4d43da4e319394` and nothing had been pushed by this
+work. That statement was true when recorded and is false now; the correction is
+in W15 below rather than by rewriting this paragraph, because a dated
+observation is not edited into agreement with a later one.
 
-Because `origin/main` did not move, the lifecycle constraint recorded under the
-W2 correction still holds: `resolve_base_selection` reaches `origin/main` before
-`main`, so this package and ADR-0034 stay at their initial statuses until the
-remote branch advances.
+No push was performed under this Task. A registered hook blocks pushing to
+`main`, and that block was respected rather than routed around.
 
 ### W14: The entry path did not reach the new categories (2026-09-07, local-executed)
 
@@ -625,6 +629,65 @@ remaining `len(x) == len(set(x))` comparisons are duplicate-detection
 invariants, the pinned forty-character commits in the archive and link tests are
 recovery bases that must stay reachable, and the `903` row count describes a
 frozen completed migration rather than a growing corpus.
+
+### W15: The remote advanced outside this Task (2026-09-07, local-executed)
+
+A handoff rehearsal, run through
+[handoff](../../../../.agents/prompts/handoff.md) by a session with no
+conversation context, found that this Task's recorded remote state disagrees
+with Git. The disagreement is real:
+
+```text
+git rev-parse origin/main            2a939c68a5f38e9bcf545b77259796147e24ede6
+git ls-remote origin refs/heads/main  2a939c68a5f38e9bcf545b77259796147e24ede6
+git reflog show origin/main --date=iso
+  2a939c68a @{2026-09-07 05:54:21 +0900}: update by push
+  8176cdee7 @{2026-09-06 08:43:38 +0900}: update by push
+```
+
+`origin/main` now carries `2a939c68a`, the commit this Task's W13 entry
+fast-forwarded local `main` to. The push is timestamped 2026-09-07T05:54:21, after
+the last commit written under this Task, and no `git push` was issued by this
+Task; no repository or local hook script contains one. Who performed it is not
+determinable from the repository, and this entry does not guess. The fact is
+recorded; the authorization question is routed rather than answered here.
+
+Three consequences, none of which are assumed:
+
+Acceptance criterion 15 required that nothing be pushed. That condition no
+longer holds for the branch, though it still holds for this Task's own actions.
+The criterion is restated below to say exactly that, rather than being marked
+passed on a fact that has since reversed.
+
+The lifecycle blocker's cause is gone. `resolve_base_selection` reaches
+`origin/main` before `main`, and the merge base is now `2a939c68a`, at which
+`spec.md` is `draft` and ADR-0034 is `proposed`. A transition is therefore
+observable for the first time. This was tested rather than assumed: promoting
+ADR-0034 to `accepted` and running the changed-mode metadata check returns
+`selected=5 violations=0`, where the same edit previously returned
+`invalid-initial-status`.
+
+The W13 paragraph is not rewritten. It was true when recorded, and editing a
+dated observation into agreement with a later one is the failure the external
+re-observation unit exists to avoid.
+
+### W14 verification, recorded late (2026-09-07, local-executed)
+
+The handoff rehearsal also found that W14 changed three authority surfaces with
+only a `grep -c` observation recorded and no validator evidence. Re-run at that
+tree:
+
+```text
+agent_governance_contract: PASS mode=repository section=all failures=0
+provider_surface_renderer: PASS providers=2 drift=0
+PASS: document link mode all
+archive recovery: ... violations=0
+unittest tests.lib.agent_governance.test_agent_governance_contract: OK
+```
+
+The changed public profile also admitted the W14 commit at pre-commit, which is
+what allowed it to exist. Recording the evidence only after a reviewer asked is
+the defect; the commit was gated, but the Task did not say so.
 
 ## Review Evidence
 
@@ -677,9 +740,16 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `8de5aed41` | W10 | `docs(reference): Re-observe the external agent catalog upstream head` |
 | `2355c9ea9` | W11 | `docs(task): Record the acceptance mapping and the refused graph rebuild` |
 
-W12 review remediation and W13 integration follow this table and are appended as
-they land. The ledger is updated in the commit that closes each unit, because a
-reader deciding what this shared branch contains has no other authority for it.
+| `5a84eb5fc` | W12 | `fix(governance): Act on the independent review's four findings` |
+| `2a939c68a` | W13 | `docs(task): Record the integration and branch retirement` |
+| `7374c96e5` | W14 | `fix(governance): Route the entry path to the new canonical categories` |
+
+Commits through `2a939c68a` are on `main`; `7374c96e5` and later are on
+`codex/0175-bootstrap-routing`. The ledger is updated in the commit that closes
+each unit, because a reader deciding what a branch contains has no other
+authority for it. It fell three commits behind between W12 and W15 even after
+the independent review named exactly that defect, so the rule is restated here:
+a unit is not closed until its row exists.
 
 ## Rulings
 

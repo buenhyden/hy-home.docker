@@ -2,9 +2,9 @@
 title: "Canonical Knowledge and Prompt Surfaces"
 version: "0.1.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:

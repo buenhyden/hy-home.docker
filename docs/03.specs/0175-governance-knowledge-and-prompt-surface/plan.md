@@ -1,10 +1,10 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0175-PLAN-0001"
 parent_ids:
@@ -284,6 +284,27 @@ The lifecycle constraint is unchanged by this: `resolve_base_selection` reaches
 `origin/main` before `main`, so a local merge does not make the package's
 `draft` statuses transitionable. Promotion still waits for the remote branch to
 advance.
+
+### W14: Entry-path routing
+
+The two categories were registered, enforced and indexed, but no entry path
+named them, so an agent following the canonical load order would never open
+either. Route `bootstrap.md` step 3 and both authored provider adapters to them,
+and add both to the English-only constraint.
+
+Verify: metadata, links, agent governance contract, renderer parity, and the
+changed public profile.
+
+### W15: Remote advance and lifecycle promotion
+
+`origin/main` advanced outside this Task's authorization. Record the observation
+with its evidence, correct the acceptance criterion that assumed it had not, and
+then walk the lifecycle that the advance makes observable: ADR-0034 to
+`accepted`, and the Spec, Plan and Task through their own transitions, at most
+one per document per commit.
+
+Verify: metadata in `check-changed` mode is the gate that proves each
+transition; a rejected transition is recorded, never overridden.
 
 ## Risk and Rollback
 
