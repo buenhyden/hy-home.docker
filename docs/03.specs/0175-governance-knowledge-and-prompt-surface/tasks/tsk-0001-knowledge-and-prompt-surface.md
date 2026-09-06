@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -243,6 +243,8 @@ before it is actually performed.
 | Automated pull-request review expansion | Remote activation and execution cannot be observed under current authorization |
 | Fixture reduction | Requires a separate duplication and maintenance-cost comparison; safety negative tests must be preserved |
 | REQ-0026, AD-0030, ADR-0031 retention-owner promotion | Owned by SPEC-0173 as its declared open design dependency |
+| Role-system import, consolidation, or retirement from the external catalog | Each change moves a permission profile and a handoff contract; this package's acceptance contract preserves 14 role IDs, so the change would be unreviewable here. This package restores the canonical owner of the intake decision instead |
+| Spec, Plan, and Task promotion beyond `draft` | The metadata check reads previous status from the fixed `origin/main` merge base, so no transition is observable on this branch; promotion belongs to the first branch after integration |
 
 ## Related Documents
 

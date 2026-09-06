@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -54,6 +54,12 @@ agent catalog is stale.
 - Preserve unchanged: 14 role IDs, 23 skill IDs, six public suite names, two
   public profiles, permission profiles, work profiles, model rows, hook
   contracts, `generated_roots`, and every frozen archive body.
+- Lifecycle constraint: `check-document-metadata.py --mode check-changed` reads
+  a document's previous status from the merge base with `origin/main`, which is
+  fixed for this branch. Every document this package creates is therefore new
+  for the branch's whole life and stays at its initial status. This package and
+  the nine new canonical files remain at `draft` here; promotion belongs to the
+  first branch taken after integration, where each transition is observable.
 - Out of scope: REQ-0026, AD-0030, and ADR-0031 retention-owner promotion,
   which SPEC-0173 owns as a separate open design dependency. Also out of scope:
   push, pull request, merge, deployment, live Compose or service action,
@@ -64,6 +70,12 @@ agent catalog is stale.
   context, cost, latency, and output ceilings, binding Codex `skills.config`,
   editor workspace-task integration, automated pull-request review expansion,
   and fixture reduction.
+- Role-system change is deferred with its reason recorded. The external catalog
+  is a discovery input, and this package restores the canonical owner of that
+  intake decision rather than importing roles under it. Importing, merging, or
+  retiring a role changes a permission profile and a handoff contract, which
+  needs its own Spec Package and its own review; doing it under a package whose
+  acceptance contract preserves 14 role IDs would make that change unreviewable.
 
 ## Behavior Contract
 
@@ -104,9 +116,13 @@ Register before authoring. The registry profiles, templates, contract inventory,
 and tests land first so that every file written under the two new roots is
 validated by a registered profile from its first commit rather than retrofitted.
 
-Take the contract change in two commits: a failing test that asserts the new
-root inventory and profile set, then the implementation that satisfies it. The
-canonical root inventory is a single pinned tuple in
+Prove each assertion fails before it passes, without a commit that carries a
+failing test. The pre-commit hook runs the changed public profile, so such a
+commit is rejected, and the bypass flag is blocked by a registered hook policy.
+The assertion's own logic therefore runs first against the state stored at
+`HEAD` and then against the working tree; the recorded RED output is the
+evidence, and the assertion ships in the commit that satisfies it. The canonical
+root inventory is a single pinned tuple in
 `scripts/lib/agent_governance/agent_governance_contract.py`, so its failure mode
 is a clear, value-free finding code rather than a partial pass.
 
@@ -148,8 +164,13 @@ reject the output-style change while accepting the new categories.
 - A forward link to a document created in a later commit breaks link
   validation. Guard: the link lands in the commit that creates its target.
 - Changing the root inventory without the registry, or the registry without the
-  contract, half-lands the category. Guard: the failing test asserts both
-  before either changes.
+  contract, half-lands the category. Guard: the contract reads the registered
+  profile set with `issubset`, so the registry may lead and the contract may
+  not; each commit carries the assertion it satisfies, and the recorded RED run
+  proves that assertion failed on the previous state.
+- A parallel plan or specification system is created outside the registered
+  Stage 99 paths. Guard: no `docs/superpowers` tree is introduced; the governing
+  Spec, Plan, and Task under `docs/03.specs/` are the only plan authority.
 - The output-style change alters session behavior. Guard: an output style is
   read at session start, so the change takes effect on the next session and is
   reviewed as text, not as observed runtime.
@@ -175,6 +196,11 @@ reject the output-style change while accepting the new categories.
    `glossary.md`, and `verification-surface-map.md`. Each member declares an
    observation date and refresh trigger, routes to a canonical owner, and
    states no obligation.
+   The category index states who may create, verify, deduplicate, promote,
+   re-review, and retire a member, and on what condition. Promotion targets are
+   named: a mandatory rule goes to `governance/`, a design decision to an ADR,
+   and detailed design or procedure to its stage owner or skill. Retirement
+   follows the registered archive route rather than a silent delete.
 5. `.agents/prompts/` contains exactly `README.md`, `handoff.md`,
    `diff-review.md`, `commit-message.md`, and `test-design.md`. Each prompt
    declares purpose, required inputs, output contract, prohibitions, failure
@@ -207,9 +233,13 @@ reject the output-style change while accepting the new categories.
 13. Focused validators pass for each changed authority surface, and the changed
     public profile passes on the final path set. A required but unexecuted check
     is recorded as BLOCKED or NOT_RUN and is never promoted to a PASS.
-14. Final evidence distinguishes local-executed, configured,
-    repository-enforced, unverified runtime, unverified entitlement, and
-    unverified remote state.
+14. Final evidence distinguishes local-executed, local-parser, configured,
+    repository-enforced, official-source, unverified runtime, unverified
+    entitlement, and unverified remote state. A cost that was not measured is
+    recorded as unmeasured, never as zero.
+15. The branch closes through the finishing procedure with the branch and its
+    worktree preserved. No push, pull request, or merge occurs without separate
+    approval, and the user's pre-existing changes are left untouched.
 
 ## Traceability
 
@@ -238,7 +268,8 @@ observation or an owner decision this package does not supply.
 ## Operational Impact
 
 This package changes tracked Markdown, JSON, YAML, and Python plus their tests.
-It starts, stops, and reconfigures nothing. The output-style change takes effect
+It starts, stops, and reconfigures nothing. The default close is local commits
+with the branch and worktree preserved; integration is a separate decision. The output-style change takes effect
 at the next provider session rather than the current one. Rollback is a reviewed
 revert of the affected logical commit; no reset, clean, force push, or archive
 body rewrite is part of the plan.

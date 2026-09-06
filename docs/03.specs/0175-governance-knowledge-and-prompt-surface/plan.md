@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -118,8 +118,10 @@ Three assertions describe the target state:
 - the pre-commit public-gate `files` selector admits a representative path for
   every prefix in the workflow contract's `changed_path_rules`.
 
-Write each assertion, run it, and record the observed failure output verbatim in
-the Task before writing the change it guards.
+Write each assertion and run its logic against the state stored at `HEAD` and
+against the working tree, recording both outputs verbatim in the Task before the
+change it guards is committed. Comparing the two is what makes the failure real:
+an assertion that has only ever passed proves nothing about what it catches.
 
 The RED state is not committed. This repository's pre-commit stage runs the
 changed public profile, which runs these suites, so a commit carrying failing
@@ -250,10 +252,11 @@ Deferred items are listed with their reason, not silently dropped.
 | Risk | Guard | Recovery |
 | --- | --- | --- |
 | A new category becomes a second authority | Registered required sections plus independent review; a stated obligation routes back to `governance/` | Revert the offending member file |
-| Contract and registry half-land | W3 asserts both before W4 and W5 change either | Revert W5, then W4; the RED test remains as the record |
+| Contract and registry half-land | The contract reads the profile set with `issubset`, so the registry leads and the contract follows; each commit carries the assertion it satisfies | Revert W5, then W4; the recorded RED run remains the evidence |
 | Registry edit reformats the whole file | Confirm byte-identical JSON round-trip before and after each edit | Revert the registry hunk |
 | Prose naming a retired path trips the token guard | Describe the retired surface without spelling its path | Rephrase; never weaken the pattern |
 | Forward link to a not-yet-created target | The link lands in the commit that creates its target | Remove the link and re-add it in the correct unit |
+| A parallel plan system appears outside Stage 03 | No `docs/superpowers` tree is created; this Spec, Plan, and Task are the only plan authority | Delete the stray tree and restate the content in its registered owner |
 | Selector widening runs the gate on more commits | Compare selectors as sets and record the exact added prefixes | Revert W9 |
 | Output-style change is claimed as observed runtime | Record it as configured, effective next session | Revert W8 |
 | Concurrent edits collide with SPEC-0173 | No file under that package is touched | None required |
