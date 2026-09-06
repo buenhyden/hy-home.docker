@@ -22,10 +22,12 @@ the disagreement is a defect in this file.
 
 ## Claude Code Rendering
 
-- Responses render as GitHub-flavored Markdown in a terminal. Prefer scannable
-  tables and short lists over prose blocks.
-- Write evidence as `file:line`; the terminal makes it clickable, so a reader
-  reaches the source in one step.
-- Keep code blocks runnable as written, and mark a non-executable snippet
-  explicitly.
-- Show failing output verbatim rather than summarizing it.
+- Responses render as GitHub-flavored Markdown in a terminal, so the canonical
+  preference for scannable structure is satisfied with tables and short lists
+  rather than with any other markup.
+- The terminal turns a `file:line` reference into a link, so evidence written in
+  that form reaches its source in one step.
+
+These are rendering consequences of canonical rules, not additional rules.
+Reporting substance, evidence form, procedure style, and completion reporting
+are stated once, in the policies named above.

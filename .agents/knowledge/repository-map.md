@@ -34,7 +34,7 @@ anything outside this repository.
 | `.agents/skills/**` | `SKILL.md` per skill id | explicit invocation only; discovery grants nothing | agent governance contract, renderer parity |
 | `.agents/knowledge/**` | this category's index | routing only; an obligation here is a defect | document metadata, agent governance contract |
 | `.agents/prompts/**` | this category's index | contract envelope only; no procedure body | document metadata, agent governance contract |
-| `.agents/governance/providers/registry.yaml` | the Provider Registry | provider, model, permission, and hook facts only | agent governance contract |
+| `.agents/governance/providers/registry.yaml` | the Provider Registry | provider, model, permission and hook facts, plus the `canonical_sources` inventory every canonical file must appear in, work profiles, projections, evaluation binding and `generated_roots`; it owns no agent governance policy | agent governance contract |
 | `.claude/**`, `.codex/**` | authored `provider.md` per provider; everything else is generated or native mechanics | canonical contract plus authored/native distinction | `provider_surface_renderer.py --check` |
 | `docs/01.requirements/**` | the Requirement Package | solution-independent needs only | metadata, links, traceability |
 | `docs/02.architecture/**` | Description for structure, ADR for one decision | accepted decisions are superseded, never rewritten | metadata, links, taxonomy tests |

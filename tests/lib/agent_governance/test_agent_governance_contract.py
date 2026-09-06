@@ -196,15 +196,16 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 ROOT, root, ".agents/governance/providers/registry.yaml"
             )
             sources = contract.canonical_source_paths(root)
-            declared = yaml.safe_load(
-                (root / ".agents/governance/providers/registry.yaml").read_text(
-                    encoding="utf-8"
-                )
-            )["canonical_sources"]
-            # The whole declared inventory is returned, in order and without
-            # duplicates. A pinned count would only record how many sources
-            # existed when the test was written.
-            self.assertEqual([str(source) for source in sources], declared)
+            # Comparing the result to the same list it was parsed from proves
+            # nothing: `_canonical_source_paths` already rejects a duplicate or
+            # a non-round-tripping entry before returning. Assert instead that
+            # every canonical category reaches the inventory, which fails if a
+            # category is dropped from the registry, and pin no count, which
+            # would only record how many sources existed when this was written.
+            self.assertEqual(
+                set(contract.ROOT_ENTRIES),
+                {source.parts[1] for source in sources if len(source.parts) > 1},
+            )
             self.assertIn(
                 pathlib.PurePosixPath(".agents/skills/adr-writing/SKILL.md"), sources
             )

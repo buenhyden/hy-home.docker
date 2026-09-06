@@ -253,6 +253,13 @@ independent exact-diff review using the `diff-review` prompt. Transition
 ADR-0034 from `proposed` to `accepted` only after the contract, registry, and
 suite evidence is recorded.
 
+ADR-0034 stays at `proposed` on this branch. The same rule that pins the Spec
+Package at `draft` pins it: the metadata check reads previous status from the
+`origin/main` merge base, and the decision is new relative to that base, so
+`accepted` is rejected as `invalid-initial-status`. This was attempted and
+measured rather than assumed. Its promotion travels with the package's, on the
+first branch after integration.
+
 Deferred items are listed with their reason, not silently dropped.
 
 ### W13: Integration and branch retirement

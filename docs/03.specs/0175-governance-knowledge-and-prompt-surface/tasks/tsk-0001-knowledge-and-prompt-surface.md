@@ -546,15 +546,41 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 10 | External re-observation | the 2026-09-06 head is recorded and the `2026-09-05 Revalidation` section is preserved | official-source |
 | 11 | Preserved invariants | 14 roles, 23 skills, 6 public suites, 2 public profiles unchanged | local-executed |
 | 12 | Prompts used in this work | `commit-message` drafted the W6 message and caught two unaccounted paths; `diff-review` drove the independent review; `test-design` shaped the three RED-then-GREEN assertions; `repository-map` and `verification-surface-map` were verified against their sources | local-executed |
-| 13 | Focused validators and changed profile | every commit passed the changed public profile at pre-commit; focused validators recorded per unit | local-executed |
+| 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
 | 15 | Closing | pending the integration unit | NOT_RUN |
+| — | ADR-0034 promotion to `accepted` | attempted and rejected with `invalid-initial-status: new adr documents must start at proposed`; the decision is new relative to the merge base, so it stays `proposed` here and is promoted with the package after integration | local-executed |
 
 ## Review Evidence
 
-Independent exact-diff review is performed at W12 using the canonical
-`diff-review` prompt once that prompt exists. No review disposition is recorded
-before it is actually performed.
+### Independent exact-diff review (2026-09-06, local-executed)
+
+Performed at W12 through
+[diff-review](../../../../.agents/prompts/diff-review.md) over
+`git diff 9ede309a5..HEAD`, 37 files, by a reviewer that did not write the
+change. Disposition: **approve with follow-up**. The reviewer re-ran the
+repository's own checks rather than accepting the recorded results, reproduced
+the selector defect and its fix against the workflow contract's 24 routed
+prefixes, and confirmed the language rule is now stated once rather than twice
+or not at all.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | medium | The Commit Ledger claimed W5 through W12 were uncommitted while six implementation commits existed, so an integrator reading the Task as the progress authority would misjudge what this shared branch contains | Fixed: the ledger now lists every commit |
+| 2 | low | The assertion replacing the pinned source count could not fail, because `agent_governance_contract.py:1222-1225` already rejects a duplicate or a non-round-tripping entry, and the entry recorded here claimed it proved order and uniqueness | Fixed: it now asserts that every canonical category reaches the inventory, which fails if one is dropped; the earlier claim is corrected below |
+| 3 | low | The Claude output style restated three canonical rules and strengthened one, requiring failing output "verbatim" where the canonical owner says only "rather than summarizing it", against acceptance criterion 7 | Fixed: the adapter keeps only rendering consequences and states no rule of its own |
+| 4 | low | `repository-map.md` scoped the Provider Registry to provider, model, permission and hook facts, omitting `canonical_sources`, which the same category's index tells authors to register in | Fixed: the row now names the inventory and the other registry keys |
+
+Correction to the W5 entry above: replacing the pinned count `98` was right,
+because a count is not an invariant and broke on every registration. The claim
+that the replacement additionally proved order and absence of duplicates was
+wrong; the contract already enforced both before returning, so that assertion
+could not fail. The reviewer caught it, and the assertion was rewritten to one
+that can.
+
+Not covered by the review: Hosted CI execution, `origin/main` state, provider
+runtime acceptance, native discovery of the two new categories, the effect of
+`keep-coding-instructions: true`, and `run-ci-gate.py --profile full`.
 
 ## Commit Ledger
 
@@ -565,8 +591,20 @@ before it is actually performed.
 | `e6b109b94` | W2 correction | `docs(spec): Correct the package lifecycle plan to what the gate allows` |
 | `4fe3c8601` | W4 | `feat(governance): Register knowledge and prompt document shapes` |
 | `5af741ce0` | Spec alignment | `docs(spec): Align the acceptance contract with the request and the gate` |
+| `0d79578b0` | Re-verification | `docs(task): Re-verify the branch and worktree at the current HEAD` |
+| `d8a9a143d` | Scope correction | `docs(spec): State the real change surface and the shared branch` |
+| `3e1eee51e` | W5 | `feat(governance): Admit knowledge and prompt roots in the agent contract` |
+| `73c145f4c` | Authorization | `docs(spec): Record the granted integration and retirement authorization` |
+| `ac6c532eb` | W6 | `feat(governance): Add the four reusable prompt contracts` |
+| `9d6b7346d` | W7 | `feat(governance): Add the three knowledge members` |
+| `d34c0591a` | W8 | `fix(governance): Return language policy to its canonical owner` |
+| `9051977aa` | W9 | `fix(qa): Align the local gate selector with the workflow contract` |
+| `8de5aed41` | W10 | `docs(reference): Re-observe the external agent catalog upstream head` |
+| `2355c9ea9` | W11 | `docs(task): Record the acceptance mapping and the refused graph rebuild` |
 
-W5 through W12 are not committed yet.
+W12 review remediation and W13 integration follow this table and are appended as
+they land. The ledger is updated in the commit that closes each unit, because a
+reader deciding what this shared branch contains has no other authority for it.
 
 ## Rulings
 
