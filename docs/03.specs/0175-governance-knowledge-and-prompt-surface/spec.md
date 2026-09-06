@@ -2,7 +2,7 @@
 title: "Governance Knowledge and Prompt Surface Specification"
 version: "0.4.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-06"
 layer: "specs"

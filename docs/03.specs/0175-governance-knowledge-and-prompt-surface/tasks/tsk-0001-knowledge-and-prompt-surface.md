@@ -2,7 +2,7 @@
 title: "Knowledge and Prompt Surface Execution"
 version: "0.5.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
