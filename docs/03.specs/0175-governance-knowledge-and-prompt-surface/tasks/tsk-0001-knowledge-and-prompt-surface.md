@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -558,7 +558,7 @@ A criterion whose check did not run is recorded as such, never promoted.
 | 13 | Focused validators and changed profile | each commit in the ledger passed the changed public profile at pre-commit, which is what admitted it; two attempts were rejected and are recorded with their cause; focused validators recorded per unit | local-executed |
 | 14 | Evidence classes distinguished | this table plus the per-unit entries; cost is unmeasured, not zero | local-executed |
 | 15 | Closing | each branch fast-forwarded into local `main` and retired after a containment proof. This Task performs no push. The remote has advanced more than once from outside it; the entries are read with `git reflog show origin/main --date=iso` and are routed for a ruling rather than counted here | local-executed |
-| — | ADR-0034 promotion to `accepted` | attempted and rejected with `invalid-initial-status: new adr documents must start at proposed`; the decision is new relative to the merge base, so it stays `proposed` here and is promoted with the package after integration | local-executed |
+| — | ADR-0034 promotion to `accepted` | rejected on the first attempt with `invalid-initial-status: new adr documents must start at proposed`, then admitted once the package reached the merge base; the decision now carries `accepted`, and the two runs together are what show the rule rather than the outcome alone | local-executed |
 
 ### W13: Integration and branch retirement (2026-09-06, local-executed)
 
@@ -793,6 +793,38 @@ rather than assumed. Setting the Task to `in-progress` returns
 package integrity rules, not just the merge base, set the order: the Spec must
 reach `active` before either.
 
+### Document audit against current state (2026-09-07, local-executed)
+
+A pass over the Spec, Plan and Task for unfinished work and for claims the
+repository has since falsified found six items, all corrected in the file that
+owns the claim.
+
+Three were statements left in the present tense after the condition they
+describe ended: the Plan asserted the package stays at `draft` for the branch's
+life, this Task's acceptance mapping said ADR-0034 stays `proposed`, and its
+Deferred Items row said no transition is observable. The Spec's status is
+`approved` and the decision's is `accepted`, so all three read as false to
+anyone checking. Each now states what happened and what still gates the rest,
+rather than restating a superseded rule.
+
+One was a stale explanation: the Plan said a forward link to SPEC-0175 is not
+written "because its target does not yet exist", long after the target existed.
+It now reads as the record of a decision rather than as a current condition.
+
+One open question was closed by measurement instead of being carried: editor
+workspace-task integration is not blocked pending a decision, it is empty
+pending a surface. No `.vscode/`, `.idea/`, or `.code-workspace` path is tracked
+and neither directory exists, so the Spec now states the measurement and the
+condition that would reopen it.
+
+The sixth is the one that mattered. The Plan listed sixteen work units and no
+completion state, so nothing in any tracked file said which were finished. Two
+independent handoff rehearsals reported that a fresh session cannot name the
+next step, and this is why: the Commit Ledger records what happened, but only the
+Plan can say what remains, and it was not saying. The Execution Sequence now
+carries a per-unit state table, with `done` defined as the commit existing and
+the evidence being in this Task.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -851,6 +883,8 @@ runtime acceptance, native discovery of the two new categories, the effect of
 | `569e14276` | W15 | `docs(spec): Advance the package to review and the Task to ready` |
 | `db9901bbe` | W15 | `docs(spec): Approve the Plan and record the provable transition rate` |
 | `f39080c7b` | W16 | `fix(spec): Record position from Git instead of a branch that dies` |
+| `7cbc71e21` | W16 | `fix(spec): State the query wherever a Git value was written` |
+| this commit | W16 | `docs(spec): Correct superseded claims and give the Plan unit states` |
 
 The ledger is updated in the commit that closes each unit, because a reader
 deciding what this package has produced has no other authority for it. It fell
@@ -882,7 +916,7 @@ changes without any edit to this file.
 | Fixture reduction | Requires a separate duplication and maintenance-cost comparison; safety negative tests must be preserved |
 | REQ-0026, AD-0030, ADR-0031 retention-owner promotion | Owned by SPEC-0173 as its declared open design dependency |
 | Role-system import, consolidation, or retirement from the external catalog | Each change moves a permission profile and a handoff contract; this package's acceptance contract preserves 14 role IDs, so the change would be unreviewable here. This package restores the canonical owner of the intake decision instead |
-| Spec, Plan, and Task promotion beyond `draft` | The metadata check reads previous status from the fixed `origin/main` merge base, so no transition is observable on this branch; promotion belongs to the first branch after integration |
+| Spec to `active`, Plan to `active`, Task to `in-progress` | Each needs its own branch after the remote advances, because previous status is read from the merge base and only one transition per document is observable per branch. The package integrity rules add an order: an `active` Plan and an `in-progress` Task each require an `active` Spec, both measured as `configuration-error` rather than assumed. The transitions already taken are recorded in the acceptance mapping |
 
 ## Related Documents
 

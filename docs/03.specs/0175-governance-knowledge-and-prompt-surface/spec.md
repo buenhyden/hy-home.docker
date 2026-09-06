@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -304,9 +304,15 @@ Whether the Stage 90 curated repository map consolidates into
 `.agents/knowledge/` remains open. It has tracked consumers in the LLM Wiki
 generator, the reference validator, `llms.txt`, and four documents, so it
 requires its own coordinated change and a registered data lifecycle transition.
-Codex `skills.config` binding, model context and cost rows, editor task
-integration, and automated pull-request review expansion each need an
-observation or an owner decision this package does not supply.
+Codex `skills.config` binding, model context and cost rows, and automated
+pull-request review expansion each need an observation or an owner decision this
+package does not supply.
+
+Editor workspace-task integration is no longer open. It was measured rather than
+left as a question: no `.vscode/`, `.idea/`, or `.code-workspace` path is tracked
+and neither directory exists, so there is no editor surface to wire, and
+inventing command identifiers is prohibited. It reopens if a tracked editor
+configuration appears.
 
 ## Operational Impact
 

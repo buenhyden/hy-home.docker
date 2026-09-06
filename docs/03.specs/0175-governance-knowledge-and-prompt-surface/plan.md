@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -67,6 +67,29 @@ execution may install hook environments and invoke container-bound linters.
 
 Each work unit ends with focused verification and one logical commit.
 
+State per unit, so a resuming session reads progress instead of inferring it
+from the Commit Ledger. A unit is `done` only when its commit exists and its
+evidence is in the Task.
+
+| Unit | State |
+| --- | --- |
+| W1 Decision and durable owners | done |
+| W2 Package creation | done |
+| W3 RED evidence | done, as a method the later units apply |
+| W4 Stage 99 registration | done |
+| W5 Contract implementation | done |
+| W6 Prompt members | done |
+| W7 Knowledge members | done |
+| W8 Language authority repair | done |
+| W9 Gate selector alignment | done |
+| W10 External re-observation | done |
+| W11 Generated artifact refresh | done for the LLM Wiki; the graph rebuild is BLOCKED by the tool's own refusal |
+| W12 Evidence, review, disposition | done |
+| W13 Integration and branch retirement | done, and repeated per branch since |
+| W14 Entry-path routing | done |
+| W15 Remote advance and lifecycle promotion | partly done; the Spec reached `approved` and ADR-0034 `accepted`, and the remaining transitions wait on the resume condition in W16 |
+| W16 Durable position and the remaining walk | partly done; the position substitution is complete and the walk continues |
+
 ### W1: Decision and durable owners
 
 Record the canonical-category decision and amend the durable owners.
@@ -75,8 +98,8 @@ add `REQ-0024-FR-0014`, extend AD-0027's System Boundaries and Components,
 allocate `ADR-0034` and `REQ-0024-FR-0014` in the Stage 99 identity spaces, and
 register `ADR-0034` in the decisions index and in the test file's ADR-to-AD map.
 
-A forward link to SPEC-0175 is not written here because its target does not yet
-exist; that link lands in W2.
+W1 wrote no forward link to SPEC-0175, because link validation fails on a target
+that does not exist yet; the link landed in W2 with the package it points at.
 
 Verify: `check-document-metadata.py`, `check-document-links.py --mode all`,
 `check-document-corpus-lifecycle.py`,
@@ -105,12 +128,13 @@ This work unit is therefore one commit.
   package row to the Stage 03 index, and add ADR-0034's implementation link now
   that its target exists.
 
-The package stays at `draft` for the life of this branch. Promoting it to
-`review`, `approved`, and `active` belongs to the first branch taken after this
-one is integrated, where the merge base carries the `draft` statuses and each
-transition becomes observable. Recording the package as `active` here would
-assert in frontmatter a walk that no Git history proves, which is the failure the
-rule exists to prevent.
+The package was created at `draft` and stayed there while its own commits were
+the only ones between it and the merge base. That condition ended once the
+package reached `origin/main`; W15 and W16 record the transitions taken since,
+and the rule that governs them is stated there rather than here. What this unit
+still owns is the reason it did not simply write `active` in frontmatter: a
+status is a claim about Git history, and asserting one the history does not show
+is the failure the rule exists to prevent.
 
 Verify per commit: metadata in `check-changed` mode, links, corpus lifecycle,
 `git diff --check`.
