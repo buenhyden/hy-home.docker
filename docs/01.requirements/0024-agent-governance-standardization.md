@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -38,8 +38,8 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 - **REQ-0024-FR-0003**: `.claude/`, `.codex/`는 공통 Agent 거버넌스 정본을
   provider 또는 runtime 형식으로 투영하는 adapter여야 하며 별도 정책,
   lifecycle, 완료 기준을 정의해서는 안 된다.
-  `.agents/`는 실제 repository-owned 정본이며 governance, role, 호출 가능한
-  skill만 등록된 경로에 둔다. Native provider 문서는 각 `.claude/`와 `.codex/`의
+  `.agents/`는 실제 repository-owned 정본이며 등록된 canonical category만
+  둔다. Native provider 문서는 각 `.claude/`와 `.codex/`의
   작성 원본으로 유지하고, 생성된 README나 adapter가 정본을 덮어쓰지 않아야 한다.
   Codex는 정본 skill을 검색하고 명시적으로 읽으며, Claude는 정본으로 연결하는
   얇은 생성 adapter를 사용한다. 두 provider의 skill은 명시적으로 호출하고,
@@ -60,6 +60,13 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 - **REQ-0024-FR-0008**: governance Gate와 fixture는 Stage 99 Registry,
   script manifest, workflow contract가 선언한 현재 계약만 검사하고 폐기된
   경로·문서 본문·고정 파일 수를 재현해서는 안 된다.
+- **REQ-0024-FR-0014**: `.agents/`의 canonical category는 governance, role,
+  호출 가능한 skill, 검증된 navigational knowledge, 재사용 prompt contract로
+  한정되며 각각 등록된 Stage 99 profile과 canonical root inventory를 가져야
+  한다. Knowledge와 prompt는 의무 규칙, 상세 설계, 명세, runbook 본문을
+  복제하지 않고 정본 소유자로 라우팅해야 한다. 어느 category도 실행 진행
+  상태를 소유하지 않으며 current Spec Package Task가 유일한 progress·handoff
+  권한으로 남는다.
 
 ## Non-functional Requirements
 
@@ -102,5 +109,6 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Historical implementation evidence**: [SPEC-0158](../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
 - **Governance entry**: [canonical agent governance](../../.agents/README.md)

@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -26,8 +26,13 @@ Agent는 provider adapter를 통해 동일한 규범을 native runtime 형식으
   소유한다.
 - Stage 99는 docs profile, path, identity, lifecycle, template의 typed contract를
   소유한다.
-- `.agents/governance/`, `.agents/roles/`, `.agents/skills/`는 작성 정본이며
-  생성물이나 호환성 복사본이 아니다.
+- `.agents/governance/`, `.agents/roles/`, `.agents/skills/`,
+  `.agents/knowledge/`, `.agents/prompts/`는 작성 정본이며 생성물이나
+  호환성 복사본이 아니다.
+- `.agents/knowledge/`는 정본 소유자로 라우팅하는 검증된 navigational
+  knowledge를 소유하고, `.agents/prompts/`는 재사용 prompt의 입력·출력
+  계약을 소유한다. 두 category는 의무 규칙과 절차 본문을 복제하지 않으며
+  실행 진행 상태를 소유하지 않는다.
 - `.claude/provider.md`, `.codex/provider.md`는 각 provider의 로딩·문법 차이를
   소유한다. 생성 README·role·Claude skill adapter와 기존 runtime mechanics는
   공통 정책을 정의하거나 canonical source를 덮어쓰지 않는다.
@@ -42,6 +47,8 @@ Agent는 provider adapter를 통해 동일한 규범을 native runtime 형식으
 | --- | --- |
 | canonical agent governance bootstrap and policies | authority resolution, safety, workflow |
 | canonical agent governance roles and skills | reusable provider-neutral behavior |
+| canonical agent governance knowledge | verified surface-to-authority routing and repository vocabulary |
+| canonical agent governance prompts | reusable input and output contracts for recurring agent work |
 | Provider Registry | provider identity and translation facts |
 | Authored native provider documents | provider-specific loading and syntax |
 | Generated native adapters | role translation and thin Claude skill pointers |
@@ -83,5 +90,6 @@ adapter 변경 자체는 Docker runtime, remote service, secret mutation을 요�
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 - [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0034 Canonical Knowledge and Prompt Surfaces](../decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../99.templates/registry.json)

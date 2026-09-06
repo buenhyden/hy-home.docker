@@ -3554,8 +3554,8 @@
         "REQ-0024.FR": {
           "prefix": "REQ-0024-FR-",
           "width": 4,
-          "high_water": 13,
-          "next_number": 14,
+          "high_water": 14,
+          "next_number": 15,
           "current_issued": [
             1,
             2,
@@ -3564,7 +3564,8 @@
             5,
             6,
             7,
-            8
+            8,
+            14
           ],
           "reserved_history": [
             9,
@@ -3742,8 +3743,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 33,
-      "next_number": 34,
+      "high_water": 34,
+      "next_number": 35,
       "child_spaces": {}
     },
     "spec": {

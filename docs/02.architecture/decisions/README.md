@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -25,8 +25,10 @@ ADR은 구현 명세나 운영 절차가 아니다.
 
 ## Scope
 
-이 디렉터리는 현재 26개의 ADR을 보유한다. 각 ADR은 하나의 material
+이 디렉터리는 현재 유효한 ADR을 보유한다. 각 ADR은 하나의 material
 choice를 소유하고 실제 Architecture Description을 parent로 연결한다.
+개수는 유지 기준이 아니므로 아래 Current Inventory와 실제 파일 목록이
+권위이다.
 
 ## Structure
 
@@ -38,6 +40,8 @@ docs/02.architecture/decisions/
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0031-preserved-archive-record.md
 ├── 0032-canonical-agent-governance-home.md
+├── 0033-full-spec-package-preservation.md
+├── 0034-canonical-knowledge-and-prompt-surfaces.md
 └── README.md
 ```
 
@@ -57,6 +61,11 @@ docs/02.architecture/decisions/
   frozen body와 disposition record를 분리하는 active archive preservation decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
   공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 active decision.
+- [`ADR-0033`](./0033-full-spec-package-preservation.md):
+  Spec Package 전체 본문 보존을 제안하는 proposed decision.
+- [`ADR-0034`](./0034-canonical-knowledge-and-prompt-surfaces.md):
+  `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는
+  proposed decision.
 
 ## How to Work in This Area
 
