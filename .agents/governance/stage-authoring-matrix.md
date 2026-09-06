@@ -33,7 +33,7 @@ document; the kind names its role inside that family.
 
 | Family | Owning stage | Kinds |
 | --- | --- | --- |
-| `governance` | canonical agent governance | `sdlc`, `policy`, `hook-policy`, `role`, `skill`, `provider`, `provider-index`, `claude-agent`, `codex-agent` |
+| `governance` | canonical agent governance | `sdlc`, `policy`, `hook-policy`, `role`, `skill`, `knowledge`, `knowledge-index`, `prompt`, `prompt-index`, `provider`, `provider-index`, `claude-agent`, `codex-agent` |
 | `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `domain-readme` |
 | `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data`, `category-readme` |
@@ -50,7 +50,9 @@ are `name` and `description`; existing governance fields are nested in `metadata
 Discovery, instruction loading, invocation, and runtime acceptance are separate.
 No generated provider surface becomes a shared authority.
 
-The canonical home contains only registered governance, role, and skill sources.
+`knowledge/` and `prompts/` are canonical categories, not stages. They route to owners and declare contracts; the owning policy, stage document, or Task keeps its authority.
+
+The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 

@@ -22,11 +22,22 @@ PROVIDERS = GOVERNANCE / "governance/providers"
 REGISTRY = PROVIDERS / "registry.yaml"
 CANONICAL_SKILL_PATTERN = ".agents/skills/{skill_id}/SKILL.md"
 SUPPORTED_PROVIDERS = ("claude", "codex")
-ROOT_ENTRIES = ("README.md", "governance", "roles", "skills")
+ROOT_ENTRIES = (
+    "README.md",
+    "governance",
+    "knowledge",
+    "prompts",
+    "roles",
+    "skills",
+)
 PROVIDER_ENTRIES = ("README.md", "registry.yaml")
 GOVERNANCE_PROFILES = {
     "governance-hook-policy",
+    "governance-knowledge",
+    "governance-knowledge-index",
     "governance-policy",
+    "governance-prompt",
+    "governance-prompt-index",
     "governance-provider",
     "governance-provider-index",
     "governance-role",
@@ -1221,6 +1232,8 @@ def _canonical_source_paths(
     patterns = (
         r"[.]agents/governance/[a-z][a-z0-9-]*[.]md",
         r"[.]agents/governance/hooks/hookify[.][a-z][a-z0-9-]*[.]md",
+        r"[.]agents/knowledge/(?:README|[a-z][a-z0-9-]*)[.]md",
+        r"[.]agents/prompts/(?:README|[a-z][a-z0-9-]*)[.]md",
         r"[.]agents/roles/[a-z][a-z0-9-]*[.]md",
         r"[.]agents/skills/[a-z][a-z0-9-]*/(?:SKILL[.]md|agents/openai[.]yaml)",
     )

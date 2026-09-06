@@ -196,7 +196,15 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 ROOT, root, ".agents/governance/providers/registry.yaml"
             )
             sources = contract.canonical_source_paths(root)
-            self.assertEqual(98, len(sources))
+            declared = yaml.safe_load(
+                (root / ".agents/governance/providers/registry.yaml").read_text(
+                    encoding="utf-8"
+                )
+            )["canonical_sources"]
+            # The whole declared inventory is returned, in order and without
+            # duplicates. A pinned count would only record how many sources
+            # existed when the test was written.
+            self.assertEqual([str(source) for source in sources], declared)
             self.assertIn(
                 pathlib.PurePosixPath(".agents/skills/adr-writing/SKILL.md"), sources
             )
@@ -266,11 +274,43 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 source = registry["template_roles"][role]["source"]
                 self.assertTrue((ROOT / source).is_file())
 
+    def test_canonical_category_roots_are_admitted_and_populated(self) -> None:
+        """Each new canonical root is admitted, registered, and non-empty."""
+        for directory in (".agents/knowledge", ".agents/prompts"):
+            with self.subTest(directory=directory):
+                root = ROOT / directory
+                self.assertTrue(root.is_dir())
+                self.assertIn("README.md", {path.name for path in root.glob("*.md")})
+        # The contract requires an exact bijection between the files on disk
+        # under the canonical home and the registered source inventory, so a
+        # member that is not declared fails the home scan rather than passing
+        # quietly.
+        declared = set(
+            yaml.safe_load(
+                (ROOT / ".agents/governance/providers/registry.yaml").read_text(
+                    encoding="utf-8"
+                )
+            )["canonical_sources"]
+        )
+        for directory in (".agents/knowledge", ".agents/prompts"):
+            for path in sorted((ROOT / directory).glob("*.md")):
+                with self.subTest(path=f"{directory}/{path.name}"):
+                    self.assertIn(f"{directory}/{path.name}", declared)
+        self.assertLessEqual(
+            {
+                "governance-knowledge",
+                "governance-knowledge-index",
+                "governance-prompt",
+                "governance-prompt-index",
+            },
+            contract.GOVERNANCE_PROFILES,
+        )
+
     def test_supported_providers_and_governance_roots_are_exact(self) -> None:
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)
         self.assertEqual(
-            ("README.md", "governance", "roles", "skills"),
+            ("README.md", "governance", "knowledge", "prompts", "roles", "skills"),
             state.root_entries,
         )
         self.assertEqual(

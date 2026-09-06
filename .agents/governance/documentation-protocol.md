@@ -181,6 +181,8 @@ of external templates.
 | Gap Type | Owner | Rule |
 | --- | --- | --- |
 | Governance behavior | `.agents/` | Change canonical policy, role, skill, or provider facts first. |
+| Reusable routing knowledge | `.agents/knowledge/` | Record verified surface-to-owner routing with its provenance and refresh trigger. |
+| Reusable prompt contract | `.agents/prompts/` | Record required inputs, output contract, prohibitions, and failure handling. |
 | Long-lived need | `docs/01.requirements/` | Record solution-independent requirements and acceptance. |
 | Structure or durable decision | `docs/02.architecture/` | Update a description or ADR. |
 | Change contract | `docs/03.specs/` | Update the bounded Spec Package. |

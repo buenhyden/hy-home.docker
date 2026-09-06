@@ -211,6 +211,99 @@ The `GOVERNANCE_PROFILES` subset assertion is deliberately not here.
 registry may register a profile the contract has not yet admitted, but not the
 reverse. That assertion ships in W5, the commit that admits the roots.
 
+### W5: Canonical roots admitted (2026-09-06, local-executed)
+
+Extended `ROOT_ENTRIES`, `GOVERNANCE_PROFILES`, and the closed canonical-source
+path allowlist; created both category indexes; declared them in
+`canonical_sources`; and routed `.agents/README.md`,
+`documentation-protocol.md`, and `stage-authoring-matrix.md` to the new
+categories.
+
+RED against the state stored at `HEAD`, then GREEN on the working tree:
+
+```text
+HEAD (before W5): failures=4
+  ROOT_ENTRIES is ('README.md', 'governance', 'roles', 'skills'), expected ('README.md', 'governance', 'knowledge', 'prompts', 'roles', 'skills')
+  GOVERNANCE_PROFILES is missing: governance-knowledge, governance-knowledge-index, governance-prompt, governance-prompt-index
+  .agents/knowledge does not exist
+  .agents/prompts does not exist
+working tree (after W5): failures=0
+```
+
+Two defects surfaced when the assertion first ran, and both were corrected
+rather than worked around.
+
+The new assertion initially required the full member set of each root. W5
+creates only the two indexes, so the assertion demanded files that W6 and W7
+write. It now requires each root to exist, to be admitted, to contain its index,
+and to have every present member declared in `canonical_sources`. The exact
+member set ships with the commits that write those members.
+
+`test_registered_inventory_can_be_read_without_other_payloads` pinned the source
+count at `98` and failed as `98 != 100` once two sources were registered. The
+count expressed no invariant and recorded only how many sources existed when the
+test was written. It is replaced by an equality against the registry's declared
+`canonical_sources` list, which additionally proves order and absence of
+duplicates. The check is stronger, not weaker, and no threshold was lowered.
+
+`python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract`
+returns `Ran 39 tests` `OK`.
+
+`check-document-links.py --mode all` then reported four `missing-link-target`
+findings, all of them the prompt index linking members that W6 creates. The
+recorded guard applies: a link lands in the commit that creates its target. The
+index now names those members as literal file names and gains the links in W6.
+The re-run reports `documents=704 links=6007 failures=0`.
+
+### Observed flake outside this package (2026-09-06, local-executed)
+
+The first W5 commit attempt was rejected by the changed public profile with one
+failure, in a suite this package does not touch:
+
+```text
+FAIL: test_timeout_still_cleans (tests.validation.test_postgres_logical_upgrade_rehearsal.PostgresLogicalUpgradeRehearsalTests.test_timeout_still_cleans)
+AssertionError: 'reason=timeout' not found in 'status=failed failure_class=readiness reason=source-state-query-failed\ncleanup_status=passed\n'
+Ran 235 tests in 27.446s
+FAILED (failures=1)
+```
+
+Run alone, the same test passes three times out of three. The fixture gives the
+rehearsal a five-second total budget with a two-second cleanup reserve
+(`IOR_TEST_TOTAL_TIMEOUT`, `IOR_TEST_CLEANUP_RESERVE`), so under the load of the
+full suite the readiness query fails before the deadline is detected and the
+run is classified `source-state-query-failed` instead of `timeout`. The
+assertion depends on wall-clock timing rather than on the behavior it names.
+
+The file is not modified here. `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
+belongs to SPEC-0173's test and fixture convergence Task, which is open, and
+changing another package's fixture under this acceptance contract would be
+unreviewable. The observation is recorded for that owner instead. This package
+does not treat a passing retry as evidence that the test is sound.
+
+### Canonical source damaged by the rejected commit run (2026-09-06, local-executed)
+
+After the rejected W5 attempt, `generate-llm-wiki.py --check` reported `FAIL:
+local governance requires a valid canonical source inventory`, and
+`canonical_source_paths` raised `AGC-YAML-INVALID
+path=.agents/governance/providers/registry.yaml`. The file had been reformatted
+in both the index and the working tree, 114 insertions against 109 deletions:
+sequence items were de-indented under their key and a comment was rewritten, so
+`yaml.safe_load` failed with `mapping values are not allowed here` at line 5.
+Every pre-commit hook in that run reported `Passed` except the final suite, so
+the reformat came from the rejected run's own worktree handling rather than from
+a hook that declared a fix.
+
+Recovery kept the canonical bytes rather than accepting the reformat:
+`git checkout HEAD -- .agents/governance/providers/registry.yaml` restored the
+authored file, the two `canonical_sources` entries were re-applied as a
+two-line addition, and `canonical_source_paths` then returned 100 sources.
+`git diff HEAD --numstat` was read for every changed file to confirm no other
+file carried unexpected churn.
+
+This is why a rejected gate run is followed by a diff review rather than by an
+immediate retry: the rejection left a canonical input invalid, and retrying
+would have committed the damage.
+
 ## Verification Evidence
 
 ### W1 focused checks (2026-09-06, local-executed)

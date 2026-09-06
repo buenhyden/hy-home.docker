@@ -23,6 +23,9 @@ native adapters. The canonical home is authored content, never renderer output.
 - `roles/` owns stable identities, responsibilities, permissions, and handoff.
 - `skills/<skill_id>/SKILL.md` owns callable procedures; skill-local
   `agents/openai.yaml` requires explicit invocation.
+- `knowledge/` owns verified routing from a repository surface to its
+  canonical owner, plus repository vocabulary and verification coverage.
+- `prompts/` owns reusable input and output contracts for recurring work.
 - `governance/providers/registry.yaml` owns provider identities, model and
   permission translations, projection routes, and hook facts.
 - [Claude](../.claude/provider.md) and [Codex](../.codex/provider.md) own their
@@ -43,6 +46,8 @@ Stage 98 record and Git history retain completed evidence.
 │   ├── sdlc.md
 │   ├── hooks/
 │   └── providers/
+├── knowledge/
+├── prompts/
 ├── roles/
 └── skills/<skill_id>/
     ├── SKILL.md
@@ -50,8 +55,10 @@ Stage 98 record and Git history retain completed evidence.
 ```
 
 Only registered canonical entries are permitted. Unknown entries are preserved
-and reported for review. No common runtime, memory, installer, or generated role
-surface is introduced here.
+and reported for review. `knowledge/` and `prompts/` route to canonical owners
+and declare contracts; neither states an obligation, holds a procedure body, or
+owns execution state. No common runtime, progress ledger, installer, or
+generated role surface is introduced here.
 
 ## How to Work in This Area
 
