@@ -35,7 +35,6 @@ tests/_tmp_*
 
 # IDE
 .vscode/
-!.vscode/extensions.json
 .idea/
 .DS_Store
 *.swp
