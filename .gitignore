@@ -117,7 +117,7 @@ _workspace/**
 
 
 # Graphify is optional generated intelligence for local exploration.
-graphify-out/.graphify*
+graphify-out/
 
 # optional: commit for shared extraction speed, skip to keep repo small
 graphify-out/cache/
@@ -127,9 +127,3 @@ graphify-out/manifest.json
 
 # local token tracking, not useful to share
 graphify-out/cost.json
-
-# The tracked snapshots. These negations come last so they override every
-# graphify rule above them.
-!graphify-out/graph.html
-!graphify-out/GRAPH_REPORT.md
-!graphify-out/graph.json
