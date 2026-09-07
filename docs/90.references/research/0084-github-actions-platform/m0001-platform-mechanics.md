@@ -1,17 +1,17 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.1.1"
+version: "0.1.2"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 layer: "references"
 artifact_id: "RES-0084-m0001"
 parent_ids:
 - "RES-0084"
 created: "2026-07-05"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-09-08"
 review_cycle: "on-source-change"
 ---
 
@@ -460,8 +460,17 @@ count in force here is whatever 1.28.0 shipped rather than the 40 above. actionl
 `.pre-commit-config.yaml` pins `rhysd/actionlint` at `rev: v1.7.12` scoped to
 `^\.github/workflows/.*\.(yml|yaml)$`, and `run-ci-precommit.sh` — the
 entrypoint of `leaf.pre-commit` under the required-quality root
-`ci.pre-commit` — executes `pre-commit run --all-files` skipping only
-`eslint-nextjs`. Both therefore run on every push and pull request to `main`.
+`ci.pre-commit` — executes `pre-commit run --all-files` skipping
+`public-validation-changed` and `public-validation-full`. Both therefore run on
+every push and pull request to `main`.
+
+Corrected 2026-09-08: the sentence above named `eslint-nextjs` as the skip.
+That hook id left `.pre-commit-config.yaml` in `1c620dd07`, and `3989da584`
+replaced the skip with the two gate-owned `public-validation-*` hooks on
+2026-09-03, two days before this module's `observed_at`. The skip is what stops
+`run-ci-gate.py` and `pre-commit` from re-entering each other, not a way to
+avoid running ESLint twice; ESLint has no pre-commit hook here and reaches CI
+only through `leaf.frontend-lint`.
 
 Worth noting against the pinning guidance above: the actionlint hook is pinned
 by tag, not by commit SHA. `.pre-commit-config.yaml` is a different mechanism
