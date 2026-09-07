@@ -174,7 +174,7 @@ runner.
 | `stale.yml`              | manage stale issues and PRs |
 | `pr-labeler.yml`         | apply PR labels            |
 | `generate-changelog.yml` | generate release changelog |
-| `tech-stack-version-sync.yml` | check curated version-registry drift for governed Compose/version changes |
+| `tech-stack-version-sync.yml` | give a path-scoped early signal for curated version-registry drift; the required gate leaf `leaf.local-tech-stack-version-drift` runs the same command on every pull request, so this workflow is a second signal and never the sole owner |
 
 Agent all-files execution remains limited to the separately approved controlled
 wrapper; neither required profile grants Agent authorization.

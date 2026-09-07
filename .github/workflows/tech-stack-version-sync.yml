@@ -9,6 +9,17 @@ name: Tech-Stack Version Sync
 # (for example after a Dependabot docker-compose bump). The fix is one command:
 #   bash scripts/operations/sync-tech-stack-versions.sh
 # committed to the PR branch by the author/maintainer.
+#
+# This is not the only place that command runs, and it is not the gate that
+# blocks a merge. `leaf.local-tech-stack-version-drift` invokes the same
+# entrypoint with the same argument as a root of `repository-integrity`, the
+# declared changed-profile fallback, so the required `validation-changed` job
+# already runs this check on every pull request to main. This workflow narrows
+# the same command to the paths that can cause the drift, which gives a
+# path-scoped signal that does not wait on the full quality job. Because the two
+# are deliberately the same command, a registered test in
+# tests/validation/test_tech_stack_version_contract.py pins them to each other:
+# change the command here without changing the gate leaf and that test fails.
 
 on:
   pull_request:

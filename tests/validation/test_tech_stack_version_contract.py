@@ -7,9 +7,18 @@ import subprocess
 import tempfile
 import unittest
 
+import yaml
+
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
+    parse_gate_registry,
     parse_public_gate_contract,
+    public_root_gate_ids,
+    select_public_suites,
+)
+from scripts.validation.ci_gate_runner import (
+    ExecutionContext,
+    build_public_validation_plan,
 )
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
@@ -320,6 +329,63 @@ class TechStackVersionContractTests(unittest.TestCase):
         )
         self.assertEqual(1, len(hardening))
         self.assertEqual("repository-integrity", hardening[0].suite)
+
+    def test_standalone_workflow_and_gate_leaf_run_one_command(self) -> None:
+        """The duplicate execution is deliberate, so it is pinned rather than left to drift.
+
+        `tech-stack-version-sync.yml` and `leaf.local-tech-stack-version-drift`
+        run the same script with the same argument on purpose: the leaf blocks
+        the merge and the workflow narrows the same command to the paths that
+        cause the drift. Two owners of one command drift apart unless something
+        compares them, so this compares them.
+        """
+
+        document = load_contract_document(ROOT)
+        leaf = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.local-tech-stack-version-drift"
+        )
+        workflow = yaml.safe_load(
+            (ROOT / ".github/workflows/tech-stack-version-sync.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        steps = workflow["jobs"]["drift-gate"]["steps"]
+        commands = [step["run"].strip() for step in steps if "run" in step]
+
+        self.assertEqual(
+            [f"bash {leaf['entrypoint']} {' '.join(leaf['argv'])}"],
+            commands,
+        )
+
+    def test_the_required_gate_reaches_the_drift_leaf_on_every_pull_request(
+        self,
+    ) -> None:
+        """The workflow is a second signal only while the leaf is the first one."""
+
+        document = load_contract_document(ROOT)
+        public = parse_public_gate_contract(document)
+        registry = parse_gate_registry(document, ".github/workflow-contract.yml")
+
+        # An empty change set selects the declared fallback, which is the floor
+        # every pull request gets before any path rule adds to it.
+        suites = select_public_suites(public, "changed", ())
+        self.assertIn("repository-integrity", suites)
+
+        plan = build_public_validation_plan(
+            registry,
+            public_root_gate_ids(public, suites),
+            public,
+            suites,
+            ExecutionContext.PULL_REQUEST,
+            profile="changed",
+            root=ROOT,
+        )
+        self.assertIn(
+            "leaf.local-tech-stack-version-drift",
+            {invocation.gate_id for invocation in plan},
+        )
 
     def test_compose_image_resolver_accepts_exact_safe_scalars(self) -> None:
         expected = "registry.example.test/team/app:1.2.3"
