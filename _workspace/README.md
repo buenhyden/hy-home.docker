@@ -1,6 +1,6 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -79,13 +79,29 @@ pattern without rewriting that ladder silently drops the second document.
 Verify the rule rather than trusting this sentence:
 
 ```bash
+git check-ignore -v --no-index _workspace/repo-support/README.md
 git check-ignore -v _workspace/repo-support/scratch.json
 git ls-files _workspace/
 ```
 
-The first command names the ignoring rule; the second lists exactly the two
-tracked README files. A third tracked path means an artifact escaped the
+`--no-index` carries the check. Without it git consults the index first and
+refuses to call a tracked file ignored, so a dropped negation stays invisible:
+the document remains tracked and every question about its ignored state answers
+no while the rule that re-included it is gone.
+
+Read the rule, not the exit status. `-v` exits 0 whether the matching pattern
+excludes or re-includes, so only the printed rule separates the two: a healthy
+ladder answers with the negation `!/_workspace/repo-support/README.md`, and a
+broken one answers with the outer `/_workspace/*`. The second command must name
+the rule that excludes a scratch path, and the third must list exactly the two
+tracked README files; a third tracked path means an artifact escaped the
 staging contract.
+
+`test_workspace_contract_documents_stay_reachable` in
+[tests/lib/test_surface_ownership.py](../tests/lib/test_surface_ownership.py)
+asks the same question with `-q`, whose exit status does separate the two, and
+runs on every gate. This contract no longer rests on someone remembering to
+type the commands.
 
 ## How to Work in This Area
 

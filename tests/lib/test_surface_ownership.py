@@ -72,6 +72,37 @@ def _full_profile_unittest_modules() -> list[str]:
     ]
 
 
+_WORKSPACE_CONTRACT_DOCUMENTS = (
+    "_workspace/README.md",
+    "_workspace/repo-support/README.md",
+)
+
+_WORKSPACE_SCRATCH_PROBES = (
+    "_workspace/scratch.json",
+    "_workspace/repo-support/scratch.json",
+)
+
+
+def _is_excluded(root: pathlib.Path, path: str) -> bool:
+    """Report whether a repository's own ignore rules still reach a path.
+
+    ``--no-index`` is the whole point. Without it git consults the index first
+    and refuses to call a tracked file ignored, which is exactly how a dropped
+    negation stays invisible: the file remains tracked, so every question about
+    its ignored state answers no while the rule that re-included it is gone.
+    """
+
+    result = subprocess.run(
+        ["git", "check-ignore", "-q", "--no-index", "--", path],
+        cwd=root,
+        timeout=10,
+        check=False,
+    )
+    if result.returncode not in (0, 1):
+        raise AssertionError(f"git check-ignore could not judge {path}")
+    return result.returncode == 0
+
+
 class SurfaceOwnershipTests(unittest.TestCase):
     """A directory states what its files are, and no constant restates it."""
 
@@ -182,3 +213,47 @@ class SurfaceOwnershipTests(unittest.TestCase):
             "the grammar admits this shape",
         )
         self.assertNotIn(module, _full_profile_unittest_modules())
+
+    def test_workspace_contract_documents_stay_reachable(self) -> None:
+        """Tracking is not the contract; the ignore ladder reaching them is."""
+
+        tracked = sorted(
+            subprocess.check_output(
+                ["git", "ls-files", "_workspace/"], cwd=ROOT, timeout=10
+            )
+            .decode()
+            .split()
+        )
+        self.assertEqual(sorted(_WORKSPACE_CONTRACT_DOCUMENTS), tracked)
+        # Git keeps a tracked file tracked after the negation that re-included
+        # it is dropped, so ls-files alone cannot see the ladder break. Only the
+        # exclude rules answer whether a fresh add would still reach them.
+        excluded = [
+            path for path in _WORKSPACE_CONTRACT_DOCUMENTS if _is_excluded(ROOT, path)
+        ]
+        self.assertEqual([], excluded)
+
+    def test_workspace_scratch_stays_excluded(self) -> None:
+        reachable = [
+            path for path in _WORKSPACE_SCRATCH_PROBES if not _is_excluded(ROOT, path)
+        ]
+        self.assertEqual([], reachable)
+
+    def test_an_anchored_pattern_without_the_ladder_is_visible(self) -> None:
+        """The shape that once dropped the nested document must still fail here."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q", "."], cwd=root, check=True, timeout=30)
+            (root / ".gitignore").write_text(
+                "/_workspace/*\n!/_workspace/README.md\n", encoding="utf-8"
+            )
+            (root / "_workspace/repo-support").mkdir(parents=True)
+            for name in _WORKSPACE_CONTRACT_DOCUMENTS:
+                (root / name).write_text("", encoding="utf-8")
+            outer, nested = _WORKSPACE_CONTRACT_DOCUMENTS
+            self.assertFalse(_is_excluded(root, outer))
+            self.assertTrue(
+                _is_excluded(root, nested),
+                "a nested document cannot be re-included while its parent is excluded",
+            )
