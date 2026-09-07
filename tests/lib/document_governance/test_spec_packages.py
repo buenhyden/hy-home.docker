@@ -884,6 +884,41 @@ class SpecPackageTests(unittest.TestCase):
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "completion"):
                 spec_packages.load_spec_packages(after_stage)
 
+    def test_open_time_identity_ignores_benign_parent_churn(self) -> None:
+        """Another process writing to a traversed parent is not a swap."""
+
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            before = os.stat(root)
+            (root / "sibling").mkdir()
+            after = os.stat(root)
+            # This is what /tmp does continuously on a shared machine: the
+            # directory's link count and mtime move while the directory itself
+            # is untouched.
+            self.assertNotEqual(
+                spec_packages._directory_snapshot(before),
+                spec_packages._directory_snapshot(after),
+            )
+            # Identity is what a symlink swap cannot forge, and it is the only
+            # thing the stat-then-open check is entitled to require. An
+            # attacker can match mtime with utimensat; nobody can match st_ino.
+            self.assertEqual(
+                spec_packages._path_identity(before),
+                spec_packages._path_identity(after),
+            )
+
+    def test_open_time_identity_still_separates_distinct_directories(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "one").mkdir()
+            (root / "two").mkdir()
+            self.assertNotEqual(
+                spec_packages._path_identity(os.stat(root / "one")),
+                spec_packages._path_identity(os.stat(root / "two")),
+            )
+
     def test_whole_package_retirement_requires_a_tombstone(self) -> None:
         """Stage 00 retires a package with a Tombstone, not by silent deletion."""
 

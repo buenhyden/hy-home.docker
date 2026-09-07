@@ -291,6 +291,21 @@ def _directory_flags() -> int:
     )
 
 
+def _path_identity(metadata: os.stat_result) -> tuple[int, int]:
+    """Return what a symlink swap cannot forge.
+
+    The stat-then-open check exists to prove the descriptor refers to the
+    object that was stat'd. Only device and inode carry that. Link count and
+    timestamps move whenever anything else writes into the directory, which on
+    a shared parent such as /tmp happens continuously and proves nothing; an
+    attacker who swaps a directory can match a timestamp with utimensat but
+    cannot match an inode. Content that must not move while a load runs is
+    guarded separately by the fuller snapshot below.
+    """
+
+    return (metadata.st_dev, metadata.st_ino)
+
+
 def _snapshot(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
     return (
         metadata.st_dev,
@@ -317,7 +332,7 @@ def _open_directory_at(
             os.close(descriptor)
         raise ValueError(f"cannot open {label}: {error}") from error
     assert descriptor is not None
-    if _snapshot(opened) != _snapshot(before):
+    if _path_identity(opened) != _path_identity(before):
         os.close(descriptor)
         raise ValueError(f"{label} changed while opening")
     return descriptor, _snapshot(opened)

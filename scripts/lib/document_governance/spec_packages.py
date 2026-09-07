@@ -136,6 +136,21 @@ class _ReceiptCarrier:
     completed_archive: bool = False
 
 
+def _path_identity(metadata: os.stat_result) -> tuple[int, int]:
+    """Return what a symlink swap cannot forge.
+
+    The stat-then-open check exists to prove the descriptor refers to the
+    object that was stat'd. Only device and inode carry that. Link count and
+    timestamps move whenever anything else writes into the directory, which on
+    a shared parent such as /tmp happens continuously and proves nothing; an
+    attacker who swaps a directory can match a timestamp with utimensat but
+    cannot match an inode. Content that must not move while a load runs is
+    guarded separately by the fuller snapshot below.
+    """
+
+    return (metadata.st_dev, metadata.st_ino)
+
+
 def _directory_snapshot(
     metadata: os.stat_result,
 ) -> tuple[int, int, int, int, int, int]:
@@ -171,9 +186,9 @@ def _open_directory_at(
     except OSError as error:
         raise SpecPackageError(f"cannot open {label}: {error}") from error
     opened = os.fstat(descriptor)
-    if not stat.S_ISDIR(opened.st_mode) or _directory_snapshot(
-        opened
-    ) != _directory_snapshot(metadata):
+    if not stat.S_ISDIR(opened.st_mode) or _path_identity(opened) != _path_identity(
+        metadata
+    ):
         os.close(descriptor)
         raise SpecPackageError(f"{label} changed while opening")
     return descriptor, _directory_snapshot(opened)
