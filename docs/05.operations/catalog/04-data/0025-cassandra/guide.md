@@ -37,7 +37,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 
 ### Prerequisites
 
-- `infra/04-data/nosql/cassandra/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/cassandra/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `cassandra-node1`과 `cassandra-exporter`는 모두 `data`와 `obs`에 속한다.
 - `DEFAULT_DATA_DIR`, `CASSANDRA_USERNAME`, `cassandra_password` secret 파일이 로컬 환경에서 준비되어 있어야 한다.
 - 런타임 점검은 container 내부 secret 파일을 읽는 방식으로 수행하고, secret 값을 문서나 로그에 남기지 않는다.
 

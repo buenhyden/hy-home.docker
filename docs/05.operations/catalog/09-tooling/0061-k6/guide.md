@@ -39,7 +39,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- `infra/09-tooling/k6/docker-compose.yml`와 root [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태 확인.
+- root [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/09-tooling/k6/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `k6-master`는 `tooling`과 `testing`에 속한다.
 - Root `infra_net` context가 제공되는지 확인.
 - 현재 구현은 Locust 시나리오를 사용하므로 Python/Locust 문법을 기준으로 테스트 파일을 작성한다.
 

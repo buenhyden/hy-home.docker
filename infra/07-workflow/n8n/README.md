@@ -85,7 +85,7 @@ n8n/
 | :--- | :--- | :--- | :--- |
 | Core Service | n8n | 2.29.5 | Node.js based |
 | Metadata DB | PostgreSQL | Management PostgreSQL | Managed via `infra/04-data/operational/mng-db` |
-| Queue Broker | Valkey (Redis-compatible) | 9.1.0 service-local, shared `mng-valkey` in root dev | Queue orchestration |
+| Queue Broker | Valkey (Redis-compatible) | 9.1.0; `${N8N_VALKEY_HOST:-mng-valkey}` by default, `n8n-valkey` under the `dedicated-valkey` profile | Queue orchestration |
 | Task Runner | n8nio/runners | 2.29.5 | Isolated execution environment |
 
 ## Architecture

@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-Apache Airflow는 `hy-home.docker` 플랫폼의 핵심 워크플로 엔진입니다. Python 기반의 DAG(Directed Acyclic Graph)를 사용하여 복잡한 작업 간의 의존성을 정의하고 예약 실행합니다. `CeleryExecutor`를 통한 분산 확장이 가능하며, root-included dev compose는 shared `mng-valkey`, service-local compose는 dedicated `airflow-valkey`를 브로커로 사용합니다.
+Apache Airflow는 `hy-home.docker` 플랫폼의 핵심 워크플로 엔진입니다. Python 기반의 DAG(Directed Acyclic Graph)를 사용하여 복잡한 작업 간의 의존성을 정의하고 예약 실행합니다. `CeleryExecutor`를 통한 분산 확장이 가능합니다. Compose 파일은 하나이며 브로커는 profile이 가릅니다. Airflow 서비스(`workflow`, `dev`)는 `${AIRFLOW_VALKEY_HOST:-mng-valkey}`를 가리키고, `dedicated-valkey` profile이 `airflow-valkey`와 `airflow-valkey-exporter`를 추가합니다.
 
 ## Audience
 
@@ -84,7 +84,7 @@ airflow/
 | :--- | :--- | :--- | :--- |
 | Engine | Apache Airflow | v3.2.2 | Python 기반 |
 | Executor | CeleryExecutor | Distributed | 분산 워커 노드 확장 |
-| Broker | Valkey (Redis-compatible) | 9.1.0 service-local, shared `mng-valkey` in root dev | 태스크 큐 및 메시지 브로커 |
+| Broker | Valkey (Redis-compatible) | 9.1.0; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` by default, `airflow-valkey` under the `dedicated-valkey` profile | 태스크 큐 및 메시지 브로커 |
 | DB | PostgreSQL | Management PostgreSQL | 메타데이터 및 상태 저장 |
 
 ## Configuration

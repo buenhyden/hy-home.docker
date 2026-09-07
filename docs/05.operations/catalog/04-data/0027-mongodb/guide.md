@@ -37,7 +37,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ### Prerequisites
 
-- `infra/04-data/nosql/mongodb/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/mongodb/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. 복제 노드와 exporter는 `data`와 `obs`에, `mongodb-arbiter`와 `mongo-express`는 `data`에만 속한다.
 - `MONGODB_ROOT_USERNAME`, `MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME`, `mongodb_root_password`, `mongo_express_basicauth_password`가 준비되어 있어야 한다.
 - replica set 이름은 compose command에 고정된 `MyReplicaSet` 기준이다. 현재 구현에는 별도 replica-set-name 환경 변수가 없다.
 

@@ -37,7 +37,7 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 
 ### Prerequisites
 
-- `infra/04-data/nosql/couchdb/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/couchdb/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `couchdb-1`부터 `couchdb-3`과 `couchdb-cluster-init`은 모두 `data`에만 속한다.
 - `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `COUCHDB_USERNAME`, `couchdb_password`, `couchdb_cookie`가 준비되어 있어야 한다.
 - 로컬 점검은 가능하면 `couchdb-1` 내부에서 secret mount를 읽어 수행한다.
 

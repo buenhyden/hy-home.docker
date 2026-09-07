@@ -37,7 +37,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- `infra/04-data/relational/postgresql-cluster/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. etcd, pg-router, pg-0부터 pg-2, exporter까지 열한 개 서비스가 모두 `data`와 `service`에 속한다.
 - `DEFAULT_DATA_DIR`, `POSTGRES_DEFAULT_DB`, Patroni usernames, service DB/user variables, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 

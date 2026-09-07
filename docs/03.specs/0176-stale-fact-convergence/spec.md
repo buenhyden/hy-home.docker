@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -28,7 +28,11 @@ implementation contradicts. That combination is the finding, not an accident:
 the registered checks prove that a document exists, carries its profile, and
 resolves its links, and none of them reads what a sentence claims.
 
-The largest cluster is one retired model preserved in thirty-nine documents.
+The largest cluster is one retired model preserved across `infra/**`,
+`docs/05.operations/catalog/**`, and `docs/02.architecture/descriptions/`.
+The first survey found thirty-nine documents; the corrected set reached
+seventy-four once the search predicate covered Korean as well as English,
+which is itself evidence for the claim above about what the checks miss.
 SPEC-0156 and SPEC-0171 converged Compose activation from "comment an `include`
 line to disable a file" onto "include every file unconditionally and let
 profiles select". The root `docker-compose.yml` carries the new model. The
@@ -70,16 +74,21 @@ the correction is recorded beside it.
 - Audit baseline: local `main` at
   `e37b2dbcd877f6fbbf32205fd4f5e83680630dc9`, clean worktree, six commits ahead
   of `origin/main` at `d890b862e310b519802a1e837089b87a2b27cdf7`.
-- Lifecycle budget, measured rather than assumed. The transition check reads
-  `previous_status` from the merge base with `origin/main`, so a document present
-  there admits exactly one transition on this branch and a document absent from
-  it admits none. Every transition this package needs is one step from that base,
-  except its own three new documents, which are therefore created at their
-  initial statuses and advance only after the remote carries them.
+- Lifecycle budget, measured rather than assumed. `resolve_base_selection` in
+  `scripts/lib/document_governance/metadata/lifecycle.py` picks the comparison
+  base from an ordered ladder that reaches `@{upstream}` before `origin/main`,
+  so on this branch the base is the merge base with `origin/main`. A document
+  present there admits exactly one transition. A document absent from it is not
+  a transition at all but a creation, and the check rejects a non-initial status
+  with `invalid-initial-status` rather than with a budget diagnostic; this
+  package's three new documents are therefore born at `draft` and can advance
+  only after the remote carries them. Measured by setting this Spec to `active`
+  and reading the diagnostic, then reverting.
 - In scope, stated as the complete set of surfaces this package changes:
-  - The thirty-nine documents under `infra/**`, `docs/05.operations/catalog/**`,
-    and `docs/02.architecture/descriptions/` that describe a Compose file as a
-    commented, optional, or standalone root include.
+  - Every document under `infra/**`, `docs/05.operations/catalog/**`, and
+    `docs/02.architecture/descriptions/` that describes a Compose file as a
+    commented, optional, absent, or standalone root include, in English or in
+    Korean. Seventy-four were changed.
   - `infra/README.md`, whose Compose inventory snapshot carries both wrong counts
     and the retired four-state status vocabulary.
   - `infra/04-data/lake-and-object/minio/README.md`, which forbids describing
@@ -245,6 +254,12 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 
 1. Zero tracked current-authority documents assert a commented, optional, or
    absent root include for a Compose file the root `include:` list contains.
+   The verifying predicate covers every language the corpus uses. Stage 01-05
+   documents are authored in Korean under the output-style contract, so an
+   English-only predicate cannot satisfy this criterion no matter how many
+   literals it carries, and a low match count from such a predicate is not
+   evidence. Two successive English-only predicates reported this criterion
+   met while seven Korean and English assertions survived.
 2. `infra/README.md` states the measured file, directory, and include counts and
    carries no four-state include vocabulary.
 3. `docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`

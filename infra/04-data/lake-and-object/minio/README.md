@@ -15,7 +15,7 @@ created: "2025-11-12"
 
 ## Overview
 
-MinIO is the object storage service for `hy-home.docker`. This leaf is the only one holding two Compose files, and the root file includes both of them unconditionally. `docker-compose.yml` declares a single `minio` service plus a `minio-create-buckets` bootstrap job, selected by the `storage`, `obs`, `dev`, and `nginx` profiles. `docker-compose.cluster.yaml` declares the four-node topology `minio1` through `minio4`, selected only by `storage-cluster`. The two topologies are separated by profile rather than by include state, and no profile selects both.
+MinIO is the object storage service for `hy-home.docker`. This leaf is the only one holding two Compose files, and the root file includes both of them unconditionally. `docker-compose.yml` declares a single `minio` service, selected by the `storage`, `obs`, `dev`, and `nginx` profiles, plus a `minio-create-buckets` bootstrap job that `nginx` does not select. `docker-compose.cluster.yaml` declares the four-node topology `minio1` through `minio4`, selected only by `storage-cluster`. The two topologies are separated by profile rather than by include state, and no profile selects both.
 
 ## Audience
 
@@ -58,8 +58,8 @@ minio/
 | --- | --- |
 | Purpose | MinIO Object Storage service leaf in `04-data`; `storage` profile services: `minio`, `minio-create-buckets`; `storage-cluster` profile services: `minio1` to `minio4` in `docker-compose.cluster.yaml` |
 | Config files | `docker-compose.yml`, `docker-compose.cluster.yaml`, `Dockerfile` |
-| Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/minio/docker-compose.yml`; cluster variant is local only |
+| Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev`, `nginx` |
+| Compose linkage | the root [docker-compose.yml](../../../../docker-compose.yml) includes both files unconditionally; `docker-compose.yml` is selected by `storage`, `obs`, `dev`, `nginx` and `docker-compose.cluster.yaml` only by `storage-cluster` |
 | Networks | `infra_net`; static IPs: `172.19.0.29` (`minio`), `172.19.0.39` (`minio-create-buckets`) |
 | Volumes | `minio-data:/data:rw`; bind source `${DEFAULT_DATA_DIR}/minio/data-1` |
 | Ports | Direct host `ports` not declared; Traefik routes API and console to `${MINIO_PORT:-9000}` and `${MINIO_CONSOLE_PORT:-9001}` |

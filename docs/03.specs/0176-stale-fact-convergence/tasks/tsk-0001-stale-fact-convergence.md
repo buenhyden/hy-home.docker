@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -524,11 +524,75 @@ added. The commit was then re-run against the new HEAD, and the affected gates
 were re-run after it, which the same policy requires after a concurrency
 incident.
 
+### W12: The predicate that was wrong in a language it never searched (2026-09-07, local-executed)
+
+The Deferred Items required a review of the corrections themselves. One
+independent reviewer, not the author, judged the working tree at `edc5162fb`
+against the eighteen criteria and returned `block` with five findings. The
+reviewer had no shell and said so before reviewing anything, then reported which
+criteria its method could not reach.
+
+Two findings were blocking and both held on re-measurement.
+
+The first is the one that matters. Criterion 1 had been recorded PASS twice, and
+both records were false. The first predicate searched two English literals. The
+correction replaced it with eleven English literals and reported "591 documents
+scanned, 1 match", which reads like thorough verification. It was not: the
+repository's output-style contract authors Stage 01-05 documents in Korean, and
+the surviving assertions were written `선택 include`. Six catalog guides told an
+operator to check an include state that has not existed since SPEC-0156, and
+`infra/04-data/lake-and-object/minio/README.md:62` called `docker-compose.cluster.yaml`
+"local only" while the root file includes it at line 226.
+
+`docs/05.operations/catalog/04-data/0025-cassandra/guide.md` contradicted itself
+inside eighteen lines: line 22, corrected by this package in W3, states that the
+root includes the file unconditionally; line 40, untouched, told the reader to
+verify the optional include state.
+
+The second blocking finding is that Review Evidence row 7 dispositioned four
+surfaces "Fixed" when two of them were not. `airflow/README.md:17` and `:87`,
+`n8n/README.md:88`, and `POL-0044:41` still described one Compose file as two
+leaves. Measured against the tree: `infra/07-workflow/airflow/` holds exactly one
+Compose file, and `airflow-valkey` sits at line 368 with a `profiles:` list
+whose only entry is `dedicated-valkey`. The broker is chosen by
+`${AIRFLOW_VALKEY_HOST:-mng-valkey}`, which is the same shape the corrected
+oauth2-proxy README already states.
+
+All seven criterion 1 survivors and all four two-leaf surfaces are corrected.
+Each replacement names the profiles read from the service's own `profiles:` list,
+parsed with `yaml.safe_load` rather than grepped.
+
+Criterion 1's wording was never the problem; it says "commented, optional, or
+absent" without naming a language. The Spec now records that the verifying
+predicate must cover every language the corpus uses, and that a low match count
+from a single-language predicate is not evidence. That is a tightening of the
+verification requirement, not a relaxation of the criterion.
+
+The lifecycle statement in the Spec's Boundaries was also wrong, and this Task
+had repeated it. It said a document absent from the merge base "admits none" of
+its transition budget. Measured by setting this Spec to `active` and reading the
+diagnostic, the check emits `invalid-initial-status: new spec documents must
+start at draft` — a creation rule, not a budget rule. The distinction changes the
+remedy: once the remote carries this package at `draft`, one later change can
+advance it, rather than one change per branch. The Spec now states the measured
+rule and names `resolve_base_selection` as its owner.
+
+Two items left the Deferred list by being fixed. `.gitignore` lost the
+`repo-support` negation when `a13bfd79c` replaced the recursive `_workspace/**`
+pattern with the anchored `/_workspace/*`; a file cannot be re-included while its
+parent directory is excluded, so the anchored form silently dropped
+`_workspace/repo-support/README.md`, a tracked file, to ignored. The three-step
+ladder is restored and verified in an isolated repository before being applied
+here. `_workspace/README.md` documents its own verification commands but no
+registered check runs them, which is why every gate passed over a broken
+contract; its Tracking Contract now states the rule that actually holds and why
+changing the outer pattern breaks the inner one.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3 | PASS after review correction: the first PASS was wrong. Verified now by a predicate matching the criterion — 591 tracked current documents scanned, 1 match and it is `infra/README.md:69` asserting that no commented include entry exists | [infra and operations documents](../../../../infra/README.md) |
+| 1 | W12 | PASS at the third attempt; the first two PASS records were both false. The first predicate carried two English literals, the second eleven, and both reported this criterion met because neither searched Korean. The second independent review found seven survivors: six catalog guides asserting a `선택 include` state and `minio/README.md` calling the root-included cluster variant `local only`. All seven are corrected. Verified now by a bilingual predicate over 618 tracked current documents: 26 matches, every one triaged in the Predicate Triage table below, zero true violations | [infra and operations documents](../../../../infra/README.md) |
 | 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
 | 3 | W4 | PASS: system scope states 41 files, all included; the SPEC-0171 pending clause is replaced by its completion | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
@@ -545,7 +609,22 @@ incident.
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
 | 16 | W10 | PASS after review correction: AUD-0023 was hand-edited and is now produced by `check-document-metadata.py --mode report`, which places the moved ADR-0031 row in the archive block as `archive-record-superseded`; LLM Wiki and provider hook parity fresh | [frontmatter semantic inventory](../../../90.references/audits/0023-frontmatter-semantic-inventory/README.md) |
 | 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
-| 18 | W11 | PASS: two independent reviewers, neither the author, over `git diff e37b2dbcd..3725e08c7`. One approved with follow-up; one blocked with twelve findings. Eleven were accepted, re-measured and corrected; one is routed to another author | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W11, W12 | PASS across two review rounds. Round one: two reviewers over `git diff e37b2dbcd..3725e08c7`; one approved with follow-up, one blocked with twelve findings, eleven accepted and corrected, one routed to another author. Round two, which round one's own Deferred Item required: one reviewer over the corrections themselves, disposition `block` with five findings. Two were blocking and both held on re-measurement; findings 4 and 5 were corrected, finding 3 is recorded as a Deferred Item at its measured scale | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+
+### Predicate Triage for criterion 1 (2026-09-07, local-executed)
+
+The bilingual predicate carries twenty-four patterns across English and Korean
+and is deliberately loose: a false positive costs one line of reading, a false
+negative is recorded as a passing check. Over 618 tracked current documents,
+excluding `docs/98.archive/**` as frozen and this package as self-describing, it
+returns 26 matches and zero true violations.
+
+| Matches | Kind | Disposition |
+| --- | --- | --- |
+| 23 | ADR closing boilerplate, `별도 실행 증거가 없는 런타임 상태는 주장하지 않는다` | False positive. `별도 실행` here means "separate execution evidence" for a runtime claim, not a separately executed Compose file |
+| 1 | `docs/05.operations/catalog/04-data/0023-minio/policy.md:38` | False positive. The control forbids describing either topology as excluded; it is the prohibition, not the defect |
+| 1 | `docs/90.references/research/0084-github-actions-platform/m0001-platform-mechanics.md:316` | False positive. `local only` names a GitHub Actions allowlist policy |
+| 1 | `infra/README.md:69` | False positive by construction. The row asserts that no commented include entry exists |
 
 ## Review Evidence
 
@@ -573,7 +652,7 @@ accepted as given; each was re-measured before being acted on, and each held.
 | 4 | high | `infra/04-data/analytics/opensearch/README.md:87` was rewritten to name the surviving file and then, in the same sentence, told the operator to validate with `-f docker-compose.cluster.yml`, a file SPEC-0171 deleted | Fixed: the command now selects `--profile data-cluster` |
 | 5 | high | POL-0025 requires Cassandra documentation to identify the implementation as a "single-node optional include", which the guide and runbook this package rewrote now contradict | Fixed: the control names the `data` and `obs` profiles and states that include state never decides whether a service runs |
 | 6 | high | POL-0023 and GDE-0023 forbid describing `docker-compose.cluster.yaml` as part of the root include that contains it, and GDE-0023 asserts it is not in the root include | Fixed: both describe the two topologies as separated by `storage` against `storage-cluster` |
-| 7 | medium | The deleted `docker-compose.dev.yml` was removed from tables and trees but the surrounding prose still described one file as two leaves, in oauth2-proxy, observability, airflow and n8n, and in the oauth2-proxy catalog subject | Fixed: the two-leaf split is replaced by the `dedicated-valkey` profile distinction the single file actually declares |
+| 7 | medium | The deleted `docker-compose.dev.yml` was removed from tables and trees but the surrounding prose still described one file as two leaves, in oauth2-proxy, observability, airflow and n8n, and in the oauth2-proxy catalog subject | Partially fixed at first, then completed. oauth2-proxy and the observability README were corrected; `airflow/README.md:17,87`, `n8n/README.md:88` and `POL-0044:41` were dispositioned Fixed while still carrying the defect, which the second review caught. All four are corrected now |
 | 8 | medium | REQ-0006 was corrected to say `messaging-cluster` renders three brokers; that profile selects `kafka-2` and `kafka-3` only, because `kafka-1` declares `messaging` and `dev` | Fixed: the requirement states which profile selects which broker and that three brokers need both |
 | 9 | medium | The Spec's Boundaries declared `docs/99.templates/registry.json` unchanged and SPEC-0173's Task untouched, while the diff changes the identity high-water and repoints links in that Task | Fixed in the Spec, not by reverting: both changes are necessary and are now named as bounded exceptions with their reason |
 | 10 | low | The Cassandra guide attributed `cassandra-node1` to `data` alone; the service declares `data` and `obs` | Fixed |
@@ -601,6 +680,37 @@ the verification reviewer's re-run and on this Task's own records. Neither
 reviewer re-checked the corrections made in response to their findings; that
 re-review is recorded below as its own state.
 
+### Independent review of the corrections (2026-09-07, local-executed)
+
+Required by this Task's own Deferred Item. One reviewer, not the author, over
+the working tree at `edc5162fb` against the eighteen criteria. Disposition
+`block`.
+
+The reviewer opened by reporting that no shell was available to it, so it never
+reproduced `git diff 3725e08c7..edc5162fb` and never re-ran a registered check.
+It named criteria 5, 6, 13, 16 and 17 as resting on the contributor's records
+rather than on anything it measured. That disclosure is what makes the rest of
+its report usable.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | blocker | Criterion 1 still unmet. The replacement predicate missed the Korean `선택 include` and the English `local only`; seven current-authority assertions survived while the receipt recorded PASS a second time | Accepted. Re-measured: six catalog guides plus `minio/README.md:62`, each against a root `include:` line that is uncommented. All seven corrected; receipt row 1 rewritten to record both false PASSes |
+| 2 | high | Review Evidence row 7 dispositions four surfaces "Fixed" while `airflow/README.md:17,87`, `n8n/README.md:88` and `POL-0044:41` still carry the two-leaf residue | Accepted. Re-measured: airflow and n8n each hold exactly one Compose file, and Pyroscope has one file with `obs` and `dev`. All four corrected; row 7 re-dispositioned |
+| 3 | medium | The same two-leaf residue exists at roughly ten times the scope this package declared, outside its in-scope set | Accepted as advisory, not fixed. Measured at 86 statements in 48 current documents. Recorded as a Deferred Item at that measured scale rather than absorbed by widening scope a second time |
+| 4 | low | The Spec still says "thirty-nine documents" while the corrected set is larger | Accepted. Measured: 74 documents changed under the three named roots. Both sentences corrected, and the growth is now recorded as evidence for the package's own thesis |
+| 5 | low | `minio/README.md:18` gives `minio-create-buckets` the `nginx` profile its Compose file withholds, and line 61 omits `nginx` from `minio` | Accepted. Verified against `minio/docker-compose.yml:14-18,60-63`; both lines corrected |
+
+On the scope widening it was asked to judge, the reviewer found it legitimate
+rather than goalpost-moving, on the ground that every amendment added obligation
+or replaced a false boundary claim, and none weakened a criterion. It separately
+noted that the one weakening-shaped amendment, criterion 8, happened in
+`3725e08c7`, outside the range it reviewed, and declined to judge it.
+
+Finding 1 is the reason this round existed. Round one's reviewers judged
+`3725e08c7`; the corrections that answered them went unreviewed, and this Task
+recorded that gap as a Deferred Item. The gap contained a false PASS on the
+package's first criterion.
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -611,7 +721,8 @@ re-review is recorded below as its own state.
 | `b5d4181d0` | W6 and W7 knowledge routing and Git-read position |
 | `c98df20dd` | W8 and W9 SPEC-0175 preservation and archive evidence |
 | `3725e08c7` | W10 and W11 entry-path closure and final verification |
-| pending | Review-finding corrections |
+| `edc5162fb` | Round-one review-finding corrections |
+| pending | W12 round-two corrections, the bilingual predicate, and the `_workspace` tracking contract |
 
 ## Rulings
 
@@ -623,16 +734,33 @@ re-review is recorded below as its own state.
 - Unexecuted checks are recorded as NOT_RUN or BLOCKED with their missing input
   and are never promoted to a PASS.
 
+### ADR-0034's discharged Follow-up, resolved on the rule's text (2026-09-07, local-executed)
+
+An earlier round deferred this item on the ground that "editing an accepted body
+to agree with a later state is what the retention policy forbids". Reading the
+rule instead of paraphrasing it, `documentation-protocol.md:172` says "Do not
+change an existing accepted decision **silently**", and it says so in a Release
+Record context rather than as a general immutability rule. The prohibition is on
+silence, not on change. The deferral rested on a remembered paraphrase that the
+source does not carry.
+
+The item is therefore resolved, in the narrowest form the rule allows. The
+original instruction is preserved verbatim and a discharge note is appended
+naming the evidence: SPEC-0175 is completed and preserved, and ADR-0034 has read
+`accepted` since. Nothing in Context, Decision, or Consequences is touched, and
+this Task carries the record, so the change is not silent. If the decision owner
+prefers the note removed, the instruction it annotates is intact.
+
 ## Deferred Items
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Re-review of the corrections made in response to the blocking review | The two reviewers judged the tree at `3725e08c7`; the eleven corrections that followed have not themselves been independently reviewed |
-| The `.gitignore` `repo-support` negation dropped by `a13bfd79c` | Authored by a different session and outside this package's scope; routed to that author |
-| This package's own lifecycle walk to `active` | The transition check reads the merge base with `origin/main`, and the remote cannot advance without a push that no authorization here grants |
-| `ADR-0034`'s discharged Follow-up item | Its first bullet still says to transition the decision to `accepted` only after SPEC-0175 records its evidence, and the decision has read `accepted` since that package landed. ADR-0034 is an accepted decision, and editing an accepted body to agree with a later state is what the retention policy forbids, so this is routed to the decision owner rather than corrected here |
+| Re-review of the W12 corrections | Discharged one level and reopened one level down. The round-two reviewer judged `edc5162fb`; the corrections answering it are in the pending commit and are themselves unreviewed. The pattern is now twice observed: each review round corrects the previous one's blind spot and creates its own |
+| The two-leaf residue outside this package's scope | Measured at 86 statements in 48 current documents, in `infra/05-messaging/**`, `infra/07-workflow/**`, their catalog subjects, and four Stage 02 descriptions. Not fixed here: absorbing it would mean widening scope a second time in the package a reviewer was asked to judge for goalpost-moving. It needs its own package |
+| This package's own lifecycle walk to `active` | Measured, not assumed. The check rejects a non-initial status on a document absent from the base with `invalid-initial-status`, not with a transition-budget diagnostic. The package can advance one step after a push carries it at `draft`; no authorization here grants that push |
 | SPEC-0173 completion | Unchanged by this package. Its aggregate remains BLOCKED on the actual PostgreSQL operating and image leaf, and its native runtime and Hosted CI evidence remain unobserved. This package closed only its retention-owner dependency |
-| `oauth2-proxy` declaring the `dev` profile twice | Observed while reading `profiles:` values in W2. It is a Compose file change, not a document change, and this package's scope excludes every Compose file |
+| `oauth2-proxy` declaring the `dev` profile twice | Re-measured in W12 by parsing all 41 Compose files: `infra/02-auth/oauth2-proxy/docker-compose.yml:17-18` is the only duplicate in the repository. Compose treats `profiles` as set membership, so behaviour is unaffected and this is hygiene. Still a Compose file change, which this package's scope excludes |
+| No registered check enforces the `_workspace` tracking contract | `_workspace/README.md` documents two verification commands and nothing runs them, which is why `a13bfd79c` could break the contract with every gate green. W12 restored the rule and corrected the document, but the enforcement gap remains. A check belongs under `scripts/**` and `tests/**`, both protected surfaces outside this package's scope |
 
 ## Related Documents
 
