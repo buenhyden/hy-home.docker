@@ -68,6 +68,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | Service directory | 40 | MinIO leaf만 파일 2개를 보유 |
 | 루트 `include` 항목 | 41 | 주석 처리된 include 항목은 없음 |
 | 활성화 결정자 | 선택한 profile | 서비스 설명은 그 서비스의 `profiles:` 값을 근거로 작성 |
+| Template security baseline 검사 대상 | 40 (`.yml`만) | `docker-compose.cluster.yaml`은 그 검사에서만 제외되며, 루트 include에서는 제외되지 않음 |
 
 profile을 하나도 선택하지 않으면 어떤 서비스도 resolve되지 않습니다. 서비스를 "루트에 포함되었다"는 이유로 기본 실행면으로 서술하지 않고, 그 서비스를 선택하는 profile 이름을 함께 적습니다.
 

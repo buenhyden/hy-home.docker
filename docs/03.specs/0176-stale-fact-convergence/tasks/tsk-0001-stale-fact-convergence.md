@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.5.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -423,6 +423,96 @@ python3 -m unittest tests.lib.document_governance.test_spec_packages test_archiv
   Ran 61 tests, OK
 ```
 
+### W10 and W11: Generated outputs and the final gate (2026-09-07, local-executed)
+
+The LLM Wiki generator builds its inventory from `git ls-files --cached`, so it
+was run after staging in every commit that changed the corpus rather than once at
+the end, and its freshness check was run on the staged tree each time. The
+provider hook parity matrix reported fresh without regeneration because no
+provider surface changed.
+
+```text
+python3 scripts/validation/run-ci-gate.py --profile changed
+GATE_EXIT=0
+```
+
+The exit code was read from the gate process, not through a pipe. That
+distinction is not pedantic here: the W1 run was invoked as
+`run-ci-gate.py | tail -25` with `echo $?`, which reported the exit status of
+`tail` and printed 0 over a suite that had failed one test.
+
+The output contains 84 lines beginning `FAIL:` and the gate still exits 0. Those
+lines are the agent-output eval checker's diagnostic codes printed by
+`tests/validation/test_agent_output_eval_fixtures.py`, which feeds deliberately
+malformed fixtures and asserts the codes appear; each such test line ends `ok`.
+The verdicts are what decide the run: thirteen unittest suites report `OK`, no
+line begins `FAILED`, and no check reports a violation.
+
+```text
+provider_surface_renderer          PASS providers=2 drift=0
+agent_governance_contract          PASS failures=0
+document metadata check-changed    selected=58 violations=0
+document links mode=all            documents=713 links=6146 failures=0
+document corpus lifecycle          violations=0; preserved=156 recovery violations=0
+operations catalog                 PASS
+script manifest                    PASS
+audit semantic freshness           PASS assertions=11 failures=0
+LLM Wiki freshness                 both outputs fresh
+provider hook parity               matrix fresh
+compose validation                 selections=28 services_total=232
+template + security baseline       compose_files_total=40 template_adoption_missing=0
+unittest suites                    13 runs, all OK
+```
+
+One fact was restored rather than corrected while reading that output. The
+original `infra/README.md` sentence conflated two different exclusions: the
+`.yaml` file is excluded from the template security baseline check, which is
+true and the gate prints it as `compose_yaml_files_excluded=1`, and it was
+described as excluded from the root include, which is false. The W4 rewrite
+removed both halves. The true half is now a row of its own that says which check
+excludes it and that the root include does not.
+
+`AGENTS.md` step 4 was found to enumerate `.agents/README.md`, roles and skills
+without the two canonical categories, which is the same routing gap W6 closed in
+the knowledge map and SPEC-0175 W14 closed in the provider adapters. It is the
+third and last entry path with that shape. The Spec's scope and criterion 9 were
+amended to cover it rather than leaving the defect outside the contract.
+
+### A concurrent writer moved HEAD under the final commit (2026-09-07, local-executed)
+
+The final commit ran its full hook chain and passed every stage, then git refused
+the ref update:
+
+```text
+Public validation suites (changed)   Passed
+commitizen check                     Passed
+fatal: cannot lock ref 'HEAD': is at a13bfd79c005f2ab62f7b5f5716af6cb2490ae3c
+       but expected c98df20ddcfc2715c2712ab6dc239fcc00ce1db3
+```
+
+Another worker committed `a13bfd79c`, a `.gitignore` change, onto this branch
+while the hook chain was running. Git's ref lock prevented a lost update; nothing
+of this package was overwritten and the staged tree survived intact.
+
+The incident was handled by not intervening. The approval boundaries require
+preserving another worker's state and not mutating the index during a
+concurrency incident, so the in-flight commit was allowed to finish on its own
+before anything was inspected, and the other worker's commit was left alone.
+
+The other change was then checked for interference rather than assumed harmless,
+because it rewrites ignore rules and this package had just added files:
+
+```text
+git check-ignore on every staged path            none ignored
+git ls-files _workspace                          README.md and repo-support/README.md still tracked
+git ls-files | git check-ignore --stdin          no tracked file is newly ignored
+```
+
+It touches one file this package does not own and ignores nothing this package
+added. The commit was then re-run against the new HEAD, and the affected gates
+were re-run after it, which the same policy requires after a concurrency
+incident.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -442,14 +532,18 @@ python3 -m unittest tests.lib.document_governance.test_spec_packages test_archiv
 | 13 | W8 | PASS: all three members are `completed` under the archive path and `ls docs/03.specs/` shows only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
 | 14 | W8 | PASS: the index row names the archive paths and describes the package as preserved; SPEC-0176 is listed as the draft package | [Stage 03 index](../../README.md) |
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
-| 16 | W10 | NOT_RUN: pending | pending |
-| 17 | W11 | NOT_RUN: pending | pending |
-| 18 | W11 | NOT_RUN: pending | pending |
+| 16 | W10 | PASS: LLM Wiki regenerated and checked on the staged tree in every corpus-changing commit; provider hook parity fresh without regeneration | [LLM Wiki index](../../../90.references/data/0082-llm-wiki-index/README.md) |
+| 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
+| 18 | W11 | NOT_RUN: independent exact-diff review of the whole package has not been performed | N/A: no reviewer available under the current authorization |
 
 ## Review Evidence
 
 Independent exact-diff review is required by acceptance criterion 18 and has not
-been performed. Recorded as NOT_RUN.
+been performed. Recorded as NOT_RUN with its missing input: a reviewer other than
+the author, which this session cannot supply. Self-review was performed against
+the staged diff and is recorded above, but self-review is not the independent
+review the criterion requires and is not promoted to one. This package therefore
+cannot complete until that review happens.
 
 ## Commit Ledger
 
@@ -459,7 +553,8 @@ been performed. Recorded as NOT_RUN.
 | `51e203b71` | W2-W4 Compose enablement convergence |
 | `f71449eff` | W5 and W9 preservation-owner promotion |
 | `b5d4181d0` | W6 and W7 knowledge routing and Git-read position |
-| pending | W8 and W9 SPEC-0175 preservation and archive evidence |
+| `c98df20dd` | W8 and W9 SPEC-0175 preservation and archive evidence |
+| pending | W10 and W11 entry-path closure and final verification |
 
 ## Rulings
 
@@ -476,6 +571,10 @@ been performed. Recorded as NOT_RUN.
 | Item | Blocking input or reason |
 | --- | --- |
 | This package's own lifecycle walk to `active` | The transition check reads the merge base with `origin/main`, and the remote cannot advance without a push that no authorization here grants |
+| Independent exact-diff review, acceptance criterion 18 | Requires a reviewer other than the author; no such reviewer is available under the current authorization |
+| `ADR-0034`'s discharged Follow-up item | Its first bullet still says to transition the decision to `accepted` only after SPEC-0175 records its evidence, and the decision has read `accepted` since that package landed. ADR-0034 is an accepted decision, and editing an accepted body to agree with a later state is what the retention policy forbids, so this is routed to the decision owner rather than corrected here |
+| SPEC-0173 completion | Unchanged by this package. Its aggregate remains BLOCKED on the actual PostgreSQL operating and image leaf, and its native runtime and Hosted CI evidence remain unobserved. This package closed only its retention-owner dependency |
+| `oauth2-proxy` declaring the `dev` profile twice | Observed while reading `profiles:` values in W2. It is a Compose file change, not a document change, and this package's scope excludes every Compose file |
 
 ## Related Documents
 

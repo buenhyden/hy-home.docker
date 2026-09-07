@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -98,6 +98,8 @@ the correction is recorded beside it.
     `docs/02.architecture/decisions/README.md` for the resulting index facts.
   - `.agents/knowledge/repository-map.md` and
     `.agents/knowledge/verification-surface-map.md`.
+  - `AGENTS.md`, whose step 4 enumerates a subset of the canonical categories and
+    so reproduces the routing gap the two knowledge corrections close.
   - `docs/03.specs/0173-governance-qa-surface-convergence/spec.md` and `plan.md`,
     for baseline position and one behavior-contract sentence.
   - `docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md`,
@@ -241,8 +243,10 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
    tracked file list as the count authority, in the same terms
    `decisions/README.md` already uses, and its structure block names `0030-` and
    `0034-` as the highest identifiers.
-9. `.agents/knowledge/repository-map.md` step 3 names `.agents/knowledge/` and
-   `.agents/prompts/` with the same conditions `bootstrap.md` states.
+9. Every entry path that enumerates canonical categories names
+   `.agents/knowledge/` and `.agents/prompts/` with the conditions
+   `bootstrap.md` states. This covers `.agents/knowledge/repository-map.md`
+   step 3 and `AGENTS.md` step 4.
 10. `.agents/knowledge/verification-surface-map.md` names the commit at which
     each transcribed source was read, and the two commits differ where the
     sources were read at different times.
