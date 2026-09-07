@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-09-08)
 
 ## Corpus Check
-- 1061 files · ~1,324,648 words
+- 1061 files · ~1,325,353 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 18014 nodes · 25229 edges · 1726 communities (1210 shown, 516 thin omitted)
+- 18006 nodes · 25234 edges · 1736 communities (1216 shown, 520 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 452 edges (avg confidence: 0.65)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e023c14b`
+- Built from commit: `e932c3ff`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -37,13 +37,13 @@
 - verify-sample-service-supply-chain.sh
 - registry.py
 - Tempo Server Configuration
-- Gateway Standard Middleware Chain
+- Contract Governance Map
 - Airflow Common Environment
 - DeliveryRehearsalContractTests
 - OpenSearch Single Node Compose Service
 - archive.py
 - GithubWorkflowContractTests
-- identity_history.py
+- IdentityHistoryTests
 - Adminer k3d Router
 - operations_catalog.py
 - heading.py
@@ -58,14 +58,13 @@
 - k6 Master Service
 - links.py
 - PostgresLogicalUpgradeRehearsalTests
-- FrontmatterError
+- frontmatter.py
 - Supabase PostgreSQL Database
 - tests/ Directory
 - ADR-0009 Tooling Services
 - ADR-0018 Vault Hardening and HA Expansion Strategy
 - Operations Stage
 - AgentOutputEvalFixtureTests
-- 0009-tooling-architecture.md
 - GateContractError
 - rehearse-postgres-logical-upgrade.sh
 - ci_gate_contract.py
@@ -75,7 +74,7 @@
 - agent_governance_contract.py
 - 0169-document-lifecycle-convergence/spec.md
 - properties
-- HistoricalDocument
+- test_workspace_governance_migration.py
 - DocumentRegistry
 - documentation-protocol.md
 - Valkey Cluster Node Services
@@ -151,8 +150,7 @@
 - Definitions / Facts
 - Workspace Document Contract Audit Pack Specification
 - properties
-- _ProcessLifecycle
-- 0005-messaging-architecture.md
+- test_reference.py
 - Reference: CS, CE & SE Self-Learning Roadmap (v2)
 - Document Governance Lifecycle Convergence Specification
 - Gap Register
@@ -196,7 +194,7 @@
 - Data Tier (04-data)
 - architecture.py
 - metadata/_support.py
-- test_profile.py
+- TemplateMetadataTests
 - Developer Environment Setup Usage
 - Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing
 - Reference: Agentic Engineering Automation Candidates
@@ -214,7 +212,7 @@
 - document-frontmatter.schema.json
 - git_provenance.py
 - LlmWikiGeneratorTests
-- catalog/00-workspace/README.md
+- catalog/README.md
 - Reference: Compose, Infrastructure, and Operations Readiness
 - Reference: SDLC Quality Formatting Implementation
 - Reference: Agent Instructions and Bounded Vibe Coding
@@ -290,20 +288,20 @@
 - Usage
 - Reference: Gap-to-Stage Routing
 - Agentic Engineering Research Pack
-- catalog/README.md
+- descriptions/0026-standardize-infra-net.md
 - LLM Wiki Maintenance Runbook
 - Analytics Tier Technical Specification (Spec)
 - Usage
 - Reference: Document Contract Audit References
 - Frontmatter Inventory
-- Traefik Edge Router
+- Traefik Static Configuration Folder
 - Observability Tier (06-observability)
 - Section Profile Inventory
 - Reference: Document Restructure Audit References
 - docs
 - Reference: Superseded Agent Catalog Audit Mapping
 - Kafka Event Streaming (05-messaging)
-- Nginx Proxy
+- Gateway Tier
 - Open WebUI
 - Reference: Superseded Automation Candidate Mapping
 - postgresql-cluster
@@ -322,7 +320,7 @@
 - Usage
 - n8n Runbook
 - Reference: LLM Wiki Repository Map
-- README Profile Inventory
+- run_checker
 - Reference: Stable Reference Terms
 - Document Contract Convergence Task
 - transitions
@@ -453,7 +451,6 @@
 - Dozzle Recovery Runbook
 - Open Notebook Recovery Runbook
 - 11-Laboratory Optimization Hardening Runbook
-- Terraform Infrastructure Tool
 - Terrakube IaC Automation Platform
 - Valkey Distributed Cluster
 - Portainer Recovery Runbook
@@ -468,7 +465,7 @@
 - reserved_history
 - properties
 - hook_rules.py
-- ProfileError
+- Nginx Proxy
 - StopGateDeferredPathTests
 - Prometheus rule group: keycloak_rules
 - Document Retention and Retirement
@@ -480,7 +477,6 @@
 - Governance and QA Surface Convergence Implementation Plan
 - Pushgateway Metrics Buffer Recovery Runbook
 - Neo4j
-- OpenSearch
 - Terraform Runbook
 - Reference: Sample-service Local Supply-chain Verification
 - Qdrant
@@ -530,7 +526,7 @@
 - 09-tooling: Tooling Tier
 - required
 - required
-- current_profiles
+- test_profile.py
 - test_script_manifest.py
 - Verification Surface Map
 - Gateway Tier Architecture Description
@@ -777,7 +773,7 @@
 - Harness / Agent-first Engineering Operations Policy
 - LLM Wiki Maintenance Operations Policy
 - OpenSearch Operations Policy
-- StarRocks Operations Policy
+- 0012-data-analytics-architecture.md
 - Valkey Cluster Operations Policy
 - MinIO Object Storage Operations Policy
 - SeaweedFS Operations Policy
@@ -824,7 +820,6 @@
 - Harness and Agent-first Engineering Outcome
 - Traefik Static Configuration
 - Infrastructure, Secrets, and Documentation Refresh Outcome
-- Traefik Dynamic Configuration
 - LLM Wiki Completion Outcome
 - Lake & Object Storage (04-data/lake-and-object)
 - NoSQL Infrastructure (04-data/nosql)
@@ -833,15 +828,15 @@
 - Governance Consistency Convergence Outcome
 - Validation Surface Reduction Outcome
 - Script Surface Ownership Convergence Outcome
-- Security Capability Specification
-- Messaging Capability Specification
+- Terraform Infrastructure Tool
+- OpenSearch
 - Observability Capability Specification
 - Workflow Capability Specification
 - Agent Governance Retirement Ledger
 - Target Surface Convergence
 - Target Surface Delta Manifest
 - ADR-0030: 은퇴 기록으로서의 Tombstone
-- ADR-0031: 보존 기록으로서의 아카이브
+- Observability Tier
 - required
 - {{TITLE}}
 - {{TITLE}}
@@ -854,41 +849,41 @@
 - Airflow DAG Quality Gate
 - {{TITLE}}
 - {{TITLE}}
+- Open Notebook Runtime Service
 - Secret Handling Boundary
-- Hy-Home Infrastructure Service Definition Layer
 - Supply-Chain Network Approvals
 - TransitionOverrideEvidencePathTests
 - IndexMembershipTests
 - load_renderer
 - test_provider_surface_renderer.py
 - ADR-0011: Laboratory Services Selection and Configuration
-- Analytics Tier
+- ExecutionLifecycleTests
 - Path
 - SecurityAutomationReadinessTests
 - SupplyChainSecureOutputTests
 - Environment Constraints
 - Git Workflow Governance
 - Software Development Lifecycle
-- Commit Message Prompt
+- ADR-0033: Spec Package 전체 본문 보존
 - Handoff Prompt
-- change-review-execution
-- SeaweedFS Storage System
-- code-review-dimensions
+- RabbitMQ Operations Policy
+- NoSQL Infrastructure Tier
+- IaC Deployment Policy
 - deployment-pipeline-design
 - docker-compose-patterns
 - e2e-testing
-- execution-plan-agent
+- Docker Registry Operations Policy
 - Keycloak Identity Provider
 - DLQ Reprocessing Quorum Queue Backlog
 - k6 Volume Drift Alignment
 - ADR-0011 Laboratory Services
-- infra-validate
+- Data Capability Specification
 - Observability Hardening CI Gate
 - ops-runbook-agent
 - policy-gate-agent
 - provider-model-evaluation
 - requirements-to-design-agent
-- security-audit
+- Traefik Dynamic Configuration
 - MinIO Single Node Service
 - task-breakdown-agent
 - test-authoring
@@ -914,21 +909,21 @@
 - ADR-0007 Airflow n8n Hybrid Workflow
 - {{TITLE}}
 - check-compose-core-readiness.sh
-- _allocation_git_fixture
+- Diff Review Prompt
 - ActiveStageScopeTests
 - Agent Knowledge
 - Agent Prompts
 - Operations — 06 Observability
 - Operations — 07 Workflow
 - Operations — 08 AI
-- Operations — 10 Communication
+- adr-writing
 - Operations — 11 Laboratory
-- Compose Enablement Model Convergence Plan
+- ci-cd-patterns
 - Document Lifecycle Convergence Plan
 - Archive Preservation Model Plan
 - AGENTS.md
 - OAuth2 Proxy Compose Service
-- Compose Sibling Pair Resolution Plan
+- container-threat-modeling
 - SDLC Taxonomy Convergence Migration Ledger
 - 98.archive
 - Core Design
@@ -1056,7 +1051,7 @@
 - _copy_registered_file
 - LifecycleRouteEquivalenceTests
 - Agent Bootstrap Policy
-- Provider Adapters
+- infra-cross-validate
 - Workflows
 - Agent Role and IO Contract
 - Verification
@@ -1070,9 +1065,9 @@
 - Traefik Static Configuration
 - RegistrySchemaBoundaryTests
 - ReferenceStageRepoContractTests
-- SonarQube Usage Guide
-- Syncthing Usage Guide
-- Operations: Terrakube Policy Usage Guide
+- knowledge-map-agent
+- style-validation
+- Data Optimization and Hardening Architecture
 - Data Packages
 - {{TITLE}}
 - {{TITLE}}
@@ -1083,19 +1078,19 @@
 - use-qa-ci-tools.sh
 - run-ci-precommit.sh
 - test_hardening_lib.sh
-- Configuration
-- Provider Capability Matrix
-- action
+- Kafka Event Streaming Cluster
+- 0076-llm-wiki-stage-category-coverage/README.md
+- HistoricalDocument
 - archive_disposition
 - archived_blob
 - archived_commit
 - archived_from
 - artifact_id
 - created
-- effort
+- Operations — 05 Messaging
 - event
 - function_id
-- generated_by
+- Operations — 09 Tooling
 - layer
 - model
 - next_review_at
@@ -1107,29 +1102,29 @@
 - permissionMode
 - preservation_class
 - review_cycle
-- reviewed_at
+- Operations — 12 Infra Net
 - runtime
 - status
 - title
 - type
-- updated
+- Operations Catalog
 - work_profile
 - oauth2-proxy/docker-entrypoint.sh
 - oauth2-proxy/docker-entrypoint.dev.sh
 - neo4j-entrypoint-with-secrets.sh
 - n8n/docker-entrypoint.sh
 - n8n/docker-entrypoint.dev.sh
-- Homer Service
+- SeaweedFS Storage System
 - surrealdb/docker-entrypoint.sh
-- Configuration
-- Scope
+- ResurrectedMigrationContractTests
+- Stage Authoring Matrix
 - post-tool-validate.sh
 - generate-compose-profile-service-coverage.sh
 - generate-tech-stack-version-provenance.sh
 - sync-tech-stack-versions.sh
 - generate-audit-implementation-matrix.sh
 - generate-security-automation-readiness.sh
-- Scope
+- description
 - run-agent-output-eval-fixtures.sh
 - valkey-cluster-init.sh
 - valkey-start.sh
@@ -1598,6 +1593,16 @@
 - Related Documents
 - Scope
 - Structure
+- model_reasoning_effort
+- name
+- tier
+- Scope
+- Scope
+- Configuration
+- Scope
+- Implementation Details
+- Scope
+- Nginx Compose Service
 
 ## God Nodes (most connected - your core abstractions)
 1. `load_registry()` - 110 edges
@@ -1612,21 +1617,21 @@
 10. `AgentOutputEvalFixtureTests` - 54 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Secret Handling Boundary` --conceptually_related_to--> `Tier Hardening Checks`  [INFERRED]
-  llms.txt → scripts/README.md
 - `DocumentGraphTests` --uses--> `FrontmatterError`  [INFERRED]
+  tests/lib/document_governance/test_links.py → scripts/lib/document_governance/frontmatter.py
+- `DocumentLinksCliTests` --uses--> `FrontmatterError`  [INFERRED]
+  tests/lib/document_governance/test_links.py → scripts/lib/document_governance/frontmatter.py
+- `LinkSelectionScopeTests` --uses--> `FrontmatterError`  [INFERRED]
+  tests/lib/document_governance/test_links.py → scripts/lib/document_governance/frontmatter.py
+- `SharedDocumentGovernanceTests` --uses--> `FrontmatterError`  [INFERRED]
   tests/lib/document_governance/test_links.py → scripts/lib/document_governance/frontmatter.py
 - `DocumentGraphTests` --uses--> `FrontmatterRecord`  [INFERRED]
   tests/lib/document_governance/test_links.py → scripts/lib/document_governance/frontmatter.py
-- `DocumentGraphTests` --uses--> `Provenance`  [INFERRED]
-  tests/lib/document_governance/test_links.py → scripts/lib/document_governance/git_provenance.py
-- `DocumentLinksCliTests` --uses--> `Provenance`  [INFERRED]
-  tests/lib/document_governance/test_links.py → scripts/lib/document_governance/git_provenance.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (1726 total, 516 thin omitted)
+## Communities (1736 total, 520 thin omitted)
 
 ### Community 0 - "grafana Compose Service"
 Cohesion: 0.07
@@ -1638,19 +1643,19 @@ Nodes (24): Related Documents, Related Documents, Related Documents, Related Doc
 
 ### Community 2 - "reference.py"
 Cohesion: 0.06
-Nodes (107): Recover pre-taxonomy Spec/Plan/Task parents from the frozen ledger., recover_legacy_parent_identities(), parse_frontmatter_text(), Parse YAML safely after proving that every mapping key is unique., Return top-of-file YAML frontmatter, or an empty mapping when absent., safe_load_unique(), _introduced_body_findings(), _machine_template_path() (+99 more)
+Nodes (104): Recover pre-taxonomy Spec/Plan/Task parents from the frozen ledger., recover_legacy_parent_identities(), parse_frontmatter_text(), Parse YAML safely after proving that every mapping key is unique., Return top-of-file YAML frontmatter, or an empty mapping when absent., safe_load_unique(), _introduced_body_findings(), _machine_template_path() (+96 more)
 
 ### Community 3 - "load_registry"
 Cohesion: 0.04
-Nodes (33): Validate one record against its typed profile and the global manifest., validate_record(), build_registry_profiles(), Project the Registry into the envelope the metadata readers consume. The…, Return the one Stage 99 profile registered for a canonical governance path., _stage00_specialization_entry(), classify_path(), declares_frozen_legacy_record() (+25 more)
+Nodes (43): _authored_body_target(), _validate_template_source(), build_registry_profiles(), Project the Registry into the envelope the metadata readers consume. The…, _registry_path_glob(), TransitionOverride, classify_path(), declares_frozen_legacy_record() (+35 more)
 
 ### Community 4 - "contract.py"
 Cohesion: 0.05
-Nodes (94): _active_consumer_scan_args(), _active_consumer_scan_command(), _baseline_merge_owner_findings(), _baseline_regular_blob(), _baseline_tree_entries(), _blob_at_commit_path(), _canonical_current_snapshot(), _canonical_replacement_findings() (+86 more)
+Nodes (104): _active_consumer_scan_args(), _active_consumer_scan_command(), _as_exact_mapping(), _as_path_tuple(), _as_string(), _as_string_tuple(), _baseline_merge_owner_findings(), _baseline_regular_blob() (+96 more)
 
 ### Community 5 - ".agents/README.md"
-Cohesion: 0.11
-Nodes (6): Approval Boundaries, Related Documents, AI Agent Identity Routing, Related Documents, Related Documents, {{TITLE}}
+Cohesion: 0.20
+Nodes (4): AI Agent Identity Routing, Related Documents, Related Documents, {{TITLE}}
 
 ### Community 6 - "ADR-0016 Open WebUI as Primary AI/RAG Interface"
 Cohesion: 0.40
@@ -1658,11 +1663,11 @@ Nodes (5): ADR-0016 Open WebUI as Primary AI/RAG Interface, Ollama Primary Infer
 
 ### Community 7 - "governance/agentic.md"
 Cohesion: 0.03
-Nodes (61): Agentic Engineering Policy, Delegation Contract, Execution Rules, External Capability Intake, Lifecycle, Related Documents, Postflight Routing, Related Documents (+53 more)
+Nodes (69): Agentic Engineering Policy, Delegation Contract, Execution Rules, External Capability Intake, Lifecycle, Related Documents, Postflight Routing, Related Documents (+61 more)
 
 ### Community 8 - "0006-infrastructure-optimization-governance/policy.md"
-Cohesion: 0.06
-Nodes (25): Controls, Exceptions, InfluxDB Operations Policy, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+17 more)
+Cohesion: 0.11
+Nodes (7): Audience, How to Work in This Area, Operations — 04 Data, Overview, Related Documents, Scope, Structure
 
 ### Community 9 - "Component Specifications"
 Cohesion: 0.50
@@ -1690,15 +1695,15 @@ Nodes (70): _bounded_join(), _bounded_yaml_scalar_anchors(), _catalog_identity()
 
 ### Community 15 - "spec_packages.py"
 Cohesion: 0.10
-Nodes (72): _allowed_statuses(), _archive_receipt_carriers(), _bounded_directory_names(), _bounded_git(), _branch_integration_receipts(), BranchIntegrationReceipt, _canonical_package_path(), _completion_visible_lines() (+64 more)
+Nodes (70): _allowed_statuses(), _archive_receipt_carriers(), _bounded_directory_names(), _bounded_git(), _branch_integration_receipts(), BranchIntegrationReceipt, _canonical_package_path(), _completion_visible_lines() (+62 more)
 
 ### Community 16 - "Traefik Gateway Routing"
-Cohesion: 0.19
-Nodes (18): Syncthing Service, Syncthing P2P Synchronization, MailHog SMTP Trap Service, Stalwart Mail Service, Mail Infrastructure, Communication Tier, Dozzle Service, Dozzle Log Viewer (+10 more)
+Cohesion: 0.23
+Nodes (15): MailHog SMTP Trap Service, Stalwart Mail Service, Mail Infrastructure, Communication Tier, Dozzle Service, Dozzle Log Viewer, Portainer Runtime Service, Docker Socket Management Pattern (+7 more)
 
 ### Community 17 - "Three Node KRaft Kafka Broker Cluster"
-Cohesion: 0.13
-Nodes (19): Kafbat UI Service, kafka-1 Broker Controller, kafka-2 Broker Controller, kafka-3 Broker Controller, Three Node KRaft Kafka Broker Cluster, Kafka Connect Service, Kafka Exporter Service, Kafka Initialization Job (+11 more)
+Cohesion: 0.16
+Nodes (16): Kafbat UI Service, kafka-1 Broker Controller, kafka-2 Broker Controller, kafka-3 Broker Controller, Three Node KRaft Kafka Broker Cluster, Kafka Connect Service, Kafka Exporter Service, Kafka Initialization Job (+8 more)
 
 ### Community 18 - "90 References"
 Cohesion: 0.40
@@ -1710,15 +1715,15 @@ Nodes (69): assert_build_context_unchanged(), assert_default_buildx_offline_capa
 
 ### Community 20 - "registry.py"
 Cohesion: 0.05
-Nodes (62): match_historical_requirement_path(), parse_historical_requirement_declarations(), Match, Match one immutable pre-taxonomy Requirement package path., Recover child allocations only when a trusted snapshot uses old grammar., _validate_template_source(), _expected_document_type(), Return the Registry family/kind type, falling back to the profile id. (+54 more)
+Nodes (73): BaseSelector, git_predicate(), _GitOutput, _historical_objects(), IdentityHistoryError, match_historical_requirement_path(), parse_historical_requirement_declarations(), _path_accepts_identity() (+65 more)
 
 ### Community 21 - "Tempo Server Configuration"
 Cohesion: 0.50
 Nodes (4): Tempo MinIO S3 Backend, Tempo OTLP Receiver, Tempo Server Configuration, Tempo Local WAL
 
-### Community 22 - "Gateway Standard Middleware Chain"
-Cohesion: 0.14
-Nodes (14): Gateway Standard Middleware Chain, OAuth2 Proxy Traefik Service, OpenSearch Basic Auth Middleware, OpenSearch Dashboards Traefik Transport, OpenSearch Traefik Transport, Gateway Request Circuit Breaker, Gateway Request Rate Limit, Gateway Request Retry (+6 more)
+### Community 22 - "Contract Governance Map"
+Cohesion: 0.09
+Nodes (22): Actions, Conformance, Contract Governance Map, Contract Owners, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary (+14 more)
 
 ### Community 23 - "Airflow Common Environment"
 Cohesion: 0.09
@@ -1733,16 +1738,16 @@ Cohesion: 0.33
 Nodes (7): OpenSearch Dashboards Compose Service, OpenSearch Single Node Compose Service, OpenSearch Security Action Groups Defaults, OpenSearch Security Basic Internal Auth Domain, OpenSearch Security OpenID Auth Domain, OpenSearch Dashboards OIDC Configuration, OpenSearch Dashboards Backend Connection
 
 ### Community 26 - "archive.py"
-Cohesion: 0.08
-Nodes (66): _approved_migration_document(), ArchiveContractError, ArchiveFinding, ArchiveInventory, _bounded_entries(), _code_value(), _compact_mapping_selection(), _decode_document() (+58 more)
+Cohesion: 0.09
+Nodes (63): _approved_migration_document(), ArchiveContractError, ArchiveFinding, ArchiveInventory, _bounded_entries(), _code_value(), _compact_mapping_selection(), _decode_document() (+55 more)
 
 ### Community 27 - "GithubWorkflowContractTests"
 Cohesion: 0.06
 Nodes (7): skip, _bootstrap_program(), GithubWorkflowContractTests, load_contract_module(), Path, Read the bootstrap command from the contract, never from a copy here., A prefix the workflow contract routes must be able to reach the gate. The…
 
-### Community 28 - "identity_history.py"
-Cohesion: 0.06
-Nodes (40): BaseSelector, collect_issued_identities(), git_predicate(), _GitOutput, _historical_objects(), _history_identity_group(), IdentityHistoryError, IssuedIdentities (+32 more)
+### Community 28 - "IdentityHistoryTests"
+Cohesion: 0.09
+Nodes (12): collect_issued_identities(), _history_identity_group(), IssuedIdentities, Reject allocation state below any observed current or historical identity., Return a stage-acceptance path and whether child IDs are required., Return issued-number sets from current files and bounded Git objects., validate_identity_history(), GitPredicateTests (+4 more)
 
 ### Community 29 - "Adminer k3d Router"
 Cohesion: 0.21
@@ -1753,8 +1758,8 @@ Cohesion: 0.07
 Nodes (47): _active_reference_scan_excluded(), BoundedDirectoryEntry, CatalogFinding, _date_time(), _directory_entries_bounded(), _excluded(), _finding(), _frontmatter() (+39 more)
 
 ### Community 31 - "heading.py"
-Cohesion: 0.06
-Nodes (50): BodyDeficitKey, _approved_machine_token(), _approved_machine_values(), _authored_body_target(), _authored_residue_findings(), _authored_residue_scan_text(), _body_deficit_multiset(), _body_target_scan_text() (+42 more)
+Cohesion: 0.07
+Nodes (43): BodyDeficitKey, _approved_machine_token(), _approved_machine_values(), _authored_residue_findings(), _authored_residue_scan_text(), _body_deficit_multiset(), _body_target_scan_text(), extract_markdown_headings() (+35 more)
 
 ### Community 33 - "provider_surface_renderer.py"
 Cohesion: 0.11
@@ -1777,8 +1782,8 @@ Cohesion: 0.50
 Nodes (4): Restricted Degraded-mode Policy, ADR-0017 Auth Runtime Hardening and Fail-closed Policy, Fail-closed Auth Policy, OAuth2 Proxy Entrypoint Secret Injection
 
 ### Community 38 - "references.py"
-Cohesion: 0.08
-Nodes (57): DocumentLink, Reject unsafe location flags and decoded controls across the full target., Blank HTML comments without shifting link offsets or line numbers., Blank inline code spans without shifting link offsets., One parsed repository-local Markdown link., Return the full percent-decoded destination, including query and fragment., Report whether the destination's path component denotes a directory., _unfenced_lines() (+49 more)
+Cohesion: 0.09
+Nodes (52): FrontmatterError, ValueError, Raised when a Markdown frontmatter block cannot be parsed safely., DocumentLink, Reject unsafe location flags and decoded controls across the full target., One parsed repository-local Markdown link., Return the full percent-decoded destination, including query and fragment., Report whether the destination's path component denotes a directory. (+44 more)
 
 ### Community 39 - "Prometheus rule group: kubernetes_alerts"
 Cohesion: 0.13
@@ -1789,16 +1794,16 @@ Cohesion: 0.14
 Nodes (15): k6 InfluxDB Sink, k6 Locustfile Mount, k6 Master Service, k6 InfluxDB Metric Exporting, k6 Directory Locust Implementation Detail, k6 Performance Testing Infrastructure, k6 Worker Scaling, Locust InfluxDB Sink (+7 more)
 
 ### Community 41 - "links.py"
-Cohesion: 0.08
-Nodes (41): archive_direct_link_total(), build_document_graph(), check_alignment(), check_traceability(), DocumentGraph, DocumentNode, _finding(), _has_symlink_ancestor() (+33 more)
+Cohesion: 0.07
+Nodes (47): archive_direct_link_total(), build_document_graph(), check_alignment(), check_traceability(), DocumentGraph, DocumentNode, _finding(), _has_symlink_ancestor() (+39 more)
 
 ### Community 42 - "PostgresLogicalUpgradeRehearsalTests"
 Cohesion: 0.06
 Nodes (3): PostgresLogicalUpgradeRehearsalTests, CompletedProcess, valid_rendered_topology_json()
 
-### Community 43 - "FrontmatterError"
+### Community 43 - "frontmatter.py"
 Cohesion: 0.06
-Nodes (31): current_markdown_authority(), Remove only explicitly delimited historical source quotations., _construct_unique_mapping(), _freeze(), frontmatter_record_from_text(), FrontmatterError, FrontmatterRecord, MappingNode (+23 more)
+Nodes (28): current_markdown_authority(), Remove only explicitly delimited historical source quotations., _construct_unique_mapping(), _freeze(), frontmatter_record_from_text(), FrontmatterRecord, MappingNode, Path (+20 more)
 
 ### Community 44 - "Supabase PostgreSQL Database"
 Cohesion: 0.18
@@ -1824,13 +1829,9 @@ Nodes (3): No Secret Operations Standard, Operations Guide Policy Runbook Taxono
 Cohesion: 0.08
 Nodes (4): AgentOutputEvalFixtureTests, load_eval_module(), Path, TemporaryDirectory
 
-### Community 50 - "0009-tooling-architecture.md"
-Cohesion: 0.08
-Nodes (25): Controls, Exceptions, IaC Deployment Policy, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+17 more)
-
 ### Community 51 - "GateContractError"
-Cohesion: 0.10
-Nodes (52): GateExecutor, GateContractError, GateKind, public_root_gate_ids(), PublicGateContract, PublicValidatorRoute, Admit bounded public-validator arguments and complete modal capability., validate_public_execution_argv() (+44 more)
+Cohesion: 0.06
+Nodes (71): BaseException, GateExecutor, GateContractError, GateKind, public_root_gate_ids(), PublicGateContract, PublicValidatorRoute, Admit bounded public-validator arguments and complete modal capability. (+63 more)
 
 ### Community 52 - "rehearse-postgres-logical-upgrade.sh"
 Cohesion: 0.10
@@ -1838,15 +1839,15 @@ Nodes (53): apply_seed_sql(), assert_exact_local_image_identities(), assert_no_p
 
 ### Community 53 - "ci_gate_contract.py"
 Cohesion: 0.09
-Nodes (38): _bounded_path_counts(), _canonical_directory(), ChangedSuiteRule, expand_gate_ids(), _expanded_all_ids(), _expanded_ids(), GateFinding, GateNode (+30 more)
+Nodes (37): _bounded_path_counts(), _canonical_directory(), ChangedSuiteRule, expand_gate_ids(), _expanded_all_ids(), _expanded_ids(), GateFinding, GateNode (+29 more)
 
 ### Community 54 - "ADR-0010 Communication Services"
 Cohesion: 0.50
 Nodes (4): ADR-0010 Communication Services, MailHog SMTP Trap, Stalwart Mail Server, TLS 1.3 Mail Security
 
 ### Community 55 - "profile.py"
-Cohesion: 0.06
-Nodes (50): date, _canonical_partition_plan_path(), classify_template_role(), _condition_members(), _contains_template_placeholder(), _deterministic_string_list(), _exact_string_list(), _glob_token_witness() (+42 more)
+Cohesion: 0.07
+Nodes (56): date, Validate one record against its typed profile and the global manifest., validate_record(), _canonical_partition_plan_path(), classify_template_role(), _condition_members(), _contains_template_placeholder(), _deterministic_string_list() (+48 more)
 
 ### Community 56 - "MongoDB Replica Member Services"
 Cohesion: 0.29
@@ -1862,19 +1863,19 @@ Nodes (42): 0014-auth Optimization Hardening Requirements Tombstone, Reason, Rec
 
 ### Community 59 - "properties"
 Cohesion: 0.04
-Nodes (51): minLength, type, minLength, type, format, type, $ref, format (+43 more)
+Nodes (54): minLength, type, minLength, type, minLength, type, format, type (+46 more)
 
-### Community 60 - "HistoricalDocument"
-Cohesion: 0.07
-Nodes (27): Counter, Node, HistoricalDocument, An explicit recovery blob, never a fallback to a current file or HEAD., _BootstrapProfileError, ValueError, Used only until the canonical metadata module is loaded safely., _active_consumers() (+19 more)
+### Community 60 - "test_workspace_governance_migration.py"
+Cohesion: 0.09
+Nodes (22): Counter, Node, _active_consumers(), _baseline_files(), _baseline_tree(), _inactive_consumer(), _level_three_sections(), _level_two_section() (+14 more)
 
 ### Community 61 - "DocumentRegistry"
-Cohesion: 0.09
-Nodes (45): Focused static metadata/profile API shared by document validators., DocumentRegistry, IdentitySpace, Validate one loaded Registry against explicit trusted allocation history., RequirementAllocationBaseline, _validate_requirement_allocation_transition(), _allocation_space(), _consume_balanced_tokens() (+37 more)
+Cohesion: 0.11
+Nodes (42): DocumentRegistry, IdentitySpace, Validate one loaded Registry against explicit trusted allocation history., RequirementAllocationBaseline, _validate_requirement_allocation_transition(), _allocation_space(), _consume_balanced_tokens(), _consume_proto_type() (+34 more)
 
 ### Community 62 - "documentation-protocol.md"
-Cohesion: 0.05
-Nodes (32): adr-writing, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents (+24 more)
+Cohesion: 0.07
+Nodes (22): How to Work in This Area, Overview, Provider Adapters, Related Documents, Scope, Structure, compose-stack-agent, Failure Handling (+14 more)
 
 ### Community 63 - "Valkey Cluster Node Services"
 Cohesion: 0.33
@@ -1909,8 +1910,8 @@ Cohesion: 0.26
 Nodes (44): assert_contains(), assert_exit(), assert_not_contains(), assert_single_diagnostic(), fail_test(), invoke(), new_fixture(), pass_test() (+36 more)
 
 ### Community 71 - "Template Application Gaps"
-Cohesion: 0.04
-Nodes (45): Actions, Conformance, Contract Governance Map, Contract Owners, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary (+37 more)
+Cohesion: 0.05
+Nodes (42): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary, Findings, Gaps For Register (+34 more)
 
 ### Community 72 - "Verification Evidence"
 Cohesion: 0.05
@@ -1941,8 +1942,8 @@ Cohesion: 0.05
 Nodes (43): All-source disposition, Approved correction execution, Approved integration and renewed correction checkpoint, Authorized config-only execution of the PostgreSQL leaf (2026-09-07, local-executed), Authorized full rehearsal of the single-instance PostgreSQL upgrade (2026-09-07, local-executed), Baseline audit follow-up commits (2026-09-06), Canonical-home relocation: current scope (2026-09-06), Clean-worktree ownership repair (+35 more)
 
 ### Community 79 - "properties"
-Cohesion: 0.05
-Nodes (43): properties, minLength, type, pattern, type, identityRecovery, identityRecoveryDecision, const (+35 more)
+Cohesion: 0.06
+Nodes (40): properties, minLength, type, pattern, type, identityRecoveryDecision, const, properties (+32 more)
 
 ### Community 80 - "OpenSearch Security Plugin Configuration"
 Cohesion: 0.50
@@ -2112,13 +2113,9 @@ Nodes (30): Acceptance Contract, Audit Record Shape, Behavior Contract, Boundari
 Cohesion: 0.07
 Nodes (30): $ref, $ref, additionalProperties, properties, required, type, $ref, $ref (+22 more)
 
-### Community 137 - "_ProcessLifecycle"
-Cohesion: 0.12
-Nodes (18): BaseException, _bounded_reap(), _close_pidfd_once(), _finalize_process_group(), _finalize_process_lifecycle(), _parse_proc_stat_pgid(), _pidfd_ready(), _proc_scan_error() (+10 more)
-
-### Community 138 - "0005-messaging-architecture.md"
-Cohesion: 0.12
-Nodes (16): Controls, Exceptions, Overview, Policy Scope, RabbitMQ Operations Policy, Related Documents, Review Cadence, Traceability (+8 more)
+### Community 137 - "test_reference.py"
+Cohesion: 0.11
+Nodes (10): Minimal Stage 98 recovery-reference validation., GloballyForbiddenKeyTests, Repository-composition and compatibility-facade tests., Sections come from the document's own profile, not from `readme`., The rule is only worth enforcing if other profiles use it., A retired key is reported as retired, not as an unknown typo., The catalog is the documented way to find a template, so it must be whole., A catalog check that inspects nothing passes vacuously. (+2 more)
 
 ### Community 139 - "Reference: CS, CE & SE Self-Learning Roadmap (v2)"
 Cohesion: 0.07
@@ -2158,7 +2155,7 @@ Nodes (7): declared_images(), direct_current_document_version_findings(), lifecy
 
 ### Community 148 - "tsk-0001-stale-fact-convergence.md"
 Cohesion: 0.16
-Nodes (9): ADR-0033: Spec Package 전체 본문 보존, Compliance, Consequences, Context, Decision, Decision Drivers, Follow-up, Options Considered (+1 more)
+Nodes (9): ADR-0031: 보존 기록으로서의 아카이브, Compliance, Consequences, Context, Decision, Decision Drivers, Options Considered, Related Documents (+1 more)
 
 ### Community 149 - "Tier-by-Tier Optimization & Expansion Catalog"
 Cohesion: 0.07
@@ -2285,16 +2282,12 @@ Cohesion: 0.06
 Nodes (31): 1. Context & Objective, 2. Requirements & Constraints, 3. Setup & Installation, 4. Usage & Integration, 5. Maintenance & Safety, Constraints, Core Stack Deployment, Data Tier (04-data) (+23 more)
 
 ### Community 180 - "architecture.py"
-Cohesion: 0.16
-Nodes (25): ArchitectureDocument, ArchitectureDocumentError, ArchitectureFinding, _canonical_parent(), _cycle_nodes(), _file_snapshot(), load_architecture_documents(), load_preserved_architecture_documents() (+17 more)
+Cohesion: 0.10
+Nodes (33): ArchitectureDocument, ArchitectureDocumentError, ArchitectureFinding, _canonical_parent(), _cycle_nodes(), _file_snapshot(), load_architecture_documents(), load_preserved_architecture_documents() (+25 more)
 
 ### Community 181 - "metadata/_support.py"
-Cohesion: 0.17
-Nodes (15): copy_registry_contract_fixture(), git(), init_git(), _materialised_profiles(), CompletedProcess, Path, Shared fixtures for metadata responsibility tests., Return the sole current document-profile authority. (+7 more)
-
-### Community 182 - "test_profile.py"
-Cohesion: 0.08
-Nodes (5): CurrentRegistryContractTests, FrontmatterParsingTests, Profile, Registry, frontmatter, and template-role tests., SharedFrontmatterExtractionTests, TemplateMetadataTests
+Cohesion: 0.14
+Nodes (14): copy_registry_contract_fixture(), current_profiles(), git(), init_git(), _materialised_profiles(), CompletedProcess, Path, Shared fixtures for metadata responsibility tests. (+6 more)
 
 ### Community 183 - "Developer Environment Setup Usage"
 Cohesion: 0.08
@@ -2329,8 +2322,8 @@ Cohesion: 0.08
 Nodes (25): 2026-09-05 Revalidation, CI/CD pipeline risk mapping (OWASP Top 10 CI/CD Security Risks), Definitions / Facts, Evidence states and threat boundary, Hardening exceptions versus violations, Image signing and build-provenance mechanisms versus current state, In scope, Layered adoption model (+17 more)
 
 ### Community 191 - "04-Data Optimization & Hardening Product Requirements"
-Cohesion: 0.08
-Nodes (23): 04-Data Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+15 more)
+Cohesion: 0.14
+Nodes (14): 04-Data Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
 
 ### Community 192 - "08-AI Optimization & Hardening Product Requirements"
 Cohesion: 0.08
@@ -2353,20 +2346,20 @@ Cohesion: 0.08
 Nodes (25): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary, Findings, Future Implementation Batches (+17 more)
 
 ### Community 197 - "document-frontmatter.schema.json"
-Cohesion: 0.08
-Nodes (24): additionalProperties, additionalProperties, type, items, minItems, type, uniqueItems, $defs (+16 more)
+Cohesion: 0.07
+Nodes (27): additionalProperties, additionalProperties, type, items, minItems, type, uniqueItems, $defs (+19 more)
 
 ### Community 198 - "git_provenance.py"
-Cohesion: 0.17
-Nodes (24): ArchivedMetadata, _kill_and_reap(), Provenance, CompletedProcess, Path, Popen, PurePosixPath, Fail-closed Git provenance resolution for repository documents. (+16 more)
+Cohesion: 0.16
+Nodes (26): ArchivedMetadata, _kill_and_reap(), Provenance, CompletedProcess, Path, Popen, PurePosixPath, Fail-closed Git provenance resolution for repository documents. (+18 more)
 
 ### Community 199 - "LlmWikiGeneratorTests"
 Cohesion: 0.23
 Nodes (3): LlmWikiGeneratorTests, load_generator(), Path
 
-### Community 200 - "catalog/00-workspace/README.md"
-Cohesion: 0.14
-Nodes (7): Audience, How to Work in This Area, Operations — 00 Workspace, Overview, Related Documents, Scope, Structure
+### Community 200 - "catalog/README.md"
+Cohesion: 0.06
+Nodes (21): Audience, How to Work in This Area, Operations — 00 Workspace, Overview, Related Documents, Scope, Structure, Compose Enablement Model Convergence Plan (+13 more)
 
 ### Community 201 - "Reference: Compose, Infrastructure, and Operations Readiness"
 Cohesion: 0.08
@@ -2405,8 +2398,8 @@ Cohesion: 0.08
 Nodes (24): minLength, type, plan_section, spec_completion_evidence, spec_section, table_headers, task_section, additionalProperties (+16 more)
 
 ### Community 210 - "check-document-corpus-lifecycle.py"
-Cohesion: 0.14
-Nodes (22): _CorpusSafetyError, _ensure_metadata_loaded(), _lexically_safe_path(), Any, Exception, Value-free corpus path failure that must cross the CLI safety boundary., Load repository-backed metadata only after CLI-shape validation., Apply one value-free confidentiality classifier to durable and printed data. (+14 more)
+Cohesion: 0.10
+Nodes (29): _CorpusSafetyError, _ensure_metadata_loaded(), _lexically_safe_path(), load_migration_contract(), Any, Exception, Value-free corpus path failure that must cross the CLI safety boundary., Load repository-backed metadata only after CLI-shape validation. (+21 more)
 
 ### Community 212 - "Procedure"
 Cohesion: 0.09
@@ -2417,8 +2410,8 @@ Cohesion: 0.09
 Nodes (23): 1. Check Service Status, 1. Resolving "Out of Sync" Items, 2. Repairing Corrupted Database, 2. Verify Port Connectivity, 3. Resetting GUI Password, Agent Operations (If Applicable), Checklist, Diagnostic Steps (+15 more)
 
 ### Community 214 - "Usage"
-Cohesion: 0.09
-Nodes (23): 1. Initial Login, 2. Organizations and Workspaces, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown, Getting Started, Implementation Context (KR) (+15 more)
+Cohesion: 0.07
+Nodes (28): 1. Initial Login, 2. Organizations and Workspaces, Common Checks, Common Pitfalls, Executor Model, Executor Timeout, Feature Breakdown, Getting Started (+20 more)
 
 ### Community 215 - "Procedure"
 Cohesion: 0.09
@@ -2521,8 +2514,8 @@ Cohesion: 0.09
 Nodes (21): Agent Role & IO Contract (If Applicable), API Contract (If Applicable), Compose Profile Service Coverage Snapshot Technical Specification, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+13 more)
 
 ### Community 242 - "MinIO Object Storage"
-Cohesion: 0.08
-Nodes (23): Audience, Canonical References, Cluster Deployment, Entrypoints, How to Work in This Area, In Scope, Initialized Buckets, Known Issues & Troubleshooting (+15 more)
+Cohesion: 0.09
+Nodes (20): Audience, Canonical References, Cluster Deployment, Entrypoints, How to Work in This Area, Initialized Buckets, Known Issues & Troubleshooting, Maintenance & Safety (+12 more)
 
 ### Community 243 - "Prometheus Development Scrape And Alerting Config"
 Cohesion: 0.09
@@ -2641,8 +2634,8 @@ Cohesion: 0.10
 Nodes (20): 01.Airflow Dag Dev Operations, 1. DAG 작성 표준, 2. 모니터링 및 디버깅, Airflow DAG Development Usage (07-workflow), Architecture, Common Checks, Common Pitfalls, Maintenance Procedures (+12 more)
 
 ### Community 272 - "OAuth2 Proxy"
-Cohesion: 0.08
-Nodes (24): Valkey Session Store, Auth Tier, Standard ForwardAuth Pattern, Auth Secret Rotation Synchronization, AI Agent Guidance, Audience, Configuration, Environment Variables (+16 more)
+Cohesion: 0.11
+Nodes (18): Valkey Session Store, Auth Tier, Standard ForwardAuth Pattern, Auth Secret Rotation Synchronization, AI Agent Guidance, Audience, Healthcheck Configuration, How to Work in This Area (+10 more)
 
 ### Community 273 - "Usage"
 Cohesion: 0.10
@@ -2660,9 +2653,9 @@ Nodes (20): Advisory Tool Contract, Consumers, Definitions / Facts, In Scope, In
 Cohesion: 0.10
 Nodes (20): Agentic Engineering Research Pack, Audience, Category Role, Consolidation and Lifecycle Boundary, Current Implementation Reconciliation, Current References, Findings, How to Work in This Area (+12 more)
 
-### Community 277 - "catalog/README.md"
-Cohesion: 0.18
-Nodes (7): Audience, How to Work in This Area, Operations Catalog, Overview, Related Documents, Scope, Structure
+### Community 277 - "descriptions/0026-standardize-infra-net.md"
+Cohesion: 0.19
+Nodes (7): Audience, How to Work in This Area, Operations — 10 Communication, Overview, Related Documents, Scope, Structure
 
 ### Community 278 - "LLM Wiki Maintenance Runbook"
 Cohesion: 0.10
@@ -2683,10 +2676,6 @@ Nodes (20): Actions, Audience, Conformance, Criteria, Definitions / Facts, Evide
 ### Community 282 - "Frontmatter Inventory"
 Cohesion: 0.10
 Nodes (20): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary, Findings, Frontmatter Inventory (+12 more)
-
-### Community 283 - "Traefik Edge Router"
-Cohesion: 0.12
-Nodes (16): Traefik Static Configuration Folder, Traefik Dashboard Router, Traefik Compose Service, AI Agent Operation Policy, Audience, Available Scripts, Environment Variables, How to Work in This Area (+8 more)
 
 ### Community 284 - "Observability Tier (06-observability)"
 Cohesion: 0.10
@@ -2712,10 +2701,6 @@ Nodes (19): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Findi
 Cohesion: 0.17
 Nodes (19): AI Agent Guidance, Audience, Change Impact, Configuration, Environment Variables, How to Work in This Area, In Scope, Kafka Event Streaming (05-messaging) (+11 more)
 
-### Community 290 - "Nginx Proxy"
-Cohesion: 0.12
-Nodes (16): Nginx Compose Service, Gateway Tier, TLS Termination, AI Agent Guidance, Audience, Available Scripts, How to Work in This Area, Nginx Proxy (+8 more)
-
 ### Community 291 - "Open WebUI"
 Cohesion: 0.11
 Nodes (18): AI Agent Guidance, Allowed Outputs, Audience, Change Impact, Configuration, Environment Variables, Guardrails, How to Work in This Area (+10 more)
@@ -2737,8 +2722,8 @@ Cohesion: 0.10
 Nodes (19): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Findings, In Scope, Maintenance (+11 more)
 
 ### Community 296 - "Vault Secret Management"
-Cohesion: 0.08
-Nodes (26): Security Tier, Vault Agent Compose Service, Vault Agent Template Rendering, Vault Sys Healthcheck, Vault Compose Service, Vault Unseal Protocol, Vault Agent Sidecar, Vault Raft Storage (+18 more)
+Cohesion: 0.10
+Nodes (20): Security Tier, Vault Agent Compose Service, Vault Agent Template Rendering, Vault Sys Healthcheck, Vault Compose Service, Vault Unseal Protocol, Vault Agent Sidecar, Vault Raft Storage (+12 more)
 
 ### Community 297 - "Reference: Superseded SDLC, QA, and Security Audit Mapping"
 Cohesion: 0.10
@@ -2788,9 +2773,9 @@ Nodes (19): Agent Operations (If Applicable), Checklist, Escalation, Evidence, n
 Cohesion: 0.11
 Nodes (19): Consumers, Definitions / Facts, In Scope, Inventory, Maintenance, Out of Scope, Overview, Provenance (+11 more)
 
-### Community 309 - "README Profile Inventory"
-Cohesion: 0.11
-Nodes (19): Actions, Conformance, Criteria, Definitions / Facts, Evidence, Evidence Snapshot Boundary, Findings, Gaps For Register (+11 more)
+### Community 309 - "run_checker"
+Cohesion: 0.19
+Nodes (5): run_checker(), write_doc(), FrontmatterParsingTests, DocumentMetadataIdentityCliTests, Identity inventory and report CLI tests.
 
 ### Community 310 - "Reference: Stable Reference Terms"
 Cohesion: 0.11
@@ -2861,24 +2846,24 @@ Cohesion: 0.11
 Nodes (17): 1. Prerequisites, 2. Pulling Models, 3. Verification, 4. Integration with Open WebUI, Common Checks, Common Pitfalls, Local Llm Setup Operations, Local LLM Setup Usage (+9 more)
 
 ### Community 327 - "RegisteredSectionContractTests"
-Cohesion: 0.20
-Nodes (7): body_with_headings(), Build a concrete target body for tests whose subject is not body validation., Path, Heading and body-contract tests., Every profile that declares sections has them enforced. A profile that also…, Map each enforced profile to one tracked document that carries it., RegisteredSectionContractTests
+Cohesion: 0.29
+Nodes (4): Path, Every profile that declares sections has them enforced. A profile that also…, Map each enforced profile to one tracked document that carries it., RegisteredSectionContractTests
 
 ### Community 328 - "ProviderHookParityTests"
 Cohesion: 0.21
 Nodes (4): copy_fixture(), ProviderHookParityTests, CompletedProcess, Path
 
 ### Community 329 - "Keycloak IAM"
-Cohesion: 0.10
-Nodes (20): Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, AI Agent Guidance, Audience, Configuration (Environment Variables), Healthcheck Strategy, How to Work in This Area (+12 more)
+Cohesion: 0.11
+Nodes (17): Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, AI Agent Guidance, Audience, Configuration (Environment Variables), Healthcheck Strategy, How to Work in This Area (+9 more)
 
 ### Community 330 - "n8n Low-code Automation"
 Cohesion: 0.11
 Nodes (17): AI Agent Guidance, Architecture, Audience, How to Work in This Area, In Scope, n8n Low-code Automation, Operational Documentation, Out of Scope (+9 more)
 
 ### Community 331 - "catalog/01-gateway/README.md"
-Cohesion: 0.24
-Nodes (7): Audience, How to Work in This Area, Operations — 01 Gateway, Overview, Related Documents, Scope, Structure
+Cohesion: 0.09
+Nodes (24): Audience, How to Work in This Area, Operations — 01 Gateway, Overview, Related Documents, Scope, Structure, Audience (+16 more)
 
 ### Community 332 - "0002-auth-architecture.md"
 Cohesion: 0.21
@@ -2901,8 +2886,8 @@ Cohesion: 0.09
 Nodes (21): Tempo 24 Hour Retention Policy, Tempo Service Graphs, Tempo Span Metrics, TraceQL Analysis, AI Agent Guidance, Audience, Available Scripts, Configuration (+13 more)
 
 ### Community 338 - "04-Data Backup Policy"
-Cohesion: 0.11
-Nodes (17): Components, Context and Stakeholders, Data Flow, Data Optimization and Hardening Architecture, Deployment View, Quality Attributes, System Boundaries, Traceability (+9 more)
+Cohesion: 0.22
+Nodes (9): 04-Data Backup Policy, Controls, Exceptions, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+1 more)
 
 ### Community 339 - "Kafka Cluster Runbook"
 Cohesion: 0.12
@@ -2933,12 +2918,12 @@ Cohesion: 0.12
 Nodes (17): Agent Operations (If Applicable), Checklist, Docker Registry Runbook, Escalation, Evidence, Observability and Evidence Sources, Overview, Procedure (+9 more)
 
 ### Community 346 - "Usage"
-Cohesion: 0.12
-Nodes (17): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Pitfalls, elasticsearch.max_map_count, How-to Procedures, Memory Exhaustion (+9 more)
+Cohesion: 0.09
+Nodes (22): 1. Access and Authentication, 2. Creating a New Project, 3. Running a Local Scan, Architecture Context, Common Checks, Common Pitfalls, elasticsearch.max_map_count, How-to Procedures (+14 more)
 
 ### Community 347 - "Usage"
-Cohesion: 0.12
-Nodes (17): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Pitfalls, Connection Failures, How-to Procedures, "Out of Sync" State (+9 more)
+Cohesion: 0.09
+Nodes (22): 1. Accessing the GUI, 2. Pairing a New Device, 3. Sharing the Sync Folder, Architecture Context, Common Checks, Common Pitfalls, Connection Failures, How-to Procedures (+14 more)
 
 ### Community 348 - "Terraform Operations Policy"
 Cohesion: 0.12
@@ -2985,8 +2970,8 @@ Cohesion: 0.12
 Nodes (17): Prometheus alert: ArgoAppNotSynced, Prometheus alert: ArgoAppOutOfSync, Prometheus alert: ArgoAppSyncFailed, Prometheus alert: ArgoAppUnhealthy, Prometheus rule group: argocd_alerts, Prometheus rule group: etcd_alerts, Prometheus alert: EtcdHighCommitDuration, Prometheus alert: EtcdHighFsyncDurations (+9 more)
 
 ### Community 359 - "Alertmanager Notification Routing"
-Cohesion: 0.07
-Nodes (27): AI Agent Guidance, Alertmanager Notification Routing, Audience, Available Scripts, Configuration, Docker Secrets, Environment Variables, How to Work in This Area (+19 more)
+Cohesion: 0.11
+Nodes (17): AI Agent Guidance, Alertmanager Notification Routing, Audience, Available Scripts, Configuration, Docker Secrets, Environment Variables, How to Work in This Area (+9 more)
 
 ### Community 360 - "Grafana Alloy Unified Collector"
 Cohesion: 0.12
@@ -3312,10 +3297,6 @@ Nodes (16): Agent Operations (If Applicable), Checklist, Escalation, Evidence, O
 Cohesion: 0.12
 Nodes (16): 11-Laboratory Optimization Hardening Runbook, Agent Operations (If Applicable), Checklist, Escalation, Evidence, Observability and Evidence Sources, Overview, Procedure (+8 more)
 
-### Community 441 - "Terraform Infrastructure Tool"
-Cohesion: 0.12
-Nodes (14): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Service Readiness (+6 more)
-
 ### Community 442 - "Terrakube IaC Automation Platform"
 Cohesion: 0.12
 Nodes (14): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Service Readiness (+6 more)
@@ -3337,8 +3318,8 @@ Cohesion: 0.12
 Nodes (16): 0012 Standardize Infra Net Runbook, Agent Operations (If Applicable), Checklist, Escalation, Evidence, Evidence, Overview, Procedure (+8 more)
 
 ### Community 447 - "infra_net Standardization Outcome"
-Cohesion: 0.12
-Nodes (16): Audience, How to Work in This Area, Operations — 12 Infra Net, Overview, Related Documents, Scope, Structure, Acceptance Contract (+8 more)
+Cohesion: 0.22
+Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, infra_net Standardization Outcome, Interfaces and Data, Overview, Technical Approach (+1 more)
 
 ### Community 448 - "Provider Hook Parity Matrix"
 Cohesion: 0.12
@@ -3372,9 +3353,9 @@ Nodes (16): maximum, minimum, type, properties, maximum, minimum, type, minLengt
 Cohesion: 0.22
 Nodes (15): evaluate(), load_rules(), _matches(), _parse_rule(), Path, RuntimeError, Evaluate the canonical hook rules against one tool-use payload. The rule files…, Return every enabled, evaluable rule, sorted by name. (+7 more)
 
-### Community 456 - "ProfileError"
-Cohesion: 0.18
-Nodes (16): _as_exact_mapping(), _as_path_tuple(), _as_string(), _as_string_tuple(), load_migration_contract(), load_migration_manifest(), _load_migration_manifest_text(), _load_repo_migration_manifest() (+8 more)
+### Community 456 - "Nginx Proxy"
+Cohesion: 0.13
+Nodes (15): Audience, Configuration, Core Files, Docker Healthcheck, How to Work in This Area, In Scope, Nginx Proxy, Out of Scope (+7 more)
 
 ### Community 457 - "StopGateDeferredPathTests"
 Cohesion: 0.39
@@ -3405,8 +3386,8 @@ Cohesion: 0.13
 Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, InfluxDB (TSDB), Out of Scope, Overview (KR), Related Documents (+5 more)
 
 ### Community 465 - "ksqlDB"
-Cohesion: 0.11
-Nodes (18): ksqlDB Datagen Compose Service, ksqlDB CLI Compose Service, ksqlDB Kafka Integration Settings, ksqlDB Server Compose Service, Kafka and Schema Registry Integration, AI Agent Guidance, Audience, How to Work in This Area (+10 more)
+Cohesion: 0.05
+Nodes (38): Gateway Standard Middleware Chain, OAuth2 Proxy Traefik Service, OpenSearch Basic Auth Middleware, OpenSearch Dashboards Traefik Transport, OpenSearch Traefik Transport, Gateway Request Circuit Breaker, Gateway Request Rate Limit, Gateway Request Retry (+30 more)
 
 ### Community 466 - "Governance and QA Surface Convergence Implementation Plan"
 Cohesion: 0.13
@@ -3419,10 +3400,6 @@ Nodes (15): Checklist, Escalation, Evidence, Observability and Evidence Sources,
 ### Community 468 - "Neo4j"
 Cohesion: 0.13
 Nodes (13): Audience, How to Work in This Area, In Scope, Neo4j, Out of Scope, Overview, Related Documents, Scope (+5 more)
-
-### Community 469 - "OpenSearch"
-Cohesion: 0.13
-Nodes (13): AI Agent Guidance, Audience, How to Work in This Area, In Scope, OpenSearch, Out of Scope, Overview (KR), Related Documents (+5 more)
 
 ### Community 470 - "Terraform Runbook"
 Cohesion: 0.13
@@ -3481,7 +3458,7 @@ Cohesion: 0.14
 Nodes (14): Acceptance Criteria, AI Agent Requirements, Constraints, Data Tier (04-data) Product Requirements, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
 
 ### Community 485 - "Analytics Tier (04-data/analytics) Product Requirements"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (14): Acceptance Criteria, AI Agent Requirements, Analytics Tier (04-data/analytics) Product Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
 
 ### Community 486 - "Messaging Tier (05-messaging) Product Requirements"
@@ -3493,11 +3470,11 @@ Cohesion: 0.14
 Nodes (14): Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements, Observability Tier Product Requirements (+6 more)
 
 ### Community 488 - "AI Infrastructure Tier (08-ai) Product Requirements"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (14): Acceptance Criteria, AI Agent Requirements, AI Infrastructure Tier (08-ai) Product Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
 
 ### Community 489 - "Tooling Tier (09-tooling) Product Requirements"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (14): Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements, Personas (+6 more)
 
 ### Community 490 - "Laboratory Tier (11-laboratory) Product Requirements"
@@ -3581,12 +3558,12 @@ Cohesion: 0.14
 Nodes (14): 02-Auth Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
 
 ### Community 510 - "03-Security (Vault) Optimization & Hardening Product Requirements"
-Cohesion: 0.14
-Nodes (14): 03-Security (Vault) Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
+Cohesion: 0.08
+Nodes (23): 03-Security (Vault) Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+15 more)
 
 ### Community 511 - "05-Messaging Optimization & Hardening Product Requirements"
-Cohesion: 0.14
-Nodes (14): 05-Messaging Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+6 more)
+Cohesion: 0.08
+Nodes (23): 05-Messaging Optimization & Hardening Product Requirements, Acceptance Criteria, AI Agent Requirements, Constraints, Functional Requirements, Interface Requirements, Key Use Cases, Non-functional Requirements (+15 more)
 
 ### Community 512 - "06-Observability Optimization & Hardening Product Requirements"
 Cohesion: 0.14
@@ -3620,9 +3597,9 @@ Nodes (14): required, required, required, decision_artifact_id, decision_path, d
 Cohesion: 0.14
 Nodes (13): additionalProperties, $id, required, $schema, title, type, common, identity_spaces (+5 more)
 
-### Community 520 - "current_profiles"
-Cohesion: 0.15
-Nodes (4): current_profiles(), Project the current Registry into the metadata validator envelope., IdentityBehaviorTests, TemplateRoleInferenceTests
+### Community 520 - "test_profile.py"
+Cohesion: 0.18
+Nodes (4): CurrentRegistryContractTests, Profile, Registry, frontmatter, and template-role tests., SharedFrontmatterExtractionTests, TemplateRoleInferenceTests
 
 ### Community 521 - "test_script_manifest.py"
 Cohesion: 0.21
@@ -3653,8 +3630,8 @@ Cohesion: 0.15
 Nodes (12): AI Agent Guidance, Architecture Decision Records (ADR), Audience, Current Inventory, Documentation Standards, How to Work in This Area, In Scope, Out of Scope (+4 more)
 
 ### Community 528 - "pg-0 pg-1 pg-2 Patroni Nodes"
-Cohesion: 0.14
-Nodes (18): etcd Three Node Quorum, pg-cluster-init, PostgreSQL Cluster Exporters, pg-0 pg-1 pg-2 Patroni Nodes, pg-router HAProxy Service, Cluster Exporter Role, Cluster Generic Service Database, etcd Distributed Configuration Store (+10 more)
+Cohesion: 0.21
+Nodes (13): etcd Three Node Quorum, pg-cluster-init, PostgreSQL Cluster Exporters, pg-0 pg-1 pg-2 Patroni Nodes, pg-router HAProxy Service, Cluster Exporter Role, Cluster Generic Service Database, etcd Distributed Configuration Store (+5 more)
 
 ### Community 529 - "Workflow Tier (07-workflow) Architecture Description"
 Cohesion: 0.15
@@ -3935,6 +3912,10 @@ Nodes (13): hookConditions, items, minItems, type, uniqueItems, additionalProper
 ### Community 600 - "agent-event-hook.sh"
 Cohesion: 0.33
 Nodes (12): changed_profile_stop_gate(), emit_stop_block(), logical_commit_stop_gate(), post_tool_use(), pre_compact(), pre_tool_use(), session_end(), session_start() (+4 more)
+
+### Community 601 - "TemplateAndAuthoredResidueTests"
+Cohesion: 0.15
+Nodes (4): body_with_headings(), Build a concrete target body for tests whose subject is not body validation., Heading and body-contract tests., TemplateAndAuthoredResidueTests
 
 ### Community 603 - "ADR-0003: HashiCorp Vault as Centralized Secrets Manager"
 Cohesion: 0.17
@@ -4568,9 +4549,9 @@ Nodes (9): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Overvie
 Cohesion: 0.22
 Nodes (9): Controls, Exceptions, OpenSearch Operations Policy, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+1 more)
 
-### Community 791 - "StarRocks Operations Policy"
-Cohesion: 0.22
-Nodes (9): Controls, Exceptions, Overview, Policy Scope, Related Documents, Review Cadence, StarRocks Operations Policy, Traceability (+1 more)
+### Community 791 - "0012-data-analytics-architecture.md"
+Cohesion: 0.07
+Nodes (27): Controls, Exceptions, InfluxDB Operations Policy, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+19 more)
 
 ### Community 792 - "Valkey Cluster Operations Policy"
 Cohesion: 0.22
@@ -4748,10 +4729,6 @@ Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview,
 Cohesion: 0.22
 Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, Infrastructure, Secrets, and Documentation Refresh Outcome, Interfaces and Data, Overview, Technical Approach (+1 more)
 
-### Community 846 - "Traefik Dynamic Configuration"
-Cohesion: 0.18
-Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
-
 ### Community 848 - "LLM Wiki Completion Outcome"
 Cohesion: 0.22
 Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, Interfaces and Data, LLM Wiki Completion Outcome, Overview, Technical Approach (+1 more)
@@ -4784,13 +4761,13 @@ Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failur
 Cohesion: 0.22
 Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, Interfaces and Data, Overview, Script Surface Ownership Convergence Outcome, Technical Approach (+1 more)
 
-### Community 856 - "Security Capability Specification"
-Cohesion: 0.22
-Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, Interfaces and Data, Overview, Security Capability Specification, Technical Approach (+1 more)
+### Community 856 - "Terraform Infrastructure Tool"
+Cohesion: 0.14
+Nodes (14): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Service Readiness (+6 more)
 
-### Community 857 - "Messaging Capability Specification"
-Cohesion: 0.22
-Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Failure Modes and Guardrails, Interfaces and Data, Messaging Capability Specification, Overview, Technical Approach (+1 more)
+### Community 857 - "OpenSearch"
+Cohesion: 0.17
+Nodes (12): Audience, How to Work in This Area, In Scope, OpenSearch, Out of Scope, Overview, Related Documents, Scope (+4 more)
 
 ### Community 858 - "Observability Capability Specification"
 Cohesion: 0.22
@@ -4816,9 +4793,9 @@ Nodes (8): Consumers, Inventory, Provenance, Purpose, Refresh, Schema, Target Su
 Cohesion: 0.22
 Nodes (9): ADR-0030: 은퇴 기록으로서의 Tombstone, Compliance, Consequences, Context, Decision, Decision Drivers, Options Considered, Related Documents (+1 more)
 
-### Community 864 - "ADR-0031: 보존 기록으로서의 아카이브"
-Cohesion: 0.22
-Nodes (9): ADR-0031: 보존 기록으로서의 아카이브, Compliance, Consequences, Context, Decision, Decision Drivers, Options Considered, Related Documents (+1 more)
+### Community 864 - "Observability Tier"
+Cohesion: 0.20
+Nodes (10): Kafka JMX Exporter Rules, Alertmanager Critical Route, Alertmanager Default Slack Route, Alertmanager Slack Receivers, Alertmanager SMTP Placeholders, Grafana Alloy Collector, LGTM Stack, Keycloak Grafana SSO (+2 more)
 
 ### Community 865 - "required"
 Cohesion: 0.22
@@ -4856,16 +4833,16 @@ Nodes (9): Findings, Implications, Limitations, Method, Question, Scope, Sources
 Cohesion: 0.22
 Nodes (9): Commit Ledger, Deferred Items, Inputs, Objective, Review Evidence, Rulings, {{TITLE}}, Verification Evidence (+1 more)
 
-### Community 878 - "Secret Handling Boundary"
-Cohesion: 0.28
-Nodes (9): Terraform CLI Service, Open Notebook Runtime Service, SurrealDB Service, Floating Image Tag Review, Open Notebook Service, Common Security Base, Template Job Low, Template Stateful Database Medium (+1 more)
+### Community 878 - "Open Notebook Runtime Service"
+Cohesion: 0.20
+Nodes (12): Terraform CLI Service, Homer Dashboard Configuration, Homer Service, Homer Dashboard, Open Notebook Runtime Service, SurrealDB Service, Floating Image Tag Review, Open Notebook Service (+4 more)
 
-### Community 879 - "Hy-Home Infrastructure Service Definition Layer"
-Cohesion: 0.28
-Nodes (9): Compose Profiles Execution Model, Hy-Home Infrastructure Service Definition Layer, Service Documentation Rubric, Tiered Docker Compose Architecture, Repo-local LLM Wiki, Tier Hardening Checks, Knowledge Maintenance Scripts, Scripts Utility and Automation Surface (+1 more)
+### Community 879 - "Secret Handling Boundary"
+Cohesion: 0.21
+Nodes (12): Syncthing Service, Syncthing P2P Synchronization, Compose Profiles Execution Model, Hy-Home Infrastructure Service Definition Layer, Service Documentation Rubric, Tiered Docker Compose Architecture, Repo-local LLM Wiki, Secret Handling Boundary (+4 more)
 
 ### Community 880 - "Supply-Chain Network Approvals"
-Cohesion: 0.22
+Cohesion: 0.25
 Nodes (8): Approvals, Current State, Purpose, Related Documents, Scope, Supply-Chain Network Approvals, Usage, Why This File Exists
 
 ### Community 881 - "TransitionOverrideEvidencePathTests"
@@ -4884,10 +4861,6 @@ Nodes (3): _child_env(), parse_frontmatter(), Return an environment for a non-ga
 Cohesion: 0.20
 Nodes (9): ADR-0011: Laboratory Services Selection and Configuration, Alternatives, Consequences, Context, Decision, Explicit Non-goals, Overview, Overview (KR) (+1 more)
 
-### Community 886 - "Analytics Tier"
-Cohesion: 0.33
-Nodes (6): InfluxDB 3 Core Compose Service, InfluxDB Time Series Database, Analytics Tier, Analytics Docker Secrets Policy, Data Tier, Polyglot Persistence Layer
-
 ### Community 889 - "SupplyChainSecureOutputTests"
 Cohesion: 0.31
 Nodes (3): load_checker(), Path, SupplyChainSecureOutputTests
@@ -4901,28 +4874,28 @@ Cohesion: 0.25
 Nodes (8): 1. Commit Standards, 2. Branching Strategy, 3. Pull Request Protocol, 4. Operational Best Practices, 5. Agent Completion Commit Discipline, 6. Enforcement, Git Workflow Governance, Related Documents
 
 ### Community 893 - "Software Development Lifecycle"
-Cohesion: 0.21
-Nodes (8): Authority Boundaries, Lifecycle, Purpose, Related Documents, Software Development Lifecycle, Document Type Families, Related Documents, Stage Authoring Matrix
+Cohesion: 0.40
+Nodes (5): Authority Boundaries, Lifecycle, Purpose, Related Documents, Software Development Lifecycle
 
-### Community 894 - "Commit Message Prompt"
-Cohesion: 0.25
-Nodes (8): Applies To, Commit Message Prompt, Failure Handling, Output Contract, Prohibited, Purpose, Related Documents, Required Inputs
+### Community 894 - "ADR-0033: Spec Package 전체 본문 보존"
+Cohesion: 0.22
+Nodes (9): ADR-0033: Spec Package 전체 본문 보존, Compliance, Consequences, Context, Decision, Decision Drivers, Follow-up, Options Considered (+1 more)
 
 ### Community 895 - "Handoff Prompt"
 Cohesion: 0.25
 Nodes (8): Applies To, Failure Handling, Handoff Prompt, Output Contract, Prohibited, Purpose, Related Documents, Required Inputs
 
-### Community 896 - "change-review-execution"
-Cohesion: 0.25
-Nodes (8): change-review-execution, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
+### Community 896 - "RabbitMQ Operations Policy"
+Cohesion: 0.22
+Nodes (9): Controls, Exceptions, Overview, Policy Scope, RabbitMQ Operations Policy, Related Documents, Review Cadence, Traceability (+1 more)
 
-### Community 897 - "SeaweedFS Storage System"
-Cohesion: 0.14
-Nodes (15): MinIO Path Style Access Requirement, MinIO S3 Compatible API, Lake and Object Storage Tier, SeaweedFS FUSE Mount, SeaweedFS Master Volume Filer Architecture, SeaweedFS S3 Gateway, SeaweedFS Security Control, SeaweedFS Storage System (+7 more)
+### Community 897 - "NoSQL Infrastructure Tier"
+Cohesion: 0.29
+Nodes (8): Lake and Object Storage Tier, Cassandra Exporter Service, Cassandra Node1 Service, Cassandra Password Secret, Apache Cassandra Wide Column Database, Cassandra Prometheus Exporter Monitoring, Cassandra Single Node Deployment, NoSQL Infrastructure Tier
 
-### Community 900 - "code-review-dimensions"
-Cohesion: 0.25
-Nodes (8): code-review-dimensions, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
+### Community 900 - "IaC Deployment Policy"
+Cohesion: 0.22
+Nodes (9): Controls, Exceptions, IaC Deployment Policy, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+1 more)
 
 ### Community 901 - "deployment-pipeline-design"
 Cohesion: 0.25
@@ -4936,9 +4909,9 @@ Nodes (8): docker-compose-patterns, Failure Handling, Gates, Inputs, Outputs, Pr
 Cohesion: 0.25
 Nodes (8): e2e-testing, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
 
-### Community 904 - "execution-plan-agent"
-Cohesion: 0.25
-Nodes (8): execution-plan-agent, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
+### Community 904 - "Docker Registry Operations Policy"
+Cohesion: 0.22
+Nodes (9): Controls, Docker Registry Operations Policy, Exceptions, Overview, Policy Scope, Related Documents, Review Cadence, Traceability (+1 more)
 
 ### Community 905 - "Keycloak Identity Provider"
 Cohesion: 0.67
@@ -4948,9 +4921,9 @@ Nodes (4): ADR-0002 Keycloak OAuth2 Proxy, Keycloak Identity Provider, OAuth2 Pr
 Cohesion: 0.07
 Nodes (28): ADR-0011 Laboratory Services, Dozzle Log Viewer, Homer Dashboard, Portainer Container Management, RedisInsight Data Inspection, SSO-Protected docker.sock Access, ADR-0020 Messaging Hardening and HA Expansion Strategy, Messaging Gateway Standard Chain (+20 more)
 
-### Community 909 - "infra-validate"
-Cohesion: 0.25
-Nodes (8): Failure Handling, Gates, infra-validate, Inputs, Outputs, Preconditions, Procedure, Related Documents
+### Community 909 - "Data Capability Specification"
+Cohesion: 0.22
+Nodes (9): Acceptance Contract, Behavior Contract, Boundaries and Inputs, Data Capability Specification, Failure Modes and Guardrails, Interfaces and Data, Overview, Technical Approach (+1 more)
 
 ### Community 910 - "Observability Hardening CI Gate"
 Cohesion: 0.50
@@ -4972,9 +4945,9 @@ Nodes (8): Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, p
 Cohesion: 0.25
 Nodes (8): Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents, requirements-to-design-agent
 
-### Community 915 - "security-audit"
-Cohesion: 0.25
-Nodes (8): Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents, security-audit
+### Community 915 - "Traefik Dynamic Configuration"
+Cohesion: 0.22
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
 
 ### Community 916 - "MinIO Single Node Service"
 Cohesion: 0.25
@@ -5025,7 +4998,7 @@ Cohesion: 0.25
 Nodes (8): Audit Packages, Authoring, Canonical Current Audit, Dated Historical Snapshots, Overview, Packages, Related Documents, Supersession Ledgers
 
 ### Community 933 - "Foundation"
-Cohesion: 0.25
+Cohesion: 0.22
 Nodes (8): Consumers, Foundation, Inventory, Provenance, Purpose, Refresh, Schema, Traceability
 
 ### Community 942 - "Github Actions Control Plane Observation"
@@ -5076,9 +5049,9 @@ Nodes (8): Attributes, Constraints, Entities, Lifecycle, Purpose, Relationships,
 Cohesion: 0.43
 Nodes (7): cleanup_runtime_material(), execute_runtime_scenario(), has_owned_cleanup_marker(), main(), on_exit(), check-compose-core-readiness.sh script, usage()
 
-### Community 954 - "_allocation_git_fixture"
-Cohesion: 0.36
-Nodes (5): _allocation_git_fixture(), _fixture_git(), CompletedProcess, Path, _reclassify_fixture_allocation()
+### Community 954 - "Diff Review Prompt"
+Cohesion: 0.25
+Nodes (8): Applies To, Diff Review Prompt, Failure Handling, Output Contract, Prohibited, Purpose, Related Documents, Required Inputs
 
 ### Community 955 - "ActiveStageScopeTests"
 Cohesion: 0.32
@@ -5104,17 +5077,17 @@ Nodes (7): Audience, How to Work in This Area, Operations — 07 Workflow, Overv
 Cohesion: 0.29
 Nodes (7): Audience, How to Work in This Area, Operations — 08 AI, Overview, Related Documents, Scope, Structure
 
-### Community 961 - "Operations — 10 Communication"
-Cohesion: 0.29
-Nodes (7): Audience, How to Work in This Area, Operations — 10 Communication, Overview, Related Documents, Scope, Structure
+### Community 961 - "adr-writing"
+Cohesion: 0.25
+Nodes (8): adr-writing, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
 
 ### Community 962 - "Operations — 11 Laboratory"
 Cohesion: 0.29
 Nodes (7): Audience, How to Work in This Area, Operations — 11 Laboratory, Overview, Related Documents, Scope, Structure
 
-### Community 963 - "Compose Enablement Model Convergence Plan"
-Cohesion: 0.29
-Nodes (7): Compose Enablement Model Convergence Plan, Dependencies, Execution Sequence, Objective, Related Documents, Risk and Rollback, Verification
+### Community 963 - "ci-cd-patterns"
+Cohesion: 0.25
+Nodes (8): ci-cd-patterns, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
 
 ### Community 964 - "Document Lifecycle Convergence Plan"
 Cohesion: 0.29
@@ -5132,9 +5105,9 @@ Nodes (5): 1. Bootstrap Sequence, 2. Graphify, 3. Quick Reference, 4. Detailed I
 Cohesion: 0.40
 Nodes (5): OAuth2 Proxy Keycloak OIDC Issuer, OAuth2 Proxy Compose Service, OAuth2 Proxy Redis Session Store, OAuth2 Proxy Valkey Exporter, OAuth2 Proxy Valkey Service
 
-### Community 968 - "Compose Sibling Pair Resolution Plan"
-Cohesion: 0.29
-Nodes (7): Compose Sibling Pair Resolution Plan, Dependencies, Execution Sequence, Objective, Related Documents, Risk and Rollback, Verification
+### Community 968 - "container-threat-modeling"
+Cohesion: 0.25
+Nodes (8): container-threat-modeling, Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents
 
 ### Community 969 - "SDLC Taxonomy Convergence Migration Ledger"
 Cohesion: 0.29
@@ -5640,9 +5613,9 @@ Nodes (3): LifecycleRouteEquivalenceTests, The single default route must not los
 Cohesion: 0.33
 Nodes (6): Agent Bootstrap Policy, Authority and Precedence, Canonical Load Order, Hard Constraints, Purpose, Verification Routing
 
-### Community 1122 - "Provider Adapters"
-Cohesion: 0.33
-Nodes (6): How to Work in This Area, Overview, Provider Adapters, Related Documents, Scope, Structure
+### Community 1122 - "infra-cross-validate"
+Cohesion: 0.25
+Nodes (8): Failure Handling, Gates, infra-cross-validate, Inputs, Outputs, Preconditions, Procedure, Related Documents
 
 ### Community 1123 - "Workflows"
 Cohesion: 0.33
@@ -5685,20 +5658,20 @@ Cohesion: 0.33
 Nodes (6): Common Checks, Related Documents, Runbook Handoff, {{TITLE}}, Traceability, Usage
 
 ### Community 1133 - "Traefik Static Configuration"
-Cohesion: 0.33
-Nodes (6): Traefik Docker Provider, Traefik Entrypoints, Traefik File Provider, OTLP Tracing, Prometheus Metrics, Traefik Static Configuration
+Cohesion: 0.25
+Nodes (8): Traefik Docker Provider, Traefik Entrypoints, Traefik File Provider, OTLP Tracing, Prometheus Metrics, Traefik Static Configuration, Traefik Dashboard Router, Traefik Compose Service
 
-### Community 1136 - "SonarQube Usage Guide"
-Cohesion: 0.40
-Nodes (5): Common Checks, Related Documents, Runbook Handoff, SonarQube Usage Guide, Traceability
+### Community 1136 - "knowledge-map-agent"
+Cohesion: 0.25
+Nodes (8): Failure Handling, Gates, Inputs, knowledge-map-agent, Outputs, Preconditions, Procedure, Related Documents
 
-### Community 1137 - "Syncthing Usage Guide"
-Cohesion: 0.40
-Nodes (5): Common Checks, Related Documents, Runbook Handoff, Syncthing Usage Guide, Traceability
+### Community 1137 - "style-validation"
+Cohesion: 0.25
+Nodes (8): Failure Handling, Gates, Inputs, Outputs, Preconditions, Procedure, Related Documents, style-validation
 
-### Community 1138 - "Operations: Terrakube Policy Usage Guide"
-Cohesion: 0.40
-Nodes (5): Common Checks, Operations: Terrakube Policy Usage Guide, Related Documents, Runbook Handoff, Traceability
+### Community 1138 - "Data Optimization and Hardening Architecture"
+Cohesion: 0.25
+Nodes (8): Components, Context and Stakeholders, Data Flow, Data Optimization and Hardening Architecture, Deployment View, Quality Attributes, System Boundaries, Traceability
 
 ### Community 1139 - "Data Packages"
 Cohesion: 0.40
@@ -5728,17 +5701,17 @@ Nodes (3): qa_ci_add_dir(), qa_ci_prepend_path(), use-qa-ci-tools.sh script
 Cohesion: 0.67
 Nodes (3): die(), GATE_OWNED_HOOKS, run-ci-precommit.sh script
 
-### Community 1149 - "Configuration"
-Cohesion: 0.50
-Nodes (4): Configuration, Core Files, Docker Healthcheck, Keycloak & OAuth2 Proxy Integration
+### Community 1149 - "Kafka Event Streaming Cluster"
+Cohesion: 0.25
+Nodes (8): Relational Database Tier, Kafbat UI, Kafka Connect, Kafka Event Streaming Cluster, RabbitMQ Service, RabbitMQ AMQP Broker, ksqlDB Streaming SQL, Messaging Tier
 
-### Community 1150 - "Provider Capability Matrix"
-Cohesion: 0.67
-Nodes (3): Authority Namespaces, Provider Capability Matrix, Related Documents
+### Community 1150 - "0076-llm-wiki-stage-category-coverage/README.md"
+Cohesion: 0.14
+Nodes (5): Approval Boundaries, Related Documents, Authority Namespaces, Provider Capability Matrix, Related Documents
 
-### Community 1151 - "action"
-Cohesion: 0.67
-Nodes (3): minLength, type, action
+### Community 1151 - "HistoricalDocument"
+Cohesion: 0.29
+Nodes (5): HistoricalDocument, An explicit recovery blob, never a fallback to a current file or HEAD., _BootstrapProfileError, ValueError, Used only until the canonical metadata module is loaded safely.
 
 ### Community 1152 - "archive_disposition"
 Cohesion: 0.67
@@ -5764,9 +5737,9 @@ Nodes (3): minLength, type, artifact_id
 Cohesion: 0.67
 Nodes (3): format, type, created
 
-### Community 1158 - "effort"
-Cohesion: 0.67
-Nodes (3): minLength, type, effort
+### Community 1158 - "Operations — 05 Messaging"
+Cohesion: 0.29
+Nodes (7): Audience, How to Work in This Area, Operations — 05 Messaging, Overview, Related Documents, Scope, Structure
 
 ### Community 1159 - "event"
 Cohesion: 0.67
@@ -5776,9 +5749,9 @@ Nodes (3): minLength, type, event
 Cohesion: 0.67
 Nodes (3): minLength, type, function_id
 
-### Community 1161 - "generated_by"
-Cohesion: 0.67
-Nodes (3): minLength, type, generated_by
+### Community 1161 - "Operations — 09 Tooling"
+Cohesion: 0.29
+Nodes (7): Audience, How to Work in This Area, Operations — 09 Tooling, Overview, Related Documents, Scope, Structure
 
 ### Community 1162 - "layer"
 Cohesion: 0.67
@@ -5824,9 +5797,9 @@ Nodes (3): minLength, type, preservation_class
 Cohesion: 0.67
 Nodes (3): review_cycle, minLength, type
 
-### Community 1173 - "reviewed_at"
-Cohesion: 0.67
-Nodes (3): reviewed_at, format, type
+### Community 1173 - "Operations — 12 Infra Net"
+Cohesion: 0.29
+Nodes (7): Audience, How to Work in This Area, Operations — 12 Infra Net, Overview, Related Documents, Scope, Structure
 
 ### Community 1174 - "runtime"
 Cohesion: 0.67
@@ -5844,29 +5817,29 @@ Nodes (3): title, minLength, type
 Cohesion: 0.67
 Nodes (3): type, pattern, type
 
-### Community 1178 - "updated"
-Cohesion: 0.67
-Nodes (3): updated, format, type
+### Community 1178 - "Operations Catalog"
+Cohesion: 0.29
+Nodes (7): Audience, How to Work in This Area, Operations Catalog, Overview, Related Documents, Scope, Structure
 
 ### Community 1179 - "work_profile"
 Cohesion: 0.67
 Nodes (3): work_profile, minLength, type
 
-### Community 1185 - "Homer Service"
-Cohesion: 1.00
-Nodes (3): Homer Dashboard Configuration, Homer Service, Homer Dashboard
+### Community 1185 - "SeaweedFS Storage System"
+Cohesion: 0.29
+Nodes (7): MinIO Path Style Access Requirement, MinIO S3 Compatible API, SeaweedFS FUSE Mount, SeaweedFS Master Volume Filer Architecture, SeaweedFS S3 Gateway, SeaweedFS Security Control, SeaweedFS Storage System
 
-### Community 1187 - "Configuration"
-Cohesion: 0.67
-Nodes (3): Configuration, Core Files, Docker Healthcheck
+### Community 1187 - "ResurrectedMigrationContractTests"
+Cohesion: 0.33
+Nodes (3): A completed migration's contract is not resurrected on every load.…, `load_profiles()` no longer takes a contract path and still works. It used to…, ResurrectedMigrationContractTests
 
-### Community 1188 - "Scope"
+### Community 1188 - "Stage Authoring Matrix"
 Cohesion: 0.67
-Nodes (3): In Scope, Out of Scope, Scope
+Nodes (3): Document Type Families, Related Documents, Stage Authoring Matrix
 
-### Community 1195 - "Scope"
+### Community 1195 - "description"
 Cohesion: 0.67
-Nodes (3): In Scope, Out of Scope, Scope
+Nodes (3): minLength, type, description
 
 ### Community 1200 - "hy-home.docker/AGENTS.md"
 Cohesion: 0.29
@@ -5896,25 +5869,61 @@ Nodes (14): AuditCriterionContract, criterion_prefix(), CriterionRow, expected_i
 Cohesion: 0.50
 Nodes (4): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue
 
+### Community 1726 - "model_reasoning_effort"
+Cohesion: 0.67
+Nodes (3): minLength, type, model_reasoning_effort
+
+### Community 1727 - "name"
+Cohesion: 0.67
+Nodes (3): minLength, type, name
+
+### Community 1728 - "tier"
+Cohesion: 0.67
+Nodes (3): tier, minLength, type
+
+### Community 1729 - "Scope"
+Cohesion: 0.67
+Nodes (3): In Scope, Out of Scope, Scope
+
+### Community 1730 - "Scope"
+Cohesion: 0.67
+Nodes (3): In Scope, Out of Scope, Scope
+
+### Community 1731 - "Configuration"
+Cohesion: 0.67
+Nodes (3): Configuration, Environment Variables, Secrets Injection
+
+### Community 1732 - "Scope"
+Cohesion: 0.67
+Nodes (3): In Scope, Out of Scope, Scope
+
+### Community 1733 - "Implementation Details"
+Cohesion: 0.67
+Nodes (3): Configuration Highlights, Healthcheck Protocol, Implementation Details
+
+### Community 1734 - "Scope"
+Cohesion: 0.67
+Nodes (3): In Scope, Out of Scope, Scope
+
 ## Ambiguous Edges - Review These
+- `pyroscope Compose Service` → `cadvisor Compose Service`  [AMBIGUOUS]
+  infra/06-observability/docker-compose.yml · relation: references
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
-- `cadvisor Compose Service` → `pyroscope Compose Service`  [AMBIGUOUS]
-  infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **10528 isolated node(s):** `$schema`, `$id`, `title`, `description`, `type` (+10523 more)
+- **10523 isolated node(s):** `$schema`, `$id`, `title`, `description`, `type` (+10518 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **516 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **520 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
+- **What is the exact relationship between `pyroscope Compose Service` and `cadvisor Compose Service`?**
+  _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `Alertmanager Critical Route` and `Alertmanager SMTP Placeholders`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
-  _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Reference: Frontmatter, Template, and README Implementation Audit` connect `Reference: Frontmatter, Template, and README Implementation Audit` to `.agents/README.md`?**
+- **Why does `Reference: Frontmatter, Template, and README Implementation Audit` connect `Reference: Frontmatter, Template, and README Implementation Audit` to `0076-llm-wiki-stage-category-coverage/README.md`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `DocumentRegistryTests` (e.g. with `TransitionOverride` and `RegistryError`) actually correct?**
   _`DocumentRegistryTests` has 2 INFERRED edges - model-reasoned connections that need verification._
