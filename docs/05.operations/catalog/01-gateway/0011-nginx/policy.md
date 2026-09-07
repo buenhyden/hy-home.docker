@@ -1,6 +1,6 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 - `infra/01-gateway/nginx/docker-compose.yml`
 - `infra/01-gateway/nginx/config/nginx.conf`
-- Nginx healthcheck/readonly/tmpfs 운영 표준 and profile-only runtime boundary
+- Nginx healthcheck/readonly/tmpfs 운영 표준 and the `nginx` profile runtime boundary
 - **Systems**: Nginx gateway proxy
 - **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like

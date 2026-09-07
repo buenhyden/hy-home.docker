@@ -1,6 +1,6 @@
 ---
 title: "Operations — 01 Gateway"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
@@ -23,7 +23,7 @@ one four-digit subject folder. Roles remain separate and no missing role is adde
 
 ## Scope
 
-- Nginx profile-only routing, root-active Traefik routing, and the edge-routing stack.
+- Nginx routing under the `nginx` profile, Traefik routing under `core`/`dev`, and the edge-routing stack.
 - No runtime configuration, secret, or deployment mutation.
 
 ## Structure

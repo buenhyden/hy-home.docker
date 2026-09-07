@@ -1,6 +1,6 @@
 ---
 title: "Nginx Proxy"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -10,13 +10,13 @@ created: "2025-11-29"
 
 # Nginx Proxy
 
-> Profile-only specialized path-based proxy and SSO client for the hy-home.docker ecosystem.
+> Specialized path-based proxy selected by the `nginx` profile, and SSO client for the hy-home.docker ecosystem.
 
 ## Overview
 
-The Nginx component in the `01-gateway` tier is a profile-only specialized proxy for complex path-based routing (for example, MinIO and Keycloak) and SSO checks through OAuth2 Proxy. It is not included in the current root compose stack by default; validation and runtime use require an explicit root network and dependency context.
+The Nginx component in the `01-gateway` tier is a specialized proxy for complex path-based routing (for example, MinIO and Keycloak) and SSO checks through OAuth2 Proxy. The root [docker-compose.yml](../../../docker-compose.yml) includes this file unconditionally and the `nginx` profile selects the service; validating the file on its own still requires an explicit root network and dependency context.
 
-Nginx 컴포넌트는 복잡한 경로 기반 라우팅과 SSO(OAuth2 Proxy) 인증 클라이언트 역할을 수행하는 profile-only leaf입니다. 현재 root compose에는 기본 include되어 있지 않으므로, 실행은 명시적인 root network/dependency context와 승인된 runtime 절차가 있을 때만 다룹니다.
+Nginx 컴포넌트는 복잡한 경로 기반 라우팅과 SSO(OAuth2 Proxy) 인증 클라이언트 역할을 수행하는 leaf입니다. 루트 compose는 이 파일을 무조건 include하며 `nginx` profile이 서비스를 선택합니다. 파일 단독 검증에는 명시적인 root network/dependency context가 필요하고, 실행은 승인된 runtime 절차가 있을 때만 다룹니다.
 
 ## Audience
 

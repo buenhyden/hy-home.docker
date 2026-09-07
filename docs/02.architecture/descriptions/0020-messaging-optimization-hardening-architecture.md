@@ -1,6 +1,6 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -63,8 +63,8 @@ created: "2026-03-28"
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
 - Kafka:
-  - Root include: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-  - Service-local full compose: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - `messaging` 또는 `dev` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - 여기에 `messaging-cluster`를 더한 경우: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
 - RabbitMQ:
   - `rabbitmq` (AMQP + Management)
 - Gateway Path:
@@ -99,8 +99,8 @@ created: "2026-03-28"
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
-  - Root profile: Kafka dev single broker + RabbitMQ single-node
-  - Service-local full compose: Kafka 3 broker model with root network/secret context
+  - `messaging`/`dev` profile: Kafka `kafka-1` 단일 broker + RabbitMQ single-node
+  - `messaging-cluster`를 더한 경우: 같은 파일의 Kafka 3 broker 모델. 파일 단독 검증에는 root network/secret context가 필요하다
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`

@@ -1,6 +1,6 @@
 ---
 title: "n8n Low-code Automation"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -52,7 +52,7 @@ n8n/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | n8n Low-code Automation service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml`; service-local production-like compose is `docker-compose.yml` |
+| Purpose | n8n Low-code Automation service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml`; that single file is the only Compose file in this directory |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE`, plus 31 more; profiles: `workflow`, `dev` |
 | Compose linkage | unconditional root include, profile-selected (`workflow`, `dev`), via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` |

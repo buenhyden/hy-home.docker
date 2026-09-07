@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier (01-gateway) Product Requirements"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `hy-home.docker` 에코시스템의 통합 진입점인 `01-gateway` 티어의 제품 요구사항을 정의한다. 현재 구현은 root-active Traefik edge router와 profile-only Nginx 특수 경로 프록시 leaf로 구성되며, 트래픽 라우팅, TLS 종료, 보안 미들웨어 체인(SSO, Rate Limit 등)을 오케스트레이션한다.
+이 문서는 `hy-home.docker` 에코시스템의 통합 진입점인 `01-gateway` 티어의 제품 요구사항을 정의한다. 현재 구현은 `core`/`dev` profile이 선택하는 Traefik edge router와 전용 `nginx` profile이 선택하는 Nginx 특수 경로 프록시 leaf로 구성되며, 트래픽 라우팅, TLS 종료, 보안 미들웨어 체인(SSO, Rate Limit 등)을 오케스트레이션한다.
 
 ### Problem Statement
 
@@ -62,7 +62,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **In Scope**:
   - Traefik (Edge Router) 기반 root-active 동적 라우팅.
-  - Nginx 기반 profile-only 특수 경로 프록시 및 헤더 조작.
+  - `nginx` profile이 선택하는 Nginx 기반 특수 경로 프록시 및 헤더 조작.
   - TLS 종료 및 인증서 관리.
 - **Out of Scope**:
   - 개별 서비스 내부의 비즈니스 로직.

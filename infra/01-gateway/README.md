@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The current root stack actively includes Traefik as the edge router. Nginx remains a profile-only specialized path proxy leaf and must be validated or run only with an explicit root network/dependency context.
+The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The root stack includes both leaves unconditionally and a profile decides what starts: `traefik` belongs to `core` and `dev`, while `nginx` belongs to the dedicated `nginx` profile. Neither resolves when no profile is selected. Nginx must still be validated or run with an explicit root network/dependency context.
 
 ## Audience
 
@@ -30,7 +30,7 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 ### In Scope
 
 - Traefik (Edge Router) configuration and root-stack deployment.
-- Nginx (Path Proxy) configuration and profile-only validation boundary.
+- Nginx (Path Proxy) configuration and the `nginx` profile validation boundary.
 - TLS termination and certificate management.
 - Dynamic service discovery via Docker provider.
 

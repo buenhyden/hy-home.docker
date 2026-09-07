@@ -1,6 +1,6 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -29,6 +29,14 @@ created: "2026-03-26"
   - Docker Provider를 통한 대다수 서비스의 자동 라우팅 처리.
 - **Secondary Path Proxy**: Nginx Alpine leaf를 유지함.
   - 현재 root compose에는 기본 include되지 않으며, 명시적 profile/runtime context에서만 Traefik의 백엔드 서비스로 등록한다.
+
+    이 문장이 적힌 시점에는 Nginx leaf가 루트 include 밖에 있었다. SPEC-0156과
+    SPEC-0171 이후 루트 `docker-compose.yml`은 41개 compose 파일을 모두 무조건
+    include하고 profile이 기동을 결정한다. Nginx는 include되며 전용 `nginx`
+    profile이 서비스를 선택한다. Traefik도 profile 없이는 기동하지 않는다는 점에서
+    같다(`core`, `dev`). 결정이 세운 경계 — Nginx는 특수 경로에만, 명시적 선택으로 —
+    는 그대로 유효하고 그 경계를 긋는 수단만 include 여부에서 profile로 바뀌었다.
+    결정 문장은 시점의 기록으로 보존한다. SPEC-0176이 기록함.
   - Nginx 내부에서 상세한 Proxy Pass, Header 조작, Buffering 설정을 수행한다.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 

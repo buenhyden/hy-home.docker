@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -23,7 +23,7 @@ created: "2026-06-04"
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-- **Systems**: Docker Compose 기반 인프라 서비스 39개(서비스 디렉터리 기준)
+- **Systems**: Docker Compose 기반 인프라 서비스 40개(서비스 디렉터리 기준. Compose 파일은 41개이며 MinIO만 파일 2개를 갖는다)
 - **Agents**: Infra/DevOps/Operations 역할의 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 

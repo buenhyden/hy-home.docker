@@ -1,6 +1,6 @@
 ---
 title: "Kafka Cluster Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -87,7 +87,7 @@ created: "2026-05-17"
    docker compose restart kafka-connect
    ```
 
-6. Full 3 broker compose에서 partition reassignment, preferred leader election, topic deletion, retention 축소가 필요하면 이 런북에서 실행하지 말고 `## Escalation`으로 전환한다.
+6. `messaging-cluster` profile로 3 broker를 선택한 상태에서 partition reassignment, preferred leader election, topic deletion, retention 축소가 필요하면 이 런북에서 실행하지 말고 `## Escalation`으로 전환한다.
 
 ### Verification Steps
 

@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ created: "2026-03-26"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 현재 root compose는 Traefik을 active edge router로 포함하며, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 profile-only 보조 프록시 leaf로 유지한다.
+Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 루트 compose는 두 leaf를 모두 무조건 include하고 profile이 기동을 결정한다. `traefik`은 `core`와 `dev`에, `nginx`는 전용 `nginx` profile에 속하므로 어느 쪽도 profile 없이는 기동하지 않는다. Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 보조 프록시 leaf로 유지한다.
 
 ## System Boundaries
 
@@ -73,7 +73,7 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 
 - **Key Entities / Flows**:
   - `Internet -> Traefik (TLS Term) -> Service Container`
-  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO` when the profile-only Nginx leaf is explicitly deployed with root network/dependency context
+  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO` when the `nginx` profile selects the Nginx leaf and root network/dependency context is present
 - **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
 - **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
 

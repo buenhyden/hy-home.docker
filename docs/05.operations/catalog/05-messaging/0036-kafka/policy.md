@@ -1,6 +1,6 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ created: "2026-05-17"
   - Kafka 관리 route는 `gateway-standard-chain@file`를 유지하고 Kafbat UI route는 `sso-errors@file,sso-auth@file`를 포함해야 한다.
   - Kafbat UI OAuth client secret은 `kafbat_client_secret` Docker Secret으로만 주입한다.
   - `kafka-init`가 선언한 `infra-events`, `application-logs` 토픽 변경은 compose diff와 검증 evidence를 남긴다.
-  - Full 3 broker compose에서 production-like 토픽을 추가할 때는 replication factor와 ISR 기준을 정책 검토 evidence에 명시한다.
+  - `messaging-cluster` profile로 3 broker를 선택한 상태에서 production-like 토픽을 추가할 때는 replication factor와 ISR 기준을 정책 검토 evidence에 명시한다.
 - **Allowed**:
   - `messaging`/`dev` profile만 선택한 단일 broker 토픽은 development-only로 `replication-factor=1`을 사용할 수 있다.
   - Schema Registry compatibility 변경은 영향 범위, consumer 호환성, rollback/escalation 기준이 task evidence에 기록된 경우 허용한다.

@@ -1,6 +1,6 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -51,7 +51,7 @@ airflow/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; service-local production-like compose is `docker-compose.yml` |
+| Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; that single file is the only Compose file in this directory |
 | Config files | `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
 | Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__CORE__FERNET_KEY_CMD`, `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`, `AIRFLOW__CORE__LOAD_EXAMPLES`, plus 15 more; profiles: `workflow`, `dev` |
 | Compose linkage | unconditional root include, profile-selected (`workflow`, `dev`), via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml` |

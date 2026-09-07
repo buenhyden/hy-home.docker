@@ -1,6 +1,6 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-07-06"
 
 ### Overview
 
-이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 현재 root stack은 Traefik을 active include로 사용하고, Nginx는 profile-only leaf로 유지하므로 컨테이너 실행은 승인된 runtime context에서만 다룬다.
+이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`가, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
 
 ### Edge Routing Stack Usage
 
@@ -36,7 +36,7 @@ created: "2026-07-06"
 
 #### Purpose
 
-This guide helps the reader validate the root-active Traefik edge router and understand the profile-only Nginx path-proxy boundary.
+This guide helps the reader validate the Traefik edge router selected by `core`/`dev` and understand the Nginx path-proxy boundary drawn by the `nginx` profile.
 
 #### Prerequisites
 

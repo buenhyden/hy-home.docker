@@ -1,6 +1,6 @@
 ---
 title: "Kafka Event Streaming (05-messaging)"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The platform's primary event streaming backbone. Root `docker-compose.yml` includes this leaf's `docker-compose.yml`, which holds both topologies: the `messaging` and `dev` profiles render a single-broker development stack, and `messaging-cluster` adds `kafka-2` and `kafka-3`. `docker-compose.yml` in this directory is the full 3 broker Kafka compose and requires root network/secret context when validated service-locally.
+The platform's primary event streaming backbone. Root `docker-compose.yml` includes this leaf's `docker-compose.yml`, which holds both topologies: the `messaging` and `dev` profiles render a single-broker development stack, and `messaging-cluster` adds `kafka-2` and `kafka-3`. Validating that file on its own requires root network and secret context.
 
 ## Audience
 
