@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 ---
 
 # docs
@@ -161,7 +161,10 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 ## Historical Refresh Evidence
 
-이전 infra/secrets/docs refresh의 실행 기록은 아래 보존 package에 있습니다.
+이전 infra/secrets/docs refresh의 Spec은 아래 보존 package에 있습니다. 이
+package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본문은 archive에
+없습니다. [ADR-0033](02.architecture/decisions/0033-full-spec-package-preservation.md)
+수락 이후 처분되는 package는 Spec, Plan, 모든 Task를 함께 보존합니다.
 현재 구조와 운영 안내는 [infra README](../infra/README.md)와
 [Operations](05.operations/README.md)가 소유하며 완료 package를 새 작업 기록으로
 재사용하지 않습니다.
@@ -171,7 +174,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 | Evidence | Current State |
 | --- | --- |
 | Spec | [03.specs/0095-infra-secrets-docs-refresh/spec.md](98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md) |
-| Plan and Task evidence | co-located in the owning Spec Package |
+| Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
 ## LLM Wiki Ownership and Historical Evidence
@@ -179,7 +182,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 | Evidence | Current State |
 | --- | --- |
 | Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md); current procedure: [LLM Wiki guide](05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
-| Plan and Task evidence | co-located in the owning Spec Package |
+| Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
 | Repository map | [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md) |
 | Generated index | [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md) |
 | Operations guide | [05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |

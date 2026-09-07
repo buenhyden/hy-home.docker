@@ -1,8 +1,8 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.17.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"
@@ -1173,6 +1173,32 @@ so the statuses were restored to `active` and `in-progress` and the package rest
 completion-ready rather than half-migrated. The Stage 03 index prose would also
 need its statuses updated in the same change, which a registered test enforces.
 
+### Completion and preservation (2026-09-07, local-executed)
+
+The last open item on this package was its own disposition. The completion
+contract was already satisfied and measured as such; what remained was the move,
+which the Deferred Items row described as a bounded change with its own approval.
+That approval was given, and SPEC-0176 owns the change.
+
+The Spec, Plan and Task transition to `completed` and move together to
+`docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/`
+in one result tree, which is what the corpus check requires of a terminal status
+and what the retention guard requires of a package leaving Stage 03. The
+preservation unit is the whole package under the decision SPEC-0176 accepted at
+its W5, so the Plan and this Task are preserved beside the Spec rather than
+removed. No Tombstone is created: completion and supersession are explained by
+terminal status and lineage, and asking for one would record a withdrawal that
+did not happen.
+
+Four stale statements in the Spec and Plan were corrected before the move rather
+than frozen into the archive: the retired branch named as a current baseline in
+both, and a Plan calling ADR-0034 proposed after it reached `accepted`. Those
+corrections are SPEC-0176 W7 and are recorded in its Task.
+
+This Task's dated observations are unchanged. A body that says what was true when
+it was written stays that way; the later facts live in the package that recorded
+them.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -1274,7 +1300,6 @@ changes without any edit to this file.
 | Role-system import, consolidation, or retirement from the external catalog | Each change moves a permission profile and a handoff contract; this package's acceptance contract preserves 14 role IDs, so the change would be unreviewable here. This package restores the canonical owner of the intake decision instead |
 | `dev` as an integration target that governance does not describe | `git-workflow.md` names only `main` as the protected baseline and the git-flow head-branch pattern excludes `dev`, so the target the request names has no policy owner. Closing the gap edits a policy this package does not own; it is routed to that owner rather than decided here |
 | Retiring or refreshing the stale `origin/dev` and the two remote `codex/**` branches | Every option is a remote reference change, which no grant here covers |
-| Package completion | The completion contract is satisfied and was measured as such. Completion additionally moves the package under `docs/98.archive/completed/` with preserved bodies and a migration record, and updates the Stage 03 index prose; that migration is a bounded change with its own approval |
 
 ## Related Documents
 

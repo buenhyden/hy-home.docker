@@ -100,7 +100,7 @@ the correction is recorded beside it.
     `.agents/knowledge/verification-surface-map.md`.
   - `docs/03.specs/0173-governance-qa-surface-convergence/spec.md` and `plan.md`,
     for baseline position and one behavior-contract sentence.
-  - `docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md`,
+  - `docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md`,
     `plan.md`, and `tasks/tsk-0001-knowledge-and-prompt-surface.md`, which reach
     their terminal statuses and move to `docs/98.archive/completed/`.
   - `docs/README.md` and `docs/03.specs/README.md` for the affected index rows.
@@ -277,7 +277,7 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 | [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Accepted by this package as the durable decision owner |
 | [ADR-0031 Archive as Preserved Record](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) | Superseded and preserved by this package |
 | [SPEC-0173 Governance and QA Surface Convergence](../0173-governance-qa-surface-convergence/spec.md) | Declared the retention-owner promotion this package performs; otherwise untouched |
-| [SPEC-0175 Governance Knowledge and Prompt Surface](../0175-governance-knowledge-and-prompt-surface/spec.md) | Completed and preserved by this package |
+| [SPEC-0175 Governance Knowledge and Prompt Surface](../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Completed and preserved by this package |
 | [POL-0078 Compose Profile Vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) | Owns the profile model the Compose corrections converge on |
 
 ## Open Questions

@@ -333,9 +333,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0004-test-and-fixture-convergence.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0005-document-and-provider-residue.md) | Markdown reference |
 | [docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) | Markdown reference |
-| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) | Markdown reference |
-| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Markdown reference |
-| [docs/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) | Markdown reference |
 | [docs/03.specs/0176-stale-fact-convergence/plan.md](../../../03.specs/0176-stale-fact-convergence/plan.md) | Markdown reference |
 | [docs/03.specs/0176-stale-fact-convergence/spec.md](../../../03.specs/0176-stale-fact-convergence/spec.md) | Markdown reference |
 | [docs/03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md](../../../03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) | Markdown reference |
@@ -1019,6 +1016,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md](../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/tasks/tsk-0001-sibling-pair-resolution.md) | Markdown reference |
 | [docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Markdown reference |
+| [docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) | Markdown reference |
 | [docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md](../../../98.archive/migrations/0001-sdlc-taxonomy-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0002-operations-catalog-convergence.md](../../../98.archive/migrations/0002-operations-catalog-convergence.md) | Markdown reference |
 | [docs/98.archive/migrations/0003-workspace-governance-simplification.md](../../../98.archive/migrations/0003-workspace-governance-simplification.md) | Markdown reference |

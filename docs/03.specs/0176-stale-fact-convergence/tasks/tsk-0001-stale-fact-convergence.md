@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -366,6 +366,63 @@ python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract
   Ran 39 tests, OK
 ```
 
+### W8: SPEC-0175 completed and preserved (2026-09-07, local-executed)
+
+That package had measured its own completion contract as satisfied and left one
+row in Deferred Items: the move itself, described as a bounded change with its
+own approval. The approval was given for this session and SPEC-0176 owns the
+change, so the deferral is closed rather than carried.
+
+The three documents transitioned and moved in one result tree, because a terminal
+status inside an active stage is what the corpus check rejects and moving one
+member while its siblings stay is what the retention guard rejects. The
+preservation unit is the whole package under the decision accepted at W5, so the
+Plan and the Task are preserved beside the Spec. No Tombstone was created:
+completion is explained by terminal status and lineage, and one would have
+recorded a withdrawal that did not happen.
+
+```text
+docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/
+  spec.md                                        status: completed
+  plan.md                                        status: completed
+  tasks/tsk-0001-knowledge-and-prompt-surface.md status: completed
+ls docs/03.specs/                                0173, 0176, README.md
+```
+
+The Stage 03 index row moved to the archive paths in the same tree, and two
+inbound links were repointed. The Task's dated observations were not rewritten;
+the four stale statements W7 corrected were fixed before the move so the archive
+receives a body that is accurate about the branch it ran on rather than one that
+freezes a dead branch name as current.
+
+### W9: The archive evidence claim that pointed at nothing (2026-09-07, local-executed)
+
+`docs/README.md` listed "Plan and Task evidence: co-located in the owning Spec
+Package" for SPEC-0095 and SPEC-0096, and both archives hold `spec.md` alone:
+
+```text
+find docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh -type f   spec.md
+find docs/98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion -type f   spec.md
+```
+
+Those two packages were disposed under the Spec-only model, so the rows now say
+the bodies are not preserved and name Git history as their only recovery path,
+with the decision that changed the rule linked beside them. This is the
+distinction ADR-0033 keeps: the current rule preserves every member, and the
+scope a past package was preserved with stays a historical fact rather than
+becoming a gap to back-fill.
+
+```text
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+  selected=57 violations=0
+python3 scripts/validation/check-document-corpus-lifecycle.py
+  violations=0; preserved=156 recovery violations=0
+python3 scripts/validation/check-document-links.py --mode all
+  documents=713 links=6146 archive_direct_links_total=70 failures=0
+python3 -m unittest tests.lib.document_governance.test_spec_packages test_archive
+  Ran 61 tests, OK
+```
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -382,9 +439,9 @@ python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract
 | 10 | W6 | PASS: the workflow contract half is unchanged since 9ede309a5 and the pre-commit half is dated to 9051977aa, each named separately | [verification surface map](../../../../.agents/knowledge/verification-surface-map.md) |
 | 11 | W7 | PASS: `git rev-parse --verify` resolves neither the local nor the remote branch; both packages now state the three Git commands | [SPEC-0173 spec](../../0173-governance-qa-surface-convergence/spec.md) |
 | 12 | W7 | PASS: contract 9 names the underscore-prefixed modules; `git ls-files tests/fixtures` returns zero paths and no acceptance criterion changed | [SPEC-0173 spec](../../0173-governance-qa-surface-convergence/spec.md) |
-| 13 | W8 | NOT_RUN: pending | pending |
-| 14 | W8 | NOT_RUN: pending | pending |
-| 15 | W9 | NOT_RUN: pending | pending |
+| 13 | W8 | PASS: all three members are `completed` under the archive path and `ls docs/03.specs/` shows only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
+| 14 | W8 | PASS: the index row names the archive paths and describes the package as preserved; SPEC-0176 is listed as the draft package | [Stage 03 index](../../README.md) |
+| 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
 | 16 | W10 | NOT_RUN: pending | pending |
 | 17 | W11 | NOT_RUN: pending | pending |
 | 18 | W11 | NOT_RUN: pending | pending |
@@ -401,7 +458,8 @@ been performed. Recorded as NOT_RUN.
 | `80b42feaa` | W1 package definition |
 | `51e203b71` | W2-W4 Compose enablement convergence |
 | `f71449eff` | W5 and W9 preservation-owner promotion |
-| pending | W6 and W7 knowledge routing and Git-read position |
+| `b5d4181d0` | W6 and W7 knowledge routing and Git-read position |
+| pending | W8 and W9 SPEC-0175 preservation and archive evidence |
 
 ## Rulings
 

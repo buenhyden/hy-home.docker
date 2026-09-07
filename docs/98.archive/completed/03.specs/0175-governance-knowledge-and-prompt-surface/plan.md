@@ -1,8 +1,8 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.10.1"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-07"
 layer: "specs"

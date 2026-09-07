@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -72,7 +72,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0172 | [Document Contract Convergence](../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) | completed record unchanged; divergent main [Spec](../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md), [Plan](../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md), and [Task](../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) preserved by the SPEC-0173 branch receipt |
 | SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md); canonical `.agents` implementation and QA repairs are integrated on local main, Tasks 1-5 retain reviewed implementation milestones, and in-progress Task 6 owns package reconciliation plus the blocked aggregate and unobserved native-runtime evidence |
 | SPEC-0174 | [Governance and QA Convergence](../98.archive/superseded/03.specs/0174-governance-qa-convergence/spec.md) | superseded by SPEC-0173; cancelled [Plan](../98.archive/superseded/03.specs/0174-governance-qa-convergence/plan.md) and [Task](../98.archive/superseded/03.specs/0174-governance-qa-convergence/tasks/tsk-0001-converge-governance-and-qa.md) preserved with the full packet |
-| SPEC-0175 | [Governance Knowledge and Prompt Surface](0175-governance-knowledge-and-prompt-surface/spec.md) | active package defining the canonical `.agents/knowledge/` and `.agents/prompts/` categories, with an active [Plan](0175-governance-knowledge-and-prompt-surface/plan.md) and in-progress [Task](0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) |
+| SPEC-0175 | [Governance Knowledge and Prompt Surface](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) and [Task](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) |
 | SPEC-0176 | [Stale Fact Convergence](0176-stale-fact-convergence/spec.md) | draft package converging documented facts on the tracked implementation: the retired Compose enablement wording, the preservation-owner chain, dead-branch position in the two in-flight packages, and three index and routing errors, with a draft [Plan](0176-stale-fact-convergence/plan.md) and draft [Task](0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) |
 
 ## How to Work in This Area
