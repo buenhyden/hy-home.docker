@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -110,6 +110,26 @@ fewer-nodes heuristic, which was protecting a graph that was 80 percent
 dangling. The rebuild used the documented `--force` for that case and ran no
 labeling, so it cost no tokens.
 
+A fourth round closed the audit and retention items. `AUD-0030` was
+re-observed rather than re-dated wholesale: `QAF-04` and `QAF-11` each cited an
+`eslint-nextjs` skip, and `QAF-04` also cited a ShellCheck exclusion for a
+script Task 3 itself removed. The re-observation found twenty registered hook
+IDs rather than twenty-four, no `exclude` on the ShellCheck hook, and no
+ESLint hook at all. Both criteria are still met by current behavior, so both
+statuses stand and only the evidence changed; each revised cell carries its own
+date, the pack keeps `observed_at` at 2026-07-05 because the other rows were
+not re-observed, and the matrix was regenerated through its own generator.
+
+The `graphify-out/` retention asymmetry was resolved toward the rule that
+already existed. `.gitignore` had listed the directory since it was written
+while forty-seven files under it stayed tracked, so the rule governed new
+content and not old, which cost 148 MiB of tracked blobs and replaced most of
+that on every graph-touching commit. All forty-seven left the index with the
+working copy untouched. Nothing in CI depended on them: no gate node or
+validator reads the directory, and the health reporter already read the
+untracked `manifest.json`. The three documents that described the tracked
+arrangement now describe this one.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -144,6 +164,13 @@ labeling, so it cost no tokens.
 | Graph dangling ratio | Before: 4,635 of 22,689 nodes had an existing `source_file`. After: 16,761 of 18,014 |
 | Graph rebuild | 18,014 nodes, 25,229 edges, 1,726 communities, `built_at_commit` equal to HEAD, token cost 0 input and 0 output |
 | Graph health after rebuild | `report-graphify-health.sh` keeps contamination, volume, gitlink, generated and god-node counts at 0; `graph_source_files_total` fell from 1,596 to 1,279; status stays advisory for cross-root inferred edges |
+| Audit re-observation | `.pre-commit-config.yaml` registers 20 hook IDs (18 `pre-commit`, 1 `pre-push`, 1 `commit-msg`), 13 with an explicit filter, no ShellCheck `exclude`, and no ESLint hook; `recommend-qa-gates.sh` is absent from the tracked tree |
+| Audit contract and matrix | `audit_criterion_contract.py` PASS with 11 reports, 161 rows, 161 unique IDs; the matrix was stale before regeneration, `--write` rewrote it, and `--check` reports fresh |
+| Retention change safety | No gate node or validator names `graphify-out`; `git rm -r --cached` removed 47 files totalling 155,898,680 bytes while 237 MB stayed on disk; every probed path under the directory is now ignored |
+| Inventories after untracking | LLM Wiki `--check` fresh, `check-document-links.py --mode all` 713 documents and 6,155 links with 0 failures, `check-script-manifest.py` PASS |
+| Untracked-graph steady state | The post-commit rebuild during `f8ea14c08` left the working tree clean, which the tracked arrangement could not do |
+| Round-3 local verification | `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1194 tests OK with 11 skips at `f8ea14c08` |
+| Pull-request identity dry run | `_check_git_flow` accepts the branch `fix/0173-hook-formatting-ownership` with the planned Conventional-Commit title and rejects a non-conforming title, so the pull-request-only leaf was exercised before pushing |
 
 ## Review Evidence
 
@@ -165,6 +192,8 @@ validation profiles.
 | `eddaf6545` | State that the required gate leaf runs the tech-stack drift command first and pin the workflow to it |
 | `e023c14bf` | Correct the CI pre-commit skip the two Stage 90 research modules transcribed |
 | `228b7e6a4` | Rebuild the knowledge graph from the current tree as its own generated-artifact unit |
+| `21ed0d434` | Re-observe and rewrite the two audit rows that named a removed hook id, and regenerate the matrix |
+| `f8ea14c08` | Remove every tracked file under `graphify-out/` so its existing ignore rule governs the whole directory |
 
 This evidence checkpoint does not predict its own commit identity.
 
@@ -216,20 +245,20 @@ This evidence checkpoint does not predict its own commit identity.
   declare `review_cycle: on-source-change`. `AUD-0030` and its generated matrix
   mirror still carry the finding in `QAF-04` and `QAF-11`. That report's
   `observed_at` of 2026-07-05 precedes the change, so the finding was accurate
-  when recorded, and the matrix exists to make audit maintenance repeatable
-  without rewriting audit conclusions. Re-dating it belongs to an audit
-  revalidation that would move the rows to `Needs Revalidation` and regenerate
-  the matrix under the criterion contract.
+  when recorded. The revalidation ran in `21ed0d434` and did not move either row
+  to `Needs Revalidation`, because re-observing found both criteria still met;
+  the evidence was rewritten with its own date instead, and the matrix was
+  regenerated through its generator.
 - The rebuilt graph keeps 1,050 nodes whose `source_file` is an absolute path
   under a former checkout location and the retired `docs/00.agent-governance`
   layout. They are LLM-extracted document nodes, and `graphify update`
   re-extracts code files only, so a semantic re-extraction with an LLM backend
   is what would drop them. Editing the generated artifact by hand is not a
   substitute.
-- `graphify-out/` is listed in `.gitignore` while 47 files under it are tracked,
-  so tracked outputs update normally and each new dated backup, including the
-  `2026-09-08/` one this rebuild wrote, stays untracked. Git history preserves
-  the replaced graph, so the backup is not a second retention surface.
+- The `graphify-out/` retention asymmetry is closed in `f8ea14c08`. The
+  directory is untracked in full, Git history holds the removed snapshots, and
+  `graphify update .` rebuilds the current graph without API tokens. Re-tracking
+  anything under it needs `git add -f` and a stated reason.
 - Reverting `174c29d9` is the Task 3 rollback boundary. Restoring only a wrapper
   or target-surface library would recreate split ownership and is not a valid
   partial rollback.
