@@ -1,6 +1,6 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -19,13 +19,13 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `05-messaging` Kafka 운영 정책을 정의한다. Root-included dev Kafka, service-local full Kafka compose, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter에 대한 필수 통제 기준을 포함한다.
+이 문서는 `05-messaging` Kafka 운영 정책을 정의한다. `messaging`/`dev` profile의 단일 broker Kafka, `messaging-cluster` profile이 더하는 3 broker 구성, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter에 대한 필수 통제 기준을 포함한다.
 
 ## Policy Scope
 
 이 정책은 Kafka broker, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter와 Kafka topic 변경 절차를 제어한다.
 
-- **Systems**: root dev Kafka single broker, service-local full Kafka 3 broker compose, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter
+- **Systems**: `messaging`/`dev` profile의 `kafka-1` 단일 broker, `messaging-cluster` profile이 더하는 `kafka-2`/`kafka-3` 3 broker 구성, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter
 - **Agents**: AI Infrastructure Agent, CI/CD Deployer
 - **Environments**: Local, Development, Production-like validation
 
@@ -38,7 +38,7 @@ created: "2026-05-17"
   - `kafka-init`가 선언한 `infra-events`, `application-logs` 토픽 변경은 compose diff와 검증 evidence를 남긴다.
   - Full 3 broker compose에서 production-like 토픽을 추가할 때는 replication factor와 ISR 기준을 정책 검토 evidence에 명시한다.
 - **Allowed**:
-  - Root-included dev compose의 단일 broker 토픽은 development-only로 `replication-factor=1`을 사용할 수 있다.
+  - `messaging`/`dev` profile만 선택한 단일 broker 토픽은 development-only로 `replication-factor=1`을 사용할 수 있다.
   - Schema Registry compatibility 변경은 영향 범위, consumer 호환성, rollback/escalation 기준이 task evidence에 기록된 경우 허용한다.
 - **Disallowed**:
   - 현재 compose에 선언되지 않은 전역 `retention.ms` 값을 current truth로 문서화하는 것

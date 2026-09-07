@@ -1,6 +1,6 @@
 ---
 title: "Airflow Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, root-included dev compose는 shared `mng-valkey`, service-local compose는 `airflow-valkey`를 사용한다.
+이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, `dedicated-valkey` profile을 선택하면 `airflow-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
 
 > Scope: Apache Airflow (07-workflow)
 
@@ -40,7 +40,7 @@ created: "2026-05-17"
 ### Checklist
 
 - [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
-- [ ] 현재 실행 환경이 root-included dev compose인지 service-local compose인지 식별했는가?
+- [ ] 현재 실행 환경이 `dedicated-valkey` profile을 선택했는지 식별했는가?
 - [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
 
 ### Steps
@@ -51,8 +51,8 @@ created: "2026-05-17"
    - `docker compose logs --tail=100 airflow-worker airflow-scheduler airflow-apiserver`
    - `docker compose exec airflow-worker df -h /opt/airflow/logs`
 2. Broker 상태 확인:
-   - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" ping'`
-   - service-local compose: `docker compose exec airflow-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/airflow_valkey_password)" ping'`
+   - `dedicated-valkey` 미선택(공유 broker): `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" ping'`
+   - `dedicated-valkey` 선택(전용 broker): `docker compose exec airflow-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/airflow_valkey_password)" ping'`
 3. Celery worker 응답 확인: `docker compose exec airflow-apiserver airflow celery inspect ping`
 4. 워커만 재시작: `docker compose restart airflow-worker`
 5. Flower(`flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.

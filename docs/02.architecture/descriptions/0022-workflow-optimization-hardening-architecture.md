@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -92,8 +92,8 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
-  - Airflow distributed components; root dev uses shared `mng-valkey`, service-local compose declares dedicated `airflow-valkey`
-  - n8n queue mode + external runner; root dev uses shared `mng-valkey`, service-local compose declares dedicated `n8n-valkey`
+  - Airflow distributed components; the `dedicated-valkey` profile starts `airflow-valkey`, and without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+  - n8n queue mode + external runner; the `dedicated-valkey` profile starts `n8n-valkey`, and without it `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
 - **Operational Evidence**:
   - `docker compose config` checks
   - `scripts/hardening/check-all-hardening.sh 07-workflow`

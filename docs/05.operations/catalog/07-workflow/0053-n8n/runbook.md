@@ -1,6 +1,6 @@
 ---
 title: "n8n Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`를 기준으로 하며 root-included dev compose와 service-local compose의 broker 경계를 먼저 식별한다.
+이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`를 기준으로 하며 `dedicated-valkey` profile 선택 여부가 만드는 broker 경계를 먼저 식별한다.
 
 > Scope: n8n (07-workflow)
 
@@ -40,7 +40,7 @@ created: "2026-05-17"
 ### Checklist
 
 - [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
-- [ ] 현재 실행 환경이 root-included dev compose인지 service-local compose인지 식별했는가?
+- [ ] 현재 실행 환경이 `dedicated-valkey` profile을 선택했는지 식별했는가?
 - [ ] `n8n_db_password` 시크릿이 올바르게 로드되었는가?
 
 ### Steps
@@ -50,8 +50,8 @@ created: "2026-05-17"
 1. 워커 로그 확인: `docker compose logs --tail=50 n8n-worker`
 2. 워커 재시작: `docker compose restart n8n-worker`
 3. Valkey 큐 상태 확인:
-   - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" info keyspace'`
-   - service-local compose: `docker compose exec n8n-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/n8n_valkey_password)" info keyspace'`
+   - `dedicated-valkey` 미선택(공유 broker): `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" info keyspace'`
+   - `dedicated-valkey` 선택(전용 broker): `docker compose exec n8n-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/n8n_valkey_password)" info keyspace'`
 
 ##### 시나리오 2: 데이터베이스 연결 오류
 

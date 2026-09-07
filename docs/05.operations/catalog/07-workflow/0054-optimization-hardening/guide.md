@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -53,8 +53,8 @@ created: "2026-05-17"
 2. Gateway/SSO 경계 정렬
    - Airflow, Flower, n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. Health 기반 의존성 강화
-   - service-local Airflow compose가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
-   - root-included dev compose가 `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
+   - `dedicated-valkey` profile을 선택한 Airflow가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
+   - 선택하지 않은 경우 shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image(`hyhome/n8n:2.29.5-local`)를 사용하도록 확인한다.

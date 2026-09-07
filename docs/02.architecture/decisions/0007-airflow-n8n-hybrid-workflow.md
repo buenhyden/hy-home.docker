@@ -1,6 +1,6 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -29,6 +29,15 @@ created: "2026-03-26"
 - **Apache Airflow**를 "Core Orchestrator"로 채택하여 복잡한 데이터 파이프라인과 시스템 배치 작업을 담당한다.
 - **n8n**을 "Integration Automator"로 채택하여 외부 서비스 연합 및 이벤트 기반의 가벼운 자동화를 담당한다.
 - root-included dev compose는 shared `mng-valkey`와 management PostgreSQL을 사용하고, service-local compose는 Airflow/n8n dedicated Valkey 서비스를 선언하여 운영 경계를 분리한다.
+
+  이 문장이 적힌 시점에는 compose 파일 두 개가 그 경계를 나눴다. 이후 SPEC-0156과
+  SPEC-0171이 compose 모델을 "루트가 모든 파일을 무조건 include하고 profile이
+  선택한다"로 바꾸면서 `infra/07-workflow/airflow/`와 `infra/07-workflow/n8n/`은
+  각각 compose 파일을 하나만 갖는다. 경계 자체는 남았고 가르는 수단만 바뀌었다.
+  `dedicated-valkey` profile이 `airflow-valkey`와 `n8n-valkey`를 기동하며, 선택하지
+  않으면 `${AIRFLOW_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_HOST:-mng-valkey}`
+  기본값이 shared `mng-valkey`로 해석된다. 결정은 유효하고 실현 형태만 바뀌었으므로
+  위 문장은 결정 시점의 기록으로 보존한다. SPEC-0176이 기록함.
 
 ## Consequences
 

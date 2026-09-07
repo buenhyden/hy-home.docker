@@ -1,6 +1,6 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ Validate the current gateway contract before any runtime action:
 bash scripts/hardening/check-all-hardening.sh 01-gateway
 ```
 
-Runtime start/stop/reload actions are not part of this guide. Traefik runtime work must use the approved root compose context. Nginx runtime work requires an explicit root network/dependency context because `infra/01-gateway/nginx/docker-compose.yml` is not root-included by default and depends on backend services.
+Runtime start/stop/reload actions are not part of this guide. Traefik runtime work must use the approved root compose context. Nginx runtime work requires an explicit root network/dependency context: the root includes `infra/01-gateway/nginx/docker-compose.yml` unconditionally, but the service is selected by the `nginx` profile and depends on backend services.
 
 #### 4. Verify Functionality
 

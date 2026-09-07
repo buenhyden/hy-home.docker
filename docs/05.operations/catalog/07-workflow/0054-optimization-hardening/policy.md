@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,10 +33,10 @@ created: "2026-05-10"
 
 - **Required**:
   - Airflow/Flower/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - service-local Airflow compose는 `airflow-valkey` `service_healthy` dependency를 사용한다.
-  - root-included dev compose는 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
+  - `dedicated-valkey` profile을 선택한 Airflow는 `airflow-valkey` `service_healthy` dependency를 사용한다.
+  - `dedicated-valkey`를 선택하지 않은 경우의 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
-  - service-local n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, root-included dev compose는 `mng-valkey` broker 경계를 명시한다.
+  - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, `dedicated-valkey` profile을 선택하지 않았을 때의 `mng-valkey` broker 경계를 명시한다.
   - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.29.5-local`)를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
   - workflow 변경은 `check-all-hardening.sh 07-workflow` 및 CI `infrastructure-hardening`을 통과해야 한다.

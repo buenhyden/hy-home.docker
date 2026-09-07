@@ -1,6 +1,6 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -59,7 +59,7 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 
 - **Scheduler & DAG Processor**: 작업 예약 및 DAG 파일 해석 (독립 실행으로 안정성 확보)
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
-- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. root-included dev compose는 `mng-valkey`를 사용하고, service-local `docker-compose.yml`은 `airflow-valkey`를 선언한다.
+- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. compose 파일은 `infra/07-workflow/airflow/docker-compose.yml` 하나이며, `dedicated-valkey` profile을 선택하면 `airflow-valkey`가 기동하고 선택하지 않으면 `${AIRFLOW_VALKEY_HOST:-mng-valkey}` 기본값이 공유 `mng-valkey`로 해석된다.
 - **API Server**: UI 및 외부 통합을 위한 `airflow-apiserver` 엔드포인트
 
 #### 2. UI 접근 및 모니터링

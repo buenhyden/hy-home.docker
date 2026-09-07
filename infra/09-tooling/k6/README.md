@@ -1,6 +1,6 @@
 ---
 title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -85,10 +85,10 @@ k6/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6-master`; local compose only: `docker-compose.yml` |
+| Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6-master`; the root [docker-compose.yml](../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
-| Compose linkage | local compose only: `docker-compose.yml` |
+| Compose linkage | root include active; the `tooling` and `testing` profiles select `k6-master` |
 | Networks | `infra_net` |
 | Volumes | `k6-data:/mnt/locust:rw`, `k6-data` |
 | Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |

@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -80,7 +80,7 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose / Linux Alpine 기반 컨테이너.
-- **Deployment Model**: root compose actively includes `infra/01-gateway/traefik/docker-compose.yml`; `infra/01-gateway/nginx/docker-compose.yml` is not root-included by default and requires explicit profile/runtime context.
+- **Deployment Model**: the root compose includes both `infra/01-gateway/traefik/docker-compose.yml` and `infra/01-gateway/nginx/docker-compose.yml` unconditionally; the `nginx` profile selects the Nginx service, which still requires an explicit network and backend context to render on its own.
 - **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
 ## Traceability

@@ -1,6 +1,6 @@
 ---
 title: "Nginx Proxy"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -55,10 +55,10 @@ nginx/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Nginx Proxy service leaf in `01-gateway`; services: `nginx`; profile-only local compose with root network/dependency requirements |
+| Purpose | Nginx Proxy service leaf in `01-gateway`; services: `nginx`; root include active and the `nginx` profile selects the service, which still depends on root network context |
 | Config files | `docker-compose.yml`, `config`, `config/nginx.conf` |
 | Config values | profiles: `nginx` |
-| Compose linkage | not root-included by default; local compose requires an explicit validation/runtime context for `infra_net` and backend dependencies |
+| Compose linkage | the root [docker-compose.yml](../../../docker-compose.yml) includes this file unconditionally and the `nginx` profile selects the service; validating the file on its own still requires an explicit context for `infra_net` and backend dependencies |
 | Networks | `infra_net` |
 | Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `../../../secrets/certs:/etc/nginx/certs:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |

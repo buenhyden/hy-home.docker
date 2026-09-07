@@ -1,6 +1,6 @@
 ---
 title: "Messaging Tier (05-messaging)"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -59,7 +59,7 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 4. Consult the [Messaging Runbook](../../docs/05.operations/catalog/05-messaging/README.md) for recovery.
 
 5. Always use the `Schema Registry` for any new topic schemas.
-6. Use `replication-factor: 3` only in the full 3 broker Kafka compose; root dev single broker topics are development-only.
+6. Use `replication-factor: 3` only when the `messaging-cluster` profile is selected; `messaging`/`dev` alone runs the single `kafka-1` broker.
 7. Check consumer lag metrics before scaling producer throughput.
 8. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.
 
@@ -68,7 +68,7 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
 | Streaming  | Confluent Kafka                | `confluentinc/cp-kafka:8.3.0` |
-| Mode       | KRaft (Zookeeper-less)         | root dev single broker; service-local full 3 broker compose |
+| Mode       | KRaft (Zookeeper-less)         | `messaging`/`dev` runs the single `kafka-1` broker; adding `messaging-cluster` brings up `kafka-2` and `kafka-3` |
 | Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.3.0` |
 | Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.3.0`      |
 | AMQP       | RabbitMQ                       | `rabbitmq:4.3.1-management-alpine` |
@@ -78,7 +78,7 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 | Service | Protocol | Profile | Port |
 | :--- | :--- | :--- | :--- |
 | `kafka-1` | Kafka/TCP | `messaging`, `dev` | 9092, 19092 |
-| `kafka-2/3` | Kafka/TCP | `messaging` in service-local full compose only | 9094/9096, 19092 |
+| `kafka-2/3` | Kafka/TCP | `messaging-cluster` profile in the same compose file | 9094/9096, 19092 |
 | `schema-registry`| HTTP | `messaging` | 8081 |
 | `rabbitmq` | AMQP/HTTP | `messaging`, `messaging-option` | 5672, 15672 (UI) |
 | `kafbat-ui` | HTTP | `messaging` | 8080 |

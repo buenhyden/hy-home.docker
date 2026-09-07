@@ -1,6 +1,6 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -67,7 +67,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 | ---------- | ------------------------------ | ------------------------- |
 | Orchestration | Apache Airflow              | v3.2.2 (CeleryExecutor)   |
 | Automation  | n8n                          | v2.29.5-local             |
-| Broker      | Valkey                       | root dev uses `mng-valkey`; service-local compose declares `airflow-valkey` and `n8n-valkey` |
+| Broker      | Valkey                       | the `dedicated-valkey` profile starts `airflow-valkey` and `n8n-valkey`; without it the host defaults resolve to the shared `mng-valkey` |
 | Database    | PostgreSQL                   | Management PostgreSQL (`mng-pg`) |
 
 ## Service Matrix
@@ -85,7 +85,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 ## Configuration
 
 - **Database**: Airflow and n8n use the `mng-db` instance in `04-data`.
-- **Broker**: root-included dev compose uses shared `mng-valkey`; service-local compose declares dedicated `airflow-valkey` and `n8n-valkey`.
+- **Broker**: each service directory holds one compose file that the root includes unconditionally. The `dedicated-valkey` profile starts dedicated `airflow-valkey` and `n8n-valkey`; without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` resolve to the shared `mng-valkey`.
 - **Persistence**: DAGs and workflows are stored in persistent volumes linked to `${DEFAULT_WORKFLOW_DIR}`.
 
 ## Testing

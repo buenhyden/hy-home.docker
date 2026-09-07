@@ -1,6 +1,6 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -27,14 +27,14 @@ created: "2026-05-17"
 
 - **Systems**: Apache Airflow 3.2.2, CeleryExecutor
 - **Agents**: CI/CD 배포 에이전트, 모니터링 에이전트
-- **Environments**: root-included local/dev compose, service-local production-like compose, homelab operations
+- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
 
 ## Controls
 
 - **Required**:
   - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
   - 민감 정보는 반드시 Secret Backend(Docker Secrets/Vault) 및 Airflow Connections를 통해 관리함.
-  - root-included dev compose와 service-local compose의 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
+  - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
   - 운영 승격 전 `AIRFLOW__CORE__LOAD_EXAMPLES` 상태를 별도 변경/evidence로 검토함.
 - **Allowed**:
   - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).

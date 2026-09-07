@@ -1,6 +1,6 @@
 ---
 title: "n8n Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 n8n 서비스의 안정적인 운영을 위한 정책과 통제 항목을 정의한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue-mode 구성을 기준으로 하며, root-included dev compose는 `mng-valkey`, service-local compose는 `n8n-valkey`를 사용한다.
+이 문서는 n8n 서비스의 안정적인 운영을 위한 정책과 통제 항목을 정의한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue-mode 구성을 기준으로 하며, `dedicated-valkey` profile을 선택하면 `n8n-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
 
 ## Policy Scope
 
@@ -30,7 +30,7 @@ created: "2026-05-17"
 - **Required**:
   - `EXECUTIONS_MODE: queue`와 external runner mode를 유지한다.
   - n8n credential material은 Docker Secrets 또는 n8n encrypted Credentials에만 둔다.
-  - root-included dev compose와 service-local compose의 broker 차이(`mng-valkey` vs `n8n-valkey`)를 운영 문서에 명시한다.
+  - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `n8n-valkey`)를 운영 문서에 명시한다.
   - workflow 변경 전/후 root validator와 hardening gate 결과를 기록한다.
 - **Allowed**:
   - UI Export/API 기반 workflow JSON 백업 절차 문서화.

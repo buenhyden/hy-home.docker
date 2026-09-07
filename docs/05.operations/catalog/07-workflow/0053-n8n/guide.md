@@ -1,6 +1,6 @@
 ---
 title: "n8n Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode 구성이며, root-included dev compose는 shared `mng-valkey`, service-local compose는 dedicated `n8n-valkey`를 broker로 사용한다.
+이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode 구성이며, `dedicated-valkey` profile을 선택하면 dedicated `n8n-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
 
 ### Usage Type
 
@@ -54,7 +54,7 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - **n8n Main**: 사용자 인터페이스(UI), API 서버, 워크플로우 엔진.
 - **n8n Worker**: 대규모 비동기 작업 처리를 담당하는 작업 실행기.
 - **n8n Task Runners**: `n8n-task-runner`와 `n8n-task-runner-worker`가 외부 runner 모드에서 broker endpoint에 연결한다.
-- **Valkey Broker**: root-included dev compose는 `mng-valkey`를 사용하고, service-local `docker-compose.yml`은 `n8n-valkey`와 `n8n-valkey-exporter`를 선언한다.
+- **Valkey Broker**: compose 파일은 `infra/07-workflow/n8n/docker-compose.yml` 하나이며, `dedicated-valkey` profile을 선택하면 `n8n-valkey`와 `n8n-valkey-exporter`가 기동하고 선택하지 않으면 `${N8N_VALKEY_HOST:-mng-valkey}` 기본값이 공유 `mng-valkey`로 해석된다.
 - **Metadata DB**: 워크플로우 레시피 및 사용자 자격 증명(`Credentials`)을 저장하는 PostgreSQL 데이터베이스.
 
 #### 2. Access and Integration

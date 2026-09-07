@@ -1,6 +1,6 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -51,8 +51,8 @@ created: "2026-05-17"
    - middleware 회귀:
      - Airflow/Flower/n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
    - Airflow startup race:
-     - service-local compose에서는 핵심 서비스의 `airflow-valkey` `service_healthy` dependency 복원
-     - root-included dev compose에서는 `mng-valkey` broker 경계와 validation evidence 확인
+     - `dedicated-valkey` profile을 선택한 경우 `airflow-valkey` `service_healthy` dependency 복원
+     - 선택하지 않은 경우 shared `mng-valkey` broker 경계와 validation evidence 확인
    - n8n worker/task-runner 이상:
      - healthcheck/depends_on 계약 복원
    - n8n image drift:

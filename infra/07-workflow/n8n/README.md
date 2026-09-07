@@ -1,6 +1,6 @@
 ---
 title: "n8n Low-code Automation"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -61,7 +61,7 @@ n8n/
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | names: `mng_valkey_password`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/n8n_db_password`, `/run/secrets/n8n_encryption_key`, `/run/secrets/n8n_runner_auth_token`, `/run/secrets/n8n_valkey_password` |
-| Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, and service-local `n8n-valkey`; exporter is dependency-gated |
+| Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, and `n8n-valkey` under the `dedicated-valkey` profile; exporter is dependency-gated |
 | Operations | [Guide](../../../docs/05.operations/catalog/07-workflow/0053-n8n/guide.md), [Policy](../../../docs/05.operations/catalog/07-workflow/0053-n8n/policy.md), [Runbook](../../../docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |

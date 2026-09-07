@@ -1,6 +1,6 @@
 ---
 title: "StarRocks (OLAP Warehouse)"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -51,10 +51,10 @@ warehouses/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | StarRocks (OLAP Warehouse) service leaf in `04-data`; services: `starrocks-fe`, `starrocks-be`; local compose only: `docker-compose.yml` |
+| Purpose | StarRocks (OLAP Warehouse) service leaf in `04-data`; services: `starrocks-fe`, `starrocks-be`; the root [docker-compose.yml](../../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `data` |
-| Compose linkage | local compose only: `docker-compose.yml` |
+| Compose linkage | root include active; the `data` profile selects `starrocks-fe` and `starrocks-be` |
 | Networks | `infra_net` |
 | Volumes | `starrocks-fe-data:/opt/starrocks/fe/meta:rw`, `starrocks-be-data:/opt/starrocks/be/storage:rw`, `starrocks-fe-data`, `starrocks-be-data` |
 | Ports | `9030:9030`, `8030:8030`, `8040:8040` |

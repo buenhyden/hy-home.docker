@@ -1,6 +1,6 @@
 ---
 title: "Kafka Cluster Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 비파괴 점검, evidence capture, escalation 절차를 정의한다. Root-included dev Kafka는 단일 broker이며, full 3 broker Kafka compose는 root network/secret context가 필요한 service-local compose다.
+이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 비파괴 점검, evidence capture, escalation 절차를 정의한다. Kafka compose 파일은 하나이며 루트가 무조건 include한다. `messaging`/`dev` profile은 `kafka-1` 단일 broker를 선택하고, `messaging-cluster` profile을 더하면 `kafka-2`/`kafka-3`이 합류한다. 이 파일을 단독으로 렌더링하려면 root network/secret context가 필요하다.
 
 > Scope: Kafka Infrastructure
 

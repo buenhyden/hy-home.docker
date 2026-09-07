@@ -1,6 +1,6 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -15,7 +15,7 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이브리드 방식으로 운영하며, root-included dev compose와 service-local compose의 broker 경계를 명확히 분리한다.
+이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이브리드 방식으로 운영하며, `dedicated-valkey` profile 선택 여부로 broker 경계를 명확히 분리한다.
 
 ### Stakeholders and Concerns
 
@@ -33,7 +33,7 @@ created: "2026-03-26"
 - **Owns**:
   - Airflow services (`airflow-apiserver`, scheduler, dag-processor, worker, triggerer, Flower).
   - n8n Server & Task Runner.
-  - Workflow broker wiring: root dev uses shared `mng-valkey`; service-local compose declares dedicated Airflow/n8n Valkey services.
+  - Workflow broker wiring: each service directory holds one compose file that the root includes unconditionally. The `dedicated-valkey` profile starts `airflow-valkey` and `n8n-valkey`; without it the `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` defaults resolve to the shared `mng-valkey`.
 - **Consumes**:
   - `04-data`: PostgreSQL Management Cluster (Airflow & n8n DB).
   - `06-observability`: Prometheus, Loki (Monitoring & Logging).

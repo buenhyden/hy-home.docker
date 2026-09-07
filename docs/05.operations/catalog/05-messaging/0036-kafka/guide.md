@@ -1,6 +1,6 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -41,7 +41,7 @@ created: "2026-05-10"
 - [Docker & Docker Compose](https://docs.docker.com/get-docker/)
 - Repository root에서 실행 가능한 `docker compose`
 - [infra/05-messaging/kafka README](../../../../../infra/05-messaging/kafka/README.md)
-- Full 3 broker compose를 service-local로 검증하려면 root `infra_net` 및 `kafbat_client_secret` context 또는 임시 validation overlay가 필요하다.
+- 3 broker 구성(`messaging-cluster` profile)을 서비스 compose 파일만으로 검증하려면 root `infra_net` 및 `kafbat_client_secret` context 또는 임시 validation overlay가 필요하다.
 
 ### Step-by-step Instructions
 
@@ -61,7 +61,7 @@ docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
 docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --topic infra-events
 ```
 
-Full 3 broker compose에서는 `replication-factor=3` 토픽을 사용할 수 있다. Root-included dev compose는 단일 broker이므로 신규 토픽에 `replication-factor=3`을 요구하지 않는다.
+`messaging-cluster` profile을 함께 선택하면 `kafka-2`/`kafka-3`이 합류해 `replication-factor=3` 토픽을 사용할 수 있다. `messaging` 또는 `dev`만 선택하면 `kafka-1` 단일 broker이므로 신규 토픽에 `replication-factor=3`을 요구하지 않는다.
 
 1. Schema Registry와 Kafka Connect는 내부 service DNS 또는 Traefik route로 확인한다.
 
@@ -80,7 +80,7 @@ docker inspect --format '{{json .State.Health}}' kafka-connect
 
 ### Common Pitfalls
 
-- root-included dev compose를 3 broker HA 구성으로 오해하는 경우
+- `messaging`/`dev` profile만 선택한 단일 broker 구성을 3 broker HA 구성으로 오해하는 경우
 - service-local compose를 root network/secret context 없이 standalone으로 검증하려는 경우
 - dev single broker에서 `replication-factor=3` 토픽을 생성하려는 경우
 - compose에 선언되지 않은 전역 retention 값을 current truth로 단정하는 경우

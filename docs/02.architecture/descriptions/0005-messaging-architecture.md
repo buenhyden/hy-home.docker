@@ -1,6 +1,6 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -47,7 +47,7 @@ created: "2026-03-26"
 
 품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
 
-- **Performance**: service-local full Kafka compose는 3 broker 병렬 쓰기 모델을 제공하고, root-included dev compose는 단일 broker 개발 모델을 제공한다.
+- **Performance**: Kafka compose 파일은 하나이며 루트가 무조건 include한다. `messaging` 또는 `dev` profile은 `kafka-1` 단일 broker 개발 모델을 제공하고, 여기에 `messaging-cluster` profile을 더하면 `kafka-2`와 `kafka-3`이 합류해 3 broker 병렬 쓰기 모델이 된다.
 - **Security**: 내부망 기반 격리 통신, Traefik 관리 경로 보호, Docker Secrets 기반 Kafbat/RabbitMQ secret 주입을 사용한다.
 - **Reliability**: KRaft 쿼럼 기반 고가용성 메타데이터 서비스.
 - **Scalability**: 브로커 및 파티션 추가를 통한 수평 확장 지원.
@@ -85,7 +85,7 @@ created: "2026-03-26"
 ## Deployment View
 
 - **Runtime / Platform**: Docker Containers / Linux Host.
-- **Deployment Model**: root include path는 Kafka dev single broker + RabbitMQ 1 node를 렌더링한다. `infra/05-messaging/kafka/docker-compose.yml`은 service-local full 3 broker compose이며 root network/secret context가 필요하다.
+- **Deployment Model**: 루트는 `infra/05-messaging/kafka/docker-compose.yml`을 무조건 include한다. `messaging`/`dev` profile은 `kafka-1` 단일 broker와 RabbitMQ 1 node를 렌더링하고, `messaging-cluster` profile을 더하면 같은 파일의 `kafka-2`/`kafka-3`이 합류한다. 이 파일만 단독으로 렌더링하려면 root network/secret context가 필요하다.
 - **Operational Evidence**: `docker-compose.yml` 기반의 스테이트풀 서비스 관리.
 
 ## Traceability
