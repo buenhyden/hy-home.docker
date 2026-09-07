@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.0.2"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 ---
 
 # Environment Constraints
@@ -113,11 +113,23 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
 This project has a graphify knowledge graph at `graphify-out/`.
 
 - Before architecture or codebase answers, read `graphify-out/GRAPH_REPORT.md`.
-- If `graphify-out/wiki/index.md` exists, prefer it over raw-file browsing.
+- If `graphify-out/wiki/index.md` exists, prefer it over raw-file browsing. It
+  has not existed in this repository; the tracked index that does is the LLM
+  Wiki under `docs/90.references/data/0082-llm-wiki-index/`, which has its own
+  generator and freshness check and is not a Graphify output.
 - Use Graphify as a navigation aid only when corpus health is clean.
 - If Graphify output includes `volumes/`, gitlink/submodule content, minified/generated artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory only.
 - Corroborate architecture and codebase conclusions against tracked source files, `.agents/`, and active stage docs.
-- After modifying code files, run `graphify update .` when the CLI is available; if `graphify` is unavailable, report that graph refresh was skipped.
+- After modifying code files, run `graphify update .` when the CLI is available;
+  if `graphify` is unavailable, report that graph refresh was skipped.
+- An available CLI can still decline. It refuses to overwrite an existing
+  graph when the new build has fewer nodes, naming missing chunk files as the
+  likely cause, and it names `--force` as the override. Treat that refusal as
+  a third outcome rather than as unavailability: record the refusal with both
+  node counts, leave the tracked graph as it stands, and do not pass `--force`
+  to silence a guard that is reporting a smaller corpus. A dated snapshot the
+  tool writes alongside a refusal is a byproduct, not a release, and is not
+  committed without checking its node count against the tracked graph.
 
 ## Related Documents
 

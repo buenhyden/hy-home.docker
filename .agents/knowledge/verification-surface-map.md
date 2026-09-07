@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.1.0"
+version: "0.2.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 created: "2026-09-06"
-observed_at: "2026-09-06"
+observed_at: "2026-09-07"
 review_cycle: "on-gate-change"
 ---
 
@@ -94,7 +94,7 @@ to avoid the pre-commit intermediate-stash race, not the Wiki snapshots.
 | --- | --- | --- |
 | Library behavior | `tests/lib/<domain>/` | importable logic in `scripts/lib/<domain>/` |
 | CLI and context | `tests/validation/` | entrypoints, argv, execution context, aggregates |
-| Synthetic input | `tests/fixtures/` | test-only inputs; production code never reads them |
+| Synthetic input | underscore-prefixed modules beside their suite, such as `tests/lib/<domain>/_support.py` and `tests/validation/_sample_delivery_fixtures.py` | test-only inputs built deterministically; production code never reads them |
 | Operational rehearsal | `examples/operations/` | reusable synthetic operational input |
 | Agent output | `evals/` | deterministic, model-free fixture evaluation |
 
@@ -107,13 +107,20 @@ are transcribed from those files, not summarized from prose. The workflow
 contract remains the authority for execution; a disagreement between this map
 and that file is a defect in this map.
 
+The Test Ownership table has a different source and had no stated one when this
+map was written, which is how it came to describe a `tests/fixtures/` layer that
+a completed convergence had already emptied. Its rows are now read from
+`git ls-files` on 2026-09-07, which reports zero tracked paths under that
+prefix. A row here names a location that the tracked tree actually contains.
+
 ## Refresh Triggers
 
 - A public suite is added, removed, or renamed.
 - A root gate node joins or leaves a suite.
 - A changed-path rule or the declared fallback changes.
 - The public entrypoint set or its normalized arguments change.
-- The `tests/lib` and `tests/validation` ownership boundary changes.
+- The `tests/lib` and `tests/validation` ownership boundary changes, or a test
+  location named in the Test Ownership table is added, moved, or emptied.
 
 ## Related Documents
 
