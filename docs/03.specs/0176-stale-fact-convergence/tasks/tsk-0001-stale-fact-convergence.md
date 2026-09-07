@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.12.0"
+version: "0.13.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -717,6 +717,49 @@ repository's. The same shape as reading a gate's exit code from the wrapper
 instead of from inside the redirect: the observation was taken from the wrong
 process at the wrong moment.
 
+### W14: The third review round, and the third time the predicate was the defect (2026-09-07, local-executed)
+
+An independent reviewer judged `7e1a23d40..ec041eff3` and returned `block` with
+three blockers. It opened by reporting that it had no shell, could not reproduce
+the diff, and had reviewed the working tree instead, naming which of its checks
+were tool-verified and which were reasoning. Every finding it raised was
+reproduced here and every one was correct.
+
+| # | Severity | Finding | Reproduced |
+| --- | --- | --- | --- |
+| 1 | `blocker` | `infra/01-gateway/nginx/README.md:17,19` still says the leaf is not root-included, contradicting rows 58 and 61 of the same file, which W13 rewrote | Yes, in English and Korean, in a file W13 edited |
+| 2 | `blocker` | `ADR-0001:31` carries the same false claim in Korean, present tense, with no note | Yes |
+| 3 | `blocker` | `infra/05-messaging/kafka/README.md:17` — a W13 rewrite left a false second clause contradicting its own first clause | Yes |
+| 4 | `high` | `airflow/README.md:54` and `n8n/README.md:55` name the same file on both sides of a distinction | Yes |
+| 5 | `medium` | The `root-active` versus `profile-only` contrast has no basis: `traefik` is `core`/`dev`, `nginx` is `nginx`, and neither resolves without a profile | Yes |
+| 6 | `low` | POL-0006 says 39 service directories; `infra/README.md` implies 40 | Yes, measured 40 directories and 41 files |
+| 7 | `low` | The new negative test does not neutralise ambient `core.excludesFile` | Yes, accepted as advisory |
+
+The third round found the same class the first two did, for the third distinct
+reason. Round one searched English against a corpus the output-style contract
+requires to be Korean. Round two swept only the lines an earlier review had
+named. Round three used a vocabulary list — `dev compose`, `local compose`,
+`service-local` — while the survivors said `not included in the current root
+compose stack by default`, `기본 include되지 않으므로`, `production-like compose`
+and `full 3 broker Kafka compose`. Not one of them contains a listed term.
+
+The pattern is now legible and belongs in the record: each round defined the
+defect by the shape its own predicate could see, and each predicate's boundary
+was mistaken for the defect's boundary. The fix that finally held was to stop
+enumerating vocabulary and search for the claim instead — any sentence that
+denies a root include or asserts a second Compose file, in either language —
+and then to check every match against the parsed YAML rather than against the
+wording.
+
+Twenty-three statements were corrected across fourteen documents. The root
+`docker-compose.yml:204-205` settles the gateway question in its own words:
+"Every file below is included unconditionally; Compose profiles decide what
+starts. Selecting no profile resolves no service." So `traefik` (`core`, `dev`)
+and `nginx` (`nginx`) differ in which profile selects them, never in whether the
+root includes them. The operational distinction was kept and the false include
+framing removed. `ADR-0001:31` keeps its sentence and gains a note in the shape
+already used for `ADR-0007` and `ADR-0022`.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -853,7 +896,11 @@ package's first criterion.
 | `edc5162fb` | Round-one review-finding corrections |
 | `1aa7bf039` | W12 `_workspace` tracking contract restoration |
 | `7e1a23d40` | W12 round-two corrections and the bilingual predicate, carrying the ADR-0034 discharge note because the commit that was to hold it alone failed on the flaky guard below |
-| pending | W13 deferred-item work: two-leaf convergence, the `_workspace` check, and the `oauth2-proxy` duplicate |
+| `028ed751d` | W13 `oauth2-proxy` duplicate profile |
+| `8513b912d` | W13 `_workspace` tracking contract check |
+| `ec041eff3` | W13 two-leaf convergence |
+| `fe01cad20` | W13 Task record |
+| pending | W14 round-three corrections and the authorized PostgreSQL config-only evidence |
 
 ## Rulings
 
@@ -891,7 +938,7 @@ prefers the note removed, the instruction it annotates is intact.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Re-review of the W13 corrections | Same shape as the W12 row it replaces, one round later. The corrections in W13 are larger than the ones a reviewer last judged and are themselves unreviewed. The pattern is now three times observed: each round corrects the previous round's blind spot and creates its own |
+| Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
 | The parent-component guard makes the public suites non-deterministic | `_directory_snapshot` compares `st_nlink` and `st_mtime_ns` for every traversed parent, so a fixture under `/tmp` fails whenever any other process writes there, while `st_dev` and `st_ino` prove no swap occurred. Measured twice in this session on two different tests. A fix belongs in `scripts/lib/document_governance/` (`spec_packages.py:139-147,174-178,312`, `references.py:252,360`, `archive.py:322,415`, `architecture.py:126`, `requirements.py:455`), a protected surface, and it is a guard change rather than a stale fact |
 | This package's own lifecycle walk to `active` | Measured, not assumed. The check rejects a non-initial status on a document absent from the base with `invalid-initial-status`, not with a transition-budget diagnostic. The package can advance one step after a push carries it at `draft`; no authorization here grants that push |
 | SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
