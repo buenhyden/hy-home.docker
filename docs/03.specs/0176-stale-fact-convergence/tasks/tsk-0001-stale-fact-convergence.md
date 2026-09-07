@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.13.0"
+version: "0.15.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -760,13 +760,80 @@ root includes them. The operational distinction was kept and the false include
 framing removed. `ADR-0001:31` keeps its sentence and gains a note in the shape
 already used for `ADR-0007` and `ADR-0022`.
 
+### W15: Rounds four and five, and the shape no text predicate reaches (2026-09-07, local-executed)
+
+Two more independent reviews ran. Both blocked. Both were right.
+
+Round four found `infra/09-tooling/k6/README.md:71` denying its own root
+include while lines 88 and 91 of the same file asserted it, and
+`REQ-0012:45` naming four of the six services the `admin` profile selects.
+Round five found five more, and its diagnosis is the part worth keeping.
+
+The survivors carry no include vocabulary at all:
+
+| Finding | Shape |
+| --- | --- |
+| `POL-0078:140-142` | a conditional deferral: "이 쌍의 topology selector는 SPEC-0171이 결정할 때까지 등록하지 않는다", for six sibling files SPEC-0171 merged and a package that completed |
+| `POL-0078:18` | a bare cardinal in a scope sentence: `24개`, measured 28 |
+| `infra/11-laboratory/README.md:88-90` | a parenthetical marker on three of five list rows |
+| `infra/README.md:127-134` | a runnable fence that cannot run: `cd infra/01-gateway/traefik && docker compose up -d` fails on the undefined `infra_net`, and `traefik` is `core`/`dev` so a bare `up` resolves nothing |
+| `infra/09-tooling/k6/README.md:65` | an environment table documenting `LOCUST_HOST_PORT`/18089, the pre-split state POL-0078:133 records as retired in favour of `K6_HOST_PORT`/18189 |
+
+Five predicates have now been wrong in five ways: language, position,
+vocabulary, claim shape, and now form — a deferral clause, a cardinal, a
+parenthesis, a code fence, a table row. The reviewer's reading is the one to
+record: the recurrences share a property no text predicate has. **A document
+contradicts itself, or contradicts its governing sibling, about a fact the
+parsed YAML settles.** Two mechanical checks would have caught all six
+documentation findings: assert that every service and profile enumeration under
+Stage 01-05 and `infra/**` agrees with the generated `DATA-0059` snapshot, and
+assert that every fenced command in a README or runbook is non-empty and names
+a path that exists. Both belong under `scripts/**` and `tests/**`; neither is
+written.
+
+The reviewer also read the working tree while a commit was in flight and
+reported four findings that were already corrected. That is the same window
+that made thirteen files look lost earlier in this package, and it is recorded
+here because it cost a review round's credibility, not because the reviewer
+erred: a review of an uncommitted tree cannot attribute a line to a commit.
+
+#### The guard change, and the record that denied it
+
+W13 recorded the parent-component guard defect as deferred because `scripts/**`
+is a protected surface. The operator then authorized it, and the change was
+made in the same session while the Deferred Item still said it was not. Round
+five caught that discrepancy. The record is corrected here.
+
+`_path_identity(metadata) -> (st_dev, st_ino)` now carries the open-time check
+in `spec_packages.py:139`, `references.py:201` and `archive.py:294`. The fuller
+six-field snapshot is retained for load-time verification and for enumeration,
+and file-content guards such as `architecture.py:124` are untouched. Type is
+still enforced three ways: `S_ISLNK`/`S_ISDIR` on the pre-open stat, `S_ISDIR`
+on the opened descriptor, and `O_NOFOLLOW | O_DIRECTORY` on the open itself.
+
+Measured with one thread creating and removing directories in `/tmp`:
+
+```text
+before the change: 242 loads, 65 failures ("Stage 03 parent changed while opening")
+after  the change: 236 loads,  0 failures
+```
+
+No security property is weakened. The check exists to prove the descriptor
+refers to the object that was stat'd, and device plus inode is exactly that.
+Link count and timestamps move whenever any unrelated process writes into a
+shared parent, and an attacker who swaps a directory can match a timestamp with
+`utimensat` but cannot match an inode. Two tests were added first and failed
+first: one asserts that benign churn in a traversed parent leaves identity
+unchanged while the full snapshot moves, the other that distinct directories
+still separate.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W12 | PASS at the third attempt; the first two PASS records were both false. The first predicate carried two English literals, the second eleven, and both reported this criterion met because neither searched Korean. The second independent review found seven survivors: six catalog guides asserting a `선택 include` state and `minio/README.md` calling the root-included cluster variant `local only`. All seven are corrected. Verified now by a bilingual predicate over 618 tracked current documents: 26 matches, every one triaged in the Predicate Triage table below, zero true violations | [infra and operations documents](../../../../infra/README.md) |
+| 1 | W12, W14 | NOT MET. Recorded PASS three times and falsified three times. The first two predicates searched English against a Korean corpus; the third searched a vocabulary list and missed `not included in the current root compose stack by default`; the fourth searched claim shape and still missed `infra/09-tooling/k6/README.md:71`, whose sibling `locust/README.md:70` had already been corrected in the same sweep. A fifth shape has no include vocabulary at all: `REQ-0012:45` encoded the retired model as a four-name service list while six services carry `admin`. Corrected in W14 round four; the criterion is recorded as NOT MET rather than PASS because this Task's own Ruling forbids promoting a check to PASS on the strength of a predicate that has now been wrong four times, and no predicate here has ever been shown complete | [spec.md criterion 1](../spec.md) |
 | 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
-| 3 | W4 | PASS: system scope states 41 files, all included; the SPEC-0171 pending clause is replaced by its completion | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 3 | W4, W15 | PASS only after round five. The system scope sentence was corrected in W4, but a second SPEC-0171 deferral clause survived 97 lines below it in the same file (`POL-0078:140-142`), and the scope sentence itself said `24개` where the tables define 28. Both corrected in W15 | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
 | 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
 | 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | [preserved ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) |
@@ -900,7 +967,12 @@ package's first criterion.
 | `8513b912d` | W13 `_workspace` tracking contract check |
 | `ec041eff3` | W13 two-leaf convergence |
 | `fe01cad20` | W13 Task record |
-| pending | W14 round-three corrections and the authorized PostgreSQL config-only evidence |
+| `e43380153` | W14 round-three corrections |
+| `11a838f35` | W14 Task record |
+| `eed5fa2f0` | W15 directory-identity guard fix |
+| `da964ba61` | W15 round-four corrections |
+| `5f912285d` | W15 round-five corrections |
+| pending | This Task record, the guard record, and the full PostgreSQL rehearsal evidence |
 
 ## Rulings
 
@@ -939,7 +1011,7 @@ prefers the note removed, the instruction it annotates is intact.
 | Item | Blocking input or reason |
 | --- | --- |
 | Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
-| The parent-component guard makes the public suites non-deterministic | `_directory_snapshot` compares `st_nlink` and `st_mtime_ns` for every traversed parent, so a fixture under `/tmp` fails whenever any other process writes there, while `st_dev` and `st_ino` prove no swap occurred. Measured twice in this session on two different tests. A fix belongs in `scripts/lib/document_governance/` (`spec_packages.py:139-147,174-178,312`, `references.py:252,360`, `archive.py:322,415`, `architecture.py:126`, `requirements.py:455`), a protected surface, and it is a guard change rather than a stale fact |
+| Registered checks for enumeration and fence integrity | Round five's diagnosis: the five recurrences share a property no text predicate has, and two mechanical checks would have caught all six documentation findings — every service/profile enumeration under Stage 01-05 and `infra/**` compared against the generated `DATA-0059` snapshot, and every fenced command in a README or runbook checked for being non-empty and naming a path that exists. Both belong under `scripts/**` and `tests/**` |
 | This package's own lifecycle walk to `active` | Measured, not assumed. The check rejects a non-initial status on a document absent from the base with `invalid-initial-status`, not with a transition-budget diagnostic. The package can advance one step after a push carries it at `draft`; no authorization here grants that push |
 | SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |

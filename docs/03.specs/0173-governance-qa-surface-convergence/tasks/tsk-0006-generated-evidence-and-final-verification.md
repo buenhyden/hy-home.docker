@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.10"
+version: "0.4.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1161,6 +1161,54 @@ this Task's own rule that an unexecuted check is never promoted to a PASS
 applies to them exactly as before. Task 0006 stays in-progress; the status is
 not advanced on the strength of one leaf.
 
+### Authorized full rehearsal of the single-instance PostgreSQL upgrade (2026-09-07, local-executed)
+
+The operator asked for the aggregate to be advanced. Under the same
+single-instance authorization, `bash scripts/operations/rehearse-postgres-logical-upgrade.sh`
+ran with no arguments, which is `RUN_MODE=normal` and does start containers.
+The two pinned images were absent locally and were pulled first, deliberately
+outside the run so that network latency could not consume the script's own
+420-second budget and produce a timeout that would be a measurement artefact
+rather than a result.
+
+```text
+cleanup_status=passed
+status=passed integrity_status=passed
+source_project=hyhome-ior-20260719-1123426-source
+target_project=hyhome-ior-20260719-1123426-target
+fixture_sha256=sha256:523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57
+dump_sha256=sha256:57fa31d0a7224af2dc7bae953e01bbfcc7de61e59fafc89b44d65a67398ddade
+dump_bytes=4484 backup_seconds=1 restore_seconds=0
+REHEARSAL_EXIT=0
+```
+
+This is the operating evidence the config-only run could not reach. The source
+Postgres 17.6 instance started, the seed SQL applied, the integrity oracle was
+captured, a custom-format dump was taken with the 18 client, the target 18.4
+instance started, the dump restored without owner or ACL, the target oracle was
+captured, and the two oracles compared equal — `integrity_status=passed`.
+
+State was captured on both sides again. Containers 15 to 15, images 71 to 71,
+`hyhome-ior` project containers 0 to 0, `/tmp/hyhome-ior-evidence.*` 0 to 0.
+The Git tree carried only the Stage 01/02/05 edits already in progress.
+
+The verdict file it wrote is not durable and is not meant to be. `main()`
+invalidates the canonical handoff before it parses arguments, so the next
+invocation of the script — including the gate's own
+`leaf.postgres-logical-upgrade-config` — removes it. That was observed here: the
+rehearsal finished at 22:13:29 and the handoff directory was emptied at 22:19:54
+by the config-only leaf inside a later pre-commit gate. This is the designed
+behaviour, not a defect: `_workspace/README.md` states that nothing under it is
+recoverable authority and that the durable claim belongs in the co-located Stage
+03 Task. The output above, captured before invalidation, is that durable record.
+
+What this does and does not establish. The rehearsal's own operating evidence is
+now observed rather than deferred. It does not establish native runtime
+discovery, provider entitlement, Hosted CI, or remote state, and the all-files
+wrapper remains NOT_RUN under the unchanged no-install scope. Those are separate
+Deferred Items and none of them is promoted by this run. Task 0006 stays
+in-progress.
+
 ## Verification Evidence
 
 ### Package reconciliation verification (2026-09-06)
@@ -1598,13 +1646,14 @@ No completed archive packet or new Spec/Plan/Task was created.
   commits and the completed 8176cdee7 local-main checkpoint only. It does not
   authorize subsequent integration, remote delivery or cleanup.
 - Runtime and remote observations remain explicitly unverified.
-- The whole-migration aggregate remains BLOCKED, but the blocking set is now
-  smaller and named more exactly. `leaf.postgres-logical-upgrade-config` PASSED
-  under the operator's single-instance runtime authorization on 2026-09-07 and
-  is no longer a blocker. What remains is the actual operating evidence: the
-  rehearsal's own upgrade path, which `--check-config-only` returns before
-  reaching. QuickWin and template-security have isolated example-input PASS
-  evidence; neither proves actual host, service or volume readiness.
+- The PostgreSQL blocker is discharged. `leaf.postgres-logical-upgrade-config`
+  PASSED and the full rehearsal PASSED with `integrity_status=passed`, both under
+  the operator's single-instance runtime authorization on 2026-09-07. The
+  whole-migration aggregate is still not claimed, because the remaining Deferred
+  Items below — native discovery, the all-files wrapper, Hosted CI and remote
+  state — are untouched by these two runs. QuickWin and template-security have
+  isolated example-input PASS evidence; neither proves actual host, service or
+  volume readiness.
 - Normal native discovery is BLOCKED before acceptance; skill calls, live hook
   delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
   change, model call or installation is authorized by this follow-up.
