@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.15.0"
+version: "0.16.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -519,24 +519,40 @@ corroborated against tracked sources rather than against the graph.
 | `python3 scripts/operations/provider_surface_renderer.py --check` | 0 | PASS, 2 providers, 0 drift |
 | `python3 -m unittest tests.lib.document_governance.test_taxonomy` | 0 | PASS, 18 tests |
 
-Acceptance mapping is completed before package completion, not per work unit.
+The completion receipt below is the machine-read authority for this package.
+It carries one row per criterion and work unit pair, because the contract reads
+a single unit per row and rejects a combined cell. Every criterion and every
+Plan work unit appears exactly once across the rows.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3, W5 | NOT_RUN | pending |
-| 2 | W4 | NOT_RUN | pending |
-| 3 | W4 | NOT_RUN | pending |
-| 4 | W7 | NOT_RUN | pending |
-| 5 | W6 | NOT_RUN | pending |
-| 6 | W5 | NOT_RUN | pending |
-| 7 | W8 | NOT_RUN | pending |
-| 8 | W3, W9 | NOT_RUN | pending |
-| 9 | W9 | NOT_RUN | pending |
-| 10 | W10 | NOT_RUN | pending |
-| 11 | W12 | NOT_RUN | pending |
-| 12 | W6, W7, W12 | NOT_RUN | pending |
-| 13 | W12 | NOT_RUN | pending |
-| 14 | W12 | NOT_RUN | pending |
+| 1 | W1 | PASS: ADR-0034 fixed the two categories as canonical and named their durable owners | [Decision](../../../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md) |
+| 1 | W3 | PASS: the root-inventory assertion failed against the state stored at `HEAD` before it passed against the working tree | [Contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py) |
+| 1 | W5 | PASS: `ROOT_ENTRIES` admits exactly the six entries and the repository contract check reports `failures=0` | [Agent governance contract](../../../../scripts/lib/agent_governance/agent_governance_contract.py) |
+| 2 | W4 | PASS: all four profiles carry the `living` lifecycle with a `template_roles` and a `transitions` entry each | [Stage 99 registry](../../../99.templates/registry.json) |
+| 3 | W4 | PASS: both governance templates exist and the catalog lists both registered types | [Stage 99 registry](../../../99.templates/registry.json) |
+| 4 | W7 | PASS: the category holds exactly the four members, each with an observation date, a refresh trigger and a routed owner, and the index states the full curation lifecycle | [Knowledge index](../../../../.agents/knowledge/README.md) |
+| 5 | W6 | PASS: the category holds exactly the five members and each declares the registered sections without restating a skill procedure | [Prompt index](../../../../.agents/prompts/README.md) |
+| 6 | W5 | PASS: `canonical_sources` lists all nine new files, the renderer reports `drift=0`, and `generated_roots` is unchanged | [Provider Registry](../../../../.agents/governance/providers/registry.yaml) |
+| 7 | W8 | PASS: the output style declares `keep-coding-instructions: true` and holds no policy of its own; the conversational-language rule sits with its canonical owner | [Output style policy](../../../../.agents/governance/output-style.md) |
+| 8 | W3 | PASS: the selector test failed against the stored state before it passed, so it is falsifiable rather than tautological | [Workflow contract tests](../../../../tests/lib/gate/test_github_workflow_contract.py) |
+| 8 | W9 | PASS: routed-but-not-admitted went from `['_workspace/', 'evals/']` to empty and a registered test owns the relation | [Pre-commit configuration](../../../../.pre-commit-config.yaml) |
+| 9 | W9 | PASS: `agentic.md` carries `External Capability Intake` and the Stage 90 member links to it rather than implying ownership | [Agentic policy](../../../../.agents/governance/agentic.md) |
+| 10 | W10 | PASS: the 2026-09-06 upstream head is recorded as a new dated section and the 2026-09-05 observation is preserved verbatim | [Agent catalog research](../../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md) |
+| 11 | W12 | PASS: 14 role IDs, 23 skill IDs, six public suites and two public profiles were re-counted unchanged | [Provider Registry](../../../../.agents/governance/providers/registry.yaml) |
+| 12 | W6 | PASS: the commit-message prompt drafted the W6 message and caught two unaccounted paths | [Commit message prompt](../../../../.agents/prompts/commit-message.md) |
+| 12 | W7 | PASS: the repository map and verification map were each verified against their own sources rather than asserted | [Knowledge index](../../../../.agents/knowledge/README.md) |
+| 12 | W12 | PASS: the diff-review prompt drove the independent review and the handoff prompt was rehearsed twice by an agent with no context | [Prompt index](../../../../.agents/prompts/README.md) |
+| 13 | W2 | PASS: the gate rejected this unit and the rejection is recorded with its cause rather than worked around | [Task checklists](../../../../.agents/governance/task-checklists.md) |
+| 13 | W11 | PASS: the LLM Wiki was regenerated after staging and its freshness check passed in the same commit | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 13 | W12 | PASS: focused validators are recorded per unit and the changed public profile returned exit 0 on the final path set | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 14 | W12 | PASS: every entry carries one of the eight evidence classes and the unmeasured cost is recorded as unmeasured | [Task checklists](../../../../.agents/governance/task-checklists.md) |
+| 15 | W13 | PASS: the first integration fast-forwarded local `main` and retired the branch after a containment proof | [Git workflow](../../../../.agents/governance/git-workflow.md) |
+| 15 | W15 | PASS: the remote advances made outside this Spec are recorded and routed rather than treated as violations of it | [Git workflow](../../../../.agents/governance/git-workflow.md) |
+| 15 | W16 | PASS: position is read from Git with named commands instead of from a branch name that dies at integration | [Handoff prompt](../../../../.agents/prompts/handoff.md) |
+| 15 | W18 | PASS: `dev` and `main` were fast-forwarded to one commit after an ancestry proof, the branch was retired, and no push was performed | [Git workflow](../../../../.agents/governance/git-workflow.md) |
+| 16 | W14 | PASS: `bootstrap.md` names both categories in its load order and in the English-only constraint, and each authored adapter states it reads them directly | [Bootstrap policy](../../../../.agents/governance/bootstrap.md) |
+| 16 | W17 | PASS: criterion 16 makes the entry path an acceptance requirement, which no earlier criterion did | [Specification](../spec.md) |
 
 ### Acceptance mapping (2026-09-06)
 
@@ -1090,6 +1106,65 @@ push, which no grant covers, so `origin/dev` still points at
 `cd13457528347437702c9cabb539efc0f11c22d8` and the local advance is unpublished.
 Where each remote ref points is read with `git rev-parse`, not asserted here.
 
+### The completion receipt disagreed with the evidence beside it (2026-09-07, local-executed)
+
+A review of this package against the completion contract found the machine-read
+receipt in a worse state than the prose beside it. The receipt carried fourteen
+rows for sixteen criteria, recorded every result as `NOT_RUN` and every owner as
+`pending`, and combined units into single cells as `W3, W5`. The Acceptance
+mapping directly below it recorded all sixteen as observed with an evidence
+class each. Two tables in one document disagreed about the same facts, and the
+one a machine reads was the wrong one.
+
+The contract that reads it is
+`common.spec_completion_evidence` in the Stage 99 registry, enforced by
+`_validate_completion`. Measured rather than inferred, it requires a single
+`## Acceptance Contract` holding uniquely numbered criteria, a single
+`## Execution Sequence` holding uniquely numbered work units matched as
+`N. WM: text`, and a four-column receipt whose result cell matches `PASS: ...`
+and whose owner cell is a link or an `N/A: reason`. One unit per row is
+mandatory; a combined cell fails as an unknown work unit.
+
+The Spec already satisfied its half with sixteen criteria. The Plan satisfied
+none of its half, because its units existed only as `### W1:` headings and the
+contract counts a numbered list:
+
+```text
+sed -n '/^## Execution Sequence/,/^## Risk/p' plan.md | grep -cE '^[1-9][0-9]*\. W[1-9][0-9]*: '
+  before: 0
+  after: 18
+```
+
+The per-unit state table introduced at W16 was converted into that numbered
+list rather than duplicated beside it, so one structure now serves both the
+resuming reader and the contract. The conversion also corrected the two rows
+that still described W15 and W16 as partly done with the walk continuing, which
+W18 closed.
+
+The receipt was rebuilt as twenty-seven rows, one per criterion and unit pair,
+covering all sixteen criteria and all eighteen units with a `PASS` result and a
+durable owner link each. The link checker accepts every owner target:
+`documents=711 links=6113 failures=0`.
+
+With those two repairs the completion contract stops objecting. Setting all
+three documents to their terminal statuses no longer produces
+`completion requires unique numbered criteria and Plan work units`, and
+`metadata check-changed` reports `selected=4 violations=0`. What remains is not
+a defect in this package:
+
+```text
+active-stage-occupancy: spec.md: completed document remains in an active stage
+active-stage-occupancy: plan.md: completed document remains in an active stage
+active-stage-occupancy: task: completed document remains in an active stage
+```
+
+A completed package does not stay in Stage 03; it moves under
+`docs/98.archive/completed/` with the preserved bodies and the migration record
+that route requires. That is a bounded change of its own with its own approval,
+so the statuses were restored to `active` and `in-progress` and the package rests
+completion-ready rather than half-migrated. The Stage 03 index prose would also
+need its statuses updated in the same change, which a registered test enforces.
+
 ## Review Evidence
 
 ### Independent exact-diff review (2026-09-06, local-executed)
@@ -1191,6 +1266,7 @@ changes without any edit to this file.
 | Role-system import, consolidation, or retirement from the external catalog | Each change moves a permission profile and a handoff contract; this package's acceptance contract preserves 14 role IDs, so the change would be unreviewable here. This package restores the canonical owner of the intake decision instead |
 | `dev` as an integration target that governance does not describe | `git-workflow.md` names only `main` as the protected baseline and the git-flow head-branch pattern excludes `dev`, so the target the request names has no policy owner. Closing the gap edits a policy this package does not own; it is routed to that owner rather than decided here |
 | Retiring or refreshing the stale `origin/dev` and the two remote `codex/**` branches | Every option is a remote reference change, which no grant here covers |
+| Package completion | The completion contract is satisfied and was measured as such. Completion additionally moves the package under `docs/98.archive/completed/` with preserved bodies and a migration record, and updates the Stage 03 index prose; that migration is a bounded change with its own approval |
 
 ## Related Documents
 

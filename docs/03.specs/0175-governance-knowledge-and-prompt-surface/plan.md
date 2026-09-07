@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -69,28 +69,28 @@ Each work unit ends with focused verification and one logical commit.
 
 State per unit, so a resuming session reads progress instead of inferring it
 from the Commit Ledger. A unit is `done` only when its commit exists and its
-evidence is in the Task.
+evidence is in the Task. The list is numbered because the completion contract
+reads its work units from this section by number, not from the unit headings
+below.
 
-| Unit | State |
-| --- | --- |
-| W1 Decision and durable owners | done |
-| W2 Package creation | done |
-| W3 RED evidence | done, as a method the later units apply |
-| W4 Stage 99 registration | done |
-| W5 Contract implementation | done |
-| W6 Prompt members | done |
-| W7 Knowledge members | done |
-| W8 Language authority repair | done |
-| W9 Gate selector alignment | done |
-| W10 External re-observation | done |
-| W11 Generated artifact refresh | done for the LLM Wiki; the graph rebuild is BLOCKED by the tool's own refusal |
-| W12 Evidence, review, disposition | done |
-| W13 Integration and branch retirement | done, and repeated per branch since |
-| W14 Entry-path routing | done |
-| W15 Remote advance and lifecycle promotion | partly done; the Spec reached `approved` and ADR-0034 `accepted`, and the remaining transitions wait on the resume condition in W16 |
-| W16 Durable position and the remaining walk | partly done; the position substitution and the two document audits are complete, and the walk continues |
-| W17 Acceptance contract completeness | done; criterion 16 requires the entry path to name both categories, which no earlier criterion did |
-| W18 Lifecycle promotion and `dev` integration | done; the remote reached the package HEAD, so all three transitions landed in one commit, and `dev` receives the work alongside `main` |
+1. W1: Decision and durable owners — done
+2. W2: Package creation — done
+3. W3: RED evidence — done, as a method the later units apply
+4. W4: Stage 99 registration — done
+5. W5: Contract implementation — done
+6. W6: Prompt members — done
+7. W7: Knowledge members — done
+8. W8: Language authority repair — done
+9. W9: Gate selector alignment — done
+10. W10: External re-observation — done
+11. W11: Generated artifact refresh — done for the LLM Wiki; the graph rebuild is BLOCKED by the tool's own refusal
+12. W12: Evidence, review, disposition — done
+13. W13: Integration and branch retirement — done, and repeated per branch since
+14. W14: Entry-path routing — done
+15. W15: Remote advance and lifecycle promotion — done; the Spec reached `approved`, ADR-0034 `accepted`, and the walk this unit opened closed at W18
+16. W16: Durable position and the remaining walk — done; the position substitution, both document audits, and the walk all completed, the last of them at W18
+17. W17: Acceptance contract completeness — done; criterion 16 requires the entry path to name both categories, which no earlier criterion did
+18. W18: Lifecycle promotion and `dev` integration — done; the remote reached the package HEAD, so all three transitions landed in one commit, and `dev` receives the work alongside `main`
 
 ### W1: Decision and durable owners
 
