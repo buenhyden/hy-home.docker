@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -333,8 +333,9 @@ package does not supply.
 Editor workspace-task integration is no longer open. It was measured rather than
 left as a question: no `.vscode/`, `.idea/`, or `.code-workspace` path is tracked
 and neither directory exists, so there is no editor surface to wire, and
-inventing command identifiers is prohibited. It reopens if a tracked editor
-configuration appears.
+inventing command identifiers is prohibited. The repository owner has since
+stated that the editor is not used at all, which removes the condition that
+would have reopened this.
 
 ## Operational Impact
 

@@ -1,6 +1,6 @@
 ---
 title: "Knowledge and Prompt Surface Execution"
-version: "0.16.0"
+version: "0.17.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1078,10 +1078,8 @@ change, so removing it is cleanup of this session's own byproduct. Regenerating
 a sound one belongs to the graph CLI and to the rebuild already deferred, not to
 this package.
 
-The commit that recorded this was itself rejected, for a file no authored change
-had touched. The graph watcher had rewritten `.gitignore`, broadening
-`graphify-out/.graphify*` to `graphify-out/` and deleting the three negations
-that keep the tracked snapshots visible:
+The commit that recorded this was itself rejected, for a change to `.gitignore`
+that this session had not authored:
 
 ```text
 -graphify-out/.graphify*
@@ -1091,15 +1089,25 @@ that keep the tracked snapshots visible:
 -!graphify-out/graph.json
 ```
 
-The deleted lines carry their own comment saying they come last so they override
-every graphify rule above them, so the rewrite contradicts the committed intent
-of the file it edited, and it would have made the repository's own tracked
-snapshots ignored. It was reverted with `git checkout -- .gitignore` and reached
-no commit; `git show --name-only` over every commit of this unit reports zero
-occurrences of the path. The diff hygiene hook caught it on a trailing blank
-line, which is a weaker signal than the change deserved: what made it visible
-was reading the working tree after the rejection rather than retrying, the same
-step that caught a damaged canonical source earlier in this package.
+That change was the repository owner's. This entry first attributed it to the
+graph watcher, on nothing stronger than the watcher having been active in the
+same window, and acted on that guess: the change was discarded twice with
+`git checkout -- .gitignore`. Both statements are withdrawn. Discarding another
+party's uncommitted work is exactly what the standing constraint forbids, and
+the guess was avoidable, because a working-tree change with no authored source
+identifies an owner to ask rather than a tool to blame. A `git checkout --` on a
+file this session did not edit is not a cleanup; it is a deletion of work that
+Git cannot recover, and it is not performed again here without asking. One hunk
+survives in a pre-commit backup under the local cache, which is a byproduct
+rather than a restore path.
+
+The observation that remains true is narrow: the deleted negation lines carry a
+comment saying they come last so they override every graphify rule above them,
+so removing them makes the tracked snapshots ignored, which is a consequence
+worth stating to the owner and not a defect to correct on their behalf. The diff
+hygiene hook caught the change on a trailing blank line, a weaker signal than it
+deserved; reading the working tree after a rejection rather than retrying is
+what made it visible at all.
 
 `origin/dev` and `origin/main` were not touched. Publishing either target is a
 push, which no grant covers, so `origin/dev` still points at
@@ -1259,7 +1267,7 @@ changes without any edit to this file.
 | Stage 90 curated repository map consolidation into `knowledge/` | Tracked consumers in the LLM Wiki generator, the reference validator, `llms.txt`, and four documents; needs its own coordinated change and a registered data lifecycle transition |
 | Model context, cost, latency, and output-ceiling rows | No authorized API path exists locally; cost is recorded as unmeasured rather than zero |
 | Codex `skills.config` native binding | Runtime acceptance unobserved; adoption would need direct observation |
-| Editor workspace-task integration | No editor workspace configuration is tracked; inventing command identifiers is prohibited |
+| Editor workspace-task integration | Closed, not deferred. No `.vscode/`, `.idea/`, or `.code-workspace` path is tracked or on disk, and the repository owner states the editor is not used, so there is no surface to wire and no condition that reopens it |
 | Automated pull-request review expansion | Remote activation and execution cannot be observed under current authorization |
 | Fixture reduction | Requires a separate duplication and maintenance-cost comparison; safety negative tests must be preserved |
 | REQ-0026, AD-0030, ADR-0031 retention-owner promotion | Owned by SPEC-0173 as its declared open design dependency |
