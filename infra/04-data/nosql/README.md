@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 에코시스템에서 선택적으로 사용할 수 있는 NoSQL 데이터베이스 인프라 구성을 포함한다. 현재 루트 compose에서는 Cassandra, CouchDB, MongoDB include가 주석 처리되어 있으며, 필요 시 각 서비스 compose를 명시적으로 포함해 실행한다.
+이 디렉터리는 `hy-home.docker` 에코시스템에서 선택적으로 사용할 수 있는 NoSQL 데이터베이스 인프라 구성을 포함한다. 루트 compose는 Cassandra, CouchDB, MongoDB compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. 세 서비스 모두 `data` profile에 속하고, Cassandra와 MongoDB의 exporter는 `obs` profile로도 선택된다.
 
 ## Audience
 

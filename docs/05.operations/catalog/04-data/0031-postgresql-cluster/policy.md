@@ -32,7 +32,7 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Documentation must identify the cluster as an optional/commented root include unless root compose changes.
+- **Required**: Documentation must identify the cluster as an unconditional root include whose services resolve only under the `data` or `service` profile, and must not describe it as part of the `core` surface.
 - **Required**: Application connection guidance must use `pg-router` write/read endpoints, not direct writes to `pg-0`, `pg-1`, or `pg-2`.
 - **Required**: Credential guidance must reference Docker Secret mounts and secret-aware entrypoints; secret values must never be copied into docs or evidence.
 - **Required**: HAProxy stats guidance must use the declared Traefik route `pg-haproxy.${DEFAULT_URL}` and `pg_haproxy_stats_password`.

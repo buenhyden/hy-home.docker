@@ -49,10 +49,10 @@ open-webui/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Open WebUI service leaf in `08-ai`; services: `open-webui`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
+| Purpose | Open WebUI service leaf in `08-ai`; services: `open-webui`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
 | Ports | Not declared |

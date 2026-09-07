@@ -105,10 +105,10 @@ syncthing/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Syncthing service leaf in `09-tooling`; services: `syncthing`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
+| Purpose | Syncthing service leaf in `09-tooling`; services: `syncthing`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `PUID`, `PGID`, `FILE__USER`, `FILE__PASSWORD_FILE`; profiles: `tooling`, `sync` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `syncthing-volume:/var/syncthing:rw`, `resources-contents-volume:/Sync:rw`, `syncthing-volume`, `resources-contents-volume` |
 | Ports | `${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/tcp`, `${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/udp`, `${SYNCTHING_BROADCASTS_HOST_PORT:-21027}:${SYNCTHING_BROADCASTS_PORT:-21027}/udp`, `${SYNCTHING_GUI_PORT:-8384}` |

@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. 현재 primary compose는 `opensearch`와 `opensearch-dashboards`를 제공하며, `docker-compose.cluster.yml`은 optional cluster variant로 별도 검증한다.
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. compose 파일 하나가 두 topology를 담는다. `data` profile은 `opensearch`와 `opensearch-dashboards`를, `data-cluster` profile은 `opensearch-node1`부터 `opensearch-node3`까지와 dashboards를 선택하며, cluster topology는 별도로 검증한다.
 
 ### Usage Type
 

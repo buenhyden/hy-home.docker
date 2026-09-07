@@ -78,7 +78,7 @@ created: "2026-03-26"
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose v3.8+ 기반의 컨테이너 오케스트레이션.
-- **Deployment Model**: `tooling` 프로필로 그룹화되어 있으나, root `docker-compose.yml`의 09-tooling includes는 현재 optional/commented 상태다.
+- **Deployment Model**: root `docker-compose.yml`은 09-tooling compose 파일을 모두 무조건 include하며, `tooling` 프로필과 서비스별 역할 프로필(`iac`, `sast`, `testing`, `registry`, `sync`) 중 선택한 것이 기동 대상을 결정한다.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability

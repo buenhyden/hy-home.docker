@@ -43,7 +43,6 @@ Apache Airflow는 `hy-home.docker` 플랫폼의 핵심 워크플로 엔진입니
 ```text
 airflow/
 ├── config/             # Airflow 설정 및 StatsD 매핑 파일
-├── docker-compose.dev.yml
 ├── docker-compose.yml  # 분산 Airflow 서비스 구성
 └── README.md           # 이 파일
 ```
@@ -53,7 +52,7 @@ airflow/
 | Field | Evidence |
 | --- | --- |
 | Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; service-local production-like compose is `docker-compose.yml` |
-| Config files | `docker-compose.dev.yml`, `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
 | Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__CORE__FERNET_KEY_CMD`, `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`, `AIRFLOW__CORE__LOAD_EXAMPLES`, plus 15 more; profiles: `workflow`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |

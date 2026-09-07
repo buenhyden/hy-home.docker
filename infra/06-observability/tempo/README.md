@@ -101,7 +101,7 @@ tempo/
 | Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image `hy/tempo:3.0.2-custom` |
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
-| Compose linkage | Declared in `../docker-compose.yml` and root-included `../docker-compose.dev.yml` |
+| Compose linkage | Declared in `../docker-compose.yml`, which the root file includes unconditionally; `tempo` resolves under the `obs` and `dev` profiles |
 | Networks | `infra_net`, `k3d-hyhome` |
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |

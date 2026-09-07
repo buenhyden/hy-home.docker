@@ -39,7 +39,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 
 - [ ] Failure category를 middleware, network, healthcheck, volume, docs, script 중 하나로 분류한다.
 - [ ] 최근 변경 커밋과 affected files를 확인한다.
-- [ ] root `docker-compose.yml`의 09-tooling includes가 optional/commented 상태인지 확인한다.
+- [ ] root `docker-compose.yml`이 09-tooling compose 파일을 모두 include하는지 확인하고, 이번 세션에서 선택한 profile을 기록한다.
 
 ### Steps
 

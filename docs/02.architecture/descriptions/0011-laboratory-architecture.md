@@ -95,7 +95,7 @@ graph TD
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose.
-- **Deployment Model**: root-active includes render Dozzle, RedisInsight, Open Notebook, and SurrealDB through the `admin` profile; Homer Dashboard and Portainer remain optional/commented root includes that are checked by the hardening script until promoted.
+- **Deployment Model**: the root file includes every laboratory Compose file unconditionally and the selected profile decides what resolves. Dozzle, RedisInsight, Open Notebook, and SurrealDB are selected by `admin` and `dev`; Homer Dashboard and Portainer are selected by `admin` alone and are checked by the hardening script.
 
 ## Traceability
 

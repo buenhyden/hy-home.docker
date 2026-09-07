@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/couchdb/docker-compose.yml`에 정의된 CouchDB 3노드 클러스터 사용 기준을 설명한다. 현재 루트 compose에서는 CouchDB include가 주석 처리된 선택 서비스이며, 활성화 시 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`가 `data` 프로파일과 `infra_net`에서 동작한다.
+이 문서는 `infra/04-data/nosql/couchdb/docker-compose.yml`에 정의된 CouchDB 3노드 클러스터 사용 기준을 설명한다. 루트 compose는 CouchDB 파일을 무조건 include하며 `data` profile을 선택할 때만 기동된다. 선택 시 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`가 `data` 프로파일과 `infra_net`에서 동작한다.
 
 ### Usage Type
 

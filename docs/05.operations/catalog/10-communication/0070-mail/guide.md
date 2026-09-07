@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `10-communication` 메일 구현을 사용하는 방법을 설명한다. 현재 구현은 optional/commented root include인 `infra/10-communication/mail/docker-compose.yml`에 있으며, Stalwart 운영 메일 서버와 MailHog 개발 SMTP 트랩을 제공한다.
+이 문서는 `10-communication` 메일 구현을 사용하는 방법을 설명한다. 현재 구현은 루트가 무조건 include하는 `infra/10-communication/mail/docker-compose.yml`에 있으며, Stalwart 운영 메일 서버와 MailHog 개발 SMTP 트랩을 제공한다. 두 서비스 모두 `communication` profile에서만 resolve된다.
 
 ### Usage Type
 
@@ -37,7 +37,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- root `docker-compose.yml`에서 mail include가 optional/commented 상태임을 확인한다.
+- root `docker-compose.yml`이 mail compose 파일을 include하는지 확인하고, `communication` profile 선택 여부로 기동을 판단한다.
 - `DEFAULT_COMMUNICATION_DIR`, `DEFAULT_URL`, Docker Secret `stalwart_password`, `secrets/certs` 경계가 운영 환경에 준비되어 있어야 한다.
 - Stalwart 직접 바인딩 포트 `25`, `465`, `587`, `993`, `4190`은 운영 승격 전에 호스트/방화벽/DNS 정책과 함께 검증한다.
 - MailHog Web UI는 포트 `8025`에서 캡처된 메일을 표시하며, 상태를 남기지 않는 개발용 서비스다.
@@ -46,7 +46,7 @@ created: "2026-05-10"
 
 #### 1. Compose 경계 확인
 
-1. [root docker-compose.yml](../../../../../docker-compose.yml)에서 `infra/10-communication/mail/docker-compose.yml` include가 현재 optional/commented인지 확인한다.
+1. [root docker-compose.yml](../../../../../docker-compose.yml)의 `include:` 목록에 `infra/10-communication/mail/docker-compose.yml`이 있는지 확인하고, `communication` profile을 선택했는지 기록한다.
 2. static 검증은 서비스 로컬 standalone compose가 아니라 root network/secret/template context를 보존하는 검증으로 수행한다.
 3. 하드닝 기준을 확인한다: `bash scripts/hardening/check-all-hardening.sh 10-communication`.
 

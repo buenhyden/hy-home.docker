@@ -56,10 +56,10 @@ terraform/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Terraform Infrastructure Tool service leaf in `09-tooling`; services: `terraform`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
+| Purpose | Terraform Infrastructure Tool service leaf in `09-tooling`; services: `terraform`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `tooling`, `iac` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `./workspace:/workspace:rw`, `$HOME/.aws:/root/.aws:ro`, `$HOME/.azure:/root/.azure:ro` |
 | Ports | Not declared |

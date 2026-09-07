@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -134,14 +134,98 @@ code of `tail` and printed `GATE EXIT=0` over a failing suite. The failure was
 found by reading the output rather than by trusting that number. Exit codes are
 read from the gate process directly for the remainder of this Task.
 
+### W2: The Compose facts, measured before anything was edited (2026-09-07, local-executed)
+
+```text
+git ls-files 'infra/**/docker-compose*.y*ml'  | wc -l          41
+  .yml                                                         40
+  .yaml                                                         1
+service directories (dirname, unique)                          40
+root include entries (yaml.safe_load)                          41
+commented include lines: grep -cE '^\s*#\s*-\s*infra/'         0
+include entries with no file on disk                            0
+disk files absent from the include list                         0
+```
+
+The include list and the tracked tree are in exact bijection, and no include
+line is commented. The `profiles:` value of every service in all 41 files was
+read from the file itself and is the source for every profile name written in
+W3 and W4; no profile name was copied from prose.
+
+### W3: The retired enablement model, removed at thirty-nine owners (2026-09-07, local-executed)
+
+A mechanical pass replaced the three exact phrases that carried the retired
+include-state claim in twenty files. Twenty-two remaining occurrences needed a
+service-specific sentence and were rewritten one at a time against the profile
+value W2 measured. A second sweep found fifteen more statements in a different
+wording, `주석 처리된 선택 서비스` and its variants, including one inside a
+Requirement's functional requirement and one inside an Architecture Description.
+
+```text
+grep -rn 'optional/commented' infra docs --include='*.md'      before: 57  after: 0
+grep -rn '주석 처리|include가 주석|standalone-only|root-commented'  after: 3 (all in infra/README.md, closed by W4)
+```
+
+The sweep exposed a second defect of the same origin that the first scan did not
+name. SPEC-0171 resolved its six sibling pairs by folding each duplicate into the
+file it duplicated and deleting it, so eighteen references in twelve documents
+pointed at `docker-compose.dev.yml` and `docker-compose.cluster.yml` files that
+no longer exist, including four tree diagrams that drew them as present. Those
+were corrected to name the surviving file and the profile that now selects each
+topology.
+
+One reference is deliberately left in place:
+
+```text
+docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md:27
+  - `docker-compose.dev.yml` 경로 정합성 수정
+```
+
+ADR-0020 is `accepted` and that line records a decision taken when the file
+existed. Editing it would rewrite an accepted decision to agree with a later
+contract, which the retention policy forbids and which this package's Rulings
+repeat. It is a correct historical record and stays.
+
+### W4: The four documents that carried their own wording (2026-09-07, local-executed)
+
+`infra/README.md` claimed 48 Compose files, 47 `.yml`, and 17 root includes
+against a measured 41, 40, and 41, and defined a four-state vocabulary whose
+`root-commented-optional` and `standalone-only` members describe states the
+tracked tree no longer has. The counts were replaced with the measured values and
+the vocabulary with the fact that decides activation, which is the selected
+profile.
+
+The MinIO README forbade describing `docker-compose.cluster.yaml` as part of the
+root include while that file sits in the include list. Both topologies are now
+described as separated by profile, `storage` against `storage-cluster`, which is
+what the two files actually declare.
+
+POL-0078 counted "41 of 47 files" and described SPEC-0171 as holding six files
+back. That package completed and the six were merged away, so the system scope is
+41 files, all included.
+
+The root `docker-compose.yml` comment said SPEC-0171 owns the six absent members.
+It now says they were folded into the files they duplicated and that the package
+is completed, which is why every Compose file under `infra/` appears in the list.
+
+```text
+python3 scripts/validation/check-document-links.py --mode all
+  documents=714 links=6135 failures=0
+python3 scripts/validation/check-operations-catalog.py            PASS
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+  selected=39 violations=0
+bash scripts/validation/validate-docker-compose.sh
+  selections=28 services_total=232, every profile OK
+```
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3 | NOT_RUN: pending | pending |
-| 2 | W4 | NOT_RUN: pending | pending |
-| 3 | W4 | NOT_RUN: pending | pending |
-| 4 | W4 | NOT_RUN: pending | pending |
+| 1 | W3 | PASS: `grep -rn 'optional/commented' infra docs --include=*.md` returns 0 outside the archive and Stage 90 dated evidence; the 주석-처리 wording returns 0 as well | [infra service and tier READMEs](../../../../infra/README.md) |
+| 2 | W4 | PASS: counts replaced with the measured 41/40/41 and the four-state vocabulary removed | [infra README](../../../../infra/README.md) |
+| 3 | W4 | PASS: system scope states 41 files, all included; the SPEC-0171 pending clause is replaced by its completion | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
 | 5 | W5 | NOT_RUN: pending | pending |
 | 6 | W5 | NOT_RUN: pending | pending |
 | 7 | W5 | NOT_RUN: pending | pending |
@@ -166,7 +250,8 @@ been performed. Recorded as NOT_RUN.
 
 | Commit | Scope |
 | --- | --- |
-| pending | W1 package definition |
+| `80b42feaa` | W1 package definition |
+| pending | W2-W4 Compose enablement convergence |
 
 ## Rulings
 

@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/mongodb/docker-compose.yml`에 정의된 MongoDB replica set 사용 기준을 설명한다. 현재 루트 compose에서는 MongoDB include가 주석 처리된 선택 서비스이며, 활성화 시 `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`가 `data`/`obs` 프로파일과 `infra_net`에서 동작한다.
+이 문서는 `infra/04-data/nosql/mongodb/docker-compose.yml`에 정의된 MongoDB replica set 사용 기준을 설명한다. 루트 compose는 MongoDB 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`가 `data`/`obs` 프로파일과 `infra_net`에서 동작한다.
 
 ### Usage Type
 

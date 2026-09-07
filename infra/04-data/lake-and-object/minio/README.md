@@ -15,7 +15,7 @@ created: "2025-11-12"
 
 ## Overview
 
-MinIO is the root-active object storage service for `hy-home.docker`. The active compose path is `infra/04-data/lake-and-object/minio/docker-compose.yml`, which runs a single `minio` service plus `minio-create-buckets` bootstrap job. The 4-node `docker-compose.cluster.yaml` remains an optional local variant and must not be described as part of the root include unless explicitly invoked.
+MinIO is the object storage service for `hy-home.docker`. This leaf is the only one holding two Compose files, and the root file includes both of them unconditionally. `docker-compose.yml` declares a single `minio` service plus a `minio-create-buckets` bootstrap job, selected by the `storage`, `obs`, `dev`, and `nginx` profiles. `docker-compose.cluster.yaml` declares the four-node topology `minio1` through `minio4`, selected only by `storage-cluster`. The two topologies are separated by profile rather than by include state, and no profile selects both.
 
 ## Audience
 
@@ -40,14 +40,14 @@ MinIO is the root-active object storage service for `hy-home.docker`. The active
 - Secret values, access keys, and private bucket contents
 - Application-level object lifecycle design
 - SeaweedFS configuration
-- Treating `docker-compose.cluster.yaml` as root-active infrastructure
+- Treating the `storage-cluster` topology as part of the single-node `storage` surface
 
 ## Structure
 
 ```text
 minio/
 ├── docker-compose.yml          # Root-active single-node service plus bootstrap job
-├── docker-compose.cluster.yaml # Optional 4-node local cluster variant
+├── docker-compose.cluster.yaml # 4-node topology, selected by the storage-cluster profile
 ├── Dockerfile                  # Optional image/build context
 └── README.md                   # This file
 ```
@@ -56,7 +56,7 @@ minio/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | MinIO Object Storage service leaf in `04-data`; root-active services: `minio`, `minio-create-buckets`; optional local cluster variant: `docker-compose.cluster.yaml` |
+| Purpose | MinIO Object Storage service leaf in `04-data`; `storage` profile services: `minio`, `minio-create-buckets`; `storage-cluster` profile services: `minio1` to `minio4` in `docker-compose.cluster.yaml` |
 | Config files | `docker-compose.yml`, `docker-compose.cluster.yaml`, `Dockerfile` |
 | Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/minio/docker-compose.yml`; cluster variant is local only |
@@ -74,7 +74,7 @@ minio/
 
 1. Review the linked operations guide, policy, and runbook before changing MinIO configuration.
 2. Keep credentials in Docker Secrets and document only secret names or mounted paths.
-3. Distinguish the root-active single-node compose path from the optional cluster variant when recording evidence.
+3. Record which profile was selected, because the single-node and four-node topologies are distinguished by profile and not by include state.
 4. After compose or bucket initialization changes, run the validation commands listed below.
 
 ## Runtime Surface

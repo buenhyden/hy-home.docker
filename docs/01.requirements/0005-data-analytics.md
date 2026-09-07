@@ -20,7 +20,7 @@ created: "2026-03-26"
 
 ### Problem Statement
 
-현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, ksqlDB, OpenSearch, StarRocks compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose에서는 주석 처리된 optional include 또는 standalone compose로 검증된다는 요구사항을 정의한다.
+현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, ksqlDB, OpenSearch, StarRocks compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose가 파일을 무조건 include하더라도 `core` profile에는 속하지 않아 별도 profile 선택 없이는 기동되지 않는다는 요구사항을 정의한다.
 
 ## Stakeholders and User Needs
 

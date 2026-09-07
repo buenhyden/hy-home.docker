@@ -36,7 +36,7 @@ created: "2026-05-17"
 
 ### Checklist
 
-- [ ] root mail include가 optional/commented인지 또는 운영 승격으로 활성화됐는지 기록한다.
+- [ ] mail compose 파일이 루트 include 목록에 있는지 확인하고, 이번 세션에서 `communication` profile을 선택했는지 기록한다.
 - [ ] 최근 compose, `.env*`, secret reference, DNS, 인증서 변경 내역을 기록한다.
 - [ ] secret 값 원문은 열람하거나 로그에 남기지 않는다.
 

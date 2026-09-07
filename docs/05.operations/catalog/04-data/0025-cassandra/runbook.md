@@ -36,7 +36,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 
 ### Checklist
 
-- [ ] 루트 compose에서 Cassandra include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] 루트 compose의 `include:` 목록에 Cassandra 파일이 있는지 확인하고, 이번 런타임에서 선택한 profile(`data`, `obs`)을 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] 데이터 복원, snapshot 교체, 볼륨 이동, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 secret 값은 기록하지 않는다.
@@ -108,7 +108,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 
 - Capture command names, pass/fail status, service states, image tags, and sanitized log summaries.
 - Do not capture secret values or full secret-backed command output.
-- Record whether Cassandra was optional/commented in root compose or explicitly included for the runtime session.
+- Record which profiles were selected for the runtime session; the root file includes the Cassandra compose file unconditionally and `data` or `obs` decides which of its services resolve.
 
 ## Rollback or Recovery
 

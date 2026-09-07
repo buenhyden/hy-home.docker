@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The platform's primary event streaming backbone. Root `docker-compose.yml` includes `docker-compose.dev.yml`, which renders a single broker development stack. `docker-compose.yml` in this directory is the full 3 broker Kafka compose and requires root network/secret context when validated service-locally.
+The platform's primary event streaming backbone. Root `docker-compose.yml` includes this leaf's `docker-compose.yml`, which holds both topologies: the `messaging` and `dev` profiles render a single-broker development stack, and `messaging-cluster` adds `kafka-2` and `kafka-3`. `docker-compose.yml` in this directory is the full 3 broker Kafka compose and requires root network/secret context when validated service-locally.
 
 ## Audience
 
@@ -29,7 +29,7 @@ The platform's primary event streaming backbone. Root `docker-compose.yml` inclu
 
 ### In Scope
 
-- **Root dev Kafka Broker**: KRaft 기반 단일 broker 개발 구성(`docker-compose.dev.yml`).
+- **Root dev Kafka Broker**: KRaft 기반 단일 broker 개발 구성(`docker-compose.yml`의 `messaging`/`dev` profile).
 - **Full Kafka Broker Cluster**: KRaft 기반 3 broker compose(`docker-compose.yml`).
 - **Confluent Schema Registry**: Avro/JSON 스키마 버전 관리.
 - **Kafka Connect**: 외부 시스템 연동용 커넥터 실행 엔진.
@@ -57,7 +57,7 @@ kafka/
 | Field | Evidence |
 | --- | --- |
 | Purpose | Kafka Event Streaming service leaf in `05-messaging`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`; local full compose: `docker-compose.yml` |
-| Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
+| Config files | `docker-compose.yml` |
 | Config values | root dev env keys include `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1`, `KAFKA_PROCESS_ROLES`, `KAFKA_CONTROLLER_QUORUM_VOTERS`; full compose uses broker IDs 1-3 and replication factor 3 for internal topics; profiles: `messaging`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
@@ -75,7 +75,7 @@ kafka/
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
-2. **Configuration**: root dev는 `docker-compose.dev.yml`, full cluster는 `docker-compose.yml`의 Broker ID 및 포트 매핑 설정을 확인한다.
+2. **Configuration**: `docker-compose.yml` 한 파일에서 Broker ID와 포트 매핑을 확인한다. 단일 broker는 `messaging`/`dev` profile, 3 broker cluster는 `messaging-cluster` profile이 선택한다.
 3. **Execution**: 변경 사항 적용 후 repository root에서 root profile 검증을 먼저 수행한다.
 4. **Validation**: [Messaging Runbook](../../../docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md)의 점검 절차를 수행한다.
 5. 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 확인한다.

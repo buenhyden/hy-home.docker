@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`에 정의된 PostgreSQL HA cluster 사용 기준을 설명한다. 현재 루트 compose에서는 `postgresql-cluster` include가 주석 처리된 선택 서비스이며, 활성화 시 etcd 3노드, Spilo/Patroni PostgreSQL 3노드, `pg-router`, `pg-cluster-init`, per-node postgres exporter가 `data`/`service` 프로파일에서 동작한다.
+이 문서는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`에 정의된 PostgreSQL HA cluster 사용 기준을 설명한다. 루트 compose는 `postgresql-cluster` 파일을 무조건 include하며 `data` 또는 `service` profile을 선택할 때만 기동된다. 선택 시 etcd 3노드, Spilo/Patroni PostgreSQL 3노드, `pg-router`, `pg-cluster-init`, per-node postgres exporter가 `data`/`service` 프로파일에서 동작한다.
 
 ### Usage Type
 
@@ -75,7 +75,7 @@ created: "2026-05-10"
 
 ### Common Pitfalls
 
-- 현재 구현은 root-active가 아니라 optional/commented include다. root compose 기본 `core` validation에 이 클러스터가 포함된 것처럼 설명하지 않는다.
+- 루트 compose는 이 클러스터 파일을 무조건 include하지만 어떤 서비스도 `core` profile에 속하지 않는다. 기본 `core` validation에 이 클러스터가 포함된 것처럼 설명하지 않는다.
 - 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
 - Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/patroni_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.

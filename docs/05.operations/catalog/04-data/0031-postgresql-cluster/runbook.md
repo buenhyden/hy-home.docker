@@ -36,7 +36,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 ### Checklist
 
-- [ ] 루트 compose에서 PostgreSQL cluster include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] 루트 compose의 `include:` 목록에 PostgreSQL cluster 파일이 있는지 확인하고, 이번 런타임에서 선택한 profile(`data`, `service`)을 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, database mutation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 credential, SQL payload, application data는 기록하지 않는다.
@@ -117,7 +117,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 - Capture command names, pass/fail status, service states, image tags, sanitized logs, and leadership/routing summary.
 - Do not capture secret values, SQL payloads, database row contents, or credential-backed connection strings.
-- Record whether the cluster was optional/commented in root compose or explicitly included for the runtime session.
+- Record which profiles were selected for the runtime session; the root file includes the cluster compose file unconditionally and the `data` and `service` profiles decide whether its services resolve.
 
 ## Rollback or Recovery
 

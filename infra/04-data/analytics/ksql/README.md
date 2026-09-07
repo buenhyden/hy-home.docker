@@ -52,10 +52,10 @@ ksql/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | ksqlDB service leaf in `04-data`; services: `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
+| Purpose | ksqlDB service leaf in `04-data`; services: `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `KSQL_CONFIG_DIR`, `KSQL_BOOTSTRAP_SERVERS`, `KSQL_HOST_NAME`, `KSQL_LISTENERS`, `KSQL_CACHE_MAX_BYTES_BUFFERING`, `KSQL_KSQL_SCHEMA_REGISTRY_URL`, `KSQL_PRODUCER_INTERCEPTOR_CLASSES`, `KSQL_CONSUMER_INTERCEPTOR_CLASSES`, plus 8 more; profiles: `data`, `ksql` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `ksqldb-data-volume:/var/lib/ksql:rw`, `ksqldb-data-volume` |
 | Ports | `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}` |

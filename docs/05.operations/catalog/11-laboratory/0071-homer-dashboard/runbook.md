@@ -35,7 +35,7 @@ Homer 설정을 검증하고, direct host port 재노출이나 SSO/allowlist 누
 
 ### Checklist
 
-- [ ] Dashboard root include가 optional/commented인지 또는 승인되어 활성화됐는지 기록한다.
+- [ ] Dashboard compose 파일이 루트 include 목록에 있는지 확인하고, 이번 세션에서 `admin` profile을 선택했는지 기록한다.
 - [ ] 최근 `config/config.yml`, compose label, `LAB_ALLOWED_CIDRS` 변경 내역을 기록한다.
 - [ ] runtime restart가 필요한지와 승인 범위를 먼저 확인한다.
 

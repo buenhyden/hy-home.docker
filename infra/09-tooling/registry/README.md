@@ -95,10 +95,10 @@ registry/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Docker Registry service leaf in `09-tooling`; services: `registry`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Purpose | Docker Registry service leaf in `09-tooling`; services: `registry`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `tooling`, `registry` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
 | Ports | `${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}` |

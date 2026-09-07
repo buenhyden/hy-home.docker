@@ -61,10 +61,10 @@ mongodb/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | MongoDB Replica Set service leaf in `04-data`; optional/commented root include; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
+| Purpose | MongoDB Replica Set service leaf in `04-data`; unconditional root include, profile-selected; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD_FILE`, `ME_CONFIG_MONGODB_ENABLE_ADMIN`, `ME_CONFIG_MONGODB_AUTH_DATABASE`, `ME_CONFIG_MONGODB_ADMINUSERNAME`, `ME_CONFIG_MONGODB_ADMINPASSWORD_FILE`, `ME_CONFIG_MONGODB_SERVER`, `ME_CONFIG_MONGODB_REPLICA_SET`, plus 2 more; profiles: `data`, `obs` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `mongo-key:/data/configdb:rw`, `mongodb1-data:/data/db:rw`, `mongo-key:/data/configdb:ro`, `mongodb2-data:/data/db:rw`, `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` |
 | Ports | `${MONGO_EXPRESS_PORT:-8081}`, `${MONGO_EXPORTER_PORT:-9216}` |

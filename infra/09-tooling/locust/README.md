@@ -67,7 +67,7 @@ locust/
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Locust.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must include root `infra_net` context because the root include is optional/commented.
+- Runtime rendering must include root `infra_net` context because the root file includes this leaf unconditionally and the `tooling` and `testing` profiles decide whether its services resolve.
 
 ## Troubleshooting
 
@@ -84,10 +84,10 @@ locust/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | 🦗 Locust Load Testing Infrastructure service leaf in `09-tooling`; services: `locust-master`, `locust-worker`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
+| Purpose | 🦗 Locust Load Testing Infrastructure service leaf in `09-tooling`; services: `locust-master`, `locust-worker`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `locust-data:/mnt/locust:rw`, `locust-data` |
 | Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |

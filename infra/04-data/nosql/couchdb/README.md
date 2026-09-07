@@ -61,10 +61,10 @@ couchdb/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | CouchDB Cluster service leaf in `04-data`; optional/commented root include; services: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` |
+| Purpose | CouchDB Cluster service leaf in `04-data`; unconditional root include, profile-selected; services: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `COUCHDB_USER`, `NODENAME`; profiles: `data` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `couchdb1-data:/opt/couchdb/data:rw`, `couchdb2-data:/opt/couchdb/data:rw`, `couchdb3-data:/opt/couchdb/data:rw`, `couchdb1-data`, `couchdb2-data`, `couchdb3-data` |
 | Ports | `${COUCHDB_PORT:-5984}`, `${COUCHDB_ERLANG_MAPPER_PORT:-4369}`, `${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}` |

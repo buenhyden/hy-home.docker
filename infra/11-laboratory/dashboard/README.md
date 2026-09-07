@@ -51,10 +51,10 @@ dashboard/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Laboratory Dashboard (Homer) service leaf in `11-laboratory`; services: `homer`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
+| Purpose | Laboratory Dashboard (Homer) service leaf in `11-laboratory`; services: `homer`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
 | Config files | `docker-compose.yml`, `config`, `config/config.yml` |
 | Config values | env keys: `INIT_ASSETS`; profiles: `admin` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `./config:/www/assets` |
 | Ports | No host `ports`; Traefik targets internal `${HOMER_PORT:-8080}` via `expose` |

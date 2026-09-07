@@ -30,7 +30,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 - Service definitions across 11 functional tiers.
 - Global orchestration via root `docker-compose.yml`.
-- Inventory status for root-active, optional, standalone, and variant Compose files.
+- Compose file inventory, and the profile that selects each service.
 - Standardized execution models using **Docker Profiles** (`core`, `data`, `obs`, etc.).
 - Resource optimization and security hardening templates.
 
@@ -58,16 +58,18 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 ## Compose Inventory Snapshot
 
-`infra/`에는 현재 48개의 Compose variant 파일이 있습니다. 이 중 47개는 `docker-compose*.yml`이고 1개는 명시적으로 excluded/report-only 처리되는 `docker-compose*.yaml` cluster variant입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 17개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
+`infra/`에는 41개의 Compose 파일이 있습니다. 이 중 40개는 `docker-compose*.yml`이고 1개는 MinIO cluster variant인 `docker-compose.cluster.yaml`입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`은 이 41개를 모두 주석 없이 `include`합니다.
 
-| Status | Meaning | Documentation Rule |
+파일 목록은 무엇이 기동되는지를 결정하지 않습니다. `include:`는 파일을 무조건 병합하고, 선택한 profile이 어떤 서비스가 resolve되는지를 결정합니다. profile 이름의 canonical 정의는 [Compose Profile Vocabulary Policy](../docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)가 소유합니다.
+
+| Fact | Value | Documentation Rule |
 | --- | --- | --- |
-| `root-active` | 루트 `include`에 주석 없이 포함된 Compose 파일 | 루트 실행면으로 문서화할 수 있음 |
-| `root-commented-optional` | 루트 `include`에 주석 처리된 optional Compose 파일 | 보유 구성으로만 설명하고 기본 실행면으로 과장하지 않음 |
-| `standalone-only` | `infra/`에 존재하지만 루트 include 목록에 없는 Compose 파일 | service README와 직접 실행 절차를 기준으로 설명 |
-| `dev/cluster variant` | `.dev.yml`, `.cluster.yml`, v2 등 대체 실행 파일 | 대상 profile과 검증 범위를 함께 기록 |
+| Compose 파일 | 41 | 파일 존재가 곧 기동을 뜻하지 않음 |
+| Service directory | 40 | MinIO leaf만 파일 2개를 보유 |
+| 루트 `include` 항목 | 41 | 주석 처리된 include 항목은 없음 |
+| 활성화 결정자 | 선택한 profile | 서비스 설명은 그 서비스의 `profiles:` 값을 근거로 작성 |
 
-현재 `root-active` 파일은 gateway/auth/security, MinIO, mng-db, Supabase, Neo4j, Qdrant, Kafka dev, RabbitMQ, observability dev, n8n dev, Airflow dev, Dozzle, RedisInsight, Open Notebook으로 제한됩니다. 전체 보유 Compose 수와 root-active 수를 혼동하지 않습니다.
+profile을 하나도 선택하지 않으면 어떤 서비스도 resolve되지 않습니다. 서비스를 "루트에 포함되었다"는 이유로 기본 실행면으로 서술하지 않고, 그 서비스를 선택하는 profile 이름을 함께 적습니다.
 
 ## Tech Stack
 
@@ -156,7 +158,7 @@ service directory and cover the following agent-verifiable fields:
 
 | Field | Required evidence |
 | :--- | :--- |
-| Purpose | Service role, tier, and root-active or standalone status |
+| Purpose | Service role, tier, and the profiles that select its services |
 | Config files | Local `docker-compose*.yml`, Dockerfile, scripts, and mounted config paths |
 | Config values | Non-secret environment keys and defaults that affect operation |
 | Compose linkage | Root include/profile status and any variant compose files |
@@ -173,7 +175,7 @@ service directory and cover the following agent-verifiable fields:
 ## How to Work in This Area
 
 1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
-2. **Global Integration**: 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가할 때 `root-active`, `root-commented-optional`, `standalone-only`, `dev/cluster variant` 상태를 함께 갱신합니다.
+2. **Global Integration**: 새 서비스 compose 파일은 루트 `docker-compose.yml`의 `include`에 주석 없이 추가하고, 각 서비스에 `profiles:`를 선언한 뒤 그 이름을 POL-0078에 등록합니다.
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
 4. **Validation**: `scripts/validation/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 

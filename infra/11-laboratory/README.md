@@ -12,7 +12,7 @@ created: "2026-03-26"
 
 ## Overview
 
-`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 현재 root-active 서비스는 Dozzle, RedisInsight, Open Notebook, SurrealDB이며 Homer Dashboard와 Portainer는 optional/commented root include로 유지된다.
+`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 루트 compose는 이 계층의 다섯 compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. Dozzle, RedisInsight, Open Notebook, SurrealDB는 `admin`과 `dev` profile에서, Homer Dashboard와 Portainer는 `admin` profile에서만 선택된다.
 
 ## Architecture
 

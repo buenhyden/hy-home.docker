@@ -46,7 +46,7 @@ created: "2026-05-10"
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
-   - root-active leaf는 `docker-compose.dev.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey`를 사용
+   - 루트가 include하는 leaf는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey`를 사용
    - local/full leaf는 `docker-compose.yml`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey`를 사용
    - command가 `--config /etc/oauth2-proxy.cfg`인지 확인
    - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인

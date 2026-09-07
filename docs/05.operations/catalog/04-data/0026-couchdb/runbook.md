@@ -36,7 +36,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 ### Checklist
 
-- [ ] 루트 compose에서 CouchDB include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] 루트 compose의 `include:` 목록에 CouchDB 파일이 있는지 확인하고, 이번 런타임에서 `data` profile을 선택했는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`로만 기록한다.
 - [ ] 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
@@ -108,7 +108,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 - Capture command names, pass/fail status, service states, image tags, sanitized logs, and membership summary.
 - Do not capture secret values, cookie values, or full authenticated HTTP output if it includes sensitive fields.
-- Record whether CouchDB was optional/commented in root compose or explicitly included for the runtime session.
+- Record which profiles were selected for the runtime session; the root file includes the CouchDB compose file unconditionally and the `data` profile decides whether its services resolve.
 
 ## Rollback or Recovery
 

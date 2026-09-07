@@ -61,10 +61,10 @@ cassandra/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Apache Cassandra service leaf in `04-data`; optional/commented root include; services: `cassandra-node1`, `cassandra-exporter` |
+| Purpose | Apache Cassandra service leaf in `04-data`; unconditional root include, profile-selected; services: `cassandra-node1`, `cassandra-exporter` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `CASSANDRA_SEEDS`, `CASSANDRA_PASSWORD_SEEDER`, `CASSANDRA_USER`, `CASSANDRA_PASSWORD_FILE`, `MAX_HEAP_SIZE`, `HEAP_NEWSIZE`; profiles: `data`, `obs` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
 | Ports | `${CASSANDRA_EXPORTER_PORT:-8080}`, `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}`, `${CASSANDRA_INTER_NODE_PORT:-7000}`, `${CASSANDRA_CLIENT_PORT:-9042}` |

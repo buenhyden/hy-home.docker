@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`10-communication` 계층은 시스템의 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. 현재 구현은 root optional/commented include인 `mail` leaf로 구성되며 Stalwart와 MailHog를 핵심 구성 요소로 사용한다.
+`10-communication` 계층은 시스템의 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. 현재 구현은 루트가 무조건 include하는 `mail` leaf로 구성되며 Stalwart와 MailHog를 핵심 구성 요소로 사용한다. 두 서비스 모두 `communication` profile에서만 선택된다.
 
 ## Architecture
 
@@ -62,7 +62,7 @@ graph TD
 
 ### Deployment
 
-이 tier의 root include는 현재 optional/commented 상태다. static readiness는 다음 기준으로 확인한다.
+이 tier의 compose 파일은 루트가 무조건 include하며 `communication` profile을 선택하지 않으면 어떤 서비스도 resolve되지 않는다. static readiness는 다음 기준으로 확인한다.
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 10-communication

@@ -37,7 +37,7 @@ created: "2026-05-17"
   - `infra_net` static IP는 authoritative mapping `172.19.0.228`(Stalwart), `172.19.0.229`(MailHog)를 사용해야 함.
 - **Allowed**:
   - 개발 환경에서의 MailHog를 통한 자유로운 메일 캡처 및 테스트.
-  - 운영 승격 전 optional/commented root include 상태로 static hardening 검증만 수행.
+  - 운영 승격 전에는 `communication` profile을 선택하지 않은 상태로 static hardening 검증만 수행.
 - **Disallowed**:
   - 인증되지 않은 릴레이(Open Relay) 설정은 엄격히 금지됨.
   - 서비스 로컬 standalone compose render를 root readiness evidence로 사용하는 행위.

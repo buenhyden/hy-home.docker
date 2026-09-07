@@ -31,7 +31,7 @@ created: "2026-05-17"
 - **Required**: OpenSearch API checks must use HTTPS and secret-backed admin authentication.
 - **Required**: primary stack operations must target `opensearch`; cluster-variant operations must explicitly target `opensearch-node1..3`.
 - **Required**: secret values and generated internal user material must not be copied into docs or command history.
-- **Allowed**: optional cluster variant validation when the command names `docker-compose.cluster.yml`.
+- **Allowed**: cluster topology validation when the command selects the `data-cluster` profile.
 - **Disallowed**: unauthenticated bulk load, HTTP-only health checks, or claims that a replica policy exists without index/ISM evidence.
 
 ## Exceptions

@@ -48,10 +48,10 @@ ollama/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Ollama Inference Engine service leaf in `08-ai`; services: `ollama`, `ollama-exporter`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
+| Purpose | Ollama Inference Engine service leaf in `08-ai`; services: `ollama`, `ollama-exporter`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; profiles: `ai`, `dev` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
 | Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` for Ollama API; exporter exposes `${OLLAMA_EXPORTER_PORT:-8000}` inside `infra_net` |

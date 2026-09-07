@@ -39,7 +39,7 @@ created: "2026-03-26"
 
 ## Functional Requirements
 
-- **REQ-0006-FR-0001**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml`은 3 broker full compose이며, root `docker-compose.yml`은 dev compose(`docker-compose.dev.yml`)를 include해 단일 broker로 렌더링한다.
+- **REQ-0006-FR-0001**: Apache Kafka (KRaft mode)를 제공한다. `infra/05-messaging/kafka/docker-compose.yml` 한 파일이 두 topology를 모두 담는다. root `docker-compose.yml`이 이를 무조건 include하며, `messaging`/`dev` profile은 단일 broker로, `messaging-cluster` profile은 3 broker로 렌더링한다.
 - **REQ-0006-FR-0002**: RabbitMQ를 통한 표준 AMQP 0-9-1 프로토콜 지원.
 - **REQ-0006-FR-0003**: Avro/JSON 스키마 관리를 위한 Schema Registry 제공.
 - **REQ-0006-FR-0004**: 웹 기반 관리 UI(Kafbat, RabbitMQ Management) 제공.

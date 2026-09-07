@@ -97,10 +97,10 @@ sonarqube/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | SonarQube Code Quality service leaf in `09-tooling`; services: `sonarqube`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
+| Purpose | SonarQube Code Quality service leaf in `09-tooling`; services: `sonarqube`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD_FILE`, `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; profiles: `tooling`, `sast` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `sonarqube-data-volume:/opt/sonarqube/data:rw`, `sonarqube-logs-volume:/opt/sonarqube/logs:rw`, `sonarqube-data-volume`, `sonarqube-logs-volume` |
 | Ports | `${SONARQUBE_PORT:-9000}` |

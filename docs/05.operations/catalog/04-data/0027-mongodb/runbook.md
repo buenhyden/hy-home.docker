@@ -36,7 +36,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 
 ### Checklist
 
-- [ ] 루트 compose에서 MongoDB include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] 루트 compose의 `include:` 목록에 MongoDB 파일이 있는지 확인하고, 이번 런타임에서 선택한 profile(`data`, `obs`)을 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] replica set name은 compose-declared `MyReplicaSet`으로만 기록한다.
@@ -109,7 +109,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 
 - Capture command names, pass/fail status, service states, image tags, sanitized logs, and replica member state summary.
 - Do not capture secret values, full MongoDB documents, or credential-backed URI strings with passwords.
-- Record whether MongoDB was optional/commented in root compose or explicitly included for the runtime session.
+- Record which profiles were selected for the runtime session; the root file includes the MongoDB compose file unconditionally and `data` or `obs` decides which of its services resolve.
 
 ## Rollback or Recovery
 

@@ -78,7 +78,7 @@ created: "2026-03-26"
 ## Deployment View
 
 - **Runtime**: Docker Compose 기반 컨테이너.
-- **Deployment Model**: `communication` 프로필로 그룹화. root `docker-compose.yml`의 mail include는 현재 optional/commented 상태이며, 운영 승격 시 DNS, 인증서, 포트 개방, secret evidence를 함께 검증한다.
+- **Deployment Model**: `communication` 프로필로 그룹화. root `docker-compose.yml`은 mail compose 파일을 무조건 include하고 그 프로필을 선택할 때만 서비스가 resolve되며, 운영 승격 시 DNS, 인증서, 포트 개방, secret evidence를 함께 검증한다.
 - **Networking**: Traefik Reverse Proxy를 통해 Stalwart/MailHog 관리 UI를 노출하며, Stalwart는 SMTP/Submission/SMTPS/IMAPS/ManageSieve 포트(25, 587, 465, 993, 4190)를 직접 바인딩한다.
 
 ## Traceability

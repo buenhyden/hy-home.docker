@@ -39,10 +39,10 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Laboratory Portainer service leaf in `11-laboratory`; services: `portainer`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
+| Purpose | Laboratory Portainer service leaf in `11-laboratory`; services: `portainer`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `admin` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock`, `portainer-data:/data`, `portainer-data` |
 | Ports | Not declared |
@@ -57,7 +57,7 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 
 ### 1. Initial Setup
 
-1. Confirm the root Portainer include is intentionally enabled; it is optional/commented by default.
+1. Confirm the `admin` profile is selected; the root file includes this leaf unconditionally and `portainer` resolves only under that profile.
 2. Validate the static boundary with `bash scripts/hardening/check-all-hardening.sh 11-laboratory`.
 3. Access `https://portainer.${DEFAULT_URL}` only after approved runtime promotion and set the initial admin password.
 

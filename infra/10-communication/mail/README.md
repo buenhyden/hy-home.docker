@@ -95,10 +95,10 @@ mail/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Mail Infrastructure service leaf in `10-communication`; services: `stalwart`, `mailhog`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
+| Purpose | Mail Infrastructure service leaf in `10-communication`; services: `stalwart`, `mailhog`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `STALWART_ADMIN_USER`; profiles: `communication` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
 | Networks | `infra_net` static IPs `172.19.0.228` (Stalwart), `172.19.0.229` (MailHog) |
 | Volumes | `stalwart-data:/opt/stalwart:rw`, `../../../secrets/certs:/opt/stalwart/certs:ro`, `stalwart-data` |
 | Ports | `${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}`, `${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}`, `${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}`, `${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}`, `${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}` |

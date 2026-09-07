@@ -32,7 +32,7 @@ created: "2026-09-04"
 - 비대상: profile이 선택한 뒤의 서비스 설정 내용, 이미지 버전, secret 값,
   network 주소 체계
 
-- **Systems**: `infra/` 하위 Compose 파일 47개 중 root가 include하는 41개, 서비스 127개
+- **Systems**: `infra/` 하위 Compose 파일 41개 전체. root가 이를 모두 include한다
 - **Agents**: Infra/DevOps/Operations 역할의 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
@@ -40,7 +40,8 @@ created: "2026-09-04"
 
 아래 세 표의 서비스 수는 root가 include하는 41개 파일 기준이며,
 `docker compose config --services`가 해당 profile 하나만 선택했을 때 내놓는
-수와 일치한다. SPEC-0171이 보류한 6개 파일의 서비스는 세지 않는다.
+수와 일치한다. SPEC-0171이 남겨 두었던 6개 sibling 파일은 그 package가
+완료되면서 짝을 이루던 파일로 병합되었으므로 별도로 세지 않는다.
 
 profile 이름은 세 종류로 나뉜다.
 

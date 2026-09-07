@@ -35,7 +35,7 @@ Portainer의 optional root include 상태와 write-capable Docker socket 위험�
 
 ### Checklist
 
-- [ ] Portainer root include가 optional/commented인지 또는 승인되어 활성화됐는지 기록한다.
+- [ ] Portainer compose 파일이 루트 include 목록에 있는지 확인하고, 이번 세션에서 `admin` profile을 선택했는지 기록한다.
 - [ ] Docker socket mount와 Portainer data path 변경 내역을 기록한다.
 - [ ] 관리자 계정 reset, data restore, endpoint 등록 변경은 승인 필요 작업으로 분리한다.
 

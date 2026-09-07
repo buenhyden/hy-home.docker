@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리한다. 현재 루트 compose에서는 `postgresql-cluster` include가 주석 처리된 선택 서비스이며, 필요 시 Patroni/etcd/PostgreSQL/HAProxy cluster compose를 명시적으로 포함해 실행한다.
+이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리한다. 루트 compose는 `postgresql-cluster` compose 파일을 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. etcd, Patroni/PostgreSQL 노드, `pg-router`, exporter는 모두 `data`와 `service` profile에 속한다.
 
 ## Audience
 

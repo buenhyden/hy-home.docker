@@ -55,9 +55,9 @@ opensearch/
 | Field | Evidence |
 | --- | --- |
 | Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; optional cluster variant services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
-| Config files | `docker-compose.cluster.yml`, `docker-compose.yml` |
+| Config files | `docker-compose.yml` |
 | Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `data` |
-| Compose linkage | primary compose root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml); `docker-compose.cluster.yml` is a local optional cluster variant |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml`; the single-node topology is the `data` profile and the three-node topology is `data-cluster`, both in that one file |
 | Networks | `infra_net` |
 | Volumes | `opensearch-data1:/usr/share/opensearch/data`, `../../../../secrets/certs:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2`, plus 15 more |
 | Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
@@ -84,7 +84,7 @@ opensearch/
 
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- `docker-compose.cluster.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
+- The `data-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
 
 ## Troubleshooting
 

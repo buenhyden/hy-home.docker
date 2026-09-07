@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 보유되어 있으며 root `docker-compose.yml`에서는 optional include로 주석 처리되어 있다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 root include가 승인되어 활성화된 런타임을 기준으로 수행한다.
+이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `open-webui`는 `ai` profile을 선택할 때 기동된다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
 ### Usage Type
 

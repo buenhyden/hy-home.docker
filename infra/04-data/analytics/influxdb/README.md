@@ -51,10 +51,10 @@ influxdb/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
+| Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | profile: `data`; database key: `INFLUXDB_DB_NAME` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) |
 | Networks | `infra_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw` |
 | Ports | No host port declared; Traefik service port `${INFLUXDB_PORT:-8181}` |

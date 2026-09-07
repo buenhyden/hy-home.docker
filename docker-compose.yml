@@ -205,9 +205,10 @@ include:
   # starts. Selecting no profile resolves no service. The profile vocabulary is
   # docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md.
   #
-  # Six sibling pair members are absent on purpose: they declare the same
-  # service names as an included file, and include: merges before profiles are
-  # evaluated. SPEC-0171 owns them.
+  # Six former sibling-pair files are gone rather than excluded: each declared
+  # the same service names as its partner, and include: merges before profiles
+  # are evaluated. SPEC-0171 folded them into the file they duplicated and is
+  # completed, so every Compose file under infra/ appears in this list.
   # 01-gateway
   - infra/01-gateway/nginx/docker-compose.yml
   - infra/01-gateway/traefik/docker-compose.yml
