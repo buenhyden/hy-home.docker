@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0173-PLAN-0001"
 parent_ids:
@@ -29,9 +29,11 @@ execution and verification ledger. This Plan remains active until the package's
 whole acceptance contract can receive an atomic lifecycle disposition.
 
 The current authorization covers the integrated `8176cdee7` checkpoint, local
-documentation follow-up and review on the same
-`codex/0173-agent-governance-home` branch, and local commits. It does not imply
-integration of later unreviewed work. Push, pull request, deployment, secrets,
+documentation follow-up and review on a short branch cut from `main`, and local
+commits. The branch that originally carried this work was retired into `main`,
+so position is read from Git with `git rev-parse --abbrev-ref HEAD`,
+`git rev-parse HEAD`, and `git log --oneline origin/main..HEAD` rather than from
+a name written here. It does not imply integration of later unreviewed work. Push, pull request, deployment, secrets,
 global runtime settings, installation, Hosted CI and remote-state mutation
 remain outside scope.
 

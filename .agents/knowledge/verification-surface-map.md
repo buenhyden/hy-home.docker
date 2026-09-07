@@ -1,6 +1,6 @@
 ---
 title: "Verification Surface Map"
-version: "0.2.0"
+version: "0.3.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
@@ -100,12 +100,16 @@ to avoid the pre-commit intermediate-stash race, not the Wiki snapshots.
 
 ## Provenance
 
-Read from `.github/workflow-contract.yml` `public_gate` and
-`.pre-commit-config.yaml` at repository commit
-`9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06. Suite and prefix rows
-are transcribed from those files, not summarized from prose. The workflow
-contract remains the authority for execution; a disagreement between this map
-and that file is a defect in this map.
+Each transcribed source names the commit it was read at, because they were not
+read at the same time. Suite and prefix rows come from `.github/workflow-contract.yml`
+`public_gate` at `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06, and
+that section has not changed since. The `.pre-commit-config.yaml` selector was
+re-read at `9051977aa` on 2026-09-07, where it gained the `_workspace/` and
+`evals/` prefixes the contract already routed; the earlier provenance named one
+commit for both files and so dated that selector to before its own fix. Rows are
+transcribed from those files, not summarized from prose. The workflow contract
+remains the authority for execution; a disagreement between this map and that
+file is a defect in this map.
 
 The Test Ownership table has a different source and had no stated one when this
 map was written, which is how it came to describe a `tests/fixtures/` layer that

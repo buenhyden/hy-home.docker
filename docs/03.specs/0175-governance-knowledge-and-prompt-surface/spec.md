@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Specification"
-version: "0.9.0"
+version: "0.9.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -38,9 +38,14 @@ agent catalog is stale.
 
 ## Boundaries and Inputs
 
-- Baseline: `codex/0173-agent-governance-home` at
-  `9ede309a5b1feba91e6f8b973a729716b14c55ab`, clean worktree, seven commits
-  ahead of `origin/main` at `8176cdee732954415bc5462d6d4d43da4e319394`.
+- Baseline, as a dated checkpoint rather than a current position: this package
+  began at `9ede309a5b1feba91e6f8b973a729716b14c55ab` with a clean worktree,
+  seven commits ahead of `origin/main` at
+  `8176cdee732954415bc5462d6d4d43da4e319394`. The branch that carried it was
+  retired into `main` at W13 and no longer resolves. A resuming session reads
+  position from Git with `git rev-parse --abbrev-ref HEAD`, `git rev-parse HEAD`,
+  and `git log --oneline origin/main..HEAD`; the Task's Commit Ledger is the
+  authority for what this package produced.
 - SPEC-0173 remains active and its documents are untouched. Its Rulings forbid
   introducing a new policy, Spec, Plan, or Task inside that package, so this work
   takes its own package rather than extending that acceptance contract.

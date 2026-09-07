@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.3.4"
+version: "0.3.5"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0173"
 parent_ids:
@@ -34,9 +34,17 @@ sole ledger for package review and outstanding acceptance evidence.
 ## Boundaries and Inputs
 
 - Original relocation provenance: local main
-  `e5685b42c92039618ae86cca8736b6a425630221`, then clean. Current review
-  baseline: local main `8176cdee732954415bc5462d6d4d43da4e319394`;
-  `codex/0173-agent-governance-home` points to the same commit.
+  `e5685b42c92039618ae86cca8736b6a425630221`, then clean. The relocation was
+  reviewed at local main `8176cdee732954415bc5462d6d4d43da4e319394`, which is a
+  dated checkpoint and not the current position: `main` has advanced past it and
+  the `codex/0173-agent-governance-home` branch that carried it was retired into
+  `main` and no longer resolves.
+- Position is read from Git rather than from a branch name, because the short
+  branches this package used were retired at integration. A resuming session runs
+  `git rev-parse --abbrev-ref HEAD` for the branch, `git rev-parse HEAD` for the
+  commit, and `git log --oneline origin/main..HEAD` for what is not yet on the
+  remote. `main` is the integration target and Task 0006's Commit Ledger is the
+  authority for what this package produced.
 - In scope: all former governance sources and their direct/indirect consumers,
   provider/core contracts, Registry/schema/templates, hooks, tests, active links,
   navigation, CI selection and affected registered generated outputs.
@@ -92,9 +100,11 @@ sole ledger for package review and outstanding acceptance evidence.
 8. `scripts/lib/<domain>/` contains importable or sourceable domain logic.
    Executable operation and validation entrypoints live under
    `scripts/operations/` and `scripts/validation/` respectively.
-9. `tests/lib/<domain>/` verifies library behavior, `tests/validation/` verifies
-   CLI and execution context, and `tests/fixtures/` contains test-only synthetic
-   input. Production scripts do not read `tests/`.
+9. `tests/lib/<domain>/` verifies library behavior and `tests/validation/`
+   verifies CLI and execution context. Test-only synthetic input lives in
+   underscore-prefixed modules beside the suite that uses it; Task 0004 emptied
+   `tests/fixtures/` and the directory is absent. Production scripts do not read
+   `tests/`.
 10. Static fixture files are retained only when the serialized format is itself
     a contract with independent reuse value. Single-field negative variants use
     deterministic table-driven builders.

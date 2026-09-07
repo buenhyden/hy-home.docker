@@ -1,12 +1,12 @@
 ---
 title: "Repository Authority Map"
-version: "0.1.0"
+version: "0.2.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 created: "2026-09-06"
-observed_at: "2026-09-06"
+observed_at: "2026-09-07"
 review_cycle: "on-surface-change"
 ---
 
@@ -60,13 +60,18 @@ anything outside this repository.
 2. [Bootstrap policy](../governance/bootstrap.md) and the matching authored
    provider adapter.
 3. Only the policies, canonical role, and explicitly invoked skills the request
-   needs.
+   needs, plus `.agents/knowledge/` when the request needs to find which surface
+   owns something and `.agents/prompts/` when it produces a handoff, a diff
+   review, a commit message, or a test design.
 4. For a repository change, the governing Requirement, Architecture, and Spec
    Package plus its current Task.
 5. The applicable registered gates, with evidence recorded in that Task.
 
 Loading more than the request needs is a cost, not a safeguard. Discovery of any
-file in this map grants no permission.
+file in this map grants no permission, and neither knowledge nor prompts grant a
+tool, a path, or an approval; the selected role's permission profile still
+governs. [`bootstrap.md`](../governance/bootstrap.md) owns this order and this
+list restates it; a disagreement between them is a defect here.
 
 ## Where Similar Things Differ
 
@@ -86,12 +91,15 @@ Derived by reading tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06: the canonical
 governance policies, the Provider Registry, the Stage 99 registry, the workflow
 contract's `public_gate` section, `scripts/manifest.yaml`, and the stage index
-documents. The knowledge graph under `graphify-out/` was not used as evidence
+documents. The Entry Order was re-read from `bootstrap.md` at `f71449eff` on
+2026-09-07, because the version transcribed here predated the two canonical
+categories this map's own ownership table lists and so routed to neither. The knowledge graph under `graphify-out/` was not used as evidence
 because its build commit differs from HEAD.
 
 ## Refresh Triggers
 
 - A canonical category is added to or removed from `.agents/`.
+- `bootstrap.md` changes the canonical load order this map restates.
 - A public suite, gate node, or changed-path rule changes in the workflow
   contract.
 - A Stage 99 profile path pattern changes.

@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -299,6 +299,73 @@ This changes acceptance criterion 8, which asked for the corrected counts. The
 criterion is amended in the Spec to require the routing statement instead,
 because writing 28 would have reproduced the defect at the next ADR.
 
+### W6: The map that routes did not route to two of its own categories (2026-09-07, local-executed)
+
+`repository-map.md` lists `.agents/knowledge/**` and `.agents/prompts/**` in its
+Surface Ownership table and then restates a canonical load order whose step 3
+reads "Only the policies, canonical role, and explicitly invoked skills the
+request needs". `bootstrap.md` step 3 has named both categories and their
+conditions since SPEC-0175 W14 corrected exactly this failure in the provider
+adapters. The knowledge map was the third entry path with the same gap and was
+not corrected then.
+
+The step now states when to read each category and repeats that neither grants a
+tool, a path, or an approval. It also names `bootstrap.md` as the owner of the
+order and this list as a restatement, so a future divergence is a defect here
+rather than an open question, and a refresh trigger was added for a change to
+that order.
+
+`verification-surface-map.md` named one commit as the provenance for two files
+that were not read at the same time. Its `.pre-commit-config.yaml` rows describe
+the selector after `9051977aa` added the `_workspace/` and `evals/` prefixes,
+while the stated commit `9ede309a5` predates that fix. The workflow-contract half
+was verified unchanged before rewriting the stanza:
+
+```text
+git diff 9ede309a5 HEAD -- .github/workflow-contract.yml   (empty)
+git diff 9ede309a5 HEAD -- .pre-commit-config.yaml         two selector lines
+```
+
+Each source now carries its own commit and date.
+
+### W7: Position recorded from Git instead of a branch that no longer resolves (2026-09-07, local-executed)
+
+```text
+git rev-parse --verify codex/0173-agent-governance-home          fatal: Needed a single revision
+git rev-parse --verify origin/codex/0173-agent-governance-home   fatal: Needed a single revision
+git rev-list --count 8176cdee7..HEAD                             45
+```
+
+SPEC-0173's Spec called local main `8176cdee7` the "current review baseline" and
+said the branch points at the same commit. The branch was retired at `2a939c68a`
+and `main` is forty-five commits past that checkpoint. SPEC-0175 stated the same
+branch as its baseline in its Spec and Plan, even though its own Task had already
+concluded that "a branch name in a Task is stale by construction" and replaced
+its own reference with three Git commands. The correction that package applied to
+itself is now applied to its Spec and Plan and to SPEC-0173's two documents:
+each commit hash that names a dated event stays, each claim that a hash or branch
+is current is replaced by the commands that read position.
+
+Two further stale facts were corrected in the same pass. SPEC-0173's behavior
+contract 9 described `tests/fixtures/` as holding test-only synthetic input while
+its own Task 0004 emptied that directory, which `git ls-files tests/fixtures`
+confirms holds zero paths; the contract now names the underscore-prefixed modules
+that replaced it. SPEC-0175's Plan called ADR-0034 proposed after that decision
+reached `accepted`.
+
+SPEC-0173's acceptance criteria are otherwise untouched, and no status in that
+package changed.
+
+```text
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+  selected=53 violations=0
+python3 scripts/validation/check-document-links.py --mode all
+  documents=713 links=6142 failures=0
+python3 scripts/validation/check-agent-governance-contract.py   PASS failures=0
+python3 -m unittest tests.lib.agent_governance.test_agent_governance_contract
+  Ran 39 tests, OK
+```
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -311,10 +378,10 @@ because writing 28 would have reproduced the defect at the next ADR.
 | 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | [preserved ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) |
 | 7 | W5 | PASS: FR-0009, Constraints and Acceptance Criteria state the Spec/Plan/Task preservation unit; no transient-removal clause remains | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
 | 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block names 0030- and 0034- | [Stage 02 index](../../../02.architecture/README.md) |
-| 9 | W6 | NOT_RUN: pending | pending |
-| 10 | W6 | NOT_RUN: pending | pending |
-| 11 | W7 | NOT_RUN: pending | pending |
-| 12 | W7 | NOT_RUN: pending | pending |
+| 9 | W6 | PASS: step 3 names both categories with the conditions bootstrap.md states, and names bootstrap.md as the owner of the order | [repository map](../../../../.agents/knowledge/repository-map.md) |
+| 10 | W6 | PASS: the workflow contract half is unchanged since 9ede309a5 and the pre-commit half is dated to 9051977aa, each named separately | [verification surface map](../../../../.agents/knowledge/verification-surface-map.md) |
+| 11 | W7 | PASS: `git rev-parse --verify` resolves neither the local nor the remote branch; both packages now state the three Git commands | [SPEC-0173 spec](../../0173-governance-qa-surface-convergence/spec.md) |
+| 12 | W7 | PASS: contract 9 names the underscore-prefixed modules; `git ls-files tests/fixtures` returns zero paths and no acceptance criterion changed | [SPEC-0173 spec](../../0173-governance-qa-surface-convergence/spec.md) |
 | 13 | W8 | NOT_RUN: pending | pending |
 | 14 | W8 | NOT_RUN: pending | pending |
 | 15 | W9 | NOT_RUN: pending | pending |
@@ -333,7 +400,8 @@ been performed. Recorded as NOT_RUN.
 | --- | --- |
 | `80b42feaa` | W1 package definition |
 | `51e203b71` | W2-W4 Compose enablement convergence |
-| pending | W5 and W9 preservation-owner promotion |
+| `f71449eff` | W5 and W9 preservation-owner promotion |
+| pending | W6 and W7 knowledge routing and Git-read position |
 
 ## Rulings
 

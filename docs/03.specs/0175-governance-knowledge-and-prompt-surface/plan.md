@@ -1,6 +1,6 @@
 ---
 title: "Governance Knowledge and Prompt Surface Implementation Plan"
-version: "0.10.0"
+version: "0.10.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -21,19 +21,21 @@ author their members, use them inside this package's own execution, and close
 the five defects SPEC-0175 names. Deliver each work unit as a separately
 reviewable logical commit so a reviewer can accept one and reject its neighbor.
 
-Authorization covers local work on `codex/0173-agent-governance-home`, local
-commits, integration into the local `main` branch, and retirement of the work
-branch and its worktree. It does not cover push, pull request, deployment, live
+Authorization covers local work on the short branch this package used, local
+commits, integration into the local `main` branch, and retirement of that branch
+and its worktree. The branch was retired at W13, so position is read from Git
+with `git rev-parse --abbrev-ref HEAD`, `git rev-parse HEAD`, and
+`git log --oneline origin/main..HEAD` rather than from a name written here. It does not cover push, pull request, deployment, live
 service action, credential values, global installation, or remote state. A
 registered hook blocks pushing to `main`; that block is respected rather than
 routed around, so `origin/main` is unchanged by this work.
 
 ## Dependencies
 
-- Baseline: `codex/0173-agent-governance-home` at
-  `9ede309a5b1feba91e6f8b973a729716b14c55ab`, clean worktree.
+- Baseline, as a dated checkpoint: `9ede309a5b1feba91e6f8b973a729716b14c55ab`
+  with a clean worktree, on a branch since retired into `main`.
 - Durable owners: REQ-0024 (amended with REQ-0024-FR-0014), AD-0027 (amended),
-  and proposed ADR-0034.
+  and accepted ADR-0034.
 - Concurrent package: SPEC-0173 stays active and unmodified. No file inside
   `docs/03.specs/0173-governance-qa-surface-convergence/` is touched.
 - Shared branch: SPEC-0173's Plan claims this work branch and has open Tasks on
