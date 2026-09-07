@@ -1,6 +1,6 @@
 ---
 title: "Verification Surface Map"
-version: "0.4.0"
+version: "0.5.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
@@ -109,9 +109,9 @@ on an unstaged working tree therefore reports fresh while the outputs are
 already stale, and the truth appears only after `git add`.
 
 Run the freshness check after staging, and carry the regenerated LLM Wiki
-outputs in the same commit as the document that changed them. The separate-unit
-rule in the quality standards targets `graphify-out/`, whose separation exists
-to avoid the pre-commit intermediate-stash race, not the Wiki snapshots.
+outputs in the same commit as the document that changed them. `graphify-out/`
+is not a comparable case: it is untracked local output, so it produces no diff
+to separate and the intermediate-stash race it once caused cannot occur.
 
 ## Test Ownership
 

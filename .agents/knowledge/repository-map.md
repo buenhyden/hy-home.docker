@@ -52,7 +52,7 @@ anything outside this repository.
 | `evals/**` | deterministic model-free agent-output evaluation | synthetic fixtures only | agent-output eval fixture gate |
 | `infra/**`, `docker-compose.yml` | the Compose layer | scoped Compose validation and Task approval | `validate-docker-compose.sh`, hardening checks |
 | `secrets/**` | path and policy context only | metadata-only evidence; values are never read | template security baseline |
-| `graphify-out/**` | generated navigation snapshot | advisory when its commit differs from HEAD | regenerate with the CLI; never hand-edit |
+| `graphify-out/**` | untracked local navigation snapshot | advisory when its commit differs from HEAD, and absent until rebuilt | regenerate with the CLI; never hand-edit or track |
 
 ## Entry Order
 

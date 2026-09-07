@@ -117,14 +117,13 @@ volumes/
 /_workspace/repo-support/*
 !/_workspace/repo-support/README.md
 
-# Graphify is optional generated intelligence for local exploration.
+# Graphify is optional generated intelligence for local exploration, and this
+# rule now governs the whole directory. Forty-seven files under it were tracked
+# while this line already ignored them, so a rebuild replaced a 148 MiB blob on
+# every graph-touching commit and each new dated backup was ignored while the
+# older ones were not. Rebuild locally with `graphify update .`, which costs no
+# API tokens; Git history holds the snapshots that were removed. Patterns under
+# an ignored directory are dead, so `cache/`, `manifest.json`, and `cost.json`
+# no longer need their own lines. Re-tracking anything here needs `git add -f`
+# and a stated reason.
 graphify-out/
-
-# optional: commit for shared extraction speed, skip to keep repo small
-graphify-out/cache/
-
-# mtime-based, invalid after git clone - always gitignore this
-graphify-out/manifest.json
-
-# local token tracking, not useful to share
-graphify-out/cost.json
