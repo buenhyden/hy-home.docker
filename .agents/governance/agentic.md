@@ -23,8 +23,11 @@ selection and permission mappings live in `.agents/governance/providers/registry
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.
 - The shared PostToolUse hook normalizes changed Markdown, shell, YAML, and JSON
-  text, runs `shfmt`, `shellcheck`, and `yamllint` on changed files where those
-  tools are available, and runs `git diff --check` before repository validators.
+  text, runs `shellcheck` and `yamllint` on changed files where those tools are
+  available, and runs `git diff --check` before repository validators. It runs
+  no formatter that `.pre-commit-config.yaml` does not register, reads that same
+  owner for the lint arguments and the frozen archive payloads its normalizer
+  must not rewrite, and fails closed when the owner declares no boundary.
   Inspect the resulting diff before committing.
 
 ## Delegation Contract

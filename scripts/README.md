@@ -224,8 +224,10 @@ private, offline scan cache.
 `scripts/hooks/post-tool-validate.sh` is a hook payload consumer. With no JSON
 payload or no changed paths, it exits successfully without running validators.
 Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
-validation; check-only mode disables whitespace writes and `shfmt -w` while
-preserving diff, syntax, and repo checks.
+validation; check-only mode disables whitespace writes while preserving diff,
+syntax, lint, and repo checks. The whitespace normalizer is the hook's only
+mutation, and it reads the registered mutator boundary from
+`.pre-commit-config.yaml` so a frozen archive payload keeps its bytes.
 
 `scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
 loads `.github/workflow-contract.yml`, selects the
