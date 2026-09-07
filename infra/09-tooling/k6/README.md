@@ -1,6 +1,6 @@
 ---
 title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -68,7 +68,7 @@ k6/
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Root `docker-compose.yml` does not currently include this leaf; runtime rendering must provide root `infra_net` context.
+- Runtime rendering must provide root `infra_net` context because the root file includes this leaf unconditionally and the `tooling` and `testing` profiles decide whether its services resolve.
 
 ## Troubleshooting
 
@@ -87,11 +87,11 @@ k6/
 | --- | --- |
 | Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6-master`; the root [docker-compose.yml](../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
+| Config values | profiles: `tooling`, `testing`; UI port keys: `K6_HOST_PORT`, `K6_PORT` |
 | Compose linkage | root include active; the `tooling` and `testing` profiles select `k6-master` |
 | Networks | `infra_net` |
 | Volumes | `k6-data:/mnt/locust:rw`, `k6-data` |
-| Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |
+| Ports | `${K6_HOST_PORT:-18189}:${K6_PORT:-8089}` |
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `k6-master` |

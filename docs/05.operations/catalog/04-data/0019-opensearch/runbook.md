@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -37,7 +37,7 @@ created: "2026-05-17"
 
 ### Checklist
 
-- [ ] primary compose or cluster compose selection is recorded.
+- [ ] `data` 단독인지 `data-cluster`까지 선택했는지 기록했다.
 - [ ] admin password is read securely and not persisted.
 - [ ] index or shard mutation requires owner approval.
 
@@ -65,9 +65,12 @@ created: "2026-05-17"
    docker logs opensearch-dashboards --tail 100
    ```
 
-4. Optional cluster variant는 별도 compose로 확인한다.
+4. cluster 구성은 같은 compose 파일의 `data-cluster` profile로 확인한다.
 
    ```bash
+   HYHOME_COMPOSE_PROFILES='data data-cluster' \
+     bash scripts/validation/validate-docker-compose.sh
+   docker logs opensearch-node1 --tail 100
    ```
 
 ### Verification Steps

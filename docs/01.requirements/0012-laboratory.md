@@ -1,6 +1,6 @@
 ---
 title: "Laboratory Tier (11-laboratory) Product Requirements"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -32,7 +32,7 @@ created: "2026-03-26"
 
 ### Key Use Cases
 
-- **통합 대시보드 접근**: optional Homer dashboard를 통해 curated 인프라 서비스 링크에 접근한다.
+- **통합 대시보드 접근**: `admin` profile이 선택하는 Homer dashboard를 통해 curated 인프라 서비스 링크에 접근한다.
 - **컨테이너 관리**: Portainer GUI를 사용하여 터미널 없이 컨테이너 로그 확인 및 재시작을 수행한다.
 - **데이터 시각화**: RedisInsight를 통해 Redis 클러스터의 키 분 분포 및 성능을 분석한다.
 - **노트북형 실험**: Open Notebook을 통해 로컬 지식 작업과 SurrealDB-backed 실험을 수행한다.
@@ -42,7 +42,7 @@ created: "2026-03-26"
 - **REQ-0012-FR-0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
 - **REQ-0012-FR-0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
 - **REQ-0012-FR-0003**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
-- **REQ-0012-FR-0004**: root-active Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **REQ-0012-FR-0004**: `admin` profile이 선택하는 Laboratory 서비스 6종(Homer, Portainer, Dozzle, RedisInsight, Open Notebook, SurrealDB)은 root compose `admin` profile 정적 검증에 포함되어야 한다.
 
 ## Non-functional Requirements
 

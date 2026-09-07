@@ -1,6 +1,6 @@
 ---
 title: "Specialized Data Services (04-data/specialized)"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,7 +14,7 @@ created: "2026-05-15"
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 root-active specialized data 서비스를 위한 구성을 포함한다. 현재 루트 compose는 Neo4j graph database와 Qdrant vector database를 active include로 참조한다.
+이 디렉터리는 `hy-home.docker` 인프라의 루트가 무조건 include하는 specialized data 서비스를 위한 구성을 포함한다. 현재 루트 compose는 Neo4j graph database와 Qdrant vector database를 active include로 참조한다.
 
 ## Audience
 

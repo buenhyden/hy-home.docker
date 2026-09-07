@@ -1,6 +1,6 @@
 ---
 title: "11-laboratory - Management & Laboratory Tier"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -85,9 +85,9 @@ Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 �
 
 - **Dashboard**: `homer.${DEFAULT_URL}` -> Homer internal `${HOMER_PORT:-8080}` (`admin` profile)
 - **Container UI**: `portainer.${DEFAULT_URL}` -> Portainer internal `${PORTAINER_PORT:-9443}` (`admin` profile)
-- **Logs UI**: `dozzle.${DEFAULT_URL}` -> Dozzle internal `${DOZZLE_PORT:-8080}` (root-active)
-- **Data UI**: `redisinsight.${DEFAULT_URL}` -> RedisInsight internal `${REDIS_INSIGHT_PORT:-5540}` (root-active)
-- **Notebook UI**: `open-notebook.${DEFAULT_URL}` -> Open Notebook web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` (root-active)
+- **Logs UI**: `dozzle.${DEFAULT_URL}` -> Dozzle internal `${DOZZLE_PORT:-8080}` (`admin` profile)
+- **Data UI**: `redisinsight.${DEFAULT_URL}` -> RedisInsight internal `${REDIS_INSIGHT_PORT:-5540}` (`admin` profile)
+- **Notebook UI**: `open-notebook.${DEFAULT_URL}` -> Open Notebook web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` (`admin` profile)
 
 ## Governance
 

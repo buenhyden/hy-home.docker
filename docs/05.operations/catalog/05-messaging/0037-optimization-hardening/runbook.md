@@ -1,6 +1,6 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 - `infrastructure-hardening` CI가 실패할 때
 - Kafka/RabbitMQ 관리 UI가 Traefik 경유로 비정상 응답할 때
-- Kafka dev compose가 경로/네트워크 오류로 기동 실패할 때
+- `messaging`/`dev` profile로 선택한 Kafka가 경로/네트워크 오류로 기동 실패할 때
 - 부동 태그 이미지 회귀가 발견될 때
 
 ## Procedure

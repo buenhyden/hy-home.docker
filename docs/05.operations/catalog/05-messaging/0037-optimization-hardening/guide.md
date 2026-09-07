@@ -1,6 +1,6 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ created: "2026-05-17"
 
 - UI 라우터에 SSO를 누락해 관리 경로가 과노출되는 실수
 - 부동 태그(`:main`)를 재도입해 예측 불가능한 런타임 회귀를 유발하는 실수
-- dev compose 경로를 repo-root 기준으로 작성해 파일 마운트 실패를 유발하는 실수
+- compose 파일 안의 마운트 경로를 repo-root 기준으로 작성해 파일 마운트 실패를 유발하는 실수
 - 하드닝 스크립트와 문서 링크를 함께 갱신하지 않는 실수
 - service-local compose가 root `infra_net` 및 secret context 없이 standalone으로 렌더링된다고 가정하는 실수
 
