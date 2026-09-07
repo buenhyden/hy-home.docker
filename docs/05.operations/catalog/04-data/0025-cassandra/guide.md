@@ -19,7 +19,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 루트 compose는 Cassandra 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `data` 프로파일의 `cassandra-node1`과 `data`/`obs` 프로파일의 `cassandra-exporter`가 `infra_net`에서 동작한다.
+이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 루트 compose는 Cassandra 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `cassandra-node1`과 `cassandra-exporter`가 `infra_net`에서 동작하며, 두 서비스 모두 `data`와 `obs` 프로파일에 속한다.
 
 ### Usage Type
 

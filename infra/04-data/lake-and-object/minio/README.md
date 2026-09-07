@@ -46,7 +46,7 @@ MinIO is the object storage service for `hy-home.docker`. This leaf is the only 
 
 ```text
 minio/
-├── docker-compose.yml          # Root-active single-node service plus bootstrap job
+├── docker-compose.yml          # Single-node service plus bootstrap job, storage profile
 ├── docker-compose.cluster.yaml # 4-node topology, selected by the storage-cluster profile
 ├── Dockerfile                  # Optional image/build context
 └── README.md                   # This file

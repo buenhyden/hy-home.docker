@@ -23,7 +23,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-Portainer의 optional root include 상태와 write-capable Docker socket 위험을 명확히 기록하고, 비파괴적 evidence를 확보한 뒤 필요한 경우 승인 절차로 에스컬레이션한다.
+Portainer의 `admin` profile 선택 여부와 write-capable Docker socket 위험을 명확히 기록하고, 비파괴적 evidence를 확보한 뒤 필요한 경우 승인 절차로 에스컬레이션한다.
 
 ## When to Use
 
@@ -50,7 +50,7 @@ Portainer의 optional root include 상태와 write-capable Docker socket 위험�
 ### Verification Steps
 
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
-- optional include가 활성화된 runtime에서 `portainer.${DEFAULT_URL}` 접속과 local endpoint evidence를 기록한다.
+- `admin` profile을 선택한 runtime에서 `portainer.${DEFAULT_URL}` 접속과 local endpoint evidence를 기록한다.
 
 ### Observability and Evidence Sources
 
@@ -70,7 +70,7 @@ N/A — no verified password reset, helper-container, data restore, or data dele
 
 ## Evidence
 
-- Record hardening output, optional include state, container status/log tail, and whether escalation was required.
+- Record hardening output, the selected profile, container status/log tail, and whether escalation was required.
 
 ## Rollback or Recovery
 

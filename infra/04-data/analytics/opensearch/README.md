@@ -84,7 +84,7 @@ opensearch/
 
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- The `data-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
+- The `data-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example --profile data-cluster config --services`.
 
 ## Troubleshooting
 

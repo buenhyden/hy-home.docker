@@ -44,7 +44,7 @@ created: "2026-05-17"
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
    - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-   - AI service-local compose 파일은 root `infra_net`과 optional include context에 의존하므로 단독 `docker compose config` 대상으로 사용하지 않는다.
+   - AI service-local compose 파일은 root `infra_net`과 root include context에 의존하므로 단독 `docker compose config` 대상으로 사용하지 않는다.
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 3. 증상별 복구

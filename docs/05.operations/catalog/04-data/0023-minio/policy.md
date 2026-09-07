@@ -26,7 +26,7 @@ created: "2026-05-17"
 ## Policy Scope
 
 - **Systems**: `minio`, `minio-create-buckets`
-- **Configs**: `infra/04-data/lake-and-object/minio/docker-compose.yml`; optional variant `docker-compose.cluster.yaml` only when explicitly invoked
+- **Configs**: `infra/04-data/lake-and-object/minio/docker-compose.yml` and `docker-compose.cluster.yaml`; the root file includes both and the profile selects between them
 - **Profiles**: `storage`, `obs`, `dev`
 - **Networks**: `infra_net`
 - **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or object-storage runtime boundaries
@@ -35,16 +35,16 @@ created: "2026-05-17"
 
 - **Required**:
   - Root and app credentials are injected through Docker Secrets under `/run/secrets/`.
-  - Compose-facing documentation must distinguish the root-active single-node compose from the optional cluster variant.
+  - Compose-facing documentation must distinguish the single-node topology, selected by `storage`, from the four-node topology, selected by `storage-cluster`, and must not describe either as excluded from the root include.
   - Bucket bootstrap behavior must match `minio-create-buckets`: `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets`, and public anonymous read only for `cdn-bucket`.
   - Public access changes beyond the bootstrap policy require explicit approval and evidence.
 - **Allowed**:
   - Metadata-only compose validation with `docker compose ... config`.
   - Read-only service health/log checks that do not expose secret values.
-  - Optional cluster variant review when clearly scoped to `docker-compose.cluster.yaml` and not presented as root-active infrastructure.
+  - Cluster topology review when clearly scoped to the `storage-cluster` profile and not presented as part of the `storage` surface.
 - **Disallowed**:
   - Recording secret values, access keys, tokens, or private bucket content in documentation or task evidence.
-  - Treating optional cluster nodes as active root include services.
+  - Treating `storage-cluster` nodes as part of the `storage` surface.
   - Performing destructive bucket deletion, credential rotation, or volume restore as a documentation-only action.
   - Assuming direct host-port exposure when current root-active compose uses Traefik routing and no direct `ports` entries.
 

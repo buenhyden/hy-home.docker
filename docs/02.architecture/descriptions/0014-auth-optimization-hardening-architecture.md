@@ -63,7 +63,7 @@ created: "2026-03-28"
 - Client Request → Traefik (`01-gateway`) → OAuth2 Proxy ForwardAuth
 - OAuth2 Proxy ↔ Keycloak (OIDC issuer/callback)
 - Keycloak ↔ PostgreSQL (`mng-pg`)
-- OAuth2 Proxy ↔ Valkey 세션 저장: root-active dev leaf는 `mng-valkey`, local/full leaf는 `oauth2-proxy-valkey` 사용
+- OAuth2 Proxy ↔ Valkey 세션 저장: 기본 구성은 공유 `mng-valkey`, `dedicated-valkey` profile은 `oauth2-proxy-valkey` 사용
 
 핵심 아키텍처 원칙:
 

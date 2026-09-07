@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -106,17 +106,36 @@ the correction is recorded beside it.
     `plan.md`, and `tasks/tsk-0001-knowledge-and-prompt-surface.md`, which reach
     their terminal statuses and move to `docs/98.archive/completed/`.
   - `docs/README.md` and `docs/03.specs/README.md` for the affected index rows.
+  - The repository root `README.md`, whose operational inventory carries the same
+    retired counts and vocabulary as `infra/README.md`.
+  - The operations catalog subjects whose controls require the retired wording:
+    `0023-minio`, `0025-cassandra`, `0033-neo4j`, `0034-qdrant`,
+    `0015-oauth2-proxy`, the AI subjects `0056`, `0057`, `0058`, `0059`, the
+    laboratory subjects `0072`, `0073`, `0075`, `0076`, the tooling subjects
+    `0062`, `0063`, and `0070-mail`. A guide corrected against a policy that
+    still requires the retired claim produces a contradiction rather than a fix.
+  - `docs/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md`,
+    which describes the retired two-leaf OAuth2 Proxy split.
   - The generated LLM Wiki outputs under `docs/90.references/data/`, regenerated
     by the registered generator and never hand-edited.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any
   Compose service, profile, image, or network value, every validator and gate,
-  `docs/99.templates/registry.json`, the Provider Registry, every role and skill
-  identity, and the frozen bodies already under `docs/98.archive/`.
+  the Provider Registry, every role and skill identity, and the frozen bodies
+  already under `docs/98.archive/`.
+- Two surfaces change in a bounded, named way rather than being unchanged.
+  `docs/99.templates/registry.json` advances `identity_spaces.spec` from 175 to
+  176 and nothing else, because allocating this package's own identifier requires
+  it and the metadata check rejects the package without it. Inside
+  SPEC-0173, only two stale sentences and the link targets of the ADR-0031 move
+  are edited; no status, acceptance criterion, or Task evidence of that package
+  changes.
 - SPEC-0173 remains active and blocked. Its Rulings forbid a new policy, Spec,
   Plan, or Task inside that package, so this work takes its own package. This
-  package corrects two stale sentences in SPEC-0173's own documents and closes
-  the retention-owner promotion SPEC-0173 declared as an open dependency; it does
-  not complete SPEC-0173 and does not touch its Task evidence.
+  package corrects two stale sentences in SPEC-0173's own documents, repoints the
+  links its Task carries to the moved ADR-0031 body, and closes the
+  retention-owner promotion SPEC-0173 declared as an open dependency. It does not
+  complete SPEC-0173, add a member to it, or change any recorded result in its
+  Task.
 - Authorization: local edits, local commits on this branch, and local
   integration into `main`. Push, pull request, remote reference change,
   deployment, live service action, secret values, and global installation remain

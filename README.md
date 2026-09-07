@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 created: "2025-11-12"
 ---
 
@@ -95,9 +95,9 @@ hy-home.docker/
 
 | Area | Current Evidence | Notes |
 | --- | --- | --- |
-| `infra/` Compose files | 48 | `docker-compose*.yml`과 `docker-compose*.yaml`를 함께 계산하며, 루트 Compose 활성 include와 standalone/variant Compose를 구분해야 함 |
+| `infra/` Compose files | 41 | `docker-compose*.yml` 40개와 `docker-compose*.yaml` 1개. 루트가 41개를 모두 주석 없이 include함 |
 | `infra/` Compose service directories | 40 | service README 누락 0개 |
-| Root active includes | 17 | 주석 처리된 optional include는 실행면으로 과장하지 않음 |
+| Root `include:` entries | 41 | 파일 목록은 기동 대상을 결정하지 않음. 선택한 profile이 결정하며 정의는 POL-0078이 소유함 |
 | Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
 | `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
 | Parent-repo tracked README files | 173 | `git ls-files '*README.md'` 기준의 tracked README inventory |

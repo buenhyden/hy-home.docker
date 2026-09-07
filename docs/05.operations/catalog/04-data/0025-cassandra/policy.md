@@ -29,7 +29,7 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Cassandra documentation must identify the current implementation as a single-node optional include, not as an active multi-node high-availability cluster.
+- **Required**: Cassandra documentation must identify the current implementation as a single node selected by the `data` or `obs` profile, not as an active multi-node high-availability cluster. The root file includes the Compose file unconditionally, so include state is never the reason a service is or is not running.
 - **Required**: Credential handling must reference `/run/secrets/cassandra_password`; plaintext password variables or copied secret values are disallowed in docs, examples, and evidence.
 - **Required**: Volume descriptions must match `${DEFAULT_DATA_DIR}/cassandra/node1` mounted to `/bitnami/cassandra`.
 - **Required**: Monitoring references must distinguish the `obs`-profile `cassandra-exporter` from the database node.

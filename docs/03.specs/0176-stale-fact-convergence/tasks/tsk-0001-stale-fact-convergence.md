@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.7.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -441,12 +441,20 @@ distinction is not pedantic here: the W1 run was invoked as
 `run-ci-gate.py | tail -25` with `echo $?`, which reported the exit status of
 `tail` and printed 0 over a suite that had failed one test.
 
-The output contains 84 lines beginning `FAIL:` and the gate still exits 0. Those
-lines are the agent-output eval checker's diagnostic codes printed by
-`tests/validation/test_agent_output_eval_fixtures.py`, which feeds deliberately
-malformed fixtures and asserts the codes appear; each such test line ends `ok`.
-The verdicts are what decide the run: thirteen unittest suites report `OK`, no
-line begins `FAILED`, and no check reports a violation.
+That run was made against a dirty worktree, and the scope this records is
+therefore not reproducible from a clean checkout. `collect_changed_paths` in
+`scripts/validation/ci_gate_runner.py` builds the local changed set from staged,
+unstaged and untracked paths, so a fully committed tree presents an empty changed
+set and the profile narrows to six suites. Both states exit 0; only the selected
+scope differs. A later reader reproducing this command should expect the narrower
+run and judge by the verdict, not by the suite count.
+
+The output of the dirty-tree run contains 84 lines beginning `FAIL:` and the gate
+still exits 0. Those lines are the agent-output eval checker's diagnostic codes
+printed by `tests/validation/test_agent_output_eval_fixtures.py`, which feeds
+deliberately malformed fixtures and asserts the codes appear; each such test line
+ends `ok`. The verdicts are what decide the run: thirteen unittest suites report
+`OK`, no line begins `FAILED`, and no check reports a violation.
 
 ```text
 provider_surface_renderer          PASS providers=2 drift=0
@@ -490,8 +498,11 @@ fatal: cannot lock ref 'HEAD': is at a13bfd79c005f2ab62f7b5f5716af6cb2490ae3c
        but expected c98df20ddcfc2715c2712ab6dc239fcc00ce1db3
 ```
 
-Another worker committed `a13bfd79c`, a `.gitignore` change, onto this branch
-while the hook chain was running. Git's ref lock prevented a lost update; nothing
+A `.gitignore` change, `a13bfd79c`, landed on this branch while the hook chain
+was running. Git cannot corroborate who made it: every commit in this range
+carries the same `AI Agent <agent@example.com>` identity, so the separate-author
+claim rests on the ref-lock error and on session timing rather than on
+attribution. What is verifiable is that it was not made by this package's work. Git's ref lock prevented a lost update; nothing
 of this package was overwritten and the staged tree survived intact.
 
 The incident was handled by not intervening. The approval boundaries require
@@ -517,8 +528,8 @@ incident.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3 | PASS: `grep -rn 'optional/commented' infra docs --include=*.md` returns 0 outside the archive and Stage 90 dated evidence; the 주석-처리 wording returns 0 as well | [infra service and tier READMEs](../../../../infra/README.md) |
-| 2 | W4 | PASS: counts replaced with the measured 41/40/41 and the four-state vocabulary removed | [infra README](../../../../infra/README.md) |
+| 1 | W3 | PASS after review correction: the first PASS was wrong. Verified now by a predicate matching the criterion — 591 tracked current documents scanned, 1 match and it is `infra/README.md:69` asserting that no commented include entry exists | [infra and operations documents](../../../../infra/README.md) |
+| 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
 | 3 | W4 | PASS: system scope states 41 files, all included; the SPEC-0171 pending clause is replaced by its completion | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
 | 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
@@ -532,18 +543,63 @@ incident.
 | 13 | W8 | PASS: all three members are `completed` under the archive path and `ls docs/03.specs/` shows only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
 | 14 | W8 | PASS: the index row names the archive paths and describes the package as preserved; SPEC-0176 is listed as the draft package | [Stage 03 index](../../README.md) |
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
-| 16 | W10 | PASS: LLM Wiki regenerated and checked on the staged tree in every corpus-changing commit; provider hook parity fresh without regeneration | [LLM Wiki index](../../../90.references/data/0082-llm-wiki-index/README.md) |
+| 16 | W10 | PASS after review correction: AUD-0023 was hand-edited and is now produced by `check-document-metadata.py --mode report`, which places the moved ADR-0031 row in the archive block as `archive-record-superseded`; LLM Wiki and provider hook parity fresh | [frontmatter semantic inventory](../../../90.references/audits/0023-frontmatter-semantic-inventory/README.md) |
 | 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
-| 18 | W11 | NOT_RUN: independent exact-diff review of the whole package has not been performed | N/A: no reviewer available under the current authorization |
+| 18 | W11 | PASS: two independent reviewers, neither the author, over `git diff e37b2dbcd..3725e08c7`. One approved with follow-up; one blocked with twelve findings. Eleven were accepted, re-measured and corrected; one is routed to another author | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 
 ## Review Evidence
 
-Independent exact-diff review is required by acceptance criterion 18 and has not
-been performed. Recorded as NOT_RUN with its missing input: a reviewer other than
-the author, which this session cannot supply. Self-review was performed against
-the staged diff and is recorded above, but self-review is not the independent
-review the criterion requires and is not promoted to one. This package therefore
-cannot complete until that review happens.
+### Independent exact-diff review (2026-09-07, local-executed)
+
+Performed over `git diff e37b2dbcd..3725e08c7`, 90 files, through
+[diff-review](../../../../.agents/prompts/diff-review.md), by two reviewers that
+did not write the change and did not edit anything.
+
+The verification reviewer re-ran eleven registered checks from a clean checkout,
+reading each exit code from the process itself, and confirmed every measured
+claim in this Task byte-for-byte or count-for-count, including the ADR-0031
+two-line move diff. Disposition: **approve with follow-up**.
+
+The contract reviewer read the diff and the tracked worktree against the
+eighteen acceptance criteria. Disposition: **block**, with three findings at
+blocker or high severity that this Task had recorded as PASS. Its verdicts are
+accepted as given; each was re-measured before being acted on, and each held.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | blocker | Criterion 1 was not met while row 1 recorded PASS. The verifying grep searched the literal strings `optional/commented` and `주석 처리` and never searched `optional include`, the more common phrasing, leaving sixteen assertions in fourteen documents including two lines inside a file this package had edited | Fixed: nineteen statements corrected; criterion 1 is now verified by a predicate that matches the criterion rather than by two literals |
+| 2 | blocker | The repository root `README.md` carried the same 48 / 17 counts and the same `주석 처리된 optional include` vocabulary that `infra/README.md` was corrected from, so two current documents stated different values for one measurement and behavior contract 3 was false | Fixed: counts replaced with the measured 41 / 41 and the vocabulary with the profile model; the root README is added to the Spec's in-scope set |
+| 3 | high | `docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md` declares `generated_by: scripts/validation/check-document-metadata.py`, and this package hand-edited one row's path in place, leaving that row asserting `status=accepted` and profile `adr` for a document that is now `superseded` | Fixed: regenerated with its own generator, which places the row in the archive block with profile `archive-record-superseded` |
+| 4 | high | `infra/04-data/analytics/opensearch/README.md:87` was rewritten to name the surviving file and then, in the same sentence, told the operator to validate with `-f docker-compose.cluster.yml`, a file SPEC-0171 deleted | Fixed: the command now selects `--profile data-cluster` |
+| 5 | high | POL-0025 requires Cassandra documentation to identify the implementation as a "single-node optional include", which the guide and runbook this package rewrote now contradict | Fixed: the control names the `data` and `obs` profiles and states that include state never decides whether a service runs |
+| 6 | high | POL-0023 and GDE-0023 forbid describing `docker-compose.cluster.yaml` as part of the root include that contains it, and GDE-0023 asserts it is not in the root include | Fixed: both describe the two topologies as separated by `storage` against `storage-cluster` |
+| 7 | medium | The deleted `docker-compose.dev.yml` was removed from tables and trees but the surrounding prose still described one file as two leaves, in oauth2-proxy, observability, airflow and n8n, and in the oauth2-proxy catalog subject | Fixed: the two-leaf split is replaced by the `dedicated-valkey` profile distinction the single file actually declares |
+| 8 | medium | REQ-0006 was corrected to say `messaging-cluster` renders three brokers; that profile selects `kafka-2` and `kafka-3` only, because `kafka-1` declares `messaging` and `dev` | Fixed: the requirement states which profile selects which broker and that three brokers need both |
+| 9 | medium | The Spec's Boundaries declared `docs/99.templates/registry.json` unchanged and SPEC-0173's Task untouched, while the diff changes the identity high-water and repoints links in that Task | Fixed in the Spec, not by reverting: both changes are necessary and are now named as bounded exceptions with their reason |
+| 10 | low | The Cassandra guide attributed `cassandra-node1` to `data` alone; the service declares `data` and `obs` | Fixed |
+| 11 | low | The tooling claim that role profiles select services individually is false for `locust-worker`, which declares `tooling` only | Fixed in both the tier README and AD-0009 |
+| 12 | low, advisory | The `.gitignore` rewrite in `a13bfd79c` drops the `repo-support` negation while its retained comment still describes two tracked contract documents | Not fixed: authored by a different session and outside this package's scope; routed to that author |
+
+Two further findings came from the verification reviewer and are corrected in
+this Task rather than in the tree:
+
+- The `--profile changed` evidence recorded at W11 is worktree-state dependent.
+  `collect_changed_paths` in `ci_gate_runner.py` scopes the local changed set to
+  staged, unstaged and untracked paths, so the thirteen suites and eighty-four
+  diagnostic `FAIL:` lines recorded there were produced against a dirty tree, and
+  the same command on a clean committed checkout selects six suites and prints
+  none. Both exit 0. The record now says which state produced it.
+- This Task attributed `a13bfd79c` to "another worker" on the strength of the
+  ref-lock error and session timing. Git cannot corroborate that: every commit in
+  the range carries the same `AI Agent <agent@example.com>` identity. The claim
+  that stands on evidence is narrower and is what matters here — the commit's
+  content is orthogonal to this package and newly ignores no tracked file.
+
+Neither reviewer covered runtime, provider entitlement, Hosted CI, or remote
+state. The contract reviewer executed no commands, so criteria 16 and 17 rest on
+the verification reviewer's re-run and on this Task's own records. Neither
+reviewer re-checked the corrections made in response to their findings; that
+re-review is recorded below as its own state.
 
 ## Commit Ledger
 
@@ -554,7 +610,8 @@ cannot complete until that review happens.
 | `f71449eff` | W5 and W9 preservation-owner promotion |
 | `b5d4181d0` | W6 and W7 knowledge routing and Git-read position |
 | `c98df20dd` | W8 and W9 SPEC-0175 preservation and archive evidence |
-| pending | W10 and W11 entry-path closure and final verification |
+| `3725e08c7` | W10 and W11 entry-path closure and final verification |
+| pending | Review-finding corrections |
 
 ## Rulings
 
@@ -570,8 +627,9 @@ cannot complete until that review happens.
 
 | Item | Blocking input or reason |
 | --- | --- |
+| Re-review of the corrections made in response to the blocking review | The two reviewers judged the tree at `3725e08c7`; the eleven corrections that followed have not themselves been independently reviewed |
+| The `.gitignore` `repo-support` negation dropped by `a13bfd79c` | Authored by a different session and outside this package's scope; routed to that author |
 | This package's own lifecycle walk to `active` | The transition check reads the merge base with `origin/main`, and the remote cannot advance without a push that no authorization here grants |
-| Independent exact-diff review, acceptance criterion 18 | Requires a reviewer other than the author; no such reviewer is available under the current authorization |
 | `ADR-0034`'s discharged Follow-up item | Its first bullet still says to transition the decision to `accepted` only after SPEC-0175 records its evidence, and the decision has read `accepted` since that package landed. ADR-0034 is an accepted decision, and editing an accepted body to agree with a later state is what the retention policy forbids, so this is routed to the decision owner rather than corrected here |
 | SPEC-0173 completion | Unchanged by this package. Its aggregate remains BLOCKED on the actual PostgreSQL operating and image leaf, and its native runtime and Hosted CI evidence remain unobserved. This package closed only its retention-owner dependency |
 | `oauth2-proxy` declaring the `dev` profile twice | Observed while reading `profiles:` values in W2. It is a Compose file change, not a document change, and this package's scope excludes every Compose file |

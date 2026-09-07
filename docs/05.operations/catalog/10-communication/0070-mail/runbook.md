@@ -86,7 +86,7 @@ N/A — no verified broad rollback or data restore procedure is documented yet. 
 
 ## Escalation
 
-verification이 실패하거나, 데이터 삭제/복구, production mail delivery 변경, DNS 변경, secret rotation, host firewall 변경이 필요하면 owning operator에게 에스컬레이션한다. 에스컬레이션에는 captured evidence, 최근 변경 내역, optional include 활성화 여부, 현재 rollback/recovery 상태를 포함한다.
+verification이 실패하거나, 데이터 삭제/복구, production mail delivery 변경, DNS 변경, secret rotation, host firewall 변경이 필요하면 owning operator에게 에스컬레이션한다. 에스컬레이션에는 captured evidence, 최근 변경 내역, 선택한 profile, 현재 rollback/recovery 상태를 포함한다.
 
 ## Traceability
 

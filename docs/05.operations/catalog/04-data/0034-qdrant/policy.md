@@ -29,7 +29,7 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Documentation must describe Qdrant as a root-active single unprivileged service, not as a cluster.
+- **Required**: Documentation must describe Qdrant as a single unprivileged service, not as a cluster.
 - **Required**: Secret guidance must state the current no-secret compose state. API-key requirements require a compose change before being documented as active policy.
 - **Required**: External access guidance must stay behind declared Traefik REST/TCP routes and must not imply host port publishing.
 - **Required**: Persistence and snapshot-path wording must match `qdrant-data:/qdrant/storage:rw` and `/qdrant/storage/snapshots`.

@@ -74,7 +74,7 @@ created: "2026-05-10"
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
-- Optional include를 활성화한 runtime에서 `docker logs --tail=100 portainer`
+- `admin` profile을 선택한 runtime에서 `docker logs --tail=100 portainer`
 
 ## Runbook Handoff
 

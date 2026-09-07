@@ -37,7 +37,7 @@ Open WebUI 서비스 운영 전반:
   - 외부 노출 경로는 반드시 SSO 미들웨어(`sso-auth@file`)를 통과해야 한다.
   - `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 변경은 사전 영향도 검토를 수행해야 한다.
   - 인덱싱 실패/지연, 연결 실패 로그를 운영 증적으로 보관해야 한다.
-  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
+  - `ai` profile 선택으로 AI 서비스를 기동하는 것은 runtime 승인 후 수행해야 한다.
 - **Allowed**:
   - 문서 수명주기 관리(업로드, 재인덱싱, 삭제).
   - 성능 개선 목적의 모델 파라미터 조정(승인된 범위 내).

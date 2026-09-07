@@ -49,7 +49,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 ├── prometheus/     # Metrics storage
 ├── pyroscope/      # Continuous profiling
 ├── tempo/          # Distributed tracing
-├── docker-compose.yml      # Local obs compose
+├── docker-compose.yml      # Observability compose, selected by obs and dev
 └── README.md
 ```
 

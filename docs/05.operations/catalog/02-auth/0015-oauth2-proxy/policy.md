@@ -37,7 +37,7 @@ created: "2026-05-17"
 - **Required**:
   - 서비스는 `template-infra-readonly-med`를 사용해야 한다.
   - 런타임 시크릿 주입은 엔트리포인트 스크립트에서 `/run/secrets` 파일로 처리한다.
-  - root-active dev leaf는 `mng-valkey`, local/full leaf는 `oauth2-proxy-valkey` 세션 저장소를 사용한다.
+  - 기본 구성은 공유 `mng-valkey`를, `dedicated-valkey` profile은 `oauth2-proxy-valkey`를 세션 저장소로 사용한다.
   - 이미지 실행 계정은 non-root(`oauth2proxy`)여야 한다.
   - 세션 정책은 `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다.
   - 기본 운영 모드는 fail-closed다.

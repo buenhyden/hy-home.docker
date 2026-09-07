@@ -33,7 +33,7 @@ created: "2026-05-10"
 
 ### Purpose
 
-분산 Locust 실행 시 실제 서비스명, root optional include 경계, UI 접근 포트, worker 복제본 기준을 현재 compose와 일치하게 안내한다.
+분산 Locust 실행 시 실제 서비스명, 선택한 profile 경계, UI 접근 포트, worker 복제본 기준을 현재 compose와 일치하게 안내한다. `locust-master`는 `tooling`과 `testing`, `locust-worker`는 `tooling`이 선택한다.
 
 ### Prerequisites
 

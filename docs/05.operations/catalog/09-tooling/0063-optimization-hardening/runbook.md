@@ -101,7 +101,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 ## Evidence
 
 - Capture command output, timestamps, failed check names, file diffs, and final pass state.
-- Record root optional include context when compose rendering is part of the evidence.
+- Record the selected profile when compose rendering is part of the evidence.
 
 ## Rollback or Recovery
 

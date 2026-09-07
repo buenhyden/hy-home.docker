@@ -37,7 +37,7 @@ Ollama 추론 엔진 운영 전반:
   - 모델 변경 전 승인된 local/dev rehearsal에서 성능 및 안정성 검증을 수행해야 한다.
   - 운영 모델은 검증된 태그/소스만 사용해야 한다.
   - VRAM/메모리 사용량을 exporter 및 대시보드로 상시 관측해야 한다.
-  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
+  - `ai` profile 선택으로 AI 서비스를 기동하는 것은 runtime 승인 후 수행해야 한다.
 - **Allowed**:
   - 승인된 경량/양자화 모델 배포.
   - `keep_alive` 정책 기반 모델 언로드 최적화.

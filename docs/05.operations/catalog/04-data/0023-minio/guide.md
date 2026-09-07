@@ -23,7 +23,7 @@ created: "2026-05-10"
 
 ### Overview
 
-MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S3-compatible object storage다. 현재 root-active compose path는 단일 `minio` service와 bucket/bootstrap job `minio-create-buckets`를 실행하며, optional `docker-compose.cluster.yaml`은 root include에 포함되지 않은 별도 cluster variant다.
+MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S3-compatible object storage다. 루트는 이 leaf의 두 compose 파일을 모두 include한다. `storage` profile은 단일 `minio` service와 bucket/bootstrap job `minio-create-buckets`를, `storage-cluster` profile은 `docker-compose.cluster.yaml`의 4노드 토폴로지를 선택하며, 두 topology를 동시에 선택하는 profile은 없다.
 
 ### Usage Type
 
@@ -76,7 +76,7 @@ MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S
 
 ### Common Pitfalls
 
-- Treating `docker-compose.cluster.yaml` as root-active. It is an optional local compose variant and must be called out separately in evidence.
+- Treating the `storage-cluster` topology as part of the `storage` surface. Both files are included by the root; the profile is what separates them, and evidence must name the profile it used.
 - Using root credentials for application integration. Use the app user created by `minio-create-buckets` and avoid recording secret values.
 - Assuming host ports are published directly. The current root-active compose uses Traefik labels and does not declare direct host ports.
 - Documenting secret values or command output that includes credentials.
@@ -86,7 +86,7 @@ MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S
 - `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`
 - `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps`
 - Search paired guide/policy/runbook and infra README for cluster-node assumptions, direct host-port assumptions, direct secret values, or old command forms.
-- Expected result: compose renders, documented services match root-active compose, and optional cluster references are clearly marked optional.
+- Expected result: compose renders, the documented services match what the selected profile resolves, and any `storage-cluster` reference is marked with that profile rather than with an include state.
 
 ## Runbook Handoff
 

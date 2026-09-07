@@ -34,12 +34,12 @@ created: "2026-03-25"
 ### Purpose
 
 - Open WebUI에서 문서 업로드, 임베딩, Qdrant 저장, 검색 컨텍스트 주입 흐름을 이해한다.
-- RAG 연결성 점검은 현재 compose env와 root optional include 경계에 맞춰 수행한다.
+- RAG 연결성 점검은 현재 compose env와 선택한 profile 경계에 맞춰 수행한다.
 - 장애 대응과 rollback은 Open WebUI runbook으로 넘긴다.
 
 ### Prerequisites
 
-- root `docker-compose.yml`에서 AI optional includes가 승인되어 활성화되어야 한다.
+- root `docker-compose.yml`은 AI compose 파일을 무조건 include하므로, `ai` profile을 선택해야 기동된다.
 - `qdrant`는 root-active `infra/04-data/specialized/qdrant/docker-compose.yml`의 `ai` 또는 `data` profile로 기동 가능해야 한다.
 - `RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b` 모델이 Ollama에 준비되어야 한다.
 

@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust 및 k6 leaf의 Locust wrapper), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. root `docker-compose.yml`은 이 계층의 compose 파일을 모두 무조건 include하며, 기동 대상은 선택한 profile이 결정한다. 모든 서비스가 `tooling` profile에 속하고, 역할 profile(`iac`, `sast`, `testing`, `registry`, `sync`)로 개별 선택할 수 있다.
+`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust 및 k6 leaf의 Locust wrapper), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. root `docker-compose.yml`은 이 계층의 compose 파일을 모두 무조건 include하며, 기동 대상은 선택한 profile이 결정한다. 모든 서비스가 `tooling` profile에 속하고, 역할 profile(`iac`, `sast`, `testing`, `registry`, `sync`)이 그 부분집합을 선택한다. 역할 profile이 계층 전체를 대체하지는 않는다. 예를 들어 `testing`은 `locust-master`와 `k6-master`만 선택하고 `locust-worker`는 `tooling`에만 속한다.
 
 ## Audience
 

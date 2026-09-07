@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Documentation must describe Neo4j as a root-active single Community service, not as a cluster or Enterprise deployment.
+- **Required**: Documentation must describe Neo4j as a single Community service selected by the `data` or `graph` profile, not as a cluster or Enterprise deployment.
 - **Required**: Authentication guidance must reference the `neo4j_password` Docker Secret and secret-aware entrypoint; secret values must never be copied into docs or evidence.
 - **Required**: Public access guidance must describe the declared HTTP Browser route only. Public Bolt routing requires a separate gateway change and documentation update.
 - **Required**: Memory controls must match compose values: heap initial `128M`, heap max `256M`, pagecache `128M`.

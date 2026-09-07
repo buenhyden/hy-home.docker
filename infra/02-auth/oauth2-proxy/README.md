@@ -45,9 +45,9 @@ OAuth2 Proxy provides a generic authentication layer for services that do not ha
 oauth2-proxy/
 ├── config/             # Proxy configuration (oauth2-proxy.cfg)
 ├── Dockerfile          # Custom Alpine-based build
-├── dev.Dockerfile      # Root-active build using mng-valkey sessions
+├── dev.Dockerfile      # Build used when sessions come from mng-valkey
 ├── docker-entrypoint.sh # Secret/Env injection script
-├── docker-entrypoint.dev.sh # Root-active secret/Env injection script
+├── docker-entrypoint.dev.sh # Secret and env injection script
 ├── docker-compose.yml  # Container orchestration
 └── README.md           # This file
 ```
@@ -56,10 +56,10 @@ oauth2-proxy/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OAuth2 Proxy service leaf in `02-auth`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.yml`; local/full leaf: `docker-compose.yml` |
+| Purpose | OAuth2 Proxy service leaf in `02-auth`; unconditional root include, profile-selected, via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.yml` |
 | Config files | `docker-compose.yml`, `Dockerfile`, `dev.Dockerfile`, `docker-entrypoint.sh`, `docker-entrypoint.dev.sh`, `config/oauth2-proxy.cfg` |
 | Config values | env keys: `SSL_CERT_FILE`, `OAUTH2_PROXY_SESSION_STORE_TYPE`, `OAUTH2_PROXY_REDIS_CONNECTION_URL`, `OAUTH2_PROXY_CLIENT_ID`, `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`; profiles: `core`, `auth`, `dev` |
-| Compose linkage | root-active dev leaf uses `mng-valkey`; local/full leaf includes `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` |
+| Compose linkage | one file, two session backends by profile: `oauth2-proxy` (`core`, `auth`, `dev`) points at `${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}`, and the `dedicated-valkey` profile adds `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` |
 | Networks | `infra_net` |
 | Volumes | `./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro`, `../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro`, `oauth2-proxy-valkey-data`, `oauth2-proxy-valkey-data:/data` |
 | Ports | `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
@@ -109,8 +109,8 @@ Secrets are injected via `docker-entrypoint.sh` from `/run/secrets/`:
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
-- `mng_valkey_password` in the root-active dev leaf
-- `oauth2_valkey_password` in the local/full leaf
+- `mng_valkey_password` when sessions use the shared `mng-valkey`
+- `oauth2_valkey_password` under the `dedicated-valkey` profile
 
 ## Testing
 
@@ -150,7 +150,7 @@ docker compose --profile auth logs oauth2-proxy --tail=200 | grep "OIDC"
 - Start with `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` to confirm root-context network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OIDC errors: verify `OAUTH2_PROXY_CLIENT_ID` matches the Keycloak client and `redirect_url` is synchronized.
-- For session errors: confirm `mng_valkey_password` is injected in the root-active dev leaf, or `oauth2_valkey_password` is injected in the local/full leaf.
+- For session errors: confirm `mng_valkey_password` is injected when sessions use the shared `mng-valkey`, or `oauth2_valkey_password` when the `dedicated-valkey` profile is selected.
 - For ForwardAuth failures: check Traefik middleware labels reference `auth.${DEFAULT_URL}` and the upstream config is correct.
 
 ## Related Documents

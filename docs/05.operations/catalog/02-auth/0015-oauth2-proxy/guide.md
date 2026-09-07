@@ -40,14 +40,14 @@ created: "2026-05-10"
 
 - `infra/02-auth/keycloak` 정상 동작
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
-- root-active dev leaf의 `mng-valkey` 또는 local/full leaf의 `oauth2-proxy-valkey` 세션 저장소 준비
+- 공유 `mng-valkey` 또는 `dedicated-valkey` profile의 `oauth2-proxy-valkey` 세션 저장소 준비
 
 ### Step-by-step Instructions
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
-   - 루트가 include하는 leaf는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, `mng-valkey`를 사용
-   - local/full leaf는 `docker-compose.yml`, `Dockerfile`, `docker-entrypoint.sh`, `oauth2-proxy-valkey`를 사용
+   - 기본 경로는 `docker-compose.yml`, `dev.Dockerfile`, `docker-entrypoint.dev.sh`, 공유 `mng-valkey`를 사용
+   - `dedicated-valkey` profile은 같은 `docker-compose.yml`에서 `oauth2-proxy-valkey`와 그 exporter를 추가로 선택
    - command가 `--config /etc/oauth2-proxy.cfg`인지 확인
    - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
 2. 엔트리포인트 시크릿 주입 확인
