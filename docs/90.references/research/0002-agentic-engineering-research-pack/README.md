@@ -374,7 +374,7 @@ list contains only sources shared across categories.
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md), and
-  [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
+  [ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md).
 - Implementation evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
   and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Operations: [Stage 05](../../../05.operations/README.md).

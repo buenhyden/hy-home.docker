@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -218,6 +218,87 @@ bash scripts/validation/validate-docker-compose.sh
   selections=28 services_total=232, every profile OK
 ```
 
+### W5: The preservation owner, promoted in one result tree (2026-09-07, local-executed)
+
+Three current-authority documents stated a rule the repository already breaks by
+design. `REQ-0026`'s acceptance criteria required that no `completed` Spec
+Package retains a `plan.md` or a Task; `AD-0030` and accepted `ADR-0031` called
+Plan and Task transient carriers removed at completion. Measured against the
+tracked tree:
+
+```text
+docs/98.archive/completed/03.specs/0156-compose-enablement-model-convergence/  spec+plan+task, all status: completed
+docs/98.archive/completed/03.specs/0169-document-lifecycle-convergence/        spec+plan+task, all status: completed
+docs/98.archive/completed/03.specs/0170-archive-preservation-model/            spec+plan+task, all status: completed
+docs/98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/       spec+plan+task, all status: completed
+```
+
+Four packages satisfy exactly what the criterion says none may. The executable
+guard agrees with the tree and not with the Requirement:
+`scripts/lib/document_governance/spec_packages.py:1054` states that preservation
+"moves a finished package to the archive and keeps every document", and
+`.agents/governance/documentation-protocol.md` carries the same model.
+
+`ADR-0033` had been written as the successor for precisely this and had waited at
+`proposed`. SPEC-0173's Plan declared the promotion sequence and named it an open
+dependency it could not close inside its own package. This package performed it
+as one result tree: `ADR-0033` to `accepted` with `supersedes: ADR-0031`,
+`ADR-0031` to `superseded` with `superseded_by: ADR-0033` and its body preserved
+under `docs/98.archive/superseded/02.architecture/decisions/`, then `REQ-0026`
+and `AD-0030` amended to the accepted preservation unit.
+
+The preserved body was compared rather than asserted:
+
+```text
+git hash-object <before move>   904677b0303d277bea44904af68ba86758a10425
+git hash-object <after move>    5bc18f381d1505e108d6fb28a994c2801c58ad83
+diff <(git show HEAD:docs/02.architecture/decisions/0031-preserved-archive-record.md) <preserved>
+  5c5   status: "accepted"  ->  status: "superseded"
+  13a14 superseded_by: "ADR-0033"
+```
+
+Only the two frontmatter fields the transition owns differ. No sentence of the
+accepted decision was edited to agree with its successor, and no already
+preserved Spec-only package was back-filled with a Plan or Task it never had.
+
+Eight documents linked the old path. Each was repointed to the archive location
+rather than left to fail, which is what `AD-0030` itself requires of a residual
+document pointing at a moved path. Two of them are Stage 90 dated evidence: the
+link target moved, the observation did not.
+
+The same pass closed a third index defect found while editing: the decisions
+index described `ADR-0034` as a `proposed` decision while its frontmatter has read
+`accepted` since its own package landed.
+
+```text
+python3 scripts/validation/check-document-metadata.py --mode check-changed
+  selected=48 violations=0 transition_overrides=0
+python3 scripts/validation/check-document-links.py --mode all
+  documents=713 links=6137 archive_direct_links_total=64 failures=0
+python3 scripts/validation/check-document-corpus-lifecycle.py
+  violations=0; preserved=153 decisions=254 recovery violations=0
+python3 -m unittest tests.lib.document_governance.test_taxonomy test_architecture test_archive
+  Ran 60 tests, OK
+```
+
+The lifecycle budget held: each of the two decisions spent its single
+merge-base transition, and `REQ-0026` and `AD-0030` changed content only, so
+neither needed one.
+
+### W9 (partial): The Stage 02 index counted what it should have routed (2026-09-07, local-executed)
+
+`docs/02.architecture/README.md` claimed "26개의 Architecture Description과 26개의
+ADR" against a measured 26 and 28, and its structure block named `0031-` as the
+last decision when `0034-` had been the last for two packages. The sibling
+`decisions/README.md` had already reasoned its way out of this class of defect:
+"개수는 유지 기준이 아니므로 아래 Current Inventory와 실제 파일 목록이 권위이다."
+The parent now states the same thing rather than carrying a number that stales on
+the next decision, and its structure block names the current highest identifier.
+
+This changes acceptance criterion 8, which asked for the corrected counts. The
+criterion is amended in the Spec to require the routing statement instead,
+because writing 28 would have reproduced the defect at the next ADR.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -226,10 +307,10 @@ bash scripts/validation/validate-docker-compose.sh
 | 2 | W4 | PASS: counts replaced with the measured 41/40/41 and the four-state vocabulary removed | [infra README](../../../../infra/README.md) |
 | 3 | W4 | PASS: system scope states 41 files, all included; the SPEC-0171 pending clause is replaced by its completion | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
-| 5 | W5 | NOT_RUN: pending | pending |
-| 6 | W5 | NOT_RUN: pending | pending |
-| 7 | W5 | NOT_RUN: pending | pending |
-| 8 | W9 | NOT_RUN: pending | pending |
+| 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
+| 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | [preserved ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) |
+| 7 | W5 | PASS: FR-0009, Constraints and Acceptance Criteria state the Spec/Plan/Task preservation unit; no transient-removal clause remains | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
+| 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block names 0030- and 0034- | [Stage 02 index](../../../02.architecture/README.md) |
 | 9 | W6 | NOT_RUN: pending | pending |
 | 10 | W6 | NOT_RUN: pending | pending |
 | 11 | W7 | NOT_RUN: pending | pending |
@@ -251,7 +332,8 @@ been performed. Recorded as NOT_RUN.
 | Commit | Scope |
 | --- | --- |
 | `80b42feaa` | W1 package definition |
-| pending | W2-W4 Compose enablement convergence |
+| `51e203b71` | W2-W4 Compose enablement convergence |
+| pending | W5 and W9 preservation-owner promotion |
 
 ## Rulings
 

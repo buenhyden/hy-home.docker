@@ -294,7 +294,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md) | Markdown reference |
 | [docs/02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/decisions/0028-local-isolated-readiness-evidence.md](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md) | Markdown reference |
-| [docs/02.architecture/decisions/0031-preserved-archive-record.md](../../../02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
 | [docs/02.architecture/decisions/0032-canonical-agent-governance-home.md](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) | Markdown reference |
 | [docs/02.architecture/decisions/0033-full-spec-package-preservation.md](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Markdown reference |
 | [docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md](../../../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md) | Markdown reference |
@@ -1134,6 +1133,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md](../../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md](../../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md](../../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md) | Markdown reference |
+| [docs/98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |

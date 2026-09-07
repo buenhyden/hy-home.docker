@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -92,7 +92,7 @@ the correction is recorded beside it.
     whose retention clauses move to the accepted successor's model.
   - `docs/02.architecture/decisions/0033-full-spec-package-preservation.md`,
     which transitions to `accepted`, and
-    `docs/02.architecture/decisions/0031-preserved-archive-record.md`, whose
+    `docs/98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md`, whose
     accepted body is preserved unchanged under `docs/98.archive/superseded/`.
   - `docs/02.architecture/README.md` and
     `docs/02.architecture/decisions/README.md` for the resulting index facts.
@@ -237,9 +237,10 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
    transition owns, and the comparison is recorded.
 7. `REQ-0026` and `AD-0030` state the full-package preservation unit and retain
    no transient Plan/Task removal clause.
-8. `docs/02.architecture/README.md` states twenty-six Descriptions and
-   twenty-eight Decisions, and its structure block names `0030-` and `0034-`
-   as the highest identifiers.
+8. `docs/02.architecture/README.md` routes to the per-directory indexes and the
+   tracked file list as the count authority, in the same terms
+   `decisions/README.md` already uses, and its structure block names `0030-` and
+   `0034-` as the highest identifiers.
 9. `.agents/knowledge/repository-map.md` step 3 names `.agents/knowledge/` and
    `.agents/prompts/` with the same conditions `bootstrap.md` states.
 10. `.agents/knowledge/verification-surface-map.md` names the commit at which
@@ -274,7 +275,7 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 | [AD-0027 Agent Governance Canonical Adapter](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md) | Owns the canonical/adapter boundary the load-order correction restates |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Amended by this package to the accepted preservation unit |
 | [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Accepted by this package as the durable decision owner |
-| [ADR-0031 Archive as Preserved Record](../../02.architecture/decisions/0031-preserved-archive-record.md) | Superseded and preserved by this package |
+| [ADR-0031 Archive as Preserved Record](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) | Superseded and preserved by this package |
 | [SPEC-0173 Governance and QA Surface Convergence](../0173-governance-qa-surface-convergence/spec.md) | Declared the retention-owner promotion this package performs; otherwise untouched |
 | [SPEC-0175 Governance Knowledge and Prompt Surface](../0175-governance-knowledge-and-prompt-surface/spec.md) | Completed and preserved by this package |
 | [POL-0078 Compose Profile Vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) | Owns the profile model the Compose corrections converge on |

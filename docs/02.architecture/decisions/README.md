@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "architecture"
 ---
 
@@ -38,7 +38,6 @@ docs/02.architecture/decisions/
 ├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
 ├── 0028-local-isolated-readiness-evidence.md
-├── 0031-preserved-archive-record.md
 ├── 0032-canonical-agent-governance-home.md
 ├── 0033-full-spec-package-preservation.md
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
@@ -57,15 +56,16 @@ docs/02.architecture/decisions/
   ADR-0032가 supersede한 이전 workspace governance authority decision.
 - [`ADR-0030`](../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md):
   ADR-0031이 supersede한 Tombstone-only preservation decision.
-- [`ADR-0031`](./0031-preserved-archive-record.md):
-  frozen body와 disposition record를 분리하는 active archive preservation decision.
+- [`ADR-0031`](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md):
+  ADR-0033이 supersede한 Spec-only preservation decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
   공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 active decision.
 - [`ADR-0033`](./0033-full-spec-package-preservation.md):
-  Spec Package 전체 본문 보존을 제안하는 proposed decision.
+  Spec, Plan, 모든 Task 본문을 함께 보존하는 accepted decision. ADR-0031을
+  supersede한다.
 - [`ADR-0034`](./0034-canonical-knowledge-and-prompt-surfaces.md):
   `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는
-  proposed decision.
+  accepted decision.
 
 ## How to Work in This Area
 

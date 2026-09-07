@@ -1,14 +1,16 @@
 ---
 title: "Spec Package 전체 본문 보존"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "architecture"
 artifact_id: "ADR-0033"
 parent_ids:
 - "AD-0030"
+supersedes:
+- "ADR-0031"
 created: "2026-09-06"
 ---
 
@@ -28,8 +30,8 @@ Plan과 Task를 transient 운반체로 규정했습니다. 그 본문을 현재 
 서로 다른 보존 단위를 소유하게 됩니다.
 
 이 결정은 현재 보존 보장을 바꾸지 않고 그 보장의 durable decision owner를
-정합화하기 위한 제안입니다. 기존 frozen record의 범위나 내용을 소급해
-바꾸거나 SPEC-0173을 완료시키지 않습니다.
+정합화합니다. 기존 frozen record의 범위나 내용을 소급해 바꾸거나 SPEC-0173을
+완료시키지 않습니다.
 
 ## Decision Drivers
 
@@ -58,8 +60,8 @@ Plan과 Task를 transient 운반체로 규정했습니다. 그 본문을 현재 
 
 ## Decision
 
-이 문서는 세 번째 방안을 제안합니다. 검토 후 수락되면 Stage 03 package의
-완료, 대체 또는 철회는 다음 규칙을 따릅니다.
+이 결정은 세 번째 방안을 채택합니다. Stage 03 package의 완료, 대체 또는
+철회는 다음 규칙을 따릅니다.
 
 1. 현재 의미를 갖는 obligation, decision, structure, procedure와 current
    consumer가 요구하는 증거를 terminal 전환 전에 canonical Agent governance,
@@ -86,6 +88,7 @@ Plan과 Task를 transient 운반체로 규정했습니다. 그 본문을 현재 
 않습니다. 과거의 Spec-only 보존 package에 누락된 Plan/Task를 소급 생성하지
 않으며, 그 기록의 당시 범위 자체를 역사적 사실로 유지합니다. 이 규칙은 이
 결정의 수락 이후 current package가 terminal 처분을 시작할 때 적용됩니다.
+ADR-0031이 accepted였던 기간에 Spec만 보존된 package의 범위는 그대로 둡니다.
 
 승인된 divergent-branch package handoff는 별도 예외 계약을 그대로 유지합니다.
 그 흐름은 source packet의 status와 전체 파일 집합 및 bytes를 변경 없이
@@ -113,15 +116,16 @@ target의 Spec, Plan, 모든 Task 역시 위의 일반 원자적 보존 규칙�
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0031 보존 기록으로서의 아카이브](0031-preserved-archive-record.md)
+- [ADR-0031 보존 기록으로서의 아카이브](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md)
 - [SPEC-0173 Governance and QA Surface Convergence](../../03.specs/0173-governance-qa-surface-convergence/spec.md)
 - [SPEC-0173 implementation plan](../../03.specs/0173-governance-qa-surface-convergence/plan.md)
 - [SPEC-0173 Task 0006](../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
 
-ADR-0031은 이 제안이 바꾸려는 accepted predecessor입니다. 제안 상태에서는
-`supersedes` 관계를 선언하지 않습니다. 실제 수락 시에만 ADR-0033을 accepted
-successor로 전환하고, ADR-0031의 reciprocal supersession metadata와 frozen
-preservation을 같은 lifecycle 변경에서 적용합니다.
+ADR-0031은 이 결정이 대체한 accepted predecessor입니다. SPEC-0176이 이
+결정을 accepted로 전환하면서 같은 결과 tree에서 ADR-0031을 superseded로
+전환하고 그 본문을 `docs/98.archive/superseded/02.architecture/decisions/`에
+변경 없이 보존했으며, 두 문서에 reciprocal supersession metadata를
+적용했습니다.
 
 ## Compliance
 
@@ -134,9 +138,9 @@ runtime, Hosted CI 또는 SPEC-0173 completion의 PASS를 뜻하지 않습니다
 
 ## Follow-up
 
-독립 검토가 이 제안을 수락할 근거를 확인한 뒤에만 ADR-0033의 initial
-`proposed` lifecycle을 `accepted`로 전환합니다. 같은 원자적 변경에서
-ADR-0031을 reciprocal successor metadata와 함께 `superseded/`에 보존하고,
-REQ-0026과 AD-0030 및 current consumer를 이 결정에 맞춥니다. 실제 승인 근거,
-본문 비교, lifecycle transition, 검증 결과와 미해결 blocker는 SPEC-0173 Task
-0006이 기록합니다.
+수락은 SPEC-0176이 하나의 결과 tree에서 수행했습니다. ADR-0033이 `accepted`로
+전환되고, ADR-0031이 `superseded`로 전환되어 본문 그대로 보존되었으며,
+REQ-0026과 AD-0030이 이 결정의 보존 단위에 맞춰졌습니다. 실제 lifecycle
+transition, 본문 동일성 비교, 검증 결과는 SPEC-0176 Task 0001이 기록합니다.
+SPEC-0173은 이 승격을 자신의 open dependency로 선언했을 뿐이며 이 결정으로
+완료되지 않습니다.

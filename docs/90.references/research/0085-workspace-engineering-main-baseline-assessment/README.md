@@ -122,7 +122,7 @@ Detailed current findings are not repeated here. They are consolidated in
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md).
 - Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md), and
-  [ADR-0031](../../../02.architecture/decisions/0031-preserved-archive-record.md).
+  [ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md).
 - Current identity-recovery owner: [SPEC-0173 Task 1](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
   the [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) retains the dated implementation result.
 - Operations authority: [Stage 05](../../../05.operations/README.md).

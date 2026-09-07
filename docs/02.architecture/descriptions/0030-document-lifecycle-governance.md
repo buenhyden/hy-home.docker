@@ -1,10 +1,10 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -73,13 +73,13 @@ retired-path와 frozen preserved-path 집합을 받습니다. completed Spec 경
 preserved-path에 있으면 completion으로 판정하고, 그렇지 않은 package 이탈은
 retirement로 판정합니다. 대응하는 Tombstone이 없는 retirement는
 `package-retirement-unrecorded`를 산출합니다. Tombstone은 철회를, completed
-Spec은 영구 outcome을, recovery blob은 제거된 transient Plan/Task의 복구를
-각각 증명하며 어느 한 기록이 다른 기록을 대신하지 않습니다.
+Spec은 영구 outcome을, 함께 보존된 Plan과 Task 본문은 그 outcome에 이른 실행
+맥락을 각각 증명하며 어느 한 기록이 다른 기록을 대신하지 않습니다.
 
 완료 순서는 outcome과 current consumer를 먼저 Spec 또는 다른 현재 정본으로
-write back하고, Plan/Task의 exact Git regular blob을 확인한 뒤, Spec의 terminal
-전환·archive 이동과 transient body 제거를 한 결과 tree에 적용하는 것입니다.
-이 순서 때문에 active Stage 03에는 terminal 중간 상태가 생기지 않습니다.
+write back한 뒤, Spec·Plan·모든 Task의 terminal 전환과 archive 이동을 한 결과
+tree에 적용하는 것입니다. 이 순서 때문에 active Stage 03에는 terminal 중간
+상태가 생기지 않습니다.
 
 link validator와 metadata validator는 결과 tree 위에서 독립적으로 실행됩니다.
 따라서 은퇴한 경로를 여전히 가리키는 잔존 문서는 lifecycle 술어를 거치지 않고
@@ -131,7 +131,8 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 ## Traceability
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
-- [ADR-0031 보존 기록으로서의 아카이브](../decisions/0031-preserved-archive-record.md)
+- [ADR-0033 Spec Package 전체 본문 보존](../decisions/0033-full-spec-package-preservation.md)
+- [ADR-0031 보존 기록으로서의 아카이브](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) (superseded)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)
 
 ## Related Documents

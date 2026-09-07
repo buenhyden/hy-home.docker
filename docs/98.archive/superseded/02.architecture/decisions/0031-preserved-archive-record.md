@@ -2,7 +2,7 @@
 title: "보존 기록으로서의 아카이브"
 version: "1.2.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-05"
 layer: "architecture"
@@ -11,6 +11,7 @@ parent_ids:
 - "AD-0030"
 supersedes:
 - "ADR-0030"
+superseded_by: "ADR-0033"
 created: "2026-09-04"
 ---
 

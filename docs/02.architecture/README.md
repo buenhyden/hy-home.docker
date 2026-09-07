@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.0.3"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "architecture"
 ---
 
@@ -26,9 +26,10 @@ Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안,
 
 ## Scope
 
-이 stage는 현재 26개의 Architecture Description과 26개의 ADR을 보유한다.
-구현 세부와 검증 계약은 Stage 03, 실행 상태는 현재 변경 패킷, 운영 절차는
-Stage 05가 소유한다.
+이 stage는 Architecture Description과 ADR을 보유한다. 개수는 유지 기준이
+아니므로 각 하위 디렉터리의 README와 실제 파일 목록이 권위이며, 이 index는
+그 경로로 안내한다. 구현 세부와 검증 계약은 Stage 03, 실행 상태는 현재 변경
+패킷, 운영 절차는 Stage 05가 소유한다.
 
 ## Structure
 
@@ -41,7 +42,7 @@ docs/02.architecture/
 ├── decisions/
 │   ├── 0001-traefik-nginx-hybrid.md
 │   ├── ...
-│   └── 0031-preserved-archive-record.md
+│   └── 0034-canonical-knowledge-and-prompt-surfaces.md
 └── README.md
 ```
 
