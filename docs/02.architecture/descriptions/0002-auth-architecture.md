@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-07"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -85,7 +85,15 @@ Agents access services using Service Account tokens issued by Keycloak. All agen
 
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
-Refer to `docs/03.specs/0002-auth/spec.md` for detailed OIDC claims and realm structures.
+Detailed OIDC claims and realm structures live in the operations catalog, at
+[Keycloak](../../05.operations/catalog/02-auth/0014-keycloak/guide.md) and
+[oauth2-proxy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md).
+The Stage 03 package this section used to name was retired, and its tombstone
+under the archive's `03.specs` tree records the catalog as the replacement; an
+active document does not link into the archive, so the tombstone is named rather
+than linked. The catalog references above are links rather than quoted paths so
+that the link checker fails on them if a target moves again, which a path in
+backticks never does.
 
 ## System Boundaries
 
