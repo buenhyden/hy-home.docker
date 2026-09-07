@@ -337,6 +337,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) | Markdown reference |
 | [docs/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Markdown reference |
 | [docs/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md](../../../03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) | Markdown reference |
+| [docs/03.specs/0176-stale-fact-convergence/plan.md](../../../03.specs/0176-stale-fact-convergence/plan.md) | Markdown reference |
+| [docs/03.specs/0176-stale-fact-convergence/spec.md](../../../03.specs/0176-stale-fact-convergence/spec.md) | Markdown reference |
+| [docs/03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md](../../../03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) | Markdown reference |
 | [docs/03.specs/README.md](../../../03.specs/README.md) | folder index |
 
 ### Operations docs
