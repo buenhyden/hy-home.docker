@@ -1,6 +1,6 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -71,9 +71,12 @@ Do not place any of the following under `_workspace`:
 
 ## Tracking Contract
 
-The root `.gitignore` ignores `_workspace/**` and re-includes only the two
-tracked contract documents named in Structure. Verify the rule rather than
-trusting this sentence:
+The root `.gitignore` ignores everything under `_workspace/` and re-includes
+only the two tracked contract documents named in Structure. Git never descends
+into an excluded directory, so `repo-support/` is re-included and its contents
+excluded again before `repo-support/README.md` is restored; changing the outer
+pattern without rewriting that ladder silently drops the second document.
+Verify the rule rather than trusting this sentence:
 
 ```bash
 git check-ignore -v _workspace/repo-support/scratch.json
