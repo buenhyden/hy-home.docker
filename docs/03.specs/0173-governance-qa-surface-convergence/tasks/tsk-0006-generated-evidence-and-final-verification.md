@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.9"
+version: "0.4.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1122,6 +1122,45 @@ deleted paths in REQ-0025, ADR-0028, and AD-0028; their focused correction now
 passes re-review. Bare generator examples in the scripts README remain open.
 Stable identity/recovery checks remain enforced; no frozen archive body was edited.
 
+### Authorized config-only execution of the PostgreSQL leaf (2026-09-07, local-executed)
+
+The operator authorized runtime Docker operations for the single-instance
+configuration and explicitly excluded the cluster one, then asked for the
+config-only run. That distinction matches the target: the rehearsal fixture
+`examples/operations/postgres-logical-upgrade/docker-compose.yml` declares
+exactly two services, `source` and `target`, each a single Postgres instance
+with no profiles. The eleven-service Patroni leaf at
+`infra/04-data/relational/postgresql-cluster/` was not touched.
+
+`bash scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`
+exited 0:
+
+```text
+cleanup_status=passed
+status=check-passed
+source_image=postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+target_image=postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+fixture_sha256=sha256:523d947400f5197ce362a11445a0c6e380a28431352679ea01ca24d106c34b57
+project_prefix=hyhome-ior-20260719
+total_timeout_seconds=420 cleanup_reserve_seconds=60 operation_budget_seconds=360
+CHECK_EXIT=0
+```
+
+State was captured on both sides of the run rather than trusted to the script's
+own cleanup claim, because an authorization to execute is not an exemption from
+verifying. Nothing moved: handoff entries 0 to 0, Docker containers 15 to 15,
+images 71 to 71, `/tmp/hyhome-ior-evidence.*` 0 to 0, and the Git tree carried
+only the unrelated Stage 03 edit already in progress. The run left no residue.
+
+What this does and does not establish. `leaf.postgres-logical-upgrade-config`
+moves from BLOCKED to PASS on observed local evidence. It does not run the
+upgrade: `RUN_MODE=check` returns before `start_source_and_wait`, so no
+container was created and no logical upgrade, dump, restore or oracle
+comparison was performed. The aggregate's remaining blockers are untouched, and
+this Task's own rule that an unexecuted check is never promoted to a PASS
+applies to them exactly as before. Task 0006 stays in-progress; the status is
+not advanced on the strength of one leaf.
+
 ## Verification Evidence
 
 ### Package reconciliation verification (2026-09-06)
@@ -1559,9 +1598,13 @@ No completed archive packet or new Spec/Plan/Task was created.
   commits and the completed 8176cdee7 local-main checkpoint only. It does not
   authorize subsequent integration, remote delivery or cleanup.
 - Runtime and remote observations remain explicitly unverified.
-- The whole-migration aggregate remains BLOCKED by the PostgreSQL operating/image
-  leaf. QuickWin and template-security have isolated example-input PASS evidence;
-  neither proves actual host, service or volume readiness.
+- The whole-migration aggregate remains BLOCKED, but the blocking set is now
+  smaller and named more exactly. `leaf.postgres-logical-upgrade-config` PASSED
+  under the operator's single-instance runtime authorization on 2026-09-07 and
+  is no longer a blocker. What remains is the actual operating evidence: the
+  rehearsal's own upgrade path, which `--check-config-only` returns before
+  reaching. QuickWin and template-security have isolated example-input PASS
+  evidence; neither proves actual host, service or volume readiness.
 - Normal native discovery is BLOCKED before acceptance; skill calls, live hook
   delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
   change, model call or installation is authorized by this follow-up.
