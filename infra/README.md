@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Surface"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -126,11 +126,11 @@ docker compose --profile ai up -d
 
 ### 3. Standalone Verification
 
-개별 폴더 내에서 독립적으로 서비스를 실행하고 검증할 수 있습니다.
+서비스 compose 파일은 단독으로 기동할 수 없습니다. 루트가 선언하는 `infra_net`과
+secret에 의존하므로, 검증은 저장소 루트에서 profile을 선택해 수행합니다.
 
 ```bash
-cd infra/01-gateway/traefik
-docker compose up -d
+HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 ```
 
 ## Structure

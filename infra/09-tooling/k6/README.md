@@ -1,6 +1,6 @@
 ---
 title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -62,7 +62,9 @@ k6/
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `LOCUST_HOST_PORT` | No | 외부 UI 접속 포트 (기본: 18089) |
+| `K6_HOST_PORT` | No | 외부 UI 접속 포트 (기본: 18189) |
+| `K6_PORT` | No | 컨테이너 내부 UI 포트 (기본: 8089) |
+| `DEFAULT_TOOLING_DIR` | Yes | 스크립트 볼륨의 호스트 경로 |
 
 ## Validation
 

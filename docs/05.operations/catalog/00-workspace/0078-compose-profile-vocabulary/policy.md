@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -15,7 +15,7 @@ created: "2026-09-04"
 
 ## Overview
 
-이 문서는 `infra/` 하위 Compose 파일이 선언하는 profile 이름 24개의 canonical
+이 문서는 `infra/` 하위 Compose 파일이 선언하는 profile 이름 28개의 canonical
 정의를 소유한다. Compose profile은 이 workspace에서 stack 구성원을 선택하는
 유일한 runtime 메커니즘이므로, 이름 하나하나가 무엇을 선택하는지 여기에서
 확정한다.
@@ -137,9 +137,9 @@ profile 이름은 세 종류로 나뉜다.
 
 - `00-workspace`와 `12-infra-net`은 운영 catalog domain이지만 `infra/` 대응
   디렉터리가 없으므로 domain selector를 갖지 않는다. 결함이 아니다.
-- `infra/` 하위 6개 sibling 쌍은 양쪽이 같은 서비스 이름을 선언하여 동시
-  include가 불가능하다. 이 쌍의 topology selector는 SPEC-0171이 결정할 때까지
-  등록하지 않는다.
+- `infra/` 하위에 있던 6개 sibling 쌍은 SPEC-0171이 완료되면서 짝을 이루던
+  파일로 병합되었다. 같은 서비스 이름을 선언하는 쌍은 더 이상 없고, 유예된
+  topology selector도 없다. 위 표의 topology 이름이 전부다.
 - 이미 함께 include된 두 파일 사이의 host port 충돌은 이 정책 이전부터
   존재하는 결함으로, 발견 시 기록하고 별도 변경으로 처리한다. 현재 미해결
   항목은 [AUD-0097](../../../../90.references/audits/0097-compose-domain-defect-register/README.md)이
