@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.2.1"
+version: "2.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 ---
 
 # Documentation Protocol
@@ -226,6 +226,16 @@ Task-owned state, and uses only the controlled wrapper. It binds its evidence to
 a Task under `docs/03.specs/`, and completion preserves
 that Task under `docs/98.archive/completed/`, where it is a frozen record that
 must not take new evidence.
+
+Preservation is what a terminal status means, and the corpus check applies it to
+each document rather than to the package as a whole. A single Task of an
+unfinished package therefore cannot be marked `completed` where it stands: the
+lifecycle edge is legal and the metadata check admits it, but the corpus check
+then reports the document as terminal inside an active stage, and satisfying it
+would move one Task out while its siblings remain. A finished Task of an
+unfinished package holds `in-progress` until the package migrates together, and
+a reader establishes that it is finished from its evidence and ledger sections
+rather than from its status field.
 
 An active stage may hold no package at all. Stage 03 is empty exactly when no
 change is in flight, which is a state to reach rather than avoid. A registered

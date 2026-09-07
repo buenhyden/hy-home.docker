@@ -1,10 +1,10 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.8"
+version: "0.4.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-07"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0006"
 parent_ids:
@@ -1383,6 +1383,43 @@ whole-migration aggregate in row 15. BLOCKED/NOT_RUN is not PASS.
 | 14 | W2 | PASS for implemented canonical/provider contract: 100 authored inputs, 77 source dispositions, independent review and 92 actual-root regression tests; native runtime acceptance remains explicitly unverified. | [Current verification ledger](#current-verification-ledger) |
 | 15 | W6 | BLOCKED whole-migration aggregate: PostgreSQL still requires unauthorized operating/image inputs. Both Compose baseline leaves now pass with isolated tracked example inputs; those results do not establish PostgreSQL, native or deployment acceptance. | [Local commit authorization and follow-up](#local-commit-authorization-and-follow-up-2026-09-06) |
 | 16 | W6 | PASS: the Task distinguishes local/configured evidence from unverified runtime, entitlement, and remote state. | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
+
+### Why all six Tasks read `in-progress` (2026-09-07, local-executed)
+
+This package shows six Tasks at `in-progress` while five of them have finished
+their work. That state was tested rather than assumed, and it is enforced rather
+than neglected.
+
+Tasks 0001 through 0005 each record a delivery commit and a Deferred Items list
+whose every entry is out of scope by design, a rollback boundary, or explicitly
+reassigned to this Task. Task 0002 states directly that the final independent
+repository review "remains assigned to Task 0006". Task 0001 assigns "current
+final acceptance, promotion, and atomic package disposition" here. Tasks 0003
+and 0004 each hand their remaining freshness and consumer evidence here. None of
+the five is waiting on work of its own.
+
+Promoting those five to `completed` in place was measured and is rejected:
+
+```text
+metadata check-changed: selected=9 violations=0
+active-stage-occupancy: tasks/tsk-0005-document-and-provider-residue.md:
+  completed document remains in an active stage
+archive recovery: violations=5
+```
+
+The lifecycle edge is legal and the metadata check admits it; the corpus check
+rejects the result. The retention policy states that completion preserves a Task
+under `docs/98.archive/completed/`, and the guard applies that per document, not
+per package. A Task therefore cannot be marked `completed` while its siblings
+continue, because marking it requires moving it out of Stage 03, and moving one
+Task of an unfinished package would split the package across two stages.
+
+The consequence for this package is that `in-progress` is the only status the
+five finished Tasks may hold until this Task closes and the whole package
+migrates together. Their finished state is read from their Verification Evidence
+and Commit Ledger sections, not from their status field. The measured statuses
+were restored to `in-progress` immediately after the test, and
+`check-document-corpus-lifecycle.py` returns `violations=0` on the restored tree.
 
 ## Review Evidence
 
