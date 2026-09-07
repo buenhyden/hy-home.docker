@@ -15,7 +15,6 @@ services:
       - core
       - auth
       - dev
-      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
