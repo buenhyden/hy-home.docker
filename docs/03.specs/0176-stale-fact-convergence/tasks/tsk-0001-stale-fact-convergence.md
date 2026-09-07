@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -588,6 +588,135 @@ registered check runs them, which is why every gate passed over a broken
 contract; its Tracking Contract now states the rule that actually holds and why
 changing the outer pattern breaks the inner one.
 
+### W13: The deferred items, worked under an explicit scope extension (2026-09-07, local-executed)
+
+Five Deferred Items were carried because each needed either a surface this
+package excluded or an authorization it did not hold. The operator named all
+five and asked for them, which is the authorization the earlier rows were
+waiting on. This section records what that produced, including where the answer
+was "measured, not done".
+
+#### The two-leaf residue, corrected as one mistake rather than 48
+
+The earlier row counted 86 statements in 48 documents and called it a separate
+package. Working it showed the count was the wrong unit. Only one infra
+directory holds more than one Compose file (`infra/04-data/lake-and-object/minio`);
+every other holds exactly one. So every statement describing a directory as a
+root-included leaf plus a separate service-local leaf is the same mistake: when
+SPEC-0156 and SPEC-0171 replaced conditional includes with "include everything,
+let the profile select", the documents were never re-expressed. What reads as a
+file distinction is a profile distinction. Forty-one statements across
+twenty-six documents were corrected on that translation, each against the parsed
+Compose file rather than against the vocabulary.
+
+Not every match was a defect, and the triage mattered more than the sweep. Two
+shapes look alike: a claim that two files exist, which is false, and a statement
+that a service's own Compose file cannot be rendered standalone because it needs
+root `infra_net` and secret context, which is true and describes the single file
+correctly. Roughly thirty lines of the second kind were left untouched.
+
+| Family | Documents' claim | Measured |
+| --- | --- | --- |
+| Airflow and n8n broker | a root-included dev compose and a service-local compose declare different brokers | one file each; `airflow-valkey` and `n8n-valkey` sit in it under `profiles: [dedicated-valkey]`, and `${AIRFLOW_VALKEY_HOST:-mng-valkey}` / `${N8N_VALKEY_HOST:-mng-valkey}` default to the shared broker |
+| Kafka broker count | a root dev single-broker compose and a service-local full 3 broker compose | one file; `kafka-1` is `messaging`/`dev`, `kafka-2` and `kafka-3` are `messaging-cluster` |
+| nginx linkage | `not root-included by default` | root `docker-compose.yml:213` includes it, one of 41 unconditional entries |
+| k6 and StarRocks linkage | `local compose only` | both root-included; selected by `tooling`/`testing` and `data` |
+
+Three matches survive deliberately. `ADR-0007:31` and `ADR-0022:26` keep their
+original sentences because an accepted decision records what was decided, not
+what the implementation later became; each gained a note naming SPEC-0156 and
+SPEC-0171 and the profile that replaced the file boundary, so the change is
+recorded rather than silent. `descriptions/0006:90` is not a defect: it lists
+two validation activities, not two files.
+
+#### The `_workspace` check, and the flag the whole thing turns on
+
+The contract now has a registered check:
+`test_workspace_contract_documents_stay_reachable` in
+`tests/lib/test_surface_ownership.py`, reached by
+`leaf.repository-integrity-regressions`.
+
+The first version of it passed against a deliberately broken `.gitignore`. That
+is the finding worth keeping. `git check-ignore` consults the index first and
+will not call a tracked file ignored, so after `a13bfd79c` dropped the negation
+the document stayed tracked and every question about its ignored state answered
+no while the rule that re-included it was gone. `--no-index` asks the exclude
+rules alone. The check was rebuilt on it and then proven by breaking the
+contract on purpose: it fails with
+`[] != ['_workspace/repo-support/README.md']` and passes again on restore.
+
+`_workspace/README.md` had worked around the same blind spot without naming it,
+by probing a scratch path instead of a contract document. Its verification block
+now names `--no-index` and says to read the printed rule rather than the exit
+status, because `-v` exits 0 whether the matching pattern excludes or
+re-includes.
+
+#### The two items that were measurement, not change
+
+`oauth2-proxy` declared `dev` twice at `docker-compose.yml:17-18`. Parsing all
+Compose files confirmed it was the only duplicate in the repository; the line is
+removed and `profiles` reads `['core', 'auth', 'dev']`.
+
+SPEC-0173 was not advanced, and the reason is its own ruling rather than a
+missing effort. `tsk-0006:198` records that a BLOCKED check is not a valid
+terminal transition and instructs that the Spec and Plan stay active with
+in-progress Tasks, and that acceptance criterion 15 is not waived. Completing it
+by editing statuses is the one thing that Task forbids.
+
+What is new is the shape of the blocker, measured rather than repeated. Docker
+is available here (server 29.7.2) and the handoff directory
+`_workspace/repo-support/task-2026-07-19-.../postgres` is empty, so
+`invalidate_canonical_handoff` would destroy nothing. The block is not stale
+state; it is that `leaf.postgres-logical-upgrade-config` runs
+`scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`,
+and `RUN_MODE=check` still reaches `assert_safe_images_paths_and_project`
+(`docker image inspect` and `docker image save` into
+`/tmp/hyhome-ior-evidence.<pid>`) and `cleanup_owned_projects_and_tmp`
+(`docker ps -aq --filter label=...` followed by removal). Those are runtime
+Docker operations, including container removal, and they need an explicit
+approval this Task does not carry. The item stays deferred with that named.
+
+The `--check-config-only` half of that was then authorized and run; the evidence
+is recorded in SPEC-0173's `tsk-0006` where it belongs. It exited 0 with
+`status=check-passed` and moved nothing: containers 15 to 15, images 71 to 71,
+handoff entries 0 to 0, `/tmp` evidence directories 0 to 0. One leaf changed
+state; the package did not.
+
+#### The gate's own defect, found while it kept failing
+
+Two gate runs failed on two different tests, both in the "changed while opening"
+guard family. Neither failure was caused by this work.
+`_open_directory_path` in `scripts/lib/document_governance/spec_packages.py`
+walks from the filesystem root down and verifies every parent component, and
+`_directory_snapshot` compares `st_nlink` and `st_mtime_ns` alongside `st_dev`
+and `st_ino`. A test fixture under `/tmp` therefore makes `/tmp` a verified
+parent. Creating one directory in `/tmp` changes the snapshot while the identity
+fields are untouched:
+
+```text
+before: (2096, 73729, 17407, 487, 1788773190218409786, ...)
+after:  (2096, 73729, 17407, 488, 1788773190218972267, ...)
+```
+
+`st_dev` and `st_ino` prove it is the same directory, so no symlink swap
+occurred; only fields that any other process can move differ. Seven or more
+concurrent test and gate processes, including another session's, were writing to
+`/tmp` throughout. The consequence is that the public suites are
+non-deterministic on a shared machine. The same comparison appears at
+`references.py:252,360`, `archive.py:322,415`, `architecture.py:126` and
+`requirements.py:455`. Not fixed here: `scripts/**` is protected and this is a
+guard change, not a stale fact. Recorded as a Deferred Item.
+
+#### A reading mistake worth recording
+
+Mid-commit, `git status` showed thirteen edited files as unmodified and the work
+appeared lost. Nothing was lost. `pre-commit` sets unstaged changes aside in its
+own cache, not `git stash`, and restores them when hooks finish, so the working
+tree during a running commit is the hook's intermediate state and not the
+repository's. The same shape as reading a gate's exit code from the wrapper
+instead of from inside the redirect: the observation was taken from the wrong
+process at the wrong moment.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -722,11 +851,18 @@ package's first criterion.
 | `c98df20dd` | W8 and W9 SPEC-0175 preservation and archive evidence |
 | `3725e08c7` | W10 and W11 entry-path closure and final verification |
 | `edc5162fb` | Round-one review-finding corrections |
-| pending | W12 round-two corrections, the bilingual predicate, and the `_workspace` tracking contract |
+| `1aa7bf039` | W12 `_workspace` tracking contract restoration |
+| `7e1a23d40` | W12 round-two corrections and the bilingual predicate, carrying the ADR-0034 discharge note because the commit that was to hold it alone failed on the flaky guard below |
+| pending | W13 deferred-item work: two-leaf convergence, the `_workspace` check, and the `oauth2-proxy` duplicate |
 
 ## Rulings
 
-- SPEC-0173 is not modified beyond the two stale sentences SPEC-0176 names.
+- SPEC-0173 is not modified beyond the two stale sentences SPEC-0176 names,
+  extended once on 2026-09-07 when the operator authorized single-instance
+  runtime Docker operations and asked for the config-only run. The extension is
+  recorded here rather than taken silently: SPEC-0173's `tsk-0006` gained the
+  execution evidence, which is that Task's own business, and its version moved
+  to 0.4.10. Nothing else in that package was touched.
 - A guard that fires is treated as correct until proven otherwise; the change is
   adjusted rather than the guard weakened.
 - Static configuration and local test results never establish native runtime
@@ -755,12 +891,11 @@ prefers the note removed, the instruction it annotates is intact.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Re-review of the W12 corrections | Discharged one level and reopened one level down. The round-two reviewer judged `edc5162fb`; the corrections answering it are in the pending commit and are themselves unreviewed. The pattern is now twice observed: each review round corrects the previous one's blind spot and creates its own |
-| The two-leaf residue outside this package's scope | Measured at 86 statements in 48 current documents, in `infra/05-messaging/**`, `infra/07-workflow/**`, their catalog subjects, and four Stage 02 descriptions. Not fixed here: absorbing it would mean widening scope a second time in the package a reviewer was asked to judge for goalpost-moving. It needs its own package |
+| Re-review of the W13 corrections | Same shape as the W12 row it replaces, one round later. The corrections in W13 are larger than the ones a reviewer last judged and are themselves unreviewed. The pattern is now three times observed: each round corrects the previous round's blind spot and creates its own |
+| The parent-component guard makes the public suites non-deterministic | `_directory_snapshot` compares `st_nlink` and `st_mtime_ns` for every traversed parent, so a fixture under `/tmp` fails whenever any other process writes there, while `st_dev` and `st_ino` prove no swap occurred. Measured twice in this session on two different tests. A fix belongs in `scripts/lib/document_governance/` (`spec_packages.py:139-147,174-178,312`, `references.py:252,360`, `archive.py:322,415`, `architecture.py:126`, `requirements.py:455`), a protected surface, and it is a guard change rather than a stale fact |
 | This package's own lifecycle walk to `active` | Measured, not assumed. The check rejects a non-initial status on a document absent from the base with `invalid-initial-status`, not with a transition-budget diagnostic. The package can advance one step after a push carries it at `draft`; no authorization here grants that push |
-| SPEC-0173 completion | Unchanged by this package. Its aggregate remains BLOCKED on the actual PostgreSQL operating and image leaf, and its native runtime and Hosted CI evidence remain unobserved. This package closed only its retention-owner dependency |
-| `oauth2-proxy` declaring the `dev` profile twice | Re-measured in W12 by parsing all 41 Compose files: `infra/02-auth/oauth2-proxy/docker-compose.yml:17-18` is the only duplicate in the repository. Compose treats `profiles` as set membership, so behaviour is unaffected and this is hygiene. Still a Compose file change, which this package's scope excludes |
-| No registered check enforces the `_workspace` tracking contract | `_workspace/README.md` documents two verification commands and nothing runs them, which is why `a13bfd79c` could break the contract with every gate green. W12 restored the rule and corrected the document, but the enforcement gap remains. A check belongs under `scripts/**` and `tests/**`, both protected surfaces outside this package's scope |
+| SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
+| Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |
 
 ## Related Documents
 
