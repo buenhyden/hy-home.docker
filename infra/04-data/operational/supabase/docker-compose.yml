@@ -12,7 +12,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
-    image: supabase/studio:2026.08.31-sha-2c76bb3
+    image: supabase/studio:2026.09.07-sha-7996410
     restart: unless-stopped
     depends_on:
       analytics:
@@ -160,7 +160,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.132.0
+    image: supabase/realtime:v2.134.10
     restart: unless-stopped
     depends_on:
       db:
@@ -195,7 +195,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.72.2
+    image: supabase/storage-api:v1.74.0
     restart: unless-stopped
     read_only: false
     volumes:
@@ -293,7 +293,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-edge-functions
-    image: supabase/edge-runtime:v1.75.0
+    image: supabase/edge-runtime:v1.76.2
     restart: unless-stopped
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions
@@ -329,7 +329,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
-    image: supabase/logflare:1.50.7
+    image: supabase/logflare:1.50.11
     restart: unless-stopped
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
@@ -361,7 +361,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:17.6.1.167
+    image: supabase/postgres:17.6.1.168
     restart: unless-stopped
     read_only: false
     volumes:
