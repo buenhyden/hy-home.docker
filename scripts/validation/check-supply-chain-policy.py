@@ -826,8 +826,7 @@ def publish_verdict_pair(
             or payload.get("source_revision") != source_revision
             or payload.get("build_context_sha256") != build_context_sha256
             or payload.get("policy_id") != "sample-service-local-v1"
-            or payload.get("producer_spec")
-            != "contract:sample-service-supply-chain-v2"
+            or payload.get("producer_spec") != "contract:sample-service-supply-chain-v2"
             or payload.get("redaction_status") != "passed"
             or not re.fullmatch(
                 r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z",

@@ -1052,9 +1052,7 @@ class SupplyChainPolicyTests(unittest.TestCase):
             ),
         )
 
-        wrong_repository = scorecard_report(
-            repository="hy-home-docker/hy-home.docker"
-        )
+        wrong_repository = scorecard_report(repository="hy-home-docker/hy-home.docker")
         self.assertIn(
             "scorecard-repository-invalid",
             self.checker.validate_scorecard_advisory(wrong_repository),

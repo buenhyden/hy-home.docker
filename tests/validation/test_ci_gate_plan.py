@@ -390,9 +390,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         selected = suites.suite_names
         plan = _real_public_plan(selected, {})
         validator_path = next(
-            item.entrypoint
-            for item in suites.validators
-            if "local" in item.contexts
+            item.entrypoint for item in suites.validators if "local" in item.contexts
         )
         invocation = next(item for item in plan if item.entrypoint == validator_path)
         mutations = (
@@ -497,10 +495,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
             # Count every validator path, not only eligible paths: otherwise a
             # hidden ineligible invocation can evade this explain comparison.
-            validator_paths = {
-                item.entrypoint
-                for item in suites.validators
-            }
+            validator_paths = {item.entrypoint for item in suites.validators}
             self.assertEqual(
                 explained_paths,
                 tuple(path.as_posix() for path in executed if path in validator_paths),
@@ -637,17 +632,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
             with self.subTest(context=context, argv=argv):
                 with self.assertRaises(contract.GateContractError) as raised:
                     runner.build_public_validation_plan(
-                        _rebind_diff_gate(
-                            gates, runner._INTERNAL_ADAPTER_PATH, argv
-                        ),
+                        _rebind_diff_gate(gates, runner._INTERNAL_ADAPTER_PATH, argv),
                         roots,
                         public,
                         public.suite_names,
                         context,
                     )
-                self.assertEqual(
-                    "ci-gate-invocation-duplicate", raised.exception.code
-                )
+                self.assertEqual("ci-gate-invocation-duplicate", raised.exception.code)
 
         unique_argv = (
             "run-unittest",

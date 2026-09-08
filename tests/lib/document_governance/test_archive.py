@@ -77,7 +77,12 @@ class MigrationStateTests(unittest.TestCase):
                 self.assertTrue(all(re.search(pattern, path) for path in frozen))
                 self.assertTrue(all(not re.search(pattern, path) for path in current))
         # Read-only checks must still inspect preserved content.
-        self.assertTrue(all(not re.search(hooks["check-merge-conflict"].get("exclude", "$^"), path) for path in frozen))
+        self.assertTrue(
+            all(
+                not re.search(hooks["check-merge-conflict"].get("exclude", "$^"), path)
+                for path in frozen
+            )
+        )
 
     def test_markdown_formatter_excludes_frozen_legacy_migrations(self) -> None:
         config = yaml.safe_load((ROOT / ".markdownlint-cli2.yaml").read_text())
@@ -106,8 +111,7 @@ class MigrationStateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             ledger = (
-                root
-                / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
+                root / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
             )
             ledger.parent.mkdir(parents=True)
             ledger.write_text(

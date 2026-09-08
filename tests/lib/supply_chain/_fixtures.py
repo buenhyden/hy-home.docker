@@ -11,9 +11,7 @@ BUILD_CONTEXT_DIGEST = "sha256:" + "e" * 64
 SOURCE_REVISION = "0123456789abcdef0123456789abcdef01234567"
 
 
-def cyclonedx_report(
-    *, image_config_digest: str = SUBJECT_DIGEST
-) -> dict[str, Any]:
+def cyclonedx_report(*, image_config_digest: str = SUBJECT_DIGEST) -> dict[str, Any]:
     return {
         "bomFormat": "CycloneDX",
         "components": [],
@@ -74,9 +72,7 @@ def grype_report(
     return report
 
 
-def provenance_statement(
-    *, archive_digest: str = ARCHIVE_DIGEST
-) -> dict[str, Any]:
+def provenance_statement(*, archive_digest: str = ARCHIVE_DIGEST) -> dict[str, Any]:
     return {
         "_type": "https://in-toto.io/Statement/v1",
         "predicate": {
@@ -93,9 +89,7 @@ def provenance_statement(
                     }
                 ],
             },
-            "runDetails": {
-                "builder": {"id": "hyhome.local.supply-chain-wrapper"}
-            },
+            "runDetails": {"builder": {"id": "hyhome.local.supply-chain-wrapper"}},
         },
         "predicateType": "https://slsa.dev/provenance/v1",
         "subject": [

@@ -1006,6 +1006,58 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             preflight.index("docker compose version"),
         )
 
+    def _preflight_with_stubs(
+        self, run_mode: str, marker: Path
+    ) -> "subprocess.CompletedProcess[str]":
+        """Drive the preflight with every runtime call stubbed but the image gate."""
+
+        return self.run_sourced(
+            textwrap.dedent(
+                f"""\
+                RUN_MODE={run_mode}
+                OPERATION_DEADLINE=$((SECONDS + 30))
+                RUNTIME_LOG={marker!s}.runtime.log
+                assert_exact_local_image_identities() {{
+                  printf 'called\n' >> {marker!s}
+                  return 10
+                }}
+                run_bounded() {{ return 0; }}
+                render_and_validate_topology() {{ return 0; }}
+                assert_no_project_collisions() {{ return 0; }}
+                assert_safe_images_paths_and_project
+                """
+            )
+        )
+
+    def test_check_mode_validates_configuration_without_local_images(self) -> None:
+        """`--check-config-only` reads configuration; it does not stage a rehearsal.
+
+        Requiring the pinned images to be present locally made the required
+        hosted gate fail on every runner, which holds no PostgreSQL 17.6 or
+        18.4 image and never runs the rehearsal, while proving nothing about
+        the configuration. The pinned literals, fixtures, owned paths and
+        rendered topology are still checked in this mode.
+        """
+
+        with tempfile.TemporaryDirectory(prefix="ior-check-mode-", dir="/tmp") as tmp:
+            marker = Path(tmp) / "called"
+            result = self._preflight_with_stubs("check", marker)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertFalse(marker.exists(), "check mode reached the local image gate")
+
+    def test_runtime_modes_still_require_the_exact_local_images(self) -> None:
+        """The boundary stays where a container is about to start."""
+
+        for run_mode in ("normal", "negative"):
+            with (
+                self.subTest(run_mode=run_mode),
+                tempfile.TemporaryDirectory(prefix="ior-run-mode-", dir="/tmp") as tmp,
+            ):
+                marker = Path(tmp) / "called"
+                result = self._preflight_with_stubs(run_mode, marker)
+                self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+                self.assertTrue(marker.exists(), "the local image gate was skipped")
+
     def test_local_image_identity_accepts_target_descriptor_runtime_id(self) -> None:
         image = "example.invalid/postgres:fixture@sha256:" + "a" * 64
         repo_digest = "example.invalid/postgres@sha256:" + "a" * 64

@@ -107,7 +107,9 @@ def recover_historical_identity(
 
     candidate = pathlib.PurePosixPath(path)
     normalized = candidate.as_posix()
-    if candidate.is_absolute() or any(part in {"", ".", ".."} for part in candidate.parts):
+    if candidate.is_absolute() or any(
+        part in {"", ".", ".."} for part in candidate.parts
+    ):
         return None
     match = _LEGACY_REQUIREMENT_PATH.fullmatch(normalized)
     if match is None:
@@ -172,9 +174,7 @@ def parse_historical_requirement_declarations(
                             f"{path}"
                         )
                     name = f"REQ-{package_number}.{expected_kind}"
-                    declarations.setdefault(name, set()).add(
-                        int(match.group("number"))
-                    )
+                    declarations.setdefault(name, set()).add(int(match.group("number")))
     return True, declarations
 
 
@@ -812,7 +812,9 @@ def validate_allocation_transition(
             return path
         for offset, part in enumerate(pathlib.PurePosixPath(path).parts):
             if part.startswith(numbers[0]):
-                return pathlib.PurePosixPath(*pathlib.PurePosixPath(path).parts[: offset + 1]).as_posix()
+                return pathlib.PurePosixPath(
+                    *pathlib.PurePosixPath(path).parts[: offset + 1]
+                ).as_posix()
         return path
 
     for path, identity in current.items():
@@ -823,8 +825,7 @@ def validate_allocation_transition(
         _record(identity, slots)
         for name, numbers in slots.items():
             if name in high_water and any(
-                number <= high_water[name]
-                and number not in previous.get(name, set())
+                number <= high_water[name] and number not in previous.get(name, set())
                 for number in numbers
             ):
                 candidate_current[path] = identity
@@ -1013,7 +1014,9 @@ def validate_allocation_transition(
                 }
                 if claimants <= merged_proven_paths:
                     current_owners = {
-                        identity_owner(candidate_origins[claimant], candidate_current[claimant])
+                        identity_owner(
+                            candidate_origins[claimant], candidate_current[claimant]
+                        )
                         for claimant in claimants
                     }
                     if merged_owners.get((name, number), set()) == current_owners:

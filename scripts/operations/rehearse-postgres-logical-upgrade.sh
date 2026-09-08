@@ -888,7 +888,16 @@ assert_safe_images_paths_and_project() {
       return 10
     }
   done
-  assert_exact_local_image_identities || return $?
+  # Holding exactly the pinned images is a precondition for running the
+  # rehearsal, not for reading its configuration. `--check-config-only` still
+  # verifies every pinned literal, the fixtures, the owned paths and the
+  # rendered topology; a hosted runner has no reason to hold a PostgreSQL
+  # 17.6/18.4 image, so demanding one there failed the required gate without
+  # proving anything about the configuration. Every mode that starts a
+  # container still asserts identity here, before any compose or runtime call.
+  if [ "$RUN_MODE" != check ]; then
+    assert_exact_local_image_identities || return $?
+  fi
   if ! run_bounded docker compose version >>"$RUNTIME_LOG" 2>&1; then
     print_failure preflight docker-compose-unavailable
     return 10

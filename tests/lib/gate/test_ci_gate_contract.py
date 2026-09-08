@@ -223,9 +223,7 @@ def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
         gate_id=gate_id,
         kind=contract.GateKind.LEAF,
         suite_key=suite_key,
-        entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-document-links.py"
-        ),
+        entrypoint=pathlib.PurePosixPath("scripts/validation/check-document-links.py"),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
         allowed_env_keys=(),
@@ -255,9 +253,7 @@ def setup(gate_id: str) -> contract.GateNode:
         gate_id=gate_id,
         kind=contract.GateKind.SETUP,
         suite_key=None,
-        entrypoint=pathlib.PurePosixPath(
-            "scripts/validation/check-document-links.py"
-        ),
+        entrypoint=pathlib.PurePosixPath("scripts/validation/check-document-links.py"),
         argv=(),
         cwd=pathlib.PurePosixPath("."),
         allowed_env_keys=(),
@@ -330,7 +326,9 @@ def registry(
     return contract.GateRegistry(
         nodes=nodes if nodes is not None else default.nodes,
         job_roots=(job_roots if job_roots is not None else default.job_roots),
-        public_roots=(public_roots if public_roots is not None else default.public_roots),
+        public_roots=(
+            public_roots if public_roots is not None else default.public_roots
+        ),
     )
 
 
@@ -373,13 +371,11 @@ class CiGateContractTests(unittest.TestCase):
                     "ci-gate-json-duplicate-key",
                 ),
                 (
-                    "schema_version: 2\ngate_nodes: []\n"
-                    "job_roots: []\n",
+                    "schema_version: 2\ngate_nodes: []\njob_roots: []\n",
                     "ci-gate-json-invalid",
                 ),
                 (
-                    '{"schema_version":1,"gate_nodes":[],'
-                    '"job_roots":[]}',
+                    '{"schema_version":1,"gate_nodes":[],"job_roots":[]}',
                     "ci-gate-schema-version",
                 ),
             )
@@ -826,9 +822,7 @@ class CiGateContractTests(unittest.TestCase):
     ) -> None:
         live = contract.load_contract_document(ROOT)
         self.assertNotIn("profile_roots", live)
-        self.assertTrue(
-            all("profiles" not in node for node in live["gate_nodes"])
-        )
+        self.assertTrue(all("profiles" not in node for node in live["gate_nodes"]))
         retired_root = json.loads(json.dumps(live))
         retired_root["profile_roots"] = []
         with self.subTest(boundary="retired-profile-roots"):

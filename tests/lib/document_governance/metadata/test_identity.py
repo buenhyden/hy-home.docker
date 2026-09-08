@@ -172,7 +172,7 @@ class IdentityBehaviorTests(unittest.TestCase):
             frontmatter_present=True,
         )
         child = metadata.Record(
-                pathlib.Path("docs/03.specs/0123-child/spec.md"),
+            pathlib.Path("docs/03.specs/0123-child/spec.md"),
             {
                 "status": "completed",
                 "artifact_id": "SPEC-0123",

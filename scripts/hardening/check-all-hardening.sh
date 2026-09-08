@@ -297,6 +297,8 @@ check_02_auth() {
   start_tier "$tier"
 
   local keycloak_compose="infra/02-auth/keycloak/docker-compose.yml"
+  local valkey_image
+  local oauth_valkey_compose_image
   local oauth_full_compose="infra/02-auth/oauth2-proxy/docker-compose.yml"
   local oauth_dockerfile="infra/02-auth/oauth2-proxy/Dockerfile"
   local oauth_dev_dockerfile="infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -336,13 +338,23 @@ check_02_auth() {
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
   check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
-  check_contains "$oauth_full_compose" "image: valkey/valkey:9.1.1-alpine" "oauth2-proxy valkey image tag mismatch"
-  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.90.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
+  # Derived rather than written out, the way the Dozzle check already is. The
+  # literal that stood here pinned 9.1.1-alpine and went stale the moment a
+  # Dependabot bump moved the Compose declaration, which failed this CI-only
+  # baseline on a tag nobody had reviewed as wrong.
+  valkey_image="$(registry_component_image "Valkey")"
+  oauth_valkey_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey")"
+  if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
+    fail "oauth2-proxy valkey image tag mismatch"
+  fi
+  # No registry component owns this exporter, so this literal is the pin rather
+  # than a second copy of one. It has to be moved with the Compose declaration.
+  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.91.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
 
-  check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy source image tag mismatch"
-  check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.3 AS src" "oauth2-proxy dev source image tag mismatch"
+  check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src" "oauth2-proxy source image tag mismatch"
+  check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src" "oauth2-proxy dev source image tag mismatch"
   check_contains "$oauth_dockerfile" "addgroup -S -g 101 oauth2proxy" "oauth2-proxy production group identity mismatch"
   check_contains "$oauth_dockerfile" "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy" "oauth2-proxy production user identity mismatch"
   check_contains "$oauth_dockerfile" "USER 100:101" "oauth2-proxy production non-root identity mismatch"
@@ -375,13 +387,20 @@ check_03_security() {
   local templates_dir="infra/03-security/vault/config/templates"
   local requirement_file="docs/01.requirements/0003-security.md"
 
+  local vault_image
+  local vault_compose_image
+
   check_file "$compose_file"
   check_file "$vault_hcl"
   check_file "$agent_hcl"
   check_file "$requirement_file"
 
   check_contains "$compose_file" "service: template-stateful-med" "vault compose template inheritance missing"
-  check_contains "$compose_file" "image: hashicorp/vault:2.0.3" "vault image tag mismatch"
+  vault_image="$(registry_component_image "Vault")"
+  vault_compose_image="$(compose_service_image "$compose_file" "vault")"
+  if [[ "$vault_compose_image" != "$vault_image" ]]; then
+    fail "vault image tag mismatch"
+  fi
   check_contains "$compose_file" "vault-agent:" "vault-agent service missing"
   check_contains "$compose_file" "vault-agent-out:" "vault-agent output volume missing"
   check_contains "$compose_file" "vault-agent-out:/vault/out" "vault-agent output mount missing"

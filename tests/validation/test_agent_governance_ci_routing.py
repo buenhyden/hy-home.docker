@@ -520,6 +520,16 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     self.assertEqual(before, target.read_bytes())
 
     def test_post_tool_checks_each_changed_shell_file_for_syntax(self) -> None:
+        """`bash -n` names the offending file, whatever the host has installed.
+
+        The syntax case has to reach `bash -n` to prove anything, and ShellCheck
+        rejects the same file first as a parse error on stdout. Whether that
+        happens depended on the host: a runner with /usr/bin/shellcheck failed
+        this case while a workstation whose shellcheck sits outside the
+        restricted PATH passed it. The lint step is stubbed out so the reporter
+        is always the one under test.
+        """
+
         with tempfile.TemporaryDirectory() as directory:
             repo = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
@@ -529,6 +539,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 "#!/bin/sh\necho valid\n", encoding="utf-8"
             )
             (scripts / "second.sh").write_text("#!/bin/sh\nif then\n", encoding="utf-8")
+            fake_bin = repo / "fake-bin"
+            fake_bin.mkdir()
+            self._write_executable(fake_bin / "shellcheck", "#!/bin/sh\nexit 0\n")
             result = subprocess.run(
                 ["bash", str(POST_TOOL), "--check"],
                 cwd=repo,
@@ -538,7 +551,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
                 env={
-                    "PATH": "/usr/bin:/bin",
+                    "PATH": f"{fake_bin}:/usr/bin:/bin",
                     "CODEX_PROJECT_DIR": str(repo),
                 },
                 check=False,
