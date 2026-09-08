@@ -88,7 +88,7 @@ oauth2-proxy/
 
 | Category | Technology         | Notes                    |
 | -------- | ------------------ | ------------------------ |
-| Proxy    | OAuth2 Proxy (Go)  | `quay.io/oauth2-proxy/oauth2-proxy:v7.15.3` copied into Alpine |
+| Proxy    | OAuth2 Proxy (Go)  | `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4` copied into Alpine |
 | Session  | Valkey             | Redis-compatible storage |
 | Protocol | OIDC / ForwardAuth | Keycloak & Traefik       |
 | Runtime  | Alpine Linux       | Minimal footprint        |
