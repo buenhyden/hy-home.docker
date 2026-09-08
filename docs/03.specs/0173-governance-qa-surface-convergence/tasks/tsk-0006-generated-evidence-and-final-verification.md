@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,39 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Option A verified local integration and cleanup follow-up (2026-09-09)
+
+The user's latest follow-up requests review of interrupted and remaining work,
+then local main integration and branch/worktree cleanup only after completion.
+This explicitly replaces the earlier Keep-as-is disposition for the completed
+option A work. It does not authorize option B redesign, package termination,
+remote writes, service actions, secret access or user-global changes.
+
+The existing five option A commits were unchanged at
+`a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`. Their independent reviews and
+normal-hook receipts remain valid historical evidence. Renewed public full QA
+passed at that clean target, and all 85 focused post-merge tests passed after
+local main fast-forwarded from `d633c443006de06ebdf3329d7094c2d055cc7e36` to
+the same target. W12-W15 and acceptance 22-24 have no remaining local failure;
+the broader Spec/Plan/Task lifecycle remains active/in-progress.
+
+This follow-up changes only Spec/Plan/Task authorization and evidence prose.
+Root owns those writes; independent rules-engineer review precedes the normal
+Git-hook commit in the linked delivery checkout. That docs-only receipt commit
+may then fast-forward into main. Its SHA and the final cleanup outcomes belong
+to the final Git read-back; the full QA result still names the target above.
+
+Cleanup is limited to `codex/qa-followup-a` and the root-created linked paths
+`.worktrees/qa-followup-a-review` and `.worktrees/qa-followup-a-code-review`.
+Before removal, prove the exact 18-path review snapshot matches final main's
+blobs and executable modes, both indexes and untracked sets are empty, and
+ignored paths contain only the known task-created Ruff/Python caches. Restore
+only those duplicate review paths to its detached HEAD, then use ordinary
+worktree removal and `git branch -d` after reachability and clean-state checks.
+Any mismatch or unknown owner stops cleanup. No force, prune, reset, manual
+stash or history rewrite is authorized. Primary `.env` is inspected by metadata
+only and preserved; all QA runs in the `.env`-free linked checkout.
 
 ### Option A verified local completion (2026-09-09)
 
@@ -1487,6 +1520,49 @@ in-progress.
 
 ## Verification Evidence
 
+### Option A renewed integration verification (2026-09-09)
+
+The earlier `/tmp` QA environment was absent. Repository requirements and the
+same direct pins were prepared explicitly in `/tmp/hy-qa-integration-tools`:
+Python 3.12.3, PyYAML 6.0.3, markdown-it-py 3.0.0, html5lib 1.1, jsonschema 4.26.0,
+pre-commit 4.6.1, Ruff 0.15.12, Commitizen 4.15.1 and shellcheck-py 0.11.0.1.
+Setup exited 0; no repository dependency or user-global setting changed.
+QA used PATH `/tmp/hy-qa-integration-tools/bin:/usr/bin:/bin`, `PYTHONPATH=.`,
+`PYTHONDONTWRITEBYTECODE=1`, local WSL2 host with PID 1 systemd and pidfd support.
+The installed normal Git-hook engine remains pre-commit 4.6.2, separately from
+the prepared CLI. No CI environment identity was fabricated.
+
+| Command / scope | Exit | Observed result |
+| --- | --- | --- |
+| `git fetch --no-tags origin main`, primary checkout | 0 | PASS: main/origin both `d633c443006de06ebdf3329d7094c2d055cc7e36`, divergence 0/0 |
+| `python3 scripts/validation/run-ci-gate.py --profile full`, clean linked delivery at `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e` | 0 | PASS, 451.098s; same HEAD and clean afterwards |
+| `git merge --ff-only codex/qa-followup-a`, primary main | 0 | PASS: main advanced from fetched baseline to `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`; clean, origin unchanged |
+| Post-merge focused unittest command below, linked HEAD equals main | 0 | PASS: 85 tests, 10.807s test time / 10.902s command time; HEAD/main unchanged, clean afterwards |
+| Exact review snapshot inspection against committed delivery | 0 | PASS: all 18 dirty tracked paths match committed bytes and executable modes; index/untracked empty |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`, one `--changed-path` each for this package's `spec.md`, `plan.md` and current Task | 0 | PASS: selected 3, violations 0, legacy exceptions 0, transition overrides 0; HEAD `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`, working-tree docs |
+| `python3 scripts/validation/check-document-links.py --mode all`, working-tree docs at the same HEAD | 0 | PASS: documents 713, links 6157, failures 0 |
+
+Post-merge command:
+
+```bash
+python3 -m unittest \
+  tests.validation.test_agent_governance_ci_routing \
+  tests.validation.test_provider_native_payloads \
+  tests.validation.test_validator_entrypoints \
+  tests.validation.test_agentic_audit_semantic_freshness \
+  tests.validation.test_audit_criterion_contract
+```
+
+The full run covers registered local suites, including shell/eval routes;
+eleven pre-existing inactive semantic-parser tests remain skipped. No blanket
+frontend/E2E, live provider/model, new hosted or production execution is claimed.
+The prior controlled all-files PASS remains bound to `6c271de2` in its receipt;
+it was not rerun for this docs-only integration follow-up. Metadata-only cache
+inspection found delivery Ruff 18/Python 118 files and review Python 1 file, no
+other ignored payload or symlink traversal. Cleanup rechecks those categories
+and exact ownership after the final evidence commit rather than assuming this
+earlier inventory authorizes a later changed path.
+
 ### Option A committed final QA (2026-09-09)
 
 Target `6c271de21174580740574e145ebb208a13de68b8`, clean linked delivery
@@ -2100,6 +2176,21 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### Option A integration and cleanup policy review (2026-09-09)
+
+Independent rules-engineer `a_policy_review` reviewed the exact three-document integration and disposition candidate against `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e` and returned Specification PASS / Quality APPROVED with zero findings. Frozen patch SHA-256 `862d1e7c9116a0de4fb4486118d47235af7631583972d0b8c5dabf459f7397aa` matched the delivery and isolated review diffs byte-for-byte; the review verified the current authorization, first fast-forward and QA target binding, preserved historical receipts, and bounded 18-path cleanup ownership. Full, post-merge, metadata and link results remained source-attributed evidence and were not independently rerun. This later review-receipt paragraph intentionally lies outside the candidate hash and adds no execution or authorization claim.
+
+Independent rules-engineer `a_policy_review` reviewed the latest explicit user
+authorization and the concrete local integration/cleanup plan: PASS WITH
+REQUIRED GUARDS, no blocking concern. It confirmed fetched main ancestry,
+clean delivery and exact 18-path review-copy identity. Required guards bind
+fresh full QA to `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`, validate the merged
+tree in the equal-SHA linked checkout, review the final docs-only receipt,
+check final main reachability and ownership, then use exact restore, ordinary
+worktree removal and branch deletion. Remote mutation, primary private state,
+package promotion and option B remain excluded. This is a policy-plan verdict;
+the subsequent exact documentation diff requires its own review.
+
 ### Option A exact-diff reviews (2026-09-09)
 
 Independent rules-engineer `a_policy_review` reviewed the final Task-only receipt candidate against committed target `6c271de21174580740574e145ebb208a13de68b8` and returned Specification PASS / Quality APPROVED with zero findings. Exact candidate patch SHA-256 `336644cd830b39d7ea8a4576e4d1966dff6ec34d071d597668d98a6403c8141e` matched both isolated and delivery Task diffs; the review verified the existing QA JSON binding, exact 18-path scope, and current option A branch/worktree preservation without rerunning full/all-files. The final corrections replaced stale current Deferred Items integration/cleanup language while preserving historical receipts. This later review-receipt paragraph intentionally lies outside that candidate hash and adds no execution or authorization claim.
@@ -2289,6 +2380,7 @@ Option A local task-owned commits (2026-09-09):
 | `1e37e3b636b4bf243e14e46acc0347ec604aba3a` | W13 hook/helper/README/manifest/regression, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed |
 | `4c2c0b2dc9a4990bbf1138e28e1a471ceab66781` | W14 validator/generator/tests/generated output, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed; timed commit including hooks424.16s |
 | `6c271de21174580740574e145ebb208a13de68b8` | W15 Task evidence, one reviewed path; public changed and commit-msg PASS, exit0; clean linked checkout after commit; timed commit including hooks347.87s |
+| `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e` | Final option A Task receipt, one reviewed path; public changed and commit-msg PASS, exit0; clean afterwards; timed commit including hooks330.31s; renewed full and first local main integration target |
 
 Current convergence commits (2026-09-08), all local and task-owned:
 
@@ -2380,11 +2472,10 @@ No completed archive packet or new Spec/Plan/Task was created.
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
   this follow-up corrects the active Spec/Plan references.
 - Push, pull request, hosted execution, branch-protection mutation, deployment,
-  tag, release, local main integration and branch/worktree cleanup remain
-  outside the current option A authorization. The current disposition is
-  Option 3: keep `codex/qa-followup-a` and both task-owned linked checkouts as-is.
-  Earlier integration, keep and cleanup instructions retain only their dated
-  scope; the newest Work Log owns this disposition.
+  tag and release remain outside the current authorization. The latest user
+  follow-up authorizes completed option A's local main integration and exact
+  task-owned branch/worktree cleanup under the newest Work Log guards. Earlier
+  integration, keep and cleanup instructions retain only their dated scope.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.
@@ -2403,14 +2494,13 @@ No completed archive packet or new Spec/Plan/Task was created.
   local implementation and verification;
   runtime claims require their own evidence. No auth/global-state access, trust
   change or model call is authorized.
-- The controlled all-files item retains the prior clean `6dbf23413` and
-  `d8a96ad4c`/pre-commit4.6.1 PASS receipts, while current option A has separate
-  clean full/all-files PASS receipts at
-  `6c271de21174580740574e145ebb208a13de68b8` above. The 34-case wrapper regression
-  remains separate evidence. Main integration at `d8a96ad4c` is historical
-  only; this follow-up keeps the branch and worktrees and authorizes no
-  integration or cleanup. No user-global installation or setting changed;
-  new hosted/native execution and package promotion remain deferred.
+- The controlled all-files item retains its dated clean PASS receipts, including
+  option A at `6c271de21174580740574e145ebb208a13de68b8`. The 34-case wrapper
+  regression remains separate evidence. Renewed full and post-merge tests passed
+  at `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`; local main reached that commit.
+  Final docs-only receipt integration and exact cleanup follow the newest Work
+  Log guards. No user-global installation or setting changed; new hosted/native
+  execution and package promotion remain deferred.
 
 ## Related Documents
 

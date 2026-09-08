@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -59,8 +59,9 @@ Task 0006 owns this approval and the current baseline. Preserve public CLI,
 suite membership, aggregate composition, native permissions, and frozen bytes.
 The legacy graph, historical audit census, active operations template markers,
 and cross-domain architecture consolidation are deferred option B candidates.
-Keep the resulting branch and verification worktree; this renewed scope does
-not authorize main integration, cleanup, or remote delivery.
+Task 0006 owns the later explicit local-integration and cleanup approval;
+execute that disposition only after verified completion. Remote delivery and
+terminal package disposition remain outside this follow-up.
 
 ## Behavior Contract
 

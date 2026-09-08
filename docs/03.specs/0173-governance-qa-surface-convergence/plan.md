@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.6.2"
+version: "0.6.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -31,7 +31,7 @@ The existing W1-W6 migration is implemented; its dated evidence is preserved.
   repository dependencies, read-only policy review and independent diff review.
 - No remote writes, service operations, real secrets, global installation,
   history rewriting, or arbitrary hook skips. Follow the current Task's
-  branch/worktree preservation decision; option A authorizes no integration.
+  authorized local integration and task-owned cleanup only after verified completion.
 
 ## Execution Sequence
 
@@ -49,7 +49,7 @@ The existing W1-W6 migration is implemented; its dated evidence is preserved.
 12. W12: Correct the approved option A ownership and execution guidance.
 13. W13: Preserve prepared tools in the post-edit hook.
 14. W14: Reuse the audit generator's validated pack and refresh its output.
-15. W15: Record reviewed option A verification and preserve the branch.
+15. W15: Record reviewed option A verification and apply the current Task's disposition.
 
 ### W1-W6: Preserve integrated migration
 
@@ -197,16 +197,18 @@ the applicable local public profile, generated checks and independent review.
 Final all-files QA uses the existing wrapper with this tracked Task and an exact
 reviewed path list in an initially clean linked worktree. Record command,
 snapshot, exit and observed cost; run no hosted-only wrapper locally. Commit
-only reviewed logical units through normal installed Git hooks. Keep branch
-and worktree; package lifecycle remains active/in-progress.
+only reviewed logical units through normal installed Git hooks. Apply the
+current Task's explicitly authorized local integration and cleanup after
+verification; package lifecycle remains active/in-progress.
 
 The primary checkout was clean at branch creation and was the initial writer
 because its relative hooksPath resolves the normal hooks there. Use a dedicated
 declared-dependency environment without changing hooks or persistent Git configuration.
 An ignored real `.env` in the primary checkout prevents public QA there under
-the no-secret scope. Freeze and transfer only verified task-owned tracked
-changes to the linked checkout, then restore those exact primary paths and
-return primary to unchanged main. The linked checkout owns delivery. Bind its
+the no-secret scope. The completed transfer moved only verified task-owned
+tracked changes to the linked checkout and restored those exact primary paths
+at baseline main. Continue validation in the linked checkout; the current Task
+owns later integration and cleanup. Bind its
 Git operations to the complete unchanged common hooks directory with command
 local `core.hooksPath`; this restores normal hooks without a persistent setting
 change or skipped hook. Independent review precedes staging and commit.
