@@ -19,7 +19,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: confluentinc/cp-ksqldb-server:8.3.0
+    image: confluentinc/cp-ksqldb-server:8.3.1
     hostname: ksqldb-server
     container_name: ksqldb-server
     read_only: false
@@ -61,7 +61,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
-    image: confluentinc/cp-ksqldb-cli:8.0.6
+    image: confluentinc/cp-ksqldb-cli:8.0.7
     container_name: ksqldb-cli
     restart: 'no'
     depends_on:
@@ -80,7 +80,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
-    image: confluentinc/ksqldb-examples:8.0.6
+    image: confluentinc/ksqldb-examples:8.0.7
     hostname: ksql-datagen
     container_name: ksql-datagen
     restart: unless-stopped
