@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 
 from audit_criterion_contract import (  # noqa: E402
     EXPECTED_PACK_FILES,
+    AuditCriterionContract,
     AuditCriterionContractError,
     validate_pack,
 )
@@ -87,6 +88,7 @@ ASSERTION_KEYS = {
 @dataclass(frozen=True)
 class SemanticValidationResult:
     assertion_count: int
+    criterion_contract: AuditCriterionContract
 
 
 class AuditSemanticContractError(ValueError):
@@ -619,7 +621,10 @@ def validate_semantics(
     )
     if errors:
         raise AuditSemanticContractError(errors)
-    return SemanticValidationResult(assertion_count=len(contract["assertions"]))
+    return SemanticValidationResult(
+        assertion_count=len(contract["assertions"]),
+        criterion_contract=criterion_contract,
+    )
 
 
 def main() -> int:

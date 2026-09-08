@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import os
 import pathlib
 import shutil
@@ -7,12 +9,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 VALIDATION_DIR = ROOT / "scripts" / "validation"
 sys.path.insert(0, str(VALIDATION_DIR))
 
+import audit_criterion_contract as criterion_module  # noqa: E402
 from audit_criterion_contract import (  # noqa: E402
     AuditCriterionContractError,
     DEFAULT_PACK,
@@ -55,6 +59,35 @@ class AuditCriterionContractTests(unittest.TestCase):
             validate_pack(self.pack)
         self.assertIn(expected_text, "\n".join(context.exception.errors))
 
+    def _run_generator_in_process(
+        self, audit_pack: pathlib.Path | None = None
+    ) -> list[pathlib.Path]:
+        script = ROOT / "scripts/validation/generate-audit-implementation-matrix.sh"
+        source = script.read_text(encoding="utf-8")
+        embedded = source.split("<<'PY'\n", 1)[1].rsplit("\nPY\n", 1)[0]
+        argv = ["audit-matrix-generator", "dry-run", "/tmp/not-written.md"]
+
+        with (
+            mock.patch.object(
+                criterion_module,
+                "validate_pack",
+                wraps=criterion_module.validate_pack,
+            ) as validate,
+            mock.patch.object(sys, "argv", argv),
+            mock.patch.dict(os.environ),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            if audit_pack is None:
+                os.environ.pop("AUDIT_PACK_DIR", None)
+            else:
+                os.environ["AUDIT_PACK_DIR"] = str(audit_pack)
+            with self.assertRaises(SystemExit) as context:
+                exec(compile(embedded, str(script), "exec"), {"__name__": "__main__"})
+
+        self.assertEqual(0, context.exception.code)
+        return [pathlib.Path(call.args[0]) for call in validate.call_args_list]
+
     def test_valid_baseline_has_exact_manifest(self) -> None:
         contract = validate_pack(self.pack)
         self.assertEqual(EXPECTED_TOTAL, len(contract.rows))
@@ -62,6 +95,14 @@ class AuditCriterionContractTests(unittest.TestCase):
         self.assertEqual(
             EXPECTED_TOTAL, len({row.criterion_id for row in contract.rows})
         )
+
+    def test_generator_validates_the_default_pack_once(self) -> None:
+        calls = self._run_generator_in_process()
+        self.assertEqual([DEFAULT_PACK], calls)
+
+    def test_generator_validates_an_override_pack_independently(self) -> None:
+        calls = self._run_generator_in_process(self.pack)
+        self.assertEqual([DEFAULT_PACK, self.pack], calls)
 
     def test_deleted_row_is_rejected(self) -> None:
         report = self._report()

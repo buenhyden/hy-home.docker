@@ -243,7 +243,9 @@ def build_output() -> tuple[str, list[str]]:
         pathlib.Path("."),
         pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json"),
     )
-    contract = validate_pack(PACK)
+    contract = semantic_result.criterion_contract
+    if PACK != contract.pack:
+        contract = validate_pack(PACK)
     report_paths = [PACK / REPORT_FILES[name] for name in REPORT_PREFIX_COUNTS]
     all_criteria = list(contract.rows)
     per_report_counts = {
@@ -280,11 +282,11 @@ def build_output() -> tuple[str, list[str]]:
     lines: list[str] = [
         "---",
         'title: "Reference: Audit Implementation Matrix"',
-        'version: "1.0.1"',
+        'version: "1.0.2"',
         'type: "reference/data-pack"',
         'status: "published"',
         "owner: \"@buenhyden\"",
-        'updated: "2026-09-05"',
+        'updated: "2026-09-09"',
         'layer: "references"',
         'artifact_id: "DATA-0065"',
         "parent_ids: []",
@@ -337,10 +339,10 @@ def build_output() -> tuple[str, list[str]]:
         "## Definitions / Facts",
         "",
         f"- **Criterion reports**: {len(REPORT_PREFIX_COUNTS)} criterion-bearing reports are expected under `{PACK}`.",
-        "- **Non-criterion pack files**: `README.md` is the index and `implementation-overview.md` is the cross-category overview; neither is counted as a criterion report.",
+        f"- **Non-criterion pack files**: `0019-readme/README.md` is the index and `{OVERVIEW.relative_to(PACK).as_posix()}` is the cross-category overview; neither is counted as a criterion report.",
         "- **Completeness contract**: every expected ID is present exactly once in its declared report/prefix; every row has the exact ten-field schema with non-empty values and allowed state/depth/disposition vocabulary.",
-        f"- **Required overview categories**: {len(EXPECTED_OVERVIEW_CATEGORIES)} categories are expected in `implementation-overview.md`.",
-        f"- **Required automation candidates**: {len(EXPECTED_CANDIDATES)} `AEA-AUTO-*` rows are expected in `automation-candidates.md`.",
+        f"- **Required overview categories**: {len(EXPECTED_OVERVIEW_CATEGORIES)} categories are expected in `{OVERVIEW.relative_to(PACK).as_posix()}`.",
+        f"- **Required automation candidates**: {len(EXPECTED_CANDIDATES)} `AEA-AUTO-*` rows are expected in `{AUTOMATION_CANDIDATES.relative_to(PACK).as_posix()}`.",
         "- **Closed with residual gap**: candidate has implementation evidence, but its row still names follow-up work that remains outside this generated snapshot.",
         "",
         "## Schema",

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Audit Implementation Matrix"
-version: "1.0.1"
+version: "1.0.2"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-09"
 layer: "references"
 artifact_id: "DATA-0065"
 parent_ids: []
@@ -57,10 +57,10 @@ Compose files, and registry references.
 ## Definitions / Facts
 
 - **Criterion reports**: 11 criterion-bearing reports are expected under `docs/90.references/audits`.
-- **Non-criterion pack files**: `README.md` is the index and `implementation-overview.md` is the cross-category overview; neither is counted as a criterion report.
+- **Non-criterion pack files**: `0019-readme/README.md` is the index and `0026-implementation-overview/README.md` is the cross-category overview; neither is counted as a criterion report.
 - **Completeness contract**: every expected ID is present exactly once in its declared report/prefix; every row has the exact ten-field schema with non-empty values and allowed state/depth/disposition vocabulary.
-- **Required overview categories**: 15 categories are expected in `implementation-overview.md`.
-- **Required automation candidates**: 13 `AEA-AUTO-*` rows are expected in `automation-candidates.md`.
+- **Required overview categories**: 15 categories are expected in `0026-implementation-overview/README.md`.
+- **Required automation candidates**: 13 `AEA-AUTO-*` rows are expected in `0021-automation-candidates/README.md`.
 - **Closed with residual gap**: candidate has implementation evidence, but its row still names follow-up work that remains outside this generated snapshot.
 
 ## Schema

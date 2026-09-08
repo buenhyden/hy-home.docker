@@ -18,6 +18,8 @@ SCRIPT = ROOT / "scripts/validation/check-agentic-audit-semantic-freshness.py"
 CONTRACT = pathlib.Path("scripts/validation/agentic-audit-semantic-contract.json")
 sys.path.insert(0, str(SCRIPT.parent))
 
+from audit_criterion_contract import EXPECTED_TOTAL  # noqa: E402
+
 spec = importlib.util.spec_from_file_location(
     "agentic_audit_semantic_freshness", SCRIPT
 )
@@ -113,6 +115,10 @@ def _assert_task5_integration_contract(
         if line.startswith("| Semantic closure assertion")
     ]
     case.assertEqual(expected_matrix_metrics, actual_matrix_metrics)
+    case.assertIn("`0026-implementation-overview/README.md`", matrix)
+    case.assertIn("`0021-automation-candidates/README.md`", matrix)
+    case.assertNotIn("`implementation-overview.md`", matrix)
+    case.assertNotIn("`automation-candidates.md`", matrix)
 
 
 class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
@@ -212,6 +218,10 @@ class AgenticAuditSemanticFreshnessTests(unittest.TestCase):
     def test_current_repository_contract_passes(self) -> None:
         result = module.validate_semantics(ROOT, CONTRACT)
         self.assertEqual(11, result.assertion_count)
+        self.assertEqual(
+            ROOT / self.contract["canonical_pack"], result.criterion_contract.pack
+        )
+        self.assertEqual(EXPECTED_TOTAL, len(result.criterion_contract.rows))
 
     def integration_surfaces(self) -> tuple[str, str, str, str, str]:
         workflow = (ROOT / ".github/workflows/ci-quality.yml").read_text(
