@@ -18,6 +18,17 @@ settings by itself.
   Review, CODEOWNERS, conversation-resolution, admin, signature,
   linear-history, force-push, deletion, creation, lock, and fork-sync settings
   were unchanged.
+- On 2026-09-08, the repository owner approved two further changes and the
+  applied state was read back through the authenticated API. Required contexts
+  became `validation-changed` alone, and
+  `required_pull_request_reviews.required_approving_review_count` became zero
+  with `require_code_owner_reviews` false. The read-back reported
+  `strict=true`, `allow_force_pushes=false`, `allow_deletions=false`,
+  `required_conversation_resolution=true`, `enforce_admins=false`,
+  `lock_branch=false` and `required_linear_history=false`, so pull requests are
+  still required before merge and nothing was widened beyond the two approved
+  fields. The prior full protection payload is retained outside the repository
+  as the rollback source.
 - Environment, deployment, release, and later control-plane state remain
   `unverified` unless a newer approved observation records them.
 
@@ -25,7 +36,12 @@ settings by itself.
 
 - Target branch: `main`.
 - Require pull requests before merge.
-- Require CODEOWNERS review for owned paths.
+- Require zero approving reviews. The repository has a single collaborator who
+  authors every pull request, and GitHub forbids self-approval, so any non-zero
+  count names an approver who cannot exist and makes administrator bypass the
+  only merge path.
+- Do not require CODEOWNERS review, for the same reason. `.github/CODEOWNERS`
+  stays as the ownership record it is and no longer gates merges.
 - Require conversations to be resolved before merge.
 - Block force pushes.
 - Block branch deletion.
@@ -44,9 +60,14 @@ the focused workflow checker proves that every required job projects its
 registered root DAG exactly once through static typed-gate invocations.
 
 - `validation-changed`
-- `validation-full`
 
-Both checks were bound to GitHub Actions app ID 15368 in the 2026-09-05
+`validation-full` is deliberately not required. `ci-quality.yml` gates the two
+jobs on mutually exclusive events, so `validation-full` reports `skipping` on
+every pull request and GitHub counts a skipped required context as unsatisfied.
+Requiring it made every pull request permanently unmergeable. It still runs and
+still blocks on pushes to `main`, which is the event it was written for.
+
+The checks were bound to GitHub Actions app ID 15368 in the 2026-09-05
 read-back. `strict=true` remains required.
 
 ## Rollback State
