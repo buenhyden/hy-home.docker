@@ -1,17 +1,17 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.2.1"
+version: "1.2.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
 - "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-09-05"
-reviewed_at: "2026-09-05"
+reviewed_at: "2026-09-08"
 review_cycle: "on-source-change"
 ---
 
@@ -120,7 +120,7 @@ observed remote state.
 | Workflow lint/syntax              | `actionlint` plus typed workflow checker                                                                                                                  | Pre-commit and focused local checker                                                    | `pre-commit` and `repo-contracts` expansions                    | **Implemented statically.** A pass cannot prove a hosted workflow ran.                                                                                   |
 | JSON/TOML syntax                  | `check-json`, `check-toml`; selective JSON parsing                                                                                                        | Pre-commit / post-tool routes                                                           | `pre-commit` job                                                | **Implemented, filtered.** Parsing does not prove consumer semantics.                                                                                    |
 | Shell syntax                      | `leaf.local-shell-syntax` invokes `bash -n` over tracked scripts and Claude hooks                                                                         | Local typed profiles                                                                    | No CI-profile membership                                        | **Local-only typed leaf.** Separate from ShellCheck.                                                                                                     |
-| Frontend lint                     | `npm run lint` uses ESLint                                                                                                                                | Direct project command or `eslint-nextjs` hook                                          | `frontend-quality`; deliberately skipped in CI `pre-commit`     | **Implemented for one project.** Dedicated CI avoids duplicate ESLint execution.                                                                         |
+| Frontend lint                     | `npm run lint` uses ESLint                                                                                                                                | Direct project command                                                                  | `leaf.frontend-lint` under `ci.frontend-quality`                | **Implemented for one project.** ESLint has no pre-commit hook here, so nothing skips it; the gate leaf is its only registered route.                    |
 | Frontend type                     | `npm run typecheck` uses `tsc --noEmit`; strict TS config                                                                                                 | Direct project command                                                                  | `frontend-quality`                                              | **Implemented for Storybook Next.js only.** `allowJs` and `skipLibCheck` are configured limits.                                                          |
 | Python lint/format                | No Ruff, Black, Flake8, or Pylint owner in pre-commit, typed gates, or workflows                                                                          | None                                                                                    | None                                                            | **Missing shared enforcement.** Historical one-off command evidence is not an active gate.                                                               |
 | Python type                       | No Mypy or Pyright owner in pre-commit, typed gates, or workflows                                                                                         | None                                                                                    | None                                                            | **Missing shared enforcement.** Type annotations in source do not establish checked coverage.                                                            |
@@ -178,8 +178,16 @@ evidence class.
 `.pre-commit-config.yaml` registers 24 hook IDs: 17 use the default
 `pre-commit` stage, 6 are `pre-push`, and 1 is `commit-msg`. File/type filters
 and stage selection mean a configured hook may legitimately skip a change.
-The CI pre-commit wrapper requires `SKIP=eslint-nextjs`; ESLint runs inside
-`frontend-quality` instead.
+The CI pre-commit wrapper sets its own `SKIP` and rejects one from a caller;
+the value is `public-validation-changed,public-validation-full`, the two hooks
+that invoke `run-ci-gate.py`, which is what keeps the gate and `pre-commit` from
+calling each other without end. ESLint runs inside `frontend-quality` and is
+absent from `.pre-commit-config.yaml`, so no skip applies to it.
+
+Corrected 2026-09-08: the row and the sentence above named `SKIP=eslint-nextjs`.
+That hook id left `.pre-commit-config.yaml` in `1c620dd07`, and `3989da584`
+introduced the current skip on 2026-09-03, two days before this module's
+`observed_at`; `tests/validation/test_run_ci_precommit.sh` pins the value.
 
 Repository governance prohibits direct Agent execution of `pre-commit run`.
 The controlled all-files wrapper additionally requires an initially clean

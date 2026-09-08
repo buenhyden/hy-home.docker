@@ -131,7 +131,7 @@ script.
 | Typed Gate Runner                      | [run-ci-gate.py](./validation/run-ci-gate.py)                                              | Explain or execute the closed `changed` and `full` public profiles through tracked descriptor-bound entrypoints with minimal environments and bounded timeouts |
 | Typed Gate Adapters                    | [ci_gate_adapters.py](./lib/gate/ci_gate_adapters.py)                                    | Implement the closed argument grammar used by typed gate leaves without shell interpolation or ambient secret forwarding |
 | GitHub Workflow Contract Gate          | [check-github-workflow-contract.py](./validation/check-github-workflow-contract.py)          | Validate exact tracked workflow triggers, permissions, concurrency, job identities, the canonical typed gate registry, and locally evidenced full-SHA Action dependencies |
-| CI-only Pre-commit Entry Point         | [run-ci-precommit.sh](./validation/run-ci-precommit.sh)                                      | Run the pinned all-files hook command only inside GitHub Actions with the dedicated frontend-lint skip; this script is not an Agent authorization path |
+| CI-only Pre-commit Entry Point         | [run-ci-precommit.sh](./validation/run-ci-precommit.sh)                                      | Run the pinned all-files hook command only inside GitHub Actions, skipping the two gate-owned `public-validation-*` hooks so the two orchestrators cannot re-enter each other; this script is not an Agent authorization path |
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
 | QuickWin Baseline Check                | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                       | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
@@ -224,8 +224,10 @@ private, offline scan cache.
 `scripts/hooks/post-tool-validate.sh` is a hook payload consumer. With no JSON
 payload or no changed paths, it exits successfully without running validators.
 Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
-validation; check-only mode disables whitespace writes and `shfmt -w` while
-preserving diff, syntax, and repo checks.
+validation; check-only mode disables whitespace writes while preserving diff,
+syntax, lint, and repo checks. The whitespace normalizer is the hook's only
+mutation, and it reads the registered mutator boundary from
+`.pre-commit-config.yaml` so a frozen archive payload keeps its bytes.
 
 `scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
 loads `.github/workflow-contract.yml`, selects the

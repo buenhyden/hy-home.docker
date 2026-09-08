@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.3.0"
+version: "0.5.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-08"
 created: "2026-09-06"
-observed_at: "2026-09-07"
+observed_at: "2026-09-08"
 review_cycle: "on-gate-change"
 ---
 
@@ -21,8 +21,9 @@ The workflow contract owns the actual composition; this map is navigation.
 ## Scope
 
 The two public validation profiles, the six public suites, their root gate
-nodes, and the prefix rules that select suites for a changed path. Excluded:
-Hosted CI job scheduling, remote branch protection, and any runtime observation.
+nodes, the prefix rules that select suites for a changed path, and the leaves
+the local context withholds. Excluded: Hosted CI job scheduling, remote branch
+protection, and any runtime observation.
 
 ## Public Entrypoints
 
@@ -30,7 +31,7 @@ Hosted CI job scheduling, remote branch protection, and any runtime observation.
 | --- | --- |
 | `python3 scripts/validation/run-ci-gate.py --profile changed` | The routine local gate for a working-tree change |
 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` | Inspect the selected leaves without executing them |
-| `python3 scripts/validation/run-ci-gate.py --profile full` | The complete local surface |
+| `python3 scripts/validation/run-ci-gate.py --profile full` | Every locally admitted suite; nine leaves stay remote, listed below |
 | `python3 scripts/operations/provider_surface_renderer.py --check` | Provider projection drift, a separate direct interface |
 | `scripts/validation/run-agent-precommit-all-files.sh` | The single approved all-files route; direct `pre-commit run` is prohibited |
 
@@ -47,6 +48,30 @@ surface. A leaf may need inputs the current authorization does not cover.
 | `document-lifecycle` | document corpus lifecycle; document lifecycle regressions; LLM Wiki freshness; audit matrix freshness; security readiness freshness |
 | `operations` | operations catalog; supply chain; Compose validation; infrastructure hardening; template security baseline; quickwin baseline |
 | `repository-integrity` | diff hygiene; shell syntax; script manifest; tech stack version drift; workflow harness; dependency vulnerability audit; git-flow contract; frontend quality; Storybook coverage; `zizmor`; pre-commit; repository integrity regressions |
+
+## What the Local Context Withholds
+
+`--profile full` names every suite, not every leaf. `_LOCAL_EXCLUDED_GATE_IDS`
+in `scripts/validation/ci_gate_runner.py` removes nine leaves when the context
+is `local`, so a local pass is not a CI pass and must not be reported as one.
+The suite table above lists these among their roots because CI reaches them.
+
+| Withheld leaf | Why it is not local | Local route |
+| --- | --- | --- |
+| `leaf.pre-commit` | Its entrypoint refuses to run outside GitHub Actions | The same hook suite, through `scripts/validation/run-agent-precommit-all-files.sh` |
+| `leaf.git-flow-contract` | Reads `PR_TITLE` and `HEAD_REF`, and its adapter admits only `pull_request` | None; a real pull request is the input |
+| `leaf.frontend-lint` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
+| `leaf.frontend-typecheck` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
+| `leaf.frontend-build` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
+| `leaf.frontend-quality` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
+| `leaf.storybook-coverage` | Needs `npm ci` and a Playwright browser install | Install both, then run the package script directly |
+| `leaf.dependency-vulnerability-audit` | `npm audit` reads a remote advisory database | Run the audit where that network access is approved |
+| `leaf.zizmor` | Runs a `uv`-installed pinned `zizmor` and writes SARIF | Install the pinned version where that is approved |
+
+Dependency installation is a setup leaf, never part of a local gate run: the
+local gate installs nothing. `install-playwright` and `run-zizmor-sarif` are
+independently restricted to CI contexts inside the adapter, so removing a leaf
+from this list alone would not make it reachable.
 
 ## What a Change Selects
 
@@ -84,9 +109,9 @@ on an unstaged working tree therefore reports fresh while the outputs are
 already stale, and the truth appears only after `git add`.
 
 Run the freshness check after staging, and carry the regenerated LLM Wiki
-outputs in the same commit as the document that changed them. The separate-unit
-rule in the quality standards targets `graphify-out/`, whose separation exists
-to avoid the pre-commit intermediate-stash race, not the Wiki snapshots.
+outputs in the same commit as the document that changed them. `graphify-out/`
+is not a comparable case: it is untracked local output, so it produces no diff
+to separate and the intermediate-stash race it once caused cannot occur.
 
 ## Test Ownership
 
@@ -111,6 +136,13 @@ transcribed from those files, not summarized from prose. The workflow contract
 remains the authority for execution; a disagreement between this map and that
 file is a defect in this map.
 
+The local exclusion table is transcribed from `_LOCAL_EXCLUDED_GATE_IDS` and
+`_PR_ONLY_GATE_IDS` in `scripts/validation/ci_gate_runner.py`, and the reasons
+from the `gate_nodes` entries and adapter context sets those identifiers reach,
+read at `6aa4287e21c56a7073356f67cb2c214df46618a7` on 2026-09-08. A registered
+test compares the identifiers in that table against the runner constant, so the
+two cannot drift apart silently.
+
 The Test Ownership table has a different source and had no stated one when this
 map was written, which is how it came to describe a `tests/fixtures/` layer that
 a completed convergence had already emptied. Its rows are now read from
@@ -123,6 +155,7 @@ prefix. A row here names a location that the tracked tree actually contains.
 - A root gate node joins or leaves a suite.
 - A changed-path rule or the declared fallback changes.
 - The public entrypoint set or its normalized arguments change.
+- A leaf joins or leaves the local exclusion set in `ci_gate_runner.py`.
 - The `tests/lib` and `tests/validation` ownership boundary changes, or a test
   location named in the Test Ownership table is added, moved, or emptied.
 

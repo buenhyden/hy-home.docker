@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import re
 import subprocess
 import tempfile
 import unittest
@@ -471,7 +472,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
 
     def test_post_tool_checks_shell_files_outside_scripts(self) -> None:
         for relative in ("infra/example.sh", "tests/example.sh", "example.sh"):
-            for check in ("shfmt", "shellcheck", "syntax"):
+            for check in ("shellcheck", "syntax"):
                 with (
                     self.subTest(path=relative, check=check),
                     tempfile.TemporaryDirectory() as directory,
@@ -489,13 +490,16 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     before = target.read_bytes()
                     fake_bin = repo / "fake-bin"
                     fake_bin.mkdir()
-                    for tool in ("shfmt", "shellcheck"):
-                        self._write_executable(
-                            fake_bin / tool,
-                            "#!/bin/sh\nexit "
-                            + ("37" if tool == check else "0")
-                            + "\n",
-                        )
+                    # shfmt stays on PATH and always fails: the hook must not
+                    # reach for an unregistered formatter, so only the tool
+                    # named by `check` can decide this subcase.
+                    self._write_executable(fake_bin / "shfmt", "#!/bin/sh\nexit 37\n")
+                    self._write_executable(
+                        fake_bin / "shellcheck",
+                        "#!/bin/sh\nexit "
+                        + ("37" if check == "shellcheck" else "0")
+                        + "\n",
+                    )
                     result = subprocess.run(
                         ["bash", str(POST_TOOL), "--check"],
                         cwd=repo,
@@ -541,6 +545,208 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             )
             self.assertNotEqual(0, result.returncode)
             self.assertIn("second.sh", result.stderr)
+
+
+class PostToolFormattingOwnershipTests(unittest.TestCase):
+    """The hook may format only in agreement with the registered owner.
+
+    `.agents/governance/quality-standards.md` section 10 makes
+    `.pre-commit-config.yaml` the sole place a formatting owner is named. These
+    cases pin the three ways this hook previously disagreed with it.
+    """
+
+    @staticmethod
+    def _write_executable(path: pathlib.Path, text: str) -> None:
+        path.write_text(text, encoding="utf-8")
+        path.chmod(0o755)
+
+    @staticmethod
+    def _repo(directory: str) -> pathlib.Path:
+        repo = pathlib.Path(directory)
+        subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+        return repo
+
+    def _run(
+        self,
+        repo: pathlib.Path,
+        relative: str,
+        *,
+        path_prefix: str = "",
+        check_mode: bool = False,
+    ) -> subprocess.CompletedProcess[str]:
+        command = ["bash", str(POST_TOOL)]
+        if check_mode:
+            command.append("--check")
+        return subprocess.run(
+            command,
+            cwd=repo,
+            input=json.dumps({"tool_input": {"file_path": relative}}),
+            capture_output=True,
+            text=True,
+            env={
+                "PATH": f"{path_prefix}/usr/bin:/bin",
+                "CODEX_PROJECT_DIR": str(repo),
+            },
+            check=False,
+        )
+
+    @staticmethod
+    def _registered_shellcheck_severity() -> str:
+        document = yaml.safe_load(
+            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
+        )
+        for repository in document["repos"]:
+            for hook in repository["hooks"]:
+                if hook["id"] == "shellcheck":
+                    for argument in hook.get("args", ()):
+                        if argument.startswith("--severity="):
+                            return argument
+        raise AssertionError("no shellcheck severity is registered")
+
+    def test_every_text_mutator_excludes_the_same_frozen_payloads(self) -> None:
+        """Three mutators exclude these bytes; they must not drift apart.
+
+        `.pre-commit-config.yaml` declares the boundary once as an anchor, and
+        the PostToolUse hook reads that declaration. `markdownlint-cli2` runs
+        with `fix: true` and cannot read a YAML anchor from another file, so it
+        restates the boundary in its own ignore list. This compares the two by
+        what they select rather than by how they spell it.
+        """
+
+        anchor = re.search(
+            r"^\s*exclude:\s*&frozen_archive_payloads\s+'(?P<pattern>[^']+)'\s*$",
+            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8"),
+            re.M,
+        )
+        self.assertIsNotNone(anchor, "the frozen payload anchor is missing")
+        frozen = re.compile(anchor.group("pattern"))
+
+        ignores = yaml.safe_load(
+            (ROOT / ".markdownlint-cli2.yaml").read_text(encoding="utf-8")
+        )["ignores"]
+
+        def markdownlint_ignores(relative: str) -> bool:
+            return any(
+                relative.startswith(entry) if entry.endswith("/") else relative == entry
+                for entry in ignores
+            )
+
+        tracked = subprocess.run(
+            ["git", "ls-files", "-z", "docs/98.archive"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        ).stdout.decode("utf-8")
+        documents = [item for item in tracked.split("\0") if item.endswith(".md")]
+        self.assertTrue(documents, "the archive holds no tracked Markdown")
+
+        disagreements = [
+            relative
+            for relative in documents
+            if bool(frozen.search(relative)) != markdownlint_ignores(relative)
+        ]
+        self.assertEqual([], disagreements)
+
+    def test_pre_commit_registers_no_shell_formatting_owner(self) -> None:
+        """A shell formatter absent from the owner does not govern the repository."""
+
+        document = yaml.safe_load(
+            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
+        )
+        registered = {
+            hook["id"]
+            for repository in document["repos"]
+            for hook in repository["hooks"]
+        }
+        self.assertNotIn("shfmt", registered)
+
+    def test_post_tool_does_not_run_an_unregistered_shell_formatter(self) -> None:
+        """A shfmt on PATH that always fails must not reach the exit code."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repo(directory)
+            shell = repo / "example.sh"
+            shell.write_text("#!/bin/sh\nif true; then\n    echo ok\nfi\n", "utf-8")
+            before = shell.read_bytes()
+            fake_bin = repo / "fake-bin"
+            fake_bin.mkdir()
+            self._write_executable(fake_bin / "shfmt", "#!/bin/sh\nexit 37\n")
+
+            result = self._run(repo, "example.sh", path_prefix=f"{fake_bin}:")
+
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(before, shell.read_bytes())
+
+    def test_post_tool_shellcheck_matches_the_registered_severity(self) -> None:
+        """The hook passes the severity its registered owner declares."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repo(directory)
+            (repo / "example.sh").write_text("#!/bin/sh\necho ok\n", encoding="utf-8")
+            fake_bin = repo / "fake-bin"
+            fake_bin.mkdir()
+            self._write_executable(
+                fake_bin / "shellcheck",
+                '#!/bin/sh\nprintf "%s\\n" "$@" > "$(dirname "$0")/argv"\nexit 0\n',
+            )
+
+            result = self._run(repo, "example.sh", path_prefix=f"{fake_bin}:")
+
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            recorded = (fake_bin / "argv").read_text(encoding="utf-8").split()
+            self.assertIn(self._registered_shellcheck_severity(), recorded)
+
+    def test_post_tool_mutator_honors_the_declared_frozen_boundary(self) -> None:
+        """The boundary is read from the owner, not restated in this hook."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repo(directory)
+            (repo / ".pre-commit-config.yaml").write_text(
+                "repos:\n"
+                "  - repo: local\n"
+                "    hooks:\n"
+                "      - id: trailing-whitespace\n"
+                "        exclude: &frozen_archive_payloads '^frozen/'\n",
+                encoding="utf-8",
+            )
+            payload = "text with trailing space   \nno final newline"
+            for relative in ("frozen/preserved.md", "active/normalized.md"):
+                target = repo / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(payload, encoding="utf-8")
+
+            frozen = repo / "frozen/preserved.md"
+            active = repo / "active/normalized.md"
+            before = frozen.read_bytes()
+
+            self.assertEqual(0, self._run(repo, "frozen/preserved.md").returncode)
+            self.assertEqual(0, self._run(repo, "active/normalized.md").returncode)
+
+            self.assertEqual(before, frozen.read_bytes())
+            self.assertEqual(
+                "text with trailing space\nno final newline\n",
+                active.read_text(encoding="utf-8"),
+            )
+
+    def test_post_tool_rejects_an_owner_without_the_frozen_anchor(self) -> None:
+        """A registered owner that declares no boundary fails closed."""
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._repo(directory)
+            (repo / ".pre-commit-config.yaml").write_text(
+                "repos:\n  - repo: local\n    hooks:\n      - id: trailing-whitespace\n",
+                encoding="utf-8",
+            )
+            target = repo / "active/document.md"
+            target.parent.mkdir(parents=True)
+            target.write_text("text   \n", encoding="utf-8")
+            before = target.read_bytes()
+
+            result = self._run(repo, "active/document.md")
+
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn("frozen_archive_payloads", result.stderr)
+            self.assertEqual(before, target.read_bytes())
 
 
 if __name__ == "__main__":

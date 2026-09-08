@@ -5,6 +5,7 @@ import dataclasses
 import io
 import os
 import pathlib
+import re
 import select
 import shutil
 import signal
@@ -43,6 +44,61 @@ def _invocation(
         allowed_env_keys=allowed_env_keys,
         timeout_seconds=60,
     )
+
+
+class LocalExclusionDocumentationTests(unittest.TestCase):
+    """`--profile full` is not the CI surface, and the map must say which leaves.
+
+    The runner withholds nine leaves from the local context. The verification
+    surface map transcribes that set so a reader can predict what a local pass
+    does not cover; a transcription nobody checks is how the map came to
+    describe surfaces the tree no longer had.
+    """
+
+    MAP = ROOT / ".agents/knowledge/verification-surface-map.md"
+
+    def _documented_gate_ids(self) -> set[str]:
+        section = (
+            self.MAP.read_text(encoding="utf-8")
+            .partition("## What the Local Context Withholds")[2]
+            .partition("\n## ")[0]
+        )
+        self.assertTrue(section.strip(), "the local exclusion section is missing")
+        return set(re.findall(r"`(leaf\.[a-z0-9-]+)`", section.partition("| ---")[2]))
+
+    def test_documented_exclusions_match_the_runner_constant(self) -> None:
+        self.assertEqual(
+            set(runner._LOCAL_EXCLUDED_GATE_IDS),
+            self._documented_gate_ids(),
+        )
+
+    def test_every_documented_exclusion_is_a_registered_leaf(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registered = {node["gate_id"] for node in document["gate_nodes"]}
+        self.assertLessEqual(self._documented_gate_ids(), registered)
+
+    def test_a_local_plan_reaches_no_withheld_leaf(self) -> None:
+        """The prose claim is checked against a built plan, not against itself."""
+
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT),
+            ".github/workflow-contract.yml",
+        )
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        suites = contract.select_public_suites(public, "full", ())
+        plan = runner.build_public_validation_plan(
+            registry,
+            contract.public_root_gate_ids(public, suites),
+            public,
+            suites,
+            runner.ExecutionContext.LOCAL,
+            profile="full",
+            root=ROOT,
+        )
+        planned = {invocation.gate_id for invocation in plan}
+        self.assertEqual(set(), planned & self._documented_gate_ids())
 
 
 class DescriptorExecutionTests(unittest.TestCase):

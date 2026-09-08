@@ -1,10 +1,10 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.2.1"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0003"
 parent_ids:
@@ -54,6 +54,82 @@ runtime mutation mode is reachable from validation. Current Requirement,
 Architecture, Operations, Research, and Audit consumers were cut over, and the
 two affected generated reference outputs were refreshed through their owners.
 
+A later round returned to `scripts/hooks/post-tool-validate.sh`, the one hook
+this Task retains, and measured it against the formatting owner rather than
+against its own description. Three disagreements reproduced on a clean tree at
+`41e83d25e`. The hook ran `shfmt`, which `.pre-commit-config.yaml` does not
+register: 19 of 49 tracked shell files are not shfmt-clean, so `shfmt -w`
+silently rewrote them on any edit, and because the `shfmt -d` call carried no
+`check_only` guard, `--check` failed on all 19. It called `shellcheck` with no
+severity while the registered hook passes `--severity=warning`, so six
+info-level findings in four files failed the hook and none of them failed the
+gate. Its whitespace normalizer performs exactly the trailing-whitespace and
+end-of-file fixes that the registered mutators exclude for the frozen archive
+payloads, but shared none of that boundary, and a probe under
+`docs/98.archive/completed/` was rewritten in both respects.
+
+The convergence removed the unregistered formatter rather than registering it.
+`.prettierignore` already records `shellcheck` as the sole owner of `*.sh`, and
+adopting shfmt would have reformatted 19 tracked files in a corpus-wide commit
+that no request covers. The hook now passes the registered severity and reads
+the `frozen_archive_payloads` anchor from `.pre-commit-config.yaml` instead of
+restating it, failing closed when a present owner declares no anchor and
+excluding nothing when no owner file exists, which is what keeps the temporary
+repositories in the hook regressions working.
+
+A second round corrected two statements about the execution surface. The
+verification surface map described `--profile full` as the complete local
+surface while `_LOCAL_EXCLUDED_GATE_IDS` withholds nine leaves from the local
+context, and listed those leaves among the suite roots with nothing to mark
+them. The scripts inventory described the CI-only pre-commit entrypoint as
+carrying a frontend-lint skip; the script skips the two gate-owned
+`public-validation-*` hooks, and `eslint-nextjs` is not a registered hook id.
+
+A third round closed the two items the previous round deferred and the stale
+generated graph. The tech-stack drift command has two owners on purpose, and
+removing the standalone workflow was rejected on evidence rather than on
+policy alone: it is the only tracked workflow with a `paths:` trigger, and the
+contract regressions copy the real `.github` tree, so the `path-widening` case
+would have lost its vehicle and the validator would have kept no coverage for a
+widened path filter. The duplication is now stated at both owners and pinned by
+two regressions instead of left implicit.
+
+The two Stage 90 research modules were not stale but wrong when written. The
+skip changed to the two gate-owned hooks in `3989da584` on 2026-09-03, which is
+an ancestor of `6201fa043`, the commit that set the `observed_at` of 2026-09-05
+both modules carry; `eslint-nextjs` had already left `.pre-commit-config.yaml`
+in `1c620dd07`. Both declare `review_cycle: on-source-change`, so the correction
+is that review, recorded with its own date beside the earlier claim. `AUD-0030`
+records the same finding with an `observed_at` that precedes the change, so it
+was accurate when written and stays as written.
+
+The tracked knowledge graph was built at `f8a72211` under the project name
+`audit-harness-consolidation`, and only 4635 of its 22689 nodes still had an
+existing `source_file`. The post-commit hook had refused every rebuild on a
+fewer-nodes heuristic, which was protecting a graph that was 80 percent
+dangling. The rebuild used the documented `--force` for that case and ran no
+labeling, so it cost no tokens.
+
+A fourth round closed the audit and retention items. `AUD-0030` was
+re-observed rather than re-dated wholesale: `QAF-04` and `QAF-11` each cited an
+`eslint-nextjs` skip, and `QAF-04` also cited a ShellCheck exclusion for a
+script Task 3 itself removed. The re-observation found twenty registered hook
+IDs rather than twenty-four, no `exclude` on the ShellCheck hook, and no
+ESLint hook at all. Both criteria are still met by current behavior, so both
+statuses stand and only the evidence changed; each revised cell carries its own
+date, the pack keeps `observed_at` at 2026-07-05 because the other rows were
+not re-observed, and the matrix was regenerated through its own generator.
+
+The `graphify-out/` retention asymmetry was resolved toward the rule that
+already existed. `.gitignore` had listed the directory since it was written
+while forty-seven files under it stayed tracked, so the rule governed new
+content and not old, which cost 148 MiB of tracked blobs and replaced most of
+that on every graph-touching commit. All forty-seven left the index with the
+working copy untouched. Nothing in CI depended on them: no gate node or
+validator reads the directory, and the health reporter already read the
+untracked `manifest.json`. The three documents that described the tracked
+arrangement now describe this one.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -69,6 +145,32 @@ two affected generated reference outputs were refreshed through their owners.
 | Typed changed profile | `run-ci-gate.py --profile changed --explain` listed each selected canonical entrypoint once and executed none |
 | Current residue | Zero current references to deleted Task 3 paths outside the four Task 5 target-surface DATA packages and their registry mapping |
 | Metadata and whitespace | Changed metadata selected 25 documents with 0 violations; `git diff --check` passed |
+| Hook baseline (2026-09-08) | Clean tree at `41e83d25e`: `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1183 tests OK with 11 skips |
+| Hook RED | `post-tool-validate.sh --check` exit 1 on `gen-secrets.sh` demanding a 483-line reindent; bare `shellcheck` exit 1 on `check-all-hardening.sh` where `--severity=warning` exits 0; a `docs/98.archive/completed/` probe changed SHA-256 across the hook |
+| Hook GREEN | The same three reproductions exit 0, 0, and byte-identical; a non-frozen control document is still normalized, so the boundary did not over-exclude |
+| Hook regressions | Six new cases in `PostToolFormattingOwnershipTests`; four fail against the previous hook, and the mutator-parity case fails when one `docs/98.archive/` root is dropped from the markdownlint ignore list |
+| Local exclusion regressions | Three new cases in `LocalExclusionDocumentationTests`; the identifier comparison fails when `leaf.zizmor` is removed from the transcribed table |
+| Post-change full gate | `run-ci-gate.py --profile full` exit 0 at `4c02e73fa` on a clean tree |
+| Post-change unit suite | `unittest discover -s tests -p 'test_*.py'` 1192 tests OK with 11 skips, exit 0 |
+| Registered shell regressions | `test_run_ci_precommit.sh`, `test_run_agent_precommit_all_files.sh`, and `test_hardening_lib.sh` exit 0; `run-agent-output-eval-fixtures.sh` exits 2 with no arguments by its fail-closed argument contract and exits 0 with its registered argv |
+| Generated freshness | `generate-llm-wiki.py --check` and `provider_surface_renderer.py --check` passed on the staged tree; `--check` and `--write` are the renderer's only modes |
+| Action provenance | All eight `uses:` references are 40-character SHAs and each resolves to a commit in its upstream repository through a read-only `gh api` lookup |
+| Remote protection read-back (2026-09-08) | `branches/main/protection` returns required contexts `validation-changed` and `validation-full`, both bound to app 15368, with `strict=true`, matching the tracked ruleset record |
+| Drift-command reach | A plan built for `pull_request`, `push`, and `local` on the declared fallback contains `leaf.local-tech-stack-version-drift` in all three; the workflow and the leaf resolve to one command |
+| Drift-command pinning RED | Changing the workflow `run:` to `--dry-run` fails the new comparison; restoring it passes |
+| Workflow contract after the change | `check-github-workflow-contract.py` PASS with workflows=6, jobs=8, actions=8; 51 workflow-contract tests OK with 11 skips; 21 tech-stack tests OK |
+| Research correction provenance | `3989da584` (2026-09-03) already carried the current skip and is an ancestor of `6201fa043` (2026-09-05), the commit that set both modules' `observed_at` |
+| Document contracts after the corrections | `check-document-metadata.py --mode check-changed` selected 6 with 0 violations; `check-document-links.py --mode all` reported 713 documents, 6,155 links, 0 failures; LLM Wiki and audit matrix freshness PASS |
+| Graph dangling ratio | Before: 4,635 of 22,689 nodes had an existing `source_file`. After: 16,761 of 18,014 |
+| Graph rebuild | 18,014 nodes, 25,229 edges, 1,726 communities, `built_at_commit` equal to HEAD, token cost 0 input and 0 output |
+| Graph health after rebuild | `report-graphify-health.sh` keeps contamination, volume, gitlink, generated and god-node counts at 0; `graph_source_files_total` fell from 1,596 to 1,279; status stays advisory for cross-root inferred edges |
+| Audit re-observation | `.pre-commit-config.yaml` registers 20 hook IDs (18 `pre-commit`, 1 `pre-push`, 1 `commit-msg`), 13 with an explicit filter, no ShellCheck `exclude`, and no ESLint hook; `recommend-qa-gates.sh` is absent from the tracked tree |
+| Audit contract and matrix | `audit_criterion_contract.py` PASS with 11 reports, 161 rows, 161 unique IDs; the matrix was stale before regeneration, `--write` rewrote it, and `--check` reports fresh |
+| Retention change safety | No gate node or validator names `graphify-out`; `git rm -r --cached` removed 47 files totalling 155,898,680 bytes while 237 MB stayed on disk; every probed path under the directory is now ignored |
+| Inventories after untracking | LLM Wiki `--check` fresh, `check-document-links.py --mode all` 713 documents and 6,155 links with 0 failures, `check-script-manifest.py` PASS |
+| Untracked-graph steady state | The post-commit rebuild during `f8ea14c08` left the working tree clean, which the tracked arrangement could not do |
+| Round-3 local verification | `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1194 tests OK with 11 skips at `f8ea14c08` |
+| Pull-request identity dry run | `_check_git_flow` accepts the branch `fix/0173-hook-formatting-ownership` with the planned Conventional-Commit title and rejects a non-conforming title, so the pull-request-only leaf was exercised before pushing |
 
 ## Review Evidence
 
@@ -85,6 +187,13 @@ validation profiles.
 | --- | --- |
 | `083eed03` | Start Task 3 from the accepted Task 2 milestone |
 | `174c29d9` | Align command ownership, relocate operation entrypoints, remove obsolete wrappers and target-surface executables, and cut over current consumers |
+| `69b131ad0` | Converge the retained PostToolUse hook on the registered formatting owner: no unregistered shell formatter, the registered ShellCheck severity, and the frozen payload boundary read from its anchor |
+| `4c02e73fa` | State the nine leaves the local context withholds and correct the CI-only pre-commit skip description, with the regressions that keep both from drifting |
+| `eddaf6545` | State that the required gate leaf runs the tech-stack drift command first and pin the workflow to it |
+| `e023c14bf` | Correct the CI pre-commit skip the two Stage 90 research modules transcribed |
+| `228b7e6a4` | Rebuild the knowledge graph from the current tree as its own generated-artifact unit |
+| `21ed0d434` | Re-observe and rewrite the two audit rows that named a removed hook id, and regenerate the matrix |
+| `f8ea14c08` | Remove every tracked file under `graphify-out/` so its existing ignore rule governs the whole directory |
 
 This evidence checkpoint does not predict its own commit identity.
 
@@ -96,6 +205,11 @@ This evidence checkpoint does not predict its own commit identity.
   modes.
 - Resolve transition records to a real successor or a terminal lifecycle; a
   script cannot be its own successor.
+- A hook formats only what `.pre-commit-config.yaml` registers. Where a tool
+  cannot read that file, it restates the boundary in its own configuration and a
+  registered test compares the two by what they select.
+- A document that names a verification surface names what that surface does not
+  cover, and a registered test compares the claim against a built plan.
 
 ## Deferred Items
 
@@ -107,6 +221,44 @@ This evidence checkpoint does not predict its own commit identity.
   consumers. The earlier residue count above remains Task 3's execution
   snapshot. See the
   [Task 0005 ledger](tsk-0005-document-and-provider-residue.md#commit-ledger).
+- `.github/workflows/tech-stack-version-sync.yml` runs
+  `scripts/operations/sync-tech-stack-versions.sh --check`, and
+  `leaf.local-tech-stack-version-drift` runs the same entrypoint with the same
+  argv as a root of `repository-integrity`, which is the declared changed-profile
+  fallback and is withheld from neither the local nor the pull-request context.
+  Every pull request to `main` therefore executes that command inside the
+  required `validation-changed` job, and a compose-touching pull request executes
+  it a second time. It was not removed: `github-governance.md` registers the
+  workflow in its Non-Gating GitHub Automation table with a stated purpose and
+  `quality-standards.md` names it as non-gating remote automation, and because
+  it is the only tracked workflow declaring a `paths:` trigger while
+  `workflow_fixture` copies the real `.github` tree, so the `path-widening`
+  regression would lose its vehicle and no coverage would remain for a widened
+  path filter. Resolved in `eddaf6545` by making the duplication deliberate
+  rather than accidental: the workflow header and the governance row both state
+  that the required leaf runs first, and two regressions compare the workflow
+  run step against the leaf entrypoint and argv and assert the leaf is in a
+  built pull-request plan.
+- The `eslint-nextjs` skip claim was corrected in `e023c14bf` for
+  `m0001-platform-mechanics.md` and `m0014-quality-ci-formatting.md`, which were
+  wrong at their own `observed_at` rather than overtaken later, and which
+  declare `review_cycle: on-source-change`. `AUD-0030` and its generated matrix
+  mirror still carry the finding in `QAF-04` and `QAF-11`. That report's
+  `observed_at` of 2026-07-05 precedes the change, so the finding was accurate
+  when recorded. The revalidation ran in `21ed0d434` and did not move either row
+  to `Needs Revalidation`, because re-observing found both criteria still met;
+  the evidence was rewritten with its own date instead, and the matrix was
+  regenerated through its generator.
+- The rebuilt graph keeps 1,050 nodes whose `source_file` is an absolute path
+  under a former checkout location and the retired `docs/00.agent-governance`
+  layout. They are LLM-extracted document nodes, and `graphify update`
+  re-extracts code files only, so a semantic re-extraction with an LLM backend
+  is what would drop them. Editing the generated artifact by hand is not a
+  substitute.
+- The `graphify-out/` retention asymmetry is closed in `f8ea14c08`. The
+  directory is untracked in full, Git history holds the removed snapshots, and
+  `graphify update .` rebuilds the current graph without API tokens. Re-tracking
+  anything under it needs `git add -f` and a stated reason.
 - Reverting `174c29d9` is the Task 3 rollback boundary. Restoring only a wrapper
   or target-surface library would recreate split ownership and is not a valid
   partial rollback.

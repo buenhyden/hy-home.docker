@@ -16,7 +16,7 @@ Consumes a hook JSON payload on stdin and validates changed files.
 
 Options:
   --check   Run non-mutating validation only. This disables whitespace writes
-            and shfmt -w while preserving diff, syntax, and repo checks.
+            while preserving diff, syntax, lint, and repo checks.
 EOF
     exit 0
     ;;
@@ -156,6 +156,51 @@ if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
   source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
 fi
 
+# `.pre-commit-config.yaml` names every registered text mutator and the frozen
+# archive payloads they must not rewrite. This hook performs the same
+# trailing-whitespace and final-newline normalization, so it reads that one
+# owner instead of restating the boundary. An owner that exists but declares no
+# anchor is a misconfiguration and fails closed; an absent owner registers no
+# mutator at all and therefore excludes nothing.
+FROZEN_PAYLOAD_PATTERN="$(
+  python3 - .pre-commit-config.yaml <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+if not path.is_file():
+    raise SystemExit(0)
+
+try:
+    text = path.read_text(encoding="utf-8")
+except OSError as error:
+    raise SystemExit(f"ERROR: formatting owner is unreadable: {error}") from error
+
+match = re.search(
+    r"^\s*exclude:\s*&frozen_archive_payloads\s+'(?P<pattern>[^']+)'\s*$",
+    text,
+    re.M,
+)
+if match is None:
+    raise SystemExit(
+        "ERROR: .pre-commit-config.yaml declares no frozen_archive_payloads anchor"
+    )
+
+pattern = match.group("pattern")
+try:
+    re.compile(pattern)
+except re.error as error:
+    raise SystemExit(
+        f"ERROR: frozen_archive_payloads is not a regular expression: {error}"
+    ) from error
+
+print(pattern)
+PY
+)"
+
 EXISTING_CHANGED_FILES=()
 SHELL_STYLE_FILES=()
 YAML_STYLE_FILES=()
@@ -163,14 +208,20 @@ JSON_SYNTAX_FILES=()
 
 format_text_file_basics() {
   local file="$1"
-  python3 - "$file" <<'PY'
+  local frozen_pattern="$2"
+  python3 - "$file" "$frozen_pattern" <<'PY'
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 path = pathlib.Path(sys.argv[1])
 if not path.is_file():
+    raise SystemExit(0)
+
+frozen_pattern = sys.argv[2]
+if frozen_pattern and re.search(frozen_pattern, path.as_posix()):
     raise SystemExit(0)
 
 data = path.read_bytes()
@@ -206,7 +257,7 @@ for path in "${CHANGED_PATHS[@]}"; do
     if [[ "$check_only" -eq 0 ]]; then
       case "$rel" in
       *.md | *.sh | *.yml | *.yaml | *.json)
-        format_text_file_basics "$rel"
+        format_text_file_basics "$rel" "$FROZEN_PAYLOAD_PATTERN"
         ;;
       esac
     fi
@@ -223,15 +274,14 @@ for path in "${CHANGED_PATHS[@]}"; do
   fi
 done
 
-if [[ "$check_only" -eq 0 && "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
-  shfmt -w "${SHELL_STYLE_FILES[@]}"
-fi
-
-if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
-  shfmt -d "${SHELL_STYLE_FILES[@]}"
-fi
+# `.pre-commit-config.yaml` registers no shfmt hook, so shell files have no
+# registered formatting owner and this hook runs none. See
+# `.agents/governance/quality-standards.md` section 10.
 if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shellcheck >/dev/null 2>&1; then
-  shellcheck "${SHELL_STYLE_FILES[@]}"
+  # Severity is owned solely by the `shellcheck` hook arguments in
+  # `.pre-commit-config.yaml`; `.shellcheckrc` cannot set it. Matching that
+  # owner keeps this hook from rejecting what the registered gate accepts.
+  shellcheck --severity=warning "${SHELL_STYLE_FILES[@]}"
 fi
 if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]] && command -v yamllint >/dev/null 2>&1; then
   yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
