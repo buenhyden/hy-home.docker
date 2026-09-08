@@ -1,10 +1,10 @@
 ---
 title: "Commit Message Prompt"
-version: "0.1.0"
+version: "0.1.1"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 created: "2026-09-06"
 ---
 
@@ -25,10 +25,9 @@ produces a draft, never a commit.
   message.
 - The governing Plan work unit this commit closes.
 - The commit conventions in
-  [git workflow](../governance/git-workflow.md), which own type, scope, and
-  message shape. The repository's commit-message check enforces that shape from
-  `.cz.toml`; read the documented rules rather than inferring them from a
-  sample.
+  [git workflow](../governance/git-workflow.md), which governs commit usage.
+  `.cz.toml` owns the type vocabulary and descriptions, message grammar,
+  and header length.
 
 Stop and request staging if the staged set is empty or spans unrelated
 concerns.
@@ -37,9 +36,11 @@ concerns.
 
 One draft message:
 
-1. **Subject** — `<type>(<scope>): <Description>` within the repository's
-   configured length limit. The type comes from the conventions document; the
-   scope names the changed authority surface, not a directory listing.
+1. **Subject** — `<type>[(<scope>)][!]: <Description>`, where brackets denote
+   optional parts rather than literal characters, with the full header within
+   the repository's configured length limit. The type comes from `.cz.toml`'s
+   `change_type_map`; the scope names the changed authority surface, not a
+   directory listing.
 2. **Body** — what changed and why, in the shape the conventions define. It
    states the reason a reader cannot recover from the diff itself and omits
    anything the diff already shows plainly.
@@ -47,7 +48,14 @@ One draft message:
 
 Validate the draft against the enforced pattern before offering it. A message
 that fails the commit-message check after a long pre-commit run wastes the whole
-run, so check the cheapest gate first.
+run, so check the cheapest gate first:
+
+```bash
+cz check --message-length-limit 75 \
+  --message "docs(governance): Align commit contract"
+```
+
+The `commit-msg` hook remains the final local enforcement point.
 
 Alongside the draft, list any staged path the message does not account for. That
 list being empty is part of the output.

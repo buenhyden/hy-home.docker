@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 ---
 
 # Git Workflow Governance
@@ -15,13 +15,20 @@ This rule defines the mandatory git workflow for all contributors and agents.
 
 Use Conventional Commits with explicit scopes where possible.
 
-- Format: `<type>(<scope>): <Description>`
-- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+- Format: `<type>[(<scope>)][!]: <Description>`; brackets denote optional
+  parts and are not literal characters.
+- Types: the keys in `.cz.toml`'s `change_type_map`. That map is the executable
+  type vocabulary.
 - The description starts with a capital letter and does not end with a
   period. The body, when present, is one block with no blank line inside
-  it. Trailers come last, after a single blank line. `.cz.toml` enforces
-  this shape at `commit-msg`; a message that violates it is rejected after
-  the pre-commit gate has already run, so validate the draft first.
+  it. Trailers come last, after a single blank line. `.cz.toml` is the sole
+  executable authority for the allowed types, message grammar, and header
+  length. Its interactive type choices explain each type; this policy governs
+  commit usage and workflow.
+- Validate a draft with
+  `cz check --message-length-limit 75 --message "feat(auth): Add login guard"`
+  before starting the commit. The `commit-msg` hook remains the final local
+  enforcement point.
 
 ## 2. Branching Strategy
 
@@ -29,9 +36,8 @@ Use Conventional Commits with explicit scopes where possible.
 - Feature branch naming: `feat/<issue-id>-<short-description>`
 - Fix branch naming: `fix/<issue-id>-<short-description>`
 - Hotfix branch naming: `hotfix/<issue-id>-<short-description>` for emergency production fixes; follows the same issue-ID requirement as `feat/` and `fix/`.
-- Other human-authored branch naming may use a matching Conventional Commit
-  type prefix: `docs/`, `style/`, `refactor/`, `perf/`, `test/`, `build/`,
-  `ci/`, `chore/`, or `revert/`.
+- Other human-authored branches use `<type>/<short-description>`, where `type`
+  is an admitted `.cz.toml` change type other than `feat` or `fix`.
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
   tool-generated PR branches only. They must still merge through the PR
   protocol and required checks.

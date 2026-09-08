@@ -1,8 +1,8 @@
 ################
-# <type>(<scope>): <subject> 의 형식으로 제목을 아래 공백줄에 작성
+# <type>[(<scope>)][!]: <subject> (대괄호 부분은 선택, 대괄호 자체는 입력하지 않음)
 # 제목은 75자 이내 / 변경사항이 "무엇"인지 명확히 작성 / 끝에 마침표 X
 # 타입과 제목은 필수 / 범위(scope)는 선택
-# 예) feat(auth): 로그인 기능 추가
+# 예) feat(auth): Add login guard
 <type>(<scope>): <subject>
 # 바로 아래 공백은 지우지 마세요 (제목과 본문의 분리를 위함)
 
@@ -14,38 +14,17 @@
 
 ################
 # 꼬릿말(footer)을 아랫줄에 작성 (현재 커밋과 관련된 이슈 번호 추가 등)
-# 예) Close #7
+# 예) Refs: #7
 
 # Issue Tracker Number or URL
 
 # --- COMMIT END ---
-# <type> Guide & Examples
-#   feat    : 새로운 기능 추가
-#             ex) feat(api): 유저 조회 API 추가
-#   fix     : 버그 수정
-#             ex) fix(ui): 버튼 클릭 미작동 오류 수정
-#   refactor: 코드 리팩토링 (기능 변화 없이 구조만 개선)
-#             ex) refactor(auth): JWT 검증 로직 가독성 개선
-#   style   : 코드 의미에 영향을 주지 않는 변경사항 (포맷팅, 세미콜론 누락 등)
-#             ex) style(common): ESLint 관련 포맷팅 수정
-#   docs    : 문서 수정 (README.md, 주석 등)
-#             ex) docs(readme): 설치 가이드 항목 업데이트
-#   test    : 테스트 추가, 수정, 삭제 (생산 코드 변경 없음)
-#             ex) test(service): 유저 서비스 단위 테스트 추가
-#   build   : 빌드 시스템 또는 외부 종속성 수정 (npm, gradle, maven 등)
-#             ex) build(deps): lodash 패키지 버전 업데이트
-#   ci      : CI 설정 파일 및 스크립트 수정 (GitHub Actions, Jenkins 등)
-#             ex) ci(github): 워크플로우 실행 트리거 수정
-#   perf    : 성능 개선을 위한 코드 수정
-#             ex) perf(db): 쿼리 튜닝을 통한 조회 속도 개선
-#   revert  : 이전 커밋 되돌리기
-#             ex) revert(feat): '기능 A' 커밋 되돌리기
-#   chore   : 기타 변경사항 (빌드 과정, 보조 도구 및 라이브러리 설정 등)
-#             ex) chore(git): .gitignore 설정 추가
-#   release : 버전 릴리즈
-#             ex) release: v1.0.0 배포
-#   deps    : 의존성 변경
-#             ex) deps(pre-commit): commitizen 훅 추가
+# Type와 문법의 기준은 .cz.toml입니다.
+# change_type_map이 허용 type을, change_type 질문의 choices가 설명을 소유합니다.
+# 전체 type 목록을 이 파일에서 별도로 관리하지 않습니다.
+# 예) release: Publish v1.0.0
+# 예) feat(api)!: Require authentication
+# breaking 변경은 ! 또는 마지막 BREAKING CHANGE: 설명으로 표시합니다.
 # ------------------
 # Remember me ~
 #   Capitalize the subject line

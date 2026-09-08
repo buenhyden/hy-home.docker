@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ### {{ group | upper_first }}
     {% for commit in commits %}
         - {% if commit.scope %}**{{ commit.scope }}:** {% endif %}\
+            {% if commit.breaking %}[**breaking**] {% endif %}\
             {{ commit.message | upper_first }}\
     {% endfor %}
 {% endfor %}\n
@@ -58,10 +59,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ]
   # regex for parsing and grouping commits
   commit_parsers=[
-    {body=".*BREAKING CHANGE", group="Breaking Changes"},
-    {message="^chore", group="Miscellaneous"},
+    {footer="^BREAKING[ -]CHANGE:", group="Breaking Changes"},
     {message="^chore\\(release\\)", skip=true},
-    {message="^doc", group="Documentation"},
+    {message="^release", skip=true},
+    {message="^build", group="Build"},
+    {message="^chore", group="Miscellaneous"},
+    {message="^ci", group="Continuous Integration"},
+    {message="^deps", group="Dependencies"},
+    {message="^docs", group="Documentation"},
     {message="^feat", group="Added"},
     {message="^fix", group="Fixed"},
     {message="^perf", group="Performance"},
@@ -71,7 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     {message="^test", group="Testing"},
   ]
   # protect breaking changes from being skipped due to matching a skipping commit_parser
-  protect_breaking_commits = false
+  protect_breaking_commits = true
   # protect github users from unauthorized exposure
   filter_commits = false
   # regex for matching git tags

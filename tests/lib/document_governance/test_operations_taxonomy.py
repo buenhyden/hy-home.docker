@@ -149,6 +149,36 @@ class OperationsAuthorityTests(unittest.TestCase):
                 {finding.path.split(":", 1)[0] for finding in findings},
             )
 
+    def test_release_commit_pattern_is_not_a_document_role(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            fixtures = {
+                "hook.md": '---\npattern: "(feat|release|deps)"\n---\n',
+                "roles.md": "| Role | Owner |\n| --- | --- |\n| Release | Ops |\n",
+                "roles-second-column.md": "| Owner | Role |\n| --- | --- |\n| Ops | Release |\n",
+                "roles-no-leading-pipe.md": "Owner | Role | Status\n--- | --- | ---\nOps | Release | Active\n",
+                "code.md": "```text\n| Role |\n| --- |\n| Release |\n```\n",
+                "prose.md": "Use the Release document role.\n",
+                "unicode.md": ("no release\u2028" * 5)
+                + "\nOwner | Role\n--- | ---\nOps | Release\n",
+            }
+            for relative, content in fixtures.items():
+                (root / relative).write_text(content, encoding="utf-8")
+            subprocess.run(["git", "add", *fixtures], cwd=root, check=True)
+            findings = validate_active_operations_references(root)
+            self.assertEqual(
+                {
+                    "roles.md",
+                    "roles-second-column.md",
+                    "roles-no-leading-pipe.md",
+                    "unicode.md",
+                    "prose.md",
+                },
+                {finding.path.split(":", 1)[0] for finding in findings},
+            )
+            self.assertIn("unicode.md:4", {finding.path for finding in findings})
+
     def test_current_drift_guides_exist_at_canonical_catalog_paths(self) -> None:
         expected = (
             "docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md",

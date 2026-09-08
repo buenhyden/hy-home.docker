@@ -1,16 +1,17 @@
 [tool.commitizen]
   name            ="cz_customize"
+  message_length_limit=75
   version_provider="scm"
 
   [tool.commitizen.customize]
     example  ="feat(auth): Add login guard"
     info_path=".gitmessage"
-    schema   ="<type>(<scope>): <subject>"
+    schema   ="<type>[(<scope>)][!]: <subject> (brackets denote optional parts)"
 
     message_template="""{{change_type}}{% if scope %}({{scope}}){% endif %}: {{subject}}{% if body %}\n\n{{body}}{% endif %}{% if footer %}\n\n{{footer}}{% endif %}"""
 
-    bump_map={break="MAJOR", feat="MINOR", fix="PATCH", perf="PATCH", refactor="PATCH"}
-    bump_pattern='^(break|feat|fix|perf|refactor)'
+    bump_map={"BREAKING[ -]CHANGE"="MAJOR", ".*!$"="MAJOR", feat="MINOR", fix="PATCH", perf="PATCH", refactor="PATCH"}
+    bump_pattern='^(BREAKING[ -]CHANGE|(?:build|chore|ci|deps|docs|feat|fix|perf|refactor|release|revert|style|test)(?:\([^\)\r\n]+\))?!?):'
     change_type_map={feat="Feat", fix="Fix", refactor="Refactor", style="Style", docs="Docs", test="Test", build="Build", ci="CI", perf="Perf", revert="Revert", chore="Chore", release="Release", deps="Deps"}
     change_type_order=[
       "Build",
@@ -57,7 +58,7 @@
       type   ="input"
 
     [[tool.commitizen.customize.questions]]
-      message="Subject (uppercase first letter, no trailing period, max 75 chars)"
+      message="Subject (uppercase first letter, no trailing period; full header max 75 chars)"
       name   ="subject"
       type   ="input"
 

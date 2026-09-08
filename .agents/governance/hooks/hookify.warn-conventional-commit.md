@@ -1,15 +1,15 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/hook-policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 action: "warn"
 enabled: true
 event: "bash"
 name: "warn-conventional-commit"
-pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
+pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(build|chore|ci|deps|docs|feat|fix|perf|refactor|release|revert|style|test)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->
@@ -25,29 +25,19 @@ The message does not follow Commit Standards in
 <type>[(scope)][!]: <description>
 ```
 
-**Allowed types:**
-
-| type | Purpose |
-| ---- | ------- |
-| `feat` | new feature |
-| `fix` | bug fix |
-| `docs` | documentation change |
-| `style` | formatting change with no behavior change |
-| `refactor` | refactor with no feature or bug change |
-| `perf` | performance improvement |
-| `test` | test addition or change |
-| `build` | build system change |
-| `ci` | CI configuration change |
-| `chore` | maintenance |
-| `revert` | revert a commit |
+Allowed types are the keys in `.cz.toml`'s `change_type_map`. This warning's
+pattern is a lightweight translation of that map; the `commit-msg` hook applies
+the complete executable grammar.
 
 **Correct examples:**
 
 ```bash
-git commit -m "feat(nginx): add rate limiting config"
-git commit -m "fix(compose): correct volume mount path"
-git commit -m "docs(readme): update service list"
-git commit -m "chore!: drop support for legacy volume names"
+git commit -m "feat(nginx): Add rate limiting config"
+git commit -m "fix(compose): Correct volume mount path"
+git commit -m "docs(readme): Update service list"
+git commit -m "chore!: Drop support for legacy volume names"
+git commit -m "deps(pre-commit): Update Commitizen hook"
+git commit -m "release: Publish v1.0.0"
 ```
 
 **This rule detects:**

@@ -15,6 +15,8 @@ import subprocess
 import time
 from collections.abc import Mapping, Sequence
 
+from markdown_it import MarkdownIt
+
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     parse_frontmatter_text,
@@ -92,7 +94,7 @@ _ACTIVE_ROUTE_PATTERNS = (
     ),
 )
 _RELEASE_ROLE_PATTERN = re.compile(
-    r"(?:\|\s*Release\s*\||(?:guide|policy|runbook|incident|postmortem)(?:\s*,\s*|\s+and\s+)release\b|Release (?:document )?role)",
+    r"(?:(?:guide|policy|runbook|incident|postmortem)(?:\s*,\s*|\s+and\s+)release\b|Release (?:document )?role)",
     re.IGNORECASE,
 )
 _RELEASE_NEGATIONS = (
@@ -615,6 +617,7 @@ def validate_active_operations_references(
             text = read_bounded_regular(root, path).decode("utf-8")
         except UnicodeDecodeError:
             continue
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
         value = path.as_posix()
         if value.startswith("docs/03.specs/") and path.name == "spec.md":
             try:
@@ -623,7 +626,22 @@ def validate_active_operations_references(
                 metadata = {}
             if metadata.get("status") in {"superseded", "retired"}:
                 continue
-        for line_number, line in enumerate(text.splitlines(), 1):
+        release_table_lines: set[int] = set()
+        if suffix == ".md" and "release" in text.lower():
+            in_table = False
+            for token in MarkdownIt("commonmark").enable("table").parse(text):
+                if token.type == "table_open":
+                    in_table = True
+                elif token.type == "table_close":
+                    in_table = False
+                elif (
+                    in_table
+                    and token.type == "inline"
+                    and token.content.strip().lower() == "release"
+                    and token.map
+                ):
+                    release_table_lines.add(token.map[0] + 1)
+        for line_number, line in enumerate(text.split("\n"), 1):
             if _RETIRED_ROUTE_RECORD_MARKER in line:
                 # A line whose purpose is to record a retired route is not an
                 # active reference to it. Sixteen such lines used to satisfy
@@ -634,7 +652,10 @@ def validate_active_operations_references(
             old_route = any(pattern.search(line) for pattern in _ACTIVE_ROUTE_PATTERNS)
             release_role = (
                 suffix == ".md"
-                and _RELEASE_ROLE_PATTERN.search(line)
+                and (
+                    line_number in release_table_lines
+                    or _RELEASE_ROLE_PATTERN.search(line)
+                )
                 and not any(token in line.lower() for token in _RELEASE_NEGATIONS)
             )
             if old_route or release_role:

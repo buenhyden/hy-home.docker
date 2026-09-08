@@ -5,16 +5,18 @@ import fcntl
 import io
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from collections.abc import Mapping
 from unittest import mock
 
 from scripts.lib.gate import ci_gate_adapters as adapters
 
-
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 REAL_SUBPROCESS_RUN = subprocess.run
 EXPECTED_SUBCOMMANDS = (
     "verify-metadata-base",
@@ -312,27 +314,283 @@ class CiGateAdapterTests(unittest.TestCase):
     def test_check_git_flow_validates_without_shell_or_child_process(
         self,
     ) -> None:
-        result, recorder = self.run_with_recorder(
-            ("check-git-flow",),
-            environ={
-                "PATH": "/usr/bin",
-                "PR_TITLE": "feat(ci): add typed gates",
-                "HEAD_REF": "feat/135-typed-gates",
-            },
+        (self.root / ".cz.toml").write_bytes((ROOT / ".cz.toml").read_bytes())
+        accepted = (
+            ("feat(api v2)!: Remove legacy endpoint", "feat/135-typed-gates"),
+            ("fix: Correct typed gate", "fix/135-typed-gates"),
+            ("fix!: Patch production gate", "hotfix/135-patch-gate"),
+            ("docs: Update guide", "docs/update-guide"),
+            ("style: Format sources", "style/format-sources"),
+            ("refactor: Simplify parser", "refactor/simplify-parser"),
+            ("perf: Reduce parsing cost", "perf/reduce-cost"),
+            ("test: Cover commit grammar", "test/commit-grammar"),
+            ("build: Update build image", "build/update-image"),
+            ("ci: Align workflow checks", "ci/align-checks"),
+            ("chore: Maintain repository", "chore/maintenance"),
+            ("revert: Restore prior behavior", "revert/restore-behavior"),
+            ("release: Publish v1.2.3", "release/publish-v1.2.3"),
+            ("deps: Update dependency pins", "deps/update-pins"),
+            ("feat: Add automation", "codex/commit-contract"),
+            ("deps: Update dependency pins", "dependabot/pip/requests-3"),
         )
-        self.assertEqual(0, result)
-        self.assertEqual([], recorder.calls)
-        with self.assertRaises(adapters.AdapterError) as caught:
-            adapters.run_adapter(
-                self.root,
-                ("check-git-flow",),
-                {
-                    "PATH": "/usr/bin",
-                    "PR_TITLE": "not conventional",
-                    "HEAD_REF": "unknown",
-                },
+        for title, branch in accepted:
+            with self.subTest(title=title, branch=branch):
+                result, recorder = self.run_with_recorder(
+                    ("check-git-flow",),
+                    environ={
+                        "PATH": "/usr/bin",
+                        "PR_TITLE": title,
+                        "HEAD_REF": branch,
+                    },
+                )
+                self.assertEqual(0, result)
+                self.assertEqual([], recorder.calls)
+
+        rejected = (
+            ("feat: lower case subject", "feat/135-typed-gates"),
+            ("feat: Subject ends with period.", "feat/135-typed-gates"),
+            (f"feat: {'A' * 70}", "feat/135-typed-gates"),
+            ("unknown: Add typed gate", "feat/135-typed-gates"),
+            ("feat: Add typed gate", "feat/missingissue"),
+            ("feat: Add typed gate", "unknown/topic"),
+        )
+        for title, branch in rejected:
+            with self.subTest(title=title, branch=branch):
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.run_adapter(
+                        self.root,
+                        ("check-git-flow",),
+                        {"PATH": "/usr/bin", "PR_TITLE": title, "HEAD_REF": branch},
+                    )
+                self.assertEqual("ci-gate-adapter-git-flow", caught.exception.code)
+
+    def test_commit_contract_translations_cover_every_canonical_type(self) -> None:
+        commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
+            "tool"
+        ]["commitizen"]
+        customize = commitizen["customize"]
+        expected_types = {
+            "build",
+            "chore",
+            "ci",
+            "deps",
+            "docs",
+            "feat",
+            "fix",
+            "perf",
+            "refactor",
+            "release",
+            "revert",
+            "style",
+            "test",
+        }
+        self.assertEqual(expected_types, set(customize["change_type_map"]))
+        choices = next(
+            question["choices"]
+            for question in customize["questions"]
+            if question["name"] == "change_type"
+        )
+        self.assertEqual(expected_types, {choice["value"] for choice in choices})
+        bump_pattern = re.compile(customize["bump_pattern"])
+
+        def increment_for(message: str) -> str | None:
+            increments = (None, "PATCH", "MINOR", "MAJOR")
+            increment = None
+            for line in message.splitlines():
+                matched = bump_pattern.search(line)
+                if matched is None:
+                    continue
+                candidate = next(
+                    (
+                        value
+                        for key, value in customize["bump_map"].items()
+                        if re.match(key, matched.group(1))
+                    ),
+                    None,
+                )
+                if increments.index(candidate) > increments.index(increment):
+                    increment = candidate
+            return increment
+
+        bump_cases = (
+            ("feat: Add endpoint", "MINOR"),
+            ("fix(api): Correct endpoint", "PATCH"),
+            ("fix(api!): Correct endpoint", "PATCH"),
+            ("feat(api!v2): Add endpoint", "MINOR"),
+            ("perf: Improve endpoint", "PATCH"),
+            ("refactor: Simplify endpoint", "PATCH"),
+            ("feat!: Remove endpoint", "MAJOR"),
+            ("fix(api)!: Remove endpoint", "MAJOR"),
+            ("chore!: Remove compatibility", "MAJOR"),
+            (
+                "\n\n".join(
+                    (
+                        "feat: Replace endpoint",
+                        "BREAKING CHANGE: Clients must use the replacement",
+                    )
+                ),
+                "MAJOR",
+            ),
+            (
+                "\n\n".join(
+                    (
+                        "feat: Replace endpoint",
+                        "BREAKING-CHANGE: Clients must use the replacement",
+                    )
+                ),
+                "MAJOR",
+            ),
+            ("docs: Update endpoint guide", None),
+        )
+        for message, expected in bump_cases:
+            with self.subTest(message=message):
+                self.assertEqual(expected, increment_for(message))
+        for change_type in expected_types:
+            for header in (
+                f"{change_type}!: Remove compatibility",
+                f"{change_type}(api)!: Remove compatibility",
+                f"{change_type}(api!)!: Remove compatibility",
+            ):
+                with self.subTest(breaking_header=header):
+                    self.assertEqual("MAJOR", increment_for(header))
+
+        cliff_config = tomllib.loads((ROOT / "cliff.toml").read_text(encoding="utf-8"))
+        cliff = cliff_config["git"]
+        changelog = cliff_config["changelog"]
+        self.assertTrue(cliff["protect_breaking_commits"])
+        self.assertIn("commit.breaking", changelog["body"])
+
+        def first_parser(message: str, footer: str = "") -> dict[str, object] | None:
+            for parser in cliff["commit_parsers"]:
+                if "footer" in parser and re.search(parser["footer"], footer):
+                    return parser
+                if "message" in parser and re.search(parser["message"], message):
+                    return parser
+            return None
+
+        for change_type in sorted(expected_types - {"release"}):
+            with self.subTest(change_type=change_type):
+                parser = first_parser(f"{change_type}: Subject")
+                self.assertIsNotNone(parser)
+                self.assertFalse(parser.get("skip", False))
+        for message in ("release: Publish v1.2.3", "chore(release): Publish v1.2.3"):
+            with self.subTest(message=message):
+                parser = first_parser(message)
+                self.assertIsNotNone(parser)
+                self.assertTrue(parser.get("skip", False))
+        for footer in (
+            "BREAKING CHANGE: The legacy endpoint was removed",
+            "BREAKING-CHANGE: The legacy endpoint was removed",
+        ):
+            with self.subTest(footer=footer):
+                breaking = first_parser("feat: Remove legacy endpoint", footer)
+                self.assertEqual("Breaking Changes", breaking.get("group"))
+        nonbreaking = first_parser(
+            "feat: Keep legacy endpoint",
+            "BREAKING-CHANGED: This is an ordinary custom footer",
+        )
+        self.assertEqual("Added", nonbreaking.get("group"))
+
+        def hook_pattern(name: str) -> re.Pattern[str]:
+            source = (ROOT / ".agents/governance/hooks" / name).read_text(
+                encoding="utf-8"
             )
-        self.assertEqual("ci-gate-adapter-git-flow", caught.exception.code)
+            encoded = re.search(r"^pattern: (\".*\")$", source, re.MULTILINE)
+            self.assertIsNotNone(encoded)
+            return re.compile(ast.literal_eval(encoded.group(1)))
+
+        commit_warning = hook_pattern("hookify.warn-conventional-commit.md")
+        branch_warning = hook_pattern("hookify.warn-branch-naming.md")
+        for change_type in expected_types:
+            with self.subTest(hook="commit", change_type=change_type):
+                self.assertIsNone(
+                    commit_warning.search(f'git commit -m "{change_type}: Subject"')
+                )
+            with self.subTest(hook="branch", change_type=change_type):
+                self.assertIsNone(
+                    branch_warning.search(f"git switch -c {change_type}/topic")
+                )
+        self.assertIsNotNone(commit_warning.search('git commit -m "unknown: Subject"'))
+        self.assertIsNotNone(branch_warning.search("git switch -c unknown/topic"))
+
+    def test_check_git_flow_fails_closed_for_invalid_commit_contract(self) -> None:
+        config = self.root / ".cz.toml"
+        target = self.root / "target.toml"
+        cases = ("missing", "malformed", "symlink")
+        for case in cases:
+            with self.subTest(case=case):
+                config.unlink(missing_ok=True)
+                target.unlink(missing_ok=True)
+                if case == "malformed":
+                    config.write_text("not valid toml =", encoding="utf-8")
+                elif case == "symlink":
+                    target.write_bytes((ROOT / ".cz.toml").read_bytes())
+                    config.symlink_to(target.name)
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.run_adapter(
+                        self.root,
+                        ("check-git-flow",),
+                        {
+                            "PATH": "/usr/bin",
+                            "PR_TITLE": "feat: Add typed gate",
+                            "HEAD_REF": "feat/135-typed-gates",
+                        },
+                    )
+                self.assertEqual("ci-gate-adapter-git-flow", caught.exception.code)
+
+    def test_authored_commit_examples_match_the_canonical_schema(self) -> None:
+        config = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))
+        commitizen = config["tool"]["commitizen"]
+        pattern = re.compile(commitizen["customize"]["schema_pattern"])
+        limit = commitizen["message_length_limit"]
+        messages = (
+            "feat(api v2)!: Remove legacy endpoint",
+            "fix: Correct typed gate\n\nExplain why the gate needed correction",
+            "\n\n".join(
+                (
+                    "feat: Replace legacy endpoint",
+                    "BREAKING CHANGE: Clients must use the typed endpoint",
+                )
+            ),
+            "\n\n".join(
+                (
+                    "feat: Replace legacy endpoint",
+                    "BREAKING-CHANGE: Clients must use the typed endpoint",
+                )
+            ),
+            "\n\n".join(
+                (
+                    "fix: Correct typed gate",
+                    "Explain why the gate needed correction",
+                    "Refs: #135",
+                )
+            ),
+        )
+        for message in messages:
+            with self.subTest(message=message):
+                self.assertLessEqual(len(message.partition("\n")[0]), limit)
+                self.assertIsNotNone(pattern.fullmatch(message))
+
+        type_pattern = "|".join(commitizen["customize"]["change_type_map"])
+        example_pattern = re.compile(
+            rf"(?P<message>(?:{type_pattern})(?:\([^()\r\n]+\))?!?: [^\"`\r\n]+)"
+        )
+        paths = (
+            ROOT / ".gitmessage",
+            ROOT / ".agents/governance/git-workflow.md",
+            ROOT / ".agents/prompts/commit-message.md",
+            ROOT / ".agents/governance/hooks/hookify.warn-conventional-commit.md",
+        )
+        for path in paths:
+            examples = tuple(
+                match.group("message").strip()
+                for match in example_pattern.finditer(path.read_text(encoding="utf-8"))
+            )
+            self.assertTrue(examples, path)
+            for message in examples:
+                with self.subTest(path=path, message=message):
+                    self.assertLessEqual(len(message.splitlines()[0]), limit)
+                    self.assertIsNotNone(pattern.fullmatch(message))
 
     def test_prepare_compose_env_is_exclusive_tracked_and_preserves_existing(
         self,

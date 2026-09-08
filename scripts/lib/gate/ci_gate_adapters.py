@@ -6,14 +6,14 @@ import fcntl
 import os
 import pathlib
 import re
-from types import MappingProxyType
 import stat
 import subprocess
 import sys
 import threading
 import time
+import tomllib
 from collections.abc import Mapping
-
+from types import MappingProxyType
 
 SUBCOMMANDS = (
     "verify-metadata-base",
@@ -280,7 +280,7 @@ def _dispatch_adapter(
         )
     if command == "check-git-flow":
         _no_arguments(arguments)
-        _check_git_flow(environ)
+        _check_git_flow(canonical_root, environ)
         return 0
     if command == "prepare-compose-env":
         _no_arguments(arguments)
@@ -730,21 +730,104 @@ def _npm_arguments(arguments: tuple[str, ...]) -> tuple[str, ...]:
     return arguments
 
 
-def _check_git_flow(environ: Mapping[str, str]) -> None:
+def _load_commit_contract(
+    root: pathlib.Path,
+) -> tuple[re.Pattern[str], int, frozenset[str]]:
+    root_fd = _owned_root_descriptor(root)
+    descriptor = -1
+    result: tuple[re.Pattern[str], int, frozenset[str]] | None = None
+    failed = False
+    try:
+        try:
+            descriptor = os.open(
+                ".cz.toml",
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK,
+                dir_fd=root_fd,
+            )
+            metadata = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(metadata.st_mode)
+                or metadata.st_size > _MAX_CAPTURE_BYTES
+            ):
+                raise ValueError
+            document = tomllib.loads(_read_bounded(descriptor).decode("utf-8"))
+            commitizen = document["tool"]["commitizen"]
+            customize = commitizen["customize"]
+            message_length_limit = commitizen["message_length_limit"]
+            change_type_map = customize["change_type_map"]
+            if (
+                commitizen["name"] != "cz_customize"
+                or type(message_length_limit) is not int
+                or message_length_limit < 1
+                or not isinstance(change_type_map, dict)
+                or not change_type_map
+            ):
+                raise ValueError
+            change_types = frozenset(change_type_map)
+            if any(
+                re.fullmatch(r"[a-z][a-z0-9-]*", change_type) is None
+                or not isinstance(label, str)
+                for change_type, label in change_type_map.items()
+            ):
+                raise ValueError
+            questions = customize["questions"]
+            type_question = next(
+                question
+                for question in questions
+                if question.get("name") == "change_type"
+            )
+            if {choice["value"] for choice in type_question["choices"]} != change_types:
+                raise ValueError
+            result = (
+                re.compile(customize["schema_pattern"]),
+                message_length_limit,
+                change_types,
+            )
+        except (
+            AttributeError,
+            KeyError,
+            OSError,
+            StopIteration,
+            TypeError,
+            UnicodeError,
+            ValueError,
+            re.error,
+        ):
+            failed = True
+    finally:
+        if descriptor >= 0:
+            try:
+                os.close(descriptor)
+            except OSError:
+                failed = True
+    if failed or result is None:
+        raise AdapterError(
+            "ci-gate-adapter-git-flow",
+            "the pull request identity does not match policy",
+        ) from None
+    return result
+
+
+def _check_git_flow(root: pathlib.Path, environ: Mapping[str, str]) -> None:
     title = environ.get("PR_TITLE", "")
     branch = environ.get("HEAD_REF", "")
-    title_pattern = re.compile(
-        r"(?:feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)"
-        r"(?:\([A-Za-z0-9._-]+\))?!?: .+\Z"
-    )
-    branch_pattern = re.compile(
-        r"(?:(?:feat|fix|hotfix)/[A-Za-z0-9._-]+-.+|"
-        r"(?:docs|style|refactor|perf|test|build|ci|chore|revert)/.+|"
-        r"(?:dependabot|codex)/.+)\Z"
+    title_pattern, message_length_limit, change_types = _load_commit_contract(root)
+    branch_prefix, separator, branch_suffix = branch.partition("/")
+    branch_is_valid = bool(separator and branch_suffix) and (
+        branch_prefix in {"dependabot", "codex"}
+        or (
+            branch_prefix in {"feat", "fix", "hotfix"}
+            and re.fullmatch(r"[A-Za-z0-9._-]+-.+", branch_suffix) is not None
+        )
+        or (
+            branch_prefix in change_types - {"feat", "fix"}
+            and re.fullmatch(r".+", branch_suffix) is not None
+        )
     )
     if (
         title_pattern.fullmatch(title) is None
-        or branch_pattern.fullmatch(branch) is None
+        or len(title.partition("\n")[0]) > message_length_limit
+        or not branch_is_valid
     ):
         raise AdapterError(
             "ci-gate-adapter-git-flow",
