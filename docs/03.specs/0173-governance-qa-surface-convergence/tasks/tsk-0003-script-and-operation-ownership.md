@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -210,6 +210,21 @@ removed. `strict`, `allow_force_pushes: false`, `allow_deletions: false` and
 `required_conversation_resolution` were all left as they were, so the change
 narrowed an unsatisfiable requirement without widening what may reach `main`.
 
+Removing the review requirement exposed a second kind of drift, this time in the
+tracked text rather than the remote state. `.github/rulesets/main-protection.md`
+still declared CODEOWNERS review as a target, `github-governance.md` called
+CODEOWNERS-triggered review mandatory without qualification, its completion gate
+asked an agent to confirm owner notification, and the pull-request template
+carried a checkbox for it. `.github/CODEOWNERS` assigns `*` to the single
+collaborator, so with owner review enforced every pull request without exception
+would have required the self-approval GitHub forbids. Left as written, those four
+sentences would ask an agent to record a review that protection never required
+and no person gave, which is the precise failure the same governance forbids
+elsewhere. Each was bound to the enforced state instead of weakened: an agent
+must now read `require_code_owner_reviews` and report which case applies, and the
+rule that agents may not self-approve or bypass required reviewers was left
+untouched.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -233,6 +248,8 @@ narrowed an unsatisfiable requirement without widening what may reach `main`.
 | Review deadlock | `required_approving_review_count` was 1 with `buenhyden` the only collaborator and the author of #148; `reviewDecision=REVIEW_REQUIRED` with zero reviews |
 | Protection after change | `contexts=["validation-changed"]`, reviews removed, and `strict`, `allow_force_pushes:false`, `allow_deletions:false`, `required_conversation_resolution:true` unchanged |
 | Worktrees | `git worktree list` reports the primary checkout only and `git rev-parse --git-dir` equals `--git-common-dir`, so no linked worktree exists to remove |
+| CODEOWNERS scope | `.github/CODEOWNERS` assigns `*` to the single collaborator, so enforced owner review would have blocked every pull request, not only owned paths |
+| Governance text bound to state | Four unconditional CODEOWNERS claims now name `require_code_owner_reviews`; `github-governance.md:37` still forbids self-approval and bypass |
 | Local exclusion regressions | Three new cases in `LocalExclusionDocumentationTests`; the identifier comparison fails when `leaf.zizmor` is removed from the transcribed table |
 | Post-change full gate | `run-ci-gate.py --profile full` exit 0 at `4c02e73fa` on a clean tree |
 | Post-change unit suite | `unittest discover -s tests -p 'test_*.py'` 1192 tests OK with 11 skips, exit 0 |
