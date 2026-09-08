@@ -644,7 +644,6 @@ files:
   mutation: check-write
   consumers:
   - .github/workflow-contract.yml
-  - .github/workflows/tech-stack-version-sync.yml
   disposition: retain
   successor: null
   tests:

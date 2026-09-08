@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -330,39 +331,58 @@ class TechStackVersionContractTests(unittest.TestCase):
         self.assertEqual(1, len(hardening))
         self.assertEqual("repository-integrity", hardening[0].suite)
 
-    def test_standalone_workflow_and_gate_leaf_run_one_command(self) -> None:
-        """The duplicate execution is deliberate, so it is pinned rather than left to drift.
-
-        `tech-stack-version-sync.yml` and `leaf.local-tech-stack-version-drift`
-        run the same script with the same argument on purpose: the leaf blocks
-        the merge and the workflow narrows the same command to the paths that
-        cause the drift. Two owners of one command drift apart unless something
-        compares them, so this compares them.
-        """
-
+    def test_required_drift_check_runs_once_in_each_public_context(self) -> None:
         document = load_contract_document(ROOT)
+        public = parse_public_gate_contract(document)
+        registry = parse_gate_registry(document, ".github/workflow-contract.yml")
         leaf = next(
             node
             for node in document["gate_nodes"]
             if node["gate_id"] == "leaf.local-tech-stack-version-drift"
         )
-        workflow = yaml.safe_load(
-            (ROOT / ".github/workflows/tech-stack-version-sync.yml").read_text(
-                encoding="utf-8"
-            )
-        )
-        steps = workflow["jobs"]["drift-gate"]["steps"]
-        commands = [step["run"].strip() for step in steps if "run" in step]
-
         self.assertEqual(
-            [f"bash {leaf['entrypoint']} {' '.join(leaf['argv'])}"],
-            commands,
+            ("scripts/operations/sync-tech-stack-versions.sh", ["--check"], "."),
+            (leaf["entrypoint"], leaf["argv"], leaf["cwd"]),
         )
+        for profile, context in (
+            ("changed", ExecutionContext.LOCAL),
+            ("changed", ExecutionContext.PULL_REQUEST),
+            ("full", ExecutionContext.LOCAL),
+            ("full", ExecutionContext.PUSH),
+            ("full", ExecutionContext.WORKFLOW_DISPATCH),
+        ):
+            with self.subTest(profile=profile, context=context):
+                suites = select_public_suites(public, profile, ())
+                plan = build_public_validation_plan(
+                    registry,
+                    public_root_gate_ids(public, suites),
+                    public,
+                    suites,
+                    context,
+                    profile=profile,
+                    root=ROOT,
+                )
+                self.assertEqual(
+                    1,
+                    sum(invocation.gate_id == leaf["gate_id"] for invocation in plan),
+                )
+
+        # Compare executable step commands, not comments or documentation examples.
+        for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
+            with self.subTest(workflow=path.name):
+                workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+                commands = [
+                    shlex.split(line, comments=True)
+                    for job in workflow["jobs"].values()
+                    for step in job["steps"]
+                    for line in step.get("run", "").splitlines()
+                ]
+                self.assertNotIn(["bash", leaf["entrypoint"], *leaf["argv"]], commands)
 
     def test_the_required_gate_reaches_the_drift_leaf_on_every_pull_request(
         self,
     ) -> None:
-        """The workflow is a second signal only while the leaf is the first one."""
+        """Every PR reaches the drift leaf, even without a matching path rule."""
 
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)

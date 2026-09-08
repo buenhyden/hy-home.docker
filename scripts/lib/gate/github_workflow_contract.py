@@ -201,13 +201,6 @@ _WORKFLOW_PERMISSION_BASELINES: Final = (
             ),
         ),
     ),
-    (
-        ".github/workflows/tech-stack-version-sync.yml",
-        _WorkflowPermissionBaseline(
-            top_level=_CONTENTS_READ,
-            jobs=(("drift-gate", _CONTENTS_READ),),
-        ),
-    ),
 )
 _ACTION_REGISTRY_BASELINE: Final = (
     (

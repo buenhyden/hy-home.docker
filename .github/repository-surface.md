@@ -66,7 +66,6 @@ authority. It owns no policy of its own.
 - [Pull request labeler workflow](./workflows/pr-labeler.yml)
 - [Stale-thread workflow](./workflows/stale.yml)
 - [Release changelog workflow](./workflows/generate-changelog.yml)
-- [Tech-stack version sync workflow](./workflows/tech-stack-version-sync.yml)
 - [Code ownership](./CODEOWNERS)
 - [Pull request template](./PULL_REQUEST_TEMPLATE.md)
 - [Label routing](./labeler.yml)

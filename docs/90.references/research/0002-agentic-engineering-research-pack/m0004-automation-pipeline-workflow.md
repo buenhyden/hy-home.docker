@@ -1,10 +1,10 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.1.1"
+version: "1.1.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
@@ -17,7 +17,7 @@ review_cycle: "on-source-change"
 
 # Reference: Automation Pipeline and Workflow Topology
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+Current routing (2026-09-08): [canonical agent governance](../../../../.agents/README.md) and
 [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
 Earlier Stage 00 paths, inventories, provider projections, and check results
 below remain dated observations, not current instructions or new runtime
@@ -28,9 +28,8 @@ original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 
 **Historical baseline notice.** The counts and remote-state conclusion in this
 section describe the named Task 7 and 2026-08-14 observations. They are
-preserved evidence, not current topology. The 2026-09-05 revalidation near the
-end of this member owns the current two-job aggregate CI and remote-protection
-conclusion.
+preserved evidence, not current topology. The current interpretation below
+routes to the workflow contract, protection policy and dated Task evidence.
 
 At Task 7 baseline `c57d33f37843802f7692261c50801f0dd966d7cb`,
 the tracked GitHub automation surface contains 7 workflow files and 23 jobs.
@@ -475,10 +474,25 @@ approved 2026-09-05 `main` protection read-back.
 | Required checks | `strict=true`; both aggregate checks bound to app ID 15368 | Remote-verified on 2026-09-05 | Later control-plane drift possible | authenticated protection read-back |
 | CD/promotion | Sample delivery rehearsal and rollback contracts exist | Defined, Configured rehearsal | No named live target, tag, or release | separate deployment Spec and acceptance |
 
-Recommendation: keep CI and CD as separate control planes. A future mismatch
-routes through the exact 12-check rollback recorded in the protection document.
+That checkpoint's recommendation to restore twelve retired checks is withdrawn.
+Current recovery follows the approved field-level procedure below.
 Official basis:
 [GitHub ruleset checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+
+### Current interpretation (2026-09-08)
+
+The [workflow contract](../../../../.github/workflow-contract.yml) retains two
+quality jobs. The [protection policy](../../../../.github/rulesets/main-protection.md)
+names only `validation-changed` as the PR required status; `validation-full`
+provides independent push/manual evidence. The standalone tech-stack drift job
+is removed locally because the required drift leaf already covers every PR.
+This local definition change is not evidence of a hosted run.
+
+Use a fresh authenticated read-back and separately approved field-level changes
+for protection recovery. Do not restore obsolete check lists from this member.
+[Task 0006](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
+owns the actual current remote observations and local verification. The dated
+inventories and 2026-09-05 result above remain historical observations.
 
 ## Maintenance
 

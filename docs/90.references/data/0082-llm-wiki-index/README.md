@@ -970,7 +970,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.github/workflows/greetings.yml](../../../../.github/workflows/greetings.yml) | YAML config |
 | [.github/workflows/pr-labeler.yml](../../../../.github/workflows/pr-labeler.yml) | YAML config |
 | [.github/workflows/stale.yml](../../../../.github/workflows/stale.yml) | YAML config |
-| [.github/workflows/tech-stack-version-sync.yml](../../../../.github/workflows/tech-stack-version-sync.yml) | YAML config |
 
 ### Secret-handling policy
 

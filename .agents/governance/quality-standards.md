@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 ---
 
 # Agent Quality and Security Standards
@@ -170,10 +170,10 @@ unexecuted checks explicitly; neither absence nor a skipped check is a PASS.
 
 The local runner validates `.github/workflow-contract.yml` and the registered
 workflow definitions through
-`scripts/validation/check-github-workflow-contract.py`. It lists
-`tech-stack-version-sync.yml` as non-gating remote automation, never runs real
-pre-commit through the CI-only entry point, and exercises that wrapper only
-with the fake-binary regression.
+`scripts/validation/check-github-workflow-contract.py`. The required
+`leaf.local-tech-stack-version-drift` owns version drift detection in every
+public context. Local QA never runs real pre-commit through the CI-only entry
+point and exercises that wrapper only with the fake-binary regression.
 
 ### Gate and Fixture Ownership
 

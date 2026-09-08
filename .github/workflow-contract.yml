@@ -160,38 +160,6 @@
           "timeout_minutes": 10
         }
       }
-    },
-    ".github/workflows/tech-stack-version-sync.yml": {
-      "name": "Tech-Stack Version Sync",
-      "classification": "non-gating",
-      "triggers": {
-        "pull_request": {
-          "branches": [
-            "main"
-          ],
-          "paths": [
-            "docker-compose.yml",
-            "infra/**/docker-compose*.yml",
-            "infra/tech-stack.versions.json"
-          ]
-        }
-      },
-      "permissions": {
-        "contents": "read"
-      },
-      "concurrency": {
-        "group": "tech-stack-version-sync-${{ github.ref }}",
-        "cancel-in-progress": true
-      },
-      "jobs": {
-        "drift-gate": {
-          "permissions": {
-            "contents": "read"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        }
-      }
     }
   },
   "gate_nodes": [
@@ -1561,8 +1529,7 @@
       "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/ci-quality.yml",
-        ".github/workflows/generate-changelog.yml",
-        ".github/workflows/tech-stack-version-sync.yml"
+        ".github/workflows/generate-changelog.yml"
       ],
       "security_disposition": "approved-node24"
     },

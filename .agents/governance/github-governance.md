@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 ---
 
 # GitHub Governance Policy
@@ -144,23 +144,28 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ## 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` defines exactly two required quality jobs:
+`ci-quality.yml` defines two quality jobs:
 `validation-changed` for pull requests and `validation-full` for push/manual
 events. `.github/workflow-contract.yml` owns the six-suite composition,
 changed-path impact rules, gate DAG, admitted environment keys, and direct
-external Actions. Each required job contains one static public profile command;
+external Actions. Each quality job contains one static public profile command;
 the focused checker retains trigger, permission, timeout, Action, and
 workflow-shape checks.
 Archive/tombstone, metadata, lifecycle, runtime-version, and repository-contract
 checks remain atomic leaves behind the two public profiles. Their composition is
-owned by `.github/workflow-contract.yml`; none is a separate required GitHub job.
+owned by `.github/workflow-contract.yml`; none is a separate required GitHub status context.
 
-### Required Quality Gates
+### Quality Jobs and Required Status
 
 | Job ID | Public profile | Event |
 | :--- | :--- | :--- |
 | `validation-changed` | `changed` | pull request |
 | `validation-full` | `full` | push or manual dispatch |
+
+Only `validation-changed` is the desired PR required status context. The
+protection record owns that list; a quality job is not automatically a required
+status check. Push/manual `validation-full` provides independent validation of
+its own event and revision, not pre-merge enforcement.
 
 `zizmor` is intentionally GitHub-only because its gate uploads SARIF with
 GitHub security permissions. Do not duplicate it inside the local pre-commit
@@ -174,12 +179,11 @@ runner.
 | `stale.yml`              | manage stale issues and PRs |
 | `pr-labeler.yml`         | apply PR labels            |
 | `generate-changelog.yml` | generate release changelog |
-| `tech-stack-version-sync.yml` | give a path-scoped early signal for curated version-registry drift; the required gate leaf `leaf.local-tech-stack-version-drift` runs the same command on every pull request, so this workflow is a second signal and never the sole owner |
 
 Agent all-files execution remains limited to the separately approved controlled
 wrapper; neither required profile grants Agent authorization.
 
-**Coupling constraint:** when adding, removing, or renaming a required job,
+**Coupling constraint:** when changing quality jobs or required status identity,
 update all three tracked surfaces together:
 
 1. `.github/workflow-contract.yml`

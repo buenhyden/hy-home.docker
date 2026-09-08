@@ -61,35 +61,39 @@ registered root DAG exactly once through static typed-gate invocations.
 
 - `validation-changed`
 
-`validation-full` is deliberately not required. `ci-quality.yml` gates the two
-jobs on mutually exclusive events, so `validation-full` reports `skipping` on
-every pull request and GitHub counts a skipped required context as unsatisfied.
-Requiring it made every pull request permanently unmergeable. It still runs and
-still blocks on pushes to `main`, which is the event it was written for.
+`validation-full` runs after main pushes and on manual dispatch. It is not a PR
+pre-merge gate; a failure after a push detects a problem in the pushed revision
+and cannot retroactively prevent that merge.
 
-The checks were bound to GitHub Actions app ID 15368 in the 2026-09-05
-read-back. `strict=true` remains required.
+GitHub treats a job skipped by a job-level condition as successful for required
+checks. A whole workflow skipped by path/branch filters or a commit-message
+instruction can leave its expected checks pending. A dependent aggregate also
+needs explicit failure propagation: a skipped dependent job alone must not hide
+a failed prerequisite. See the
+[official required-check troubleshooting guide](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
+
+A past merge blockage cannot be attributed to a skipped job without the actual
+check-run, PR head or test-merge SHA, expected source app, and contemporaneous
+protection configuration. The current required context is bound to GitHub
+Actions app ID 15368 with `strict=true`; current dated read-back belongs in the
+active Task, separately from the observations above.
 
 ## Rollback State
 
-If a later authenticated read-back does not match the two aggregate checks,
-restore the exact pre-change state captured on 2026-09-05:
+A difference from this desired contract is a prompt to inspect, not permission
+to restore old settings. Obtain a fresh authenticated read-back and bind any
+approved correction to the exact field, before-state, target and recovery.
 
-- `docs-traceability`
-- `repo-contracts`
-- `git-flow-contract`
-- `compose-validation`
-- `compose-all-profiles-validation`
-- `infrastructure-hardening`
-- `template-security-baseline`
-- `quickwin-baseline`
-- `pre-commit`
-- `zizmor`
-- `frontend-quality`
-- `storybook-coverage`
+For required checks, the current desired state is `validation-changed` alone,
+`strict=true`, app ID 15368. Do not restore the retired individual-check list or
+a previous two-context list from historical prose. Those contexts may no longer
+be produced on the required event or revision. Other protection fields require
+their own approved before-state and must not be reset incidentally.
 
-Keep `strict=true`. Bind every restored context to app ID 15368 except
-`frontend-quality`, whose captured before-state was unbound.
+If reverting a future approved change, use that change's captured before-state
+only after confirming its checks are still produced by the matching workflow
+and event. Verify the resulting setting with authenticated read-back and record
+it in the current Task. Local Git recovery restores tracked definitions only.
 
 ## Application Boundary
 
@@ -99,6 +103,6 @@ be performed through GitHub UI or an audited `gh api` command, then re-check:
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`
 
-The 2026-09-05 read-back is point-in-time evidence, not a perpetual guarantee.
+Every dated read-back is point-in-time evidence, not a perpetual guarantee.
 Any later claim of remote enforcement requires a new authenticated read-back;
 tracked workflow or policy files alone prove only repository configuration.

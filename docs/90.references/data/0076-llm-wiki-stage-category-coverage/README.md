@@ -43,7 +43,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 
 ## Inventory
 
-- Safe tracked source paths: `1036`
+- Safe tracked source paths: `1035`
 - Source buckets: `17`
 - LLM Wiki categories: `12`
 - Path roles: `7`
@@ -55,7 +55,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | `.agents` | 107 | [.agents/README.md](../../../../.agents/README.md)<br>[.agents/governance/agentic.md](../../../../.agents/governance/agentic.md)<br>[.agents/governance/approval-boundaries.md](../../../../.agents/governance/approval-boundaries.md) |
 | `.claude` | 49 | [.claude/CLAUDE.md](../../../../.claude/CLAUDE.md)<br>[.claude/README.md](../../../../.claude/README.md)<br>[.claude/agents/ci-cd-engineer.md](../../../../.claude/agents/ci-cd-engineer.md) |
 | `.codex` | 17 | [.codex/README.md](../../../../.codex/README.md)<br>[.codex/agents/ci-cd-engineer.toml](../../../../.codex/agents/ci-cd-engineer.toml)<br>[.codex/agents/code-reviewer.toml](../../../../.codex/agents/code-reviewer.toml) |
-| `.github` | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
+| `.github` | 15 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | `docs/01.requirements` | 18 | [docs/01.requirements/0001-gateway.md](../../../01.requirements/0001-gateway.md)<br>[docs/01.requirements/0002-auth.md](../../../01.requirements/0002-auth.md)<br>[docs/01.requirements/0003-security.md](../../../01.requirements/0003-security.md) |
 | `docs/02.architecture` | 56 | [docs/02.architecture/README.md](../../../02.architecture/README.md)<br>[docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)<br>[docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md](../../../02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md) |
 | `docs/03.specs` | 12 | [docs/03.specs/0173-governance-qa-surface-convergence/plan.md](../../../03.specs/0173-governance-qa-surface-convergence/plan.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/spec.md](../../../03.specs/0173-governance-qa-surface-convergence/spec.md)<br>[docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md) |
@@ -83,7 +83,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | Reference and template docs | 104 | [docs/90.references/README.md](../../README.md)<br>[docs/90.references/audits/0019-readme/README.md](../../audits/0019-readme/README.md)<br>[docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md](../../audits/0020-agent-instructions-catalog-vibe-models/README.md) |
 | Infrastructure source | 245 | [infra/01-gateway/README.md](../../../../infra/01-gateway/README.md)<br>[infra/01-gateway/nginx/README.md](../../../../infra/01-gateway/nginx/README.md)<br>[infra/01-gateway/nginx/config/nginx.conf](../../../../infra/01-gateway/nginx/config/nginx.conf) |
 | Scripts and validators | 34 | [evals/README.md](../../../../evals/README.md)<br>[evals/run-agent-output-eval-fixtures.sh](../../../../evals/run-agent-output-eval-fixtures.sh)<br>[scripts/README.md](../../../../scripts/README.md) |
-| GitHub workflow surface | 16 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
+| GitHub workflow surface | 15 | [.github/CODEOWNERS](../../../../.github/CODEOWNERS)<br>[.github/ISSUE_TEMPLATE/bug_report.yml](../../../../.github/ISSUE_TEMPLATE/bug_report.yml)<br>[.github/ISSUE_TEMPLATE/feature_request.yml](../../../../.github/ISSUE_TEMPLATE/feature_request.yml) |
 | Secret-handling policy | 1 | [secrets/README.md](../../../../secrets/README.md) |
 | Other tracked source | 160 | [docs/98.archive/README.md](../../../98.archive/README.md)<br>[docs/98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md](../../../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md)<br>[docs/98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md](../../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) |
 
@@ -93,7 +93,7 @@ This package is generated from the same safe tracked candidate set as DATA-0082.
 | --- | ---: |
 | JSON registry | 77 |
 | Markdown reference | 584 |
-| YAML config | 123 |
+| YAML config | 122 |
 | folder index | 173 |
 | script | 47 |
 | source path | 28 |

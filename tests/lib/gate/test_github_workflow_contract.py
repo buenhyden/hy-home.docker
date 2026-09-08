@@ -1105,9 +1105,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "path-widening",
-                ".github/workflows/tech-stack-version-sync.yml",
-                "      - 'infra/tech-stack.versions.json'\n",
-                "      - 'infra/tech-stack.versions.json'\n      - '.github/**'\n",
+                ".github/workflows/ci-quality.yml",
+                "    branches: [main]\n",
+                "    branches: [main]\n    paths: ['.github/**']\n",
                 "workflow-trigger-mismatch",
             ),
             (
@@ -1147,8 +1147,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "duplicate-job-identity",
-                ".github/workflows/tech-stack-version-sync.yml",
-                "jobs:\n  drift-gate:\n",
+                ".github/workflows/stale.yml",
+                "jobs:\n  stale:\n",
                 (
                     "jobs:\n"
                     "  validation-changed:\n"
@@ -1157,7 +1157,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "    runs-on: ubuntu-latest\n"
                     "    timeout-minutes: 5\n"
                     "    steps: []\n"
-                    "  drift-gate:\n"
+                    "  stale:\n"
                 ),
                 "workflow-job-identity-duplicate",
             ),
@@ -2047,10 +2047,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     }
                 },
             ),
-            ".github/workflows/tech-stack-version-sync.yml": (
-                {"contents": "read"},
-                {"drift-gate": {"contents": "read"}},
-            ),
         }
         contract = {
             workflow.path: workflow
@@ -2226,22 +2222,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "          actions: write\n"
                 ),
             ),
-            (
-                "tech-stack-version-sync",
-                ".github/workflows/tech-stack-version-sync.yml",
-                ("  drift-gate:\n    permissions:\n      contents: read\n"),
-                (
-                    "  drift-gate:\n"
-                    "    permissions:\n"
-                    "      contents: read\n"
-                    "      pull-requests: write\n"
-                ),
-                ("      drift-gate:\n        permissions: {contents: read}\n"),
-                (
-                    "      drift-gate:\n"
-                    "        permissions: {contents: read, pull-requests: write}\n"
-                ),
-            ),
         )
 
         for (
@@ -2266,10 +2246,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "greetings": ("issue-greeting", "pull-requests"),
                     "pr-labeler": ("triage", "issues"),
                     "stale": ("stale", "actions"),
-                    "tech-stack-version-sync": (
-                        "drift-gate",
-                        "pull-requests",
-                    ),
                 }[label]
                 job = document["workflows"][relative]["jobs"][job_id]
                 if job["permissions"] is None:
