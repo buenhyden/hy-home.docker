@@ -48,17 +48,28 @@ elsewhere.
 
 ## Work Log
 
-### Option A committed implementation and final QA (2026-09-09)
+### Option A verified local completion (2026-09-09)
 
 The renewed user selection authorizes option A only. W12-W14 are committed
 with independent review and normal Git hooks; the Commit Ledger identifies
-their exact SHAs. W15 owns this evidence update and the pending clean-checkout
-full/all-files verification. Local final verification is not yet complete.
+their exact SHAs. W15 full and approved all-files QA both passed at the same
+clean committed target. Local implementation and verification are PASS. This
+final Task-only receipt follows independent review and normal commit hooks;
+its own commit SHA belongs to the final Git read-back. No code, contract or
+generated output changed after the final QA target.
 Keep `codex/qa-followup-a` and both task-owned linked checkouts; primary main
 remains clean at `d633c443`. No integration, push, PR, dispatch, remote settings,
 service operation, secret access or global configuration change is authorized
 by this option. Broader option B and terminal package disposition remain
 outside this local follow-up. Spec/Plan/Task lifecycle statuses stay unchanged.
+
+Installed Superpowers6.3.0 finishing-a-development-branch was read and applied
+after committed verification. The actual linked-worktree/base relationship
+was rechecked and the user's existing Keep-the-branch disposition selects
+Option 3: Keep as-is. No repeated integration menu, merge, push or cleanup is
+needed or performed. The normal verification-before-completion procedure was
+also applied; it did not replace the repository's public QA entrypoint or
+require repeating an unchanged check solely for reporting.
 
 ### Approved option A implementation (2026-09-08)
 
@@ -1476,6 +1487,41 @@ in-progress.
 
 ## Verification Evidence
 
+### Option A committed final QA (2026-09-09)
+
+Target `6c271de21174580740574e145ebb208a13de68b8`, clean linked delivery
+`/home/hy/projects/hy-home.docker/.worktrees/qa-followup-a-review`, local WSL2
+host with PID1 systemd. PATH is `/tmp/hy-qa-followup-a-tools/bin:/usr/bin:/bin`,
+`PYTHONPATH=.`, `PYTHONDONTWRITEBYTECODE=1`. The controller verified LOCAL
+context, absent `.env`, clean index/worktree and unchanged HEAD.
+
+| Command / scope | Exit | Result |
+| --- | --- | --- |
+| `python3 scripts/validation/run-ci-gate.py --profile full` | 0 | PASS,475.086s; clean afterwards; all six public suites,43 planned local invocations |
+| `bash scripts/validation/run-agent-precommit-all-files.sh --task docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md`, with one `--allow-prefix` per exact reviewed path below | 0 | PASS,42.573s; hook_exit0, snapshot passed; before/after/changed/unexpected counts all0 |
+
+The 18 exact allow-prefix arguments are the path set from
+`git diff --name-only d633c443006de06ebdf3329d7094c2d055cc7e36 6c271de21174580740574e145ebb208a13de68b8`.
+The controller compared the NUL-delimited argument source with that immutable
+diff before execution; all paths belong to the independently reviewed W12-W15
+units. No broad folder prefix, unreviewed path or alternative Task was used.
+The wrapper ran repository-pinned pre-commit4.6.1 and reported no first failure
+or mutations. Both commands ended at the same HEAD with an empty index and
+worktree. Their timings are observed costs, not a before/after speedup claim.
+
+The full run included registered Python, shell-wrapper and eval fixture paths,
+not an assertion that unittest discovery covers every project. Observed
+document-contract tests361 and operations/supply-chain tests237 passed; eval
+catalog fixtures10 and semantic regressions14 matched; registered Wiki,
+audit/security/supply-chain/provider outputs were fresh. Eleven pre-existing
+inactive semantic-parser tests in `test_github_workflow_contract.py` remained
+NOT_RUN/skipped with their declared Wave A/Wave C reason. That file is unchanged
+from baseline; no skip was introduced or removed for this work. CI-wrapper
+denials were expected negative-test results, not a spoofed hosted execution.
+The CI-only frontend/build/audit leaves, new hosted runs, live native/provider/
+model execution and production delivery remain NOT_RUN. No new blanket
+unittest-discovery, package-local frontend or live E2E completion is claimed.
+
 ### Option A implementation checks (2026-09-09)
 
 Focused implementation checks used task-owned working-tree inputs in linked
@@ -2013,7 +2059,7 @@ NOT_RUN observations are not converted into live PASS evidence.
 | 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
 | 22 | W13 | PASS: prepared tool priority, explicit-only helper use, repeat stability and missing-tool behavior; independent code review approved. | [Post-tool hook](../../../../scripts/hooks/post-tool-validate.sh) |
 | 23 | W14 | PASS: generator reuses the same validated pack once per invocation; distinct override and existing negative paths remain checked. | [Semantic validator](../../../../scripts/validation/check-agentic-audit-semantic-freshness.py) |
-| 24 | W12/W14/W15 | PASS for corrected owner/event/path guidance and regenerated output; remote observations stay bound to baseline SHA/event. Final integrated QA receipts remain separate below. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 24 | W12/W14/W15 | PASS: corrected owner/event/path guidance and generated output; committed full/all-files receipts above; remote observations remain baseline-SHA/event evidence only. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 
 ### Why all six Tasks read `in-progress` (2026-09-07, local-executed)
 
@@ -2055,6 +2101,16 @@ were restored to `in-progress` immediately after the test, and
 ## Review Evidence
 
 ### Option A exact-diff reviews (2026-09-09)
+
+Independent rules-engineer `a_policy_review` reviewed the final Task-only receipt candidate against committed target `6c271de21174580740574e145ebb208a13de68b8` and returned Specification PASS / Quality APPROVED with zero findings. Exact candidate patch SHA-256 `336644cd830b39d7ea8a4576e4d1966dff6ec34d071d597668d98a6403c8141e` matched both isolated and delivery Task diffs; the review verified the existing QA JSON binding, exact 18-path scope, and current option A branch/worktree preservation without rerunning full/all-files. The final corrections replaced stale current Deferred Items integration/cleanup language while preserving historical receipts. This later review-receipt paragraph intentionally lies outside that candidate hash and adds no execution or authorization claim.
+
+Independent rules-engineer `a_policy_review` approved the Task v3 evidence
+commit: Specification PASS / Quality APPROVED, zero findings, exact diff
+SHA-256 `84eed9ae59d02842879784924c90f89e2b9153edcace920bd1d794a3362a7c65`.
+Review corrections expanded commit IDs to full SHAs and separated delivery,
+isolated plan-only, and staged-hook snapshot observations. It verified the
+commit chain and 7/5/5 path scopes; earlier test/hook/remote results remained
+source-attributed receipts rather than independently repeated executions.
 
 Independent Python reviewer `a_w13_review` separately approved W14 Specification
 PASS / Quality APPROVED, zero findings, on exact five-file diff SHA-256
@@ -2232,6 +2288,7 @@ Option A local task-owned commits (2026-09-09):
 | `6bd86e57717db2dd022bb0b6926445d09285bf6a` | W12 plus Spec/Plan, seven reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration verified |
 | `1e37e3b636b4bf243e14e46acc0347ec604aba3a` | W13 hook/helper/README/manifest/regression, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed |
 | `4c2c0b2dc9a4990bbf1138e28e1a471ceab66781` | W14 validator/generator/tests/generated output, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed; timed commit including hooks424.16s |
+| `6c271de21174580740574e145ebb208a13de68b8` | W15 Task evidence, one reviewed path; public changed and commit-msg PASS, exit0; clean linked checkout after commit; timed commit including hooks347.87s |
 
 Current convergence commits (2026-09-08), all local and task-owned:
 
@@ -2323,10 +2380,11 @@ No completed archive packet or new Spec/Plan/Task was created.
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
   this follow-up corrects the active Spec/Plan references.
 - Push, pull request, hosted execution, branch-protection mutation, deployment,
-  tag and release remain outside the current local-integration authorization.
-  The latest user instruction permits local main integration after completion
-  and then exact branch/worktree cleanup. Earlier keep/cleanup instructions
-  retain only their dated scope; the newest Work Log owns this disposition.
+  tag, release, local main integration and branch/worktree cleanup remain
+  outside the current option A authorization. The current disposition is
+  Option 3: keep `codex/qa-followup-a` and both task-owned linked checkouts as-is.
+  Earlier integration, keep and cleanup instructions retain only their dated
+  scope; the newest Work Log owns this disposition.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.
@@ -2341,15 +2399,18 @@ No completed archive packet or new Spec/Plan/Task was created.
   volume readiness.
 - Native Codex startup remains BLOCKED at the recorded private/global-state
   boundary. Discovery, skill calls, live hook delivery, enforcement and model
-  entitlement remain NOT_RUN/unverified. Neither blocks this local integration;
+  entitlement remain NOT_RUN/unverified. Neither blocks option A's completed
+  local implementation and verification;
   runtime claims require their own evidence. No auth/global-state access, trust
   change or model call is authorized.
-- The controlled all-files item has actual clean `6dbf23413` and subsequent
-  `d8a96ad4c`/pre-commit4.6.1 PASS receipts, both exit0 with no source changes.
-  The 34-case wrapper regression remains separate evidence. Main integration
-  is observed at d8a96ad4c; final receipt integration and exact cleanup follow
-  the newest Work Log conditions. No user-global installation or setting
-  changed; new hosted/native execution and package promotion remain deferred.
+- The controlled all-files item retains the prior clean `6dbf23413` and
+  `d8a96ad4c`/pre-commit4.6.1 PASS receipts, while current option A has separate
+  clean full/all-files PASS receipts at
+  `6c271de21174580740574e145ebb208a13de68b8` above. The 34-case wrapper regression
+  remains separate evidence. Main integration at `d8a96ad4c` is historical
+  only; this follow-up keeps the branch and worktrees and authorizes no
+  integration or cleanup. No user-global installation or setting changed;
+  new hosted/native execution and package promotion remain deferred.
 
 ## Related Documents
 
