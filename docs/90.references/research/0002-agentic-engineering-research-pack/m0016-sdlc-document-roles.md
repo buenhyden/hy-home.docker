@@ -329,7 +329,7 @@ and, where it matters more, what it does not.
 | [Task template](../../../99.templates/templates/specs/task.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming Verification/Review/Commit-Ledger/Deferred sections absent from the Plan template.  |
 | [Plan template](../../../99.templates/templates/specs/plan.template.md)                                                         | 2026-08-14 | Workspace tracked            | Direct read confirming "Verification Plan" (prospective) versus Task's "Verification Evidence" (observed). |
 | Spec-contracts templates (retired path: `../../../99.templates/templates/spec-contracts/`)                                                    | 2026-08-14 | Workspace tracked            | Directory listing confirming eight registered focused-contract template files.                             |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
+| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
 
 ## Architecture Practice Delta Claims
 

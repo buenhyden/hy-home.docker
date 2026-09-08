@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -130,6 +130,31 @@ validator reads the directory, and the health reporter already read the
 untracked `manifest.json`. The three documents that described the tracked
 arrangement now describe this one.
 
+A fifth round is the first with hosted evidence, and it found what no local run
+could. Pull request #146 ran `validation-changed` twice and failed both times on
+seventeen `missing-link-target` findings, while the same `check-document-links.py
+--mode all` reported zero failures locally. The checker resolves a target against
+the filesystem, so the seventeen research modules linking to
+`graphify-out/GRAPH_REPORT.md` still resolved on a working copy where that
+untracked file sits on disk and resolved nowhere on a fresh checkout. Untracking
+the directory is what exposed it; the links had been pointing at a tracked file
+until then.
+
+The repository owner merged #146 at 00:20:12Z from `a00f0bb46`, a merge of `main`
+into the branch whose branch parent is `6603ef8fc`. The link repair was pushed to
+the branch after that merge was cut, so it is not in the merged result: `main` at
+`b5293a067` carries the untracking and the seventeen broken links together. This
+Task did not merge and did not choose to merge past a failing required check;
+`enforce_admins` is false, which is what makes that possible.
+
+Two independent breaks were then measured on `main`. The seventeen links are the
+first. The second is unrelated to this package: three Dependabot pull requests
+merged compose image bumps for ten components without the curated registry, so
+`sync-tech-stack-versions.sh --check` exits 1 on `main`. That is the drift gate
+catching real drift, and it is the strongest evidence yet for the earlier
+decision not to weaken it. Both are repaired on a branch cut from the merged
+`main` rather than by touching `main`.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -171,6 +196,14 @@ arrangement now describe this one.
 | Untracked-graph steady state | The post-commit rebuild during `f8ea14c08` left the working tree clean, which the tracked arrangement could not do |
 | Round-3 local verification | `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1194 tests OK with 11 skips at `f8ea14c08` |
 | Pull-request identity dry run | `_check_git_flow` accepts the branch `fix/0173-hook-formatting-ownership` with the planned Conventional-Commit title and rejects a non-conforming title, so the pull-request-only leaf was exercised before pushing |
+| Hosted run 1 (34172567197) | `pull_request` at `6603ef8fc`: `validation-changed` FAILED in 1m49s with 17 `missing-link-target` findings; `validation-full` skipped by its `if` condition, as designed for a pull request |
+| Hosted run 2 (34172977726) | `pull_request` at `a00f0bb46`, the owner's merge of `main` into the branch: `validation-changed` FAILED identically with `links=6155`, so it did not contain the repair pushed afterwards |
+| Local versus hosted divergence | `check-document-links.py --mode all` reported `failures=0` locally and 17 missing targets on the runner, because the target existed on disk as untracked output and not in the checkout |
+| Repair and guard | Removing the 17 links moved `links` from 6,155 to 6,138 with `failures=0`; the new `IgnoredLinkTargetTests` fails with the offending document and target when one link is restored |
+| Main breakage measured | At `b5293a067`, `git grep` finds the 17 links and `sync-tech-stack-versions.sh --check` exits 1 for 10 components; `git ls-tree` confirms zero tracked files under `graphify-out/` |
+| Drift repair | The script's own remedy rewrote the registry, the provenance snapshot was regenerated through its generator, and `test_direct_current_docs_use_registry_versions` then required Traefik, Ollama, and Dozzle README citations to follow |
+| Round-5 local verification | On the repair branch at `cca15d647`: `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1195 tests OK with 11 skips |
+| Generated outputs on the repair branch | LLM Wiki, audit matrix, security readiness, supply-chain summary, provider renderer, and tech-stack provenance all report fresh |
 
 ## Review Evidence
 
@@ -194,6 +227,9 @@ validation profiles.
 | `228b7e6a4` | Rebuild the knowledge graph from the current tree as its own generated-artifact unit |
 | `21ed0d434` | Re-observe and rewrite the two audit rows that named a removed hook id, and regenerate the matrix |
 | `f8ea14c08` | Remove every tracked file under `graphify-out/` so its existing ignore rule governs the whole directory |
+| `6603ef8fc` | Record the audit revalidation and the retention change |
+| `7cd7c8ab4` | Stop tracked documents from linking into an ignored path, and add the regression that catches the class |
+| `cca15d647` | Re-point the tech-stack registry to the merged compose tags and carry the three README citations with it |
 
 This evidence checkpoint does not predict its own commit identity.
 
@@ -212,6 +248,19 @@ This evidence checkpoint does not predict its own commit identity.
   cover, and a registered test compares the claim against a built plan.
 
 ## Deferred Items
+
+- `main` at `b5293a067` carries seventeen broken links and a ten-component
+  registry drift. Both are repaired on `fix/0173-ignored-link-targets`, cut from
+  that commit, and reaching `main` needs a merge this Task does not perform.
+- Pull request #146 was merged while its required `validation-changed` check was
+  failing. Whether to require administrators to pass required checks is a remote
+  control-plane decision recorded in `.github/rulesets/main-protection.md`, and
+  changing `enforce_admins` needs owner approval and a new read-back.
+- The hosted runs surfaced two checks no tracked file declares: CodeQL default
+  setup, which contributes `Analyze (actions)`, `Analyze (javascript-typescript)`
+  and `Analyze (python)`, and a GitGuardian app check. `.github/workflow-contract.yml`
+  knows six workflows and neither of these, so the tracked surface does not
+  describe everything a pull request runs.
 
 - Historical Git blobs and immutable archive evidence are not rewritten.
 - New general-purpose script frameworks are outside the bounded convergence

@@ -337,7 +337,7 @@ and, where it matters more, what it does not.
 | Common document contract (retired path: `../../../99.templates/support/common-document-contract.md`)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
 | Archive and retention contract (retired path: `../../../99.templates/support/archive-retention-contract.md`)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
 | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
+| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
 
 ## Scope Application
 

@@ -409,7 +409,7 @@ Gemini event-count note above).
 | [`scripts/hooks/post-tool-validate.sh`](../../../../scripts/hooks/post-tool-validate.sh) | Workspace tracked | Read 2026-08-14: path-triggered check matrix, optional-tool behavior. |
 | `.gemini/settings.json` (retired path: `.gemini/settings.json`, absent; Stage 00 supports Claude and Codex only) + [adapter](../../../../scripts/hooks/agent-event-hook.sh) | Workspace tracked | Read 2026-08-14: 7 native events, `modelConfigs.overrides`, translation logic. |
 | Hookify catalog (`docs/00.agent-governance/rules/hooks/hookify.*.md`) | Workspace tracked | Counted 2026-08-14: 19 files, 7 block/12 warn; no runtime binding found. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Workspace tracked, stale | Read first; built from `f8a72211`; no uncorroborated claim retained. |
+| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | Workspace tracked, stale | Read first; built from `f8a72211`; no uncorroborated claim retained. |
 
 ## Scope Application
 

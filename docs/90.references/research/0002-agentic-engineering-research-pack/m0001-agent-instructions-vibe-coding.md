@@ -302,7 +302,7 @@ do not establish that this repository loaded either file in a live session.
 | [Task checklists](../../../../.agents/governance/task-checklists.md) | 2026-08-14 | Workspace tracked | Re-read: pre-task ambiguity-blocking rule, in-task loop-bound rule, completion evidence duties. |
 | [Environment constraints](../../../../.agents/governance/environment-constraints.md) | 2026-08-14 | Workspace tracked | Read: "most-specific in-scope instruction file wins" and "system/developer/direct user instructions always override repository instruction files." |
 | Root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) | 2026-08-14 | Workspace tracked | Read directly: exact line counts and `@`-import vs. prose-instruction loading mechanism per file. |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; corroborated against tracked sources and not used as current proof. |
+| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | 2026-08-08 | Workspace stale/advisory | Built from `f8a72211`; corroborated against tracked sources and not used as current proof. |
 
 ## Scope Application
 

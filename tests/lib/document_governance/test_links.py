@@ -4,7 +4,9 @@ import ast
 import dataclasses
 import importlib.util
 import io
+import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -421,6 +423,76 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 )
             }
         self.assertIn("consumers-invalid", codes)
+
+
+class IgnoredLinkTargetTests(unittest.TestCase):
+    """A tracked document may not link into a path Git ignores.
+
+    The link checker resolves a target against the filesystem, so an ignored
+    directory that exists on the contributor's disk satisfies it while a fresh
+    CI checkout has nothing there. That gap is not hypothetical: untracking
+    `graphify-out/` left seventeen tracked research modules linking to a report
+    that only existed locally, and the local run reported zero failures while
+    the hosted run failed. Resolving against Git rather than the disk is what
+    closes it.
+    """
+
+    LINK = re.compile(r"\]\(\s*(?P<target>[^)\s]+)")
+
+    @staticmethod
+    def _tracked_markdown() -> tuple[str, ...]:
+        completed = subprocess.run(
+            ["git", "ls-files", "-z", "--", "*.md"],
+            cwd=ROOT,
+            capture_output=True,
+            check=True,
+        )
+        return tuple(
+            item for item in completed.stdout.decode("utf-8").split("\0") if item
+        )
+
+    def _relative_targets(self) -> dict[str, set[str]]:
+        """Map each repository-relative link target to the documents using it."""
+
+        targets: dict[str, set[str]] = {}
+        for relative in self._tracked_markdown():
+            document = pathlib.PurePosixPath(relative)
+            body = (ROOT / relative).read_text(encoding="utf-8", errors="replace")
+            for match in self.LINK.finditer(body):
+                target = match.group("target").split("#", 1)[0]
+                if not target or ":" in target or target.startswith("/"):
+                    continue
+                resolved = os.path.normpath(
+                    (document.parent / target).as_posix()
+                ).replace(os.sep, "/")
+                if resolved.startswith(".."):
+                    continue
+                targets.setdefault(resolved, set()).add(relative)
+        return targets
+
+    def test_no_tracked_document_links_to_an_ignored_path(self) -> None:
+        targets = self._relative_targets()
+        self.assertTrue(targets, "no tracked Markdown links were parsed")
+
+        completed = subprocess.run(
+            ["git", "check-ignore", "--stdin", "-z"],
+            cwd=ROOT,
+            input="\0".join(sorted(targets)).encode("utf-8"),
+            capture_output=True,
+            check=False,
+        )
+        # check-ignore exits 0 when something matched and 1 when nothing did.
+        self.assertIn(completed.returncode, (0, 1), completed.stderr.decode("utf-8"))
+        ignored = {
+            item for item in completed.stdout.decode("utf-8").split("\0") if item
+        }
+
+        offenders = sorted(
+            f"{document} -> {target}"
+            for target in ignored
+            for document in targets[target]
+        )
+        self.assertEqual([], offenders)
 
 
 class DocumentGraphTests(unittest.TestCase):
