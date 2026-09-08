@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.6.0"
+version: "0.6.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,46 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W16 local integration and cleanup authorization (2026-09-09)
+
+The user explicitly requested merging the development branch/worktrees into
+local main and cleaning them up. This supersedes the W16 planning checkpoint's
+keep disposition below. The authorized target is `codex/qa-convergence-design`
+with delivery worktree `.worktrees/qa-convergence-design` and the controller-owned
+review worktree `.worktrees/qa-convergence-design-review`. W17-W21 remain NOT_RUN
+and unapproved for implementation; operations execution planning remains on hold.
+No remote write, service operation, private-state access or package closure is
+included. Historical approval and review receipts retain their original scope.
+
+Before integration, local main and the stored origin/main ref both resolve to
+`541854af0c93fc30b38b03dbcdbe03da357f9186`; the clean delivery branch is one commit
+ahead at `9153c055fb8a26afd2da474e2f228819dfc864b5`. No fresh fetch, hosted run or
+remote protection observation is claimed. The completed planning commit and
+normal-hook results are recorded in Verification Evidence and Commit Ledger.
+
+Root authors only the existing three-document disposition receipt. After its
+independent read-only review and normal-hook commit, integrate with `git merge
+--ff-only codex/qa-convergence-design`. Verify the resulting main tree using the
+identical committed snapshot in the `.env`-free linked checkout, then remove
+only the two named worktrees and use `git branch -d` for the merged branch.
+The primary checkout and its ignored private state remain untouched by QA.
+A failed check or unexplained new path stops the affected cleanup; no force,
+prune, reset, stash or remote operation is part of this sequence. Final Git
+read-back records actual integration and removal; this entry grants no advance
+PASS for those operations.
+
+Cleanup ownership inspection found only the prior review's three tracked
+Markdown copies. Spec and Plan are byte-identical to `9153c055f`; Task differs
+only by the later v5 review receipt added in that commit, so the reviewed
+content is preserved in delivered history. The review worktree has no ignored
+or untracked files. The delivery worktree contains 95 ignored Python bytecode
+files in 18 `__pycache__` directories under `scripts/` and `tests/`, created by
+this task's QA; all inspected entries are regular `.pyc` files with no symlink
+or unexpected ignored path. Recheck this exact class before ordinary removal.
+After any final review, compare its source bytes with the delivered commit
+before restoring only the three known review paths to detached HEAD. No other
+worker's index or files are included.
 
 ### QA and document follow-up planning (2026-09-09)
 
@@ -1627,6 +1667,42 @@ in-progress.
 
 ## Verification Evidence
 
+### W16 disposition candidate checks (2026-09-09)
+
+Target: base `9153c055fb8a26afd2da474e2f228819dfc864b5` plus the three-document
+disposition diff `6b43fb50a8a1e6e15fbd71e1bfe42abcbae3c8bfb66cec618edab463ed655cf7`.
+Commands ran in the `.env`-free delivery worktree with the prepared Python tool
+environment. These results and the review receipt were appended afterwards;
+normal Git hooks will validate the final staged snapshot including these receipts.
+
+| Command | Exit | Result |
+| --- | --- | --- |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD` | 0 | PASS: selected 3, zero violations, legacy exceptions and transition overrides |
+| `python3 scripts/validation/check-document-links.py --mode all` | 0 | PASS: 713 documents, 6157 links, zero failures |
+| `python3 scripts/knowledge/generate-llm-wiki.py --check` | 0 | PASS: both outputs fresh; no source paths added, removed or renamed |
+| `git diff --check` | 0 | PASS: scoped diff hygiene |
+| `cz check --message-length-limit 75 --message 'docs(qa): Record planning delivery and integration approval'` | 0 | PASS: lightweight message check; commit-msg retained |
+
+### W16 committed delivery read-back (2026-09-09)
+
+Target: `9153c055fb8a26afd2da474e2f228819dfc864b5`, three planning documents in
+the `.env`-free linked WSL2 checkout; prepared Python tools and unchanged normal
+Git hooks, with no fabricated CI context.
+
+| Command or observation | Exit | Result and limit |
+| --- | --- | --- |
+| Normal `git -c core.hooksPath=/home/hy/projects/hy-home.docker/.git/hooks commit -m 'docs(qa): Plan remaining convergence work'` retry, `/usr/bin/time -p` | 0 | PASS: commit `9153c055f`, 355.89 seconds wall time; source markdownlint, public changed, secret detection and commit-msg passed; no bypass |
+| `git status --short`, index/worktree diff and `git diff --check main...HEAD` | 0 | PASS: clean committed delivery; exactly three task-owned planning documents, one commit ahead of local main |
+| Review-copy comparison with committed source; ignored-file metadata inspection | 0 | PASS: all prior review content preserved; only known task-generated bytecode in delivery, no unexpected review scratch; cleanup still requires final recheck |
+
+The preceding failed first commit and earlier review-pending statements below
+are historical checkpoints. This read-back supplies their subsequent outcome;
+it does not recast earlier candidates as the final snapshot. The disposition
+receipt's normal hooks and actual merge/cleanup remain future steps at this
+writing. Hosted QA, full/all-files reruns, runtime/provider execution and domain
+coverage are NOT_RUN or N/A for this documentation-only integration receipt;
+normal hooks execute the required changed validation on its staged snapshot.
+
 ### Follow-up planning verification (2026-09-09)
 
 Target: base HEAD `541854af0c93fc30b38b03dbcdbe03da357f9186` plus the three
@@ -1691,7 +1767,7 @@ option A approval and W16 planning do not authorize it.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 25 | W16 | In progress: reviewed-source proposal authored, document checks passed and independent final review approved; normal-hook commit/read-back pending under W16 | This Task inventory, Spec proposal and Plan W16-W21 |
+| 25 | W16 | PASS: planning proposal reviewed, validated and committed as `9153c055f` through normal hooks; later local integration/cleanup authorized separately | This Task inventory, Spec proposal and Plan W16-W21 |
 | 26 | W17 | NOT_RUN: implementation scope approval pending | Existing public workflow contract, gate libraries and their regressions |
 | 27 | W18 | NOT_RUN: implementation scope approval pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
 | 28 | W19 | NOT_RUN: implementation scope approval pending | Active Stage 05 targets and metadata residue contract |
@@ -2360,6 +2436,10 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### W16 integration disposition review (2026-09-09)
+
+Independent rules-engineer `a_policy_review` reviewed the exact W16 integration-and-cleanup disposition candidate against `9153c055fb8a26afd2da474e2f228819dfc864b5` and returned Specification PASS / Quality APPROVED with zero findings. Exact three-document diff SHA-256 `6b43fb50a8a1e6e15fbd71e1bfe42abcbae3c8bfb66cec618edab463ed655cf7` matched the writer and isolated review snapshots byte-for-byte; the reviewer also read back the `9153c055fb8a26afd2da474e2f228819dfc864b5` commit and supplied normal-hook log without rerunning it. The review confirmed that the latest user authorization supersedes the W16 keep disposition only for guarded local fast-forward integration and cleanup of the two named task-owned worktrees and merged branch; W17-W21, operations execution, remote/global/private state and package closure remain excluded. Current candidate document checks remain source-attributed; final normal hooks, merge, post-merge verification and cleanup are pending. This exact later receipt intentionally lies outside the reviewed hash and approves no other change or execution scope.
+
 ### Follow-up planning review (2026-09-09)
 
 Independent rules-engineer `a_policy_review` reviewed the exact post-formatter W16 three-document candidate against `541854af0c93fc30b38b03dbcdbe03da357f9186` and returned Specification PASS / Quality APPROVED with zero findings. Exact working-tree diff SHA-256 `8c220ee26e8cc5078c27bb2f6052169fb28288c89359142bb9a9f63aa414fdf8` matched the writer and isolated review snapshots byte-for-byte; the review confirmed the continuous acceptance-criteria 1-30 structure, W16-only authority, W17-W21 NOT_RUN boundary, and accurate classification of the failed first hook attempt and formatter correction. Hook and formatter results remained source-attributed and were not independently rerun; the normal hook retry and final Git read-back remain pending. This exact later receipt intentionally lies outside the reviewed hash, and approval covers no other change or implementation, runtime, merge, cleanup, remote-write or all-files authorization.
@@ -2562,12 +2642,14 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
 
-W16 is one three-document planning delivery unit with intended subject
-`docs(qa): Plan remaining convergence work`. Its final SHA and normal-hook
-outcome belong to the final Git read-back; W17-W21 have no implementation commits.
+W16 planning delivery: `9153c055fb8a26afd2da474e2f228819dfc864b5`,
+`docs(qa): Plan remaining convergence work`, three documents, normal Git hooks
+PASS and exit 0. The later three-document disposition receipt is a separate
+logical documentation commit; its SHA belongs to final Git read-back.
+W17-W21 have no implementation commits.
 The first attempt exited 1 because the formatter changed the newly separated
 acceptance list. HEAD remained at the baseline; no commit was created and no
-hook was bypassed. The corrected continuous list is the retry candidate.
+hook was bypassed. The corrected continuous list passed the retry recorded above.
 
 Option A local task-owned commits (2026-09-09):
 
@@ -2669,8 +2751,10 @@ No completed archive packet or new Spec/Plan/Task was created.
   review. Their criteria are NOT_RUN and do not reopen completed option A work.
 - Operations execution planning is on hold by the 2026-09-09 user response.
   Neither synthetic rehearsal nor live service planning/execution is included.
-- Keep the new `codex/qa-convergence-design` branch and its linked worktree.
-  No new merge, cleanup, push, PR or workflow dispatch is authorized by W16.
+- Apply the latest Work Log's explicit local main integration and task-owned
+  branch/worktree cleanup request after verification. W16 planning alone did
+  not authorize this disposition; the subsequent user request does.
+  Push, PR and workflow dispatch remain outside scope.
 
 - The preservation-owner blocker is discharged by current REQ-0026, AD-0030
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
@@ -2679,7 +2763,7 @@ No completed archive packet or new Spec/Plan/Task was created.
   tag and release remain outside the current authorization. The preceding
   option A follow-up authorized its completed local integration and task-owned
   cleanup only. Earlier integration, keep and cleanup instructions retain their
-  dated scope; they do not authorize the new W16 planning branch's disposition.
+  dated scope; the latest explicit user request now owns W16's local disposition.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.

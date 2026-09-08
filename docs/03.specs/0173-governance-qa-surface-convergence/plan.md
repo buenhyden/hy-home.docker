@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -25,7 +25,9 @@ The 2026-09-09 continuation authorizes W16 planning only. W17-W21 below are
 proposed implementation work, pending user scope review. Operations execution
 planning is explicitly on hold, including synthetic runtime rehearsals. Existing
 active package status and historical option A approval do not authorize this
-proposal's execution. Preserve the new planning branch and worktree.
+proposal's execution. The later user request authorizes local main integration
+of the verified W16 planning delivery and its task-owned branch/worktree cleanup;
+Task 0006 owns this disposition and the verification evidence.
 
 ## Dependencies
 
@@ -244,7 +246,10 @@ change is needed: the registered sections already hold decisions and evidence.
    batches. Record the user's operations-planning hold without a runtime task.
 4. Review proposed criteria 26-30 and work units for coverage and approval scope.
    Validate the three authored documents, obtain independent review and create
-   one planning commit. Do not execute W17-W21, merge or remove the worktree.
+   one planning commit. Do not execute W17-W21. Apply the later explicit local
+   integration/cleanup request only after verifying the delivered commit and
+   preservation of every task-owned review copy; use fast-forward integration
+   and ordinary worktree removal and merged-branch deletion.
 
 ### W17: Proposed graph and parser cutover
 

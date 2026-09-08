@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -75,7 +75,10 @@ Reuse this active package and its existing identities. W16 owns the requested
 planning deliverable; W17-W21 and proposed criteria 26-30 require implementation
 scope approval before execution. The active frontmatter records the existing
 package lifecycle, not approval of this proposal. Earlier option A approvals and
-its completed integration do not approve these changes or a new local merge.
+its completed integration do not approve this proposal. The later explicit user
+request authorizes local integration of the W16 planning delivery and cleanup
+of its verified task-owned branch/worktrees, as recorded in Task 0006. That
+disposition does not authorize W17-W21 implementation or package closure.
 
 The proposed scope is bounded to the existing public QA graph and its inactive
 semantic-parser consumers, audit census and current evidence consumers, active
