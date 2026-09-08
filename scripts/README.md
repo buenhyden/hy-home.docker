@@ -148,7 +148,7 @@ script.
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, current-task routing, post-edit style validation/formatting, logical commit completion reminders, and Stop gating        |
 | Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Check safe changed paths with available formatting/lint tools, diff hygiene, and syntax checks; completion-time aggregate validation belongs to Stop |
 | Unified Hardening Check                | [check-all-hardening.sh](./hardening/check-all-hardening.sh)                                | Run all tier hardening checks, or one selected tier                                                                                                                                                             |
-| QA/CI Tooling Environment              | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh)                                       | Expose user-global QA/CI tools to restricted agent shells                                                                                                                                                       |
+| QA/CI Tooling Environment              | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh)                                       | Explicitly append available QA/CI tool directories without changing the existing PATH priority                                                                                                                  |
 | Docker Preflight Mode                  | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight`         | Real local prerequisite validation without dummy file creation                                                                                                                                                  |
 | Secret Generation                      | [gen-secrets.sh](./operations/gen-secrets.sh)                                               | Generate local Docker secret files; use `--check` or `--dry-run` before default generation                                                                                                                      |
 | Sample Service Delivery Rehearsal      | [rehearse-sample-service-delivery.sh](./operations/rehearse-sample-service-delivery.sh)     | Validate fixture contracts or run the canonical-gated local baseline/canary promotion, rollback, atomic evidence, and owned-cleanup state machine                                                              |
@@ -228,6 +228,10 @@ validation; check-only mode disables whitespace writes while preserving diff,
 syntax, lint, and repo checks. The whitespace normalizer is the hook's only
 mutation, and it reads the registered mutator boundary from
 `.pre-commit-config.yaml` so a frozen archive payload keeps its bytes.
+The hook preserves its caller's prepared tool search order and does not source
+`scripts/operations/use-qa-ci-tools.sh` automatically. Source that helper
+explicitly when optional QA/CI tools are otherwise unavailable; repeated
+sourcing keeps the existing PATH order and adds each available directory once.
 
 `scripts/validation/run-ci-gate.py` is the dependency-free typed-gate CLI. It
 loads `.github/workflow-contract.yml`, selects the
@@ -444,7 +448,7 @@ bash scripts/operations/generate-compose-profile-service-coverage.sh --check
 bash scripts/operations/generate-tech-stack-version-provenance.sh --write
 bash scripts/operations/generate-tech-stack-version-provenance.sh --check
 
-# Make globally installed QA/CI tools available in restricted agent shells
+# Explicitly add optional QA/CI tools while preserving the current PATH priority
 source scripts/operations/use-qa-ci-tools.sh
 
 # Verify the agent-visible QA/CI toolchain

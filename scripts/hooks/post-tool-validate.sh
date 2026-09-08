@@ -56,11 +56,6 @@ if [[ -z "$CHANGED_PATH_TEXT" ]]; then
 fi
 mapfile -t CHANGED_PATHS <<<"$CHANGED_PATH_TEXT"
 
-if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
-  # shellcheck source=../operations/use-qa-ci-tools.sh
-  source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
-fi
-
 # `.pre-commit-config.yaml` names every registered text mutator and the frozen
 # archive payloads they must not rewrite. This hook performs the same
 # trailing-whitespace and final-newline normalization, so it reads that one

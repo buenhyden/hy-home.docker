@@ -654,10 +654,11 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/hooks/post-tool-validate.sh
+  - scripts/README.md
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/requirements-pre-commit.txt
   kind: dependency-manifest

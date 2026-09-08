@@ -4,7 +4,9 @@ import json
 import os
 import pathlib
 import re
+import shlex
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -15,6 +17,7 @@ from scripts.lib.gate import ci_gate_contract as contract
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 POST_TOOL = ROOT / "scripts/hooks/post-tool-validate.sh"
 EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
+QA_CI_TOOLS = ROOT / "scripts/operations/use-qa-ci-tools.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
@@ -499,6 +502,63 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             self.assertNotEqual(0, result.returncode)
             self.assertEqual(before, shell.read_bytes())
 
+    def test_post_tool_preserves_the_prepared_python_search_order(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            repo = base / "repo"
+            repo.mkdir()
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            helper = repo / "scripts" / "operations" / "use-qa-ci-tools.sh"
+            helper.parent.mkdir(parents=True)
+            helper_called = base / "helper-called"
+            helper.write_text(
+                QA_CI_TOOLS.read_text(encoding="utf-8")
+                + f"\n: > {shlex.quote(str(helper_called))}\n",
+                encoding="utf-8",
+            )
+            target = repo / "example.json"
+            target.write_text("{}\n", encoding="utf-8")
+            before = target.read_bytes()
+
+            trace = base / "python-trace"
+            prepared_bin = base / "prepared" / "bin"
+            user_bin = base / "home" / ".local" / "bin"
+            prepared_bin.mkdir(parents=True)
+            user_bin.mkdir(parents=True)
+            real_python = shlex.quote(str(pathlib.Path(sys.executable).resolve()))
+            self._write_executable(
+                prepared_bin / "python3",
+                "#!/bin/sh\nprintf 'prepared\\n' >> \"$TOOL_TRACE\"\n"
+                f'exec {real_python} "$@"\n',
+            )
+            self._write_executable(
+                user_bin / "python3",
+                "#!/bin/sh\nprintf 'user-global\\n' >> \"$TOOL_TRACE\"\n"
+                f'exec {real_python} "$@"\n',
+            )
+
+            result = subprocess.run(
+                ["bash", str(POST_TOOL), "--check"],
+                cwd=repo,
+                input=json.dumps({"tool_input": {"file_path": "example.json"}}),
+                capture_output=True,
+                text=True,
+                env={
+                    "PATH": f"{prepared_bin}:/usr/bin:/bin",
+                    "HOME": str(base / "home"),
+                    "TOOL_TRACE": str(trace),
+                    "CODEX_PROJECT_DIR": str(repo),
+                },
+                check=False,
+            )
+
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(before, target.read_bytes())
+            self.assertFalse(helper_called.exists())
+            selections = trace.read_text(encoding="utf-8").splitlines()
+            self.assertTrue(selections)
+            self.assertEqual({"prepared"}, set(selections))
+
     def test_post_tool_propagates_available_linter_failures(self) -> None:
         for suffix, tool in (("sh", "shellcheck"), ("yaml", "yamllint")):
             with (
@@ -622,6 +682,82 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             )
             self.assertNotEqual(0, result.returncode)
             self.assertIn("second.sh", result.stderr)
+
+
+class QaCiToolEnvironmentTests(unittest.TestCase):
+    @staticmethod
+    def _write_executable(path: pathlib.Path) -> None:
+        path.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        path.chmod(0o755)
+
+    def test_repeated_bootstrap_preserves_existing_path_and_adds_each_dir_once(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            prepared_bin = base / "prepared" / "bin"
+            user_bin = base / "home" / ".local" / "bin"
+            go_bin = base / "home" / "go" / "bin"
+            extra_bin = base / "extra" / "bin"
+            for path in (prepared_bin, user_bin, go_bin, extra_bin):
+                path.mkdir(parents=True)
+            self._write_executable(prepared_bin / "selected-tool")
+            self._write_executable(user_bin / "selected-tool")
+            self._write_executable(extra_bin / "extra-tool")
+
+            original = [str(prepared_bin), "/usr/bin", "/bin"]
+            command = (
+                '. "$1"\n'
+                'first="$PATH"\n'
+                '. "$1"\n'
+                'printf "FIRST=%s\\nSECOND=%s\\nSELECTED=%s\\nEXTRA=%s\\n" '
+                '"$first" "$PATH" "$(command -v selected-tool)" '
+                '"$(command -v extra-tool)"\n'
+            )
+            result = subprocess.run(
+                ["/bin/bash", "-c", command, "bash", str(QA_CI_TOOLS)],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                env={
+                    "PATH": ":".join(original),
+                    "HOME": str(base / "home"),
+                    "QA_CI_NODE_BIN": "",
+                    "QA_CI_EXTRA_PATHS": str(extra_bin),
+                },
+                check=False,
+            )
+
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            observed = dict(line.split("=", 1) for line in result.stdout.splitlines())
+            self.assertEqual(observed["FIRST"], observed["SECOND"])
+            entries = observed["SECOND"].split(":")
+            self.assertEqual(original, entries[: len(original)])
+            for path in (user_bin, go_bin, extra_bin):
+                self.assertEqual(1, entries.count(str(path)))
+            self.assertEqual(str(prepared_bin / "selected-tool"), observed["SELECTED"])
+            self.assertEqual(str(extra_bin / "extra-tool"), observed["EXTRA"])
+
+    def test_executed_bootstrap_still_reports_missing_tools(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            empty_path = pathlib.Path(directory) / "empty"
+            empty_path.mkdir()
+            result = subprocess.run(
+                ["/bin/sh", str(QA_CI_TOOLS)],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                env={
+                    "PATH": str(empty_path),
+                    "HOME": directory,
+                    "QA_CI_NODE_BIN": "",
+                },
+                check=False,
+            )
+
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("python3=MISSING", result.stdout)
+            self.assertIn("shellcheck=MISSING", result.stdout)
 
 
 class PostToolFormattingOwnershipTests(unittest.TestCase):

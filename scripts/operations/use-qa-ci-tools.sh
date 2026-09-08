@@ -1,16 +1,16 @@
 #!/usr/bin/env sh
 # Source this file before running local QA/CI commands from restricted agent shells.
 
-qa_ci_prepend_path() {
-  case "${PATH:-}" in
-  "$1" | "$1":*) ;;
-  *) PATH="$1${PATH:+:$PATH}" ;;
+qa_ci_append_path() {
+  case ":${PATH:-}:" in
+  *:"$1":*) ;;
+  *) PATH="${PATH:+$PATH:}$1" ;;
   esac
 }
 
 qa_ci_add_dir() {
   if [ -d "$1" ]; then
-    qa_ci_prepend_path "$1"
+    qa_ci_append_path "$1"
   fi
 }
 
