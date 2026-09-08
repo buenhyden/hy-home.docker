@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-09"
 ---
 
 # GitHub Governance Policy
@@ -178,7 +178,7 @@ runner.
 | `greetings.yml`          | welcome new contributors   |
 | `stale.yml`              | manage stale issues and PRs |
 | `pr-labeler.yml`         | apply PR labels            |
-| `generate-changelog.yml` | generate release changelog |
+| `generate-changelog.yml` | verify that an existing release tag has a CHANGELOG entry |
 
 Agent all-files execution remains limited to the separately approved controlled
 wrapper; neither required profile grants Agent authorization.

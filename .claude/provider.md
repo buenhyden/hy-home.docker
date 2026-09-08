@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-09"
 runtime: "claude"
 ---
 
@@ -46,7 +46,7 @@ projection of either, and their absence under `.claude/` is not a defect.
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).
 The shared policy and approved Task determine scope; this adapter adds no gate.
-Hook behavior remains subject to shared policy and manifest-owned public suites.
+Hook behavior remains subject to shared policy and workflow-contract-owned public suites.
 Static configuration and renderer parity prove tracked adoption only; native
 invocation, hook trust, entitlement, and runtime acceptance need direct evidence.
 Do not change user-global or ignored local settings under this adapter's authority.

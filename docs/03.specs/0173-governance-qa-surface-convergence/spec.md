@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-09"
 layer: "specs"
 artifact_id: "SPEC-0173"
 parent_ids:
@@ -49,6 +49,18 @@ provenance, not permanent validation inputs.
 - Exclude push, PR creation/merge, workflow dispatch, remote settings, releases,
   tags, operational service actions, real secrets, and user-global configuration.
   Unavailable runtime/hosted observations remain separate from local completion.
+
+### Approved option A follow-up
+
+The user's subsequent option A approval narrows the renewed work to current
+ownership/path/context prose, prepared-tool preservation in post-edit hooks,
+and reuse of the audit generator's validated pack within one invocation.
+Task 0006 owns this approval and the current baseline. Preserve public CLI,
+suite membership, aggregate composition, native permissions, and frozen bytes.
+The legacy graph, historical audit census, active operations template markers,
+and cross-domain architecture consolidation are deferred option B candidates.
+Keep the resulting branch and verification worktree; this renewed scope does
+not authorize main integration, cleanup, or remote delivery.
 
 ## Behavior Contract
 
@@ -254,6 +266,16 @@ def canonical_invocation_key(
     rules and checks; external/symlink paths and malformed edits fail closed.
     Project permissions contain no arbitrary Git/Python allow grant, and Stop
     retry handling remains bounded. Static tests do not imply live delivery.
+
+22. Post-edit validation preserves the explicitly prepared tool search order;
+    it does not automatically promote user-global tools over that environment.
+    Explicit bootstrap remains separate from source-preserving check execution.
+23. The audit matrix generator reuses the pack already validated by its semantic
+    check, while malformed input, semantic failure and stale output still fail.
+    The standalone validators and public aggregate remain behaviorally intact.
+24. Current provider, ownership, changelog and metadata-base guidance each matches
+    its executable owner. Registered generated text uses current document paths;
+    new remote observations retain their actual SHA and event.
 
 ## Traceability
 

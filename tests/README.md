@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-09"
 created: "2026-02-21"
 ---
 
@@ -75,10 +75,14 @@ tests/
 실행합니다. 두 inventory는 각각 5개 production 책임과 4개 등록 mode를
 mirroring하며, 공통 fixture는 discovery 대상이 아닌 `_support.py`만 사용합니다.
 
-changed/new blocking gate는 활성 상태입니다. `check-document-metadata.py
---mode check-changed --base-ref "$(git merge-base main HEAD)"`가 CI가 강제하는
-차단 조건이며, base ref는 고정하지 않고 계산합니다. 인자 없이 실행하면 차단하지
-않는 advisory inventory를 출력합니다.
+changed/new blocking gate는 활성 상태입니다. 로컬 `changed` profile은
+`check-document-metadata.py --mode check-active`로 active corpus를 base 없이
+검사합니다. pull request의 `changed` profile은 신뢰된 `PR_BASE_SHA`를
+`TEMPLATE_GATE_BASE`로 전달해 `--mode check-changed` 비교를 수행합니다.
+push와 수동 실행의 `full` profile은 `--mode check-contracts --history-scope full`로
+문서 계약과 전체 history를 검사합니다. push에서는 유효한 이전 SHA가 있으면
+lifecycle/ID 할당의 기준으로 사용하고, 수동 실행에는 이벤트 비교 기준이 없습니다.
+인자 없이 실행하면 `report` mode로 advisory inventory를 출력합니다.
 
 ## Related Documents
 
