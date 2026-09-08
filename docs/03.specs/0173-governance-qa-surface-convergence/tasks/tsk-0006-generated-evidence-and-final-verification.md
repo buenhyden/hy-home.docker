@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -48,6 +48,29 @@ elsewhere.
 
 ## Work Log
 
+### Verified local integration and completion (2026-09-08)
+
+The user renewed the interrupted follow-up request with the same condition:
+complete the authorized local work before main integration and exact cleanup.
+Local implementation and applicable follow-up verification are PASS. Main was
+fast-forwarded from `efd58f441` to `d8a96ad4c`; all six task-owned commits remain
+reachable. Both worktrees were clean at the resumed read-back. The only remaining
+write is this Task receipt; after its independent review and normal hooks, main
+will receive it with another fast-forward. Ordinary removal of the exact linked
+worktree and merged branch follows final cleanliness, reachability and owner
+release checks. This receipt precedes those final operations; their actual
+outcome and the receipt commit's own SHA belong to the final Git read-back.
+
+The interruption removed temporary logs/tool environments and prior agent
+processes. The earlier all-files PASS had already been observed in the tool
+result and remains valid for its exact target; the first merged full run had
+no observed exit. The resumed full invocation therefore reran at the same clean
+main HEAD and passed. No tool installation, service operation, remote mutation
+or private-state access was needed for that recovery. Spec/Plan/Task lifecycle
+status remains active/in-progress; terminal package preservation is separate
+from completion of this local request. Native startup BLOCKED and subsequent
+live/provider/model/hosted NOT_RUN observations retain their recorded limits.
+
 ### Completion assessment and conditional integration follow-up (2026-09-08)
 
 The latest user request authorizes follow-up work, checking completion of the
@@ -55,7 +78,8 @@ request, and main integration plus branch/worktree cleanup only if complete.
 This supersedes the earlier Keep-the-branch choice only after that condition
 is met. Starting state: main and origin/main at `efd58f441`, implementation
 branch `codex/governance-qa-convergence` at `b1d93f8d1`, both worktrees clean.
-The five local convergence commits and their actual QA receipts are preserved.
+The five commits present at that starting checkpoint and their QA receipts
+are preserved; the subsequent sixth commit is recorded in the Commit Ledger.
 
 Root continues approved W6/W7/W9 verification/documentation work. Independent
 rules-engineer found no numbered acceptance criterion requiring live native,
@@ -1380,6 +1404,33 @@ in-progress.
 
 ## Verification Evidence
 
+### Actual local integration receipts (2026-09-08)
+
+| Command / context / target | Exit | Result / limit |
+| --- | --- | --- |
+| actual normal Git pre-commit/public changed and commit-msg hooks; follow-up four-document commit | 0 | PASS created d8a96ad4c; clean linked worktree after commit |
+| controlled actual all-files wrapper; clean linked d8a96ad4c, this Task, exact50 reviewed paths, pre-commit4.6.1 | 0 | PASS46.782s; hook_exit0; before0/after0/changed0/unexpected0; observed before interruption |
+| `git merge --ff-only codex/governance-qa-convergence`; clean primary main efd58f441 | 0 | PASS fast-forward to d8a96ad4c; main equals feature tip, clean; origin/main unchanged |
+| first post-merge local full at d8a96ad4c | unobserved | BLOCKED completion observation by environment interruption; temporary log unavailable after restart, no PASS claimed |
+| resumed `python3 scripts/validation/run-ci-gate.py --profile full`; clean primary main d8a96ad4c | 0 | PASS488.208s;361 document tests176.805s,237 operations tests30.299s, registered shell/eval/config/generator checks;11 inactive-parser skips retained |
+| post-full `git status`, HEAD and origin/main read-back | 0 | PASS clean main d8a96ad4c; origin/main remains efd58f441 |
+| linked-worktree ignored-path metadata and file-kind inspection | 0 | PASS118 Python bytecode/31 Ruff cache files created by task QA; unknown0, symlink0, nonregular0; contents not collected |
+| Task-only receipt: `check-document-metadata.py --mode check-changed --base-ref HEAD` | 0 | PASS selected1, violations0, legacy exceptions0, transition overrides0 |
+| Task-only receipt: `check-document-links.py --mode all` | 0 | PASS713 documents/6154 links/46 pairs/72 archive links, failures0 |
+| Task-only receipt: pinned Markdownlint, `git diff --check`, cheap Commitizen message check | 0 | PASS; no execution-contract or generated-source change |
+
+The actual all-files argv was `bash
+scripts/validation/run-agent-precommit-all-files.sh --task` followed by this
+canonical Task's repository-relative path, with a separate `--allow-prefix`
+for each of the50 exact paths in `git diff --name-only efd58f441 d8a96ad4c`.
+The controller compared that set with its reviewed allowlist before execution;
+UTF-8 sorted paths, each LF-terminated, have SHA-256
+`f7c241fcfb204f88763000316a1cf76c26cb2363c70d3e522752ba593107db52`.
+The temporary venv supplied repository-pinned pre-commit4.6.1 through PATH;
+no CI/GITHUB_ACTIONS impersonation or arbitrary SKIP was used. These receipts
+prove d8a96ad4c in their stated contexts; the later Task-only receipt commit
+uses its own focused checks and normal Git hooks.
+
 ### Conditional integration follow-up checks (2026-09-08)
 
 | Command / context / target | Exit | Result / limit |
@@ -1452,7 +1503,7 @@ not hosted changelog/release execution.
 | controlled actual all-files wrapper; clean linked HEAD `6dbf23413`, this Task and exact 49 reviewed path arguments | 0 | PASS45.183s; hook_exit0; before0/after0/changed0/unexpected0; argv binding below |
 | `python3 scripts/validation/run-ci-gate.py --profile full`; committed implementation HEAD `6dbf23413`, local finishing check | 0 | PASS including361 document tests165.886s,237 operations tests30.650s, registered shell/eval/config checks and generator freshness; 11 inactive-parser skips retained; working tree remains clean |
 
-Final implementation target:
+Earlier implementation checkpoint:
 `6dbf234135d5b0605b8d0912542d29a053b3f8f2`. The actual all-files command was
 `bash scripts/validation/run-agent-precommit-all-files.sh`, with `--task` equal
 to this canonical Task's repository-relative path and a separate `--allow-prefix`
@@ -1465,13 +1516,13 @@ SHA-256 `0968455cb347b9fccbbf6f587307263d0aae43a2b6b4d0f4013d48ef5b7c5677`.
 The wrapper reported `hook_result=passed`, `first_failure=not_applicable`,
 `snapshot_result=passed` and zero before/after/changed/unexpected paths.
 
-Final local disposition: PASS for the authorized implementation and applicable
-local checks. Hosted validation of these new commits and live provider delivery
+Earlier disposition at the 6dbf23413 checkpoint: PASS for the implementation and
+applicable local checks. Hosted validation of these new commits and live provider delivery
 remain NOT_RUN; whole-package completion/merge readiness is not asserted.
-The implementation branch and linked worktree are preserved; original main is
-clean at the fetched baseline. The later receipt-only commit changes this Task,
-uses normal commit hooks, and does not extend the above all-files/full receipt
-to a different snapshot or claim a repeated full execution.
+At that checkpoint the branch/worktree were preserved and main was clean at
+the fetched baseline. The subsequent b1d93f8d1 receipt-only commit changed this Task,
+used normal commit hooks, and did not extend that all-files/full receipt to
+a different snapshot. The newer integration receipts above own current state.
 
 Authenticated run read-back (exit 0) identifies [quality run34202909252](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252)
 as event `push` at the baseline SHA; [validation-full job101985602222](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252/job/101985602222)
@@ -1806,6 +1857,16 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+Resumed integration receipt review: independent `integration_receipt_review`
+returned Specification PASS / Quality APPROVED with zero Critical/Important/Minor
+findings for the exact Task-only diff (63 insertions/12 deletions), SHA-256
+`61972511efbdf539b173c3e944684078e18405b7c7b4324f2956715b42fb96fa`.
+It confirmed actual versus interrupted evidence, local-only authorization,
+separate terminal lifecycle and conditional ordinary cleanup after the final
+receipt commit is clean and reachable from main. This review paragraph and the
+focused-check receipt rows record subsequent observations and are outside that
+reviewed diff hash; they add no implementation or authority change.
+
 Final follow-up exact-diff review: independent `policy_review` returned
 Specification PASS / Quality APPROVED, zero Critical/Important/Minor findings,
 after correcting unknown-path versus unavailable-evidence routing, preserving
@@ -1928,6 +1989,7 @@ Current convergence commits (2026-09-08), all local and task-owned:
 | `1aea9246a` | W10 workflow consolidation/protection guidance and registered generated evidence; 14 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
 | `6dbf23413` | W7 SDLC/document owners, active package and publication-scan regression; 11 files; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
 | `b1d93f8d1` | Final local verification receipts; one Task file; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
+| `d8a96ad4c` | Verification map and local completion scope; four documents; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
 
 Earlier dated commits:
 
@@ -2029,9 +2091,11 @@ No completed archive packet or new Spec/Plan/Task was created.
   entitlement remain NOT_RUN/unverified. Neither blocks this local integration;
   runtime claims require their own evidence. No auth/global-state access, trust
   change or model call is authorized.
-- The controlled final all-files item is discharged by the actual clean
-  `6dbf23413` invocation above, exit0 with no source changes. Its 34-case wrapper
-  regression remains separate evidence. No user-global installation or setting
+- The controlled all-files item has actual clean `6dbf23413` and subsequent
+  `d8a96ad4c`/pre-commit4.6.1 PASS receipts, both exit0 with no source changes.
+  The 34-case wrapper regression remains separate evidence. Main integration
+  is observed at d8a96ad4c; final receipt integration and exact cleanup follow
+  the newest Work Log conditions. No user-global installation or setting
   changed; new hosted/native execution and package promotion remain deferred.
 
 ## Related Documents
