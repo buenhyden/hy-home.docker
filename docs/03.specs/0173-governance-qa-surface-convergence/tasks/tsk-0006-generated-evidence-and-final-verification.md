@@ -76,8 +76,10 @@ The installed Superpowers 6.3.0 using-superpowers, brainstorming, writing-plans
 and executing-plans procedures were read explicitly. Executing-plans routes
 this subagent-capable session to subagent-driven-development; its session ledger
 and default documentation tree are replaced by this already approved Task.
-Finishing is reserved for verified commits and the user's branch-preservation
-choice. No unavailable slash command or global installation is claimed.
+Finishing-a-development-branch was read after the implementation commits and
+actual all-files verification. Its final local full run passed on `6dbf23413`;
+the user's existing Keep-the-branch choice applies without a new options gate.
+No unavailable slash command or global installation is claimed.
 
 | Surface / role | Canonical owner / consumers | Context and finding | Decision / validation / recovery |
 | --- | --- | --- | --- |
@@ -1376,6 +1378,29 @@ in-progress.
 | `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_links`; remaining W7 candidate | 0 | PASS41 tests8.722s, canonical publication scan includes governance root and rejects missing roots |
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`, then `--mode check-contracts`; W7 candidate | 0 | PASS8 selected documents/0 violations, repository contracts0 violations |
 | `python3 scripts/validation/check-document-links.py --mode all`; W7 candidate | 0 | PASS713 documents/6154 links/46 catalog pairs/72 archive links/0 failures |
+| controlled actual all-files wrapper; clean linked HEAD `6dbf23413`, this Task and exact 49 reviewed path arguments | 0 | PASS45.183s; hook_exit0; before0/after0/changed0/unexpected0; argv binding below |
+| `python3 scripts/validation/run-ci-gate.py --profile full`; committed implementation HEAD `6dbf23413`, local finishing check | 0 | PASS including361 document tests165.886s,237 operations tests30.650s, registered shell/eval/config checks and generator freshness; 11 inactive-parser skips retained; working tree remains clean |
+
+Final implementation target:
+`6dbf234135d5b0605b8d0912542d29a053b3f8f2`. The actual all-files command was
+`bash scripts/validation/run-agent-precommit-all-files.sh`, with `--task` equal
+to this canonical Task's repository-relative path and a separate `--allow-prefix`
+for every exact path returned by `git diff --name-only
+efd58f441a81a6db9011afa6f099b36beff851eb
+6dbf234135d5b0605b8d0912542d29a053b3f8f2`. The controller compared those 49 paths
+with its reviewed allowlist before invocation; no root-wide prefix was used.
+The lexicographically sorted UTF-8 paths, one LF-terminated path per line, have
+SHA-256 `0968455cb347b9fccbbf6f587307263d0aae43a2b6b4d0f4013d48ef5b7c5677`.
+The wrapper reported `hook_result=passed`, `first_failure=not_applicable`,
+`snapshot_result=passed` and zero before/after/changed/unexpected paths.
+
+Final local disposition: PASS for the authorized implementation and applicable
+local checks. Hosted validation of these new commits and live provider delivery
+remain NOT_RUN; whole-package completion/merge readiness is not asserted.
+The implementation branch and linked worktree are preserved; original main is
+clean at the fetched baseline. The later receipt-only commit changes this Task,
+uses normal commit hooks, and does not extend the above all-files/full receipt
+to a different snapshot or claim a repeated full execution.
 
 Authenticated run read-back (exit 0) identifies [quality run34202909252](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252)
 as event `push` at the baseline SHA; [validation-full job101985602222](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252/job/101985602222)
@@ -1742,6 +1767,12 @@ Reviewed diff SHA-256:
 `aa3ebb605070247a0e116e0662129e091aee07fa831a7490626c7540149b365b`.
 All six findings were closed; adding this verdict and formatting does not claim
 that the pending actual all-files or hosted/native executions have run.
+The subsequent Task-only final receipt review returned Specification PASS /
+Quality APPROVED, zero findings, against `6dbf23413`; reviewed diff SHA-256
+`f5a0eb717bff9da0e801c5547ae7202fe2949ef0b18302880dbbec7ab4af937b`.
+The independent reviewer compared all 49 argv paths/hash and actual all-files
+output, final full log, commit identity and clean original main. This later
+receipt discharges local all-files only; hosted/live-native remain NOT_RUN.
 
 The current relocation and clean-checkout reviews are recorded in the latest
 Work Log above. The following paragraphs preserve earlier reviews and their
@@ -1803,6 +1834,7 @@ Current convergence commits (2026-09-08), all local and task-owned:
 | `3f2b16a65` | W8/W11 hook inputs and changed validation; 16 files; public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
 | `04eafc83b` | W9 commit grammar/consumers and semantic operations-table parsing; 11 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
 | `1aea9246a` | W10 workflow consolidation/protection guidance and registered generated evidence; 14 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
+| `6dbf23413` | W7 SDLC/document owners, active package and publication-scan regression; 11 files; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
 
 Earlier dated commits:
 
@@ -1895,18 +1927,17 @@ No completed archive packet or new Spec/Plan/Task was created.
   the operator's single-instance runtime authorization on 2026-09-07. The
   whole-migration aggregate is still not claimed, because the remaining Deferred
   Items below are not discharged by those two operating runs. The current
-  local public profiles and remote observations have their own receipts;
-  actual final all-files is still pending. QuickWin and template-security have
+  local public profiles, actual all-files and remote observations have their
+  own current receipts above. QuickWin and template-security have
   isolated example-input PASS evidence; neither proves actual host, service or
   volume readiness.
 - Normal native discovery is BLOCKED before acceptance; skill calls, live hook
   delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
   change, model call or installation is authorized by this follow-up.
-- The current request authorizes the controlled final all-files boundary after
-  reviewed logical commits produce a clean linked worktree. Its 34-case wrapper
-  regression passes; the actual final invocation is still pending. The earlier
-  no-install boundary described in dated entries does not block this approved
-  final QA. No user-global installation or settings change is authorized.
+- The controlled final all-files item is discharged by the actual clean
+  `6dbf23413` invocation above, exit0 with no source changes. Its 34-case wrapper
+  regression remains separate evidence. No user-global installation or setting
+  changed; new hosted/native execution and package promotion remain deferred.
 
 ## Related Documents
 
