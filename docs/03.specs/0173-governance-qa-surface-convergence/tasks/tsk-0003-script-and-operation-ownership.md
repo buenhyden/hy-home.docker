@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -184,6 +184,32 @@ square. Restoring a truthful hosted gate is an owner decision between preparing
 the pinned image in the workflow before the gate runs and excluding the leaf
 from CI contexts the way the local context already excludes nine others.
 
+Round six examined why a green gate would still not merge. Branch protection on
+`main` required both `validation-changed` and `validation-full`, but
+`ci-quality.yml` gates the two jobs on mutually exclusive events: line 19 runs
+the first only when `github.event_name == 'pull_request'`, and line 57 runs the
+second only when it is not. On every pull request `validation-full` therefore
+reports `skipping`, which GitHub counts as unsatisfied, so no pull request could
+reach a mergeable state no matter how green its checks were. Merged pull
+request #147 shows the shape directly: `validation-changed` failed at nine
+minutes forty-seven and `validation-full` reported `skipping` at zero seconds,
+and the merge landed as `edab4a89b` anyway.
+
+A second requirement compounded it. `required_approving_review_count` was one
+while `buenhyden` is the repository's only collaborator and the author of every
+pull request, and GitHub refuses self-approval. No person existed who could
+satisfy the requirement. The earlier observation that every merge in the window
+passed by administrator bypass therefore had two causes, and neither was the red
+checks: bypass was the only merge path the configuration allowed.
+
+Both were repaired with owner approval and the prior configuration was captured
+first. Required contexts became `validation-changed` alone, which matches the
+workflow's own intent that pull requests are gated by the changed-scope suite
+and pushes to `main` by the full suite; `required_pull_request_reviews` was
+removed. `strict`, `allow_force_pushes: false`, `allow_deletions: false` and
+`required_conversation_resolution` were all left as they were, so the change
+narrowed an unsatisfiable requirement without widening what may reach `main`.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -203,6 +229,10 @@ from CI contexts the way the local context already excludes nine others.
 | Hook RED | `post-tool-validate.sh --check` exit 1 on `gen-secrets.sh` demanding a 483-line reindent; bare `shellcheck` exit 1 on `check-all-hardening.sh` where `--severity=warning` exits 0; a `docs/98.archive/completed/` probe changed SHA-256 across the hook |
 | Hook GREEN | The same three reproductions exit 0, 0, and byte-identical; a non-frozen control document is still normalized, so the boundary did not over-exclude |
 | Hook regressions | Six new cases in `PostToolFormattingOwnershipTests`; four fail against the previous hook, and the mutator-parity case fails when one `docs/98.archive/` root is dropped from the markdownlint ignore list |
+| Protection deadlock | `ci-quality.yml:19,57` gate `validation-changed` and `validation-full` on mutually exclusive events; `gh pr checks 147` shows `validation-full` `skipping` at 0s while both were required contexts |
+| Review deadlock | `required_approving_review_count` was 1 with `buenhyden` the only collaborator and the author of #148; `reviewDecision=REVIEW_REQUIRED` with zero reviews |
+| Protection after change | `contexts=["validation-changed"]`, reviews removed, and `strict`, `allow_force_pushes:false`, `allow_deletions:false`, `required_conversation_resolution:true` unchanged |
+| Worktrees | `git worktree list` reports the primary checkout only and `git rev-parse --git-dir` equals `--git-common-dir`, so no linked worktree exists to remove |
 | Local exclusion regressions | Three new cases in `LocalExclusionDocumentationTests`; the identifier comparison fails when `leaf.zizmor` is removed from the transcribed table |
 | Post-change full gate | `run-ci-gate.py --profile full` exit 0 at `4c02e73fa` on a clean tree |
 | Post-change unit suite | `unittest discover -s tests -p 'test_*.py'` 1192 tests OK with 11 skips, exit 0 |
@@ -283,6 +313,13 @@ This evidence checkpoint does not predict its own commit identity.
   registered test compares the two by what they select.
 - A document that names a verification surface names what that surface does not
   cover, and a registered test compares the claim against a built plan.
+- A required status check names a context that the workflow can actually
+  produce for that event. A context gated off for pull requests is reported as
+  skipped and counts as unsatisfied, so requiring it makes every pull request
+  permanently unmergeable and turns administrator bypass into the only path.
+- An approval requirement names an approver who exists. On a single-collaborator
+  repository a non-zero approving-review count cannot be met, because the author
+  may not approve their own pull request.
 
 ## Deferred Items
 
@@ -293,15 +330,25 @@ This evidence checkpoint does not predict its own commit identity.
   that image in the workflow before the gate runs, which the workflow contract
   admits one bootstrap step for, or excluding the leaf from CI contexts as the
   local context already excludes nine leaves. Both change registered
-  composition and belong to the owner.
+  composition and belong to the owner. Resolved instead by making
+  `--check-config-only` mean what it says: `assert_exact_local_image_identities`
+  now runs only when `RUN_MODE` is not `check`, so configuration validation no
+  longer demands images it never uses while every runtime mode still requires
+  them. Two regressions pin both halves, and the textual ordering assertion that
+  identities are checked before compose or runtime still holds.
 
-- `main` at `b5293a067` carries seventeen broken links and a ten-component
-  registry drift. Both are repaired on `fix/0173-ignored-link-targets`, cut from
-  that commit, and reaching `main` needs a merge this Task does not perform.
+- `main` at `b5293a067` carried seventeen broken links and a ten-component
+  registry drift. Both reached `main`: the links as `7cd7c8ab4` and the drift
+  with the hardening baseline in `94af0aae0`. `IgnoredLinkTargetTests` keeps a
+  tracked document from linking into an ignored path again.
 - Pull request #146 was merged while its required `validation-changed` check was
-  failing. Whether to require administrators to pass required checks is a remote
-  control-plane decision recorded in `.github/rulesets/main-protection.md`, and
-  changing `enforce_admins` needs owner approval and a new read-back.
+  failing. Two of the three causes are now removed: `validation-full` no longer
+  sits in the required contexts it could never satisfy on a pull request, and
+  the unsatisfiable approving-review requirement is gone, so a green
+  `validation-changed` is now sufficient to merge without bypass.
+  `enforce_admins` remains `false`, which still permits a bypass rather than
+  requiring one; flipping it is a separate owner decision recorded in
+  `.github/rulesets/main-protection.md` and needs its own read-back.
 - The hosted runs surfaced two checks no tracked file declares: CodeQL default
   setup, which contributes `Analyze (actions)`, `Analyze (javascript-typescript)`
   and `Analyze (python)`, and a GitGuardian app check. `.github/workflow-contract.yml`
