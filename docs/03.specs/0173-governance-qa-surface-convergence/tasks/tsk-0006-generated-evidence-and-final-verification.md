@@ -1,10 +1,10 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.5.2"
+version: "0.5.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-09"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0006"
 parent_ids:
@@ -47,6 +47,78 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Option A committed implementation and final QA (2026-09-09)
+
+The renewed user selection authorizes option A only. W12-W14 are committed
+with independent review and normal Git hooks; the Commit Ledger identifies
+their exact SHAs. W15 owns this evidence update and the pending clean-checkout
+full/all-files verification. Local final verification is not yet complete.
+Keep `codex/qa-followup-a` and both task-owned linked checkouts; primary main
+remains clean at `d633c443`. No integration, push, PR, dispatch, remote settings,
+service operation, secret access or global configuration change is authorized
+by this option. Broader option B and terminal package disposition remain
+outside this local follow-up. Spec/Plan/Task lifecycle statuses stay unchanged.
+
+### Approved option A implementation (2026-09-08)
+
+The user selected option A after the renewed read-only investigation. This is
+the current authorization: W12-W15 local corrections, regression tests,
+registered regeneration, independent review and logical commits. Keep the
+branch and review/QA worktree. Earlier local merge/cleanup permissions belong
+to their dated checkpoint and do not authorize renewed integration. No push,
+PR, dispatch, remote-setting change, operations, secret/global-state access,
+or package termination is included.
+
+Fetched baseline: main/origin/main/HEAD all
+`d633c443006de06ebdf3329d7094c2d055cc7e36`, divergence 0/0, sole primary
+worktree clean, no staged/unstaged/untracked changes or other current owner.
+Implementation branch is `codex/qa-followup-a`, initially in the primary checkout. The
+unchanged `core.hooksPath=.git/hooks` resolves installed hooks there but not in
+a linked checkout. A declared-dependency venv at
+`/tmp/hy-qa-followup-a-tools` prepares Python dependencies and pre-commit4.6.1.
+Its process PATH preserves normal installed Git hooks without SKIP or optional
+Graphify installation. The normal Git-hook engine
+has its own installed interpreter; version equality is not inferred. Independent
+review and final QA use a linked checkout prepared by root.
+
+A subsequent metadata-only probe found the primary checkout's ignored `.env`.
+Its content was not opened. Because public quickwin/template-security leaves
+would use it, no complete public QA or commit is permitted there. Independent
+rules-engineer approved exact relocation to the `.env`-free linked checkout:
+freeze writers, capture the task-owned NUL path list and full-index binary
+diff, verify matching diff/modes/bytes after apply, and only then restore the
+same primary tracked paths. Return primary to unchanged main and attach the
+branch in the linked checkout. No ignored path is moved or removed.
+
+Delivery Git commands use `-c core.hooksPath=` with the absolute complete
+common Git `hooks` directory. This restores all existing normal hooks in the
+linked checkout; it is not the earlier selective hook wrapper and changes no
+persistent setting. Only actual pre-commit/commit-msg results are commit
+evidence; no pre-push is claimed. Graphify remains unavailable in the prepared
+environment and NOT_RUN. Linked delivery is followed by an independently
+prepared read-only review snapshot and clean committed final all-files QA.
+
+Superpowers6.3.0 using-superpowers/brainstorming supplied the prior investigation;
+writing-plans/executing-plans now use this existing package. The execution
+skill routes available subagents to subagent-driven-development. Its separate
+progress ledger and default docs tree are replaced by this Task under the
+user's explicit single-owner instruction. Root owns package/manifest evidence;
+scoped writable contributors implement, independent read-only reviewers review.
+
+| Work / shared surface | Current finding and decision | Validation / recovery |
+| --- | --- | --- |
+| W12 guidance | correct provider suite owner, eval CODEOWNERS paths, changelog check, metadata base, stale AD generator claim | metadata/links/workflow/provider; restore reviewed docs commit |
+| W13 hook/environment | synthetic prepared Python is replaced by global-path promotion; separate bootstrap and preserve prepared tools | deterministic PATH and check-mode regressions; restore hook unit |
+| W14 audit generator | semantic validation parses pack, then generator parses it again; reuse same-invocation result and current output paths | exact-once plus structural/semantic/stale negatives; restore coherent source/output unit |
+| W15 package/manifest | root is sole writer; no file ownership overlap with W12-W14 except root integration | per-unit review, normal hooks, clean linked final QA |
+| Deferred B | legacy graph13 nodes, historical audit counts/Task phrases, active operations Target markers184, architecture consolidation, Zizmor duplicate argument candidate | preserve existing contracts and evidence; no deletion or broader redesign |
+
+Preflight: W12 prose has no interface dependency on W13/W14. W13 affects the
+post-edit tool environment only. W14 retains public command/graph contracts.
+W15 consumes their observed results and owns shared metadata. Scope and tests
+agree within each unit; the only shared writer is root. Policy pre-review is
+assigned to independent rules-engineer before protected source mutation.
 
 ### Verified local integration and completion (2026-09-08)
 
@@ -1404,6 +1476,128 @@ in-progress.
 
 ## Verification Evidence
 
+### Option A implementation checks (2026-09-09)
+
+Focused implementation checks used task-owned working-tree inputs in linked
+delivery `codex/qa-followup-a`, WSL2/Linux and the temporary declared-dependency
+environment. The analysis baseline is `d633c443`; individual rows identify
+later HEADs and exceptional snapshot contexts. No result proves another snapshot.
+
+| Command / input | Exit | Result |
+| --- | --- | --- |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_agent_governance_ci_routing tests.validation.test_provider_native_payloads tests.validation.test_validator_entrypoints` | 0 | PASS36,7.664s |
+| `shellcheck --severity=warning scripts/hooks/post-tool-validate.sh scripts/operations/use-qa-ci-tools.sh` | 0 | PASS, pinned shellcheck-py0.11.0.1 |
+| focused prepared-Python regression after helper-call marker addition | 0 | PASS1,0.083s; Ruff check/format check and diff check PASS |
+| temporary mutation probe restores automatic source, preserves original payload import path | 0 | PASS probe: test rejects mutation at helper-call marker; first probe setup failed at missing payload import and was corrected |
+| W12 metadata `--mode check-changed --base-ref HEAD`, four changed Markdown paths | 0 | PASS selected3,violations0; provider source is outside that metadata profile |
+| W12 `check-document-links.py --mode all` | 0 | PASS documents713,links6154,failures0 |
+| W12 `provider_surface_renderer.py --check` | 0 | PASS providers2,drift0; static evidence only |
+| W12 `check-github-workflow-contract.py` | 0 | PASS workflows5,jobs7,actions8 |
+| package metadata with repeated `--changed-path` and `--base-ref HEAD` | 0 | PASS selected3,violations0; initial unsupported positional-path invocation exited2 before validation |
+| review-corrected documents, metadata `--mode check-changed --base-ref HEAD`; renderer `--check` | 0 | PASS selected6,violations0; providers2,drift0 |
+| four planned Conventional Commit subjects, `cz check --message ... --message-length-limit 75` | 0 | PASS actual pinned Commitizen4.15.1 before expensive hooks |
+| Task metadata/export attempt overlapping the staged W14 commit's automatic hook snapshot | 0/128 | FAIL as a review-snapshot acquisition: the export was empty and `git apply --check` rejected it; no candidate review or PASS claim used this artifact. |
+| restored Task at `4c2c0b2dc`, `check-document-metadata.py --mode check-changed --base-ref HEAD --changed-path` with the canonical Task path | 0 | PASS selected1,violations0; scoped diff check passed before this receipt |
+
+Runtime preparation read-back: Python3.12.3, Bash5.2.21, Git2.43.0,
+Compose CLI5.5.1, pre-commit4.6.1; Linux6.18.33.2 WSL2, `/proc` present and
+opening/closing a pidfd for the current process passed. PID1 reports `codex`;
+that is the restricted sandbox observation. The normal Git-hook host reports
+PID1 `systemd`, the same WSL2 kernel and a successful pidfd self probe. Final
+public QA uses that host context with normal init/reaping, not a claim that the
+sandbox PID1 alone certifies cleanup. No service or Docker daemon operation was
+used for these version/prerequisite probes. Installed normal Git hooks use their
+existing pre-commit4.6.2 interpreter. The final explicit all-files wrapper uses
+the separately prepared repository-pinned pre-commit4.6.1; these are distinct
+observed tool contexts, not assumed version parity.
+
+| W14 command / input | Exit | Result |
+| --- | --- | --- |
+| default-pack exact-once, independent override and returned-model regressions before implementation | 1 | expected RED: duplicate default validation and missing returned model; override already passed |
+| same focused regressions after implementation | 0 | PASS3; default pack calls2→1, override still validates each distinct pack once |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_audit_criterion_contract tests.validation.test_agentic_audit_semantic_freshness` | 0 | PASS49,2.943s, contributor observation |
+| matrix generator `--check` before regeneration | 1 | expected stale output |
+| matrix generator `--write`, repeated explicit `--write`, then `--check` | 0 | PASS identical generated SHA-256 `64ed1ac5a793d504e819598e73e2046cb5badb0addc9828e60ae7b70e495ec0f`; fresh |
+| standalone semantic/criterion validators, Bash syntax, pinned ShellCheck, Ruff check/format check, diff check | 0 | PASS assertions11; reports11/rows161/unique161; existing census unchanged |
+
+The CI gate planning sources and workflow contract are byte-identical to the
+baseline. A post-change plan-only probe in the isolated code-review worktree
+confirmed local/PR invocation counts:
+empty or ruff18/23, Task29/35, provider37/43, workflow/full43/56, tracked
+`projects/storybook/nextjs/package-lock.json`43/56, unknown18/30. No duplicate
+entrypoint/argv/cwd/environment identities appeared. `changed` and `full`
+explain modes also exited0. These observations establish unchanged selection,
+not hosted execution or an end-to-end wall-time improvement.
+
+W12 author froze its five owned paths before W14 implementation began. It
+changed prose and CODEOWNERS only; no new fixture or runtime test was required.
+
+### Option A baseline and setup (2026-09-08)
+
+Transfer completed after the revised policy review: the exact eight owned
+tracked paths had an empty index and no untracked paths. Binary diff SHA-256
+`45007bbc4f26d0e0c5eb8cda8687d6a8bd23bac0a2d145b088a93cf805061fcf`,
+all per-path byte hashes and modes matched in both checkouts before exact
+primary restoration. Primary is clean main at the baseline below. The linked
+`.worktrees/qa-followup-a-review` now owns `codex/qa-followup-a`; its `.env` is
+absent. A second detached `.worktrees/qa-followup-a-code-review` holds only
+root-applied review snapshots. No private/ignored input was copied or removed.
+
+W13 regression evidence from the implementation contributor: the three new
+cases first exited1 with two priority/idempotence failures, then exited0 after
+the fix. Routing28, native payload5 and entrypoint3 tests passed with
+`PYTHONPATH=.`. An initial entrypoint attempt without that required import path
+failed with three ModuleNotFoundError results. Ruff check/format check and
+Bash syntax passed; ShellCheck was initially unavailable (exit127) and is now
+prepared at the repository-pinned version in the temporary venv. The primary
+`--profile changed` attempt was interrupted (exit130) after the `.env` risk was
+identified; its observed progress was governance/provider/eval validation. It
+is not aggregate PASS. Public validation now runs only in the linked checkout.
+
+All baseline commands below target clean `d633c443006de06ebdf3329d7094c2d055cc7e36`
+in local WSL2/Linux with Python3.12.3; Python bytecode writes were disabled.
+Explain and plan-model probes do not execute the represented public gates.
+
+| Command / context | Exit | Observed result |
+| --- | --- | --- |
+| authorized `git fetch --no-tags origin main`, status/ref/worktree read-back | 0 | PASS same main/origin/HEAD, 0/0 divergence, clean primary tree |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --explain` | 0 | PASS repository-integrity fallback; plan only |
+| `python3 scripts/operations/provider_surface_renderer.py --check` | 0 | PASS providers2, drift0; static, not live delivery |
+| `python3 scripts/validation/check-script-manifest.py` | 0 | PASS inventory79 |
+| `python3 scripts/validation/check-github-workflow-contract.py` | 0 | PASS workflows5/jobs7/actions8 |
+| `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | 0 | PASS violations0 |
+| `python3 scripts/validation/check-document-links.py --mode all` | 0 | PASS documents713/links6154, failures0 |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_plan` | 0 | PASS27, 21.209s; real Git snapshot/initial/shallow/rename/partial and plan/context regressions |
+| `PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_adapters` | 0 | PASS18, 0.293s; includes canonical commit translations and examples |
+| `python3 scripts/validation/audit_criterion_contract.py` | 0 | PASS; single-run wall0.044s |
+| `python3 scripts/validation/check-agentic-audit-semantic-freshness.py` | 0 | PASS11 assertions; single-run wall0.083s |
+| `bash scripts/validation/generate-audit-implementation-matrix.sh --check` | 0 | PASS fresh; single-run wall0.123s |
+| helper sourced in temporary synthetic tool environment | 0 | FAIL desired priority: prepared python path replaced by synthetic user-global python; no real private input |
+| declared requirements installed in temporary venv; isolated adapter regression | 0 | PASS install, then18 tests0.275s; no global installation |
+| normal `git switch -c codex/qa-followup-a`, separate detached review worktree creation | 0 | PASS normal hooks/settings preserved, linked review tree initially clean |
+
+The same plan probe found local/PR invocation counts of18/23 for empty or
+ruff-only changes,29/35 for a Task,37/43 for a provider,43/56 for workflow or
+package-lock changes and full. No repeated unittest module argv was found.
+The audit generator internally validates the pack twice; with separately
+selected structure/semantic commands the full plan reaches that check four
+times. These counts do not measure hosted wall time or imply duplicate tests.
+
+Read-only remote observation: run34232730449 is a completed successful **push**
+at the baseline SHA, with validation-full job102082653704 and its SARIF upload
+successful; validation-changed job102082656043 is skipped. Same-SHA CodeQL
+Actions/Python/JavaScript-TypeScript checks succeeded. Default CodeQL setup is
+configured, ruleset list is empty, and branch protection requires only
+validation-changed, app15368, strict=true. Retrieved full-SHA action.yml files
+for all8 registered Actions report node24 as declared. These observations apply
+only to that SHA/event; they do not retroactively alter historical NOT_RUN or
+prove any subsequent local change. No remote execution was triggered.
+
+Installed version probes report Codex0.153.4 and Claude2.1.263. Codex's version
+command reported a read-only PATH-alias warning; startup/discovery/enforcement
+was not attempted. Official hook/required-check documentation was compared
+with tracked configuration; native/model execution remains NOT_RUN.
+
 ### Actual local integration receipts (2026-09-08)
 
 | Command / context / target | Exit | Result / limit |
@@ -1817,6 +2011,9 @@ NOT_RUN observations are not converted into live PASS evidence.
 | 19 | W10 | PASS: required drift leaf exact-once in five contexts and workflow/security regressions; new hosted run NOT_RUN. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 20 | W7/W10 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
 | 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
+| 22 | W13 | PASS: prepared tool priority, explicit-only helper use, repeat stability and missing-tool behavior; independent code review approved. | [Post-tool hook](../../../../scripts/hooks/post-tool-validate.sh) |
+| 23 | W14 | PASS: generator reuses the same validated pack once per invocation; distinct override and existing negative paths remain checked. | [Semantic validator](../../../../scripts/validation/check-agentic-audit-semantic-freshness.py) |
+| 24 | W12/W14/W15 | PASS for corrected owner/event/path guidance and regenerated output; remote observations stay bound to baseline SHA/event. Final integrated QA receipts remain separate below. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 
 ### Why all six Tasks read `in-progress` (2026-09-07, local-executed)
 
@@ -1856,6 +2053,54 @@ were restored to `in-progress` immediately after the test, and
 `check-document-corpus-lifecycle.py` returns `violations=0` on the restored tree.
 
 ## Review Evidence
+
+### Option A exact-diff reviews (2026-09-09)
+
+Independent Python reviewer `a_w13_review` separately approved W14 Specification
+PASS / Quality APPROVED, zero findings, on exact five-file diff SHA-256
+`57bbbf6c1511bb20666d95cfa1be5d637a3ea779b8184c6358586aaf016f5869`.
+Independent checks passed four reuse/override/incomplete-pack/model cases
+(0.296s), three symlink/UTF-8/Git-failure cases (0.159s), Ruff/Bash/ShellCheck,
+diff check and generator freshness. The generated hash matched the author.
+
+Independent rules-engineer `a_policy_review` returned Specification PASS /
+Quality APPROVED for exactly seven W12/Spec/Plan paths. Initial review required
+separate PR/push metadata wording, the exact operations marker scope, removal
+of stale Plan integration permission and current authored dates. All were
+corrected, then re-reviewed with zero findings. Frozen W12 v2 diff SHA-256
+`e8319b26f45bfd41f78e7434252b7b9e47bcf3a8eb2acb0872c5bdeb72089e31`
+and Spec/Plan v2
+`2662dd8d2184f4a0f4f51dcb709686047ed6ed3ac5182f0aa0a7cfe7d758c046`
+matched the isolated checkout byte-for-byte. Task evidence was excluded from
+that review and has its own final review before its commit.
+
+Independent read-only Python reviewer `a_w13_review` approved W13 Specification
+PASS / Quality APPROVED in the separate code-review worktree. Its optional
+helper-call regression finding was implemented and independently re-reviewed:
+exact five-file diff SHA-256
+`7917e700f0c02fa2530e6a80d5ad0818c5f7a35cc19bea119bb3114acd9b1e05`.
+Final review reported zero remaining findings; focused test1,0.122s plus Ruff
+check/format and scoped diff check passed. Earlier review also exercised the
+three new cases and existing linter-failure propagation (4 tests,0.272s), Bash
+syntax and ShellCheck. This is code/spec review, not native or hosted execution.
+
+### Option A policy pre-review (2026-09-08)
+
+Independent read-only rules-engineer `a_policy_review` returned policy PASS
+before protected source mutation. It confirmed the user-approved scope, normal
+hook-preserving primary branch and isolated linked review/QA checkout, and
+temporary declared-dependency environment. Required implementation guards:
+preserve inbound tool order, remove the helper's obsolete hook consumer from
+manifest, render the actual validated audit pack without accepting caller PASS
+or another pack, preserve CLI/DAG/standalone failure behavior, and distinguish
+historical baseline cleanliness from the currently edited candidate. The last
+wording was corrected in Plan. This is policy pre-review, not exact diff approval.
+
+The same independent reviewer subsequently approved the `.env`-driven transfer
+and full common-hook rebinding after verifying hook metadata and the shared
+Git directory. Its required diff/mode/byte equality, exact restore, clean main,
+no ignored-state mutation, and renewed review after hook fixes govern delivery.
+This newer ruling supersedes the initial primary-commit mechanics only.
 
 Resumed integration receipt review: independent `integration_receipt_review`
 returned Specification PASS / Quality APPROVED with zero Critical/Important/Minor
@@ -1979,6 +2224,14 @@ prose with the exact Registry exceptions as part of the approved integration,
 not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
+
+Option A local task-owned commits (2026-09-09):
+
+| Commit | Scope / observed hook result |
+| --- | --- |
+| `6bd86e57717db2dd022bb0b6926445d09285bf6a` | W12 plus Spec/Plan, seven reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration verified |
+| `1e37e3b636b4bf243e14e46acc0347ec604aba3a` | W13 hook/helper/README/manifest/regression, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed |
+| `4c2c0b2dc9a4990bbf1138e28e1a471ceab66781` | W14 validator/generator/tests/generated output, five reviewed paths; public changed and commit-msg PASS, exit0; normal unstaged restoration observed; timed commit including hooks424.16s |
 
 Current convergence commits (2026-09-08), all local and task-owned:
 
