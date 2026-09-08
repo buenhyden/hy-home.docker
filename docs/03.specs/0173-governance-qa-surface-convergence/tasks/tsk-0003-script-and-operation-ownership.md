@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -155,6 +155,35 @@ catching real drift, and it is the strongest evidence yet for the earlier
 decision not to weaken it. Both are repaired on a branch cut from the merged
 `main` rather than by touching `main`.
 
+The repair pull request then produced the finding that matters most. #147 moved
+`validation-changed` from failing at one minute thirty-six to failing at nine
+minutes forty-seven: the seventeen links are gone, `drift-gate` passes, CodeQL,
+GitGuardian, the labeler and the greeting all pass, every unit batch reports OK,
+and Compose validation renders twenty-eight selections and two hundred
+thirty-two services. It then exits 10 at `leaf.postgres-logical-upgrade-config`
+with `status=failed failure_class=preflight reason=source-image-not-local` and
+`cleanup_status=passed`.
+
+That failure is not this package's. `assert_exact_local_image_identity` refuses
+to proceed unless the pinned image is already present locally with matching
+repository, target and config digests, which is a deliberate supply-chain
+boundary that forbids an implicit pull. A hosted runner has no such image, so
+the leaf cannot pass there. Task 6 already recorded this exact string. The
+merged Dependabot pull requests #143 and #145 failed `validation-changed` with
+the identical `reason=source-image-not-local` and exit code 10 before this
+session began, and #145's `drift-gate` failed with the same `changes=10` this
+package repaired.
+
+The last thirty `ci-quality.yml` runs, reaching back to 2026-09-06, are failures
+on both `push` and `pull_request` without a single success. Required checks have
+therefore been red throughout, and every merge in that window passed by
+administrator bypass rather than by a green check. The boundary was left intact:
+weakening the identity assertion, reporting an unavailable tool as a pass, or
+pulling an image inside the gate would each trade a real guarantee for a green
+square. Restoring a truthful hosted gate is an owner decision between preparing
+the pinned image in the workflow before the gate runs and excluding the leaf
+from CI contexts the way the local context already excludes nine others.
+
 ## Verification Evidence
 
 | Check | Result |
@@ -204,6 +233,11 @@ decision not to weaken it. Both are repaired on a branch cut from the merged
 | Drift repair | The script's own remedy rewrote the registry, the provenance snapshot was regenerated through its generator, and `test_direct_current_docs_use_registry_versions` then required Traefik, Ollama, and Dozzle README citations to follow |
 | Round-5 local verification | On the repair branch at `cca15d647`: `run-ci-gate.py --profile full` exit 0 and `unittest discover -s tests` 1195 tests OK with 11 skips |
 | Generated outputs on the repair branch | LLM Wiki, audit matrix, security readiness, supply-chain summary, provider renderer, and tech-stack provenance all report fresh |
+| Hosted run 3 (34178910270) | PR #147: `validation-changed` FAILED after 9m47s with zero `missing-link-target`, all unit batches OK, Compose validation passing 28 selections and 232 services, then exit 10 at the PostgreSQL rehearsal preflight |
+| Hosted checks that passed on #147 | `drift-gate`, `Analyze (actions)`, `Analyze (javascript-typescript)`, `Analyze (python)`, `CodeQL`, `GitGuardian Security Checks`, `triage`, `pull-request-greeting`; `validation-full` and `issue-greeting` skipped by their conditions |
+| Pre-existing hosted failure | Runs 34160561874 (#143) and 34164770210 (#145) both failed with `failure_class=preflight reason=source-image-not-local` and exit code 10, before this session |
+| Hosted history | The last 30 `ci-quality.yml` runs, back to 2026-09-06, are failures on both `push` and `pull_request`, with no success in the window |
+| Main push after #146 | Run 34172984899 at `b5293a067` fails on `missing-link-target`, which `7cd7c8ab4` repairs |
 
 ## Review Evidence
 
@@ -248,6 +282,15 @@ This evidence checkpoint does not predict its own commit identity.
   cover, and a registered test compares the claim against a built plan.
 
 ## Deferred Items
+
+- `leaf.postgres-logical-upgrade-config` cannot pass on a hosted runner. Its
+  preflight requires the pinned image to be present locally with matching
+  digests and refuses an implicit pull, which is the supply-chain guarantee and
+  is not weakened here. Restoring a truthful hosted gate means either preparing
+  that image in the workflow before the gate runs, which the workflow contract
+  admits one bootstrap step for, or excluding the leaf from CI contexts as the
+  local context already excludes nine leaves. Both change registered
+  composition and belong to the owner.
 
 - `main` at `b5293a067` carries seventeen broken links and a ten-component
   registry drift. Both are repaired on `fix/0173-ignored-link-targets`, cut from
