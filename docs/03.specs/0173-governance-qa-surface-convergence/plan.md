@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.6.0"
+version: "0.6.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -30,7 +30,8 @@ The existing W1-W6 migration is implemented; its dated evidence is preserved.
 - A clean linked worktree from fetched main, explicit task ownership, installed
   repository dependencies, read-only policy review and independent diff review.
 - No remote writes, service operations, real secrets, global installation,
-  history rewriting, or arbitrary hook skips. Keep the final branch/worktree.
+  history rewriting, or arbitrary hook skips. Follow the current Task's
+  expressly authorized local integration and branch/worktree disposition.
 
 ## Execution Sequence
 
@@ -136,9 +137,11 @@ Files: `.github/workflows/tech-stack-version-sync.yml`, workflow contract/checke
 5. Review each logical diff and commit. Use the controlled final all-files wrapper
    only with actual tracked Task, reviewed owned prefixes, and clean linked
    worktree. Review any resulting formatter diff and verify idempotence.
-6. Finish with verified status and ownership under the completion checklist;
-   keep the branch and worktree. Package lifecycle stays nonterminal while its
-   actual remaining acceptance is unavailable.
+6. Finish with verified status and ownership under the completion checklist.
+   Use current Task authorization for local integration and cleanup. Separate
+   native/hosted observations remain unverified until actually run; they are not
+   additional local acceptance gates. Terminal package lifecycle follows its
+   own atomic preservation procedure, not a condition added to local merging.
 
 ### W11: Repair provider edit routing
 

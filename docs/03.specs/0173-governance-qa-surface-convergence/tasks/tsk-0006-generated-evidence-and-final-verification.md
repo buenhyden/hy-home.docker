@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -25,12 +25,11 @@ branch_integration_receipts:
 
 ## Objective
 
-Own the remaining acceptance evidence after canonical-home relocation and its
-verified follow-ups entered local main at `8176cdee7`. Reconcile the active
-package against that implementation without repeating completed milestones or
-reinterpreting historical results. Local documentation changes, scoped commits
-and safe verification remain authorized; remote delivery and operational actions
-remain outside scope.
+Own acceptance and follow-up evidence for the canonical-home and QA convergence.
+Reconcile the active package against actual Git state without repeating completed
+milestones or re-dating historical results. The newest Work Log entry owns the
+current user authorization and its integration conditions; older checkpoints
+and scope decisions remain dated evidence.
 
 Reading order: Work Log entries run newest first, so the current state is the
 first entry under that heading and nothing below it needs to be read to learn
@@ -48,6 +47,54 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Completion assessment and conditional integration follow-up (2026-09-08)
+
+The latest user request authorizes follow-up work, checking completion of the
+request, and main integration plus branch/worktree cleanup only if complete.
+This supersedes the earlier Keep-the-branch choice only after that condition
+is met. Starting state: main and origin/main at `efd58f441`, implementation
+branch `codex/governance-qa-convergence` at `b1d93f8d1`, both worktrees clean.
+The five local convergence commits and their actual QA receipts are preserved.
+
+Root continues approved W6/W7/W9 verification/documentation work. Independent
+rules-engineer found no numbered acceptance criterion requiring live native,
+model or hosted execution: SPEC criteria15/16/20/21, Plan W11 and REQ-0024's
+evidence-separation contract require honest limits, not an added runtime gate.
+Correct the stronger active Spec/Plan/Task prose while retaining NOT_RUN for
+those observations. Criterion15 can report the actual applicable local PASS.
+Terminal package/archive disposition is a separate lifecycle operation; it is
+not a new precondition for completing this local implementation request.
+
+The latest direct user instruction narrowly authorizes verified local-main
+integration and subsequent exact branch/worktree cleanup. It takes precedence
+over the generic codex-branch PR route only for this local ref operation; remote
+delivery retains the PR/required-check rules. Push/PR/hosted authorization was
+requested because the earlier user scope excluded those actions; no response
+grants remote authority. This pending optional remote route does not block the
+already authorized local merge. No global policy exception is introduced.
+
+After the exact follow-up diff is independently reviewed and normally committed,
+confirm both worktrees clean, main at the observed baseline, and main an ancestor
+of the feature tip. Use `git merge --ff-only codex/governance-qa-convergence`
+from the main worktree. Verify main equals the delivered feature tip before
+ordinary `git worktree remove` and `git branch -d`; stop on dirty/divergent state
+or an active owner. Recovery retains the original main commit and every source
+commit; no reset, history rewrite, forced deletion or remote write is authorized.
+
+One active navigation defect remained: the verification surface map claimed
+path rules had not changed, omitted optional frontend-root selection, and
+described the old hook path filter. Update that existing map from the actual
+contract and runner; it remains navigation, not a new authority. Root-tool
+selection, unconditional integrity fallback, known/unknown path behavior,
+all-path/always-run hooks and staging-sensitive generator inputs are now explicit.
+
+Follow-up tools use a controller-owned temporary venv, not a global installation.
+The first git-cliff 2.14.0 install failed resolution (exit1): the official site's
+latest banner did not match PyPI availability. Public PyPI metadata reported
+2.13.1; installing that exact version together with repository-pinned pre-commit
+4.6.1 succeeded. Both binaries reported those versions. Network use was bounded
+to public package metadata/download, with approved sandbox escalation.
 
 ### Governance, QA, CI/CD and commit convergence (2026-09-08)
 
@@ -1333,6 +1380,30 @@ in-progress.
 
 ## Verification Evidence
 
+### Conditional integration follow-up checks (2026-09-08)
+
+| Command / context / target | Exit | Result / limit |
+| --- | --- | --- |
+| starting `git status`, worktree list and HEAD/main read-back | 0 | PASS original main and implementation worktree clean; main/origin at efd58f441, implementation b1d93f8d1 |
+| temporary venv install pre-commit4.6.1/git-cliff2.14.0 | 1 | FAIL package resolution; no2.14.0 on PyPI; public metadata read-back found2.13.1 |
+| temporary venv install exact pre-commit4.6.1/git-cliff2.13.1 and `--version` | 0 | PASS declared pre-commit pin and actual git-cliff version; no global install |
+| actual git-cliff2.13.1 synthetic context/render matrix at b1d93f8d1; independent commit reviewer | 0 each | PASS148 inputs/296 CLI calls; 13types, scope, breaking markers/footers, skip protection, bodies/trailers and rendered Markdown; no mismatches; offline/no-exec, no repository mutation |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_execution_context.LocalExclusionDocumentationTests tests.validation.test_agent_governance_ci_routing.AgentGovernanceCiRoutingTests`; map follow-up | 0 | PASS22 tests17.202s; existing scope/exclusion regressions |
+| pinned Markdownlint0.22.1 and `git diff --check`; map follow-up | 0 | PASS one navigation source, no executing contract change |
+| `git fetch --no-tags origin main`; follow-up baseline | 0 | PASS main/origin remain efd58f441, divergence0/0; no remote mutation |
+| `check-document-metadata.py --mode check-changed --base-ref HEAD`; four follow-up documents | 0 | PASS selected4, violations0, exceptions0, overrides0; contract checks0 violations |
+| document links `--mode all`; follow-up tree | 0 | PASS713 documents/6154 links/46 pairs/72 archive links, failures0 |
+| `provider_surface_renderer.py --check`; follow-up tree | 0 | PASS2 providers, drift0 |
+| exact task-owned path comparison; baseline efd58f441 through working tree | 0 | PASS50 paths including the navigation map; no unexpected paths |
+| pinned Markdownlint0.22.1 on four follow-up documents; `git diff --check`; cheap Commitizen message check | 0 | PASS scoped formatting/diff and proposed follow-up message |
+
+Actual git-cliff argv: `git-cliff HEAD..HEAD --config cliff.toml --offline
+--no-exec --with-commit MSG`, once with `--context` and once without for each
+synthetic message. Only the returned synthetic commit fields and rendered
+changelog were inspected; no tag, changelog file, real commit or remote fetch
+was created. This discharges the earlier actual git-cliff NOT_RUN item locally,
+not hosted changelog/release execution.
+
 ### Current convergence checks (2026-09-08)
 
 | Command / context / target | Exit | Result / limit |
@@ -1668,8 +1739,9 @@ the delivered tree and are not QA evidence.
 Rows 1-16 retain the earlier migration provenance with current owner wording;
 8176cdee7 is a historical integration checkpoint. Rows 17-21 record the current
 convergence. Its current local checks and commits have separate receipts above
-and in the Commit Ledger; none re-dates older results or closes the unresolved
-package acceptance in row 15. BLOCKED/NOT_RUN is not PASS.
+and in the Commit Ledger; none re-dates older results. Row15 now reflects the
+independently reviewed applicable-check interpretation; separate native/hosted
+NOT_RUN observations are not converted into live PASS evidence.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
@@ -1687,10 +1759,10 @@ package acceptance in row 15. BLOCKED/NOT_RUN is not PASS.
 | 12 | W1 | PASS: the exact SPEC-0172 source receipt and superseded full-packet mirror are recorded on this Task; ordinary SPEC-0174 disposition remains a registered lifecycle route. | [Branch-integration receipt](tsk-0006-generated-evidence-and-final-verification.md) |
 | 13 | W5 | PASS: DATA-0068, DATA-0069, DATA-0073, and DATA-0074 disposition evidence retains byte-preserved bodies and paired Tombstones. | [Archive records](../../../98.archive/) |
 | 14 | W2 | PASS: implemented canonical/provider contract; 100 authored inputs, 77 source dispositions, independent review and 92 actual-root regression tests; native runtime acceptance remains explicitly unverified. | [Current verification ledger](#current-verification-ledger) |
-| 15 | W6 | NOT_RUN: whole-package acceptance is incomplete; the current authorized PostgreSQL config-only check passes; both current local public profiles pass. Native acceptance and hosted verification remain unexecuted, separate from dated operational evidence. | [Local commit authorization and follow-up](#local-commit-authorization-and-follow-up-2026-09-06) |
+| 15 | W6 | PASS: applicable focused, manifest, metadata/lifecycle, generated, diff and local public/full/all-files checks have observed PASS receipts. Native/model/hosted observations remain separately NOT_RUN; no live or remote acceptance is inferred. | [Current checks](#current-convergence-checks-2026-09-08) |
 | 16 | W6 | PASS: the Task distinguishes local/configured evidence from unverified runtime, entitlement, and remote state. | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
 | 17 | W8 | PASS: deterministic selector/model/Git snapshot regressions; initial/missing-base inputs fail safely; current integrated profiles recorded above. | [Gate selection](../../../../scripts/validation/ci_gate_runner.py) |
-| 18 | W9 | PASS: Commitizen/adapter/translated-hook message matrix; actual git-cliff execution NOT_RUN because executable is unavailable. | [Commit contract](../../../../.cz.toml) |
+| 18 | W9 | PASS: Commitizen/adapter/translated-hook matrix and subsequent actual git-cliff2.13.1 matrix148inputs/296context-render calls; all exit0. | [Commit contract](../../../../.cz.toml) |
 | 19 | W10 | PASS: required drift leaf exact-once in five contexts and workflow/security regressions; new hosted run NOT_RUN. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 20 | W7/W10 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
 | 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
@@ -1733,6 +1805,26 @@ were restored to `in-progress` immediately after the test, and
 `check-document-corpus-lifecycle.py` returns `violations=0` on the restored tree.
 
 ## Review Evidence
+
+Final follow-up exact-diff review: independent `policy_review` returned
+Specification PASS / Quality APPROVED, zero Critical/Important/Minor findings,
+after correcting unknown-path versus unavailable-evidence routing, preserving
+native startup BLOCKED separately from later NOT_RUN, and adding the fifth
+commit receipt. Reviewed four-file diff SHA-256:
+`4498eb06a706b8a121b19982c1ab4eb109186a76cc0a10a2a6857ce777a411ca`.
+The reviewer also approved the conditional ff-only integration, merged-result
+verification, subsequent Task-only receipt commit and ordinary cleanup sequence.
+This paragraph records that review; it is not part of the preceding diff hash.
+
+Conditional-integration policy audit: independent `policy_review` found the
+active Spec Open Questions, Plan finish wording and Task row15 had added a
+native/hosted package blocker not present in the numbered acceptance criteria.
+Restore the acceptance meaning without claiming those executions ran. The
+latest direct user instruction authorizes local ff-only main integration after
+completion and then clean, reachable branch/worktree removal. It overrides the
+generic PR route only for this local operation; remote delivery still requires
+its own approval/checks. Package archive/terminal promotion is a separate
+lifecycle operation, not a new local merge gate.
 
 Current convergence reviews (2026-09-08): rules-engineer approved the initial
 bounded design and then W7 exact diff after six corrections (work-unit grammar,
@@ -1835,6 +1927,7 @@ Current convergence commits (2026-09-08), all local and task-owned:
 | `04eafc83b` | W9 commit grammar/consumers and semantic operations-table parsing; 11 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
 | `1aea9246a` | W10 workflow consolidation/protection guidance and registered generated evidence; 14 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
 | `6dbf23413` | W7 SDLC/document owners, active package and publication-scan regression; 11 files; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
+| `b1d93f8d1` | Final local verification receipts; one Task file; actual public changed and commit-msg PASS, exit 0; clean worktree after commit |
 
 Earlier dated commits:
 
@@ -1915,25 +2008,27 @@ No completed archive packet or new Spec/Plan/Task was created.
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
   this follow-up corrects the active Spec/Plan references.
 - Push, pull request, hosted execution, branch-protection mutation, deployment,
-  tag and release remain outside scope. The current convergence request permits
-  reviewed local implementation/commits and read-only remote observation while
-  preserving this branch/worktree. The earlier 8176cdee7 integration/cleanup
-  instructions are dated history, not current merge or deletion authorization.
+  tag and release remain outside the current local-integration authorization.
+  The latest user instruction permits local main integration after completion
+  and then exact branch/worktree cleanup. Earlier keep/cleanup instructions
+  retain only their dated scope; the newest Work Log owns this disposition.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.
 - The PostgreSQL blocker is discharged. `leaf.postgres-logical-upgrade-config`
   PASSED and the full rehearsal PASSED with `integrity_status=passed`, both under
   the operator's single-instance runtime authorization on 2026-09-07. The
-  whole-migration aggregate is still not claimed, because the remaining Deferred
-  Items below are not discharged by those two operating runs. The current
-  local public profiles, actual all-files and remote observations have their
-  own current receipts above. QuickWin and template-security have
+  dated operating result does not prove current local or remote acceptance.
+  Current local public profiles, actual all-files and remote observations have
+  their own receipts above. The applicable local criterion15 is PASS; unrelated
+  live/hosted observations are not added package blockers. QuickWin and template-security have
   isolated example-input PASS evidence; neither proves actual host, service or
   volume readiness.
-- Normal native discovery is BLOCKED before acceptance; skill calls, live hook
-  delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
-  change, model call or installation is authorized by this follow-up.
+- Native Codex startup remains BLOCKED at the recorded private/global-state
+  boundary. Discovery, skill calls, live hook delivery, enforcement and model
+  entitlement remain NOT_RUN/unverified. Neither blocks this local integration;
+  runtime claims require their own evidence. No auth/global-state access, trust
+  change or model call is authorized.
 - The controlled final all-files item is discharged by the actual clean
   `6dbf23413` invocation above, exit0 with no source changes. Its 34-case wrapper
   regression remains separate evidence. No user-global installation or setting

@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -38,7 +38,7 @@ provenance, not permanent validation inputs.
   commits. Fetch and authenticated remote reads are authorized observations.
 - Inspect the actual fetched main, branch, worktree, index, and working tree;
   record the measured SHA and ownership only in Task 0006. Preserve unrelated
-  changes and the final local branch/worktree.
+  changes; current Task authorization determines local integration/disposition.
 - In scope: `.agents/`, `.claude/`, `.codex/`, `.github/`, `scripts/`, `tests/`,
   connected `evals/`, `examples/`, `_workspace/`, root tool/commit configuration,
   and affected active, working, and historical document consumers. Project-local
@@ -271,8 +271,10 @@ def canonical_invocation_key(
 Normal native hook delivery, provider entitlement, and hosted verification of
 new local commits require their actual execution evidence. Local permission and
 available tool inputs determine which validation routes can run; absent inputs
-are NOT-RUN or BLOCKED, never inferred PASS. The existing package remains
-nonterminal while those package-level acceptance limits remain unresolved.
+are NOT-RUN or BLOCKED, never inferred PASS. These are separate observations;
+they do not add live execution requirements to the numbered acceptance contract.
+Local completion and authorized local integration use their applicable evidence.
+Terminal package disposition separately follows the registered lifecycle rules.
 
 ## Operational Impact
 

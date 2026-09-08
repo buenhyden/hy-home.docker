@@ -1,6 +1,6 @@
 ---
 title: "Verification Surface Map"
-version: "0.5.0"
+version: "0.5.1"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
@@ -75,38 +75,53 @@ from this list alone would not make it reachable.
 
 ## What a Change Selects
 
+The declared `repository-integrity` fallback is always included. Rows below
+show the suites selected by each matching path rule, not a replacement for
+that fallback. Exact prefixes remain owned by the workflow contract.
+
 | Changed prefix | Suites selected |
 | --- | --- |
 | `.agents/`, `.claude/`, `.codex/`, `AGENTS.md`, `CLAUDE.md` | agent-governance, document-contract, document-graph, document-lifecycle |
 | `README.md`, `_workspace/`, `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/90.references/`, `docs/98.archive/`, `docs/99.templates/` | document-contract, document-graph, document-lifecycle |
 | `docker-compose.yml`, `docs/05.operations/`, `examples/`, `infra/`, `secrets/` | document-contract, document-graph, document-lifecycle, operations |
 | `.github/`, `.pre-commit-config.yaml`, `evals/`, `projects/`, `scripts/`, `tests/` | all six suites |
+| Root tool/commit paths declared in the contract, including `.cz.toml`, `.gitmessage`, and `ruff.toml` | repository-integrity |
 | any other tracked path | repository-integrity, by the declared fallback |
 
 A path with no matching rule still selects a suite. Silence is never the result
 of an unmatched path.
 
+For `changed`, the contract's `changed_root_rules` then selects the optional
+frontend-quality and Storybook roots within those suites. Their current inputs
+are workflow/pre-commit definitions, the Next.js package, scripts, and tests.
+Known document/provider/root-tool paths alone omit those optional roots; the
+dependency audit and other required roots remain selected. An unknown valid
+path retains every root of its fallback-selected suite. Unavailable or invalid
+changed-path evidence fails closed before planning. `full` retains all suite
+roots before the execution-context exclusions above apply.
+
 ## Two Selectors, One Requirement
 
-Two independent selectors decide whether the public gate runs:
+Two routing surfaces have different responsibilities:
 
 - `.github/workflow-contract.yml` `public_gate.changed_path_rules` decides which
   suites a changed path needs.
-- `.pre-commit-config.yaml` decides whether the public gate hook runs at all for
-  the staged file set.
+- `.pre-commit-config.yaml` admits every path for both public hooks and sets
+  `always_run: true`, so empty or deletion-only input does not omit validation.
 
-The second must admit every prefix the first names. A prefix the contract routes
-but the hook selector omits produces a change that needs suites and runs none
-locally. The reverse asymmetry is safe: a broader hook selector only runs the
-gate more often. A registered test owns this relation so a divergence fails
-rather than passing quietly.
+The hook does not maintain a second impact list. Registered regressions compare
+its admitted paths and always-run behavior with the public routing contract.
+Automatic commit hooks observe the index with surviving untracked inputs;
+direct local `changed` observes the staged/unstaged/untracked union. A receipt
+from either route proves its own snapshot only.
 
 ## Generated Outputs and Staging Order
 
 The LLM Wiki generator builds its inventory from `git ls-files --cached`, so an
-added file is invisible to it until that file is staged. A freshness check run
-on an unstaged working tree therefore reports fresh while the outputs are
-already stale, and the truth appears only after `git add`.
+added file is invisible to it until that file is staged. A freshness check can
+therefore pass on an unstaged candidate and become stale after staging. The
+security-readiness generator also derives its inventory from tracked paths;
+staged workflow deletion changes that generated workflow count.
 
 Run the freshness check after staging, and carry the regenerated LLM Wiki
 outputs in the same commit as the document that changed them. `graphify-out/`
@@ -125,16 +140,14 @@ to separate and the intermediate-stash race it once caused cannot occur.
 
 ## Provenance
 
-Each transcribed source names the commit it was read at, because they were not
-read at the same time. Suite and prefix rows come from `.github/workflow-contract.yml`
-`public_gate` at `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06, and
-that section has not changed since. The `.pre-commit-config.yaml` selector was
-re-read at `9051977aa` on 2026-09-07, where it gained the `_workspace/` and
-`evals/` prefixes the contract already routed; the earlier provenance named one
-commit for both files and so dated that selector to before its own fix. Rows are
-transcribed from those files, not summarized from prose. The workflow contract
-remains the authority for execution; a disagreement between this map and that
-file is a defect in this map.
+Suite/path/root routing and public hook settings were revalidated against
+`.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py` and
+`.pre-commit-config.yaml` on 2026-09-08 after the convergence implementation.
+The previous claim that the path rules were unchanged is superseded by the
+explicit root-tool rules and optional-root selection now described above.
+The workflow contract remains the execution authority; a disagreement between
+this navigation map and that source is a defect in this map. Dated execution
+and staging-recovery receipts belong to the current Spec Package Task.
 
 The local exclusion table is transcribed from `_LOCAL_EXCLUDED_GATE_IDS` and
 `_PR_ONLY_GATE_IDS` in `scripts/validation/ci_gate_runner.py`, and the reasons
