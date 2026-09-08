@@ -94,16 +94,18 @@ repos:
         name: Public validation suites (changed)
         entry: python3 scripts/validation/run-ci-gate.py --profile changed
         language: system
-        files: ^(AGENTS\.md|CLAUDE\.md|README\.md|docker-compose\.yml|\.env\.example|_workspace/.*|\.agents/.*|\.claude/.*|\.codex/.*|evals/.*|infra/.*|docs/.*|examples/.*|projects/.*|scripts/.*|secrets/.*|tests/.*|\.github/.*|\.pre-commit-config\.yaml)$
+        files: ^.*$
         pass_filenames: false
+        always_run: true
         stages: [pre-commit]
 
       - id: public-validation-full
         name: Public validation suites (full)
         entry: python3 scripts/validation/run-ci-gate.py --profile full
         language: system
-        files: ^(AGENTS\.md|CLAUDE\.md|README\.md|docker-compose\.yml|\.env\.example|_workspace/.*|\.agents/.*|\.claude/.*|\.codex/.*|evals/.*|infra/.*|docs/.*|examples/.*|projects/.*|scripts/.*|secrets/.*|tests/.*|\.github/.*|\.pre-commit-config\.yaml)$
+        files: ^.*$
         pass_filenames: false
+        always_run: true
         stages: [pre-push]
 
   # --- 8. Commit & Message (Release) ---

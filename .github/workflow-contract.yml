@@ -736,6 +736,8 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_hook_rules",
+        "tests.lib.hooks.test_tool_payload",
+        "tests.validation.test_provider_native_payloads",
         "-v"
       ],
       "cwd": ".",
@@ -1492,6 +1494,29 @@
       },
       {
         "prefixes": [
+          ".cz.toml",
+          ".editorconfig",
+          ".gitattributes",
+          ".gitignore",
+          ".gitleaks.toml",
+          ".gitmessage",
+          ".gitmodules",
+          ".graphifyignore",
+          ".hadolint.yaml",
+          ".markdownlint-cli2.yaml",
+          ".prettierignore",
+          ".rtk/",
+          ".shellcheckrc",
+          ".yamllint",
+          "cliff.toml",
+          "ruff.toml"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
           ".github/",
           ".pre-commit-config.yaml",
           "evals/",
@@ -1506,6 +1531,21 @@
           "document-lifecycle",
           "operations",
           "repository-integrity"
+        ]
+      }
+    ],
+    "changed_root_rules": [
+      {
+        "prefixes": [
+          ".github/",
+          ".pre-commit-config.yaml",
+          "projects/storybook/nextjs/",
+          "scripts/",
+          "tests/"
+        ],
+        "root_gate_ids": [
+          "ci.frontend-quality",
+          "ci.storybook-coverage"
         ]
       }
     ],

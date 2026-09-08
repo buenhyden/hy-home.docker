@@ -10,6 +10,7 @@ import unittest
 
 import yaml
 
+from scripts.lib.gate import ci_gate_contract as contract
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 POST_TOOL = ROOT / "scripts/hooks/post-tool-validate.sh"
@@ -17,6 +18,69 @@ EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
+    def test_public_hooks_admit_every_tracked_path_and_root_tool_owner(self) -> None:
+        document = yaml.safe_load(
+            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
+        )
+        hooks = {
+            hook["id"]: hook
+            for repository in document["repos"]
+            if repository["repo"] == "local"
+            for hook in repository["hooks"]
+            if hook["id"] in {"public-validation-changed", "public-validation-full"}
+        }
+        self.assertEqual(
+            {"public-validation-changed", "public-validation-full"}, set(hooks)
+        )
+        tracked = (
+            subprocess.run(
+                ["git", "ls-files", "-z"],
+                cwd=ROOT,
+                capture_output=True,
+                check=True,
+            )
+            .stdout.decode("utf-8")
+            .split("\0")
+        )
+        for hook_id, hook in hooks.items():
+            selector = re.compile(hook["files"])
+            omitted = [
+                path for path in tracked if path and not selector.fullmatch(path)
+            ]
+            with self.subTest(hook=hook_id):
+                self.assertEqual([], omitted)
+                self.assertTrue(hook.get("always_run"))
+
+        root_tool_paths = {
+            ".cz.toml",
+            ".editorconfig",
+            ".gitattributes",
+            ".gitignore",
+            ".gitleaks.toml",
+            ".gitmessage",
+            ".gitmodules",
+            ".graphifyignore",
+            ".hadolint.yaml",
+            ".markdownlint-cli2.yaml",
+            ".prettierignore",
+            ".rtk/",
+            ".shellcheckrc",
+            ".yamllint",
+            "cliff.toml",
+            "ruff.toml",
+        }
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        matching_rules = {
+            prefix: rule.suites
+            for rule in public.changed_rules
+            for prefix in rule.prefixes
+            if prefix in root_tool_paths
+        }
+        self.assertEqual(root_tool_paths, set(matching_rules))
+        self.assertEqual({("repository-integrity",)}, set(matching_rules.values()))
+
     @staticmethod
     def _write_executable(path: pathlib.Path, text: str) -> None:
         path.write_text(text, encoding="utf-8")
@@ -360,8 +424,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 inside.write_text("inside trailing space   \n", encoding="utf-8")
                 outside.write_text("outside trailing space   \n", encoding="utf-8")
                 if case == "absolute":
-                    supplied = str(inside)
-                    observed = inside
+                    supplied = str(outside)
+                    observed = outside
                 elif case == "traversal":
                     supplied = "../outside.md"
                     observed = outside

@@ -170,6 +170,339 @@ def _rebind_diff_gate(
 
 
 class CiGateRunnerContractTests(unittest.TestCase):
+    @staticmethod
+    def _git(root: pathlib.Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+    def _changed_path_repo(self, directory: pathlib.Path) -> pathlib.Path:
+        repo = directory / "repo"
+        repo.mkdir()
+        self._git(repo, "init", "-q")
+        self._git(repo, "config", "user.email", "t@example.com")
+        self._git(repo, "config", "user.name", "Test")
+        for relative in (
+            "modified.txt",
+            "deleted.txt",
+            "rename-old.txt",
+            "space name.txt",
+        ):
+            (repo / relative).write_text("before\n", encoding="utf-8")
+        self._git(repo, "add", "-A")
+        self._git(repo, "commit", "-qm", "seed")
+        return repo
+
+    def test_local_changed_paths_cover_real_git_snapshots(self) -> None:
+        def modify(repo: pathlib.Path) -> None:
+            (repo / "modified.txt").write_text("after\n", encoding="utf-8")
+
+        def stage(repo: pathlib.Path) -> None:
+            modify(repo)
+            self._git(repo, "add", "modified.txt")
+
+        def partially_stage(repo: pathlib.Path) -> None:
+            stage(repo)
+            (repo / "modified.txt").write_text("after again\n", encoding="utf-8")
+
+        def add(repo: pathlib.Path) -> None:
+            (repo / "added.txt").write_text("added\n", encoding="utf-8")
+
+        def stage_add(repo: pathlib.Path) -> None:
+            add(repo)
+            self._git(repo, "add", "added.txt")
+
+        def delete(repo: pathlib.Path) -> None:
+            (repo / "deleted.txt").unlink()
+
+        def stage_delete(repo: pathlib.Path) -> None:
+            delete(repo)
+            self._git(repo, "add", "deleted.txt")
+
+        def rename(repo: pathlib.Path) -> None:
+            target = repo / "scripts/rename-new.txt"
+            target.parent.mkdir()
+            (repo / "rename-old.txt").rename(target)
+
+        def stage_rename(repo: pathlib.Path) -> None:
+            target = repo / "scripts/rename-new.txt"
+            target.parent.mkdir()
+            self._git(repo, "mv", "rename-old.txt", target.relative_to(repo).as_posix())
+
+        def modify_space(repo: pathlib.Path) -> None:
+            (repo / "space name.txt").write_text("after\n", encoding="utf-8")
+
+        def change_type(repo: pathlib.Path) -> None:
+            (repo / "modified.txt").unlink()
+            (repo / "modified.txt").symlink_to("deleted.txt")
+
+        def stage_type(repo: pathlib.Path) -> None:
+            change_type(repo)
+            self._git(repo, "add", "modified.txt")
+
+        cases = (
+            ("unstaged", modify, ("modified.txt",)),
+            ("staged", stage, ("modified.txt",)),
+            ("partially-staged", partially_stage, ("modified.txt",)),
+            ("unstaged-add", add, ("added.txt",)),
+            ("staged-add", stage_add, ("added.txt",)),
+            ("unstaged-delete", delete, ("deleted.txt",)),
+            ("staged-delete", stage_delete, ("deleted.txt",)),
+            ("unstaged-rename", rename, ("rename-old.txt", "scripts/rename-new.txt")),
+            (
+                "staged-rename",
+                stage_rename,
+                ("rename-old.txt", "scripts/rename-new.txt"),
+            ),
+            ("space", modify_space, ("space name.txt",)),
+            ("unstaged-type", change_type, ("modified.txt",)),
+            ("staged-type", stage_type, ("modified.txt",)),
+        )
+        for name, mutate, expected in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                repo = self._changed_path_repo(pathlib.Path(directory))
+                mutate(repo)
+                self.assertEqual(
+                    expected,
+                    runner.collect_changed_paths(repo, {"PATH": os.defpath}),
+                )
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            self.assertEqual(
+                (), runner.collect_changed_paths(repo, {"PATH": os.defpath})
+            )
+
+    def test_initial_repository_collects_staged_and_untracked_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            self._git(repo, "init", "-q")
+            (repo / "staged.txt").write_text("staged\n", encoding="utf-8")
+            (repo / "untracked.txt").write_text("untracked\n", encoding="utf-8")
+            self._git(repo, "add", "staged.txt")
+            self.assertEqual(
+                ("staged.txt", "untracked.txt"),
+                runner.collect_changed_paths(repo, {"PATH": os.defpath}),
+            )
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            (repo / "modified.txt").write_text("second commit\n", encoding="utf-8")
+            self._git(repo, "add", "modified.txt")
+            self._git(repo, "commit", "-qm", "second")
+            self.assertEqual(
+                (
+                    "deleted.txt",
+                    "modified.txt",
+                    "rename-old.txt",
+                    "space name.txt",
+                ),
+                runner.collect_changed_paths(
+                    repo,
+                    {
+                        "EVENT_NAME": "push",
+                        "PUSH_BEFORE_SHA": "0" * 40,
+                        "PATH": os.defpath,
+                    },
+                ),
+            )
+
+    def test_changed_name_status_parser_fails_closed(self) -> None:
+        for label, output in (
+            ("missing-rename-target", b"R100\0old.txt\0"),
+            ("unknown-status", b"X\0path.txt\0"),
+            ("unmerged-status", b"U\0path.txt\0"),
+            ("invalid-utf8", b"M\0\xff\0"),
+            ("unterminated", b"M\0path.txt"),
+        ):
+            result = subprocess.CompletedProcess(["git"], 0, stdout=output)
+            with (
+                self.subTest(label=label),
+                mock.patch.object(runner.subprocess, "run", return_value=result),
+                self.assertRaises(contract.GateContractError) as raised,
+            ):
+                runner.collect_changed_paths(ROOT, {"PATH": os.defpath})
+            self.assertEqual("ci-gate-changed-paths", raised.exception.code)
+
+    def test_hosted_comparison_includes_both_rename_paths_and_requires_base(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            target = repo / "scripts/rename-new.txt"
+            target.parent.mkdir()
+            self._git(repo, "mv", "rename-old.txt", target.relative_to(repo).as_posix())
+            self._git(repo, "commit", "-qm", "rename")
+            for event, key in (
+                ("pull_request", "PR_BASE_SHA"),
+                ("push", "PUSH_BEFORE_SHA"),
+            ):
+                with self.subTest(event=event):
+                    self.assertEqual(
+                        ("rename-old.txt", "scripts/rename-new.txt"),
+                        runner.collect_changed_paths(
+                            repo,
+                            {"EVENT_NAME": event, key: base, "PATH": os.defpath},
+                        ),
+                    )
+            with self.assertRaises(contract.GateContractError) as missing:
+                runner.collect_changed_paths(
+                    repo,
+                    {
+                        "EVENT_NAME": "pull_request",
+                        "PR_BASE_SHA": "f" * 40,
+                        "PATH": os.defpath,
+                    },
+                )
+            self.assertEqual("ci-gate-changed-paths", missing.exception.code)
+
+    def test_shallow_hosted_comparison_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base_dir = pathlib.Path(directory)
+            source = self._changed_path_repo(base_dir)
+            missing_base = self._git(source, "rev-parse", "HEAD").stdout.strip()
+            (source / "modified.txt").write_text("second\n", encoding="utf-8")
+            self._git(source, "add", "modified.txt")
+            self._git(source, "commit", "-qm", "second")
+            shallow = base_dir / "shallow"
+            subprocess.run(
+                ["git", "clone", "-q", "--depth", "1", source.as_uri(), str(shallow)],
+                check=True,
+            )
+            with self.assertRaises(contract.GateContractError) as raised:
+                runner.collect_changed_paths(
+                    shallow,
+                    {
+                        "EVENT_NAME": "pull_request",
+                        "PR_BASE_SHA": missing_base,
+                        "PATH": os.defpath,
+                    },
+                )
+            self.assertEqual("ci-gate-changed-paths", raised.exception.code)
+
+    def test_automatic_pre_commit_sees_index_content_and_untracked_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base_dir = pathlib.Path(directory)
+            repo = self._changed_path_repo(base_dir)
+            probe = repo / "probe.py"
+            probe.write_text(
+                "import os, pathlib, sys\n"
+                f"sys.path.insert(0, {str(ROOT)!r})\n"
+                "from scripts.validation import ci_gate_runner as runner\n"
+                "print('OBSERVED=' + '|'.join(runner.collect_changed_paths("
+                "pathlib.Path.cwd(), os.environ)))\n"
+                "print('BYTES=' + pathlib.Path('modified.txt').read_text().strip())\n",
+                encoding="utf-8",
+            )
+            (repo / ".pre-commit-config.yaml").write_text(
+                "repos:\n"
+                "  - repo: local\n"
+                "    hooks:\n"
+                "      - id: index-snapshot\n"
+                "        name: index snapshot\n"
+                "        entry: python3 probe.py\n"
+                "        language: system\n"
+                "        verbose: true\n"
+                "        files: ^.*$\n"
+                "        pass_filenames: false\n",
+                encoding="utf-8",
+            )
+            self._git(repo, "add", "probe.py", ".pre-commit-config.yaml")
+            self._git(repo, "commit", "-qm", "add probe")
+            (repo / "modified.txt").write_text("staged\n", encoding="utf-8")
+            self._git(repo, "add", "modified.txt")
+            (repo / "modified.txt").write_text("unstaged remainder\n", encoding="utf-8")
+            (repo / "space name.txt").write_text("unstaged only\n", encoding="utf-8")
+            (repo / "untracked.txt").write_text("visible\n", encoding="utf-8")
+            hook = repo / ".git/hooks/pre-commit"
+            hook.write_text(
+                "#!/bin/sh\nexec pre-commit hook-impl --config=.pre-commit-config.yaml "
+                '--hook-type=pre-commit --hook-dir=.git/hooks -- "$@"\n',
+                encoding="utf-8",
+            )
+            hook.chmod(0o755)
+            environment = dict(os.environ)
+            environment["PRE_COMMIT_HOME"] = str(base_dir / "pre-commit-cache")
+            result = subprocess.run(
+                ["git", "-c", "core.hooksPath=.git/hooks", "commit", "-m", "snapshot"],
+                cwd=repo,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            output = result.stdout + result.stderr
+            self.assertIn("OBSERVED=modified.txt|untracked.txt", output)
+            self.assertIn("BYTES=staged", output)
+            self.assertNotIn("space name.txt", output)
+            self.assertEqual(
+                "unstaged remainder\n", (repo / "modified.txt").read_text()
+            )
+
+    def test_changed_plan_omits_only_irrelevant_frontend_roots(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        public = contract.parse_public_gate_contract(document)
+        optional = {"ci.frontend-quality", "ci.storybook-coverage"}
+        paths = ("docs/03.specs/0173-governance-qa-surface-convergence/plan.md",)
+        selected = contract.select_public_suites(public, "changed", paths)
+        roots = contract.public_root_gate_ids(public, selected, changed_paths=paths)
+        self.assertFalse(optional & set(roots))
+        plan = runner.build_public_validation_plan(
+            registry,
+            roots,
+            public,
+            selected,
+            runner.ExecutionContext.PULL_REQUEST,
+        )
+        gate_ids = {invocation.gate_id for invocation in plan}
+        self.assertIn("leaf.dependency-vulnerability-audit", gate_ids)
+        self.assertFalse(
+            {
+                "leaf.frontend-lint",
+                "leaf.frontend-typecheck",
+                "leaf.frontend-build",
+                "leaf.frontend-quality",
+                "leaf.storybook-coverage",
+            }
+            & gate_ids
+        )
+
+    def test_relevant_frontend_failure_propagates(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        public = contract.parse_public_gate_contract(document)
+        paths = ("projects/storybook/nextjs/package-lock.json",)
+        selected = contract.select_public_suites(public, "changed", paths)
+        plan = runner.build_public_validation_plan(
+            registry,
+            contract.public_root_gate_ids(public, selected, changed_paths=paths),
+            public,
+            selected,
+            runner.ExecutionContext.PULL_REQUEST,
+        )
+        self.assertIn("leaf.frontend-quality", {item.gate_id for item in plan})
+        self.assertEqual(
+            23,
+            runner.execute_execution_plan(
+                ROOT,
+                plan,
+                {"PATH": os.defpath},
+                executor=lambda invocation: (
+                    23 if invocation.gate_id == "leaf.frontend-quality" else 0
+                ),
+            ),
+        )
+
     def test_every_public_plan_has_unique_canonical_invocations(self) -> None:
         cases = (
             ("changed", runner.ExecutionContext.LOCAL),

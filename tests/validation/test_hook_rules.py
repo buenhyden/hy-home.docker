@@ -46,6 +46,9 @@ def copy_dispatcher_fixture(root: pathlib.Path, *, with_rules: bool) -> None:
     hook_directory.mkdir(parents=True)
     shutil.copy2(DISPATCHER, hook_directory / DISPATCHER.name)
     shutil.copy2(MODULE, hook_directory / MODULE.name)
+    payload = root / "scripts/lib/hooks/tool_payload.py"
+    payload.parent.mkdir(parents=True)
+    shutil.copy2(ROOT / "scripts/lib/hooks/tool_payload.py", payload)
     if not with_rules:
         return
     policy_directory = root / ".agents/governance/hooks"

@@ -784,7 +784,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         plan = build_public_validation_plan(
             registry,
-            public_root_gate_ids(public_contract, selected_suites),
+            public_root_gate_ids(
+                public_contract,
+                selected_suites,
+                changed_paths=(
+                    changed_paths if arguments.profile == "changed" else None
+                ),
+            ),
             public_contract,
             selected_suites,
             context,
@@ -829,26 +835,42 @@ def collect_changed_paths(
         "LC_ALL": "C",
         "PATH": environ.get("PATH", os.defpath),
     }
-    base = ""
     event = environ.get("EVENT_NAME", "")
-    if event == "pull_request" and _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", "")):
-        base = environ["PR_BASE_SHA"]
-    elif (
-        event == "push"
-        and _FULL_SHA.fullmatch(environ.get("PUSH_BEFORE_SHA", ""))
-        and environ.get("PUSH_BEFORE_SHA") != "0" * 40
-    ):
-        base = environ["PUSH_BEFORE_SHA"]
-
-    commands = (
-        (("git", "diff", "--name-only", "-z", "--diff-filter=ACMRD", f"{base}...HEAD"),)
-        if base
-        else (
-            ("git", "diff", "--name-only", "-z", "--diff-filter=ACMRD"),
-            ("git", "diff", "--cached", "--name-only", "-z", "--diff-filter=ACMRD"),
+    name_status = ("--name-status", "-z", "--find-renames")
+    if event == "pull_request":
+        base = environ.get("PR_BASE_SHA", "")
+        if not _FULL_SHA.fullmatch(base) or base == "0" * 40:
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "the pull-request comparison base is unavailable",
+            )
+        commands = (("git", "diff", *name_status, f"{base}...HEAD"),)
+    elif event == "push":
+        base = environ.get("PUSH_BEFORE_SHA", "")
+        if not _FULL_SHA.fullmatch(base):
+            raise GateContractError(
+                "ci-gate-changed-paths",
+                "git",
+                "the push comparison base is unavailable",
+            )
+        commands = (
+            (("git", "ls-tree", "-r", "--name-only", "-z", "HEAD"),)
+            if base == "0" * 40
+            else (("git", "diff", *name_status, base, "HEAD"),)
+        )
+    elif event:
+        raise GateContractError(
+            "ci-gate-changed-paths",
+            "git",
+            "the hosted comparison context is unavailable",
+        )
+    else:
+        commands = (
+            ("git", "diff", *name_status),
+            ("git", "diff", "--cached", *name_status),
             ("git", "ls-files", "--others", "--exclude-standard", "-z"),
         )
-    )
     paths: set[str] = set()
     total_bytes = 0
     for command in commands:
@@ -884,17 +906,31 @@ def collect_changed_paths(
                 "git",
                 "changed path output exceeds its boundary",
             )
+        fields = [item for item in result.stdout.split(b"\0") if item]
+        values: list[str] = []
         try:
-            values = tuple(
-                item.decode("utf-8", errors="strict")
-                for item in result.stdout.split(b"\0")
-                if item
-            )
-        except UnicodeDecodeError:
+            if "--name-status" in command:
+                index = 0
+                while index < len(fields):
+                    status = fields[index].decode("ascii", errors="strict")
+                    index += 1
+                    path_count = 2 if status.startswith(("C", "R")) else 1
+                    if not re.fullmatch(r"(?:[ACDMT]|[CR][0-9]+)", status):
+                        raise ValueError
+                    if index + path_count > len(fields):
+                        raise ValueError
+                    values.extend(
+                        item.decode("utf-8", errors="strict")
+                        for item in fields[index : index + path_count]
+                    )
+                    index += path_count
+            else:
+                values.extend(item.decode("utf-8", errors="strict") for item in fields)
+        except (UnicodeDecodeError, ValueError):
             raise GateContractError(
                 "ci-gate-changed-paths",
                 "git",
-                "changed paths must be UTF-8",
+                "changed path output could not be parsed",
             ) from None
         paths.update(values)
         if len(paths) > _MAX_CHANGED_PATHS:

@@ -171,6 +171,10 @@ _REQUIRED_JOB_ROOTS = {
     "validation-changed": "ci.validation-changed",
     "validation-full": "ci.validation-full",
 }
+_OPTIONAL_CHANGED_ROOT_GATE_IDS = (
+    "ci.frontend-quality",
+    "ci.storybook-coverage",
+)
 _REQUIRED_ROOT_CHILDREN = {
     root_gate_id: tuple(_INTERNAL_CI_ROOTS.values())
     for root_gate_id in _REQUIRED_JOB_ROOTS.values()
@@ -474,11 +478,18 @@ class ChangedSuiteRule:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
+class ChangedRootRule:
+    prefixes: tuple[str, ...]
+    root_gate_ids: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
 class PublicGateContract:
     profile_names: tuple[str, ...]
     suites: tuple[PublicSuiteRoute, ...]
     validators: tuple[PublicValidatorRoute, ...]
     changed_rules: tuple[ChangedSuiteRule, ...]
+    changed_root_rules: tuple[ChangedRootRule, ...]
     changed_fallback_suites: tuple[str, ...]
 
     @property
@@ -732,6 +743,7 @@ def parse_public_gate_contract(
                 "suite_roots",
                 "validators",
                 "changed_path_rules",
+                "changed_root_rules",
                 "changed_fallback_suites",
             }
         ),
@@ -741,6 +753,7 @@ def parse_public_gate_contract(
                 "suite_roots",
                 "validators",
                 "changed_path_rules",
+                "changed_root_rules",
                 "changed_fallback_suites",
             }
         ),
@@ -897,6 +910,68 @@ def parse_public_gate_contract(
         seen_prefixes.update(prefixes)
         rules.append(ChangedSuiteRule(prefixes, suites))
 
+    raw_root_rules = _require_records(
+        raw["changed_root_rules"],
+        "ci-gate-changed-root-rules",
+        "public_gate/changed_root_rules",
+    )
+    root_rules: list[ChangedRootRule] = []
+    seen_root_prefixes: set[str] = set()
+    covered_optional_roots: set[str] = set()
+    for index, record in enumerate(raw_root_rules):
+        rule_path = f"public_gate/changed_root_rules[{index}]"
+        fields = frozenset({"prefixes", "root_gate_ids"})
+        _require_fields(
+            record,
+            fields,
+            fields,
+            "ci-gate-changed-root-rules",
+            rule_path,
+        )
+        prefixes = _strings(
+            record["prefixes"],
+            "ci-gate-changed-root-rules",
+            f"{rule_path}/prefixes",
+        )
+        root_gate_ids = _strings(
+            record["root_gate_ids"],
+            "ci-gate-changed-root-rules",
+            f"{rule_path}/root_gate_ids",
+        )
+        expected_root_order = tuple(
+            gate_id
+            for gate_id in _OPTIONAL_CHANGED_ROOT_GATE_IDS
+            if gate_id in root_gate_ids
+        )
+        if (
+            not prefixes
+            or not root_gate_ids
+            or seen_root_prefixes.intersection(prefixes)
+            or root_gate_ids != expected_root_order
+            or any(not _valid_changed_prefix(prefix) for prefix in prefixes)
+            or any(
+                not any(
+                    _matches_changed_prefix(prefix.removesuffix("/"), known)
+                    for known in seen_prefixes
+                )
+                for prefix in prefixes
+            )
+        ):
+            raise GateContractError(
+                "ci-gate-changed-root-rules",
+                rule_path,
+                "changed root rules require known prefixes and bounded optional roots",
+            )
+        seen_root_prefixes.update(prefixes)
+        covered_optional_roots.update(root_gate_ids)
+        root_rules.append(ChangedRootRule(prefixes, root_gate_ids))
+    if covered_optional_roots != set(_OPTIONAL_CHANGED_ROOT_GATE_IDS):
+        raise GateContractError(
+            "ci-gate-changed-root-rules",
+            "public_gate/changed_root_rules",
+            "every optional changed root requires an explicit path rule",
+        )
+
     fallback = _strings(
         raw["changed_fallback_suites"],
         "ci-gate-changed-fallback",
@@ -916,6 +991,7 @@ def parse_public_gate_contract(
         tuple(routes),
         tuple(validators),
         tuple(rules),
+        tuple(root_rules),
         fallback,
     )
 
@@ -955,6 +1031,8 @@ def select_public_suites(
 def public_root_gate_ids(
     contract: PublicGateContract,
     selected_suites: tuple[str, ...],
+    *,
+    changed_paths: tuple[str, ...] | None = None,
 ) -> tuple[str, ...]:
     if len(selected_suites) != len(set(selected_suites)) or any(
         name not in contract.suite_names for name in selected_suites
@@ -965,11 +1043,44 @@ def public_root_gate_ids(
             "selected public suites must be unique and registered",
         )
     selected = set(selected_suites)
-    return tuple(
+    roots = tuple(
         gate_id
         for route in contract.suites
         if route.name in selected
         for gate_id in route.root_gate_ids
+    )
+    if changed_paths is None:
+        return roots
+    if any(not _valid_changed_path(path) for path in changed_paths):
+        raise GateContractError(
+            "ci-gate-changed-path",
+            "changed_paths",
+            "changed paths must be canonical repository-relative paths",
+        )
+    if any(
+        not any(
+            _matches_changed_prefix(path, prefix)
+            for rule in contract.changed_rules
+            for prefix in rule.prefixes
+        )
+        for path in changed_paths
+    ):
+        return roots
+    selected_optional_roots = {
+        gate_id
+        for rule in contract.changed_root_rules
+        if any(
+            _matches_changed_prefix(path, prefix)
+            for path in changed_paths
+            for prefix in rule.prefixes
+        )
+        for gate_id in rule.root_gate_ids
+    }
+    return tuple(
+        gate_id
+        for gate_id in roots
+        if gate_id not in _OPTIONAL_CHANGED_ROOT_GATE_IDS
+        or gate_id in selected_optional_roots
     )
 
 

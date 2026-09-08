@@ -3,6 +3,7 @@
 set -euo pipefail
 
 EVENT="${1:-}"
+HOOK_PAYLOAD_MODULE="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/../lib/hooks/tool_payload.py"
 INPUT="$(cat || true)"
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
 
@@ -76,7 +77,7 @@ PY
 }
 
 pre_tool_use() {
-  if python3 - "$PROJECT_DIR" 3<<<"$INPUT" <<'PY'
+  if python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
 import pathlib
 import re
@@ -94,8 +95,11 @@ def deny_policy_failure(reason):
     raise SystemExit(0)
 
 try:
-    data = json.loads(raw)
-except (TypeError, ValueError):
+    sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+    from scripts.lib.hooks.tool_payload import decode_payload, edit_targets
+    data = decode_payload(raw)
+    edits = edit_targets(project, data)
+except Exception:
     deny_policy_failure("PreToolUse input is invalid; policy evaluation could not run.")
 
 if not isinstance(data, dict):
@@ -106,37 +110,7 @@ tool_input = data.get("tool_input", {})
 if not isinstance(tool_input, dict):
     tool_input = {}
 
-paths = []
-
-def add(value):
-    if isinstance(value, str) and value:
-        paths.append(value)
-
-for key in ("file_path", "path"):
-    add(tool_input.get(key))
-
-for key in ("files", "paths"):
-    value = tool_input.get(key)
-    if isinstance(value, list):
-        for item in value:
-            if isinstance(item, str):
-                add(item)
-            elif isinstance(item, dict):
-                add(item.get("file_path") or item.get("path"))
-
-edits = tool_input.get("edits")
-if isinstance(edits, list):
-    for edit in edits:
-        if isinstance(edit, dict):
-            add(edit.get("file_path") or edit.get("path"))
-
-for match in re.finditer(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", raw, re.M):
-    add(match.group(1).strip())
-for match in re.finditer(r"^\*\*\* Move to: (.+)$", raw, re.M):
-    add(match.group(1).strip())
-
-seen = set()
-paths = [path for path in paths if not (path in seen or seen.add(path))]
+paths = list(dict.fromkeys(path for path, _ in edits))
 
 system_messages = []
 additional_context = []
@@ -249,30 +223,8 @@ try:
     sys.path.insert(0, str(rules_module.parent))
     import hook_rules
 
-    command = tool_input.get("command")
+    command = tool_input.get("command") if tool_name in {"", "Bash"} else ""
     command = command if isinstance(command, str) else ""
-    project_prefix = str(project) + "/"
-
-    def _short(value):
-        return value[len(project_prefix):] if value.startswith(project_prefix) else value
-
-    replacement = ""
-    for key in ("content", "new_string", "new_text"):
-        value = tool_input.get(key)
-        if isinstance(value, str):
-            replacement = value
-            break
-    edits = [(_short(path), replacement) for path in paths]
-    nested = tool_input.get("edits")
-    if isinstance(nested, list):
-        for edit in nested:
-            if not isinstance(edit, dict):
-                continue
-            target = edit.get("file_path") or edit.get("path")
-            text = edit.get("new_string") or edit.get("new_text")
-            if isinstance(target, str) and isinstance(text, str):
-                edits.append((_short(target), text))
-
     warnings, blocks = hook_rules.evaluate(
         hook_rules.load_rules(project), command=command, edits=tuple(edits)
     )

@@ -497,6 +497,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_hardening_lib.sh
+- path: scripts/lib/hooks/tool_payload.py
+  kind: library
+  authority: .agents/governance/providers/registry.yaml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/hooks/agent-event-hook.sh
+  - scripts/hooks/post-tool-validate.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/hooks/test_tool_payload.py
 - path: scripts/lib/ops/compose-core-readiness.sh
   kind: library
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md

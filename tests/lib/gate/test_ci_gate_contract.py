@@ -55,6 +55,90 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             contract.select_public_suites(public, "unknown", ())
         self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
 
+    def test_changed_root_rules_are_typed_and_only_prune_optional_roots(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        optional = {"ci.frontend-quality", "ci.storybook-coverage"}
+        self.assertEqual(
+            optional,
+            {
+                gate_id
+                for rule in public.changed_root_rules
+                for gate_id in rule.root_gate_ids
+            },
+        )
+        all_roots = set(contract.public_root_gate_ids(public, public.suite_names))
+        self.assertLessEqual(optional, all_roots)
+
+        known_paths = (
+            "docs/03.specs/0173-governance-qa-surface-convergence/plan.md",
+            ".agents/governance/sdlc.md",
+            "infra/monitoring/config.yml",
+        )
+        for path in known_paths:
+            with self.subTest(path=path):
+                selected = contract.select_public_suites(public, "changed", (path,))
+                roots = set(
+                    contract.public_root_gate_ids(
+                        public, selected, changed_paths=(path,)
+                    )
+                )
+                self.assertFalse(optional & roots)
+                repository = next(
+                    route
+                    for route in public.suites
+                    if route.name == "repository-integrity"
+                )
+                self.assertLessEqual(set(repository.root_gate_ids) - optional, roots)
+
+        relevant_paths = (
+            "projects/storybook/nextjs/package-lock.json",
+            "projects/storybook/nextjs/src/app/page.tsx",
+            "scripts/validation/ci_gate_runner.py",
+            "tests/validation/test_ci_gate_plan.py",
+            ".github/workflow-contract.yml",
+            ".pre-commit-config.yaml",
+        )
+        for path in relevant_paths:
+            with self.subTest(path=path):
+                selected = contract.select_public_suites(public, "changed", (path,))
+                roots = set(
+                    contract.public_root_gate_ids(
+                        public, selected, changed_paths=(path,)
+                    )
+                )
+                self.assertLessEqual(optional, roots)
+
+        selected = contract.select_public_suites(
+            public, "changed", ("docs/03.specs/example.md", "unknown-root.txt")
+        )
+        self.assertLessEqual(
+            optional,
+            set(
+                contract.public_root_gate_ids(
+                    public,
+                    selected,
+                    changed_paths=("docs/03.specs/example.md", "unknown-root.txt"),
+                )
+            ),
+        )
+
+    def test_changed_root_rules_reject_mandatory_or_unknown_roots(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        for label, gate_id in (
+            ("mandatory", "ci.dependency-vulnerability-audit"),
+            ("unknown", "ci.unknown"),
+        ):
+            with self.subTest(label=label):
+                candidate = json.loads(json.dumps(baseline))
+                candidate["public_gate"]["changed_root_rules"][0]["root_gate_ids"] = [
+                    gate_id
+                ]
+                with self.assertRaises(contract.GateContractError) as raised:
+                    contract.parse_public_gate_contract(candidate)
+                self.assertEqual("ci-gate-changed-root-rules", raised.exception.code)
+
     def test_public_validator_records_fail_closed_on_ownership_and_argv_drift(
         self,
     ) -> None:

@@ -37,119 +37,24 @@ esac
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
 cd "$PROJECT_DIR"
 
-INPUT="$(cat || true)"
-mapfile -d '' -t CHANGED_PATHS < <(
-  printf '%s' "$INPUT" | python3 -c '
-import json
-import re
+HOOK_PAYLOAD_MODULE="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/../lib/hooks/tool_payload.py"
+CHANGED_PATH_TEXT="$(
+  python3 -c '
+import pathlib
 import sys
-
-raw = sys.stdin.read()
+sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+from scripts.lib.hooks.tool_payload import decode_payload, edit_targets
 try:
-    data = json.loads(raw) if raw.strip() else {}
-except Exception:
-    data = {}
-
-tool_input = data.get("tool_input", {}) if isinstance(data, dict) else {}
-paths = []
-
-def add(value):
-    if isinstance(value, str) and value:
-        paths.append(value)
-
-if isinstance(tool_input, dict):
-    for key in ("file_path", "path"):
-        add(tool_input.get(key))
-
-    for key in ("files", "paths"):
-        value = tool_input.get(key)
-        if isinstance(value, list):
-            for item in value:
-                if isinstance(item, str):
-                    add(item)
-                elif isinstance(item, dict):
-                    add(item.get("file_path") or item.get("path"))
-
-    edits = tool_input.get("edits")
-    if isinstance(edits, list):
-        for edit in edits:
-            if isinstance(edit, dict):
-                add(edit.get("file_path") or edit.get("path"))
-
-for match in re.finditer(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", raw, re.M):
-    add(match.group(1).strip())
-for match in re.finditer(r"^\*\*\* Move to: (.+)$", raw, re.M):
-    add(match.group(1).strip())
-
-seen = set()
-for path in paths:
-    if path not in seen:
-        seen.add(path)
-        sys.stdout.buffer.write(path.encode("utf-8") + b"\0")
-'
-)
-
-if [[ "${#CHANGED_PATHS[@]}" -eq 0 ]]; then
+    edits = edit_targets(pathlib.Path(sys.argv[1]), decode_payload(sys.stdin.read()))
+except Exception as error:
+    raise SystemExit(f"ERROR: edit payload validation failed: {error}") from error
+print("\n".join(dict.fromkeys(path for path, _ in edits)))
+' "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE"
+)"
+if [[ -z "$CHANGED_PATH_TEXT" ]]; then
   exit 0
 fi
-
-python3 - "$PROJECT_DIR" "${CHANGED_PATHS[@]}" <<'PY'
-from __future__ import annotations
-
-import os
-import pathlib
-import stat
-import sys
-
-
-def fail(value: str, reason: str) -> None:
-    raise SystemExit(f"ERROR: unsafe changed path {value!r}: {reason}")
-
-
-root_input = pathlib.Path(sys.argv[1])
-try:
-    root = root_input.resolve(strict=True)
-    root_metadata = root_input.lstat()
-except OSError as error:
-    raise SystemExit(f"ERROR: unsafe project root: {error}") from error
-if root_input.absolute() != root or not stat.S_ISDIR(root_metadata.st_mode):
-    raise SystemExit("ERROR: project root must be a canonical physical directory")
-
-for value in sys.argv[2:]:
-    if not value or any(ord(character) < 32 or ord(character) == 127 for character in value):
-        fail(value, "empty or control-character path")
-    if "\\" in value:
-        fail(value, "backslash path is noncanonical")
-    candidate = pathlib.PurePosixPath(value)
-    if candidate.is_absolute():
-        fail(value, "absolute paths are unsupported")
-    if candidate.as_posix() != value or any(part in {"", ".", ".."} for part in candidate.parts):
-        fail(value, "path is noncanonical or traverses a parent")
-    target = root.joinpath(*candidate.parts)
-    try:
-        if os.path.commonpath((str(root), str(target))) != str(root):
-            fail(value, "path escapes the repository")
-    except ValueError:
-        fail(value, "path escapes the repository")
-    current = root
-    for index, part in enumerate(candidate.parts):
-        current = current / part
-        try:
-            metadata = current.lstat()
-        except FileNotFoundError:
-            break
-        except OSError as error:
-            fail(value, f"path cannot be inspected: {error}")
-        if stat.S_ISLNK(metadata.st_mode):
-            fail(value, "symlink components are unsupported")
-        final = index == len(candidate.parts) - 1
-        if not final and not stat.S_ISDIR(metadata.st_mode):
-            fail(value, "parent component is not a directory")
-        if final and not stat.S_ISREG(metadata.st_mode):
-            fail(value, "changed target is not a regular file")
-        if final and metadata.st_nlink != 1:
-            fail(value, "changed target must have exactly one hard link")
-PY
+mapfile -t CHANGED_PATHS <<<"$CHANGED_PATH_TEXT"
 
 if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
   # shellcheck source=../operations/use-qa-ci-tools.sh
@@ -244,14 +149,7 @@ if new_data != data:
 PY
 }
 
-for path in "${CHANGED_PATHS[@]}"; do
-  if [[ "$path" = /* && "$path" != "$PROJECT_DIR"/* ]]; then
-    continue
-  fi
-
-  rel="${path#"$PROJECT_DIR"/}"
-  rel="${rel#./}"
-
+for rel in "${CHANGED_PATHS[@]}"; do
   if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
     EXISTING_CHANGED_FILES+=("$rel")
     if [[ "$check_only" -eq 0 ]]; then
