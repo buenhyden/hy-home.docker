@@ -28,7 +28,7 @@ Repo-local stricter rules always override this document; never weaken them on th
   the local desired contract. Agents must not declare a PR ready to merge
   without separately verified remote checks, or must explicitly report that
   remote verification is unavailable.
-- CODEOWNERS-triggered reviews are mandatory. If a changed path is owned by a CODEOWNERS entry, that review must be obtained before merge — agents must note this requirement when completing PR review tasks.
+- CODEOWNERS-triggered reviews are mandatory wherever remote protection enforces them. Agents must read the enforced state rather than assume it: when `require_code_owner_reviews` is enabled, an owned path's review must be obtained before merge; when it is disabled, `.github/CODEOWNERS` remains the ownership and review-routing record and no longer gates merges. Report which of the two applies; never record a review that protection did not require and no person gave.
 
 ## 2. Pull Request and Review Contract
 
@@ -137,7 +137,7 @@ Before an agent declares any PR-related task complete, it must confirm:
 1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
 2. All required reviews are approved (or note which are outstanding and who owns them).
 3. No BLOCK-severity findings remain from code review or security audit.
-4. CODEOWNERS-triggered reviewers have been notified if paths are owned.
+4. CODEOWNERS-triggered reviewers have been notified if paths are owned and remote protection enforces owner review; when it does not, state that instead of claiming a review.
 5. No secrets, long-lived credentials, or unpinned action references were introduced.
 
 If any gate is unmet, the task status is "blocked" not "done."

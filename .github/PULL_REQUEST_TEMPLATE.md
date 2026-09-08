@@ -100,7 +100,7 @@ See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for prot
 - [ ] Documentation has been added/updated using `docs/99.templates`, or marked N/A with a reason.
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
 - [ ] Required GitHub Actions checks are passing or pending checks are explained above.
-- [ ] CODEOWNERS-triggered reviewers have been requested for owned paths.
+- [ ] CODEOWNERS-triggered reviewers have been requested for owned paths, or marked N/A because remote protection does not enforce owner review.
 - [ ] Commits are small, logical, and reviewable, or squash strategy is documented.
 - [ ] Draft/WIP state is accurate and remaining work is listed when applicable.
 - [ ] I have run tests locally.
