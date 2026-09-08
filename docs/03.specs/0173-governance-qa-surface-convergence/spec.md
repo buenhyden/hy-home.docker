@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.4.3"
+version: "0.5.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -62,6 +62,26 @@ and cross-domain architecture consolidation are deferred option B candidates.
 Task 0006 owns the later explicit local-integration and cleanup approval;
 execute that disposition only after verified completion. Remote delivery and
 terminal package disposition remain outside this follow-up.
+
+### Proposed follow-up: QA and document consolidation
+
+The 2026-09-09 request authorizes review and authoring this Spec, its Plan and
+Task 0006. The subsequent explicit answer puts **operations execution planning
+on hold**. Neither synthetic runtime rehearsal planning nor service deployment,
+restart, recovery or runtime execution is included. Existing configuration-only
+and deterministic QA routes remain subjects of review, not operational proof.
+
+Reuse this active package and its existing identities. W16 owns the requested
+planning deliverable; W17-W21 and proposed criteria 26-30 require implementation
+scope approval before execution. The active frontmatter records the existing
+package lifecycle, not approval of this proposal. Earlier option A approvals and
+its completed integration do not approve these changes or a new local merge.
+
+The proposed scope is bounded to the existing public QA graph and its inactive
+semantic-parser consumers, audit census and current evidence consumers, active
+operations-document authoring residue, and the nine overlapping Stage 02 owner
+pairs identified in Task 0006. No new QA registry, wrapper, policy home, document
+package, ID, provider runtime experiment or dependency upgrade is proposed.
 
 ## Behavior Contract
 
@@ -138,6 +158,46 @@ avoid tightening unrelated restrictions. Check and fix remain explicit; no
 read-only QA command silently edits source. Update active stale package claims
 against their current owners, retaining dated Task and frozen archive evidence.
 
+### Proposed follow-up design
+
+- **QA composition:** preserve the two profiles, six suites and existing public
+  CLI. Compare actual expanded invocations by entrypoint, argv, cwd, context,
+  configuration and input snapshot. `job_roots` currently participates in
+  structural validation even where public suite expansion does not use its
+  aggregate. Remove a node only after identifying and migrating those consumers;
+  reachability from one root set alone is insufficient deletion evidence.
+- **Inactive semantic parser:** prefer retiring its unused call graph after
+  mapping each skipped safety case to an active projection, DAG or runner test.
+  Keep helpers with active callers. If an existing safety intent lacks active
+  coverage, add a behavior regression at its actual owner before removal. Do not
+  re-enable a general shell interpreter solely to make skipped tests execute.
+- **Census:** preserve stable audit criterion identity/schema completeness and
+  frozen migration provenance. Current corpus membership, profile coverage and
+  ownership come from tracked paths, Stage 99 and lifecycle records. Remove
+  copied current-count assertions and stale current prose; derive display totals
+  from the validated owner. Never derive the expected criterion set from the
+  same possibly incomplete input being checked. Changing that stable set or
+  retention policy is outside this proposal.
+- **Operations-document residue:** remove obsolete authoring markers from
+  reviewed active target documents while preserving procedures, IDs and valid
+  examples. Keep the existing target-residue check; do not relax it to accept
+  current debt. Stage 98 frozen bodies are not cleanup targets.
+- **Architecture ownership:** consolidate each overlapping pair into its
+  established base Description after clause-level comparison. Preserve distinct
+  security, data, topology and hardening decisions, and route procedural details
+  to their existing Stage 05 subject. A genuinely distinct capability may keep
+  a separate explicitly scoped owner only after review proves that split. Do
+  not merge all domains into one document or invent service behavior.
+- **Lifecycle:** migrate active links, labels, full IDs, indexes and consumers
+  with each domain change. Preserve source artifact IDs and use the registered
+  supersession/archive/recovery transition only after semantic transfer is
+  complete. Existing frozen bytes and historical identity readers remain intact.
+
+Task 0006 owns the dated census and disposition inventory. Counts and baseline
+SHAs in that inventory are observations, not future gate constants. Durable QA
+behavior belongs to AD-0027 and the existing executable owners; document
+ownership and preservation belong to REQ-0026, AD-0030 and Stage 99.
+
 ## Interfaces and Data
 
 - `.github/workflow-contract.yml`: single executable DAG and public suite
@@ -205,6 +265,12 @@ def canonical_invocation_key(
   Ordinary live packages still require registered lifecycle transitions.
 
 ## Acceptance Contract
+
+Criteria 1-24 retain the existing contract. Criterion 25 is the authorized W16
+planning deliverable; criteria 26-30 are proposed, unapproved W17-W21 work and
+remain NOT_RUN. This continuation grants no implementation, merge or runtime
+authority. Keep the numbered criteria in one continuous list so formatting
+preserves the Plan and Task references.
 
 1. The six public suite names and two public profiles remain unchanged.
 2. `validation-changed` and `validation-full` remain the quality jobs for PR
@@ -277,6 +343,32 @@ def canonical_invocation_key(
 24. Current provider, ownership, changelog and metadata-base guidance each matches
     its executable owner. Registered generated text uses current document paths;
     new remote observations retain their actual SHA and event.
+
+25. The Spec, Plan and Task identify confirmed findings versus candidates,
+    compare alternatives, name owners, dependencies, checks and recovery, and
+    record the operations-planning hold. Existing IDs, historical receipts and
+    nonterminal lifecycle states remain intact. This is the current planning
+    deliverable; it does not establish implementation approval or completion.
+26. After approval, public plans retain their required semantic leaf coverage
+    without duplicate invocation identities. Removed legacy nodes and inactive
+    parser helpers have no active caller; each formerly skipped safety intent
+    has an active negative test or a reviewed explanation that its syntax is
+    rejected at the current boundary. Missing/cyclic/unsafe contracts still fail.
+27. After approval, current corpus checks derive coverage from canonical owners
+    without historical counts as current acceptance. Stable criterion omission,
+    duplicate IDs, invalid schema, stale output and corrupt recovery evidence
+    still fail. Dated audit facts are distinguished from current observations.
+28. After approval, the reviewed active operations-document scope has no obsolete
+    authoring residue; valid examples, procedure content, IDs and frozen archive
+    bytes remain intact. Metadata report generation is not claimed as its source.
+29. After approval, every reviewed architecture capability has an unambiguous
+    owner and a source-clause-to-destination mapping. Unique obligations are
+    preserved before supersession; active links and generated navigation resolve
+    to the retained owner, with registered archive and recovery evidence.
+30. After approval, each coherent implementation unit has relevant regression,
+    exact diff review and normal-hook commit evidence. Final local validation
+    names its snapshot and context; hosted, provider and operations observations
+    remain separate. Unmeasured savings and held runtime plans are never PASS.
 
 ## Traceability
 

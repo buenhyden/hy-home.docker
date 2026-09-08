@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.5.4"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,113 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### QA and document follow-up planning (2026-09-09)
+
+The user requested review and Spec/Plan/Task authoring for QA, operations
+execution, legacy graph, fixed census and large document consolidation. The
+subsequent explicit response, "운영 실행 계획은 보류", holds operations execution
+planning. W16 is authorized documentation work; W17-W21 are proposed follow-up
+implementation and require scope review. No synthetic runtime rehearsal plan,
+service procedure expansion, runtime execution or remote write is authorized.
+
+Root owns the three existing package documents. Reuse SPEC-0173,
+SPEC-0173-PLAN-0001 and SPEC-0173-TSK-0006; no new ID or lifecycle transition.
+Their active/in-progress metadata preserves the existing package state and
+does not approve the new proposal. Prior acceptance 1-24 and dated receipts are
+unchanged. Proposed criteria 26-30 remain NOT_RUN; criterion 25 owns this draft
+planning deliverable. The proposed scope is not a new requirement for declaring
+the completed option A implementation successful.
+
+Baseline: clean local main/HEAD
+`541854af0c93fc30b38b03dbcdbe03da357f9186`, six commits ahead of the stored
+origin/main ref `d633c443006de06ebdf3329d7094c2d055cc7e36`. The immediately prior
+integration phase fetched that remote baseline; this planning phase makes no
+fresh hosted or protection observation. Only the primary worktree existed at
+start; no staged, unstaged or untracked work was transferred. The new branch
+`codex/qa-convergence-design` starts at that main in
+`.worktrees/qa-convergence-design`, initially clean and without `.env`. Preserve
+the primary checkout, its ignored private state and the new planning worktree.
+The previous option A integration/cleanup authorization is exhausted by its
+completed disposition and does not authorize merging this draft.
+
+Later shared-ref read-back at 07:41 KST found main and origin/main both at
+`541854af0c93fc30b38b03dbcdbe03da357f9186`, divergence 0/0. The origin/main
+reflog records `update by push` at 07:28:10 KST, after this planning branch was
+created. This task issued no push; the actor and hosted outcome were not
+investigated. The earlier six-ahead statement is the starting observation only.
+The reviewed working-tree source and base HEAD did not change.
+
+Installed Superpowers 6.3.0 brainstorming, writing-plans and using-git-worktrees
+procedures were read and applied with the repository's Stage 99 path precedence.
+The registered Spec/Plan/Task templates and current parser already support the
+required sections; no template/schema change or parallel progress ledger is
+needed. Execution-plan/task-breakdown guidance informed the proposed work units;
+no approved-plan execution or implementation is claimed.
+
+#### Investigation and disposition inventory
+
+All counts below are static observations of the stated baseline, not permanent
+gate expectations. Review covers safe tracked source and its direct consumers;
+it is not a full service, provider-runtime or remote-security audit.
+
+| Path or symbol | Current owner and consumers | Finding and proposed disposition | Verification or recovery boundary |
+| --- | --- | --- | --- |
+| `.github/workflow-contract.yml` public gate and job roots | Execution definition; runner, workflow checker and tests | 78 nodes; suite-root child closure reaches 65. The remaining 13 participate in legacy job-root composition or setup; candidate cutover, not proof of dead execution. Preserve six suites/two profiles | W17 compares actual invocations in five supported profile/context pairs; restore the coherent contract unit if detection differs |
+| `github_workflow_contract.validate_workflows` | Active static checker; CLI and public gate | Required-quality validation calls `_workflow_projection_findings`. `_resolve_job_semantics` has no production caller found; its parser closure needs caller-by-caller retirement review | W17 preserves active projection, permissions, action identity, input and failure guards |
+| `tests/lib/gate/test_github_workflow_contract.py` | Library regression evidence | Eleven methods explicitly skip the inactive Wave A/Wave C semantic parser. They are NOT_RUN evidence, not eleven passing safety tests | Migrate each safety intent to active tests or prove current syntax rejection before removing obsolete cases |
+| `audit_criterion_contract.REPORT_PREFIX_COUNTS`, `REPORT_FILES`, `SCHEMA` | Stable audit completeness contract; semantic validator and matrix generator | Eleven report definitions / 161 expected IDs are deliberate independent membership, not today's document census. Keep; remove only redundant derived presentation literals | Omitted/duplicate/unexpected IDs and malformed fields must still fail |
+| `agentic-audit-semantic-contract.json` and semantic validator | Bounded current audit assertions | Exact assertion membership and phrase checks need current-owner comparison. Do not infer live readiness from an Implemented row or Task text | W18 retains unsafe-input, required evidence and stale-output failures; no new prose pin |
+| `tests/validation/test_workspace_governance_migration.py` | Frozen migration/recovery evidence | 903-row, owner/action counts and baseline digests are loaded from the historical approved selection for current compact schema. Retain this historical role; they are not evidence of today's corpus size | Keep corruption/missing-history rejection; current lifecycle authority remains registry/tree/archive |
+| Audit `0024-frontmatter-template-readme-implementation`, DML-09 | Authored Stage 90 current report; generated DATA-0065 consumer | Current prose still carries 17 README profiles, 231 READMEs and 37 unresolved status-bearing files. Reconcile or clearly date from current owner evidence | Edit authored report first, regenerate matrix; never patch generated rows directly |
+| Audit `0021-automation-candidates`, AUT-07; DML-13 | Authored criterion provenance | Stable criterion cardinality is valid; copied fixture-count or old Spec labels need dated/current distinction | Keep row IDs/schema and current verification meaning while correcting labels |
+| `docs/05.operations/**/*.md`, `TARGET_TEMPLATE_LITERALS`, AD-0030 Risks | Active procedures, metadata residue rule, architecture description | 184 tracked Markdown files contain the obsolete Target authoring marker. The metadata report is not its generator. Proposed scoped comment cleanup; no operational procedure redesign | W19 inspects each context, preserves examples/commands/IDs and excludes frozen bodies |
+| Stage 02 base/hardening pairs below | Capability design owners; Requirements/ADR/Stage 05 consumers | Nine pairs share Requirement parents; AD-0030 reports overlapping authority. Hardening texts contain distinct design obligations, so clause-level comparison remains necessary | W20 per-domain clause transfer, independent owner review and registered preservation |
+| Stage 99 registry, both document schemas and three templates | Document shape/path/identity/lifecycle definition | Existing required sections suffice. Keep; no new field, template or ID allocation | Metadata contracts and changed document checks |
+| `run-ci-gate.py`, quality policy and current Task | Public execution, verification selection and evidence respectively | Local checks, hosted checks and real runtime prove different boundaries; retain existing definitions | W21 records context/snapshot/exit; held operations and unobserved hosted execution never become PASS |
+| `.agents/scripts/`, `.codex/skills/` | Intentionally absent shared/native copies | Keep absent; canonical skills and current hook/operation paths remain owners | No replacement directory, wrapper or provider projection is introduced |
+
+The 13 nodes outside the suite-root child closure are
+`ci.validation-changed`, `ci.validation-full`, `ci.repo-contracts`,
+`ci.supply-chain-fixture-policy`, `ci.compose-validation`,
+`ci.infrastructure-hardening`, `ci.template-security-baseline`,
+`ci.quickwin-baseline`, `ci.pre-commit`, `leaf.repo-contracts`,
+`setup.compose-env`, `setup.repo-python-dependencies` and
+`setup.precommit-python-dependencies`. This list records candidates, not an
+approved deletion list. Public validators and job-root structural consumers
+must be included in the execution analysis.
+
+#### Architecture comparison scope
+
+Paths are under `docs/02.architecture/descriptions/`. The proposed retained owner
+is the existing base Description; per-clause review precedes every retirement.
+
+| Requirement | Base Description | Hardening Description | Distinct material to preserve and reconcile |
+| --- | --- | --- | --- |
+| REQ-0002 | AD-0002 `0002-auth-architecture.md` | AD-0014 `0014-auth-optimization-hardening-architecture.md` | Secret injection, fail-closed auth, health and runtime boundaries |
+| REQ-0003 | AD-0003 `0003-security-architecture.md` | AD-0018 `0018-security-optimization-hardening-architecture.md` | Vault/Agent source versus rendered-output ownership |
+| REQ-0004 | AD-0004 `0004-data-architecture.md` | AD-0019 `0019-data-optimization-hardening-architecture.md` | Engine lifecycle and data/service boundaries |
+| REQ-0006 | AD-0005 `0005-messaging-architecture.md` | AD-0020 `0020-messaging-optimization-hardening-architecture.md` | Gateway/SSO, queue recovery and expansion constraints |
+| REQ-0007 | AD-0006 `0006-observability-architecture.md` | AD-0021 `0021-observability-optimization-hardening-architecture.md` | Health dependencies, non-root operation and retention boundaries |
+| REQ-0008 | AD-0007 `0007-workflow-architecture.md` | AD-0022 `0022-workflow-optimization-hardening-architecture.md` | n8n secret guards, worker health and orchestration boundaries |
+| REQ-0009 | AD-0008 `0008-ai-architecture.md` | AD-0023 `0023-ai-optimization-hardening-architecture.md` | GPU concurrency, stateful UI and vector-data ownership |
+| REQ-0010 | AD-0009 `0009-tooling-architecture.md` | AD-0024 `0024-tooling-optimization-hardening-architecture.md` | Tooling ingress/network and test-runtime constraints |
+| REQ-0012 | AD-0011 `0011-laboratory-architecture.md` | AD-0025 `0025-laboratory-optimization-hardening-architecture.md` | Allowlist/SSO, socket permissions and laboratory data boundaries |
+
+#### Alternatives and decision
+
+| Alternative | Benefit | Cost or risk | Draft decision |
+| --- | --- | --- | --- |
+| Reuse current owners; remove proven obsolete routes; consolidate by domain | Preserves public interfaces and stable evidence with reviewable changes | Requires actual consumer/obligation mapping | Recommended; W17-W21 are bounded proposals |
+| Restore the general semantic shell parser and redesign registries | Could inspect more arbitrary command shapes | Larger security surface and duplicate interpretation where active projection already rejects free-form commands | Do not pursue without a demonstrated unsupported safety need |
+| Remove fixed census and bulk-merge all documents | Fewer files/assertions immediately | Loses criterion omission detection, provenance or unique domain clauses | Reject blanket removal; classify each case |
+
+The actual workflow event matrix remains: quality on PR to main (changed) and
+main push/manual (full); changelog on version-tag push; greetings on opened
+issue/PR; labeler on opened/synchronize/reopened PR; stale on its schedule.
+This is repository configuration evidence only. `validation-changed` remains
+the required PR identity. The legacy graph is not the ignored Graphify output;
+that advisory graph and private inputs are outside this work.
 
 ### Option A verified local integration and cleanup follow-up (2026-09-09)
 
@@ -1520,6 +1627,83 @@ in-progress.
 
 ## Verification Evidence
 
+### Follow-up planning verification (2026-09-09)
+
+Target: base HEAD `541854af0c93fc30b38b03dbcdbe03da357f9186` plus the three
+task-owned working-tree Markdown changes on `codex/qa-convergence-design`.
+Environment: the `.env`-free linked WSL2 checkout, prepared Python 3.12 tool
+environment at `/tmp/hy-qa-integration-tools`, no fabricated CI context.
+
+| Command or observation | Exit | Result and limit |
+| --- | --- | --- |
+| `git status --short --branch`, `git worktree list`, `git rev-parse --is-shallow-repository` | 0 | PASS: clean main at start, sole primary worktree, full history; no change ownership conflict |
+| `git worktree add .worktrees/qa-convergence-design -b codex/qa-convergence-design main` | 0 | PASS: isolated branch from main; clean checkout and no `.env` before writing |
+| `python3 scripts/validation/check-document-metadata.py --mode check-contracts`, before edits | 0 | PASS: repository contracts, zero violations; no claim of future implementation |
+| Graph reachability, AST skip inspection, tracked marker and parent-ID inspection | 0 | PASS as inventory only; observations and exact scope are above; not runtime or regression execution |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD` | 0 | PASS: selected 3, violations 0, legacy exceptions 0, transition overrides 0 |
+| `python3 scripts/validation/check-document-links.py --mode all` | 0 | PASS: 713 documents, 6157 links, zero failures |
+| `python3 scripts/knowledge/generate-llm-wiki.py --check` | 0 | PASS: both outputs fresh; no path additions/removals/renames, so no regeneration needed |
+| `git diff --check`; `python3 scripts/validation/run-ci-gate.py --profile changed --explain` | 0 / 0 | PASS: diff hygiene and plan inspection only; explanation is not execution |
+| `python3 scripts/validation/run-ci-gate.py --profile changed`, timed with `/usr/bin/time -p` | 0 | PASS: 308.97 seconds wall time on the prepared WSL host; includes selected document and repository validation, not future implementation or runtime acceptance |
+| `cz check --message-length-limit 75 --message 'docs(qa): Plan remaining convergence work'` | 0 | PASS: lightweight message validation; normal commit-msg hook still required |
+| Repeated `check-document-metadata.py --mode check-changed --base-ref HEAD` and `check-document-links.py --mode all` after the placement/ID/ref corrections | 0 / 0 | PASS: selected 3 / violations 0; 713 documents / 6157 links / zero failures |
+| First normal `git -c core.hooksPath=/home/hy/projects/hy-home.docker/.git/hooks commit -m 'docs(qa): Plan remaining convergence work'` attempt | 1 | FAIL: markdownlint-cli2 auto-renumbered the new separate list from 25-30 to 1-6 and blocked commit; its remaining public changed hook passed. Total wall time 315.18 seconds; no commit created |
+
+The formatter owner uses `fix: true` without an MD029 exception. After the
+first attempt finished, the Spec correction restored criteria 25-30, removed
+the subsection that split the ordered list, and moved the approval distinction
+to the Acceptance Contract introduction. One continuous list preserves the
+existing Plan/Task references without changing formatter configuration. The
+first attempt's modified snapshot is not final acceptance evidence; the normal
+commit retry must leave formatting unchanged and pass its checks.
+
+The pinned formatter's actual `package.json` bin entry was then run twice with
+the repository configuration, using the command below. Both runs reported
+`Linting: 3 file(s)`, zero errors and exit 0; SHA-256 comparisons found all three
+source files unchanged after each run. This is formatter idempotence evidence,
+not a replacement for the final normal Git hooks.
+
+```bash
+/home/hy/.cache/pre-commit/reposug4r9vb/node_env-default/bin/node \
+  /home/hy/.cache/pre-commit/reposug4r9vb/node_env-default/lib/node_modules/markdownlint-cli2/markdownlint-cli2-bin.mjs \
+  docs/03.specs/0173-governance-qa-surface-convergence/spec.md \
+  docs/03.specs/0173-governance-qa-surface-convergence/plan.md \
+  docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md
+```
+
+The public changed run used the three-file candidate diff SHA-256
+`848c50bd8e57b59dea419d3470ef35810335dd0d9fd41466871e410287dea5d9`.
+After it finished, self-review moved the new Spec design subsection into
+Technical Approach and restored the uninterrupted Interfaces list, clarified
+the inventory's preliminary architecture comparison and added these receipts.
+Subsequent metadata/link verification covers the placement, ID and ref
+corrections. At the pre-commit review checkpoint, normal automatic Git hooks
+remain pending for the final staged form; the final Git read-back owns their
+outcome. No execution code or contract changed. No before/after runtime saving
+is claimed; W17-W21 measurements await approved implementation.
+
+Independent preliminary review also corrected the proposed Requirement reference
+to REQ-0024-NFR-0013 and requested explicit time-bounding of the shared-ref
+movement above. Subsequent metadata/link checks cover those corrections.
+The final proposal names frontmatter/CODEOWNERS as the per-domain review owner
+and requires eventual-scope authorization for any final all-files run; completed
+option A approval and W16 planning do not authorize it.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 25 | W16 | In progress: reviewed-source proposal authored, document checks passed and independent final review approved; normal-hook commit/read-back pending under W16 | This Task inventory, Spec proposal and Plan W16-W21 |
+| 26 | W17 | NOT_RUN: implementation scope approval pending | Existing public workflow contract, gate libraries and their regressions |
+| 27 | W18 | NOT_RUN: implementation scope approval pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
+| 28 | W19 | NOT_RUN: implementation scope approval pending | Active Stage 05 targets and metadata residue contract |
+| 29 | W20 | NOT_RUN: per-domain transfer and review not performed | Retained Stage 02 owners and registered preservation records |
+| 30 | W21 | NOT_RUN: follows approved implementation; no hosted/runtime success inferred | Public QA definition and this Task's future execution receipts |
+
+Full QA, live provider/model checks and new hosted runs are NOT_RUN for this
+planning-only change. Operations execution planning is held by the user, so no
+operations execution work unit or runtime acceptance test is added. Shell/eval,
+frontend, behavior coverage and service tests are N/A to authoring these three
+documents; normal policy-selected document QA remains required.
+
 ### Option A renewed integration verification (2026-09-09)
 
 The earlier `/tmp` QA environment was absent. Repository requirements and the
@@ -2176,6 +2360,12 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### Follow-up planning review (2026-09-09)
+
+Independent rules-engineer `a_policy_review` reviewed the exact post-formatter W16 three-document candidate against `541854af0c93fc30b38b03dbcdbe03da357f9186` and returned Specification PASS / Quality APPROVED with zero findings. Exact working-tree diff SHA-256 `8c220ee26e8cc5078c27bb2f6052169fb28288c89359142bb9a9f63aa414fdf8` matched the writer and isolated review snapshots byte-for-byte; the review confirmed the continuous acceptance-criteria 1-30 structure, W16-only authority, W17-W21 NOT_RUN boundary, and accurate classification of the failed first hook attempt and formatter correction. Hook and formatter results remained source-attributed and were not independently rerun; the normal hook retry and final Git read-back remain pending. This exact later receipt intentionally lies outside the reviewed hash, and approval covers no other change or implementation, runtime, merge, cleanup, remote-write or all-files authorization.
+
+Independent rules-engineer `a_policy_review` reviewed the exact W16 three-document planning candidate against `541854af0c93fc30b38b03dbcdbe03da357f9186` and returned Specification PASS / Quality APPROVED with zero findings. Exact diff SHA-256 `2d4a891aa635d6ed88cc710604f2848c6da99bb9f3e08bb2732ad6c52eb4ce64` matched the writer and isolated review snapshots byte-for-byte; the review confirmed existing ID, lifecycle and historical-evidence preservation, the operations-planning hold, current frontmatter/CODEOWNERS owner routing, the eventual-scope approval boundary for all-files, and W17-W21 NOT_RUN status. Contributor-recorded checks remained source-attributed and were not independently rerun; public changed remains bound to `848c50bd8e57b59dea419d3470ef35810335dd0d9fd41466871e410287dea5d9`, while final normal hooks and Git read-back remain pending. This later review receipt intentionally lies outside the reviewed hash and grants no implementation, runtime, merge, cleanup, remote-write or all-files authorization.
+
 ### Option A integration and cleanup policy review (2026-09-09)
 
 Independent rules-engineer `a_policy_review` reviewed the exact three-document integration and disposition candidate against `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e` and returned Specification PASS / Quality APPROVED with zero findings. Frozen patch SHA-256 `862d1e7c9116a0de4fb4486118d47235af7631583972d0b8c5dabf459f7397aa` matched the delivery and isolated review diffs byte-for-byte; the review verified the current authorization, first fast-forward and QA target binding, preserved historical receipts, and bounded 18-path cleanup ownership. Full, post-merge, metadata and link results remained source-attributed evidence and were not independently rerun. This later review-receipt paragraph intentionally lies outside the candidate hash and adds no execution or authorization claim.
@@ -2372,6 +2562,13 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
 
+W16 is one three-document planning delivery unit with intended subject
+`docs(qa): Plan remaining convergence work`. Its final SHA and normal-hook
+outcome belong to the final Git read-back; W17-W21 have no implementation commits.
+The first attempt exited 1 because the formatter changed the newly separated
+acceptance list. HEAD remained at the baseline; no commit was created and no
+hook was bypassed. The corrected continuous list is the retry candidate.
+
 Option A local task-owned commits (2026-09-09):
 
 | Commit | Scope / observed hook result |
@@ -2468,14 +2665,21 @@ No completed archive packet or new Spec/Plan/Task was created.
 
 ## Deferred Items
 
+- W17-W21 are a reviewed-source proposal, pending explicit implementation scope
+  review. Their criteria are NOT_RUN and do not reopen completed option A work.
+- Operations execution planning is on hold by the 2026-09-09 user response.
+  Neither synthetic rehearsal nor live service planning/execution is included.
+- Keep the new `codex/qa-convergence-design` branch and its linked worktree.
+  No new merge, cleanup, push, PR or workflow dispatch is authorized by W16.
+
 - The preservation-owner blocker is discharged by current REQ-0026, AD-0030
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
   this follow-up corrects the active Spec/Plan references.
 - Push, pull request, hosted execution, branch-protection mutation, deployment,
-  tag and release remain outside the current authorization. The latest user
-  follow-up authorizes completed option A's local main integration and exact
-  task-owned branch/worktree cleanup under the newest Work Log guards. Earlier
-  integration, keep and cleanup instructions retain only their dated scope.
+  tag and release remain outside the current authorization. The preceding
+  option A follow-up authorized its completed local integration and task-owned
+  cleanup only. Earlier integration, keep and cleanup instructions retain their
+  dated scope; they do not authorize the new W16 planning branch's disposition.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.
@@ -2497,9 +2701,10 @@ No completed archive packet or new Spec/Plan/Task was created.
 - The controlled all-files item retains its dated clean PASS receipts, including
   option A at `6c271de21174580740574e145ebb208a13de68b8`. The 34-case wrapper
   regression remains separate evidence. Renewed full and post-merge tests passed
-  at `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`; local main reached that commit.
-  Final docs-only receipt integration and exact cleanup follow the newest Work
-  Log guards. No user-global installation or setting changed; new hosted/native
+  at `a7aae37d6bbf403321485c6556a1ea1c4a1ef58e`. The final docs-only receipt
+  subsequently integrated at `541854af0c93fc30b38b03dbcdbe03da357f9186`; W16's
+  initial Git read-back confirms that main and the removal of the old linked
+  worktrees. No user-global installation or setting changed; new hosted/native
   execution and package promotion remain deferred.
 
 ## Related Documents

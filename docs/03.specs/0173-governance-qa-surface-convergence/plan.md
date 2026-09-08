@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.6.3"
+version: "0.7.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -20,6 +20,12 @@ Implement the 2026-09-08 local convergence authorized in [the Spec](spec.md),
 using the registered execution workflow with independent review.
 Task 0006 owns inventory, decisions, commands, results, reviews, and commits.
 The existing W1-W6 migration is implemented; its dated evidence is preserved.
+
+The 2026-09-09 continuation authorizes W16 planning only. W17-W21 below are
+proposed implementation work, pending user scope review. Operations execution
+planning is explicitly on hold, including synthetic runtime rehearsals. Existing
+active package status and historical option A approval do not authorize this
+proposal's execution. Preserve the new planning branch and worktree.
 
 ## Dependencies
 
@@ -50,6 +56,12 @@ The existing W1-W6 migration is implemented; its dated evidence is preserved.
 13. W13: Preserve prepared tools in the post-edit hook.
 14. W14: Reuse the audit generator's validated pack and refresh its output.
 15. W15: Record reviewed option A verification and apply the current Task's disposition.
+16. W16: Review remaining QA and document debt and author the proposed follow-up.
+17. W17: Converge the legacy graph and inactive parser consumers after approval.
+18. W18: Separate current corpus coverage from stable audit and recovery census.
+19. W19: Remove active operations-document authoring residue after approval.
+20. W20: Consolidate architecture owners by independently reviewed domain.
+21. W21: Verify approved units and record local completion without runtime claims.
 
 ### W1-W6: Preserve integrated migration
 
@@ -215,6 +227,144 @@ change or skipped hook. Independent review precedes staging and commit.
 Root alone updates shared package evidence and manifest. Each contributor owns
 only its named files; policy/code reviewers remain read-only and independent.
 
+### W16: Current planning deliverable
+
+Owner: documentation contributor; independent reviewer: read-only rules-engineer.
+Write only this Spec, Plan and Task 0006. Reuse REQ-0024-FR-0007,
+REQ-0024-FR-0008, REQ-0024-NFR-0013, REQ-0026-FR-0004, REQ-0026-FR-0005,
+REQ-0026-FR-0009, REQ-0026-FR-0012 and REQ-0026-NFR-0006. No schema or template
+change is needed: the registered sections already hold decisions and evidence.
+
+1. Bind the investigation to current local main and distinguish the stored
+   origin/main ref from fresh hosted evidence. Inspect only safe tracked source.
+2. Trace public suites, graph validation, inactive parser calls, census inputs
+   and document owners. Put dated counts and the domain-pair list only in Task.
+3. Compare in-place cleanup with general parser restoration, census removal and
+   corpus-wide merging. Prefer existing owners, conditional removal and domain
+   batches. Record the user's operations-planning hold without a runtime task.
+4. Review proposed criteria 26-30 and work units for coverage and approval scope.
+   Validate the three authored documents, obtain independent review and create
+   one planning commit. Do not execute W17-W21, merge or remove the worktree.
+
+### W17: Proposed graph and parser cutover
+
+Owner: writable CI/CD contributor. Root alone coordinates shared contract,
+manifest and Task changes; independent code/security reviewers do not write.
+Files: `.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py`,
+`scripts/lib/gate/github_workflow_contract.py`, `scripts/lib/gate/ci_gate_adapters.py`,
+`scripts/validation/ci_gate_runner.py`, their existing `tests/lib/gate/` and
+`tests/validation/test_ci_gate_*.py` consumers, and affected manifest/docs only.
+
+1. Capture expanded invocation and setup plans for changed/local,
+   changed/pull_request, full/local, full/push and full/workflow_dispatch using
+   existing planner APIs and controlled test contexts. Do not execute hosted
+   commands by spoofing CI variables. Cover docs, provider, workflow, root-only
+   settings, locks/shared libraries, staged/unstaged/partial, rename/delete/add,
+   spaces, empty diff, initial commit and missing/shallow base cases.
+2. Trace the suite-unreachable nodes through job-root structural validation and
+   all registered consumers. Migrate or remove that obsolete composition in one
+   coherent contract/parser/runner/test change. Preserve required job identities,
+   strict JSON parsing, active setup prerequisites and context restrictions.
+3. Map skipped semantic-parser cases to active behavior owners: dynamic shell
+   rejection, helper/graph cycles, symlink escape, executable mode, bounded input,
+   argv/env admission and required failure propagation. Retire only the unused
+   parser closure; keep active helpers and add missing negative cases first.
+4. Compare before/after semantic leaf coverage and invocation multiplicity.
+   Exercise workflow contract and gate library/CLI regressions. Review the exact
+   diff before the graph cutover commit; no test-count or node-count target.
+
+### W18: Proposed census and audit consumer reconciliation
+
+Depends on W17 only where changed graph selection affects the validation route.
+Owner: writable validation contributor, with read-only preservation review.
+Files: `scripts/validation/audit_criterion_contract.py`,
+`check-agentic-audit-semantic-freshness.py`, `agentic-audit-semantic-contract.json`
+and `generate-audit-implementation-matrix.sh` in that directory, their two audit
+test modules, `tests/validation/test_workspace_governance_migration.py`, affected
+canonical `docs/90.references/audits/` reports and generated DATA-0065.
+
+1. Classify every candidate as stable criterion identity, historical recovery
+   proof, current corpus rule or derived presentation. Retain historical
+   migration counts/digests while they bind the preserved approved selection;
+   do not substitute today's files or silently remove that evidence test.
+2. Preserve the criterion manifest/schema as the independent completeness
+   expectation. Replace redundant literal display-count assertions with owner
+   results; keep missing/duplicate/unexpected criterion and invalid-field tests.
+   Changing audit-pack membership requires a separately reviewed contract change.
+3. Correct current DML-09 corpus claims and misleading legacy labels from live
+   registry/path evidence. Preserve dated observations as dated evidence. Review
+   semantic closure assertions against their actual current owners rather than
+   adding required Task prose. Keep stale-output and unsafe-input rejection.
+4. Regenerate DATA-0065 with its registered generator, check freshness and a
+   second write's byte identity. Run the audit criterion/semantic tests and
+   history recovery tests if their owner changes; commit source, tests and output
+   together. No permanent second census registry or automatic historical rewrite.
+
+### W19: Proposed active authoring-residue cleanup
+
+Owner: documentation contributor. Files: the Task-inventoried tracked Markdown
+under `docs/05.operations/`, AD-0030's current risk description, and affected
+metadata tests only if a behavior gap is demonstrated. The existing
+`TARGET_TEMPLATE_LITERALS` contract remains the owner of forbidden target residue.
+
+1. Derive the exact current target list with tracked-path inspection, excluding
+   frozen archives and legitimate quoted examples. Inspect context before edits.
+2. Remove only obsolete authoring comments. Preserve procedure commands, values,
+   IDs, ownership and lifecycle; no runtime runbook is designed or executed.
+3. Compare procedure content before/after and run changed metadata plus operations
+   catalog/link validation. The metadata report does not generate these markers.
+   Update AD-0030 only after the finding is resolved, then commit this separate
+   documentation unit. Do not convert the observed file count into a gate.
+
+### W20: Proposed architecture consolidation
+
+Owner: documentation contributor; each pair's current frontmatter/CODEOWNERS
+owner reviews its semantic transfer (currently `@buenhyden` for the listed
+Descriptions). Dependencies: implementation scope approval and the per-pair comparison, not
+runtime execution. Files: the Description pairs listed in Task 0006, their
+existing Requirement/ADR and Stage 05 inbound consumers, registered indexes,
+AD-0030 and necessary Stage 98 lifecycle records. No unrelated infra changes.
+
+1. Start with auth as a pilot, then security/data, messaging/observability,
+   workflow/AI, and tooling/laboratory. Make each domain a reviewable commit;
+   dependency links must resolve at each intermediate commit.
+2. For each pair, map source section/obligation to destination section and mark
+   duplicate, distinct, obsolete or unresolved. Compare the underlying tracked
+   configuration and accepted ADR when claims conflict; preserve unresolved
+   content and stop only that domain's retirement until its owner decides.
+3. Merge retained design into the base Description, with procedures routed to
+   existing Stage 05 owners. Correct misleading link labels as well as targets.
+   Preserve stable IDs; no abbreviated requirement IDs or blanket prefix rewrite.
+4. Apply registered supersession/archive/recovery after transfer and review.
+   Preserve the selected source bytes and valid identity history. Update inbound
+   links and indexes atomically; do not rewrite existing frozen archive bodies.
+5. Use `python3 scripts/knowledge/generate-llm-wiki.py --write` only when indexed
+   paths change, then `--check`. Verify metadata, all links and corpus lifecycle,
+   plus relevant archive/identity regressions. Record each reviewed disposition
+   in the existing Task table, not a new migration framework or progress ledger.
+
+### W21: Proposed final QA and local delivery evidence
+
+Depends on completion of the approved W17-W20 subset; excluded units remain
+NOT_RUN and cannot satisfy their proposed acceptance. Root integrates receipts.
+Use `.agents/governance/quality-standards.md` as the verification owner and the
+same public entrypoint for local/hosted definitions. Record focused test results,
+selected invocations, tool/config versions, cwd, setup count, duplicate count
+and measured wall time in Task for comparable inputs. Do not compare different
+contexts as a speed improvement.
+
+Run the applicable changed profile after edits and local full for the shared
+graph/validator cutover in a prepared Linux/WSL2 linked checkout with `/proc`,
+pidfd and proper reaping. Bind evidence to HEAD plus the actual index/working-tree
+inputs. Keep baseline resolution fail-closed and do not reuse another snapshot's
+PASS. If final all-files is needed, it requires explicit authorization for the
+eventual implemented scope and the existing clean-worktree/exact-path wrapper
+contract. Neither W16 nor the completed option A approval authorizes that run.
+It is not a new unconditional gate. Normal commit hooks remain.
+Hosted run/job/SHA/event and managed automation observations require their real
+read-back; no dispatch/push is authorized here. Operations planning and execution
+stay on hold. Preserve the branch/worktree unless separately authorized.
+
 ## Risk and Rollback
 
 | Risk | Guard | Recovery |
@@ -225,6 +375,10 @@ only its named files; policy/code reviewers remain read-only and independent.
 | Check mutates authored source | Explicit check mode or controlled isolated validation | Review task-owned diff; never reset others |
 | Static success is promoted to runtime or hosted evidence | Per-command context and target SHA in Task | Correct evidence classification |
 | Archive or identity changes manufacture completion | Preserve frozen bytes and current package states | Revert only authored Task-owned changes |
+| Legacy removal hides a safety gap | Map each removed route to active behavior coverage | Restore the coherent contract/parser/test unit |
+| Dynamic expected counts accept missing audit rows | Keep independent stable criterion membership | Restore the criterion owner and regenerated output |
+| Consolidation loses a unique security or data obligation | Per-domain clause mapping and current frontmatter/CODEOWNERS owner review before retirement | Restore that domain's reviewed source and links from Git |
+| Documentation work silently becomes runtime planning | Explicit user hold applies to W16-W21 | Remove the out-of-scope plan and correct its Task disposition |
 
 ## Verification
 
@@ -236,6 +390,31 @@ Acceptance 21 maps to W11.
 Acceptance 22 maps to W13, 23 to W14, and 24 to W12/W14/W15.
 Domain-logic coverage is N/A for validation/configuration-only changes;
 behavioral safety regressions remain mandatory for changed validators.
+
+For the continuation, criterion 25 maps to W16; proposed 26/27/28/29/30 map
+to W17/W18/W19/W20/W21 respectively. Planning verification is limited to
+metadata contracts, changed document checks, links, LLM Wiki freshness and the
+policy-selected public changed route. Actual commands and exits belong in Task.
+The future minimum regression commands, used only for their approved changes,
+are:
+
+```bash
+PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_contract tests.lib.gate.test_github_workflow_contract
+PYTHONPATH=. python3 -m unittest tests.validation.test_audit_criterion_contract tests.validation.test_agentic_audit_semantic_freshness
+python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/check-document-metadata.py --mode check-contracts
+python3 scripts/validation/check-document-links.py --mode all
+python3 scripts/validation/check-document-corpus-lifecycle.py
+python3 scripts/knowledge/generate-llm-wiki.py --check
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
+python3 scripts/validation/run-ci-gate.py --profile changed
+python3 scripts/validation/run-ci-gate.py --profile full
+```
+
+Select changed runner/selector, archive/identity, shell/eval and package-local
+regressions from the existing contract where applicable; Python discovery alone
+is not evidence of all repository tests. Explain output is planning evidence
+only. W16 does not run W17-W21 regressions or full QA merely to document them.
 
 ## Rulings
 
