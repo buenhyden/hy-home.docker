@@ -1,6 +1,6 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -238,6 +238,9 @@ from CI contexts the way the local context already excludes nine others.
 | Pre-existing hosted failure | Runs 34160561874 (#143) and 34164770210 (#145) both failed with `failure_class=preflight reason=source-image-not-local` and exit code 10, before this session |
 | Hosted history | The last 30 `ci-quality.yml` runs, back to 2026-09-06, are failures on both `push` and `pull_request`, with no success in the window |
 | Main push after #146 | Run 34172984899 at `b5293a067` fails on `missing-link-target`, which `7cd7c8ab4` repairs |
+| Main push after both repairs | Run 34180222230 at `edab4a89b` passes every unit batch and Compose validation with 28 selections and 232 services, then fails only at the preflight; the link and drift failures are gone |
+| One environment-dependent case | `test_post_tool_checks_each_changed_shell_file_for_syntax` asserted on stderr while ShellCheck rejects the same file first on stdout, so it passed where shellcheck sits outside the restricted PATH and failed on a runner carrying `/usr/bin/shellcheck`; the pre-change hook reproduces it identically, so it is the case being environment-dependent |
+| Hosted convergence | Across runs the failure moved 1m36s, 6m04s, 9m47s, 13m29s as each cause was removed; run 34182514443 reaches the same single preflight that `main` reaches, with every unit batch OK |
 
 ## Review Evidence
 
