@@ -7,17 +7,17 @@
 # rewriting frontmatter quoting -- against conventions this repository's own
 # templates and validators encode.
 #
-# Each file type already has one owner:
-#   *.md            markdownlint-cli2 plus the Stage 99 document validators
-#   *.yaml, *.yml   yamllint, and actionlint for workflows
-#   *.json          check-json
+# Existing check owners differ from formatters; only registered mutators format:
+#   *.md            markdownlint-cli2 (format/lint); Stage 99 validators (check only)
+#   *.yaml, *.yml   yamllint, and actionlint for workflows (lint only)
+#   *.json          check-json (syntax only)
 #   *.py            ruff format, pinned by ruff.toml
-#   *.sh            shellcheck
-#   Dockerfile*     hadolint
-#   *.ts, *.tsx     eslint, run by the frontend-lint gate on the Next.js
-#   *.js, *.jsx     project; no other JavaScript is tracked here
+#   *.sh            shellcheck (lint only)
+#   Dockerfile*     hadolint (lint only)
+#   *.ts, *.tsx     eslint (lint), run by the frontend-lint gate on the Next.js
+#   *.js, *.jsx     project; package scripts own their exact local scope
 #
-# One type has no owner: `examples/sample-web-service/site/index.html`. Prettier
+# The HTML sample has no registered formatter: `examples/sample-web-service/site/index.html`. Prettier
 # was the only tool that reached it, so removing Prettier left it unformatted
 # rather than reformatted by something else. Give HTML an owner before adding
 # more of it.

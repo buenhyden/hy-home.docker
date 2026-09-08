@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.3.5"
+version: "0.4.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-08"
 layer: "specs"
 artifact_id: "SPEC-0173"
 parent_ids:
@@ -12,8 +12,8 @@ parent_ids:
 - "REQ-0026"
 - "AD-0027"
 - "AD-0030"
-- "ADR-0031"
 - "ADR-0032"
+- "ADR-0033"
 supersedes:
 - "SPEC-0174"
 created: "2026-09-05"
@@ -23,54 +23,32 @@ created: "2026-09-05"
 
 ## Overview
 
-The reviewed governance/QA convergence, canonical `.agents/` relocation,
-clean-worktree ownership repair and bounded Python cleanup are integrated on
-local main at `8176cdee732954415bc5462d6d4d43da4e319394`. Native Claude/Codex
-adapters, Stage 99 machine contracts, executable owners and frozen execution
-evidence remain preserved. The existing package remains active: Tasks 0001
-through 0005 retain their implementation milestones and Task 0006 remains the
-sole ledger for package review and outstanding acceptance evidence.
+Converge the remaining governance, QA, workflow, and commit consumers using the
+implemented canonical-home migration. Tasks 0001 through 0005 retain their
+reviewed implementation evidence; Task 0006 owns this local follow-up and all
+remaining package acceptance. Historical checkpoint SHAs in that Task are
+provenance, not permanent validation inputs.
 
 ## Boundaries and Inputs
 
-- Original relocation provenance: local main
-  `e5685b42c92039618ae86cca8736b6a425630221`, then clean. The relocation was
-  reviewed at local main `8176cdee732954415bc5462d6d4d43da4e319394`, which is a
-  dated checkpoint and not the current position: `main` has advanced past it and
-  the `codex/0173-agent-governance-home` branch that carried it was retired into
-  `main` and no longer resolves.
-- Position is read from Git rather than from a branch name, because the short
-  branches this package used were retired at integration. A resuming session runs
-  `git rev-parse --abbrev-ref HEAD` for the branch, `git rev-parse HEAD` for the
-  commit, and `git log --oneline origin/main..HEAD` for what is not yet on the
-  remote. `main` is the integration target and Task 0006's Commit Ledger is the
-  authority for what this package produced.
-- In scope: all former governance sources and their direct/indirect consumers,
-  provider/core contracts, Registry/schema/templates, hooks, tests, active links,
-  navigation, CI selection and affected registered generated outputs.
-- The latest explicit user request adopts relocation after suitability review
-  and replaces the earlier empty-container/direct-read restriction. It authorizes
-  normal scoped approval for protected `.agents` and `.codex` writes.
-- Preserve: existing role/skill IDs, permissions/model settings, six suites/two
-  profiles, required CI jobs, strict protection contract, Operations identity
-  routes, issued-ID high-water and all existing frozen archive bytes.
-- Durable-owner promotion remains open because REQ-0026, AD-0030, and accepted
-  ADR-0031 still describe transient Plan/Task deletion while canonical policy
-  and executable package guards require full-package preservation. Reconcile
-  the Requirement and Description only after a bounded design review. Preserve
-  ADR-0031's accepted body; changing its decision requires a reviewed successor
-  and the applicable reciprocal supersession lifecycle. No successor identity
-  or design outcome is selected by this specification update.
-- The subsequent user instruction authorizes local commits of the reviewed
-  relocation and continued review/execution of safe follow-up verification.
-- The reviewed relocation (`6c283d395`), reproducible ownership and Wiki repair
-  (`c265bacc5`), evidence checkpoint (`a8c6ede82`), and bounded lint cleanup
-  (`8176cdee7`) now form the integrated local baseline. Current authorization
-  covers the `8176cdee7` checkpoint and follow-up on the same work branch; it
-  does not imply integration of later unreviewed work.
-- Out of scope: additional integration, push, PR, fetch/pull, deployment, live
-  Compose/service actions, credentials/environment contents, certificates,
-  global settings, new servers/plugins, model entitlement and hook trust changes.
+- Reuse REQ-0024, REQ-0026, AD-0027, AD-0030, and accepted ADR-0032/0033.
+  Full-package preservation is already implemented; ADR-0031 is superseded.
+- The 2026-09-08 user request authorizes scoped local source, policy, document,
+  configuration, regression, fixture, generated-output changes and logical
+  commits. Fetch and authenticated remote reads are authorized observations.
+- Inspect the actual fetched main, branch, worktree, index, and working tree;
+  record the measured SHA and ownership only in Task 0006. Preserve unrelated
+  changes and the final local branch/worktree.
+- In scope: `.agents/`, `.claude/`, `.codex/`, `.github/`, `scripts/`, `tests/`,
+  connected `evals/`, `examples/`, `_workspace/`, root tool/commit configuration,
+  and affected active, working, and historical document consumers. Project-local
+  QA is included only where its real package inputs change.
+- Preserve the six public suites, two profiles, `validation-changed` required
+  status identity, required detection coverage, fail-closed safety boundaries,
+  source/generated distinction, and immutable archive bodies.
+- Exclude push, PR creation/merge, workflow dispatch, remote settings, releases,
+  tags, operational service actions, real secrets, and user-global configuration.
+  Unavailable runtime/hosted observations remain separate from local completion.
 
 ## Behavior Contract
 
@@ -128,18 +106,24 @@ sole ledger for package review and outstanding acceptance evidence.
 
 ## Technical Approach
 
-Treat the integrated `8176cdee7` tree as the implemented baseline. Preserve the
-reviewed source dispositions, accepted ADR-0032, superseded ADR-0029, provider
-source/output boundary, document discovery, link rebasing, hook routing and
-test-ownership repair. Further work reconciles the active package and collects
-only evidence whose actual inputs are available and authorized.
+Use existing owners in place. `.agents/governance/` owns common policy, authored
+provider adapters own native loading, the Provider Registry owns translations,
+the workflow contract owns execution, the script manifest owns inventory,
+Stage 99 owns document shape, and Task 0006 owns evidence.
 
-Canonical skill shape, direct loading and static provider checks have passed;
-they do not establish normal native discovery. The whole-migration aggregate
-remains blocked by its actual PostgreSQL operating/image leaf. Keep that leaf
-selected and record BLOCKED or NOT_RUN until its inputs and execution boundary
-permit direct observation. Do not convert focused or synthetic PASS results
-into aggregate, native runtime, Hosted CI or remote acceptance.
+Prefer correcting these consumers over adding a wrapper or registry. Remove the
+standalone tech-stack workflow while retaining its required drift leaf; its
+command, inputs, and context duplicate the required validation without measured
+additional value. Align root-only hook selection with the public selector, keep
+index and working-tree evidence distinct, and fail explicitly when a comparison
+base cannot be resolved. Preserve CI pre-commit anti-recursion.
+
+Use `.cz.toml` as the executable commit vocabulary and message-shape owner;
+policy explains it, PR identity checks consume it, and other tool-specific
+translations have behavioral parity tests. Preserve existing accepted types and
+avoid tightening unrelated restrictions. Check and fix remain explicit; no
+read-only QA command silently edits source. Update active stale package claims
+against their current owners, retaining dated Task and frozen archive evidence.
 
 ## Interfaces and Data
 
@@ -210,9 +194,9 @@ def canonical_invocation_key(
 ## Acceptance Contract
 
 1. The six public suite names and two public profiles remain unchanged.
-2. `validation-changed` and `validation-full` remain the only required quality
-   jobs, and the tracked protection contract retains `strict=true` and app ID
-   `15368`.
+2. `validation-changed` and `validation-full` remain the quality jobs for PR
+   and push/manual respectively. Only `validation-changed` is the desired PR
+   required status context, with `strict=true` and app ID `15368`.
 3. Expanding changed/local, changed/pull-request, full/local, full/push, and
    full/workflow-dispatch plans yields no duplicate canonical invocation key.
 4. The former duplicate Compose validation and Storybook/Next.js npm bootstrap
@@ -244,8 +228,8 @@ def canonical_invocation_key(
     are byte-identical and Tombstones `tomb-DATA-0068`, `tomb-DATA-0069`,
     `tomb-DATA-0073`, and `tomb-DATA-0074` own their disposition without any
     frozen archive body edit.
-14. All 77 original common files have a reviewed disposition; `.agents` is the
-    sole common authority with 14 unchanged role IDs and 23 explicit-invocation
+14. The original migration dispositions remain historical Task evidence;
+    `.agents` is the sole common authority with registered roles and explicit
     skill packages. Native projections are deterministic consumers; old live
     governance paths and `.codex/skills` substitutes are absent.
 15. Applicable focused tests, script manifest, metadata/lifecycle discovery,
@@ -256,11 +240,26 @@ def canonical_invocation_key(
 16. Final evidence distinguishes local-executed, configured, repository-enforced,
     unverified runtime, unverified entitlement, and unverified remote state.
 
+17. Root-only tool/commit configuration reaches public validation. Selector
+    regressions cover staged/unstaged/partial snapshots, rename/delete/add,
+    spaces, empty diff, initial commits, and unavailable/shallow base history.
+18. Commit hook, lightweight message check, PR title/branch, examples, and
+    release/changelog translations agree on accepted type and message behavior.
+19. Tech-stack drift remains required after duplicate workflow removal; workflow,
+    contract, checker, tests, consumers, and active docs transition together.
+20. Local checks report actual exit/context/inputs and keep source bytes intact;
+    hosted jobs, managed automation, and deployment are separate evidence.
+21. Native edit payloads share pre/post path and replacement extraction: physical
+    in-root Claude absolute paths work; Codex multi-file patches reach all file
+    rules and checks; external/symlink paths and malformed edits fail closed.
+    Project permissions contain no arbitrary Git/Python allow grant, and Stop
+    retry handling remains bounded. Static tests do not imply live delivery.
+
 ## Traceability
 
 - Requirements: REQ-0024 and REQ-0026.
 - Architecture: AD-0027 and AD-0030.
-- Decisions: ADR-0032 and ADR-0031.
+- Decisions: ADR-0032 and ADR-0033; ADR-0031 is superseded evidence.
 - Execution: SPEC-0173-PLAN-0001 and SPEC-0173-TSK-0001 through
   SPEC-0173-TSK-0006.
 - Completed evidence: SPEC-0155, SPEC-0157, SPEC-0159, SPEC-0161, SPEC-0167,
@@ -269,14 +268,11 @@ def canonical_invocation_key(
 
 ## Open Questions
 
-Durable-owner promotion has one unresolved design dependency: align REQ-0026
-and AD-0030 with canonical full-package preservation and define the reviewed
-successor treatment needed to change accepted ADR-0031 without rewriting it.
-That design must be approved before those owners or identity allocation change.
-Actual PostgreSQL operating/image inputs, normal native startup without
-unauthorized auth or global-runtime side effects, Hosted CI, provider
-entitlement, and remote branch protection remain separate observation
-prerequisites or limits.
+Normal native hook delivery, provider entitlement, and hosted verification of
+new local commits require their actual execution evidence. Local permission and
+available tool inputs determine which validation routes can run; absent inputs
+are NOT-RUN or BLOCKED, never inferred PASS. The existing package remains
+nonterminal while those package-level acceptance limits remain unresolved.
 
 ## Operational Impact
 

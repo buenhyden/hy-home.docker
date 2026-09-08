@@ -32,7 +32,7 @@ created: "{{CREATED}}"
 
 {{RED_GREEN_AND_GATE_EVIDENCE}}
 
-<!-- Author prompt: Before completing the owning Spec, map every numbered acceptance criterion to a declared Plan W-number. Record PASS with observed evidence or SKIP with a reason, and link the durable owner or explain N/A. This is the sole promotion receipt. -->
+<!-- Author prompt: Fill the promotion receipt using .agents/governance/sdlc.md; record actual results and limits under the current approval and completion policies. -->
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |

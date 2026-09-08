@@ -1,10 +1,10 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-08"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -107,13 +107,13 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 
 ## Risks
 
-- 두 번째 강제 경로가 실행되지 않습니다. `validate_body_contract`의
-  `changed_boundary` 분기는 template role의 heading 계약과 변경 target의 잔여
-  literal/token 검사를 담당하지만, production 호출부인
-  `scripts/lib/document_governance/metadata/reference.py`의 두 지점이 모두
-  `False`를 전달합니다. Registry section 계약이 이제 모든 profile에 직접
-  강제되므로 heading 검사는 중복이지만, `template-instruction-in-target`과
-  `template-body-token-in-target`은 다른 어떤 check도 대신하지 않습니다.
+- 변경 문서의 잔여 template 지침과 token은 `check-changed`의
+  `_introduced_body_findings`가 현재 본문과 base 본문을 각각
+  `changed_boundary=True`로 비교하여 새로 도입된 위반을 거부합니다.
+  `reference.py`의 template source 검사에 있는 두 `False` 호출만으로 이
+  production 경로가 비활성이라고 판단할 수 없습니다. 기존 위반은 변경분
+  검증과 구분되며, current/base 비교가 기존 marker의 일괄 정비를 증명하지는
+  않습니다.
 - 잔여 marker 계약이 세 곳에서 서로 다릅니다. `TARGET_TEMPLATE_LITERALS`는
   `<!-- Target:`을 변경 target에 남아서는 안 되는 잔여물로 선언하고, 현재 어떤
   template도 이를 생성하지 않으며, `docs/99.templates` 아래 template source는

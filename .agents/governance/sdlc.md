@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/sdlc"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 ---
 
 # Software Development Lifecycle
@@ -44,7 +44,11 @@ stage. Retry and approval boundaries remain in agent governance policy.
 
 Stage 90 supplies evidence and Stage 98 supplies historical path lookup; neither
 overrides current lifecycle authority. Stage 99 defines document shapes and
-identities. Registered scripts implement gates.
+identities. Registered scripts implement gates. Terminal package completion requires observed
+PASS evidence for every numbered acceptance criterion and its Plan work unit.
+FAIL, BLOCKED, NOT_RUN and skipped checks remain valid in-progress evidence;
+they do not satisfy terminal acceptance. Stage 99 and its validator own the
+receipt's machine shape, so templates refer here for completion meaning.
 
 ## Authority Boundaries
 

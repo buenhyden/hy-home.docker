@@ -1,10 +1,10 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.4.11"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-08"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0006"
 parent_ids:
@@ -48,6 +48,126 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Governance, QA, CI/CD and commit convergence (2026-09-08)
+
+Current authorization: the user's 2026-09-08 convergence request permits local
+source/configuration/document/test changes, fetch/read-only GitHub observation,
+review and logical commits. It prohibits push/PR/dispatch, remote settings,
+release/tag, service operations, real secrets and global configuration. The
+request's Keep-the-branch choice applies. Root contributes under writable
+CI/CD/documentation scope; rules-engineer and code-reviewer remain independent
+and read-only. Existing user/other-worker changes: none at initial inspection.
+
+Baseline: `main`, `origin/main` and HEAD were
+`efd58f441a81a6db9011afa6f099b36beff851eb`; authorized fetch confirmed 0/0
+local/remote divergence. Implementation uses clean linked worktree
+`.worktrees/governance-qa-convergence`, branch `codex/governance-qa-convergence`.
+Original main/worktree is preserved. Fetch required sandbox escalation for
+`.git/FETCH_HEAD`; automatic approval accepted it, exit 0. Worktree creation
+was similarly approved, exit 0. No resets, stashes or index changes were used for setup.
+
+Design: use existing owner contracts in place. A new QA registry/wrapper would
+add authority; documentation-only correction would leave selector/parser defects.
+Choose coherent consumer fixes and removal of duplicate tech-stack automation
+while preserving its required drift leaf. Reuse this package/Task, not a new ID
+or Superpowers documentation tree. W7-W11 in the Plan define the implementation.
+The installed Superpowers 6.3.0 using-superpowers, brainstorming, writing-plans
+and executing-plans procedures were read explicitly. Executing-plans routes
+this subagent-capable session to subagent-driven-development; its session ledger
+and default documentation tree are replaced by this already approved Task.
+Finishing is reserved for verified commits and the user's branch-preservation
+choice. No unavailable slash command or global installation is claimed.
+
+| Surface / role | Canonical owner / consumers | Context and finding | Decision / validation / recovery |
+| --- | --- | --- | --- |
+| `.agents/`, authored providers | common policy; native adapters/renderer | Common home already exists; `.agents/scripts/` and `.codex/skills/` absent in tracked tree | keep boundaries; renderer and governance checks; Git source recovery |
+| Stage 99 registry, both schemas, templates | document shape; metadata/parser/tests | Current SDLC and template contracts reviewed before editing; no new identity needed | keep shapes unless behavior proves a defect; registry/template tests |
+| SPEC-0173 spec/plan/current Task | bounded contract / execution evidence | Stale ADR-0031 blocker despite current ADR-0033; old checkpoint treated as current | update active prose; preserve dated Task and frozen archive bytes |
+| `.github/rulesets/main-protection.md` | desired protection; maintainer | Job skip and workflow skip confused; old rollback revives retired checks | update using official docs/current read-back; no remote mutation |
+| `.pre-commit-config.yaml` / changed selector | hook routing / workflow DAG | Root config omission and Git T/new-push/snapshot cases reproduced and corrected | update shared consumers with behavior tests; revert logical unit |
+| `.cz.toml`, `.gitmessage`, cliff, PR adapter | executable commit contract / tools | release/deps and subject/scope rules disagree | converge type owner and translated parsers; message matrix |
+| tech-stack workflow / required drift leaf | workflow contract / script inventory | Same check command in PR context; no measured benefit for extra workflow | merge into required leaf; update checker/tests/consumers |
+| root formatter/linter configs | pre-commit and actual package scripts | Ruff format differs from lint; Markdown config fixes files | explicit fix/check; preserve archive boundary; second-run idempotence |
+| automatic Git hooks | common Git hooks directory | relative `core.hooksPath=.git/hooks` resolves to no hooks in linked tree; optional post-commit Graphify rebuild exceeds this Task | use reviewed command-local hook binding described below; no global setting write |
+| native edit payloads | shared `scripts/lib/hooks/tool_payload.py`; existing Pre/Post consumers | Claude absolute paths rejected; decoded Codex command targets omitted | repair shared translation, keep physical-path guards; deterministic fixtures and independent review |
+| Claude project permissions | authored `.claude/settings.json` | arbitrary Git/Python allow grants conflict with approval policy | remove exactly those two grants, keep narrow entries; native permission regression |
+
+Read-only inventory at the baseline covered tracked `.agents` (107), `.claude`
+(49), `.codex` (17), `.github` (16), scripts (75), tests (79), docs (670), infra
+(270), projects (52), examples (33), evals (3), and `_workspace` (2) files.
+These counts identify inspection scope, not new permanent invariants. Root
+configs/ignore rules, both Python requirement files, frontend package scripts
+and its package-lock were compared with their actual callers. Historical
+research m0004 retains dated inventories; its active rollback interpretation
+now routes to the current protection owner. Frozen archive payloads are intact.
+
+| Tool/config owner | Input / action / version boundary | Decision |
+| --- | --- | --- |
+| `.editorconfig`, `.gitattributes` | UTF-8/LF, Python four spaces; text basics | keep aligned editor/Git transport settings |
+| `.pre-commit-config.yaml`, `ruff.toml` | Python format only, Ruff 0.15.12; lint is a distinct command | use cached pinned formatter explicitly; second check must be clean |
+| `.markdownlint-cli2.yaml` | Markdown formatter/linter with fix=true, CLI 0.22.1 | check in isolated copy or approved hook; retain registered frozen exclusions |
+| `.yamllint`, `.shellcheckrc`, `.hadolint.yaml` | YAML1.38.0, ShellCheck0.11.0.1 warning severity, Hadolint2.14.0 | keep separate lint/syntax domains; no second formatter |
+| `.gitleaks.toml` | default detector8.30.0, no blanket archive exemption | keep security owner and failure propagation |
+| `.prettierignore` | no registered Prettier invocation | retain exclusion; clarify lint versus format comments |
+| project package/lock | Next.js lint/typecheck/build/Storybook coverage scripts | package-local owner retained; no copied repository governance |
+| `.cz.toml`, `.gitmessage`, `cliff.toml` | commit schema, authored examples, changelog translation | W9 coherent parser/consumer parity |
+
+| Workflow / event | Context, permission and execution | Current disposition |
+| --- | --- | --- |
+| ci-quality / PR to main including fork | validation-changed, contents:read, fetch-depth:0, 30min | same public definition; required context name retained; untrusted PR code has no write token |
+| ci-quality / main push or manual | validation-full, contents/actions:read, security-events:write, 30min | independent hosted full/security/SARIF evidence; no dispatch in this Task |
+| generate-changelog / v*.*.* tag push | read-only changelog lookup, 5min | check, not release creation or production CD |
+| pr-labeler / PR opened/sync/reopened | contents:read, pull-requests:write, 5min | non-gating metadata; fork token limits remain distinct |
+| greetings / issue or PR opened | per-job issue/PR write, contents:read, 5min | non-gating messaging automation; not invoked here |
+| stale / daily 01:30 UTC | issue/PR write, contents:read, 10min | non-gating scheduled metadata; not invoked here |
+| tech-stack / path-filtered PR | identical bash drift --check, read-only, 5min | delete local standalone; required leaf still runs on every PR |
+| managed CodeQL/Dependabot/dependency graph | remote-listed automation beyond tracked YAML | preserve; baseline observation only |
+
+Measured plan comparison: docs PR 42 to 35 invocations, common-policy PR 50 to
+43; each drops seven unrelated frontend/browser invocations while retaining
+dependency audit. Project-lock and runner inputs retain 56 invocations/seven
+frontend calls. Unknown paths stay conservative (30/seven). Planning took
+1.8-3.6ms in the contributor's probe. Full/local remains 43 invocations;
+PR/full/push/manual context differences are not cache reuse. The apparent
+duplicate Python install candidate was rejected: adapter context filtering
+already removes every inner `install-python-requirements` invocation, leaving
+the hosted workflow bootstrap as owner. No fictitious install saving is claimed.
+Standalone removal saves one workflow/job, checkout and duplicate drift command
+on matching PRs (two drift executions to one); hosted wall-time saving was not
+measured. This Task changes no cache key or PASS reuse behavior.
+
+Hook binding decision (independent rules-engineer, 2026-09-08): use a restrictive
+controller-created temporary directory with exact symlinks to
+the common Git directory's `hooks/pre-commit`, `hooks/commit-msg`, and
+`hooks/pre-push`, resolved with `git rev-parse --path-format=absolute
+--git-common-dir`, via command-local `git -c core.hooksPath=<absolute-directory>`.
+The source inventory also contains post-checkout and optional Graphify
+post-commit, but no non-sample prepare-commit-msg. Only pre-commit and commit-msg
+are commit gates. Omitting the optional post-commit mutator honors the user's
+ignored/private collection boundary; it is not a check waiver. Graphify remains
+NOT_RUN. No hook contents, skip variable or persistent Git setting is changed.
+The approved controller-owned temporary directory is mode 0700 and contains
+three exact source symlinks. Its existing pre-commit engine is 4.6.2; the CI
+bootstrap requirement pins 4.6.1. Tool hook revisions remain repository-pinned,
+but engine-version equality is not claimed.
+Automatic pre-commit validates tracked index content with surviving untracked
+paths; direct local changed observes staged/unstaged/untracked union. Neither
+receipt is presented as proof of a different snapshot.
+
+Commit grouping recovery: W8-first exposes future W11 on-disk paths without
+registration; W11-first leaves the changed pre-commit config unstaged, which the
+framework rejects before QA. After both failure modes were observed, independent
+rules-engineer `policy_review` approved the W8/W11 shared hook/input-validation
+unit under git-workflow's inseparable-change exception. The checks and files
+remain visible; no manual stash, file hiding or new validation framework is used.
+
+Baseline local environment: Linux WSL2, Python 3.12.3; repository Python
+requirements import successfully. Installed `codex-cli 0.153.4` and Claude Code
+`2.1.263` version-only probes do not prove live hooks or entitlement. The Codex
+version command warned it could not write PATH aliases under the sandbox.
+Ignored/private contents and graph snapshot were excluded under the user's
+explicit inspection boundary.
 
 ### Preservation-owner alignment (2026-09-06)
 
@@ -1211,6 +1331,80 @@ in-progress.
 
 ## Verification Evidence
 
+### Current convergence checks (2026-09-08)
+
+| Command / context / target | Exit | Result / limit |
+| --- | --- | --- |
+| `git fetch --no-tags origin main`; original clean main | 0 | PASS; exact baseline above, no remote mutation |
+| `python3 scripts/validation/run-ci-gate.py --profile changed --explain`; clean linked baseline | 0 | PASS; repository-integrity fallback, eight rendered validator entries |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_ci_gate_plan tests.lib.gate.test_ci_gate_adapters tests.validation.test_tech_stack_version_contract`; baseline | 0 | PASS; 55 tests, 3.543 seconds |
+| authenticated `gh api` workflows, main/protection, rulesets, baseline SHA/check-runs | 0 | PASS read-back; required context validation-changed/app15368/strict=true, reviews=0, CODEOWNERS=false; rulesets list empty |
+| metadata check-changed/check-contracts, traceability links, corpus lifecycle; W7 candidate | 0 | PASS; 9 changed documents, contracts0 violations; links713 documents/6147 links/0 failures; lifecycle0 violations |
+| `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.metadata.test_profile tests.lib.document_governance.test_spec_packages`; W7 candidate | 0 | PASS; 59 tests, 78.814s; active package remains nonterminal |
+| Python full discovery `-s tests -p 'test_*.py'`; intermediate before final selector/provider fixes | 0 | PASS; 1197 tests, 576.737s, 11 existing inactive-parser skips; not final snapshot evidence |
+| full Python discovery during final review corrections | 0 | PASS1228 tests539.790s/skipped11; final control-envelope test was added after collection, so this is intermediate evidence |
+| `PYTHONPATH=. python3 -m unittest discover -s tests -p 'test_*.py'`; stable final code, local | 0 | PASS1229 tests572.263s, 11 retained inactive-parser skips; actual shell/eval runs are the separate public/wrapper receipts, frontend not included |
+| public changed; intermediate candidate under default sandbox | 10 | BLOCKED at PostgreSQL config-only Docker query; preceding Compose configuration28 selections passed; no service startup |
+| direct PostgreSQL script with mistaken `--check` | 2 | FAIL usage; recovered by reading registered argv, no service operation |
+| `bash scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`; approved escalation | 0 | PASS config-only/cleanup; socket access clears environmental blocker, no service startup/stop |
+| W8 selector/model/contract tests; contributor | 0 | PASS52 tests19.58s, routing25tests22.38s, context9tests3.12s |
+| W8 review regressions for T state and multi-commit zero-before push | 1 then 0 | RED two type cases and one new-branch case; corrected four-case batch PASS17.727s including automatic Git hook snapshot |
+| W10 tech-stack/workflow regression modules | 0 | PASS72tests7.744s, 11 retained inactive-parser skips; independent repeat72tests8.301s |
+| workflow checker; script manifest; tech-stack --check | 0 | PASS5workflows/7jobs/8actions; required drift leaf retained |
+| provider audit synthetic official-shaped Pre/Post payloads; baseline | 1/0 | FAIL reproduced Claude absolute rejection and Codex silent empty-target success; runtime delivery NOT_RUN |
+| W11 library/native routing/existing hook regression modules | 0 | PASS61tests20.080s; synthetic inputs and temporary files, no live provider/model |
+| W9 independent actual pinned Commitizen4.15.1 / adapter / warning-hook parity | 0 | PASS104 bump cases, 24 message cases, 18 adapter tests, 13 type translations; specification PASS / quality APPROVED; actual git-cliff executable unavailable NOT_RUN |
+| W9 updated optional grammar/type-owner examples; adapter parity | 0 | PASS18 tests0.319s; no duplicate authored type inventory |
+| public changed candidate before staging adapter identity | 1 | FAIL entrypoint/index identity; exact reviewed adapter blob staged, guard retained |
+| public changed candidate before operations-table correction | 1 | FAIL2 of360 document tests170.170s; commit regex release arm falsely detected as document role |
+| focused operations-table regression before correction | 1 | RED hook frontmatter false positive; semantic Markdown table parsing retains no-leading-pipe tables and ignores fenced examples |
+| `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_operations_taxonomy`; final table mapping | 0 | GREEN10 tests2.724s; independent repeat10tests1.675s/APPROVED; existing route/prose negatives retained |
+| `python3 scripts/validation/run-ci-gate.py --profile changed`; integrated local candidate | 0 | PASS; tests and registered shell/eval/config validators; last grammar/table edge corrections also verified independently and by subsequent full run |
+| `python3 scripts/validation/run-ci-gate.py --profile full`; stable code candidate, local, approved config-only socket access | 0 | PASS registered Python/shell/eval/config leaves, including361 document tests201.063s and237 operations tests30.957s; no hosted/frontend/model claim |
+| public changed/full `--explain`; integrated local candidate | 0 | PASS16 rendered validator entries each; actual invocation counts are the separate DAG measurements above |
+| first W9 Git commit attempt; command-local approved hooks | 1 | FAIL before QA: unstaged pre-commit config; no commit created; reordered W8 first instead of bypassing config protection |
+| first W8 Git commit attempt; staged7-file unit | 1 | FAIL2 ownership tests: future W11 files lacked registration in the intermediate index snapshot; removing only four own intents preserved files but did not resolve the failure |
+| second W8 Git commit attempt; same staged7 files, future files untracked | 1 | FAIL same2 tests: manifest support intentionally includes --others, test reachability scans disk; independent rules-engineer approved combining W8/W11 input-validation units; no weaker checks, hidden files or snapshot substitution |
+| first W10 Git commit attempt; deletion staged, command-local approved hooks | 1 | FAIL2 of42 security-readiness tests13.703s: DATA-0078 still counted six tracked workflows; prior working-tree candidate PASS did not cover this changed index inventory |
+| `bash scripts/validation/generate-security-automation-readiness.sh --write`, then `--check`; staged workflow deletion | 0 | PASS registered generator; one derived count6 to5, no control status promotion; six focused readiness tests PASS1.531s |
+| CI pre-commit anti-recursion shell regression | 0 | PASS registered fake-binary cases; real CI wrapper not invoked locally |
+| controlled all-files wrapper regression | 0 | PASS34 cases, 0 failed; this is not an actual final all-files receipt |
+| pinned Ruff0.15.12 format then --check and Markdownlint-cli2 0.22.1 twice; final touched paths | 0 | PASS18 Python/19 Markdown files; second-run byte idempotence; new parser/tests lint also PASS |
+| provider renderer --check, parity --validate-only, shell syntax/ShellCheck | 0 | PASS2providers/0projection drift/13dispatchers; no generated native changes required |
+| Wiki generator --write then --check after workflow deletion | 0 | PASS registered outputs regenerated; final staged-input freshness checked separately |
+| final documentation CLI discovery using nonexistent `check-metadata.py`, then misspelled `rg` targets | 2 | FAIL path lookup only; actual registered `check-document-metadata.py --help` resolved the interface, exit0; no validation claimed for failed probes |
+| `PYTHONPATH=. python3 -m unittest tests.lib.document_governance.test_links`; remaining W7 candidate | 0 | PASS41 tests8.722s, canonical publication scan includes governance root and rejects missing roots |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`, then `--mode check-contracts`; W7 candidate | 0 | PASS8 selected documents/0 violations, repository contracts0 violations |
+| `python3 scripts/validation/check-document-links.py --mode all`; W7 candidate | 0 | PASS713 documents/6154 links/46 catalog pairs/72 archive links/0 failures |
+
+Authenticated run read-back (exit 0) identifies [quality run34202909252](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252)
+as event `push` at the baseline SHA; [validation-full job101985602222](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252/job/101985602222)
+is successful and [validation-changed job101985604189](https://github.com/buenhyden/hy-home.docker/actions/runs/34202909252/job/101985604189)
+is skipped.
+The baseline check-runs report validation-full success, validation-changed
+skipped, and CodeQL Analyze actions/python/javascript-typescript success for
+`efd58f441a81a6db9011afa6f099b36beff851eb`. Workflows list also contains dynamic
+CodeQL/Dependabot/dependency graph and two temporary audit workflow records
+absent from this tree. These observations establish neither those temporary
+workflows' current reachability nor hosted verification of this local change.
+
+Official-source verification: GitHub's required-check troubleshooting distinguishes
+conditionally skipped jobs (successful status) from workflow-level path/branch/
+commit-message skips (pending checks). See
+<https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks>.
+No prior merge incident cause is inferred from that distinction alone.
+
+Native payload evidence comes from the official Claude
+<https://code.claude.com/docs/en/hooks> and Codex
+<https://developers.openai.com/codex/hooks> references (the latter redirects to
+ChatGPT Learn): Claude file_path is absolute; Codex apply_patch supplies its
+patch in tool_input.command for both Pre/Post. Official Claude permissions
+<https://code.claude.com/docs/en/permissions> explains the broad grants removed.
+All eight registered immutable action.yml manifests were reopened at their
+contract full SHAs and declare node24. This verifies declared runtime, not an
+executed hosted job. No current CD deployment pipeline, live target or secret
+promotion is inferred from changelog checks, runbooks or synthetic rehearsal.
+
 ### Package reconciliation verification (2026-09-06)
 
 The current candidate changes existing Stage 03 documents only. It adds no
@@ -1446,16 +1640,16 @@ original SPEC-0174 Task cleanup promise is also preserved: its temporary
 Actions acquisition, transport, and reconstruction workflows are absent from
 the delivered tree and are not QA evidence.
 
-The mapping retains previously observed integration evidence in rows 1-13 and
-the recorded relocation/follow-up results in rows 14-16. The implemented tree
-is now integrated at 8176cdee7. This document reconciliation does not rerun or
-re-date those results, and its documentation gate cannot close the outstanding
-whole-migration aggregate in row 15. BLOCKED/NOT_RUN is not PASS.
+Rows 1-16 retain the earlier migration provenance with current owner wording;
+8176cdee7 is a historical integration checkpoint. Rows 17-21 record the current
+convergence. Its current local checks and commits have separate receipts above
+and in the Commit Ledger; none re-dates older results or closes the unresolved
+package acceptance in row 15. BLOCKED/NOT_RUN is not PASS.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W3 | PASS: five-context canonical-invocation uniqueness was observed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 2 | W3 | PASS: the tracked contract retains only `validation-changed` and `validation-full` as required quality jobs. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 2 | W3 | PASS: the tracked contract retains the two quality jobs `validation-changed` and `validation-full`; only `validation-changed` is the desired PR required status context. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 3 | W3 | PASS: changed/local, changed/pull-request, full/local, full/push, and full/workflow-dispatch uniqueness regression passed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 4 | W3 | PASS: gate/workflow regression evidence records the selected Compose and frontend bootstrap leaf de-duplication. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 5 | W3 | PASS: transition regression and script-manifest validation reject a self-successor and incomplete transition contract. | [Script manifest](../../../../scripts/manifest.yaml) |
@@ -1467,9 +1661,14 @@ whole-migration aggregate in row 15. BLOCKED/NOT_RUN is not PASS.
 | 11 | W1 | PASS: current-path grammar and full-history recovery remain separately enforced by the focused document-governance checks. | [Spec package validator](../../../../scripts/lib/document_governance/spec_packages.py) |
 | 12 | W1 | PASS: the exact SPEC-0172 source receipt and superseded full-packet mirror are recorded on this Task; ordinary SPEC-0174 disposition remains a registered lifecycle route. | [Branch-integration receipt](tsk-0006-generated-evidence-and-final-verification.md) |
 | 13 | W5 | PASS: DATA-0068, DATA-0069, DATA-0073, and DATA-0074 disposition evidence retains byte-preserved bodies and paired Tombstones. | [Archive records](../../../98.archive/) |
-| 14 | W2 | PASS for implemented canonical/provider contract: 100 authored inputs, 77 source dispositions, independent review and 92 actual-root regression tests; native runtime acceptance remains explicitly unverified. | [Current verification ledger](#current-verification-ledger) |
-| 15 | W6 | BLOCKED whole-migration aggregate: PostgreSQL still requires unauthorized operating/image inputs. Both Compose baseline leaves now pass with isolated tracked example inputs; those results do not establish PostgreSQL, native or deployment acceptance. | [Local commit authorization and follow-up](#local-commit-authorization-and-follow-up-2026-09-06) |
+| 14 | W2 | PASS: implemented canonical/provider contract; 100 authored inputs, 77 source dispositions, independent review and 92 actual-root regression tests; native runtime acceptance remains explicitly unverified. | [Current verification ledger](#current-verification-ledger) |
+| 15 | W6 | NOT_RUN: whole-package acceptance is incomplete; the current authorized PostgreSQL config-only check passes; both current local public profiles pass. Native acceptance and hosted verification remain unexecuted, separate from dated operational evidence. | [Local commit authorization and follow-up](#local-commit-authorization-and-follow-up-2026-09-06) |
 | 16 | W6 | PASS: the Task distinguishes local/configured evidence from unverified runtime, entitlement, and remote state. | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
+| 17 | W8 | PASS: deterministic selector/model/Git snapshot regressions; initial/missing-base inputs fail safely; current integrated profiles recorded above. | [Gate selection](../../../../scripts/validation/ci_gate_runner.py) |
+| 18 | W9 | PASS: Commitizen/adapter/translated-hook message matrix; actual git-cliff execution NOT_RUN because executable is unavailable. | [Commit contract](../../../../.cz.toml) |
+| 19 | W10 | PASS: required drift leaf exact-once in five contexts and workflow/security regressions; new hosted run NOT_RUN. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 20 | W7/W10 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
+| 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
 
 ### Why all six Tasks read `in-progress` (2026-09-07, local-executed)
 
@@ -1509,6 +1708,40 @@ were restored to `in-progress` immediately after the test, and
 `check-document-corpus-lifecycle.py` returns `violations=0` on the restored tree.
 
 ## Review Evidence
+
+Current convergence reviews (2026-09-08): rules-engineer approved the initial
+bounded design and then W7 exact diff after six corrections (work-unit grammar,
+ADR parent, result spelling, required-check receipt, PR checkbox, durable skill
+routing). Independent metadata/diff/publication regression checks passed.
+Python reviewer found and rechecked W8 type-change, initial-push and snapshot
+claims; all corrected. Pinned formatting subsequently passed. W10 independent
+security/Python review approved code and required generated Wiki/current m0004
+routing follow-up; those owners were updated through the registered generator.
+Its final DATA-0078 inventory correction received independent APPROVED after
+generator --check and exact-diff review; only the workflow count changed.
+The additional operations-catalog false-positive correction received independent
+Python APPROVED after preserving optional leading table delimiters and physical
+LF/CR source-line mapping (10 tests, 1.675s, exit 0). W9 consumer review
+returned Specification PASS / Quality APPROVED with actual pinned Commitizen
+coverage.
+W11 policy gate approved the precise native parser and two-grant narrowing;
+independent security and Python reviews approved after malformed-record and
+path-boundary corrections. Final provider code review returned Specification
+PASS / Quality APPROVED, 0 findings, after native structural differential probes
+and 68 deterministic tests (19.736s, exit 0). No live hook delivery was claimed.
+The final W7 review requested six wording/evidence corrections: automatic Git
+hook authorization, historical promotion context, pending all-files evidence,
+controller-private path removal, failure-result wording and Markdown owner
+qualification. These were corrected without changing completion status or
+execution permissions. Independent Python reviewer `selector_review` approved
+the three-line publication-scan test correction with no findings; its diff
+check passed, and the separately reported 41-test run was not repeated.
+Final independent rules-engineer review returned Specification PASS / Quality
+APPROVED, zero findings, for the remaining 11-path diff against `1aea9246a`.
+Reviewed diff SHA-256:
+`aa3ebb605070247a0e116e0662129e091aee07fa831a7490626c7540149b365b`.
+All six findings were closed; adding this verdict and formatting does not claim
+that the pending actual all-files or hosted/native executions have run.
 
 The current relocation and clean-checkout reviews are recorded in the latest
 Work Log above. The following paragraphs preserve earlier reviews and their
@@ -1562,6 +1795,16 @@ prose with the exact Registry exceptions as part of the approved integration,
 not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
+
+Current convergence commits (2026-09-08), all local and task-owned:
+
+| Commit | Scope / observed hook result |
+| --- | --- |
+| `3f2b16a65` | W8/W11 hook inputs and changed validation; 16 files; public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
+| `04eafc83b` | W9 commit grammar/consumers and semantic operations-table parsing; 11 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
+| `1aea9246a` | W10 workflow consolidation/protection guidance and registered generated evidence; 14 files; actual public changed and commit-msg PASS, exit 0; automatic unstaged restoration confirmed |
+
+Earlier dated commits:
 
 | Commit | Scope |
 | --- | --- |
@@ -1630,37 +1873,40 @@ No completed archive packet or new Spec/Plan/Task was created.
   unregistered output writes are outside Task 6, and AST-only refresh cannot
   refresh July semantic evidence. Independent policy review accepted this
   reported scope boundary (PASS/A, zero findings). Existing graph data remains
-  stale/advisory, not authority or acceptance evidence. No graph update, LLM,
-  network, or global-settings operation occurred.
+  stale/advisory, not authority or acceptance evidence. No graph update, LLM
+  call or global-settings operation occurred. The current authorized read-only
+  network observations are separately recorded above.
 
 ## Deferred Items
 
-- REQ-0026, AD-0030 and accepted ADR-0031 retain obsolete transient Plan/Task
-  removal language. Resolve that current-owner promotion dependency through the
-  reviewed successor/preservation lifecycle; keep the existing full-package
-  policy and executable guarantee unchanged. The eight-file reconciliation
-  itself does not close this item.
-- Push, pull request, Hosted CI, branch protection, deployment, tag, and release
-  remain outside scope. The earlier cleanup instruction is historical; this
-  follow-up retains the work branch/workspace and authorizes reviewed local
-  commits and the completed 8176cdee7 local-main checkpoint only. It does not
-  authorize subsequent integration, remote delivery or cleanup.
-- Runtime and remote observations remain explicitly unverified.
+- The preservation-owner blocker is discharged by current REQ-0026, AD-0030
+  and accepted ADR-0033. The earlier dated reports remain historical evidence;
+  this follow-up corrects the active Spec/Plan references.
+- Push, pull request, hosted execution, branch-protection mutation, deployment,
+  tag and release remain outside scope. The current convergence request permits
+  reviewed local implementation/commits and read-only remote observation while
+  preserving this branch/worktree. The earlier 8176cdee7 integration/cleanup
+  instructions are dated history, not current merge or deletion authorization.
+- Current authorized read-only remote baseline observations are recorded above;
+  verification of new local changes on hosted runners remains NOT_RUN. Live
+  provider runtime observations remain unverified.
 - The PostgreSQL blocker is discharged. `leaf.postgres-logical-upgrade-config`
   PASSED and the full rehearsal PASSED with `integrity_status=passed`, both under
   the operator's single-instance runtime authorization on 2026-09-07. The
   whole-migration aggregate is still not claimed, because the remaining Deferred
-  Items below — native discovery, the all-files wrapper, Hosted CI and remote
-  state — are untouched by these two runs. QuickWin and template-security have
+  Items below are not discharged by those two operating runs. The current
+  local public profiles and remote observations have their own receipts;
+  actual final all-files is still pending. QuickWin and template-security have
   isolated example-input PASS evidence; neither proves actual host, service or
   volume readiness.
 - Normal native discovery is BLOCKED before acceptance; skill calls, live hook
   delivery and enforcement remain NOT_RUN. No auth/global-state access, trust
   change, model call or installation is authorized by this follow-up.
-- The all-files wrapper remains NOT_RUN because it can install hook environments
-  and invoke container linters. Ruff check and format now PASS on all 46 Python
-  files changed since the original baseline; the historical lint failures above
-  retain their dated scope and are not current unresolved findings.
+- The current request authorizes the controlled final all-files boundary after
+  reviewed logical commits produce a clean linked worktree. Its 34-case wrapper
+  regression passes; the actual final invocation is still pending. The earlier
+  no-install boundary described in dated entries does not block this approved
+  final QA. No user-global installation or settings change is authorized.
 
 ## Related Documents
 

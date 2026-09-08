@@ -967,7 +967,7 @@ class DocumentLinksCliTests(unittest.TestCase):
 
         candidates = [ROOT / "README.md"]
         for root in (
-            ROOT / ".agents/policies",
+            ROOT / ".agents/governance",
             ROOT / ".agents/roles",
             ROOT / "docs/01.requirements",
             ROOT / "docs/02.architecture",
@@ -975,6 +975,7 @@ class DocumentLinksCliTests(unittest.TestCase):
             ROOT / "docs/05.operations",
             ROOT / "infra",
         ):
+            self.assertTrue(root.is_dir(), f"publication scan root is missing: {root}")
             candidates.extend(root.rglob("*.md"))
         failures: list[str] = []
         retired_names = (

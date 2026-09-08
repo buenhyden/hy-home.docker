@@ -211,9 +211,17 @@ Gate in `.agents/governance/github-governance.md`.
 
 ## 10. Formatting and Linting Ownership
 
-- Every tracked file type has exactly one formatting owner, and
-  `.pre-commit-config.yaml` is where that owner is named. A tool absent from it
-  does not govern this repository, whatever configuration it leaves behind.
+- `.pre-commit-config.yaml` owns shared formatter and linter invocations;
+  registered project-local package scripts own their actual package scope.
+  A config file alone does not establish an executing owner. Formatting rewrites
+  bytes; linting reports defects, and a syntax/security check is not a formatter.
+  Keep one formatting owner per file scope; a scope can have no formatter.
+- Check commands must preserve authored source. Use supported check options;
+  Agent-invoked all-files pre-commit runs use the controlled isolated final-QA
+  boundary and report any resulting diff. Normal automatic Git commit hooks
+  retain their existing authorization and must not be bypassed. Explicit
+  fixes are reviewed separately and a second formatting pass must be unchanged.
+  Ruff format is the Python formatter; it does not imply Ruff lint execution.
 - Formatting settings are pinned in the repository, not left to a tool default
   or to whichever version a machine has. `ruff.toml` pins Python.
 - An agent editor hook may format a file only in agreement with the registered

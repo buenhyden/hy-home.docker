@@ -1,12 +1,12 @@
 ---
 title: "Repository Vocabulary"
-version: "0.1.0"
+version: "0.2.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-08"
 created: "2026-09-06"
-observed_at: "2026-09-06"
+observed_at: "2026-09-08"
 review_cycle: "on-contract-change"
 ---
 
@@ -57,6 +57,19 @@ Registry.
 
 | Term | Meaning here | Rule owner |
 | --- | --- | --- |
+| QA | Applicable verification and review of the changed contract | [quality standards](../governance/quality-standards.md) |
+| CI | Hosted validation of a named event and revision | [GitHub governance](../governance/github-governance.md) |
+| CD | Authorized artifact promotion and deployment; a changelog check or rehearsal alone is not deployment | [documentation protocol](../governance/documentation-protocol.md#release-evidence-boundary) |
+| Workflow | GitHub event-triggered automation composed of jobs | `.github/workflow-contract.yml` |
+| Job | One execution unit in a workflow; not necessarily a required status check | `.github/workflow-contract.yml` |
+| Required status check | A named source-bound context required by remote protection for the relevant revision | `.github/rulesets/main-protection.md` |
+| Check | Validation that reports a result without rewriting source | [quality standards](../governance/quality-standards.md) |
+| Fix | An explicitly requested source transformation followed by diff review and verification | [quality standards](../governance/quality-standards.md) |
+| Fixture | Deterministic input with a focused behavior or independent serialized consumer | [quality standards](../governance/quality-standards.md) |
+| Approval | Authority for a named surface and operation; neither a test result nor a provider event | [approval boundaries](../governance/approval-boundaries.md) |
+| Verification evidence | Actual command, context, target snapshot and exit; Task-owned | [SDLC](../governance/sdlc.md) |
+| Local completion | Reviewed local changes and applicable checks/commits with explicit limits | [task checklists](../governance/task-checklists.md) |
+| Merge readiness | Actual required checks and reviews for the relevant PR revision and verified protection | [GitHub governance](../governance/github-governance.md) |
 | Suite | One of the six named public groupings of gate nodes | `.github/workflow-contract.yml` |
 | Gate node | One addressable entry in the executable graph | `.github/workflow-contract.yml` |
 | Leaf | A gate node that executes an entrypoint rather than expanding to children | `.github/workflow-contract.yml` |
@@ -88,6 +101,9 @@ Compiled from tracked sources at repository commit
 policies, the Provider Registry, the Stage 99 registry, and the workflow
 contract. Each row names its rule owner so a reader verifies the term against
 that document rather than against this table.
+
+Revalidated the QA/CI/CD and completion vocabulary against current owners on
+2026-09-08; this table remains navigation rather than a second policy.
 
 ## Refresh Triggers
 
