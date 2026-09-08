@@ -24,9 +24,7 @@ from scripts.lib.document_governance.metadata.profile import (
 )
 from scripts.lib.document_governance.registry import load_registry
 
-LEGACY_REQUIREMENT = pathlib.PurePosixPath(
-    "docs/01.requirements/prd-0042-preserved.md"
-)
+LEGACY_REQUIREMENT = pathlib.PurePosixPath("docs/01.requirements/prd-0042-preserved.md")
 
 
 class IdentityHistoryTests(unittest.TestCase):
@@ -240,9 +238,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "commit", "-qm", "merge issued lineage")
 
             registry = load_registry(registry_path)
-            current = {
-                canonical.relative_to(root).as_posix(): f"SPEC-{issued:04d}"
-            }
+            current = {canonical.relative_to(root).as_posix(): f"SPEC-{issued:04d}"}
             self.assertEqual(
                 (),
                 identity_history.validate_allocation_transition(
@@ -251,8 +247,7 @@ class IdentityHistoryTests(unittest.TestCase):
             )
             preserved = {
                 (
-                    "docs/98.archive/completed/03.specs/"
-                    f"{issued:04d}-fixture/spec.md"
+                    f"docs/98.archive/completed/03.specs/{issued:04d}-fixture/spec.md"
                 ): f"SPEC-{issued:04d}"
             }
             self.assertEqual(
@@ -263,9 +258,9 @@ class IdentityHistoryTests(unittest.TestCase):
             )
 
             collision = dict(current)
-            collision[
-                f"docs/03.specs/{issued:04d}-collision/spec.md"
-            ] = f"SPEC-{issued:04d}"
+            collision[f"docs/03.specs/{issued:04d}-collision/spec.md"] = (
+                f"SPEC-{issued:04d}"
+            )
             findings = identity_history.validate_allocation_transition(
                 root, registry, collision, base
             )
@@ -335,8 +330,7 @@ class IdentityHistoryTests(unittest.TestCase):
             registry = load_registry(registry_path)
             issued = registry.identity_spaces["spec"].high_water
             preserved = root / (
-                "docs/98.archive/completed/03.specs/"
-                f"{issued:04d}-fixture/spec.md"
+                f"docs/98.archive/completed/03.specs/{issued:04d}-fixture/spec.md"
             )
             preserved.parent.mkdir(parents=True)
             preserved.write_text(
@@ -345,9 +339,7 @@ class IdentityHistoryTests(unittest.TestCase):
             self._git(root, "add", ".")
             self._git(root, "commit", "-qm", "preserve issued identity")
             base = self._git(root, "rev-parse", "HEAD").strip()
-            current = {
-                preserved.relative_to(root).as_posix(): f"SPEC-{issued:04d}"
-            }
+            current = {preserved.relative_to(root).as_posix(): f"SPEC-{issued:04d}"}
 
             self.assertEqual(
                 (),

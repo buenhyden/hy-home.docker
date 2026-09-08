@@ -810,9 +810,7 @@ def parse_public_gate_contract(
             "ci-gate-public-validators",
             validator_path,
         )
-        suite = _string(
-            record["suite"], "ci-gate-public-validators", validator_path
-        )
+        suite = _string(record["suite"], "ci-gate-public-validators", validator_path)
         gate_id = _string(
             record["gate_id"], "ci-gate-public-validators", validator_path
         )

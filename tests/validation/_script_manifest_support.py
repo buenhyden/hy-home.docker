@@ -89,6 +89,8 @@ TASK12_RETIRED_SCRIPTS = frozenset(
         "scripts/validation/recommend-qa-gates.sh",
     }
 )
+
+
 def tracked_paths(*pathspecs: str) -> set[str]:
     paths = subprocess.run(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", *pathspecs],

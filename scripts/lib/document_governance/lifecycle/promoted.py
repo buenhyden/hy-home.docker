@@ -27,13 +27,9 @@ def _historical_promoted_findings(root: pathlib.Path) -> list[Finding]:
 
     row = selected[0]
     recovery = row["recovery_commit"] or migration["baseline_commit"]
-    expected = HistoricalDocument(
-        root, recovery, row["source_path"]
-    ).read_bytes()
+    expected = HistoricalDocument(root, recovery, row["source_path"]).read_bytes()
     _load_migration_manifest_text(expected.decode("utf-8"))
-    observed = _read_regular_repo_bytes(
-        root, row["target_path"], require_tracked=True
-    )
+    observed = _read_regular_repo_bytes(root, row["target_path"], require_tracked=True)
     if observed == expected:
         return []
     return [

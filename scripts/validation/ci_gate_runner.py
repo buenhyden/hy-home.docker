@@ -587,9 +587,7 @@ def validate_public_execution_parity(
         for item in public_contract.validators
         if item.suite in selected and manifest_context in item.contexts
     }
-    ownership_by_path = {
-        item.entrypoint: item for item in public_contract.validators
-    }
+    ownership_by_path = {item.entrypoint: item for item in public_contract.validators}
     counts: collections.Counter[pathlib.PurePosixPath] = collections.Counter()
     for invocation in plan:
         if _is_admitted_internal_invocation(invocation, context):
