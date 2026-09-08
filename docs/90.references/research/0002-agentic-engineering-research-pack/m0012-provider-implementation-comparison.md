@@ -328,7 +328,7 @@ stable revision identifier; every vendor row is external mutable.
 | WS-CLAUDE | [Claude provider notes](../../../../.claude/provider.md) | Tracked mutable; stale uniform-high effort sentence identified. |
 | WS-CODEX | [Codex provider notes](../../../../.codex/provider.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
 | WS-GEMINI | Gemini provider notes (retired path: `../../../00.agent-governance/providers/gemini.md`) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
-| WS-GRAPH | [Graphify report](../../../../graphify-out/GRAPH_REPORT.md) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
+| WS-GRAPH | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
 
 ## Scope Application
 

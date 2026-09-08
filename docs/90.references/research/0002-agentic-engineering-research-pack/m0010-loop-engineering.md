@@ -398,7 +398,7 @@ future arXiv version.
 | `providers/gemini.md` (retired path: `../../../00.agent-governance/providers/gemini.md`)                      | Workspace tracked               | Read 2026-08-14: `AfterAgent` deny-retry mechanism description.                                                       |
 | [Shared dispatcher](../../../../scripts/hooks/agent-event-hook.sh)                             | Workspace tracked, executable   | Read directly 2026-08-14: no attempt-counter code path against `max_attempts`.                                        |
 | [Hookify catalog](../../../../.agents/governance/hooks)                                   | Workspace tracked               | Counted 2026-08-14: 2 of 19 rules scoped to `event: stop`; no runtime binding found.                                  |
-| [Graphify report](../../../../graphify-out/GRAPH_REPORT.md)                                    | Workspace tracked, stale        | Read first; built from `f8a72211`; every lead corroborated.                                                           |
+| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                    | Workspace tracked, stale        | Read first; built from `f8a72211`; every lead corroborated.                                                           |
 
 ## Scope Application
 
