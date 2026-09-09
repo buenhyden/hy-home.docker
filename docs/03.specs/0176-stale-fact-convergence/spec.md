@@ -123,8 +123,11 @@ the correction is recorded beside it.
     laboratory subjects `0072`, `0073`, `0075`, `0076`, the tooling subjects
     `0062`, `0063`, and `0070-mail`. A guide corrected against a policy that
     still requires the retired claim produces a contradiction rather than a fix.
-  - `docs/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md`,
-    which describes the retired two-leaf OAuth2 Proxy split.
+  - AD-0014 no longer needs the correction this scope planned. SPEC-0173 found
+    that AD-0002 already carried every clause AD-0014 held, so AD-0002 now
+    supersedes it and the preserved body sits under
+    `docs/98.archive/superseded/02.architecture/descriptions/`. Correcting a
+    superseded record would rewrite a frozen archive body.
   - The generated LLM Wiki outputs under `docs/90.references/data/`, regenerated
     by the registered generator and never hand-edited.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any

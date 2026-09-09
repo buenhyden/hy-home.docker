@@ -311,7 +311,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/descriptions/0011-laboratory-architecture.md](../../../02.architecture/descriptions/0011-laboratory-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0012-data-analytics-architecture.md](../../../02.architecture/descriptions/0012-data-analytics-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0013-open-webui-architecture.md](../../../02.architecture/descriptions/0013-open-webui-architecture.md) | Markdown reference |
-| [docs/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../../../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../../../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../../../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../../../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md) | Markdown reference |
@@ -1134,6 +1133,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md](../../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md](../../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md) | Markdown reference |
 | [docs/98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) | Markdown reference |
+| [docs/98.archive/superseded/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../../../98.archive/superseded/02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/plan.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/spec.md) | Markdown reference |
 | [docs/98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md](../../../98.archive/superseded/03.specs/0172-document-contract-convergence/tasks/tsk-0001-document-contract-convergence.md) | Markdown reference |
