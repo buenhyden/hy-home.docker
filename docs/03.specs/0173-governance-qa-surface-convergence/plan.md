@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.8.1"
+version: "0.9.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -68,6 +68,9 @@ Git integration does not promote incomplete work units or package status.
 19. W19: Remove active operations-document authoring residue after approval.
 20. W20: Consolidate architecture owners by independently reviewed domain.
 21. W21: Verify approved units and record local completion without runtime claims.
+22. W22: Give manifest evidence one grammar and close the W17 consumer finding.
+23. W23: Bound stage-document links outside `docs/` to one entry point.
+24. W24: Remove CI setup that has no consumer and record the QA execution map.
 
 ### W1-W6: Preserve integrated migration
 
@@ -388,6 +391,56 @@ Hosted run/job/SHA/event and managed automation observations require their real
 read-back; no dispatch/push is authorized here. Operations planning and execution
 stay on hold. Preserve the branch/worktree unless separately authorized.
 
+### W22: One manifest evidence grammar
+
+Owner: writable validation contributor. Files: `scripts/validation/check-script-manifest.py`,
+`scripts/manifest.yaml`, `tests/validation/_script_manifest_support.py` and
+`tests/validation/test_script_manifest.py`.
+
+1. Establish which implementation the gate actually uses before proposing a row.
+   The suite carried a second, looser grammar; a row could pass one and fail the
+   other, which is how the omission rationale survived a passing checker.
+2. Extend the gate grammar by one hop into a module-level helper that starts a
+   child process, and keep a local helper that starts none as a negative case.
+   Do not follow helper chains: at depth two every local call reaches subprocess.
+3. Point the suite at the gate implementation and delete the duplicate. Keep the
+   inventory-only rejections the tests own, and keep the checker loader inside
+   the test module, because that call is the module's own use evidence.
+
+### W23: One entry point into stage documents
+
+Owner: documentation contributor with validation ownership for the mode. Files:
+`scripts/lib/document_governance/links.py`, `scripts/validation/check-document-links.py`,
+`scripts/lib/document_governance/operations_catalog.py`, `tests/lib/document_governance/test_links.py`,
+`.agents/governance/documentation-protocol.md` and the affected documents outside `docs/`.
+
+1. Widen the selection to tracked Markdown plus `llms.txt` before adding a rule.
+   A named support list decided which outside documents were read at all, so the
+   violations were invisible rather than tolerated. Tracked selection also keeps
+   the untracked Markdown under `projects/` out of the graph.
+2. Add the rule as a mode on the existing graph. Reuse the existing parser for
+   fences, inline code, anchors and normalization; no separate regex pass.
+3. Remediate by keeping the label and moving the path into code text, and add
+   the entry-point link once per affected document. Where the old link was
+   already broken, remove the reference: a text path to a file that is not there
+   is the same stale claim. Fix canonical sources and regenerate provider
+   projections rather than editing generated adapters.
+4. Correct the documents that taught the rejected pattern, including the hook
+   example and the validator's own README and constraint guidance.
+
+### W24: CI setup with a consumer
+
+Owner: writable CI/CD contributor. Files: `.github/workflows/ci-quality.yml`,
+`.github/workflow-contract.yml`, `scripts/lib/gate/github_workflow_contract.py`
+and `tests/lib/gate/test_github_workflow_contract.py`.
+
+1. Prove the step is unused across gate leaves, requirements files and the hook
+   runner's own code before removing it.
+2. Remove the step, its registered action and its allowed-action entry together,
+   so an unregistered action still fails the parity check.
+3. Record the measured local execution map. Compare only equal contexts, and do
+   not convert a single hosted observation into a threshold.
+
 ## Risk and Rollback
 
 | Risk | Guard | Recovery |
@@ -415,7 +468,7 @@ Domain-logic coverage is N/A for validation/configuration-only changes;
 behavioral safety regressions remain mandatory for changed validators.
 
 For the continuation, criterion 25 maps to W16; criteria 26/27/28/29/30 map
-to W17/W18/W19/W20/W21 respectively. Planning verification is limited to
+to W17/W18/W19/W20/W21 respectively. Criteria 31/32/33 map to W22/W23/W24. Planning verification is limited to
 metadata contracts, changed document checks, links, LLM Wiki freshness and the
 policy-selected public changed route. Actual commands and exits belong in Task.
 The future minimum regression commands, used only for their approved changes,
