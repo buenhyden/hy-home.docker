@@ -30,22 +30,26 @@ created: "2026-03-26"
 
 ### In Scope
 
-- **Benchmark Orchestration**: `k6-master`를 통한 Locust-wrapper 부하 생성 시나리오 관리.
-- **Result Evidence**: Locust wrapper의 요청 통계와 로그를 테스트 evidence로 기록.
-- **Scenario Mount**: `k6-data:/mnt/locust:rw` volume 계약 유지.
+- **Benchmark Orchestration**: `k6` 서비스가 실행하는 k6 시나리오 관리.
+- **Result Evidence**: k6 요약 출력과 Prometheus remote write로 보낸 지표를 evidence로 기록.
+- **Scenario Mount**: `k6-data:/scripts:ro` volume 계약 유지.
 
 ### Out of Scope
 
 - **Metric Storage Layer**: 장기 지표 저장소의 선택과 운영은 이 leaf의 책임이 아님.
-- **Visualization**: Grafana 대시보드 연동 작업.
+  이 leaf는 Prometheus remote write endpoint로 내보내기만 한다.
+- **Visualization**: Grafana 대시보드 자체의 소유는 `06-observability`에 있다.
 
 ## Structure
 
 ```text
 k6/
-├── locustfile.py       # 테스트 시나리오 정의 (Python 기반)
-├── docker-compose.yml  # 분산 테스팅 오케스트레이션
+├── Dockerfile          # 고정된 grafana/k6 이미지
+├── docker-compose.yml  # 부하 시험 작업 정의
 └── README.md           # This file
+
+시나리오 스크립트는 저장소가 아니라 `DEFAULT_TOOLING_DIR`의 host bind mount에
+둔다. `locust` leaf와 같은 규약이다.
 ```
 
 ## Available Scripts
@@ -54,7 +58,7 @@ k6/
 | ---------------------------------------------------------- | -------------------------------- |
 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | Static hardening contract check |
 | `python3 scripts/validation/run-ci-gate.py --profile changed` | Documentation and stale-literal guard |
-| `docker compose ... logs -f k6-master` | Approved runtime context에서 마스터 노드 로그 확인 |
+| `docker compose ... logs -f k6` | Approved runtime context에서 실행 로그 확인 |
 
 ## Configuration
 
@@ -62,15 +66,18 @@ k6/
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `K6_HOST_PORT` | No | 외부 UI 접속 포트 (기본: 18189) |
-| `K6_PORT` | No | 컨테이너 내부 UI 포트 (기본: 8089) |
+| `K6_SCRIPT` | No | 실행할 시나리오 경로 (기본: `/scripts/smoke.js`) |
+| `K6_TESTID` | No | Grafana 대시보드가 필터로 쓰는 `testid` 태그 (기본: `local`) |
+| `K6_TREND_STATS` | No | remote write로 내보낼 trend 통계 (기본: `min,max,p(95),p(99)`) |
+| `K6_PROMETHEUS_HOST` | No | remote write 대상 호스트 (기본: `prometheus`) |
+| `K6_PROMETHEUS_PORT` | No | remote write 대상 포트 (기본: `9090`) |
 | `DEFAULT_TOOLING_DIR` | Yes | 스크립트 볼륨의 호스트 경로 |
 
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must provide root `infra_net` context because the root file includes this leaf unconditionally and the `tooling` and `testing` profiles decide whether its services resolve.
+- Runtime rendering must provide root `infra_net` context because the root file includes this leaf unconditionally and the `testing` profile decides whether its service resolves.
 
 ## Troubleshooting
 
@@ -88,16 +95,16 @@ k6/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6-master`; the root [docker-compose.yml](../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
-| Config files | `docker-compose.yml` |
-| Config values | profiles: `tooling`, `testing`; UI port keys: `K6_HOST_PORT`, `K6_PORT` |
-| Compose linkage | root include active; the `tooling` and `testing` profiles select `k6-master` |
+| Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6`; the root [docker-compose.yml](../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
+| Config files | `Dockerfile`, `docker-compose.yml` |
+| Config values | profiles: `testing`; scenario and export keys: `K6_SCRIPT`, `K6_TESTID`, `K6_TREND_STATS`, `K6_PROMETHEUS_HOST`, `K6_PROMETHEUS_PORT` |
+| Compose linkage | root include active; the `testing` profile selects `k6` |
 | Networks | `infra_net` |
-| Volumes | `k6-data:/mnt/locust:rw`, `k6-data` |
-| Ports | `${K6_HOST_PORT:-18189}:${K6_PORT:-8089}` |
+| Volumes | `k6-data:/scripts:ro`, `k6-data` |
+| Ports | None declared; k6 is CLI-driven and publishes no host port |
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
-| Healthcheck | Compose healthcheck declared for `k6-master` |
+| Healthcheck | None declared; `k6` runs one scenario and exits, so `restart` is `no` |
 | Operations | Guide (`docs/05.operations/catalog/09-tooling/0061-k6/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0061-k6/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0061-k6/runbook.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |

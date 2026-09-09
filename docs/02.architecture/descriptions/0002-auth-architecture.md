@@ -1,14 +1,16 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-10"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
 - "REQ-0002"
+supersedes:
+- "AD-0014"
 created: "2026-03-26"
 ---
 # 02-Auth Architecture Description

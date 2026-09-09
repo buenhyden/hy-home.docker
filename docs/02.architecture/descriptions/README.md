@@ -54,7 +54,7 @@ docs/02.architecture/descriptions/
 
 ### Current Inventory
 
-- `AD-0001`부터 `AD-0014`: 기본 tier와 서비스 아키텍처.
+- `AD-0001`부터 `AD-0013`: 기본 tier와 서비스 아키텍처.
 - `AD-0018`부터 `AD-0026`: hardening, HA와 network 후속 아키텍처.
 - [`AD-0027`](./0027-agent-governance-canonical-adapter.md):
   canonical agent governance adapter architecture.

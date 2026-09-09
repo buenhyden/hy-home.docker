@@ -11,28 +11,39 @@ volumes:
       device: ${DEFAULT_TOOLING_DIR}/k6
 
 services:
-  k6-master:
+  k6:
+    # k6 runs a scenario and exits, so it declares only the load-test role
+    # profile. Selecting the whole `tooling` domain must not fire a load test.
     profiles:
-      - 'tooling'
       - testing
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     build: .
+    # The template restarts unless stopped, which would replay the load test
+    # forever for a one-shot job.
+    restart: 'no'
     read_only: false
     labels:
       <<: *tier-label
-    ports:
-      - '${K6_HOST_PORT:-18189}:${K6_PORT:-8089}'
     volumes:
-      - k6-data:/mnt/locust:rw
+      - k6-data:/scripts:ro
     networks:
       - infra_net
-    command: locust -f /mnt/locust/locustfile.py --master
-    healthcheck:
-      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:8089']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    environment:
+      # The Grafana dashboard reads k6 metrics from Prometheus remote write.
+      # `obs` must already be selected; k6 declares no depends_on because
+      # prometheus does not declare `testing`.
+      K6_PROMETHEUS_RW_SERVER_URL: 'http://${K6_PROMETHEUS_HOST:-prometheus}:${K6_PROMETHEUS_PORT:-9090}/api/v1/write'
+      # The dashboard queries min, max, p95 and p99; k6 emits only p(99) by
+      # default, so the panels stay empty unless all four are requested.
+      K6_PROMETHEUS_RW_TREND_STATS: '${K6_TREND_STATS:-min,max,p(95),p(99)}'
+    command:
+      - run
+      - --out
+      - experimental-prometheus-rw
+      - --tag
+      - testid=${K6_TESTID:-local}
+      - ${K6_SCRIPT:-/scripts/smoke.js}
     extra_hosts:
       - '${DEFAULT_URL:-localhost}:host-gateway'

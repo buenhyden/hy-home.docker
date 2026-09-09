@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust 및 k6 leaf의 Locust wrapper), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. root `docker-compose.yml`은 이 계층의 compose 파일을 모두 무조건 include하며, 기동 대상은 선택한 profile이 결정한다. 모든 서비스가 `tooling` profile에 속하고, 역할 profile(`iac`, `sast`, `testing`, `registry`, `sync`)이 그 부분집합을 선택한다. 역할 profile이 계층 전체를 대체하지는 않는다. 예를 들어 `testing`은 `locust-master`와 `k6-master`만 선택하고 `locust-worker`는 `tooling`에만 속한다.
+`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust와 k6), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. root `docker-compose.yml`은 이 계층의 compose 파일을 모두 무조건 include하며, 기동 대상은 선택한 profile이 결정한다. `k6`를 제외한 모든 서비스가 `tooling` profile에 속하고, 역할 profile(`iac`, `sast`, `testing`, `registry`, `sync`)이 그 부분집합을 선택한다. 역할 profile이 계층 전체를 대체하지는 않는다. 예를 들어 `testing`은 `locust-master`와 `k6`를 선택하고 `locust-worker`는 `tooling`에만 속한다. `k6`는 시나리오를 한 번 실행하고 종료하는 작업이므로 `testing`만 선언한다.
 
 ## Audience
 
@@ -42,7 +42,7 @@ created: "2025-11-12"
 
 ```text
 09-tooling/
-├── k6/          # k6 load-testing service assets
+├── k6/          # k6 load-testing job assets
 ├── locust/      # Locust distributed load-testing service
 ├── registry/    # Private OCI registry
 ├── sonarqube/   # Code quality service
@@ -70,7 +70,7 @@ created: "2025-11-12"
 | **Terrakube** | IaC Automation | TF State Management, API-driven Infra | PostgreSQL, MinIO |
 | **SonarQube** | Code Quality | Static Analysis, Security Hotspots | PostgreSQL |
 | **Locust** | Performance | Python-based Load Testing | Distributed Workers |
-| **k6** | Performance | Current Locust-wrapper `k6-master` leaf | InfluxDB |
+| **k6** | Performance | `k6` one-shot job; metrics via Prometheus remote write | Prometheus |
 | **Registry** | Cont. Storage | Private OCI Registry | Bind mount `${DEFAULT_REGISTRY_DIR}` |
 | **Syncthing** | Data Sync | P2P File Synchronization | Local Storage |
 | **Terraform** | IaC CLI | Containerized Terraform helper | Local workspace |

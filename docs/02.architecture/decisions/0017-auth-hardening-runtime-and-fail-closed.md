@@ -4,11 +4,11 @@ version: "1.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-10"
 layer: "architecture"
 artifact_id: "ADR-0017"
 parent_ids:
-- "AD-0014"
+- "AD-0002"
 created: "2026-03-28"
 ---
 # ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy
@@ -75,7 +75,6 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0014-auth-optimization-hardening.md](../../01.requirements/0002-auth.md)
-- **Architecture Description**: [../02.architecture/descriptions/0014-auth-optimization-hardening-architecture.md](../descriptions/0014-auth-optimization-hardening-architecture.md)
-- **Spec**: [../03.specs/002-auth/spec.md](../descriptions/0002-auth-architecture.md)
+- **Requirement Package**: [REQ-0002 Auth requirements](../../01.requirements/0002-auth.md)
+- **Architecture Description**: [AD-0002 Auth architecture](../descriptions/0002-auth-architecture.md)
 - **Related ADR**: [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)

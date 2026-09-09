@@ -55,7 +55,7 @@ created: "2026-05-17"
    - tooling compose에 `infra_net` external 선언을 명시한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
 4. 테스트 런타임 안정화
    - locust-worker healthcheck를 확인한다.
-   - k6 leaf는 현재 `k6-master` 단일 Locust wrapper이며, `k6-data:/mnt/locust:rw` volume 계약을 유지한다.
+   - k6 leaf는 `k6` 단일 작업이며, `k6-data:/scripts:ro` volume 계약을 유지한다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `bash scripts/validation/check-template-security-baseline.sh`

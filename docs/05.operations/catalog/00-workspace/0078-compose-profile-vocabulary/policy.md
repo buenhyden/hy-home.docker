@@ -61,7 +61,7 @@ profile 이름은 세 종류로 나뉜다.
 | `obs` | `06-observability`와 `04-data`의 exporter | 18 |
 | `workflow` | `07-workflow` | 12 |
 | `ai` | `08-ai`와 `04-data`의 vector store | 4 |
-| `tooling` | `09-tooling` | 10 |
+| `tooling` | `09-tooling` | 9 |
 | `communication` | `10-communication` | 2 |
 | `admin` | `11-laboratory`의 관리 UI | 6 |
 
@@ -111,7 +111,7 @@ profile 이름은 세 종류로 나뉜다.
     붙인다. 대상이 선택되면 `condition`은 그대로 적용되고, 선택되지 않으면
     렌더링이 실패하는 대신 건너뛴다.
 - **Allowed**:
-  - 한 서비스가 여러 profile을 선언하는 것. 예로 `k6-master`는 `tooling`과
+  - 한 서비스가 여러 profile을 선언하는 것. 예로 `locust-master`는 `tooling`과
     `testing`을 함께 선언한다.
   - domain selector와 topology selector의 동시 선택.
 - **Disallowed**:
@@ -129,9 +129,11 @@ profile 이름은 세 종류로 나뉜다.
 | `data-cluster` ↔ `data` | host port 9600 | 두 opensearch 토폴로지는 대체재다. `data-cluster`의 node1이 performance analyzer 포트를 공개하며, 두 배포를 동시에 띄울 이유가 없다. dashboards는 양쪽 모두에 속하고 `OPENSEARCH_HOSTS`가 어디를 보는지 정한다 |
 | `storage-cluster` ↔ `storage` | host port 충돌 없음 | 두 minio 토폴로지는 대체재다. 두 파일이 서비스 이름을 공유하지 않아 host port는 부딪히지 않지만, 동시에 띄우면 같은 network에 독립된 object store가 둘 생긴다 |
 
-`testing`은 `k6-master`와 `locust-master`를 함께 선택한다. 두 서비스는 원래
-`LOCUST_HOST_PORT` 하나를 공유해 18089에서 충돌했으므로, k6에 `K6_HOST_PORT`
-(기본 18189)를 분리 배정했다. 이제 배타 쌍이 아니다.
+`testing`은 `k6`와 `locust-master`를 함께 선택한다. 두 서비스가 원래 공유하던
+`LOCUST_HOST_PORT` 18089 충돌은 사라졌다. `k6`는 실제 k6 engine으로 전환되면서
+UI를 갖지 않게 되어 host port를 전혀 공개하지 않는다. 대신 `k6`는 시나리오를
+한 번 실행하고 종료하는 작업이므로 `tooling`을 선언하지 않는다. 도메인 전체를
+선택하는 것이 부하 시험을 발사해서는 안 되기 때문이다.
 
 ## Exceptions
 
