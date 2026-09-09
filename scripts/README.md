@@ -237,6 +237,10 @@ sourcing keeps the existing PATH order and adds each available directory once.
 loads `.github/workflow-contract.yml`, selects the
 closed `changed` or `full` public profile, and keeps `--explain` execution-free.
 Explain and execution use the same context-filtered, exact-once canonical plan.
+`--explain` prints the standalone validator plan, and a parity test holds it
+equal to the validators the same profile executes. The profile also runs the
+registered regression leaves, which explain does not list: read it as the
+validator plan rather than as the run's full contents or cost.
 PR and non-initial push bases are validated and forwarded as
 `TEMPLATE_GATE_BASE`; local, initial push, and workflow dispatch use the explicit
 active-corpus metadata mode without inventing a comparison base.

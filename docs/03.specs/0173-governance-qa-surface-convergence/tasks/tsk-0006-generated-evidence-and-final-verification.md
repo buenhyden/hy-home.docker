@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -2056,6 +2056,28 @@ never timed in isolation, and the only hosted observation available is the
 earlier 16-minute `validation-full` run at a different revision. GitHub
 documents a six-hour job limit and no duration guidance, so the numbers above
 are this repository's measurements rather than an external threshold.
+
+Local cost scales with what changed, not with a fixed commit-time budget. The
+`docs(qa)` commit of this Task took 6 m 07.73 s end to end. A controlled probe
+reproduced it: one appended line in this Stage 03 Task selected 11 validators
+instead of 8 and `--profile changed` took 394.53 s, against 29.90 s on a clean
+tree. Standalone, those validators are cheap: `check-document-corpus-lifecycle.py`
+11.89 s, `check-script-manifest.py` 3.18 s, `check-template-security-baseline.sh`
+0.72 s, `check-quickwin-baseline.sh` 0.50 s, `check-storybook-contract.sh` 0.11 s,
+`check-github-workflow-contract.py` 0.11 s, and the rest below 0.1 s. The probe
+file was restored and the tree verified clean before continuing.
+
+The remaining time belongs to gate nodes that `--explain` does not print. The
+contract registers 16 leaves that run `ci_gate_adapters.py run-unittest`, and
+`--explain --profile full` emits exactly 15 lines, all validator entrypoints,
+with nothing on stderr and no mention of a regression leaf. That is the tested
+contract rather than a defect: `test_standalone_validator_explain_and_fake_execution_have_exact_parity`
+holds explain equal to the executed validators so a hidden validator invocation
+cannot evade the comparison. The consequence is recorded in `scripts/README.md`:
+explain is the validator plan, not the run's contents or its cost. The
+commit-time hook therefore costs 29.9 s at minimum and about 6.5 minutes for a
+Stage 03 documentation change; whether that belongs at commit time is an owner
+decision and was not changed here.
 
 ### W17 review corrections (2026-09-09)
 
