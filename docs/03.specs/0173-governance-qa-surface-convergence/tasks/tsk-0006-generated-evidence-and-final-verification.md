@@ -48,6 +48,28 @@ elsewhere.
 
 ## Work Log
 
+### W31 The contract now proves a leaf can start (2026-09-09)
+
+W30 reverted the removal but left the gap that allowed it. The Action registry
+answers whether an Action is declared, pinned and named by a consumer workflow.
+Nothing answered whether a gate leaf's program is present on the runner, so the
+parity check passed while `leaf.zizmor` could not spawn at all.
+
+The rule now has an owner in the checker rather than in a test. Reading
+`ci_gate_adapters.py` by AST, every `_run_child` call spawns a literal program:
+`bash`, `git`, `npm`, `npx`, `python3`, `uvx`. The first three are the runner
+baseline; the rest are mapped to the Action that installs them, and both quality
+jobs must carry that Action. A spawned program with no mapping, and an adapter
+source that cannot be read or whose argv is not a literal, are failures rather
+than defaults.
+
+The guard was proved by removing the setup step again: the checker reported
+`leaf-program-uninstalled` for `validation-changed` and for `validation-full`,
+and returned to `PASS: GitHub workflow contract (workflows=5, jobs=7,
+actions=8)` once restored. The suite went from 39 to 42 tests, the three new
+ones covering the passing state, the removed installer, and the unmapped and
+unreadable failures.
+
 ### W30 The uv removal was wrong and is reverted (2026-09-09)
 
 W24 removed `astral-sh/setup-uv` from both quality jobs on the finding that

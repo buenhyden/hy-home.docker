@@ -618,6 +618,66 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     tuple(map(self._static_gate_profile, programs)),
                 )
 
+    def test_every_program_a_gate_leaf_spawns_is_installed_by_both_jobs(self) -> None:
+        """A leaf that cannot start is a contract failure, not a runtime one."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        programs = self.module._adapter_programs(ROOT)
+        self.assertIsNotNone(programs)
+        self.assertIn("uvx", programs)
+        self.assertEqual(
+            (),
+            self.module._leaf_program_findings(programs, documents_by_path),
+        )
+
+    def test_removing_an_installing_action_fails_both_quality_jobs(self) -> None:
+        """Deleting the setup step must fail here, never at spawn time."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        document = documents_by_path[".github/workflows/ci-quality.yml"]
+        stripped = copy.deepcopy(document)
+        for job in stripped.data["jobs"].values():
+            job["steps"] = [
+                step
+                for step in job["steps"]
+                if not str(step.get("uses", "")).startswith("astral-sh/setup-uv@")
+            ]
+        findings = self.module._leaf_program_findings(
+            self.module._adapter_programs(ROOT),
+            {**documents_by_path, ".github/workflows/ci-quality.yml": stripped},
+        )
+        self.assertEqual({"leaf-program-uninstalled"}, {f.code for f in findings})
+        self.assertEqual(2, len(findings))
+
+    def test_an_unmapped_or_unreadable_spawned_program_fails_closed(self) -> None:
+        """A new program with no declared installer is a failure, not a default."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        self.assertEqual(
+            ["leaf-program-unmapped"],
+            [
+                finding.code
+                for finding in self.module._leaf_program_findings(
+                    ("cargo",), documents_by_path
+                )
+            ],
+        )
+        self.assertEqual(
+            ["leaf-program-source-unreadable"],
+            [
+                finding.code
+                for finding in self.module._leaf_program_findings(
+                    None, documents_by_path
+                )
+            ],
+        )
+
     def test_bootstrap_projection_is_exact_and_ordered(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         document = next(
