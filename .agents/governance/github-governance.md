@@ -1,6 +1,6 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.0.4"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,7 +33,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 2. Pull Request and Review Contract
 
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
-- Draft/WIP PRs are allowed for collaboration, but they must not be treated as merge-ready and must list remaining work in the PR template.
+- Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Git history is the recovery mechanism. A current Task may name a temporary
@@ -42,12 +42,23 @@ Repo-local stricter rules always override this document; never weaken them on th
 
 ## 3. Merge and Branch Discipline
 
-- Delete a feature branch only after its approved change is reachable from the
-  delivered protected branch and its linked worktree is clean.
+This section is the single owner of merge and branch-lifecycle rules. Both the
+Git workflow policy and `.github/rulesets/main-protection.md` defer here; the
+ruleset file records the observed remote state and issues no rule of its own.
+
+- Deliver every change to `main` through a pull request. Agents do not push to
+  `main` directly, do not force-push it, and do not bypass a required check,
+  regardless of how few reviews protection currently requires.
+- Delete a branch only when all of the following hold: its approved change and
+  every referenced recovery commit are reachable from the delivered protected
+  branch, its linked worktree is clean, and the owner has approved the deletion.
 - Long-lived branches other than `main` require explicit user authorization.
-- Do not rewrite a current Task's named recovery commit before integration.
+- Do not rewrite a current Task's named recovery commit before integration. Use
+  a merge commit or fast-forward rather than rewriting referenced objects.
   History cleanup beyond the completed feature branch requires explicit
   authorization.
+- Draft or WIP pull requests are never merge-ready. They must list their
+  remaining work in the PR template.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
 ## 4. GitHub Actions Security Contract

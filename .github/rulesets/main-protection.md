@@ -46,11 +46,11 @@ settings by itself.
 - Block force pushes.
 - Block branch deletion.
 - Require the latest branch head to pass required checks before merge.
-- Preserve referenced recovery commits in delivered history using merge commits
-  or fast-forward. Do not enforce squash/rebase-only or linear-history settings
-  that would discard referenced objects.
-- Delete merged branches only after referenced recovery commits and regular
-  source blobs are verified reachable from `main`, with owner approval.
+- Do not enforce squash/rebase-only or linear-history settings that would
+  discard referenced objects, so delivered history can keep them.
+- Recovery-commit preservation and branch deletion are stated once, in
+  `.agents/governance/github-governance.md` section 3. This file records the
+  settings that support those rules, not the rules themselves.
 
 ## Required Status Checks
 
