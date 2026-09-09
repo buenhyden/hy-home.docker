@@ -3632,6 +3632,15 @@ No completed archive packet or new Spec/Plan/Task was created.
 | `9489c023b` | `docs(references): Narrow the repository map to the LLM Wiki it describes` | W28 DATA-0083 role reduction |
 | `522bda7be` | `fix(docs): Keep new prose inside the registered body contracts` | W29 hosted body-contract fix |
 | `8c1cca682` | `docs(references): Point the retirement rule at the table it means` | W29 index direction fix |
+| `366febaac` | `docs(qa): Record why two local passes missed the hosted required check` | W29 hosted receipts |
+| `8cdfd3cbc` | `revert: Restore the uv setup the zizmor gate leaf needs` | W30 regression revert |
+| `fc0e1a2eb` | `docs(qa): Record the uv finding that was wrong and how it hid` | W30 correction record |
+| `4c40f1f51` | `feat(validation): Prove a gate leaf can start before the runner tries` | W31 guard, its tests and the W31 record |
+
+`4c40f1f51` also carries the W31 Work Log entry, because that document stayed
+staged from an attempt `ruff format` had rejected. The subject names only the
+guard. The commit was left as it is rather than rewritten, and this row is the
+correction.
 
 No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
 
@@ -3662,12 +3671,26 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   regressions are unchanged by W22-W24 and keep their existing receipts; no new
   independent review of them was requested or run.
 - W20 remains BLOCKED. Actual owner semantic-transfer and retirement approval is
-  still outstanding, AD-0014 stays active, and nothing in W22-W24 touches it.
-  This request does not constitute that owner's content review.
-- Hosted verification of `a23edf9b0`, `2ce13c246`, `ca1f0cace` and `0917f1028`
-  is NOT_RUN. Push, pull request, workflow dispatch, branch-protection change,
-  deployment and release remain outside the current authorization, so the
-  `validation-changed` required check has not observed these commits.
+  still outstanding, AD-0014 stays active, and nothing in W22-W31 touches it.
+  No request in this session constitutes that owner's content review, and no
+  approval may be inferred from the delivery route the user chose.
+- CDR-04 remains an owner decision and its evidence is now complete rather than
+  a two-option sketch. `infra/09-tooling/k6/` holds only a README and a compose
+  file: no Dockerfile, no locustfile, and a service that copies `locust-master`
+  down to the `/mnt/locust` mount and the 8089 healthcheck. Three tracked
+  surfaces nevertheless presuppose a real k6 engine, so the intent is legible
+  even though the implementation never followed: a 17-panel `k6 Prometheus`
+  Grafana dashboard, a Dependabot docker entry for the directory, and the
+  `K6_HOST_PORT` split that exists only because `testing` selects both services.
+  Converting the leaf is an infrastructure change needing runtime verification;
+  removing it also retires those three surfaces. Neither is an agent decision.
+- Hosted verification of `a23edf9b0`, `2ce13c246` and `0917f1028` is no longer
+  NOT_RUN. The user's branch and pull request route authorized push and pull
+  request creation, and pull request 151 carries these commits through the
+  hosted `validation-changed` check with the receipts recorded above.
+  `ca1f0cace` was reverted by `8cdfd3cbc` and is not part of the delivered set.
+  Workflow dispatch, branch-protection change, deployment and release remain
+  outside the authorization.
 - Two examined items are recorded as owner decisions rather than changes:
   workflow `cancel-in-progress` on `main` pushes, and the 29.9-second
   `public-validation-changed` hook at commit time. Neither is a defect; both
@@ -3691,11 +3714,12 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
 - The preservation-owner blocker is discharged by current REQ-0026, AD-0030
   and accepted ADR-0033. The earlier dated reports remain historical evidence;
   this follow-up corrects the active Spec/Plan references.
-- Push, pull request, hosted execution, branch-protection mutation, deployment,
-  tag and release remain outside the current authorization. The preceding
-  option A follow-up authorized its completed local integration and task-owned
-  cleanup only. Earlier integration, keep and cleanup instructions retain their
-  dated scope; the latest explicit user request now owns W16's local disposition.
+- Push, pull request and hosted execution are authorized for this branch by the
+  user's chosen delivery route and are exercised by pull request 151.
+  Branch-protection mutation, deployment, tag and release remain outside the
+  authorization, and merging the pull request stays the owner's action. Earlier
+  integration, keep and cleanup instructions retain their dated scope; the
+  latest explicit user request owns W16's local disposition.
 - Current authorized read-only remote baseline observations are recorded above;
   verification of new local changes on hosted runners remains NOT_RUN. Live
   provider runtime observations remain unverified.
