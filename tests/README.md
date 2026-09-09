@@ -48,10 +48,14 @@ created: "2026-02-21"
 ```text
 tests/
 ├── README.md  # This file
-├── fixtures/          # 독립 consumer가 필요한 고정 입력만 허용; 현재 비어 있음
 ├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
 └── validation/        # validation/entrypoint 및 실행-context 테스트
 ```
+
+고정 입력 디렉터리는 없습니다. 현재 픽스처는 `_fixtures.py` 형태의 builder
+모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니다. 독립 consumer가 읽어야
+하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
+`tests/fixtures/`를 만듭니다.
 
 ## How to Work in This Area
 
