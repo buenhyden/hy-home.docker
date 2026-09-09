@@ -24,6 +24,12 @@ Describe what the repo-local LLM Wiki consists of and how its members relate, so
 
 This package is not the entry-point list and not the rule set. Root [`llms.txt`](../../../../llms.txt) owns the canonical entry points and the evidence boundaries an LLM agent must respect, and the agent knowledge category owns surface-to-authority routing with the approval and proving check for each surface. Both were previously restated here, and each restatement was one more place to drift.
 
+Nothing in this package is an obligation. The entry-point list and the evidence
+boundaries are in `llms.txt`. Surface ownership, the approval boundary and the
+proving check for each surface are in `.agents/knowledge/repository-map.md`.
+Document authoring and retirement rules are in
+`.agents/governance/documentation-protocol.md`.
+
 ## Repository Role
 
 This reference describes the LLM Wiki package set. Exploration order comes from `llms.txt`; surface ownership comes from the agent knowledge repository map; policy stays in `.agents/`, operations in Stage 05, and runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
@@ -55,25 +61,6 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 - **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
 - **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `.agents/` documents that directly define current runtime configuration and validation criteria.
 - **Advisory graph context**: Supporting material such as `graphify-out/` output that may be used only as exploration hints and must not be promoted to canonical evidence.
-
-## LLM Wiki Members
-
-| Member | Kind | Refreshed by |
-| --- | --- | --- |
-| `llms.txt` | root machine entrypoint; owns entry points and boundaries | authored |
-| `docs/90.references/data/0082-llm-wiki-index/` | tracked path index | `scripts/knowledge/generate-llm-wiki.py` |
-| `docs/90.references/data/0076-llm-wiki-stage-category-coverage/` | stage and category coverage of the same candidate set | the same generator |
-| this package | what the wiki is and how its members relate | authored |
-
-The maintenance procedure is a Stage 05 subject: `docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/`.
-
-## Where Rules Live
-
-Nothing in this package is an obligation. The entry-point list and the evidence
-boundaries are in `llms.txt`. Surface ownership, the approval boundary and the
-proving check for each surface are in `.agents/knowledge/repository-map.md`.
-Document authoring and retirement rules are in
-`.agents/governance/documentation-protocol.md`.
 
 ## Sources
 
@@ -111,6 +98,15 @@ This package preserves its existing data evidence under the Stage 99 `data` cont
 ## Inventory
 
 This package preserves its existing data evidence under the Stage 99 `data` contract.
+
+| Member | Kind | Refreshed by |
+| --- | --- | --- |
+| `llms.txt` | root machine entrypoint; owns entry points and boundaries | authored |
+| `docs/90.references/data/0082-llm-wiki-index/` | tracked path index | `scripts/knowledge/generate-llm-wiki.py` |
+| `docs/90.references/data/0076-llm-wiki-stage-category-coverage/` | stage and category coverage of the same candidate set | the same generator |
+| this package | what the wiki is and how its members relate | authored |
+
+The maintenance procedure is a Stage 05 subject: `docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/`.
 
 ## Refresh
 

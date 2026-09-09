@@ -56,18 +56,16 @@ The [implementation audit index](0019-readme/README.md) routes the current
 criterion reports and their [implementation overview](0026-implementation-overview/README.md).
 These reports remain point-in-time evidence, not policy authority.
 
-## Retired Packages
+## Dated Historical Snapshots
+
+The [superseded audit snapshot](../../98.archive/superseded/90.references/audits/0033-readme/README.md) retains its observation
+date in metadata; current package paths remain date-free.
 
 AUD-0097 was retired on 2026-09-09. Three of its four defects were fixed in the
 tree while four operations guides still linked it as the owner of an open
 finding; the one defect that remained moved to the guide of the subject that
 owns it. The preserved body is under `docs/98.archive/retired/`, and
 `tomb-AUD-0097` records the disposition.
-
-## Dated Historical Snapshots
-
-The [superseded audit snapshot](../../98.archive/superseded/90.references/audits/0033-readme/README.md) retains its observation
-date in metadata; current package paths remain date-free.
 
 ## Supersession Ledgers
 

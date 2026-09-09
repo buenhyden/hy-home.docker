@@ -18,6 +18,18 @@ created: "2026-06-04"
 
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
 
+Canonical agent governance lives in `.agents/`: the governance policies own the
+rules, the Provider Registry owns provider identity, model and permission
+translation, and the roles own their own tier and work profile. This document
+owns the operational side only — when the harness is exercised, how it is
+checked, and what to do when a check fails.
+
+Controls below therefore point at their owner instead of restating it. Every
+control that summarised a canonical rule in prose eventually disagreed with it:
+the model row named a hierarchy the registry never expressed, and the Codex row
+still forbade a catalog the registry had already adopted. A control that names
+its owner cannot drift that way.
+
 ## Policy Scope
 
 - Agent entry shims.
@@ -36,20 +48,6 @@ created: "2026-06-04"
 - `docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/policy.md`
 - `docs/05.operations/catalog/*/[0-9][0-9][0-9][0-9]-*/runbook.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
-
-## Ownership Boundary
-
-Canonical agent governance lives in `.agents/`: the governance policies own the
-rules, the Provider Registry owns provider identity, model and permission
-translation, and the roles own their own tier and work profile. This document
-owns the operational side only — when the harness is exercised, how it is
-checked, and what to do when a check fails.
-
-Controls below therefore point at their owner instead of restating it. Every
-control that summarised a canonical rule in prose eventually disagreed with it:
-the model row named a hierarchy the registry never expressed, and the Codex row
-still forbade a catalog the registry had already adopted. A control that names
-its owner cannot drift that way.
 
 ## Controls
 
