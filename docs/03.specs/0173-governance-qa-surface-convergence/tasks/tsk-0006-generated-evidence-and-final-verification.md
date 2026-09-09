@@ -48,6 +48,30 @@ elsewhere.
 
 ## Work Log
 
+### W30 The uv removal was wrong and is reverted (2026-09-09)
+
+W24 removed `astral-sh/setup-uv` from both quality jobs on the finding that
+nothing used it. The finding was wrong. `leaf.zizmor` spawns
+`uvx --from zizmor==1.28.0 zizmor`, so the hosted `changed` profile failed with
+`FAIL [ci-gate-adapter-child-exec]: the child process is unavailable` 91 ms
+after the Storybook leaf finished, which is the next child in the DAG failing
+to spawn at all rather than failing its own work.
+
+Three properties hid the defect until the hosted run reached that leaf. The
+adapter raises `child-exec` only from `OSError` at spawn time, so the message
+names the mechanism and not the missing program. `uvx` exists on the local
+machine, so every local `full` run passed while the runner had no `uv` at all.
+The earlier hosted failures stopped at `metadata` and at `git-flow`, both
+upstream of `leaf.zizmor`, so no run had reached it before.
+
+The check that was supposed to catch this proves the wrong thing.
+`check-github-workflow-contract.py` verifies that each declared Action is
+registered, pinned, and named by a consumer workflow. It says nothing about
+whether a gate leaf's executable is present on the runner, so an Action can be
+removed with the parity check still passing. The removal was reverted whole
+rather than patched, and the contract reports `actions=8` again with its 39
+tests passing.
+
 ### W29 Remote required-check convergence (2026-09-09)
 
 Local passes failed to predict the hosted required check twice, for two
