@@ -69,4 +69,5 @@ progress or handoff document.
 - [Governance hub](../README.md)
 - [Approval boundaries](approval-boundaries.md)
 - [Documentation protocol](documentation-protocol.md)
-- [Stage 99 registry](../../docs/99.templates/registry.json)
+- Stage 99 registry (`docs/99.templates/registry.json`)
+- [Documentation index](../../docs/README.md)

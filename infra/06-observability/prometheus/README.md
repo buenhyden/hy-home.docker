@@ -46,9 +46,9 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 ### 2. Traceability
 
-- **System Guide**: [docs/05.operations/catalog/06-observability/0045-prometheus/guide.md](../../../docs/05.operations/catalog/06-observability/0045-prometheus/guide.md)
-- **Operations Policy**: [docs/05.operations/catalog/06-observability/0045-prometheus/policy.md](../../../docs/05.operations/catalog/06-observability/0045-prometheus/policy.md)
-- **Runbook**: [docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md](../../../docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md)
+- **System Guide**: `docs/05.operations/catalog/06-observability/0045-prometheus/guide.md`
+- **Operations Policy**: `docs/05.operations/catalog/06-observability/0045-prometheus/policy.md`
+- **Runbook**: `docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md`
 
 ## Overview
 
@@ -100,7 +100,8 @@ infra/06-observability/prometheus/
 ## Related Documents
 
 - [infra/README.md](../../README.md)
-- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
-- [Prometheus usage guide](../../../docs/05.operations/catalog/06-observability/0045-prometheus/guide.md)
-- [Prometheus operations policy](../../../docs/05.operations/catalog/06-observability/0045-prometheus/policy.md)
-- [Prometheus recovery runbook](../../../docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md)
+- `docs/05.operations/README.md`
+- Prometheus usage guide (`docs/05.operations/catalog/06-observability/0045-prometheus/guide.md`)
+- Prometheus operations policy (`docs/05.operations/catalog/06-observability/0045-prometheus/policy.md`)
+- Prometheus recovery runbook (`docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md`)
+- [Documentation index](../../../docs/README.md)

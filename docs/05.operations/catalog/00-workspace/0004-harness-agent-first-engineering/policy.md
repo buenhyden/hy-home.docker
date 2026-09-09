@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-09"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -17,6 +17,18 @@ created: "2026-06-04"
 ## Overview
 
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
+
+Canonical agent governance lives in `.agents/`: the governance policies own the
+rules, the Provider Registry owns provider identity, model and permission
+translation, and the roles own their own tier and work profile. This document
+owns the operational side only — when the harness is exercised, how it is
+checked, and what to do when a check fails.
+
+Controls below therefore point at their owner instead of restating it. Every
+control that summarised a canonical rule in prose eventually disagreed with it:
+the model row named a hierarchy the registry never expressed, and the Codex row
+still forbade a catalog the registry had already adopted. A control that names
+its owner cannot drift that way.
 
 ## Policy Scope
 
@@ -44,10 +56,10 @@ created: "2026-06-04"
 | Thin root shims | Root files delegate detailed policy to `.agents/` and runtime overlays. |
 | Runtime mirror parity | Native role adapters and thin Claude skill pointers stay synchronized with authored `.agents` sources; canonical files are never renderer output. |
 | Runtime parity scope | Repository checks prove catalog, model, scope import, and protocol-reference parity; they do not prove semantic parity of every runtime document. |
-| Model hierarchy | `workflow-supervisor` remains `opus`; worker agents remain `sonnet`. |
+| Model selection | Each role declares a `work_profile` and the Provider Registry maps that profile to a provider model. This document does not restate the mapping: summarising it as one supervisor model and one worker model was wrong for six of the thirteen workers, because `adversarial-review` roles resolve to the same tier as the supervisor and `routine-validation` resolves below the others. |
 | Scope imports | Each runtime agent imports exactly one primary scope. |
 | Hook safety | Runtime hooks must parse real payload shapes without shell command substitution side effects. |
-| Codex boundary | `.codex` remains hooks/context only unless governance explicitly adopts a Codex catalog. |
+| Codex boundary | Governance has adopted a Codex catalog: the Provider Registry declares the native agent pattern and the renderer writes one adapter per role beside the hook configuration. The registry, not this document, decides what the Codex surface contains. |
 | Template-first docs | New stage docs use `docs/99.templates/` and update parent README files. |
 | Source-label prevention | Active runtime/governance files must not reference external harness source labels. |
 | Graph context health | Graphify is a navigation aid only when health is clean; contaminated output remains advisory and must be corroborated against tracked source and canonical docs. |
@@ -75,7 +87,7 @@ CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
 bash scripts/knowledge/report-graphify-health.sh
 python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/check-document-links.py --mode traceability
+python3 scripts/validation/check-document-links.py --mode all
 bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-quickwin-baseline.sh

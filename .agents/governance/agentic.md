@@ -80,5 +80,6 @@ prompt-local policy.
 - [Workflows](workflows.md)
 - [Task checklists](task-checklists.md)
 - [Provider registry](providers/registry.yaml)
-- [External catalog evidence](../../docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
+- External catalog evidence (`docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
 - [Workflow supervisor](../roles/workflow-supervisor.md)
+- [Documentation index](../../docs/README.md)

@@ -63,4 +63,5 @@ infra/04-data/
 ## Related Documents
 
 - [infra/README.md](../README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- `docs/05.operations/README.md`
+- [Documentation index](../../docs/README.md)

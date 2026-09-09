@@ -111,5 +111,6 @@ maintainer in GitHub project settings; this repository cannot apply it.
 - [Local main-protection proposal](./rulesets/main-protection.md)
 - [Agent governance overview](../.agents/README.md)
 - [Current canonical agent governance task checklist](../.agents/governance/task-checklists.md)
-- [Workspace governance authority](../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- Workspace governance authority (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
 - [Repository README](../README.md)
+- [Documentation index](../docs/README.md)

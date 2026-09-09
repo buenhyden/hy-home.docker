@@ -214,10 +214,6 @@ _ACTION_REGISTRY_BASELINE: Final = (
         "4391f3da665fdf50b6810c1a66712fb9ba21aa93",
     ),
     (
-        "astral-sh/setup-uv",
-        "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
-    ),
-    (
         "github/codeql-action/upload-sarif",
         "cdf488f595d80d6e07e03d4674febd5ab45fa938",
     ),

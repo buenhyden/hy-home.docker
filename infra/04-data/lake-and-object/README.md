@@ -35,7 +35,7 @@ created: "2026-05-15"
 ### Out of Scope
 
 - 애플리케이션 레벨 데이터 모델링
-- 백업 정책 정의 ([04-data operations catalog](../../../docs/05.operations/catalog/04-data/README.md) 담당)
+- 백업 정책 정의 (04-data operations catalog (`docs/05.operations/catalog/04-data/README.md`) 담당)
 
 ## Structure
 
@@ -56,6 +56,6 @@ lake-and-object/
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)
-- [docs/03.specs/004-data/README.md](../../../docs/03.specs/0004-data/spec.md)
-- [04-data operations catalog](../../../docs/05.operations/catalog/04-data/README.md)
-- [secrets/storage/](../../../secrets/storage/)
+- 04-data operations catalog (`docs/05.operations/catalog/04-data/README.md`)
+- `secrets/storage/`
+- [Documentation index](../../../docs/README.md)

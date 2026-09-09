@@ -68,16 +68,17 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 
 ## How to Work in This Area
 
-1. Review the [Gateway operations guides](../../docs/05.operations/catalog/01-gateway/README.md) to understand traffic flow.
+1. Review the Gateway operations guides (`docs/05.operations/catalog/01-gateway/README.md`) to understand traffic flow.
 2. Ensure secrets are generated via `scripts/operations/gen-secrets.sh` before deployment.
-3. Follow the [Edge routing stack guide](../../docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md) for initial deployment boundaries.
+3. Follow the Edge routing stack guide (`docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md`) for initial deployment boundaries.
 4. Verify static readiness with `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` and `bash scripts/hardening/check-all-hardening.sh 01-gateway`; use runtime health commands only against an approved running stack.
 
 ## Related Documents
 
 - [Agent Governance](../../AGENTS.md)
-- [System Architecture](../../docs/02.architecture/descriptions/README.md)
+- System Architecture (`docs/02.architecture/descriptions/README.md`)
 - [Secret Management](../../secrets/README.md)
-- [Gateway Guides](../../docs/05.operations/catalog/01-gateway/README.md)
-- [Operations Policy](../../docs/05.operations/catalog/01-gateway/README.md)
-- [Emergency Runbooks](../../docs/05.operations/catalog/01-gateway/README.md)
+- Gateway Guides (`docs/05.operations/catalog/01-gateway/README.md`)
+- Operations Policy (`docs/05.operations/catalog/01-gateway/README.md`)
+- Emergency Runbooks (`docs/05.operations/catalog/01-gateway/README.md`)
+- [Documentation index](../../docs/README.md)

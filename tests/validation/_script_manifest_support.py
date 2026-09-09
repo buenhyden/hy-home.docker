@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import ast
+import importlib.util
+import sys
 from copy import deepcopy
 import json
 import os
@@ -102,124 +104,43 @@ def tracked_paths(*pathspecs: str) -> set[str]:
     return {path for path in paths if (ROOT / path).is_file()}
 
 
-def _python_imports_target(reference: str, target: str) -> bool:
-    if not reference.endswith(".py") or not target.endswith(".py"):
-        return False
-    module = target.removesuffix(".py").replace("/", ".")
-    sibling_module = PurePosixPath(target).stem
-    same_directory = PurePosixPath(reference).parent == PurePosixPath(target).parent
-    try:
-        tree = ast.parse((ROOT / reference).read_text(encoding="utf-8"))
-    except SyntaxError:
-        return False
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            if any(alias.name == module for alias in node.names):
-                return True
-        elif isinstance(node, ast.ImportFrom):
-            if node.module == module or (
-                same_directory and node.module == sibling_module
-            ):
-                return True
-            package, _, member = module.rpartition(".")
-            if node.module == package and any(
-                alias.name == member for alias in node.names
-            ):
-                return True
-    return False
+MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
+_CHECKER = None
 
 
-MACHINE_REFERENCE_KEYS = frozenset(
-    {
-        "argv",
-        "command",
-        "commands",
-        "entry",
-        "entrypoint",
-        "implementation",
-        "path",
-        "required_evidence_paths",
-        "run",
-        "script",
-    }
-)
+def load_manifest_checker():
+    """Load the gate checker once; it owns manifest evidence semantics."""
 
-
-def machine_config_proves_use(document: object, target: str, parent: str = "") -> bool:
-    if isinstance(document, dict):
-        return any(
-            machine_config_proves_use(value, target, str(key))
-            for key, value in document.items()
+    global _CHECKER
+    if _CHECKER is None:
+        spec = importlib.util.spec_from_file_location(
+            "check_script_manifest", MANIFEST_CHECKER
         )
-    if isinstance(document, list):
-        return any(
-            machine_config_proves_use(value, target, parent) for value in document
-        )
-    if parent not in MACHINE_REFERENCE_KEYS or not isinstance(document, str):
-        return False
-    return bool(
-        re.search(
-            rf"(?<![A-Za-z0-9_./-]){re.escape(target)}(?![A-Za-z0-9_./-])",
-            document,
-        )
-    )
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"cannot load {MANIFEST_CHECKER}")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        _CHECKER = module
+    return _CHECKER
 
 
-def reference_proves_use(reference: str, target: str) -> bool:
-    """Prove invocation/import evidence, not path inventory membership.
+def reference_proves_use(reference: str, target: str, *, is_test: bool = False) -> bool:
+    """Answer the gate's own evidence question about a declared reference.
 
-    Markdown evidence must put the path/basename in a command/code span. Source
-    evidence must either import the Python module or name the path/basename in
-    executable/fixture content. Inventory-only surfaces are rejected up front.
+    The grammar has a single owner. Only the inventory surfaces these manifest
+    tests own are rejected here: they list every tracked path by construction,
+    so naming one there is membership rather than use.
     """
 
-    if reference == "scripts/manifest.yaml" or reference == ".github/CODEOWNERS":
+    if reference in {"scripts/manifest.yaml", ".github/CODEOWNERS"}:
         return False
     if reference.startswith(FORBIDDEN_EVIDENCE_PREFIXES):
         return False
-    if _python_imports_target(reference, target):
-        return True
     text = (ROOT / reference).read_text(encoding="utf-8")
-    basename = PurePosixPath(target).name
-    module_symbol = PurePosixPath(target).stem.replace("-", "_")
-    token_present = target in text or basename in text
-    if not token_present and reference.endswith(".py"):
-        token_present = bool(re.search(rf"\b{re.escape(module_symbol)}\b", text))
-    if not token_present:
-        return False
-    if reference.endswith(".md"):
-        in_fence = False
-        for line in text.splitlines():
-            if line.lstrip().startswith("```"):
-                in_fence = not in_fence
-                continue
-            if (target in line or basename in line) and (
-                in_fence or "`" in line or re.search(r"\[[^]]*\]\([^)]*\)", line)
-            ):
-                return True
-        return False
-    if reference.endswith((".yaml", ".yml")):
-        try:
-            document = yaml.safe_load(text)
-        except yaml.YAMLError:
-            return False
-        return machine_config_proves_use(document, target)
-    if reference.endswith((".sh", ".bash")):
-        return any(
-            (target in line or basename in line) and not line.lstrip().startswith("#")
-            for line in text.splitlines()
-        )
-    if reference.endswith(".py"):
-        return any(
-            marker in text
-            for marker in (
-                "subprocess.run",
-                "subprocess.Popen",
-                "runpy.run_path",
-                "importlib",
-            )
-        )
-    return target in text
+    return load_manifest_checker()._reference_proves_use(
+        reference, text, target, is_test=is_test
+    )
 
 
 def is_runbook_authority(path: str) -> bool:

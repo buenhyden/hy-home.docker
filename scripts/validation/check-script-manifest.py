@@ -757,6 +757,40 @@ def _python_proves_use(text: str, target: str) -> bool:
     def visible(names: set[tuple[ast.AST, str]], scope: ast.AST, name: str) -> bool:
         return (scope, name) in names or (tree, name) in names
 
+    def starts_a_child(node: ast.AST) -> bool:
+        return any(
+            isinstance(call, ast.Call)
+            and (
+                isinstance(call.func, ast.Name)
+                and visible(subprocess_calls, node_scopes[id(call)], call.func.id)
+                or isinstance(call.func, ast.Attribute)
+                and call.func.attr in invocation_names
+                and (
+                    visible(
+                        subprocess_modules,
+                        node_scopes[id(call)],
+                        attribute_root(call.func),
+                    )
+                    or visible(
+                        runpy_modules,
+                        node_scopes[id(call)],
+                        attribute_root(call.func),
+                    )
+                )
+            )
+            for call in ast.walk(node)
+        )
+
+    # One hop only: a module-level helper that starts a child process is still
+    # this module executing the command it is handed. Depth stays at one so the
+    # rule cannot grow into general interprocedural analysis.
+    child_helpers = {
+        definition.name
+        for definition in tree.body
+        if isinstance(definition, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and starts_a_child(definition)
+    }
+
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
@@ -801,6 +835,12 @@ def _python_proves_use(text: str, target: str) -> bool:
                 and call_name == "spec_from_file_location"
                 and visible(importlib_modules, scope, root_name)
             )
+        ):
+            return True
+        if (
+            target_argument
+            and isinstance(node.func, ast.Name)
+            and node.func.id in child_helpers
         ):
             return True
         if (

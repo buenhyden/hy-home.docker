@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.0.2"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-09"
 ---
 
 # Git Workflow Governance
@@ -48,10 +48,10 @@ Use Conventional Commits with explicit scopes where possible.
 2. Run relevant programmatic checks before requesting review.
 3. For governance work, ensure linked stage docs remain accurate.
 4. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
-5. Mark incomplete work as Draft/WIP and list remaining work in the PR template; do not request final review until the PR is ready.
-6. Keep commits atomic and reviewable. Document any cleanup proposal in the PR.
-   Referenced recovery commits must remain reachable in delivered history;
-   use a merge commit or fast-forward instead of rewriting those objects.
+5. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
+6. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
+   the recovery-commit and history-rewrite rules it must satisfy are owned by
+   `.agents/governance/github-governance.md` section 3.
 7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 

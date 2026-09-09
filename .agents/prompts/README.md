@@ -76,4 +76,5 @@ current Task; the prompt itself records nothing.
 - [Agent governance index](../README.md)
 - [Knowledge index](../knowledge/README.md)
 - [Agentic policy](../governance/agentic.md)
-- [Canonical knowledge and prompt surfaces decision](../../docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
+- [Documentation index](../../docs/README.md)

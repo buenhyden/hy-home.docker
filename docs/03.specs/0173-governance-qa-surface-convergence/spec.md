@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.6.1"
+version: "0.7.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -376,6 +376,17 @@ preserves the Plan and Task references.
     exact diff review and normal-hook commit evidence. Final local validation
     names its snapshot and context; hosted, provider and operations observations
     remain separate. Unmeasured savings and held runtime plans are never PASS.
+31. One implementation answers whether a declared manifest reference proves use,
+    so the gate and its regression suite cannot return different verdicts for the
+    same row. A child started through a module-local helper is provable at depth
+    one, and a local helper that starts no child still proves nothing.
+32. No document outside `docs/` links to a file under a numbered stage directory.
+    `docs/README.md` is the single route, stage paths and artifact IDs stay
+    readable as text and as machine input, and enforcement reads every tracked
+    Markdown document plus `llms.txt` rather than a named support list.
+33. Every CI setup step has a consumer in the gate, a requirements file or a
+    hook code path. Removing one changes the workflow, the registered action
+    list and the parity check together.
 
 ## Traceability
 

@@ -7,12 +7,12 @@ settings by itself.
 ## Observation Boundary
 
 - The dated public snapshot remains at
-  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`;
-  it is historical evidence and is not rewritten as current state.
+  the retired DATA-0071 package, preserved under `docs/98.archive/retired/`;
+  it is superseded historical evidence and is not current state.
 - On 2026-09-05, the repository owner approved a PATCH limited to
   `branches/main/protection/required_status_checks`. The applied state and full
   protection read-back are recorded in
-  [the completed SPEC-0172 outcome](../../docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md#remote-control-plane-evidence).
+  the completed SPEC-0172 outcome (`docs/98.archive/completed/03.specs/0172-document-contract-convergence/spec.md#remote-control-plane-evidence`).
 - That read-back verified `strict=true`, required contexts
   `validation-changed` and `validation-full`, and GitHub Actions app ID 15368.
   Review, CODEOWNERS, conversation-resolution, admin, signature,
@@ -46,11 +46,11 @@ settings by itself.
 - Block force pushes.
 - Block branch deletion.
 - Require the latest branch head to pass required checks before merge.
-- Preserve referenced recovery commits in delivered history using merge commits
-  or fast-forward. Do not enforce squash/rebase-only or linear-history settings
-  that would discard referenced objects.
-- Delete merged branches only after referenced recovery commits and regular
-  source blobs are verified reachable from `main`, with owner approval.
+- Do not enforce squash/rebase-only or linear-history settings that would
+  discard referenced objects, so delivered history can keep them.
+- Recovery-commit preservation and branch deletion are stated once, in
+  `.agents/governance/github-governance.md` section 3. This file records the
+  settings that support those rules, not the rules themselves.
 
 ## Required Status Checks
 

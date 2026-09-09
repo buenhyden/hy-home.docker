@@ -22,6 +22,13 @@ LIFECYCLE_CONTRACT = ROOT / "scripts/lib/document_governance/lifecycle/contract.
 SCRIPT_MANIFEST_CLI = ROOT / "scripts/validation/check-script-manifest.py"
 
 
+def track_repository(root: pathlib.Path) -> None:
+    """Index a fixture tree so the selection can read it as tracked content."""
+
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+
+
 def load_metadata_cli():
     spec = importlib.util.spec_from_file_location(
         "task10_document_metadata", METADATA_CLI
@@ -88,6 +95,7 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
             (outside / "provider.md").write_text("private fixture sentinel\n")
             for provider in (".claude", ".codex"):
                 (root / provider).symlink_to(outside, target_is_directory=True)
+            track_repository(root)
             with mock.patch.object(
                 pathlib.Path,
                 "read_text",
@@ -123,6 +131,7 @@ class SharedDocumentGovernanceTests(unittest.TestCase):
                 path = root / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(body)
+            track_repository(root)
             paths = module._paths(root)
             self.assertEqual(
                 set(bodies), {path.relative_to(root).as_posix() for path in paths}
@@ -998,6 +1007,69 @@ class DocumentLinksCliTests(unittest.TestCase):
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)
 
+    def test_entrypoint_mode_allows_only_the_docs_index_from_outside_docs(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            outside = root / "infra/README.md"
+            inside = root / "docs/03.specs/0001-example/spec.md"
+            index = root / "docs/README.md"
+            outside.parent.mkdir(parents=True)
+            inside.parent.mkdir(parents=True)
+            outside.write_text(
+                "[index](../docs/README.md)\n"
+                "[stage file](../docs/03.specs/0001-example/spec.md)\n"
+                "[stage index](../docs/03.specs/README.md)\n"
+                "[stage directory](../docs/03.specs/)\n"
+                "path as text: `docs/03.specs/0001-example/spec.md`\n",
+                encoding="utf-8",
+            )
+            inside.write_text("[peer](../../README.md)\n", encoding="utf-8")
+            index.write_text("# Docs\n", encoding="utf-8")
+            (root / "docs/03.specs/README.md").write_text("# Specs\n", encoding="utf-8")
+            findings = check_entrypoint(
+                build_document_graph(
+                    [outside, inside, index, root / "docs/03.specs/README.md"],
+                    repo_root=root,
+                )
+            )
+
+        self.assertEqual(
+            ["infra/README.md:2", "infra/README.md:3", "infra/README.md:4"],
+            [finding.path for finding in findings],
+        )
+        self.assertEqual(
+            {"stage-link-outside-docs"}, {finding.code for finding in findings}
+        )
+
+    def test_entrypoint_mode_leaves_links_between_docs_documents_alone(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/01.requirements/0001-example.md"
+            target = root / "docs/03.specs/0001-example/spec.md"
+            source.parent.mkdir(parents=True)
+            target.parent.mkdir(parents=True)
+            source.write_text(
+                "[spec](../03.specs/0001-example/spec.md)\n", encoding="utf-8"
+            )
+            target.write_text("# Spec\n", encoding="utf-8")
+            findings = check_entrypoint(
+                build_document_graph([source, target], repo_root=root)
+            )
+
+        self.assertEqual([], findings)
+
     def test_repository_modes_are_deterministic_and_non_mutating(self) -> None:
         before = subprocess.run(
             ["git", "diff", "--name-only"],
@@ -1006,7 +1078,7 @@ class DocumentLinksCliTests(unittest.TestCase):
             check=True,
             capture_output=True,
         ).stdout
-        for mode in ("traceability", "alignment"):
+        for mode in ("traceability", "alignment", "entrypoint"):
             with self.subTest(mode=mode):
                 result = subprocess.run(
                     [sys.executable, str(CLI), "--mode", mode],
@@ -1055,6 +1127,27 @@ class LinkSelectionScopeTests(unittest.TestCase):
             target = root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text("# x\n", encoding="utf-8")
+        track_repository(root)
+
+    def test_selection_reads_tracked_documents_only(self) -> None:
+        """Selection follows the index, not the directory listing.
+
+        `projects/` carries over a thousand Markdown files on disk and three in
+        the index; a directory walk would pull a dependency tree into the graph.
+        """
+
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, "docs/90.references/audits/0001-a/README.md")
+            untracked = root / "projects/vendor/README.md"
+            untracked.parent.mkdir(parents=True, exist_ok=True)
+            untracked.write_text("# vendored\n", encoding="utf-8")
+            selected = {
+                path.relative_to(root).as_posix() for path in module._paths(root)
+            }
+        self.assertIn("docs/90.references/audits/0001-a/README.md", selected)
+        self.assertNotIn("projects/vendor/README.md", selected)
 
     def test_selection_covers_every_tracked_documentation_root(self) -> None:
         module = load_links_cli()
@@ -1091,6 +1184,7 @@ class LinkSelectionScopeTests(unittest.TestCase):
                 target.write_text(
                     f"---\nstatus: {status}\n---\n\n# {name}\n", encoding="utf-8"
                 )
+            track_repository(root)
             selected = {
                 path.relative_to(root).as_posix() for path in module._paths(root)
             }

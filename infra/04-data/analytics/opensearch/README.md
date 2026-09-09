@@ -64,7 +64,7 @@ opensearch/
 | Labels | `traefik.enable`, `traefik.http.routers.opensearch.rule`, `traefik.http.routers.opensearch.entrypoints`, `traefik.http.routers.opensearch.tls`, `traefik.http.services.opensearch.loadbalancer.serversTransport`, `traefik.http.services.opensearch.loadbalancer.server.port`, `traefik.http.services.opensearch.loadbalancer.server.scheme`, `traefik.http.routers.opensearch-dashboards.rule`, plus 8 more |
 | Secret refs | names: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`; mounts: `/run/secrets/opensearch_admin_password`, `/run/secrets/opensearch_dashboard_password`, `/run/secrets/opensearch_exporter_password`, `/run/secrets/opensearch_security_cookie`, `/run/secrets/oauth2_proxy_client_secret` |
 | Healthcheck | Compose healthcheck declared for `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards` |
-| Operations | [Guide](../../../../docs/05.operations/catalog/04-data/0019-opensearch/guide.md), [Policy](../../../../docs/05.operations/catalog/04-data/0019-opensearch/policy.md), [Runbook](../../../../docs/05.operations/catalog/04-data/0019-opensearch/runbook.md) |
+| Operations | Guide (`docs/05.operations/catalog/04-data/0019-opensearch/guide.md`), Policy (`docs/05.operations/catalog/04-data/0019-opensearch/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0019-opensearch/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
 
@@ -72,9 +72,9 @@ opensearch/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../../.agents/governance/agentic.md)와 [documentation protocol](../../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/catalog/04-data/0019-opensearch/guide.md)를 참조한다.
-2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/catalog/04-data/0019-opensearch/policy.md)을 확인한다.
-3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/catalog/04-data/0019-opensearch/runbook.md)을 사용한다.
+1. 아키텍처 컨텍스트는 시스템 가이드 (`docs/05.operations/catalog/04-data/0019-opensearch/guide.md`)를 참조한다.
+2. 자원 거버넌스는 운영 정책 (`docs/05.operations/catalog/04-data/0019-opensearch/policy.md`)을 확인한다.
+3. 유지보수 및 복구 절차는 복구 런북 (`docs/05.operations/catalog/04-data/0019-opensearch/runbook.md`)을 사용한다.
 
 4. OpenSearch 설정 변경 시 JVM Heap 메모리 설정을 신중히 확인한다.
 5. HTTPS 및 보안 플러그인 설정을 수정할 때 인증서 경로를 누락하지 않도록 주의한다.
@@ -93,10 +93,11 @@ opensearch/
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/catalog/04-data/analytics/opensearch.md](../../../../docs/05.operations/catalog/04-data/0019-opensearch/guide.md)
-- **Policy**: [docs/05.operations/catalog/04-data/0019-opensearch/policy.md](../../../../docs/05.operations/catalog/04-data/0019-opensearch/policy.md)
-- **Runbook**: [docs/05.operations/catalog/04-data/0019-opensearch/runbook.md](../../../../docs/05.operations/catalog/04-data/0019-opensearch/runbook.md)
+- **System Guide**: docs/05.operations/catalog/04-data/analytics/opensearch.md (`docs/05.operations/catalog/04-data/0019-opensearch/guide.md`)
+- **Policy**: `docs/05.operations/catalog/04-data/0019-opensearch/policy.md`
+- **Runbook**: `docs/05.operations/catalog/04-data/0019-opensearch/runbook.md`
 - **Monitoring**: `opensearch-exporter:9114/metrics`
+- [Documentation index](../../../../docs/README.md)
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

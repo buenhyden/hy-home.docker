@@ -50,5 +50,6 @@ Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing
 ## Related Documents
 
 - [Rules engineer](../../roles/rules-engineer.md)
-- [Agent governance artifacts contract](../../../docs/99.templates/registry.json)
+- Agent governance artifacts contract (`docs/99.templates/registry.json`)
 - [Approval boundaries](../../governance/approval-boundaries.md)
+- [Documentation index](../../../docs/README.md)

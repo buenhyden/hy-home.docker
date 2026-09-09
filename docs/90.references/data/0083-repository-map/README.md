@@ -1,10 +1,10 @@
 ---
 title: "Reference: LLM Wiki Repository Map"
-version: "1.0.1"
+version: "1.1.0"
 type: "reference/data-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-09"
 layer: "references"
 artifact_id: "DATA-0083"
 parent_ids: []
@@ -16,15 +16,23 @@ observed_at: "2026-08-23"
 
 ## Overview
 
-This reference lists the canonical tracked source files that LLM agents should check first when reading `hy-home.docker`. It helps agents quickly find repository documentation, governance, infrastructure, script, and secret-handling boundaries.
+This reference describes the repo-local LLM Wiki: which files make it up, which of them are generated, and which document owns each question it used to answer itself.
 
 ## Purpose
 
-Provide a repo-local exploration order so LLM agents do not confuse runtime truth with reference context. Root [`llms.txt`](../../../../llms.txt) is a thin entrypoint to this document, and this document does not replace active policy or original runtime configuration.
+Describe what the repo-local LLM Wiki consists of and how its members relate, so a reader knows which file to open for which question.
+
+This package is not the entry-point list and not the rule set. Root [`llms.txt`](../../../../llms.txt) owns the canonical entry points and the evidence boundaries an LLM agent must respect, and the agent knowledge category owns surface-to-authority routing with the approval and proving check for each surface. Both were previously restated here, and each restatement was one more place to drift.
+
+Nothing in this package is an obligation. The entry-point list and the evidence
+boundaries are in `llms.txt`. Surface ownership, the approval boundary and the
+proving check for each surface are in `.agents/knowledge/repository-map.md`.
+Document authoring and retirement rules are in
+`.agents/governance/documentation-protocol.md`.
 
 ## Repository Role
 
-This reference is the curated repository map for the LLM Wiki. It provides exploration paths based on tracked files. Policy decisions are checked in `.agents/`, operations decisions in `docs/05.operations/`, and latest runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
+This reference describes the LLM Wiki package set. Exploration order comes from `llms.txt`; surface ownership comes from the agent knowledge repository map; policy stays in `.agents/`, operations in Stage 05, and runtime truth in `infra/`, `scripts/`, registry JSON files, and Docker Compose files.
 
 Graphify output is only a navigation aid. Even when `graphify-out/` exists, do not treat it as an authoritative source. If `bash scripts/knowledge/report-graphify-health.sh` reports `status=advisory`, recheck all structural judgments against canonical tracked source files.
 
@@ -32,13 +40,14 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 ### In Scope
 
-- tracked source files that LLM agents should read first
-- docs taxonomy, agent governance, infrastructure, scripts, and secret-handling entrypoints
-- boundaries for `secrets/`, `volumes/`, and `graphify-out/`
-- maintenance rules for repo-local LLM Wiki outputs
+- the LLM Wiki member list and how each member is refreshed
+- the routing from a wiki question to the document that owns its answer
 
 ### Out of Scope
 
+- the canonical entry-point list and evidence boundaries, owned by `llms.txt`
+- surface ownership, approval boundaries and proving checks, owned by
+  `.agents/knowledge/repository-map.md`
 - public wiki site, deployed wiki, full-content bundle, `llms-full.txt`
 - Graphify publication wiring or regeneration policy
 - Docker Compose runtime changes
@@ -47,36 +56,11 @@ Graphify output is only a navigation aid. Even when `graphify-out/` exists, do n
 
 ## Definitions / Facts
 
-- **LLM Wiki**: Repo-local exploration reference made of root `llms.txt` and `docs/90.references/data/0082-llm-wiki-index/`.
+- **LLM Wiki**: Repo-local exploration reference made of root `llms.txt`, the generated index, its coverage report, and this description.
 - **Generated tracked repo-local index**: Path-only index refreshed by `scripts/knowledge/generate-llm-wiki.py`.
 - **Tracked source files**: README files, governance docs, operations docs, Compose files, scripts, and registry JSON files tracked by Git.
 - **Runtime truth**: `infra/`, `scripts/`, registry JSON files, Docker Compose files, and `.agents/` documents that directly define current runtime configuration and validation criteria.
 - **Advisory graph context**: Supporting material such as `graphify-out/` output that may be used only as exploration hints and must not be promoted to canonical evidence.
-
-## Repository Map
-
-| Need | Canonical Source | Notes |
-| --- | --- | --- |
-| Repository overview | [README.md](../../../../README.md) | human-facing root hub |
-| Agent execution rules | [AGENTS.md](../../../../AGENTS.md) | provider-neutral entry shim |
-| Documentation taxonomy | [docs/README.md](../../../README.md) | active stage routing |
-| Agent governance | [.agents/README.md](../../../../.agents/README.md) | repo-local governance SSOT |
-| Infrastructure layout | [infra/README.md](../../../../infra/README.md) | Compose tier and service map |
-| Script inventory | [scripts/README.md](../../../../scripts/README.md) | validator and automation map |
-| Secret handling | [secrets/README.md](../../../../secrets/README.md) | path and policy context only |
-| Data reference context | [docs/90.references/data/README.md](../README.md) | stable Data interpretation rules |
-| LLM entrypoint | [llms.txt](../../../../llms.txt) | thin machine-readable entrypoint |
-| LLM generated index | [README.md](../0082-llm-wiki-index/README.md) | generated tracked repo-local path index |
-| LLM maintenance guide | [guide.md](../../../05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) | refresh and validation procedure |
-
-## Source Rules
-
-- Prefer tracked source files over generated artifacts.
-- Use repo-relative links for local files.
-- Do not quote or summarize secret values, credentials, private keys, tokens, shell history, or raw logs.
-- Treat `secrets/` paths as policy context only unless the user explicitly asks for a task that requires more.
-- Exclude `volumes/`, dependency trees, generated/minified artifacts, and `graphify-out/` from authoritative evidence.
-- Re-run repository validators after changing this reference or the root LLM entrypoint.
 
 ## Sources
 
@@ -114,6 +98,15 @@ This package preserves its existing data evidence under the Stage 99 `data` cont
 ## Inventory
 
 This package preserves its existing data evidence under the Stage 99 `data` contract.
+
+| Member | Kind | Refreshed by |
+| --- | --- | --- |
+| `llms.txt` | root machine entrypoint; owns entry points and boundaries | authored |
+| `docs/90.references/data/0082-llm-wiki-index/` | tracked path index | `scripts/knowledge/generate-llm-wiki.py` |
+| `docs/90.references/data/0076-llm-wiki-stage-category-coverage/` | stage and category coverage of the same candidate set | the same generator |
+| this package | what the wiki is and how its members relate | authored |
+
+The maintenance procedure is a Stage 05 subject: `docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/`.
 
 ## Refresh
 

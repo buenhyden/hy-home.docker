@@ -379,7 +379,7 @@ list contains only sources shared across categories.
   and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Operations: [Stage 05](../../../05.operations/README.md).
 - Audit/data: [AUD-0026](../../audits/0026-implementation-overview/README.md),
-  [AUD-0097](../../audits/0097-compose-domain-defect-register/README.md),
+  [k6 guide](../../../05.operations/catalog/09-tooling/0061-k6/guide.md),
   [DATA-0082](../../data/0082-llm-wiki-index/README.md), and
   [DATA-0083](../../data/0083-repository-map/README.md).
 - Package/index/template authority: [research index](../README.md),

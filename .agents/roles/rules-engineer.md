@@ -53,4 +53,5 @@ Escalate unresolved authority or plan conflicts to `workflow-supervisor`; never 
 - [Agentic policy](../governance/agentic.md)
 - [Policy gate function](../skills/policy-gate-agent/SKILL.md)
 - [Requirements-to-design function](../skills/requirements-to-design-agent/SKILL.md)
-- [Agent governance artifacts contract](../../docs/99.templates/registry.json)
+- Agent governance artifacts contract (`docs/99.templates/registry.json`)
+- [Documentation index](../../docs/README.md)

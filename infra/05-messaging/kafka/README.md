@@ -66,7 +66,7 @@ kafka/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.schema-registry.rule`, `traefik.http.routers.schema-registry.entrypoints`, `traefik.http.routers.schema-registry.tls`, `traefik.http.routers.schema-registry.middlewares`, `traefik.http.services.schema-registry.loadbalancer.server.port`, `traefik.http.routers.kafka-connect.rule`, plus 14 more |
 | Secret refs | names: `kafbat_client_secret`; mounts: `/run/secrets/kafbat_client_secret` |
 | Healthcheck | Compose healthcheck declared for Kafka broker(s), `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, and `kafka-exporter`; `kafka-init` is a job and has no healthcheck |
-| Operations | [Guide](../../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md), [Policy](../../../docs/05.operations/catalog/05-messaging/0036-kafka/policy.md), [Runbook](../../../docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md) |
+| Operations | Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`), Policy (`docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`), Runbook (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -74,10 +74,10 @@ kafka/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
+1. **Bootstrap**: Kafka KRaft Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: `docker-compose.yml` 한 파일에서 Broker ID와 포트 매핑을 확인한다. 단일 broker는 `messaging`/`dev` profile, 3 broker cluster는 `messaging-cluster` profile이 선택한다.
 3. **Execution**: 변경 사항 적용 후 repository root에서 root profile 검증을 먼저 수행한다.
-4. **Validation**: [Messaging Runbook](../../../docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md)의 점검 절차를 수행한다.
+4. **Validation**: Messaging Runbook (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`)의 점검 절차를 수행한다.
 5. 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 확인한다.
 
 6. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
@@ -134,8 +134,9 @@ docker inspect --format '{{json .State.Health}}' schema-registry
 
 ## Related Documents
 
-- **PRD**: [05-messaging](../../../docs/01.requirements/0006-messaging.md)
-- **ARD**: [Messaging Architecture](../../../docs/02.architecture/descriptions/0005-messaging-architecture.md)
-- **Guide**: [Kafka Guide](../../../docs/05.operations/catalog/05-messaging/0036-kafka/guide.md)
-- **Policy**: [Messaging Ops](../../../docs/05.operations/catalog/05-messaging/0036-kafka/policy.md)
-- **Runbook**: [Messaging Recovery](../../../docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md)
+- **PRD**: 05-messaging (`docs/01.requirements/0006-messaging.md`)
+- **ARD**: Messaging Architecture (`docs/02.architecture/descriptions/0005-messaging-architecture.md`)
+- **Guide**: Kafka Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`)
+- **Policy**: Messaging Ops (`docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`)
+- **Runbook**: Messaging Recovery (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`)
+- [Documentation index](../../../docs/README.md)

@@ -60,7 +60,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 `infra/`에는 41개의 Compose 파일이 있습니다. 이 중 40개는 `docker-compose*.yml`이고 1개는 MinIO cluster variant인 `docker-compose.cluster.yaml`입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`은 이 41개를 모두 주석 없이 `include`합니다.
 
-파일 목록은 무엇이 기동되는지를 결정하지 않습니다. `include:`는 파일을 무조건 병합하고, 선택한 profile이 어떤 서비스가 resolve되는지를 결정합니다. profile 이름의 canonical 정의는 [Compose Profile Vocabulary Policy](../docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)가 소유합니다.
+파일 목록은 무엇이 기동되는지를 결정하지 않습니다. `include:`는 파일을 무조건 병합하고, 선택한 profile이 어떤 서비스가 resolve되는지를 결정합니다. profile 이름의 canonical 정의는 Compose Profile Vocabulary Policy (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다.
 
 | Fact | Value | Documentation Rule |
 | --- | --- | --- |
@@ -189,9 +189,10 @@ service directory and cover the following agent-verifiable fields:
 
 ## Related Documents
 
-- [Official Guides](../docs/05.operations/README.md)
-- [Operation Specs](../docs/05.operations/README.md)
-- [Architecture Details](../docs/02.architecture/descriptions/README.md)
+- Official Guides (`docs/05.operations/README.md`)
+- Operation Specs (`docs/05.operations/README.md`)
+- Architecture Details (`docs/02.architecture/descriptions/README.md`)
 - [Secret Management](../secrets/README.md)
 - [Root Compose](../docker-compose.yml)
 - [Tech Stack Versions](./tech-stack.versions.json)
+- [Documentation index](../docs/README.md)

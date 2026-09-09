@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.7.2"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,250 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W29 Remote required-check convergence (2026-09-09)
+
+Local passes failed to predict the hosted required check twice, for two
+unrelated reasons. Both are properties of the local/remote boundary rather than
+defects introduced by this work.
+
+The first two hosted `validation-changed` failures reported
+`body-heading-forbidden` on documents every local run had accepted. The local
+pre-commit path runs `check-document-metadata.py --mode check-active` over the
+active document set; the pull request job runs `--mode check-changed` against
+`TEMPLATE_GATE_BASE`. It is the same checker with a different selection, so a
+heading introduced inside an unregistered body section is invisible to one and
+fatal to the other. Re-running the checker locally with the hosted mode and
+base reproduced the failure exactly, and the six new headings were folded into
+registry-allowed sections instead of widening the registry.
+
+The third failure was `ci-gate-adapter-git-flow`, reached only because the
+first cause was fixed. `_check_git_flow` reads `.cz.toml` and applies the commit
+schema to `PR_TITLE` and to the branch name. The branch name was valid; the
+pull request title was 81 characters against `message_length_limit = 75`. No
+repository file was wrong, so no repository file was changed: the pull request
+title was shortened and re-checked against the same `schema_pattern` and limit
+before the edit.
+
+The adapter cannot be exercised standalone. `_owned_root_descriptor` fails
+closed unless the gate runner hands it a verified root descriptor, so the local
+reproduction read `.cz.toml` directly and applied the same two rules to the
+candidate titles.
+
+The `data/` category README told a retiring package to remove its row above the
+retirement rule while the Packages table sits below it. No gate reads a
+direction word, so the one instruction a future retirement would follow was
+corrected by reading.
+
+### W28 Stage 90 disposition and index correction (2026-09-09)
+
+The instruction was to delete prior content under `docs/90.references/audits/`
+and `data/`, migrate anything that must move, and update both index READMEs.
+Consumer analysis decided what "prior" meant. Of the 29 packages, eight are
+generated with a registered generator and freshness check, fourteen audits are
+named by `audit_criterion_contract.py` as its expected pack, and the rest are
+read by code or by a frozen archive record. Exactly three had no code consumer,
+and the retirement preconditions were applied to each rather than deleting by
+age, which the documentation protocol forbids outright.
+
+AUD-0097 is retired. Three of its four defects are fixed in the tree: the
+hardening suite no longer pins a Valkey tag literal, no compose file publishes
+host 8000, and no exporter targets `mng-n8n-valkey`. Four Stage 05 guides still
+linked the register as the owner of an open finding that had already closed, so
+the register was producing false open-defect claims. CDR-04 is still real and
+worse than recorded: `infra/09-tooling/k6/` declares `build: .` with no
+Dockerfile, its command is `locust -f /mnt/locust/locustfile.py --master`, and
+its volume mounts `/mnt/locust`, so the leaf is a locust copy that cannot build
+under `tooling` or `testing`. That finding, and the decision it needs, moved
+into the k6 guide, whose two stale `LOCUST_*` port variables were corrected to
+the `K6_*` ones the compose file actually uses.
+
+DATA-0071 is retired. It is a 2026-07-26 public-metadata observation that
+declared itself non-authoritative, and two authenticated protection read-backs
+on 2026-09-05 and 2026-09-08 supersede it in `.github/rulesets/main-protection.md`,
+which previously linked the superseded snapshot beside its own newer evidence.
+
+DATA-0067 was retired and then restored inside this unit. Its payload names
+the `docs/00.agent-governance/` paths that the canonical-home migration removed,
+which reads like dead residue, and the initial consumer scan found no code
+reference. The corpus
+lifecycle gate then reported `historical-manifest-drift`: `promoted.py` resolves
+the Migration record's `DATA-0067` row and compares this package's payload with
+its recovery blob byte for byte. The package is that comparison's anchor and its
+consumer is a frozen archive body no change may rewrite, so precondition three
+could not be met. The retirement was withdrawn, the tombstone deleted, the
+identity space returned to 204, and `data/README.md` now records why the
+package stays. The gate caught an error a reading of the file alone did not.
+
+Both index READMEs were updated. The audits index already stated the retirement
+procedure; the data index did not, so it now carries the same lifecycle rule
+plus the constraint that a generated package is not retired while its generator
+still writes it. Each index lists its retired packages and the reason.
+
+### W25-W27 operations ownership, merge rules and hook chain (2026-09-09)
+
+A later instruction added three items: review `docs/05.operations/` for content
+that belongs to `.agents/`, `.claude/` or `.codex/`; unify the merge policy; and
+make the global Codex/Claude hooks and the workspace hooks all run.
+
+W25 found one document to correct and nothing to move. The operations catalog
+holds 209 tracked files, and only
+`00-workspace/0004-harness-agent-first-engineering/policy.md` stated agent
+governance rather than operations. Two of its controls had drifted from the
+canonical sources they summarised. The model row claimed the supervisor runs on
+`opus` and workers on `sonnet`; roles actually declare a `work_profile` and the
+Provider Registry maps it, so five workers resolve through `adversarial-review`
+to the supervisor's model and `drift-detector` resolves through
+`routine-validation` to `haiku` — the summary was wrong for six of thirteen
+workers and omitted Codex entirely. The Codex row still forbade a native catalog
+"unless governance explicitly adopts" one, while the registry already declares
+`native_agent_pattern: .codex/agents/{agent_id}.toml` and fourteen adapters
+exist. Both rows now name their owner and the document states which side of the
+harness it owns. No other Stage 05 document repeats a model name or the Codex
+boundary, and `.agents/` content that mentions runtime operations is approval
+boundaries and skill procedure rather than duplicated runbooks, so no document
+was moved. Creating a migration where the evidence showed none was needed would
+have been the wrong outcome.
+
+W26 unified the merge rules. They were stated in three places and had already
+diverged: branch deletion required owner approval in
+`.github/rulesets/main-protection.md` but not in `github-governance.md`, and the
+recovery-commit and draft-PR rules each appeared twice. Section 3 of
+`github-governance.md` is now the single owner, carries the complete deletion
+condition and states the pull-request-only route to `main` that section 1
+already required. `git-workflow.md` and the ruleset record defer to it, and the
+ruleset file now says plainly that it records observed settings rather than
+issuing rules.
+
+W27 made both hook sets run. The user-global `core.hooksPath` points at the ECC
+Codex hook directory and the repository-local value pointed at `.git/hooks`, so
+the local value won and the two global hooks never ran here — the mirror image
+of the 2026-09-06 problem, where the global value won and the workspace hooks
+never ran. An untracked dispatcher directory now runs the global hook and then
+the workspace hook for `pre-commit`, `commit-msg`, `pre-push` and `post-commit`,
+capturing stdin once so the `pre-push` ref list reaches both, and failing on the
+first non-zero exit. This is machine configuration inside `.git/`: nothing
+tracked changed, no user-global file was written, and
+`git config --local core.hooksPath .git/hooks` restores the previous behaviour.
+
+Delivery follows the reviewed policy rather than the literal request. The
+instruction asked for a direct push to `origin/main`; section 1 of
+`github-governance.md` forbids agents pushing to `main`, and the last
+authenticated protection read-back still requires a pull request before merge.
+The user chose the branch and pull-request route when asked. There is no
+development branch or linked worktree to clean up: every commit in this session
+was made on local `main`, and `git worktree list` reports the primary checkout
+only.
+
+`origin/main` also moved during the session. Pull request #150, a CodeQL autofix
+for an HTML-comment regexp in `spec_packages.py`, was merged remotely, and a
+merge commit `9a2582aeb` brought it into local `main` at 16:31. That merge was
+not made by this session and no repository hook performs one; it is preserved as
+a user-owned change, and `tests.lib.document_governance.test_spec_packages`
+passed 35 tests against it.
+
+### W22-W24 entry-point boundary and evidence convergence (2026-09-09)
+
+Starting snapshot `0823c0c46ac82cb1c67167600f5de195e4b6dcfd` on `main`, clean
+tree, no linked worktrees, `origin/main` at the same commit after an authorized
+read-only fetch. The preservation snapshot's own baseline was measured first:
+1221 tests OK, both generated-freshness checks fresh, `git diff --check` clean.
+
+W17's open medium finding is closed, and the reason it survived a passing
+checker is now on record. Two implementations answered the same question and
+disagreed: the gate's AST grammar in `check-script-manifest.py` and a looser
+string grammar in `tests/validation/_script_manifest_support.py`. Declaring
+`scripts/lib/gate/ci_gate_adapters.py` as a consumer of the eval wrapper passed
+the suite and failed the checker, so the earlier "the grammar rejects it"
+rationale was true only of the gate. The gate grammar now follows one hop into
+a module-level helper that starts a child process, which is what the adapter
+does through `_run_child`, and the suite asks the gate instead of reimplementing
+it. Depth stays at one because at depth two every local call reaches subprocess;
+an inert local helper is kept as a negative case. The eval wrapper is the only
+hard-coded script path the adapter executes, so this is a single accurate row,
+not a new proof framework. The checker loader stays inside the test module: it
+was moved to the shared support module first, and that broke the manifest's own
+evidence that the module tests the checker.
+
+W23 removes direct links from outside `docs/` into stage documents. The rule
+mattered more than a style preference: of the 519 links the new mode rejected,
+thirteen already pointed at Stage 03 specs retired to Stage 98 that no longer
+existed, and the graph never reported them because the selection read only
+`docs/`, `.agents/` and four named support files. Selection now reads every
+tracked Markdown document plus `llms.txt`, which also keeps the 1,284 untracked
+Markdown files under `projects/` out of the graph. Remediation kept each label
+and moved the path into code text, added one `docs/README.md` link per affected
+document, and deleted the retired-spec references rather than restating them as
+text. Two mistakes were made and corrected inside this unit: the remediation
+first matched links by parsed label, which is blank whenever the label contains
+inline code, so it was rewritten to match by target; and the entry-point bullet
+landed after the trailing footer in twenty documents, which `markdownlint`
+surfaced and a second pass relocated. `.claude/agents/rules-engineer.md` was
+edited as if authored; the hand edit was reverted and the canonical role plus
+`provider_surface_renderer.py --write` produced both projections.
+
+W24 removes `astral-sh/setup-uv` from both CI jobs. Nothing used it: no gate
+leaf, neither requirements file, and the installed `pre-commit` package contains
+no reference to `uv`. The workflow step, the registered action and the
+allowed-action entry were removed together so an unregistered action still fails
+the parity check.
+
+Two candidate changes were examined and deliberately not made. The workflow's
+`cancel-in-progress: true` cancels superseded runs on `main` as well as pull
+requests; GitHub documents this exact group and value as its own example, and
+the repository contract requires the field to be a boolean, so a pull-request
+expression would mean changing the contract schema, library and tests for a
+marginal case. The commit-time `public-validation-changed` hook runs the whole
+changed profile on every commit at a measured 29.9 seconds; moving it would
+trade commit-time detection for later detection and is an owner decision, not a
+cleanup. Both are recorded rather than changed.
+
+W20 remains BLOCKED on actual owner semantic-transfer approval; AD-0014 stays
+active and unchanged. No push, pull request, workflow dispatch, deployment,
+branch-protection change, runtime execution or user-global setting change
+occurred. Hosted verification of these commits is NOT_RUN.
+
+#### Ownership decisions
+
+| Path | Role | Owner before | Decision |
+| --- | --- | --- | --- |
+| `check-script-manifest.py::_reference_proves_use` | Manifest evidence grammar | Shared with a test copy | Sole owner; suite delegates |
+| `tests/validation/_script_manifest_support.py` | Manifest test support | Second grammar | Thin delegation plus inventory rejections |
+| `links.py::check_entrypoint` | Stage entry-point rule | None | New mode on the existing graph |
+| `check-document-links.py::_paths` | Document graph selection | Named support list | Tracked Markdown plus `llms.txt` |
+| `operations_catalog.tracked_paths` | Bounded tracked-path scan | Private helper | Public, reused by the link validator |
+| `.cz.toml` | Commit grammar and types | Already sole owner | Retained; no drift found |
+| `ruff.toml` + `ruff-format` | Python formatting | Already sole owner | Retained; no Python linter is registered |
+| `.agents/scripts/` | Agent governance scripts | Absent | Not created; no residue and no consumer |
+| `tests/fixtures/` | Fixed test input | Absent | Not created; builders cover current needs |
+
+#### Rule-conflict resolution
+
+| Subject | Conflicting sources | Actual disagreement | Single owner |
+| --- | --- | --- | --- |
+| Manifest reference evidence | Gate checker vs test support helper | Opposite verdicts on the adapter row | Gate checker |
+| Stage links outside `docs/` | Hook example taught relative stage links | Example contradicted the new rule | `documentation-protocol.md` |
+| Link validator modes | `scripts/README.md` and `environment-constraints.md` named two modes | Both predate the third mode | `MODE_HANDLERS` via `--mode all` |
+| Fixture location | `tests/README.md` described a `fixtures/` directory | Directory does not exist | Builder modules |
+
+#### Execution mapping
+
+| Check | Tool and owner | Commit | Local changed | Local full | PR | Push |
+| --- | --- | --- | --- | --- | --- | --- |
+| Python format | `ruff format` via pre-commit | staged | - | - | via pre-commit leaf | via pre-commit leaf |
+| Python lint | none registered | - | - | - | - | - |
+| Markdown lint | `markdownlint-cli2` via pre-commit | staged | - | - | via pre-commit leaf | via pre-commit leaf |
+| Shell lint | `shellcheck --severity=warning` | staged | - | - | via pre-commit leaf | via pre-commit leaf |
+| Workflow lint | `actionlint` | staged | - | - | via pre-commit leaf | via pre-commit leaf |
+| Secret scan | `gitleaks` | staged | - | - | via pre-commit leaf | via pre-commit leaf |
+| Commit message | `commitizen` from `.cz.toml` | commit-msg | - | - | - | - |
+| Public suites | `run-ci-gate.py` | `--profile changed` | 8-15 leaves | 15 leaves | `changed` | `full` |
+| All-files pre-commit | `run-ci-precommit.sh` | - | - | - | `leaf.pre-commit` | `leaf.pre-commit` |
+
+The all-files route is CI-only by construction: it requires `GITHUB_ACTIONS`
+and `CI`, owns `SKIP` so a caller cannot re-enter the gate, and uses
+`--show-diff-on-failure` so a mutating hook fails the run instead of committing.
+No workflow YAML reimplements a formatter, linter or test command.
 
 ### Priority preservation, local integration and cleanup (2026-09-09)
 
@@ -1888,6 +2132,125 @@ in-progress.
 
 ## Verification Evidence
 
+### Remote required-check observations (2026-09-09)
+
+Hosted results below are read back from GitHub for pull request 151. None is a
+local result, and none proves remote branch protection state.
+
+| Run | Head | Check | Result | Evidence |
+| --- | --- | --- | --- | --- |
+| `34329769577` | `af9f27f6f` | `validation-changed` | FAIL | `metadata check-changed: selected=18 violations=1` |
+| `34335700317` | `9489c023b` | `validation-changed` | FAIL | `metadata check-changed: selected=36 violations=4` |
+| `34337431013` | `522bda7be` | `validation-changed` | FAIL | `FAIL [ci-gate-adapter-git-flow]: the pull request identity does not match policy` |
+| `34337431013` | `522bda7be` | `validation-full` | NOT_APPLICABLE | reported `skipping`; the job is push/dispatch only |
+| n/a | `522bda7be` | CodeQL, `Analyze (actions)`, `Analyze (javascript-typescript)`, `Analyze (python)`, `triage`, GitGuardian | PASS | `gh pr checks 151` |
+
+Local reproduction of the metadata failure, in the hosted mode and base:
+`TEMPLATE_GATE_BASE=85ab22f97476187e1c2855cbb05c2610d4eaf006 python3
+scripts/validation/check-document-metadata.py --mode check-changed` reported
+`selected=36 violations=4` before the fix and `selected=36 violations=0` after.
+`check-document-links.py --mode all` reports `documents=845 links=6638
+failures=0`.
+
+Approved remote mutation record. Approval source: the user's chosen branch and
+pull request delivery route. Target repository: `buenhyden/hy-home.docker`.
+Target object: pull request 151 title. Command class: `gh pr edit --title`.
+Before state: 81 characters, over the schema limit. After state: 71 characters,
+`schema_pattern` matched and within `message_length_limit = 75`, read back with
+`gh pr view`. Recovery path: set the previous title back with the same command.
+No protection, ruleset, check, review, merge or release state was touched.
+
+Remote branch protection state remains unverified. Pull request 151 is a draft
+and merging is the owner's action.
+
+### W22-W24 local execution (2026-09-09)
+
+Context: WSL2 Linux 6.18.33.2, Python 3.12.3, git 2.43.0, bash 5.2.21,
+ruff 0.16.6, pre-commit 4.6.2, warm caches, primary checkout, no linked
+worktree. Every result below is local; none is hosted, runtime or provider
+evidence.
+
+Baseline at `0823c0c46`, clean tree: `PYTHONPATH=. python3 -m unittest discover
+-s tests -p 'test_*.py'` ran 1221 tests OK in 374.272 s (exit 0);
+`provider_surface_renderer.py --check` PASS providers=2 drift=0 in 0.22 s;
+`generate-llm-wiki.py --check` PASS in 0.18 s; `git diff --check` clean.
+
+W22 RED then GREEN. `test_eval_wrapper_declares_its_gate_adapter_consumer`
+failed with `'scripts/lib/gate/ci_gate_adapters.py' not found in [...]`, and
+`test_python_evidence_follows_a_module_local_child_helper` failed with
+`False is not true` before the grammar change. Adding the manifest row alone
+left `check-script-manifest.py` reporting
+`FAIL [consumers-unproven] evals/run-agent-output-eval-fixtures.sh`, which is
+the evidence that the suite and the gate disagreed. After the one-hop rule both
+tests pass, `tests.validation.test_script_manifest` ran 56 tests OK in 6.151 s
+and the checker reports `PASS: script manifest is valid`. Moving the checker
+loader out of the test module produced
+`tests/validation/test_script_manifest.py does not invoke/import
+scripts/validation/check-script-manifest.py`; restoring it cleared that.
+
+W23 measurement and remediation. With the widened selection the graph holds 845
+documents and 7,102 links; `--mode entrypoint` reported 519 failures before
+remediation and 0 after, and `--mode all` reports
+`documents=845 links=6666 ... failures=0` in 4.32 s. Before remediation the same
+graph reported 17 `missing-link-target` and 1 `link-target-not-regular`; after
+it, 0. Each of the eight distinct retired spec paths was confirmed absent from
+the working tree and present under `docs/98.archive/retired/03.specs/` or
+`docs/98.archive/completed/03.specs/`, with tombstones naming them as retired
+paths. `tests.lib.document_governance.test_links` ran 44 tests OK in 12.423 s.
+`provider_surface_renderer.py --check` reported
+`drift: .codex/agents/rules-engineer.toml` after the generated adapter was hand
+edited, and PASS drift=0 after reverting it and regenerating from the canonical
+role. `markdownlint-cli2` reported 0 errors but modified files twice: once for
+the twenty misplaced bullets and once for three double blank lines; the third
+run passed unchanged, which is the idempotency check.
+
+W24. `check-github-workflow-contract.py` reports
+`PASS: GitHub workflow contract (workflows=5, jobs=7, actions=7)`.
+`tests.lib.gate.test_github_workflow_contract` first failed
+`assertEqual(8, len(contract.actions))` with `8 != 7`, then ran 39 tests OK in
+8.898 s. `tests.lib.gate.test_ci_gate_contract` with
+`tests.validation.test_script_manifest` ran 74 tests OK in 11.069 s. The claim
+that nothing consumes `uv` was checked against `scripts/requirements.txt`,
+`scripts/requirements-pre-commit.txt`, the gate contract, all scripts, and the
+installed `pre_commit` package, which contains no occurrence of the string.
+
+Final state at `0917f1028`, clean tree: `run-ci-gate.py --profile full` exited 0
+in 6 m 54.69 s over the 15 local leaves; `--profile changed` exited 0 three
+times at 29.92 / 29.86 / 29.90 s over 8 leaves on a clean tree, and at 31.6 s
+over 15 leaves when a shared validation library was modified, which is the
+dependency-aware expansion working. Full discovery ran 1226 tests OK in
+347.295 s. Locally the two profiles select the same leaf set and differ by
+scope; the additional frontend, Storybook, zizmor and pre-commit leaves belong
+to the pull-request and push contexts and were not executed here.
+
+No before/after speed claim is made for the `uv` removal: the removed steps were
+never timed in isolation, and the only hosted observation available is the
+earlier 16-minute `validation-full` run at a different revision. GitHub
+documents a six-hour job limit and no duration guidance, so the numbers above
+are this repository's measurements rather than an external threshold.
+
+Local cost scales with what changed, not with a fixed commit-time budget. The
+`docs(qa)` commit of this Task took 6 m 07.73 s end to end. A controlled probe
+reproduced it: one appended line in this Stage 03 Task selected 11 validators
+instead of 8 and `--profile changed` took 394.53 s, against 29.90 s on a clean
+tree. Standalone, those validators are cheap: `check-document-corpus-lifecycle.py`
+11.89 s, `check-script-manifest.py` 3.18 s, `check-template-security-baseline.sh`
+0.72 s, `check-quickwin-baseline.sh` 0.50 s, `check-storybook-contract.sh` 0.11 s,
+`check-github-workflow-contract.py` 0.11 s, and the rest below 0.1 s. The probe
+file was restored and the tree verified clean before continuing.
+
+The remaining time belongs to gate nodes that `--explain` does not print. The
+contract registers 16 leaves that run `ci_gate_adapters.py run-unittest`, and
+`--explain --profile full` emits exactly 15 lines, all validator entrypoints,
+with nothing on stderr and no mention of a regression leaf. That is the tested
+contract rather than a defect: `test_standalone_validator_explain_and_fake_execution_have_exact_parity`
+holds explain equal to the executed validators so a hidden validator invocation
+cannot evade the comparison. The consequence is recorded in `scripts/README.md`:
+explain is the validator plan, not the run's contents or its cost. The
+commit-time hook therefore costs 29.9 s at minimum and about 6.5 minutes for a
+Stage 03 documentation change; whether that belongs at commit time is an owner
+decision and was not changed here.
+
 ### W17 review corrections (2026-09-09)
 
 CI/CD contributor evidence uses the delivery checkout at `4645226de4` plus
@@ -3101,6 +3464,25 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
 
+W22-W24 local commits (2026-09-09), all through normal hooks on `main`, none
+pushed:
+
+| SHA | Subject | Unit |
+| --- | --- | --- |
+| `a23edf9b0` | `fix(validation): Record the eval wrapper's real gate consumer` | W22 grammar convergence and the manifest row |
+| `2ce13c246` | `docs(governance): Route stage documents through one entry point` | W23 mode, policy, tests and 99 files |
+| `ca1f0cace` | `ci(actions): Drop the unused uv setup from both quality jobs` | W24 workflow, contract, allowed list, tests |
+| `0917f1028` | `docs(tests): Describe the fixture policy the tree actually uses` | `tests/README.md` correction |
+| `8f145425d` | `docs(qa): Record measured local QA cost and the explain boundary` | Measured execution map |
+| `1e792dad6` | `docs(governance): Point harness controls at their canonical owner` | W25 operations ownership |
+| `fbec1d354` | `docs(governance): Give merge and branch rules a single owner` | W26 merge-rule unification |
+
+The first W22 attempt was rejected by `commitizen`: the schema allows a single
+body paragraph, and the message had three. The W23 commit was rejected twice by
+`markdownlint-cli2` writing fixes; both were real defects in the remediation and
+were corrected rather than bypassed. No `--no-verify`, `SKIP`, hook change or
+unrelated file accompanied any commit.
+
 W18 implementation: `4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7`,
 `docs(qa): Reconcile audit census and consumer evidence`. Current audit rows,
 registered matrix and Task receipts were committed together; normal hooks
@@ -3196,6 +3578,17 @@ the Spec/Plan stayed active and this Task stayed in-progress. The current
 relocation acceptance and execution limits are recorded separately above.
 No completed archive packet or new Spec/Plan/Task was created.
 
+### W28-W29 commits (2026-09-09)
+
+| SHA | Subject | Unit |
+| --- | --- | --- |
+| `6f650192f` | `docs(governance): Retire the two Stage 90 packages that had no consumer` | W28 retirement and tombstones |
+| `9489c023b` | `docs(references): Narrow the repository map to the LLM Wiki it describes` | W28 DATA-0083 role reduction |
+| `522bda7be` | `fix(docs): Keep new prose inside the registered body contracts` | W29 hosted body-contract fix |
+| `8c1cca682` | `docs(references): Point the retirement rule at the table it means` | W29 index direction fix |
+
+No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
+
 ## Rulings
 
 - Generated output changes are accepted only when their canonical source set
@@ -3217,6 +3610,27 @@ No completed archive packet or new Spec/Plan/Task was created.
 
 ## Deferred Items
 
+- W17's medium manifest finding is discharged by W22: the adapter consumer is
+  declared and the gate proves it. The earlier omission rationale is superseded,
+  not repeated. The npm-before-Playwright ordering and its malformed-order
+  regressions are unchanged by W22-W24 and keep their existing receipts; no new
+  independent review of them was requested or run.
+- W20 remains BLOCKED. Actual owner semantic-transfer and retirement approval is
+  still outstanding, AD-0014 stays active, and nothing in W22-W24 touches it.
+  This request does not constitute that owner's content review.
+- Hosted verification of `a23edf9b0`, `2ce13c246`, `ca1f0cace` and `0917f1028`
+  is NOT_RUN. Push, pull request, workflow dispatch, branch-protection change,
+  deployment and release remain outside the current authorization, so the
+  `validation-changed` required check has not observed these commits.
+- Two examined items are recorded as owner decisions rather than changes:
+  workflow `cancel-in-progress` on `main` pushes, and the 29.9-second
+  `public-validation-changed` hook at commit time. Neither is a defect; both
+  trade coverage against cost and were left as they are.
+- No Python linter is registered. `ruff format` is the only Python tool the
+  repository runs, `ruff.toml` has no `[lint]` section, and `ruff check` reports
+  findings under its default rule set that this repository has never adopted.
+  That is NOT_APPLICABLE for current verification, and adopting a linter would
+  be a separate reviewed change.
 - W17-W21 implementation is now approved by the latest Work Log. Unexecuted
   criteria remain NOT_RUN; they do not reopen completed option A work.
 - Operations execution planning is on hold by the 2026-09-09 user response.

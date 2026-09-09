@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "1.0.0"
+version: "1.1.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-09"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -48,7 +48,6 @@ a `package-member` profile and so allocates no global identity.
 | [AUD-0030](./0030-sdlc-quality-formatting-implementation/README.md) | Reference: SDLC Quality Formatting Implementation | active |
 | [AUD-0031](./0031-security-framework-maturity/README.md) | Reference: Security Framework Maturity Coverage | active |
 | [AUD-0032](./0032-workspace-rules-environment-implementation/README.md) | Reference: Workspace Rules and Environment Implementation | active |
-| [AUD-0097](./0097-compose-domain-defect-register/README.md) | Reference: Compose Domain Defect Register | active |
 | [AUD-0033](../../98.archive/superseded/90.references/audits/0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
 
 ## Canonical Current Audit
@@ -61,6 +60,12 @@ These reports remain point-in-time evidence, not policy authority.
 
 The [superseded audit snapshot](../../98.archive/superseded/90.references/audits/0033-readme/README.md) retains its observation
 date in metadata; current package paths remain date-free.
+
+AUD-0097 was retired on 2026-09-09. Three of its four defects were fixed in the
+tree while four operations guides still linked it as the owner of an open
+finding; the one defect that remained moved to the guide of the subject that
+owns it. The preserved body is under `docs/98.archive/retired/`, and
+`tomb-AUD-0097` records the disposition.
 
 ## Supersession Ledgers
 

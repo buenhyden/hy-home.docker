@@ -64,19 +64,19 @@ hy-home.docker/
 ## Repository Map
 
 - [`docs/`](./docs) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
-- [`docs/05.operations/`](./docs/05.operations) - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
-- [`docs/90.references/`](./docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
+- `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
+- `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- [`docs/90.references/data/0082-llm-wiki-index/`](./docs/90.references/data/0082-llm-wiki-index) - tracked source files 기반 LLM Wiki entrypoint
-- [`docs/90.references/data/0083-repository-map/README.md`](docs/90.references/data/0083-repository-map/README.md) - curated repository map
-- [`docs/90.references/data/0082-llm-wiki-index/README.md`](docs/90.references/data/0082-llm-wiki-index/README.md) - generated tracked path index
+- `docs/90.references/data/0082-llm-wiki-index` - tracked source files 기반 LLM Wiki entrypoint
+- `docs/90.references/data/0083-repository-map/README.md` - curated repository map
+- `docs/90.references/data/0082-llm-wiki-index/README.md` - generated tracked path index
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- [`docs/90.references/data/`](./docs/90.references/data) - Docker image/version drift 기준과 참고 규칙
-- [`docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/`](./docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
+- `docs/90.references/data` - Docker image/version drift 기준과 참고 규칙
+- `docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh` - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
 
@@ -142,7 +142,7 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 bash scripts/validation/validate-docker-compose.sh
 ```
 
-이 검증은 선언된 모든 profile을 하나씩 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 한 profile이 선택하는 두 서비스가 같은 host port를 공개하지 않는지 확인합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 [Compose profile vocabulary](docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
+이 검증은 선언된 모든 profile을 하나씩 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 한 profile이 선택하는 두 서비스가 같은 host port를 공개하지 않는지 확인합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 
@@ -175,7 +175,7 @@ docker compose --profile core up -d
 
 - Agent 전용 규칙 문서는 영어를 사용합니다.
 - 루트 `README.md`, 사람이 읽는 폴더 README, 가이드, 운영 문서는 한국어를 기본으로 사용합니다.
-- 문서 작성 작업은 가능한 경우 [`docs/99.templates/`](./docs/99.templates)의 템플릿을 출발점으로 사용합니다.
+- 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
 | Surface | Language Rule |
@@ -197,12 +197,12 @@ docker compose --profile core up -d
 
 | Stage | Responsibility |
 | --- | --- |
-| [`docs/01.requirements/`](./docs/01.requirements) | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
-| [`docs/02.architecture/`](./docs/02.architecture) | 아키텍처 요구사항과 결정 기록 |
-| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세, 인터페이스, 구현 계약과 co-located Plan/Task evidence |
-| [`docs/05.operations/`](./docs/05.operations) | 운영 가이드, 정책, 런북, 사고 기록 |
-| [`docs/90.references/`](./docs/90.references) | 느리게 변하는 참고 지식, 용어, source-backed reference |
-| [`docs/99.templates/`](./docs/99.templates) | 새 문서와 README의 canonical template |
+| `docs/01.requirements` | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
+| `docs/02.architecture` | 아키텍처 요구사항과 결정 기록 |
+| `docs/03.specs` | 기능별 기술 명세, 인터페이스, 구현 계약과 co-located Plan/Task evidence |
+| `docs/05.operations` | 운영 가이드, 정책, 런북, 사고 기록 |
+| `docs/90.references` | 느리게 변하는 참고 지식, 용어, source-backed reference |
+| `docs/99.templates` | 새 문서와 README의 canonical template |
 
 일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
 
@@ -210,13 +210,13 @@ docker compose --profile core up -d
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
-| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 실행 계획/작업 evidence 갱신 | [`docs/03.specs/README.md`](docs/03.specs/README.md) | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
-| 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 새 요구사항 정의 | `docs/01.requirements/README.md` | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 아키텍처 선택 기록 | `docs/02.architecture/README.md` | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 구현 명세 작성 | `docs/03.specs/README.md` | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 실행 계획/작업 evidence 갱신 | `docs/03.specs/README.md` | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
+| 운영 지식 갱신 | `docs/05.operations/README.md` | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 참고 지식 추가 | `docs/90.references/README.md` | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 템플릿 변경 | `docs/99.templates/README.md` | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
@@ -264,7 +264,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/templates/common/readme-repository.template.md`](./docs/99.templates/templates/common/readme-repository.template.md) 같은 승인된 템플릿과 [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/templates/common/readme-repository.template.md` 같은 승인된 템플릿과 [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
 5. GitHub workflow를 바꿀 때는 [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)와 [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
@@ -278,13 +278,13 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)
 - [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)
 - [`.agents/governance/stage-authoring-matrix.md`](.agents/governance/stage-authoring-matrix.md)
-- [`docs/05.operations/README.md`](./docs/05.operations/README.md)
-- [`docs/90.references/README.md`](./docs/90.references/README.md)
-- [`docs/90.references/data/README.md`](./docs/90.references/data/README.md)
-- [`docs/90.references/data/0082-llm-wiki-index/README.md`](./docs/90.references/data/0082-llm-wiki-index/README.md)
-- [`docs/90.references/data/0082-llm-wiki-index/README.md`](docs/90.references/data/0082-llm-wiki-index/README.md)
+- `docs/05.operations/README.md`
+- `docs/90.references/README.md`
+- `docs/90.references/data/README.md`
+- `docs/90.references/data/0082-llm-wiki-index/README.md`
+- `docs/90.references/data/0082-llm-wiki-index/README.md`
 - [`llms.txt`](./llms.txt)
-- [`docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md`](docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md)
+- `docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md`
 - Historical execution evidence: `plan-0028` (retained through the typed change ledger)
 - [`infra/README.md`](./infra/README.md)
 - [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)

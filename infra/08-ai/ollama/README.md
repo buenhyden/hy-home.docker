@@ -58,15 +58,15 @@ ollama/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ollama`, `ollama-exporter` |
-| Operations | [Guide](../../../docs/05.operations/catalog/08-ai/0056-ollama/guide.md), [Policy](../../../docs/05.operations/catalog/08-ai/0056-ollama/policy.md), [Runbook](../../../docs/05.operations/catalog/08-ai/0056-ollama/runbook.md) |
+| Operations | Guide (`docs/05.operations/catalog/08-ai/0056-ollama/guide.md`), Policy (`docs/05.operations/catalog/08-ai/0056-ollama/policy.md`), Runbook (`docs/05.operations/catalog/08-ai/0056-ollama/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. 상위 사용 가이드인 [Ollama usage guide](../../../docs/05.operations/catalog/08-ai/0056-ollama/guide.md)를 먼저 읽는다.
-2. 리소스 예약 및 모델 거버넌스는 [Ollama operations policy](../../../docs/05.operations/catalog/08-ai/0056-ollama/policy.md)를 따른다.
-3. 장애 발생 시 [Ollama recovery runbook](../../../docs/05.operations/catalog/08-ai/0056-ollama/runbook.md)에 따라 복구를 수행한다.
+1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/catalog/08-ai/0056-ollama/guide.md`)를 먼저 읽는다.
+2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/catalog/08-ai/0056-ollama/policy.md`)를 따른다.
+3. 장애 발생 시 Ollama recovery runbook (`docs/05.operations/catalog/08-ai/0056-ollama/runbook.md`)에 따라 복구를 수행한다.
 
 ## Validation
 
@@ -85,9 +85,10 @@ ollama/
 
 ## Related Documents
 
-- **Guide**: [Ollama usage guide](../../../docs/05.operations/catalog/08-ai/0056-ollama/guide.md)
-- **Policy**: [Ollama operations policy](../../../docs/05.operations/catalog/08-ai/0056-ollama/policy.md)
-- **Runbook**: [Ollama recovery runbook](../../../docs/05.operations/catalog/08-ai/0056-ollama/runbook.md)
+- **Guide**: Ollama usage guide (`docs/05.operations/catalog/08-ai/0056-ollama/guide.md`)
+- **Policy**: Ollama operations policy (`docs/05.operations/catalog/08-ai/0056-ollama/policy.md`)
+- **Runbook**: Ollama recovery runbook (`docs/05.operations/catalog/08-ai/0056-ollama/runbook.md`)
+- [Documentation index](../../../docs/README.md)
 
 ## Configuration
 

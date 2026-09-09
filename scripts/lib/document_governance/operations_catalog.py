@@ -565,6 +565,12 @@ def _tracked_paths(
         ) from error
 
 
+def tracked_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, ...]:
+    """Expose the bounded tracked-path scan to other document validators."""
+
+    return _tracked_paths(root, MAX_TRACKED_FILES)
+
+
 def _excluded(path: pathlib.PurePosixPath) -> bool:
     value = path.as_posix()
     return value.startswith(

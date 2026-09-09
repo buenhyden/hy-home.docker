@@ -61,4 +61,5 @@ infra/01-gateway/traefik/config/
 
 - [infra/README.md](../../../README.md)
 - [Traefik service README](../README.md)
-- [Gateway operations guides](../../../../docs/05.operations/catalog/01-gateway/README.md)
+- Gateway operations guides (`docs/05.operations/catalog/01-gateway/README.md`)
+- [Documentation index](../../../../docs/README.md)

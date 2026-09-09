@@ -64,5 +64,6 @@ acceptance, entitlement, quality, cost, or latency.
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)
-- [Agent output evaluation fixtures](../../../docs/90.references/data/0064-agent-output-eval-fixtures/README.md)
-- [Workspace governance authority](../../../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- Agent output evaluation fixtures (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)
+- Workspace governance authority (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- [Documentation index](../../../docs/README.md)

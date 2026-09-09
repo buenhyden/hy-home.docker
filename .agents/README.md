@@ -31,7 +31,7 @@ native adapters. The canonical home is authored content, never renderer output.
 - [Claude](../.claude/provider.md) and [Codex](../.codex/provider.md) own their
   native loading and syntax differences. Their generated READMEs are outputs.
 
-[Stage 99](../docs/99.templates/README.md) owns document profiles, paths,
+Stage 99 (`docs/99.templates/README.md`) owns document profiles, paths,
 identifiers, lifecycle values, and templates. Registered scripts own executable
 checks. The current Spec Package Task owns execution evidence; its preserved
 Stage 98 record and Git history retain completed evidence.
@@ -79,4 +79,5 @@ generated role surface is introduced here.
 - [SDLC](governance/sdlc.md)
 - [Bootstrap](governance/bootstrap.md)
 - [Provider registry](governance/providers/registry.yaml)
-- [Canonical-home decision](../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- [Documentation index](../docs/README.md)

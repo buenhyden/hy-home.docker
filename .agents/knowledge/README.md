@@ -82,4 +82,5 @@ canonical owner.
 - [Agent governance index](../README.md)
 - [Prompt index](../prompts/README.md)
 - [Documentation protocol](../governance/documentation-protocol.md)
-- [Canonical knowledge and prompt surfaces decision](../../docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
+- [Documentation index](../../docs/README.md)
