@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0004"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md -->
 
 # Valkey Cluster Operations Policy
 

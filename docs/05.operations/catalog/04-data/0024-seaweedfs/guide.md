@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0024"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md -->
 
 # SeaweedFS Usage Guide
 

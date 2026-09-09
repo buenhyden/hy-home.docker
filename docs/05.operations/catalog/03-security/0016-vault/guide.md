@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0016"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/03-security/0016-vault/guide.md -->
 
 # 03-Security Vault Usage Guide
 

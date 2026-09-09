@@ -11,7 +11,6 @@ parent_ids: []
 created: "2026-06-04"
 ---
 
-<!-- Target: docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md -->
 
 # Common Optimizations Template Exceptions Policy
 

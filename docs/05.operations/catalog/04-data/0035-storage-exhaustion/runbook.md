@@ -10,7 +10,6 @@ artifact_id: "RUN-0035"
 parent_ids: []
 created: "2026-06-04"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0035-storage-exhaustion/runbook.md -->
 
 # 04-Data Storage Exhaustion Runbook
 

@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0009"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md -->
 
 # Terrakube Operations Policy
 

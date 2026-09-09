@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0031"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md -->
 
 # PostgreSQL Cluster Usage Guide
 

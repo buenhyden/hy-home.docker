@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0013"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/01-gateway/0013-traefik/guide.md -->
 
 # 01-Gateway Traefik Usage Guide
 

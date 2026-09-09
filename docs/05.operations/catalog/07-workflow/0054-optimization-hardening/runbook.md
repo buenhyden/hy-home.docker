@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0054"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md -->
 
 # 07-Workflow Optimization Hardening Runbook
 

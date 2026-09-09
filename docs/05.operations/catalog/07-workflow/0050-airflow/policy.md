@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0007"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0050-airflow/policy.md -->
 
 # Airflow Operations Policy
 

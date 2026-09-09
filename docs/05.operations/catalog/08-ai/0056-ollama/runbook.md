@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0056"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/08-ai/0056-ollama/runbook.md -->
 
 # Ollama Runbook
 

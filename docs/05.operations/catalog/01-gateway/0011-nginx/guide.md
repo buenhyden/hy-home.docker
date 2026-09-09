@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0011"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/01-gateway/0011-nginx/guide.md -->
 
 # 01-Gateway Nginx Usage Guide
 

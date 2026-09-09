@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0009"
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0060-iac-deployment/policy.md -->
 
 # IaC Deployment Policy
 

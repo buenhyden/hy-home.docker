@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0047"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0047-pyroscope/guide.md -->
 
 # Pyroscope Usage Guide
 

@@ -10,7 +10,6 @@ artifact_id: "GDE-0042"
 parent_ids: []
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md -->
 
 # LGTM Stack Usage Guide
 

@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0006"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0044-optimization-hardening/policy.md -->
 
 # Observability Optimization Hardening Policy
 

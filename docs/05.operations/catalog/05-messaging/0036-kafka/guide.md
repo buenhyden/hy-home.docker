@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0036"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/05-messaging/0036-kafka/guide.md -->
 
 # Kafka Usage Guide
 

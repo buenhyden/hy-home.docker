@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0023"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0023-minio/runbook.md -->
 
 # MinIO Object Storage Health Runbook
 

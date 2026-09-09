@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0058"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md -->
 
 # 08-AI Optimization Hardening Runbook
 

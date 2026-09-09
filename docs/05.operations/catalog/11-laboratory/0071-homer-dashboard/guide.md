@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0071"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/guide.md -->
 
 # Laboratory Dashboard Usage Guide
 

@@ -11,7 +11,6 @@ parent_ids: []
 created: "2026-06-04"
 ---
 
-<!-- Target: docs/05.operations/catalog/00-workspace/0010-sensitive-env-vars-comparison/guide.md -->
 
 # `SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison
 

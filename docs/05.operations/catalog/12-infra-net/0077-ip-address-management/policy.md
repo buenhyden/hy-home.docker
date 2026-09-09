@@ -12,7 +12,6 @@ parent_ids:
 created: "2026-04-01"
 ---
 
-<!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md -->
 
 # infra_net IP Management Operations Policy
 

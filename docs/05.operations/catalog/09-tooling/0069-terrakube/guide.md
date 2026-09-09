@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0069"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md -->
 
 # Operations: Terrakube Policy Usage Guide
 

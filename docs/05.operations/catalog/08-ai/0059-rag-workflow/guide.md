@@ -10,7 +10,6 @@ artifact_id: "GDE-0059"
 parent_ids: []
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/08-ai/0059-rag-workflow/guide.md -->
 
 # RAG Workflow Usage Guide
 

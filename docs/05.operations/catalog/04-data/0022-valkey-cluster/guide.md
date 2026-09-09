@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0022"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md -->
 
 # Valkey Cluster Usage Guide
 

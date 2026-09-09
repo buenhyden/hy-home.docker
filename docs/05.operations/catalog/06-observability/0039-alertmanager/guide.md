@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0039"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0039-alertmanager/guide.md -->
 
 # Alertmanager Usage Guide
 

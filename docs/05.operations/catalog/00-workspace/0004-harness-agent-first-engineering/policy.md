@@ -11,7 +11,6 @@ parent_ids:
 - "SPEC-0094"
 created: "2026-06-04"
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md -->
 
 # Harness / Agent-first Engineering Operations Policy
 

@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0041"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0041-grafana/runbook.md -->
 
 # Grafana Provisioning and Access Recovery Runbook
 

@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0012"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0017-influxdb/policy.md -->
 
 # InfluxDB Operations Policy
 

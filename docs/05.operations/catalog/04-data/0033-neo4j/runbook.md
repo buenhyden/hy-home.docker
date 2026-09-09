@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0033"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0033-neo4j/runbook.md -->
 
 # Neo4j Health and Recovery Triage Runbook
 

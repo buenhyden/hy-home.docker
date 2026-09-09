@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0008"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/08-ai/0058-optimization-hardening/policy.md -->
 
 # 08-AI Optimization Hardening Operations Policy
 

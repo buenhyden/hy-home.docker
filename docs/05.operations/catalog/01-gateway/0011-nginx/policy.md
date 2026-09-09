@@ -12,7 +12,6 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-<!-- Target: docs/05.operations/catalog/01-gateway/0011-nginx/policy.md -->
 
 # 01-Gateway Nginx Operations Policy
 

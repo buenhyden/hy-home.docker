@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0047"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0047-pyroscope/runbook.md -->
 
 # Pyroscope Readiness and Recovery Runbook
 

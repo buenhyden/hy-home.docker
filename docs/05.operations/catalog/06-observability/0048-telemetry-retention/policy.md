@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0006"
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0048-telemetry-retention/policy.md -->
 
 # Retention and Performance Policies
 

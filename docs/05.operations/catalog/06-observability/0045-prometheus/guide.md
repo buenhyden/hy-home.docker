@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0045"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0045-prometheus/guide.md -->
 
 # Prometheus Usage Guide
 

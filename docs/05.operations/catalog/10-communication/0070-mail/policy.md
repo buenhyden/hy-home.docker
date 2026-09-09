@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0010"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/10-communication/0070-mail/policy.md -->
 
 # Mail Operations Policy
 

@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0031"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md -->
 
 # PostgreSQL Cluster Health and Recovery Triage Runbook
 

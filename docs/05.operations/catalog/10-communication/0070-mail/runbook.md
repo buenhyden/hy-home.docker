@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0070"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/10-communication/0070-mail/runbook.md -->
 
 # Mail Recovery Runbook
 

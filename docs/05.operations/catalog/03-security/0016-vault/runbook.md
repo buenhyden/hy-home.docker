@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0016"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/03-security/0016-vault/runbook.md -->
 
 # 03-Security Vault Runbook
 

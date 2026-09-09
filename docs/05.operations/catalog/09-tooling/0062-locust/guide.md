@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0062"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0062-locust/guide.md -->
 
 # Locust Usage Guide
 

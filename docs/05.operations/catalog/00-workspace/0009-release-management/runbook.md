@@ -10,7 +10,6 @@ artifact_id: "RUN-0009"
 parent_ids: []
 created: "2026-06-04"
 ---
-<!-- Target: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md -->
 
 # Release Management Runbook
 

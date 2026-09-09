@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.5.1"
+version: "0.6.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -63,7 +63,7 @@ Task 0006 owns the later explicit local-integration and cleanup approval;
 execute that disposition only after verified completion. Remote delivery and
 terminal package disposition remain outside this follow-up.
 
-### Proposed follow-up: QA and document consolidation
+### Approved follow-up: QA and document consolidation
 
 The 2026-09-09 request authorizes review and authoring this Spec, its Plan and
 Task 0006. The subsequent explicit answer puts **operations execution planning
@@ -71,16 +71,17 @@ on hold**. Neither synthetic runtime rehearsal planning nor service deployment,
 restart, recovery or runtime execution is included. Existing configuration-only
 and deterministic QA routes remain subjects of review, not operational proof.
 
-Reuse this active package and its existing identities. W16 owns the requested
-planning deliverable; W17-W21 and proposed criteria 26-30 require implementation
-scope approval before execution. The active frontmatter records the existing
-package lifecycle, not approval of this proposal. Earlier option A approvals and
-its completed integration do not approve this proposal. The later explicit user
-request authorizes local integration of the W16 planning delivery and cleanup
-of its verified task-owned branch/worktrees, as recorded in Task 0006. That
-disposition does not authorize W17-W21 implementation or package closure.
+Reuse this active package and its existing identities. W16 planning is delivered.
+After the W17-W21 review, the user's instruction to inspect the Task and Plan
+and proceed authorizes the reviewed implementation scope and logical local
+commits. Task 0006 records this approval, the W20 taxonomy-consumer correction,
+and execution evidence. W20 starts with the auth pilot and retains the current
+owner's semantic-transfer review before each domain retirement. Operations
+planning remains on hold. Prior W16 integration/cleanup is complete; it does
+not authorize new remote writes, local main integration, worktree deletion or
+terminal package promotion. Current nonterminal metadata remains unchanged.
 
-The proposed scope is bounded to the existing public QA graph and its inactive
+The approved scope is bounded to the existing public QA graph and its inactive
 semantic-parser consumers, audit census and current evidence consumers, active
 operations-document authoring residue, and the nine overlapping Stage 02 owner
 pairs identified in Task 0006. No new QA registry, wrapper, policy home, document
@@ -161,7 +162,7 @@ avoid tightening unrelated restrictions. Check and fix remain explicit; no
 read-only QA command silently edits source. Update active stale package claims
 against their current owners, retaining dated Task and frozen archive evidence.
 
-### Proposed follow-up design
+### Follow-up design
 
 - **QA composition:** preserve the two profiles, six suites and existing public
   CLI. Compare actual expanded invocations by entrypoint, argv, cwd, context,
@@ -270,9 +271,9 @@ def canonical_invocation_key(
 ## Acceptance Contract
 
 Criteria 1-24 retain the existing contract. Criterion 25 is the authorized W16
-planning deliverable; criteria 26-30 are proposed, unapproved W17-W21 work and
-remain NOT_RUN. This continuation grants no implementation, merge or runtime
-authority. Keep the numbered criteria in one continuous list so formatting
+planning deliverable; criteria 26-30 cover the newly approved W17-W21 work and
+remain NOT_RUN until verified. This continuation grants no new main integration,
+remote write or runtime authority. Keep the numbered criteria in one continuous list so formatting
 preserves the Plan and Task references.
 
 1. The six public suite names and two public profiles remain unchanged.

@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0001"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/01-gateway/0013-traefik/policy.md -->
 
 # 01-Gateway Traefik Operations Policy
 

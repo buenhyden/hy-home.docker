@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0044"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md -->
 
 # 06-Observability Optimization Hardening Runbook
 

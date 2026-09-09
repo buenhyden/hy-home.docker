@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0050"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0050-airflow/guide.md -->
 
 # Airflow Usage Guide
 

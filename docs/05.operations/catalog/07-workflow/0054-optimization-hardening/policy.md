@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0007"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md -->
 
 # 07-Workflow Optimization Hardening Operations Policy
 

@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0014"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md -->
 
 # 02-Auth Keycloak Runbook
 

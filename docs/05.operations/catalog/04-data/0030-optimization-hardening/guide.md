@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0030"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0030-optimization-hardening/guide.md -->
 
 # 04-Data Optimization Hardening Usage Guide
 

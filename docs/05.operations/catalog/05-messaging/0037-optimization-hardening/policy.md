@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0005"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md -->
 
 # 05-Messaging Optimization Hardening Operations Policy
 

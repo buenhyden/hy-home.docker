@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0053"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0053-n8n/guide.md -->
 
 # n8n Usage Guide
 

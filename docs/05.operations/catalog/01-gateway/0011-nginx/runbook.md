@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0011"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md -->
 
 # 01-Gateway Nginx Runbook
 

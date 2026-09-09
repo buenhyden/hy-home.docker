@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0034"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0034-qdrant/runbook.md -->
 
 # Qdrant Health and Recovery Triage Runbook
 

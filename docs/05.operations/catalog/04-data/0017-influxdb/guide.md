@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0017"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0017-influxdb/guide.md -->
 
 # InfluxDB Usage Guide
 

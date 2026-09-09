@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0077"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md -->
 
 # 0012 Standardize Infra Net Runbook
 

@@ -10,7 +10,6 @@ artifact_id: "RUN-0055"
 parent_ids: []
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md -->
 
 # AI GPU Recovery Runbook
 

@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0015"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md -->
 
 # 02-Auth OAuth2 Proxy Runbook
 

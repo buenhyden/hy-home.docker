@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0036"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md -->
 
 # Kafka Cluster Runbook
 

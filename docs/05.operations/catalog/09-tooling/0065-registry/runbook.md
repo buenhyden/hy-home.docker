@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0065"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0065-registry/runbook.md -->
 
 # Docker Registry Runbook
 

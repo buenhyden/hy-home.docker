@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0077"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md -->
 
 # 0012 Standardize Infra Net Usage Guide
 

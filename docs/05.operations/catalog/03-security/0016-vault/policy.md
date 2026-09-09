@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0003"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/03-security/0016-vault/policy.md -->
 
 # 03-Security Vault Operations Policy
 

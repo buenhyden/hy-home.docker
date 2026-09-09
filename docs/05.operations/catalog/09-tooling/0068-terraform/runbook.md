@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0068"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0068-terraform/runbook.md -->
 
 # Terraform Runbook
 

@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0074"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md -->
 
 # 11-Laboratory Optimization Hardening Runbook
 

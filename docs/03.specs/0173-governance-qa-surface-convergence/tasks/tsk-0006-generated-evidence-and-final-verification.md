@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.6.1"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,65 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W17-W21 approved implementation (2026-09-09)
+
+After the W17-W21 review and briefing, the user instructed: "task와 plan을
+점검한 후 진행한다". This authorizes the reviewed implementation scope and
+logical local commits. W19/W18/W17 proceed as separate units; W20 starts with
+auth and keeps per-domain semantic-transfer review by the current owner before
+retirement; W21 covers each unit and final local verification. Operations
+execution planning remains on hold. No remote write, runtime service action,
+secret/global access, new main integration or branch/worktree cleanup is
+included. Earlier W16 keep/integration instructions remain dated evidence.
+
+A fresh authorized `git fetch origin main` exited 0. Local main, origin/main
+and FETCH_HEAD all resolve to `62fd2fcd5848f23ff05b2eb9622f22457017992d`.
+The primary checkout was clean; no existing dirty or untracked work was moved.
+Root created clean `.worktrees/qa-convergence-implementation` on
+`codex/qa-convergence-implementation` and detached
+`.worktrees/qa-convergence-implementation-review` from that baseline. Both start
+without `.env`; private primary state is preserved. Existing prepared Python
+3.12 tools at `/tmp/hy-qa-integration-tools` are reused, with no installation
+or fabricated CI context. Public QA uses proper WSL host init/reaping.
+
+Root owns shared Spec/Plan/Task, AD-0030 and any shared manifest edits; each
+implementation worker receives exact non-overlapping paths. Reviewers are
+read-only in the separate review checkout. Normal hooks use the unchanged
+common `.git/hooks` via command-local binding, never a bypass. Installed
+Superpowers executing-plans, using-git-worktrees and subagent-driven-development
+procedures are adapted to the repository's sole Task evidence owner; no second
+progress ledger, QA registry or permanent report is introduced. Meaningful
+behavior changes use regression-first checks; wording/comment cleanup uses
+content preservation and existing document validators.
+
+| Unit / shared consumer | Plan inspection and ruling | Execution state |
+| --- | --- | --- |
+| W17 graph/parser | Preserve six suites/two profiles and semantic coverage; migrate structural job-root consumers with removed routes; skipped safety intents need active owners before parser retirement | Ready; no implementation PASS yet |
+| W18 audit/census | Stable criterion membership and frozen migration proof remain independent expectations; correct current reports and derived presentation only where ownership proves drift | Ready; no blanket count removal |
+| W19 authoring residue | Remove only context-reviewed obsolete comments; preserve procedure bytes and the existing residue rule; update AD-0030 after verification | Comment cleanup implemented; verification/review below |
+| W20 taxonomy consumer | Prior independent rules-engineer review found medium omission: add `tests/lib/document_governance/test_taxonomy.py`; transition active AD mapping with archive ID/parent evidence in each coherent domain cutover | Corrected Plan; auth pilot first |
+| W21 verification | Local subset completion does not close the package; no hosted/runtime PASS; final all-files retains explicit eventual-scope approval and exact clean-worktree wrapper contract | Pending implemented inputs |
+| W19/W20 -> AD-0030 | Root updates each resolved finding independently; no concurrent writer or premature removal of the nine-domain debt | Root-owned |
+| W18/W20 -> indexes/generated evidence | Authored sources change first; the registered generator owns outputs; serialize generation after reviewed path changes | Preserve freshness per unit |
+| W17 -> W18/W21 QA routes | W18 can run before graph cutover; final W21 repeats impacted checks on the committed new graph with exact input/context binding | No cross-snapshot PASS reuse |
+
+W19 removed one context-reviewed, self-referential authoring comment from each
+of 184 tracked operations documents (62 policies, 62 guides, 59 runbooks and one
+README). These are dated observations, not a new census gate. Procedure bytes,
+frontmatter, IDs and lifecycle remain unchanged; AD-0030 now describes the
+resolved marker finding while retaining the unresolved nine-domain finding.
+
+The worker's first relative-path patch accidentally applied these same changes
+to the primary main working tree. Root stopped mutations and verified all 184
+primary files against HEAD minus exactly their own marker line, their identity
+with the linked results, and the empty primary index. Root then restored only
+that verified path list with `git restore --source=HEAD --worktree
+--pathspec-from-file=/tmp/hy-w19-primary-recovery-paths --pathspec-file-nul`.
+Exit 0 and subsequent read-back confirmed clean primary main at the unchanged
+baseline; linked results remain preserved. No private state was read or moved.
+All later writers must bind absolute paths and the delivery cwd; affected
+checks are repeated after this recovery rather than reusing pre-recovery PASS.
 
 ### W16 local integration and cleanup authorization (2026-09-09)
 
@@ -1667,6 +1726,24 @@ in-progress.
 
 ## Verification Evidence
 
+### W17-W21 implementation checks (2026-09-09)
+
+Unless stated otherwise, cwd is `.worktrees/qa-convergence-implementation`,
+base/HEAD is `62fd2fcd5848f23ff05b2eb9622f22457017992d` plus the named working-tree
+candidate, with `PATH=/tmp/hy-qa-integration-tools/bin:/usr/bin:/bin` and
+`PYTHONDONTWRITEBYTECODE=1`. These are local observations, not hosted execution.
+
+| Target / command or API | Exit | Result and limit |
+| --- | --- | --- |
+| Baseline `python3 scripts/validation/check-document-metadata.py --mode check-contracts` | 0 | PASS, zero violations before implementation |
+| Approval three-document candidate `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD` | 0 | PASS, selected 3 and zero violations; later receipt edits require fresh checks |
+| W17 planner APIs `build_public_validation_plan` with controlled local/PR/full push/manual contexts | 0 | PASS planning only: 19 plans, duplicate invocations 0; 0.0493 seconds planning, no leaf executed. Local changed lengths docs/provider/workflow/root/shared/lock/space/empty: 29/37/43/18/43/43/18/18; PR: 35/43/56/23/56/49/30/23; full local/push/manual: 43/55/54. Temporary baseline SHA-256 `200ca874b10be44268882ed25b51bd588719538606219983438b4506709e5609`; not a permanent fixture or QA speed claim |
+| W19 worker `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref 62fd2fcd5` | 0 | PASS source-attributed before recovery: selected 187, violations 0, 28.14 seconds; superseded by post-recovery checks for completion |
+| W19 worker `python3 scripts/validation/check-operations-catalog.py` and `python3 scripts/validation/check-document-links.py --mode all` | 0 / 0 | PASS source-attributed before recovery: 0.95 / 4.75 seconds, links 713 documents / 6157 links / zero failures |
+| Post-recovery exact W19 review checkout: metadata changed / operations catalog / links all / diff check | 0 / 0 / 0 / 0 | PASS, selected 188 / zero metadata violations; links 713 documents / 6157 links / zero failures. Wall times 28.97 / 0.79 / 4.45 / 0.11 seconds; exact candidate diff `8feac739324a9309d4b22d3efff776b20520322d4a2f0c0c2def808a2f27eb4c` |
+| Explicit markdownlint-cli2 formatting of the 188 W19/approval paths, then second execution | 0 / 0 | PASS; first run normalized the incidents README extra blank line and Task table; second run changed no bytes. Procedure content preserved |
+| Primary recovery byte proof, exact scoped restore, `git status --short` and `git rev-parse HEAD` | 0 | PASS: all 184 files equal HEAD minus one exact comment and equal linked result; index empty; primary clean and HEAD unchanged after recovery |
+
 ### W16 disposition candidate checks (2026-09-09)
 
 Target: base `9153c055fb8a26afd2da474e2f228819dfc864b5` plus the three-document
@@ -1768,9 +1845,9 @@ option A approval and W16 planning do not authorize it.
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 25 | W16 | PASS: planning proposal reviewed, validated and committed as `9153c055f` through normal hooks; later local integration/cleanup authorized separately | This Task inventory, Spec proposal and Plan W16-W21 |
-| 26 | W17 | NOT_RUN: implementation scope approval pending | Existing public workflow contract, gate libraries and their regressions |
-| 27 | W18 | NOT_RUN: implementation scope approval pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
-| 28 | W19 | NOT_RUN: implementation scope approval pending | Active Stage 05 targets and metadata residue contract |
+| 26 | W17 | NOT_RUN: approved implementation pending | Existing public workflow contract, gate libraries and their regressions |
+| 27 | W18 | NOT_RUN: approved implementation pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
+| 28 | W19 | NOT_RUN: approved implementation pending | Active Stage 05 targets and metadata residue contract |
 | 29 | W20 | NOT_RUN: per-domain transfer and review not performed | Retained Stage 02 owners and registered preservation records |
 | 30 | W21 | NOT_RUN: follows approved implementation; no hosted/runtime success inferred | Public QA definition and this Task's future execution receipts |
 
@@ -2436,6 +2513,42 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### W19 exact-diff review (2026-09-09)
+
+Independent read-only rules-engineer `a_policy_review` reviewed the exact W19
+candidate against `62fd2fcd5`: Specification PASS / Quality APPROVED, zero findings.
+Exact diff SHA-256 `8feac739324a9309d4b22d3efff776b20520322d4a2f0c0c2def808a2f27eb4c`
+contains the approved three-document planning update, AD-0030 resolution and
+removal of one obsolete self-path marker from each of 184 operations documents.
+The incidents README also loses its extra blank line after formatting; commands,
+identities, lifecycle and the nine-domain debt remain intact. Root-reported
+post-recovery metadata, catalog, link and diff checks are source-attributed,
+not independently rerun. Normal hooks and commit read-back are pending; this
+later result/review receipt lies outside the reviewed hash.
+
+### W17-W21 plan and lifecycle reviews (2026-09-09)
+
+Independent read-only rules-engineer `a_policy_review` approved the corrected
+three-document approval/Plan candidate: Specification PASS / Quality APPROVED,
+zero findings. Writer and separate review checkout matched exact diff SHA-256
+`e0e2cc7888cedb53a2377fdbb65b54e2b65afb05979c78122e091735708cdf89` against
+`62fd2fcd5`. An earlier candidate was blocked for two stale current Git-disposition
+clauses; both now preserve the new implementation branch/worktrees. This later
+receipt and implementation deltas lie outside that reviewed hash.
+
+The same independent reviewer judged the proposed W20 standalone AD
+supersession route PASS WITH REQUIRED PRECONDITIONS under the existing
+registry/lifecycle rules and ADR-0029 to ADR-0032 precedent. After actual owner
+semantic-transfer review, terminal metadata may precede atomic archive movement:
+pre-transition active bytes remain recoverable in Git, while the terminal
+snapshot becomes immutable in Stage 98. Original body bytes stay unchanged;
+these two full-file snapshots must not be claimed identical. No Tombstone is
+needed for supersession. Accepted ADR-0017 may retain its AD-0014 parent as
+preserved decision ancestry. Reciprocal metadata, current inbound/index and
+active taxonomy cutover plus recovery/identity validation remain required.
+This policy interpretation is not the still-pending domain owner's review and
+does not authorize archive before that review.
+
 ### W16 integration disposition review (2026-09-09)
 
 Independent rules-engineer `a_policy_review` reviewed the exact W16 integration-and-cleanup disposition candidate against `9153c055fb8a26afd2da474e2f228819dfc864b5` and returned Specification PASS / Quality APPROVED with zero findings. Exact three-document diff SHA-256 `6b43fb50a8a1e6e15fbd71e1bfe42abcbae3c8bfb66cec618edab463ed655cf7` matched the writer and isolated review snapshots byte-for-byte; the reviewer also read back the `9153c055fb8a26afd2da474e2f228819dfc864b5` commit and supplied normal-hook log without rerunning it. The review confirmed that the latest user authorization supersedes the W16 keep disposition only for guarded local fast-forward integration and cleanup of the two named task-owned worktrees and merged branch; W17-W21, operations execution, remote/global/private state and package closure remain excluded. Current candidate document checks remain source-attributed; final normal hooks, merge, post-merge verification and cleanup are pending. This exact later receipt intentionally lies outside the reviewed hash and approves no other change or execution scope.
@@ -2747,14 +2860,14 @@ No completed archive packet or new Spec/Plan/Task was created.
 
 ## Deferred Items
 
-- W17-W21 are a reviewed-source proposal, pending explicit implementation scope
-  review. Their criteria are NOT_RUN and do not reopen completed option A work.
+- W17-W21 implementation is now approved by the latest Work Log. Unexecuted
+  criteria remain NOT_RUN; they do not reopen completed option A work.
 - Operations execution planning is on hold by the 2026-09-09 user response.
   Neither synthetic rehearsal nor live service planning/execution is included.
-- Apply the latest Work Log's explicit local main integration and task-owned
-  branch/worktree cleanup request after verification. W16 planning alone did
-  not authorize this disposition; the subsequent user request does.
-  Push, PR and workflow dispatch remain outside scope.
+- W16 local integration and cleanup completed at `62fd2fcd5848f23ff05b2eb9622f22457017992d`.
+  Preserve the new `codex/qa-convergence-implementation` branch and its
+  implementation/review worktrees. New main integration or cleanup requires a
+  separate user request; push, PR and workflow dispatch remain outside scope.
 
 - The preservation-owner blocker is discharged by current REQ-0026, AD-0030
   and accepted ADR-0033. The earlier dated reports remain historical evidence;

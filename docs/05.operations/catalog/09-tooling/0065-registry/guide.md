@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0065"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0065-registry/guide.md -->
 
 # Docker Registry Usage Guide
 

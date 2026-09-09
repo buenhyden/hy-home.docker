@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0002"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md -->
 
 # 02-Auth OAuth2 Proxy Operations Policy
 

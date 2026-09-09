@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0009"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md -->
 
 # 09-Tooling Optimization Hardening Operations Policy
 

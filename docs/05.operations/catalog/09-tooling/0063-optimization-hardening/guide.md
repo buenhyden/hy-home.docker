@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0063"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md -->
 
 # 09-Tooling Optimization Hardening Usage Guide
 

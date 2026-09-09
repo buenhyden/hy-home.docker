@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0020"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0020-starrocks/runbook.md -->
 
 # StarRocks Recovery Runbook
 

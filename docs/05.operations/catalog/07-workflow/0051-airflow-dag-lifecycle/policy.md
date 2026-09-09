@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0007"
 created: "2026-03-25"
 ---
-<!-- Target: docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md -->
 
 # DAG Deployment Operations Policy
 

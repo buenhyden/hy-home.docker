@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0022"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md -->
 
 # Valkey Cluster Health Runbook
 

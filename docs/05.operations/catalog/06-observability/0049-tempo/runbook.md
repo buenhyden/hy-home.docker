@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0049"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/06-observability/0049-tempo/runbook.md -->
 
 # Tempo Readiness and Recovery Runbook
 

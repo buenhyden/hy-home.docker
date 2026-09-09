@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0026"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0026-couchdb/runbook.md -->
 
 # CouchDB Cluster Triage Runbook
 

@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0072"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0072-dozzle/guide.md -->
 
 # Dozzle Usage Guide
 

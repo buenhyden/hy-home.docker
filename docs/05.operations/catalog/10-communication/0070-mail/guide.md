@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0070"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/10-communication/0070-mail/guide.md -->
 
 # Mail Usage Guide
 

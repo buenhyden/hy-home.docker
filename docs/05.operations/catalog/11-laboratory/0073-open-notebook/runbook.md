@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0073"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md -->
 
 # Open Notebook Recovery Runbook
 

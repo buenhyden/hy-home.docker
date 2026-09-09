@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0015"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md -->
 
 # 02-Auth OAuth2 Proxy Usage Guide
 

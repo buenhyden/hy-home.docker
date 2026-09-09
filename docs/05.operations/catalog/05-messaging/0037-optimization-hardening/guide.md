@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0037"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md -->
 
 # 05-Messaging Optimization Hardening Usage Guide
 

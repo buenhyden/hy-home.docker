@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0011"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0071-homer-dashboard/policy.md -->
 
 # Laboratory Dashboard Operations Policy
 

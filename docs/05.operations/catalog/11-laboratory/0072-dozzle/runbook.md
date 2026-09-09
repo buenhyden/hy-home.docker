@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0072"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0072-dozzle/runbook.md -->
 
 # Dozzle Recovery Runbook
 

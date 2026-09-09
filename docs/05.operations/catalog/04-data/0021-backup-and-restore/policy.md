@@ -11,7 +11,6 @@ parent_ids:
 - "AD-0004"
 created: "2026-06-04"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0021-backup-and-restore/policy.md -->
 
 # 04-Data Backup Policy
 

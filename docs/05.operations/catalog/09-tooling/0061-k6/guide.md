@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0061"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/09-tooling/0061-k6/guide.md -->
 
 # k6 Usage Guide
 

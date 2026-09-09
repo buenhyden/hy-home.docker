@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.7.1"
+version: "0.8.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -21,13 +21,15 @@ using the registered execution workflow with independent review.
 Task 0006 owns inventory, decisions, commands, results, reviews, and commits.
 The existing W1-W6 migration is implemented; its dated evidence is preserved.
 
-The 2026-09-09 continuation authorizes W16 planning only. W17-W21 below are
-proposed implementation work, pending user scope review. Operations execution
-planning is explicitly on hold, including synthetic runtime rehearsals. Existing
-active package status and historical option A approval do not authorize this
-proposal's execution. The later user request authorizes local main integration
-of the verified W16 planning delivery and its task-owned branch/worktree cleanup;
-Task 0006 owns this disposition and the verification evidence.
+The reviewed W16 planning delivery and its local integration are complete.
+The user's subsequent instruction to inspect the Task and Plan and proceed
+authorizes W17-W21 implementation in the reviewed scope. Execute W19, W18 and
+W17 as separate coherent units, then W20 by domain starting with auth; W21
+verification applies to each unit and the final approved result. Operations
+execution planning remains on hold, including synthetic runtime rehearsals.
+Task 0006 owns approval and evidence; package status is not execution approval.
+Preserve the new implementation branch/worktrees at delivery unless the user
+separately requests their integration or cleanup.
 
 ## Dependencies
 
@@ -38,8 +40,8 @@ Task 0006 owns this disposition and the verification evidence.
 - A clean linked worktree from fetched main, explicit task ownership, installed
   repository dependencies, read-only policy review and independent diff review.
 - No remote writes, service operations, real secrets, global installation,
-  history rewriting, or arbitrary hook skips. Follow the current Task's
-  authorized local integration and task-owned cleanup only after verified completion.
+  history rewriting, or arbitrary hook skips. Preserve the implementation
+  branch/worktrees; integration or cleanup requires a separate user request.
 
 ## Execution Sequence
 
@@ -246,12 +248,13 @@ change is needed: the registered sections already hold decisions and evidence.
    batches. Record the user's operations-planning hold without a runtime task.
 4. Review proposed criteria 26-30 and work units for coverage and approval scope.
    Validate the three authored documents, obtain independent review and create
-   one planning commit. Do not execute W17-W21. Apply the later explicit local
+   one planning commit. This completed W16 work unit grants no W17-W21 authority.
+   Apply the later explicit local
    integration/cleanup request only after verifying the delivered commit and
    preservation of every task-owned review copy; use fast-forward integration
    and ordinary worktree removal and merged-branch deletion.
 
-### W17: Proposed graph and parser cutover
+### W17: Graph and parser cutover
 
 Owner: writable CI/CD contributor. Root alone coordinates shared contract,
 manifest and Task changes; independent code/security reviewers do not write.
@@ -278,7 +281,7 @@ Files: `.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py`,
    Exercise workflow contract and gate library/CLI regressions. Review the exact
    diff before the graph cutover commit; no test-count or node-count target.
 
-### W18: Proposed census and audit consumer reconciliation
+### W18: Census and audit consumer reconciliation
 
 Depends on W17 only where changed graph selection affects the validation route.
 Owner: writable validation contributor, with read-only preservation review.
@@ -305,7 +308,7 @@ canonical `docs/90.references/audits/` reports and generated DATA-0065.
    history recovery tests if their owner changes; commit source, tests and output
    together. No permanent second census registry or automatic historical rewrite.
 
-### W19: Proposed active authoring-residue cleanup
+### W19: Active authoring-residue cleanup
 
 Owner: documentation contributor. Files: the Task-inventoried tracked Markdown
 under `docs/05.operations/`, AD-0030's current risk description, and affected
@@ -321,14 +324,15 @@ metadata tests only if a behavior gap is demonstrated. The existing
    Update AD-0030 only after the finding is resolved, then commit this separate
    documentation unit. Do not convert the observed file count into a gate.
 
-### W20: Proposed architecture consolidation
+### W20: Architecture consolidation
 
 Owner: documentation contributor; each pair's current frontmatter/CODEOWNERS
 owner reviews its semantic transfer (currently `@buenhyden` for the listed
 Descriptions). Dependencies: implementation scope approval and the per-pair comparison, not
 runtime execution. Files: the Description pairs listed in Task 0006, their
 existing Requirement/ADR and Stage 05 inbound consumers, registered indexes,
-AD-0030 and necessary Stage 98 lifecycle records. No unrelated infra changes.
+AD-0030, `tests/lib/document_governance/test_taxonomy.py` and necessary Stage 98
+lifecycle records. No unrelated infra changes.
 
 1. Start with auth as a pilot, then security/data, messaging/observability,
    workflow/AI, and tooling/laboratory. Make each domain a reviewable commit;
@@ -345,10 +349,13 @@ AD-0030 and necessary Stage 98 lifecycle records. No unrelated infra changes.
    links and indexes atomically; do not rewrite existing frozen archive bodies.
 5. Use `python3 scripts/knowledge/generate-llm-wiki.py --write` only when indexed
    paths change, then `--check`. Verify metadata, all links and corpus lifecycle,
-   plus relevant archive/identity regressions. Record each reviewed disposition
+   plus relevant archive/identity regressions. Update the taxonomy test
+   `AD_TO_REQUIREMENT_PACKAGE` active mapping in the same domain cutover and
+   preserve retired/superseded ID and parent evidence through the existing
+   archive/recovery checks. Record each reviewed disposition
    in the existing Task table, not a new migration framework or progress ledger.
 
-### W21: Proposed final QA and local delivery evidence
+### W21: Final QA and local delivery evidence
 
 Depends on completion of the approved W17-W20 subset; excluded units remain
 NOT_RUN and cannot satisfy their proposed acceptance. Root integrates receipts.
@@ -396,7 +403,7 @@ Acceptance 22 maps to W13, 23 to W14, and 24 to W12/W14/W15.
 Domain-logic coverage is N/A for validation/configuration-only changes;
 behavioral safety regressions remain mandatory for changed validators.
 
-For the continuation, criterion 25 maps to W16; proposed 26/27/28/29/30 map
+For the continuation, criterion 25 maps to W16; criteria 26/27/28/29/30 map
 to W17/W18/W19/W20/W21 respectively. Planning verification is limited to
 metadata contracts, changed document checks, links, LLM Wiki freshness and the
 policy-selected public changed route. Actual commands and exits belong in Task.

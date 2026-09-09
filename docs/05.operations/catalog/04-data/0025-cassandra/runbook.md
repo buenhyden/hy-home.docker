@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0025"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0025-cassandra/runbook.md -->
 
 # Cassandra Health and Recovery Triage Runbook
 

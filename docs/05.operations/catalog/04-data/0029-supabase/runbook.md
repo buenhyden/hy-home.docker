@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0029"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0029-supabase/runbook.md -->
 
 # Supabase Stack Health Runbook
 

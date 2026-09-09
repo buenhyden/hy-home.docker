@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -114,13 +114,11 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   production 경로가 비활성이라고 판단할 수 없습니다. 기존 위반은 변경분
   검증과 구분되며, current/base 비교가 기존 marker의 일괄 정비를 증명하지는
   않습니다.
-- 잔여 marker 계약이 세 곳에서 서로 다릅니다. `TARGET_TEMPLATE_LITERALS`는
-  `<!-- Target:`을 변경 target에 남아서는 안 되는 잔여물로 선언하고, 현재 어떤
-  template도 이를 생성하지 않으며, `docs/99.templates` 아래 template source는
-  이를 담지 않도록 test로 강제됩니다. 그런데 활성 `docs/05.operations/`의
-  추적 문서 184개가 이를 담고 있지만 `check-document-metadata.py --mode report`는
-  이 marker를 생성하지 않습니다. 이 marker를
-  제거할지 계약에서 내릴지는 아직 결정되지 않았습니다.
+- `TARGET_TEMPLATE_LITERALS`가 선언한 `<!-- Target:` 잔여물 규칙을
+  유지합니다. 현재 template source와 metadata report는 이 주석을 생성하지
+  않습니다. 활성 운영 문서에 남은 자기 경로 주석은 본문·절차·식별자를
+  보존하며 제거했습니다. 정비 결과는 SPEC-0173-TSK-0006의 현재 실행 증거로
+  추적하며, 관측한 문서 수를 영구 계약으로 고정하지 않습니다.
 - 9개 도메인이 살아 있는 Stage 02 Description을 둘씩 가집니다. base
   description과 `*-optimization-hardening` description이 관계 선언 없이
   공존하며 어느 쪽도 다른 쪽의 상위 집합이 아닙니다. REQ-0026-FR-0005는

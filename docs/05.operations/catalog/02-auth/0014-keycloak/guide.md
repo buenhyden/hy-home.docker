@@ -11,7 +11,6 @@ parent_ids:
 - "POL-0014"
 created: "2026-05-10"
 ---
-<!-- Target: docs/05.operations/catalog/02-auth/0014-keycloak/guide.md -->
 
 # 02-Auth Keycloak Usage Guide
 

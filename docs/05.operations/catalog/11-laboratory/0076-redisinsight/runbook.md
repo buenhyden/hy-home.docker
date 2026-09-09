@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0076"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md -->
 
 # RedisInsight Recovery Runbook
 

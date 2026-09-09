@@ -11,7 +11,6 @@ parent_ids:
 - "GDE-0019"
 created: "2026-05-17"
 ---
-<!-- Target: docs/05.operations/catalog/04-data/0019-opensearch/runbook.md -->
 
 # OpenSearch Recovery Runbook
 
