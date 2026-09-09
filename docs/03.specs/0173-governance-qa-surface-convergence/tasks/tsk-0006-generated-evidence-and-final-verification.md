@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.7.1"
+version: "0.7.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,144 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### Priority preservation, local integration and cleanup (2026-09-09)
+
+The latest explicit user instruction makes local branch/worktree integration
+and force cleanup the priority, and requires committing uncommitted changes
+before merging them. This supersedes the previous keep disposition for
+`codex/qa-convergence-implementation` and its three task-owned linked worktrees.
+Implementation and review agents are stopped. Main already fast-forwarded from
+`62fd2fcd5848f23ff05b2eb9622f22457017992d` to
+`4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7`, preserving the completed W19 and
+W18 commits. The remaining 20 tracked paths will be committed together as an
+in-progress preservation snapshot through normal hooks, then fast-forwarded
+to local main before removing the linked worktrees and development branch.
+
+This disposition does not claim W17-W21 or package completion. W17 still has
+an independent medium manifest finding: `a_policy_review` returned
+Specification FAIL / Quality CHANGES REQUIRED on the 17-path candidate
+`b86bdea2aa51893c2156cac4e0b7d6cbb9d182d9e65235b0b8df591b08f1f2c6`
+because the eval wrapper omits its actual adapter consumer. The passing manifest
+checker and the earlier omission rationale do not discharge this finding.
+The npm-before-Playwright prerequisite correction and Ruff formatting are in
+the preservation snapshot; their final independent re-review is NOT_RUN.
+W20's three-file auth candidate retains its technical PASS but actual owner
+semantic-transfer/retirement approval remains pending; AD-0014 stays active.
+Final full-profile QA for this snapshot is NOT_RUN. The normal commit result
+and final Git read-back will be reported with their actual outcomes; no existing
+receipt is reused as proof of this snapshot.
+
+Before cleanup, binary patches for all three linked worktrees were saved in
+the common Git directory at `recovery/qa-convergence-20260909T020050Z`, with
+base SHAs, tracked-file hashes and successful reverse-apply checks. Review
+worktrees hold earlier copies of the same task-owned candidate, not independent
+unmerged work. Only known Python/Ruff caches accompany their tracked changes.
+The primary checkout's private environment file remains untouched and is not
+a QA input. Remote writes, operations execution, package promotion and actual
+owner retirement approval remain outside this Git disposition.
+
+### W17 cutover and W20 auth candidate (2026-09-09)
+
+W18 was committed as `4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7` through normal
+hooks. The paused W17 code/test changes and auth draft were restored byte-for-byte;
+root verified the empty index and clean unchanged primary main before resuming
+W17. To keep the pending auth review copy stable, root created a third clean
+Task-owned detached checkout `.worktrees/qa-convergence-code-review` at that W18
+commit, without `.env`. It will hold only the W17 review snapshot and later
+committed final QA inputs; the existing implementation-review checkout retains
+the auth proposal for the owner. No cleanup or integration authority changes.
+Root also added the discovered `check-storybook-contract.sh` consumer to
+Plan W17: it must migrate with the retired internal graph API, rather than
+keeping an obsolete route alive. This is an existing affected consumer, not a
+new CLI or workflow layer.
+
+W17's first RED attempt mistakenly called `run_adapter` instead of the pure
+argv-admission function. The existing accepted installer verb reached a real
+system `python3 -m pip install -r scripts/requirements.txt` child in the test's
+temporary fixture cwd. Debian PEP 668 immediately rejected it with
+`externally-managed-environment`; installation success or download progress was
+not observed. This was an unintended install attempt, not mocked execution or
+successful setup. The worker replaced it with `validate_adapter_argv` rejection
+cases; subsequent negative execution cases must use explicit fake children.
+No dependency installation is authorized by this test. The exact initial
+command and result appear in Verification Evidence below.
+
+The W17 implementation candidate removes 13 suite-unreachable nodes and the
+job-root schema, private CI planner, unused shell-semantic parser closure and
+two retired setup adapter verbs. Public expansion now uses one bounded,
+iterative helper; Storybook and the runner consume it. The active workflow
+projection, setup ordering and public CLI stay in place. Root recorded the
+actual Storybook imports in the Plan/Task and corrected the Spec's present-tense
+job-root description. The worker's first focused checks pass and all 19 baseline
+plans match exactly; independent review and delivery checks remain pending.
+Skipped parser safety intentions map to active workflow projection, DAG,
+bounded readers and runner tests: unsupported shell/dynamic commands, cycles,
+symlink/mode/cwd/descriptor replacement, argv/environment admission and required
+failure propagation. Removed tests owned obsolete composition or unused parser
+behavior; rejected legacy fields/verbs remain negative inputs.
+
+Root also traced an existing transitive eval overlap: the adapter's shell wrapper
+executes the same Python fixture/regression command as a separate public
+validator, but additionally checks bounded output and PASS markers. Independent
+rules-engineer review confirmed a medium W17 finding. Root ruled that removing
+the direct duplicate and retaining all adapter guards and fixture tests is within
+the approved multiplicity work. The next comparison must permit only that
+removed invocation; the initial 19-plan equality is a preliminary checkpoint.
+Security review rejected root's initial claim that the direct evaluator check
+was merely posthoc: the executor verifies all planned files before starting
+any child. Removing that row therefore also removes a real preflight check of
+the inner evaluator's tracked executable mode and Git-object identity. The
+correction must reuse the existing preflight verifier for that inner file while
+executing the adapter once; no residual-risk waiver or weaker boundary is accepted.
+Manifest kind stays `validator`, with its wrapper consumer recorded; this Task
+records the full adapter-to-wrapper-to-evaluator chain.
+No new registry, wrapper or child execution permission is introduced.
+
+Independent Python review also found a medium setup-order regression: reversing
+the active frontend aggregate's children passed generic validation and placed
+frontend tasks before `npm ci`. The former internal pin had rejected it.
+The correction must retain semantic prerequisites for npm setup and Playwright
+coverage, with malformed-order regressions, without restoring obsolete job-root
+composition. W17 is not delivered while either review finding remains open.
+
+Cutover checks exposed stale manifest evidence: pre-commit requirements still
+named the removed graph setup consumer, and the hardening wrapper named tests
+inside the retired parser closure. Root points requirements at the actual
+quality workflow and removes only that obsolete test claim. Three proposed
+additional consumer rows were rejected by the existing bounded proof grammar
+(an internal Python helper call and Python imports embedded in a shell script).
+Those new rows are omitted; their actual calls are inspected and recorded here,
+while existing provable manifest consumers remain. No parser framework or
+comment-only proof was added to satisfy the inventory. The affected current
+AUT-05 and AEA-AUTO-011 evidence also used a retired eval wrapper path and old
+numeric marker syntax; root aligns these rows and their generated matrix with
+the surviving eval route, preserving audit identity and historical dates.
+
+W20 auth draft transfers AD-0014's retained meaning to AD-0002 and existing
+Stage 05 owners. An independent technical review found two medium omissions:
+the concrete `mng-pg` service identity and the Operations Policy's implication
+that a profile alone changes Proxy's session destination. The candidate now
+preserves `mng-pg` and aligns the existing policy/guide prerequisites for host,
+image/entrypoint and matching session-secret selection. No new runtime procedure,
+service command or secret value is introduced. Owner semantic-transfer review
+was requested using the concrete auth candidate; no answer or retirement is
+assumed. AD-0014 remains active and unchanged pending that review.
+
+| Auth source clause | Current destination / disposition | Evidence and limit |
+| --- | --- | --- |
+| AD-0014 boundary and components | AD-0002 System Boundaries/Components: token/ForwardAuth/session responsibility, gateway/data dependencies, `mng-pg` and Valkey | Duplicate IAM structure consolidated; application RBAC/business logic and new auth stack remain non-goals |
+| AD-0014 quality/failure clauses | AD-0002 Quality Attributes plus existing Proxy policy/runbook | Fail-closed, non-root, file-secret boundary, restricted degraded mode and recovery ownership preserved |
+| AD-0014 storage/profile/deployment | AD-0002 Components/Data Flow/Deployment; POL-0015 and GDE-0015 prerequisites | Tracked Compose selects services by profile but host/image via configuration; matching entrypoint session-secret path required; no actual connection test claimed |
+| AD-0014 operational evidence list | Existing Stage 05 policy/guide/runbook links | Commands/procedures retain their owner; static CI and runtime evidence stay separate |
+| AD-0002 original agent contract | AD-0002 AI Agent Architecture | Keycloak service-account token and `X-Auth-Request-User` audit header retained |
+| AD-0014 preservation and ADR-0017 ancestry | Pending owner review; existing registered supersession route | Terminal snapshot/body preservation, reciprocal metadata, archived ID/parent recovery, mechanical ADR link update, taxonomy and indexes must move atomically after review |
+
+Read-only comparison of the other eight pairs found retained clauses that fit
+their existing base Description and Stage 05 owners. Data additionally needs
+owner resolution of base AD-0004's general multi-node HA claim versus AD-0019's
+per-engine limits and tracked single-node configurations. Those domains remain
+unmodified; comparisons do not constitute owner approval or retirement evidence.
 
 ### W18 audit consumer reconciliation (2026-09-09)
 
@@ -1750,6 +1888,114 @@ in-progress.
 
 ## Verification Evidence
 
+### W17 review corrections (2026-09-09)
+
+CI/CD contributor evidence uses the delivery checkout at `4645226de4` plus
+the 11 owned working-tree paths, inherited prepared Python 3.12 and
+`PYTHONDONTWRITEBYTECODE=1`. The eval multiplicity regression first failed with
+one method/five context failures (exit 1, 0.039 seconds) and then passed (exit 0,
+0.038 seconds). A preceding shell typo `PYpk` exited 127 without running tests.
+The exact test is
+`python3 -m unittest tests.validation.test_ci_gate_plan.CiGateRunnerContractTests.test_full_plan_runs_the_agent_eval_once_through_the_adapter -v`.
+
+After the eval/output/setup corrections,
+`python3 -m unittest tests.lib.gate.test_ci_gate_contract tests.lib.gate.test_ci_gate_adapters tests.lib.gate.test_github_workflow_contract tests.validation.test_ci_gate_plan -v`
+passed 99 tests in 24.968 seconds, exit 0. Fake-child cases preserve nonzero exit
+23, each missing marker, NUL, oversized output, invalid UTF-8 and one happy output.
+The later provenance correction adds preflight-only verified descriptors to the
+existing executor, closes them in its existing cleanup and never executes them.
+`python3 -m unittest tests.validation.test_ci_gate_execution_context.DescriptorExecutionTests.test_agent_eval_dependency_is_preflighted_without_second_execution tests.lib.gate.test_ci_gate_contract.CiGateContractTests.test_active_aggregates_retain_every_mandatory_child -v`
+passed two tests in 0.175 seconds, exit 0. Untracked, symlinked, non-executable
+and index-mismatched eval dependencies fail before the fake adapter runs;
+opened descriptors close on success/failure. Deleting a required active root
+itself or its mandatory child is rejected. Subsequent focused descriptor/eval
+checks passed seven tests in 0.839 seconds; the contract module passed 18 tests
+in 0.323 seconds. Workflow/Storybook static checks and nine changed Python syntax
+checks passed; no hosted/setup/install/runtime execution is inferred.
+
+The immutable 19-row baseline comparison now permits one exact change: removal
+of the direct eval invocation in 11 rows (changed local/PR provider, workflow,
+shared-library and lock cases; full local/push/manual). All other ordered
+invocation fields, suites and setup calls match. Full local changes 43 to 42
+registered calls, push 55 to 54, manual 54 to 53. Registered duplicates remain
+zero; effective eval calls change two to one wherever that suite is selected.
+No comparable full-QA before/after wall-time measurement or speed claim is made.
+
+Root's manifest check exited 0 after replacing the two stale claims; its prior
+five findings included three newly proposed unsupported proof forms, omitted
+as described in the Work Log. The undocumented direct-module help smoke without
+`PYTHONPATH` failed in both the changed candidate and unchanged `b600e7c01` code
+for `ci_gate_contract.py`, `ci_gate_runner.py` and `github_workflow_contract.py`
+with `ModuleNotFoundError: scripts`; it is not a newly introduced regression.
+The documented test environment and final public QA remain separate checks.
+Root regenerated DATA-0065 twice: both writes exited 0, the second was byte
+identical, and `generate-audit-implementation-matrix.sh --check` exited 0.
+Generated SHA-256: `5ecf13ae1f10f5c8165cf86ea8f364a08969807979770d8a81cf56abe04c5fe8`.
+
+### W17 candidate checks (2026-09-09)
+
+Source-attributed CI/CD worker results in the delivery checkout, HEAD
+`4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7` plus the 11 owned code/contract/test
+paths. Commands use `PYTHONDONTWRITEBYTECODE=1`, inherited prepared Python 3.12
+PATH and `python3 -m unittest ... -v` unless shown otherwise. These results
+precede the independent review snapshot and do not claim full or hosted QA.
+
+| Target / command suffix | Exit | Observed result |
+| --- | --- | --- |
+| `tests.lib.gate.test_ci_gate_adapters.CiGateAdapterTests.test_retired_setup_commands_are_rejected_by_the_argv_contract` before implementation | 1 | RED: one method, two failures; pure `validate_adapter_argv`, no child execution |
+| `tests.lib.gate.test_ci_gate_contract tests.lib.gate.test_ci_gate_adapters tests.lib.gate.test_github_workflow_contract` | 0 | 72 tests, 6.435 seconds; prior run failed on one malformed test-case tuple, corrected before this run |
+| `tests.validation.test_ci_gate_plan` | 0 | 24 tests, 26.112 seconds, including controlled failure propagation |
+| `tests.validation.test_ci_gate_model` | 0 | Seven tests, 0.130 seconds |
+| `tests.validation.test_ci_gate_execution_context.DescriptorExecutionTests.test_path_replacement_after_open_executes_verified_descriptor tests.validation.test_ci_gate_execution_context.DescriptorExecutionTests.test_descriptor_mode_preserves_root_and_python_sibling_imports` | 0 | Two tests, 0.369 seconds; prior wrong `CiGateExecutionContextTests` selector produced two loader errors, not test failures |
+| `python3 scripts/validation/check-github-workflow-contract.py` | 0 | Five workflows, seven jobs, eight action identities |
+| `bash scripts/validation/check-storybook-contract.sh` | 0 | Active static consumer passes after API migration |
+| `python3 /tmp/hy-w17-compare-plans.py` | 0 | All 19 rows preserve suite selection, ordered invocation fields, setup and registered duplicate counts; no leaf execution |
+| `git diff --check -- <11 exact owned paths>` | 0 | No whitespace errors |
+
+The temporary baseline's SHA-256 is
+`200ca874b10be44268882ed25b51bd588719538606219983438b4506709e5609`.
+It contains eight controlled changed-path cases for local and PR contexts plus
+full local/push/manual plans. Baseline local full has 43 registered invocations;
+root independently compared its unittest arguments with tracked test files:
+all 58 Python test modules are scheduled once. That inventory check is not a
+test execution result. Root's active-consumer search found retired API references
+only as deliberate invalid-input tests; dated research/Task and frozen records
+retain historical references. Primary main remained clean at `62fd2fcd5`.
+
+### W20 auth transfer candidate (2026-09-09)
+
+The stable review checkout is detached at `b600e7c01` with the four reviewed W18
+paths plus the three auth proposal paths. The scoped auth diff SHA-256 is
+`a671021514e8e0932b2563500e43ce243751720449787d4b676711e2abc69f22`;
+this is an uncommitted transfer candidate, not the later archive cutover.
+Prepared Python 3.12 tool PATH and `PYTHONDONTWRITEBYTECODE=1` were used.
+`python3 scripts/validation/check-document-metadata.py --mode check-changed
+--base-ref HEAD` exited 0 in 21.26 seconds: selected 7, zero violations.
+`python3 scripts/validation/check-document-links.py --mode all` exited 0 in
+5.03 seconds: 713 documents, 6167 links, zero failures. These document checks
+prove neither domain-owner approval nor any live connection or provider runtime.
+
+### W18 delivered snapshot and W17 initial RED (2026-09-09)
+
+Delivery cwd `.worktrees/qa-convergence-implementation`, prepared tool PATH,
+`PYTHONDONTWRITEBYTECODE=1`: cheap Commitizen check for
+`docs(qa): Reconcile audit census and consumer evidence` exited 0. Normal
+`git -c core.hooksPath=/home/hy/projects/hy-home.docker/.git/hooks commit -m
+'docs(qa): Reconcile audit census and consumer evidence'` exited 0 in 379.58
+seconds and created `4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7`. Formatter,
+public changed, secret detection and commit-msg passed on the four staged
+W18 paths; W17/auth were excluded. Afterward all four excluded file hashes
+matched their pre-hook values, index was empty and primary main remained clean.
+
+W17 initial command in the same delivery cwd:
+`python3 -m unittest tests.lib.gate.test_ci_gate_contract.PublicSuiteRegistryTests.test_retired_job_roots_are_rejected_by_the_strict_contract tests.lib.gate.test_ci_gate_adapters.CiGateAdapterTests.test_rejects_unknown_metacharacter_paths_npm_verbs_and_secret_env -v`.
+Exit 1: two methods, three assertion failures (legacy job_roots accepted,
+installer accepted, compose adapter returning a source error instead of unknown
+command). The installer test unexpectedly reached the real pip child described
+in the Work Log and was rejected by PEP 668. This attempt is FAIL and does not
+prove installation or a safely isolated execution test. Replacement tests target
+the pure admission boundary; their later results must be recorded independently.
+
 ### W19 delivery and W18 candidate checks (2026-09-09)
 
 W19 normal commit ran in the delivery checkout with the prepared tool PATH,
@@ -1900,7 +2146,7 @@ option A approval and W16 planning do not authorize it.
 | --- | --- | --- | --- |
 | 25 | W16 | PASS: planning proposal reviewed, validated and committed as `9153c055f` through normal hooks; later local integration/cleanup authorized separately | This Task inventory, Spec proposal and Plan W16-W21 |
 | 26 | W17 | NOT_RUN: approved implementation pending | Existing public workflow contract, gate libraries and their regressions |
-| 27 | W18 | NOT_RUN: approved implementation pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
+| 27 | W18 | PASS: current audit consumers reconciled and committed as `4645226de`; normal hooks passed | Criterion manifest, current audit source, lifecycle and historical recovery owners |
 | 28 | W19 | PASS: reviewed residue cleanup committed as `b600e7c01`; normal hooks and preservation read-back passed | Active Stage 05 targets and metadata residue contract |
 | 29 | W20 | NOT_RUN: per-domain transfer and review not performed | Retained Stage 02 owners and registered preservation records |
 | 30 | W21 | NOT_RUN: follows approved implementation; no hosted/runtime success inferred | Public QA definition and this Task's future execution receipts |
@@ -2567,6 +2813,38 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### W17 first independent review (2026-09-09)
+
+Read-only Python reviewer `w17_python_review` and security auditor
+`w17_security_review` reproduced the first 15-path diff hash
+`a81ec32985a68ca6a4254fe30a515413bbbbc338ead6ac1a25e4e484c8ab88c9`
+against `4645226de4`: Specification FAIL / CHANGES REQUIRED. Python review
+demonstrated missing active setup/membership guards, including removal of the
+eval regression leaf. Security review demonstrated that the proposed direct
+eval removal would also remove real preflight provenance; root corrected its
+contrary assumption. Both confirmed the retained inactive-parser removal and
+other existing safety boundaries, while requiring the eval overlap to converge.
+The worker corrected these findings in the later candidate; final exact-diff
+review and delivery QA are pending and are not implied by focused test passes.
+
+### W20 auth candidate technical review (2026-09-09)
+
+Independent read-only rules-engineer `a_policy_review` first reviewed scoped
+AD-0002 diff `a328be93896ab2a2ac3fde731a43db3fe55eff7dac0b2a7dd965154db2fddea0`
+against `b600e7c01`: Specification FAIL / Quality CHANGES REQUIRED for two medium
+findings, omitted `mng-pg` identity and the conflicting Proxy policy profile
+claim. Root resolved both and aligned the existing guide's prerequisite to
+host/image/entrypoint/session-secret selection, without adding runtime commands.
+The three-path v2 diff
+`a671021514e8e0932b2563500e43ce243751720449787d4b676711e2abc69f22`
+received Specification PASS / Quality APPROVED with zero findings. The reviewer
+confirmed preservation of unique clauses, agent contract, security boundary and
+ADR-0017 decision ancestry; their own `git diff --check` was read-only. Root's
+metadata/link results are separately recorded above. The actual domain owner
+has not yet answered the concrete transfer/retirement request. Technical review
+does not substitute that approval, and AD-0014 remains active. This receipt
+is outside the scoped candidate hash and does not authorize archive or runtime.
+
 ### W18 exact-diff review (2026-09-09)
 
 Independent read-only rules-engineer `a_policy_review` reviewed the exact W18
@@ -2823,6 +3101,11 @@ not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
 
+W18 implementation: `4645226de4a1ccfab06c5c4c0d7b8d04f3a918a7`,
+`docs(qa): Reconcile audit census and consumer evidence`. Current audit rows,
+registered matrix and Task receipts were committed together; normal hooks
+passed and excluded W17/auth changes were preserved.
+
 W19 implementation: `b600e7c0115c4890febd7f316d93ae42821e406a`,
 `docs(governance): Remove obsolete operations authoring residue`. The commit
 contains the approved implementation-plan update, context-reviewed marker
@@ -2939,9 +3222,11 @@ No completed archive packet or new Spec/Plan/Task was created.
 - Operations execution planning is on hold by the 2026-09-09 user response.
   Neither synthetic rehearsal nor live service planning/execution is included.
 - W16 local integration and cleanup completed at `62fd2fcd5848f23ff05b2eb9622f22457017992d`.
-  Preserve the new `codex/qa-convergence-implementation` branch and its
-  implementation/review worktrees. New main integration or cleanup requires a
-  separate user request; push, PR and workflow dispatch remain outside scope.
+  The latest explicit user instruction now authorizes committing the remaining
+  in-progress snapshot, local main integration and force cleanup of the new
+  `codex/qa-convergence-implementation` branch and three task-owned worktrees.
+  This Git disposition does not close unfinished acceptance; push, PR and
+  workflow dispatch remain outside scope.
 
 - The preservation-owner blocker is discharged by current REQ-0026, AD-0030
   and accepted ADR-0033. The earlier dated reports remain historical evidence;

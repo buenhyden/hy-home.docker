@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.6.0"
+version: "0.6.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -78,8 +78,11 @@ commits. Task 0006 records this approval, the W20 taxonomy-consumer correction,
 and execution evidence. W20 starts with the auth pilot and retains the current
 owner's semantic-transfer review before each domain retirement. Operations
 planning remains on hold. Prior W16 integration/cleanup is complete; it does
-not authorize new remote writes, local main integration, worktree deletion or
-terminal package promotion. Current nonterminal metadata remains unchanged.
+not authorize new remote writes or terminal package promotion. The latest
+separate user request now prioritizes committing the in-progress snapshot,
+local main integration and force cleanup of task-owned branches/worktrees;
+Task 0006 owns that disposition and outstanding acceptance. Current nonterminal
+metadata remains unchanged.
 
 The approved scope is bounded to the existing public QA graph and its inactive
 semantic-parser consumers, audit census and current evidence consumers, active
@@ -91,7 +94,7 @@ package, ID, provider runtime experiment or dependency upgrade is proposed.
 
 1. `.github/workflow-contract.yml` is the only executable-composition owner. It
    owns public suite membership, gate nodes, entrypoints, normalized arguments,
-   execution context, admitted environment, order, timeout, setup, and job roots.
+   execution context, admitted environment, order, timeout, setup, and suite roots.
 2. `scripts/manifest.yaml` owns file inventory, kind, mutation capability,
    lifecycle, consumers, tests, disposition, check command, and generated
    outputs. It does not repeat public suite, argv, or execution-context data.
@@ -166,9 +169,9 @@ against their current owners, retaining dated Task and frozen archive evidence.
 
 - **QA composition:** preserve the two profiles, six suites and existing public
   CLI. Compare actual expanded invocations by entrypoint, argv, cwd, context,
-  configuration and input snapshot. `job_roots` currently participates in
-  structural validation even where public suite expansion does not use its
-  aggregate. Remove a node only after identifying and migrating those consumers;
+  configuration and input snapshot. Converge structural validation and public
+  expansion on the public suite roots. Migrate every consumer of the obsolete
+  job-root composition before removing its nodes;
   reachability from one root set alone is insufficient deletion evidence.
 - **Inactive semantic parser:** prefer retiring its unused call graph after
   mapping each skipped safety case to an active projection, DAG or runner test.

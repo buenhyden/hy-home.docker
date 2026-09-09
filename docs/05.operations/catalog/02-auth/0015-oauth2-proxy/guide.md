@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-09"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -40,6 +40,11 @@ created: "2026-05-10"
 - `infra/02-auth/keycloak` 정상 동작
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
 - 공유 `mng-valkey` 또는 `dedicated-valkey` profile의 `oauth2-proxy-valkey` 세션 저장소 준비
+- 사용할 저장소에 맞는 `OAUTH2_PROXY_VALKEY_HOST` 및 이미지/entrypoint의 세션 시크릿
+  경로 확인. Profile은 서비스를 추가할 뿐 Proxy의 기본 호스트나 이미지를 전환하지 않는다.
+  공유 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
+  전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
+  이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
 ### Step-by-step Instructions
 

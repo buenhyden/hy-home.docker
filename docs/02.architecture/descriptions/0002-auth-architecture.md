@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-09"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -36,15 +36,12 @@ created: "2026-03-26"
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
-
-This section was added for template alignment. Existing architecture content in this existing Architecture Description remains the source of truth; no runtime behavior is changed.
+요구사항 소유자, 구현자와 운영자는 인증 경계, 시크릿 파일 주입, 최소 권한
+실행과 장애 시 fail-closed 동작을 공유 관심사로 다룬다. 이 Description은
+구조와 품질 기대를 설명하며, 실행 절차와 검증 결과는 각각 Operations 문서와
+해당 작업의 Task가 소유한다.
 
 ## Components
-
-### Viewpoints and Views
-
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
 The auth system sits between the `01-gateway` and other internal services. It validates user presence before traffic enters any protected container.
 
@@ -68,6 +65,13 @@ graph TD
     Gateway -->|Authorized Request| InternalService["Internal Service"]
 ```
 
+Keycloak은 `04-data`의 `mng-pg` PostgreSQL 서비스에 identity 상태를 저장한다. OAuth2 Proxy의
+기본 session 저장소는 공유 `mng-valkey`다. `dedicated-valkey` profile은
+`oauth2-proxy-valkey`와 exporter를 추가로 선택하며, Proxy의 실제 접속 대상은
+`OAUTH2_PROXY_VALKEY_HOST` 설정으로 결정된다. Profile 선택만으로 기본 접속
+대상이 자동 전환된다고 가정하지 않는다. 환경별 연결과 시크릿 주입 경로의
+절차는 [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)가 소유한다.
+
 ### AI Agent Architecture
 
 Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
@@ -81,52 +85,57 @@ Agents access services using Service Account tokens issued by Keycloak. All agen
 
 ## Data Flow
 
-### Data and Control Flows
+브라우저 요청은 Traefik의 HTTPS ingress를 거쳐 OAuth2 Proxy의 ForwardAuth
+검사를 받는다. Proxy는 Keycloak의 OIDC issuer/callback과 연동하고,
+`/oauth2/auth` 경량 검증 경로 및 Valkey의 cookie/session 상태를 사용한다.
+Keycloak realm/user/session metadata의 지속성은 PostgreSQL이 담당한다.
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
-
-Detailed OIDC claims and realm structures live in the operations catalog, at
-[Keycloak](../../05.operations/catalog/02-auth/0014-keycloak/guide.md) and
-[oauth2-proxy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md).
-The Stage 03 package this section used to name was retired, and its tombstone
-under the archive's `03.specs` tree records the catalog as the replacement; an
-active document does not link into the archive, so the tombstone is named rather
-than linked. The catalog references above are links rather than quoted paths so
-that the link checker fails on them if a target moves again, which a path in
-backticks never does.
+Client, cookie 및 DB 시크릿은 `/run/secrets` 파일 주입 경계를 사용한다.
+평문 시크릿을 Compose나 문서에 넣지 않는다. 세부 claims, realm 구성과 세션의
+만료·갱신·도메인 설정은 [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)와
+[Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)를 따른다.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
-
-- **Owns**: The architecture scope already described in this document.
-- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
-- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this Architecture Description.
-- **Non-goals**: Semantic rewriting of the historical architecture record.
+- **Owns**: 인증 토큰 발급·검증 경로, ForwardAuth 진입점 및 인증 세션 정책의 구조.
+- **Consumes**: `01-gateway`의 HTTPS ingress·routing과 `04-data`의 PostgreSQL·Valkey.
+- **Does Not Own**: 애플리케이션별 RBAC 세부 구현, 비인증 비즈니스 로직, 시크릿 값,
+  운영 절차 또는 특정 실행의 검증 증거.
+- **Non-goals**: 인증 프로토콜 변경, 신규 인증 스택·시크릿 백엔드 도입 및 fail-open 기본 정책.
 
 ## Quality Attributes
 
-### Quality Scenarios
-
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
-
-- **Performance**: Use the existing service-specific constraints in this document.
-- **Security**: Preserve the security boundaries already described in this document.
-- **Reliability**: Preserve the availability and failure-mode notes already described in this document.
-- **Scalability**: Use existing capacity and deployment notes where present.
-- **Observability**: Use downstream operations and spec documents for runtime evidence.
-- **Operability**: Use downstream operations documents for procedures.
-
-### Additional Architecture Views
-
-The existing architecture diagram, component, constraint, or reliability sections in this document provide the system context. This alignment section does not introduce new architecture facts.
+- **Performance**: 기본 `/oauth2/auth` 경량 검증 경로로 인증 오버헤드를 제한한다.
+- **Security**: 파일 시크릿 주입과 Proxy non-root 실행을 유지한다. 인증이 불가능하면
+  보호 서비스 접근을 허용하지 않는 fail-closed가 기본이다.
+- **Reliability**: 상태 저장소, healthcheck와 정적 검증을 연결한다. 제한적 degraded-mode는
+  [Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)의 별도 운영 승인과
+  [runbook](../../05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md)의 종료·원복 조건을 따른다.
+- **Scalability**: 환경별 도메인과 세션 설정을 명시적으로 구성하며 세션의 복원력을 유지한다.
+- **Observability**: 컨테이너 로그, health 상태와 agent audit header를 증거원으로 사용한다.
+  로그 보존과 실제 증거 수집은 운영 문서 및 해당 Task의 책임이다.
+- **Operability**: CI 정적 검사와 운영 문서의 검증 절차를 연결한다. 정적 PASS는
+  실제 로그인, 장애 복구 또는 운영 배포 성공을 증명하지 않는다.
 
 ## Deployment View
 
-Existing architecture details above remain authoritative for this view.
+Docker Compose에서 Keycloak은 상태 저장 특성을 고려한 `template-infra-high`를
+유지하고 DB/Admin 시크릿을 파일로 주입한다. OAuth2 Proxy는 custom Alpine
+image와 non-root 사용자, `template-infra-readonly-med`를 사용한다. 실행 경로와
+계정 차이는 [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)가 설명한다.
+이 선택과 fail-closed 근거는 [ADR-0017](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)에 보존된다.
+
+Profile 정적 검증과 hardening 검사는 적용 가능한 CI 실행 계약 및
+[Keycloak policy](../../05.operations/catalog/02-auth/0014-keycloak/policy.md),
+[Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)의 검증 경로를 따른다.
+인증 계층의 단계적 반영과 장애 원복은 승인된 운영 절차의 책임이며,
+이 문서의 정비가 운영 실행이나 새로운 배포 계획을 승인하지 않는다.
 
 ## Related Documents
 
-- **PRD**: [Auth product requirements](../../01.requirements/0002-auth.md)
-- **Spec**: [Auth technical specification](0002-auth-architecture.md)
-- **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
+- **Requirement Package**: [REQ-0002 Auth requirements](../../01.requirements/0002-auth.md)
+- **Decision**: [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
+- **Decision**: [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
+- **Operations**: [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md),
+  [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md) and
+  [Proxy recovery runbook](../../05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md)

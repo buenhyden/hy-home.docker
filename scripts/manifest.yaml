@@ -17,6 +17,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - evals/run-agent-output-eval-fixtures.sh
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
@@ -60,7 +61,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/agent-event-hook.sh
   kind: hook
@@ -666,7 +666,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/workflow-contract.yml
+  - .github/workflows/ci-quality.yml
   disposition: retain
   successor: null
   tests: []

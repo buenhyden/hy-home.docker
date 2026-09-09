@@ -17,6 +17,13 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 class PublicSuiteRegistryTests(unittest.TestCase):
+    def test_retired_job_roots_are_rejected_by_the_strict_contract(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        document["job_roots"] = []
+        with self.assertRaises(contract.GateContractError) as caught:
+            contract.parse_gate_registry(document, ".github/workflow-contract.yml")
+        self.assertEqual("ci-gate-document-fields", caught.exception.code)
+
     def test_workflow_contract_owns_the_immutable_public_suite_registry(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
@@ -238,68 +245,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     contract.load_manifest_document(path)
 
 
-class PinDerivationTests(unittest.TestCase):
-    """The CI-root pins must not restate one another.
-
-    `_INTERNAL_ROOT_SUITES` names a suite key per internal CI job and
-    `_INTERNAL_ROOT_CHILDREN` names a gate id per internal CI root. For every
-    root the first is exactly the `leaf.`-prefixed members of the second with
-    the prefix removed, in order, so keeping both as literals meant every new
-    gate suite had to be written into both by hand and the two could silently
-    disagree. The module now derives the first from the second; this test pins
-    that derivation, and a root that legitimately needs them to differ has to
-    change this test first.
-    """
-
-    def test_root_suites_are_exactly_the_leaf_children_of_each_root(self) -> None:
-        for job_id, root_gate_id in contract._INTERNAL_CI_ROOTS.items():
-            with self.subTest(job=job_id):
-                children = contract._INTERNAL_ROOT_CHILDREN[root_gate_id]
-                self.assertEqual(
-                    tuple(
-                        gate_id.removeprefix("leaf.")
-                        for gate_id in children
-                        if gate_id.startswith("leaf.")
-                    ),
-                    contract._INTERNAL_ROOT_SUITES[job_id],
-                )
-
-    def test_every_internal_root_has_children(self) -> None:
-        self.assertEqual(
-            set(contract._INTERNAL_CI_ROOTS.values()),
-            set(contract._INTERNAL_ROOT_CHILDREN),
-        )
-
-    def test_the_derivation_tracks_a_change_rather_than_agreeing_once(self) -> None:
-        children = (*contract._INTERNAL_ROOT_CHILDREN["ci.zizmor"], "leaf.invented")
-        derived = tuple(
-            gate_id.removeprefix("leaf.")
-            for gate_id in children
-            if gate_id.startswith("leaf.")
-        )
-        self.assertEqual(("zizmor", "invented"), derived)
-        self.assertEqual(("zizmor",), contract._INTERNAL_ROOT_SUITES["zizmor"])
-
-
-# Aliased to the module under test since 2026-08-29. These six tables were
-# verbatim copies of `ci_gate_contract`'s private pins, and they exist only to
-# synthesise a conformant registry that the mutation tests below then break. A
-# copy therefore proved nothing the module did not already state, while every
-# new gate suite had to be written into both. Verification is unchanged: each
-# mutation test still breaks this fixture and asserts the contract rejects it,
-# and `PinDerivationTests` pins the one derivation the module now performs.
-INTERNAL_CI_ROOTS = contract._INTERNAL_CI_ROOTS
-INTERNAL_ROOT_SUITES = contract._INTERNAL_ROOT_SUITES
-INTERNAL_ROOT_CHILDREN = contract._INTERNAL_ROOT_CHILDREN
-REQUIRED_JOB_ROOTS = contract._REQUIRED_JOB_ROOTS
-REQUIRED_ROOT_CHILDREN = contract._REQUIRED_ROOT_CHILDREN
-ALL_CI_SUITES = contract._ALL_CI_SUITES
-REQUIRED_JOB_SUITES = contract._REQUIRED_JOB_SUITES
 LOCAL_AGGREGATE_CHILDREN = contract._LOCAL_AGGREGATE_CHILDREN
-PUBLIC_ROOTS = contract.public_root_gate_ids(
-    contract.parse_public_gate_contract(contract.load_contract_document(ROOT)),
-    contract.PUBLIC_SUITE_NAMES,
-)
 
 
 def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
@@ -332,84 +278,21 @@ def aggregate(gate_id: str, children: tuple[str, ...]) -> contract.GateNode:
     )
 
 
-def setup(gate_id: str) -> contract.GateNode:
-    return contract.GateNode(
-        gate_id=gate_id,
-        kind=contract.GateKind.SETUP,
-        suite_key=None,
-        entrypoint=pathlib.PurePosixPath("scripts/validation/check-document-links.py"),
-        argv=(),
-        cwd=pathlib.PurePosixPath("."),
-        allowed_env_keys=(),
-        timeout_minutes=10,
-        opaque=False,
-        children=(),
-    )
-
-
 def complete_registry() -> contract.GateRegistry:
-    nodes: dict[str, contract.GateNode] = {}
-    job_roots: list[contract.JobRoot] = []
-    for internal_job, root_gate_id in INTERNAL_CI_ROOTS.items():
-        for suite_key in INTERNAL_ROOT_SUITES[internal_job]:
-            gate_id = f"leaf.{suite_key}"
-            nodes.setdefault(gate_id, leaf(gate_id, suite_key))
-        nodes[root_gate_id] = aggregate(
-            root_gate_id,
-            INTERNAL_ROOT_CHILDREN[root_gate_id],
-        )
-    for job_id, root_gate_id in REQUIRED_JOB_ROOTS.items():
-        nodes[root_gate_id] = aggregate(
-            root_gate_id,
-            REQUIRED_ROOT_CHILDREN[root_gate_id],
-        )
-        job_roots.append(
-            contract.JobRoot(
-                workflow=".github/workflows/ci-quality.yml",
-                job_id=job_id,
-                root_gate_id=root_gate_id,
-                classification="required-quality",
-            )
-        )
-
-    structural_children = {
-        gate_id
-        for children in (
-            *INTERNAL_ROOT_CHILDREN.values(),
-            *REQUIRED_ROOT_CHILDREN.values(),
-            *LOCAL_AGGREGATE_CHILDREN.values(),
-        )
-        for gate_id in children
-    }
-    public_leaf_roots = {
-        gate_id for gate_id in PUBLIC_ROOTS if gate_id.startswith("leaf.")
-    }
-    for gate_id in structural_children | public_leaf_roots:
-        if gate_id.startswith("setup."):
-            nodes.setdefault(gate_id, setup(gate_id))
-        elif gate_id.startswith("leaf."):
-            suite_key = gate_id.removeprefix("leaf.")
-            nodes.setdefault(gate_id, leaf(gate_id, suite_key))
-    for gate_id, children in LOCAL_AGGREGATE_CHILDREN.items():
-        nodes[gate_id] = aggregate(gate_id, children)
-
-    return contract.GateRegistry(
-        nodes=tuple(nodes.values()),
-        job_roots=tuple(job_roots),
-        public_roots=PUBLIC_ROOTS,
+    return contract.parse_gate_registry(
+        contract.load_contract_document(ROOT),
+        ".github/workflow-contract.yml",
     )
 
 
 def registry(
     *,
     nodes: tuple[contract.GateNode, ...] | None = None,
-    job_roots: tuple[contract.JobRoot, ...] | None = None,
     public_roots: tuple[str, ...] | None = None,
 ) -> contract.GateRegistry:
     default = complete_registry()
     return contract.GateRegistry(
         nodes=nodes if nodes is not None else default.nodes,
-        job_roots=(job_roots if job_roots is not None else default.job_roots),
         public_roots=(
             public_roots if public_roots is not None else default.public_roots
         ),
@@ -438,10 +321,13 @@ class CiGateContractTests(unittest.TestCase):
             leaf.entrypoint,
         )
         self.assertEqual((), leaf.argv)
-        self.assertIn(
-            leaf.gate_id,
-            nodes["ci.repo-contracts"].children,
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
         )
+        operations_roots = next(
+            route.root_gate_ids for route in public.suites if route.name == "operations"
+        )
+        self.assertIn(leaf.gate_id, operations_roots)
 
     def test_schema_v2_contract_is_strict_json_and_duplicate_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -450,16 +336,15 @@ class CiGateContractTests(unittest.TestCase):
             contract_path.parent.mkdir()
             cases = (
                 (
-                    '{"schema_version":2,"schema_version":2,'
-                    '"gate_nodes":[],"job_roots":[]}',
+                    '{"schema_version":2,"schema_version":2,"gate_nodes":[]}',
                     "ci-gate-json-duplicate-key",
                 ),
                 (
-                    "schema_version: 2\ngate_nodes: []\njob_roots: []\n",
+                    "schema_version: 2\ngate_nodes: []\n",
                     "ci-gate-json-invalid",
                 ),
                 (
-                    '{"schema_version":1,"gate_nodes":[],"job_roots":[]}',
+                    '{"schema_version":1,"gate_nodes":[]}',
                     "ci-gate-schema-version",
                 ),
             )
@@ -473,7 +358,6 @@ class CiGateContractTests(unittest.TestCase):
             unknown = {
                 "schema_version": 2,
                 "gate_nodes": [],
-                "job_roots": [],
                 "unknown": [],
             }
             with self.assertRaises(contract.GateContractError) as caught:
@@ -486,7 +370,6 @@ class CiGateContractTests(unittest.TestCase):
             float_schema = {
                 "schema_version": 2.0,
                 "gate_nodes": [],
-                "job_roots": [],
             }
             with self.subTest(boundary="float-schema"):
                 with self.assertRaises(contract.GateContractError) as caught:
@@ -504,7 +387,7 @@ class CiGateContractTests(unittest.TestCase):
                 + "[" * 1500
                 + "0"
                 + "]" * 1500
-                + ',"job_roots":[]}',
+                + "}",
                 encoding="utf-8",
             )
             with self.subTest(boundary="deep-json"):
@@ -531,7 +414,6 @@ class CiGateContractTests(unittest.TestCase):
                     }
                     for index in range(2049)
                 ],
-                "job_roots": [],
             }
             with self.subTest(boundary="node-limit"):
                 with self.assertRaises(contract.GateContractError) as caught:
@@ -605,7 +487,6 @@ class CiGateContractTests(unittest.TestCase):
                 document: dict[str, object] = {
                     "schema_version": 2,
                     "gate_nodes": [invalid_node],
-                    "job_roots": [],
                 }
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_gate_registry(
@@ -629,33 +510,28 @@ class CiGateContractTests(unittest.TestCase):
                 if mutation == "cycle":
                     candidate = registry()
                     nodes = tuple(
-                        aggregate(node.gate_id, ("ci.repo-contracts",))
-                        if node.gate_id == "ci.docs-traceability"
-                        else aggregate(
+                        aggregate(
                             node.gate_id,
-                            (*node.children, "ci.docs-traceability"),
+                            (*node.children, "local.workflow-harness"),
                         )
-                        if node.gate_id == "ci.repo-contracts"
+                        if node.gate_id == "local.workflow-harness"
                         else node
                         for node in candidate.nodes
                     )
-                    roots = candidate.job_roots
                 elif mutation == "missing-child":
                     candidate = registry()
                     nodes = tuple(
                         aggregate(node.gate_id, ("leaf.missing",))
-                        if node.gate_id == "ci.docs-traceability"
+                        if node.gate_id == "local.workflow-harness"
                         else node
                         for node in candidate.nodes
                     )
-                    roots = candidate.job_roots
                 else:
                     candidate = registry()
                     nodes = (*candidate.nodes, leaf("leaf.orphan", "orphan"))
-                    roots = candidate.job_roots
                 findings = contract.validate_gate_registry(
                     ROOT,
-                    registry(nodes=nodes, job_roots=roots),
+                    registry(nodes=nodes),
                 )
                 self.assertEqual(
                     {finding.code for finding in findings},
@@ -678,24 +554,14 @@ class CiGateContractTests(unittest.TestCase):
         ) + (leaf("leaf.deep", "deep"),)
         deep_registry = contract.GateRegistry(
             deep_nodes,
-            (
-                contract.JobRoot(
-                    ".github/workflows/ci-quality.yml",
-                    "validation-changed",
-                    "aggregate.deep-0",
-                    "required-quality",
-                ),
-            ),
             ("aggregate.deep-0",),
         )
         with self.subTest(boundary="deep-iterative-expansion"):
             self.assertEqual(
                 ("leaf.deep",),
-                contract.expand_gate_ids(
+                contract.expand_public_gate_ids(
                     deep_registry,
-                    "ci",
-                    None,
-                    True,
+                    ("aggregate.deep-0",),
                 ),
             )
 
@@ -728,110 +594,141 @@ class CiGateContractTests(unittest.TestCase):
         )
         findings = contract.validate_gate_registry(
             ROOT,
-            registry(
-                nodes=duplicate_suite_nodes,
-                job_roots=candidate.job_roots,
-            ),
+            registry(nodes=duplicate_suite_nodes),
         )
-        self.assert_codes(
-            findings,
-            "ci-gate-suite-duplicate",
-            "ci-gate-suite-owner-duplicate",
-        )
+        self.assert_codes(findings, "ci-gate-suite-duplicate")
 
-        candidate = registry()
-        duplicate_path_nodes = tuple(
-            aggregate(
-                node.gate_id,
-                (*node.children, "aggregate.duplicate-path"),
-            )
-            if node.gate_id == "ci.docs-traceability"
-            else node
-            for node in candidate.nodes
-        ) + (
-            aggregate(
-                "aggregate.duplicate-path",
-                ("leaf.docs-traceability",),
-            ),
-        )
-        findings = contract.validate_gate_registry(
-            ROOT,
-            registry(
-                nodes=duplicate_path_nodes,
-                job_roots=candidate.job_roots,
-            ),
-        )
-        self.assert_codes(findings, "ci-gate-internal-root-children")
-
-    def test_required_job_roots_are_the_exact_two_workflow_jobs(self) -> None:
+    def test_public_routes_require_setup_before_frontend_consumers(self) -> None:
         candidate = complete_registry()
-        findings = contract.validate_gate_registry(ROOT, candidate)
-        self.assertEqual((), findings)
-        findings = contract.validate_gate_registry(
-            ROOT,
-            contract.GateRegistry(
-                candidate.nodes,
-                candidate.job_roots[:-1],
-                candidate.public_roots,
-            ),
-        )
-        self.assert_codes(findings, "ci-gate-required-job-roots")
-
-        duplicate = contract.GateRegistry(
-            candidate.nodes,
-            (*candidate.job_roots, candidate.job_roots[0]),
-            candidate.public_roots,
-        )
-        self.assert_codes(
-            contract.validate_gate_registry(ROOT, duplicate),
-            "ci-gate-required-job-roots",
-        )
-        for label, extra in (
+        cases = (
             (
-                "third-required-job",
-                contract.JobRoot(
-                    ".github/workflows/ci-quality.yml",
-                    "validation-third",
-                    "ci.validation-full",
-                    "required-quality",
+                "frontend-reversed",
+                "ci.frontend-quality",
+                lambda children: tuple(reversed(children)),
+                "ci-gate-setup-prerequisite",
+            ),
+            (
+                "frontend-missing",
+                "ci.frontend-quality",
+                lambda children: tuple(
+                    child
+                    for child in children
+                    if child != "setup.frontend-node-dependencies"
                 ),
+                "ci-gate-active-aggregate-child",
             ),
             (
-                "missing-workflow-job-id",
-                dataclasses.replace(candidate.job_roots[0], job_id="not-in-workflow"),
+                "storybook-playwright-before-npm-ci",
+                "ci.storybook-coverage",
+                lambda children: (
+                    "setup.storybook-playwright",
+                    "setup.frontend-node-dependencies",
+                    "leaf.storybook-coverage",
+                ),
+                "ci-gate-setup-prerequisite",
             ),
-        ):
-            with self.subTest(label=label):
-                mutated_jobs = (
-                    (*candidate.job_roots, extra)
-                    if label == "third-required-job"
-                    else (extra, candidate.job_roots[1])
+            (
+                "storybook-late-playwright",
+                "ci.storybook-coverage",
+                lambda children: (
+                    "setup.frontend-node-dependencies",
+                    "leaf.storybook-coverage",
+                    "setup.storybook-playwright",
+                ),
+                "ci-gate-setup-prerequisite",
+            ),
+        )
+        for label, root_gate_id, mutate, expected_code in cases:
+            with self.subTest(case=label):
+                nodes = tuple(
+                    dataclasses.replace(node, children=mutate(node.children))
+                    if node.gate_id == root_gate_id
+                    else node
+                    for node in candidate.nodes
+                )
+                mutated = dataclasses.replace(candidate, nodes=nodes)
+                self.assert_codes(
+                    contract.validate_gate_registry(ROOT, mutated),
+                    expected_code,
+                )
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.expand_public_gate_ids(mutated, (root_gate_id,))
+                self.assertEqual(
+                    expected_code,
+                    caught.exception.code,
+                )
+
+    def test_active_aggregates_retain_every_mandatory_child(self) -> None:
+        candidate = complete_registry()
+        for (
+            aggregate,
+            required_children,
+        ) in contract._REQUIRED_ACTIVE_AGGREGATE_CHILDREN.items():
+            for missing_child in required_children:
+                with self.subTest(
+                    aggregate=aggregate,
+                    missing_child=missing_child,
+                ):
+                    nodes = tuple(
+                        dataclasses.replace(
+                            node,
+                            children=tuple(
+                                child
+                                for child in node.children
+                                if child != missing_child
+                            ),
+                        )
+                        if node.gate_id == aggregate
+                        else node
+                        for node in candidate.nodes
+                    )
+                    mutated = dataclasses.replace(candidate, nodes=nodes)
+                    self.assert_codes(
+                        contract.validate_gate_registry(ROOT, mutated),
+                        "ci-gate-active-aggregate-child",
+                    )
+                    with self.assertRaises(contract.GateContractError) as caught:
+                        contract.expand_public_gate_ids(mutated, (aggregate,))
+                    self.assertEqual(
+                        "ci-gate-active-aggregate-child",
+                        caught.exception.code,
+                    )
+        for missing_root in contract._REQUIRED_ACTIVE_AGGREGATE_CHILDREN:
+            with self.subTest(missing_root=missing_root):
+                mutated = dataclasses.replace(
+                    candidate,
+                    nodes=tuple(
+                        node for node in candidate.nodes if node.gate_id != missing_root
+                    ),
+                    public_roots=tuple(
+                        root for root in candidate.public_roots if root != missing_root
+                    ),
                 )
                 self.assert_codes(
-                    contract.validate_gate_registry(
-                        ROOT,
-                        dataclasses.replace(candidate, job_roots=mutated_jobs),
-                    ),
-                    "ci-gate-required-job-roots",
+                    contract.validate_gate_registry(ROOT, mutated),
+                    "ci-gate-active-aggregate-root",
                 )
 
-        wrong_children = tuple(
-            dataclasses.replace(
-                node,
-                children=tuple(reversed(node.children)),
-            )
-            if node.gate_id == "ci.repo-contracts"
-            else node
-            for node in candidate.nodes
+    def test_public_roots_are_the_only_graph_reachability_authority(self) -> None:
+        candidate = complete_registry()
+        reachable = contract._expanded_all_ids(
+            {node.gate_id: node for node in candidate.nodes},
+            candidate.public_roots,
         )
-        with self.subTest(boundary="required-root-children"):
-            self.assert_codes(
-                contract.validate_gate_registry(
-                    ROOT,
-                    dataclasses.replace(candidate, nodes=wrong_children),
-                ),
-                "ci-gate-internal-root-children",
-            )
+        self.assertEqual(
+            {node.gate_id for node in candidate.nodes},
+            set(reachable),
+        )
+        self.assertEqual((), contract.validate_gate_registry(ROOT, candidate))
+        for roots in (
+            (),
+            (candidate.public_roots[0], candidate.public_roots[0]),
+            ("leaf.docs-traceability",),
+        ):
+            with self.subTest(boundary="public-root-admission", roots=roots):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.expand_public_gate_ids(candidate, roots)
+                self.assertEqual("ci-gate-public-roots", caught.exception.code)
 
         with self.subTest(boundary="hostile-git-environment"):
             with mock.patch.dict(
@@ -866,31 +763,27 @@ class CiGateContractTests(unittest.TestCase):
                     (),
                     contract.validate_gate_registry(ROOT, candidate),
                 )
-            self.assertEqual(1, len(observed))
-            arguments, kwargs = observed[0]
-            self.assertEqual(
-                [
-                    "git",
-                    "--literal-pathspecs",
-                    "ls-files",
-                    "--error-unmatch",
-                    "--",
-                ],
-                arguments[:-1],
-            )
-            self.assertEqual(ROOT, kwargs["cwd"])
-            self.assertEqual(5, kwargs["timeout"])
-            environment = kwargs["env"]
-            self.assertIsInstance(environment, dict)
-            self.assertFalse(
-                {
-                    "GIT_DIR",
-                    "GIT_INDEX_FILE",
-                }
-                & set(environment),
-            )
-            self.assertEqual("/dev/null", environment["GIT_CONFIG_GLOBAL"])
-            self.assertEqual("1", environment["GIT_CONFIG_NOSYSTEM"])
+            self.assertTrue(observed)
+            for arguments, kwargs in observed:
+                self.assertEqual(
+                    [
+                        "git",
+                        "--literal-pathspecs",
+                        "ls-files",
+                        "--error-unmatch",
+                        "--",
+                    ],
+                    arguments[:-1],
+                )
+                self.assertEqual(ROOT, kwargs["cwd"])
+                self.assertEqual(5, kwargs["timeout"])
+                environment = kwargs["env"]
+                self.assertIsInstance(environment, dict)
+                self.assertFalse(
+                    {"GIT_DIR", "GIT_INDEX_FILE"} & set(environment),
+                )
+                self.assertEqual("/dev/null", environment["GIT_CONFIG_GLOBAL"])
+                self.assertEqual("1", environment["GIT_CONFIG_NOSYSTEM"])
 
         with self.subTest(boundary="git-timeout"):
             with mock.patch.object(
@@ -960,7 +853,6 @@ class CiGateContractTests(unittest.TestCase):
             valid = {
                 "schema_version": 2,
                 "gate_nodes": [],
-                "job_roots": [],
             }
             contract_path.write_text(json.dumps(valid), encoding="utf-8")
             symlink_root = base / "repo-link"
@@ -1090,7 +982,6 @@ class CiGateContractTests(unittest.TestCase):
                             "allowed_env_keys": [key],
                         }
                     ],
-                    "job_roots": [],
                 }
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_gate_registry(

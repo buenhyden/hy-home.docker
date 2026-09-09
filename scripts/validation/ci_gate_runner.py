@@ -23,12 +23,11 @@ from scripts.lib.gate import ci_gate_adapters
 try:
     from scripts.lib.gate.ci_gate_contract import (
         GateContractError,
-        GateKind,
         GateRegistry,
         PUBLIC_SUITE_NAMES,
         PublicGateContract,
         PublicValidatorRoute,
-        expand_gate_ids,
+        expand_public_gate_ids,
         load_contract_document,
         parse_gate_registry,
         parse_public_gate_contract,
@@ -40,12 +39,11 @@ try:
 except ModuleNotFoundError:  # Direct sibling-script execution.
     from ci_gate_contract import (  # type: ignore[no-redef]
         GateContractError,
-        GateKind,
         GateRegistry,
         PUBLIC_SUITE_NAMES,
         PublicGateContract,
         PublicValidatorRoute,
-        expand_gate_ids,
+        expand_public_gate_ids,
         load_contract_document,
         parse_gate_registry,
         parse_public_gate_contract,
@@ -296,46 +294,6 @@ class _GateArgumentParser(argparse.ArgumentParser):
         )
 
 
-def build_execution_plan(
-    registry: GateRegistry,
-    profile: str,
-    gate_id: str | None,
-    all_roots: bool,
-) -> tuple[GateInvocation, ...]:
-    node_by_id = {node.gate_id: node for node in registry.nodes}
-    gate_ids = expand_gate_ids(registry, profile, gate_id, all_roots)
-    invocations: list[GateInvocation] = []
-    seen: set[str] = set()
-    for selected_id in gate_ids:
-        if selected_id in seen:
-            continue
-        seen.add(selected_id)
-        node = node_by_id.get(selected_id)
-        if (
-            node is None
-            or node.kind is GateKind.AGGREGATE
-            or node.entrypoint is None
-            or node.cwd is None
-            or node.timeout_minutes is None
-        ):
-            raise GateContractError(
-                "ci-gate-execution-node",
-                selected_id,
-                "the selected executable gate is incomplete",
-            )
-        invocations.append(
-            GateInvocation(
-                gate_id=node.gate_id,
-                entrypoint=node.entrypoint,
-                argv=node.argv,
-                cwd=node.cwd,
-                allowed_env_keys=node.allowed_env_keys,
-                timeout_seconds=node.timeout_minutes * 60,
-            )
-        )
-    return tuple(invocations)
-
-
 def build_public_execution_plan(
     registry: GateRegistry,
     root_gate_ids: tuple[str, ...],
@@ -349,40 +307,8 @@ def build_public_execution_plan(
             "gate_nodes",
             "gate identifiers must be unique",
         )
-    ordered: list[str] = []
-    seen: set[str] = set()
-    active: set[str] = set()
-
-    def visit(gate_id: str) -> None:
-        if gate_id in seen:
-            return
-        if gate_id in active:
-            raise GateContractError(
-                "ci-gate-cycle",
-                "gate_nodes",
-                "the gate graph must be acyclic",
-            )
-        node = node_by_id.get(gate_id)
-        if node is None:
-            raise GateContractError(
-                "ci-gate-child-missing",
-                gate_id,
-                "a registered public root or child does not exist",
-            )
-        active.add(gate_id)
-        if node.kind is GateKind.AGGREGATE:
-            for child in node.children:
-                visit(child)
-        else:
-            ordered.append(gate_id)
-        active.remove(gate_id)
-        seen.add(gate_id)
-
-    for gate_id in root_gate_ids:
-        visit(gate_id)
-
     invocations: list[GateInvocation] = []
-    for gate_id in ordered:
+    for gate_id in expand_public_gate_ids(registry, root_gate_ids):
         node = node_by_id[gate_id]
         if node.entrypoint is None or node.cwd is None or node.timeout_minutes is None:
             raise GateContractError(
@@ -662,15 +588,6 @@ def _filter_execution_context(
     )
 
 
-def render_execution_plan(
-    plan: tuple[GateInvocation, ...],
-) -> tuple[str, ...]:
-    return tuple(
-        f"{invocation.gate_id}\t{invocation.entrypoint.as_posix()}"
-        for invocation in plan
-    )
-
-
 def execute_execution_plan(
     root: pathlib.Path,
     plan: tuple[GateInvocation, ...],
@@ -701,6 +618,7 @@ def execute_execution_plan(
             )
         root_fd = _open_root(canonical_root)
         verified: list[_VerifiedInvocation] = []
+        preflight_only: list[_VerifiedInvocation] = []
         try:
             descriptor_root = f"/proc/self/fd/{root_fd}"
             python_bootstrap = _create_python_bootstrap(
@@ -715,6 +633,26 @@ def execute_execution_plan(
                         path_value,
                     )
                 )
+                if (
+                    invocation.entrypoint == _INTERNAL_ADAPTER_PATH
+                    and invocation.argv == ("run-agent-output-eval",)
+                ):
+                    preflight_only.append(
+                        _verify_invocation(
+                            root_fd,
+                            dataclasses.replace(
+                                invocation,
+                                gate_id=("preflight-only.agent-output-eval-dependency"),
+                                entrypoint=pathlib.PurePosixPath(
+                                    "evals/agent_output_eval.py"
+                                ),
+                                argv=(),
+                                cwd=pathlib.PurePosixPath("."),
+                                allowed_env_keys=(),
+                            ),
+                            path_value,
+                        )
+                    )
             for item in verified:
                 child_environment = _child_environment(
                     root_fd,
@@ -733,7 +671,7 @@ def execute_execution_plan(
                     return result
             return 0
         finally:
-            for item in verified:
+            for item in (*verified, *preflight_only):
                 _close(item.entrypoint_fd)
                 _close(item.cwd_fd)
             _close(root_fd)

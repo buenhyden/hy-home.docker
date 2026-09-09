@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
+import errno
 import io
 import os
 import pathlib
@@ -351,6 +352,155 @@ class DescriptorExecutionTests(unittest.TestCase):
                     )
                 self.assertEqual(expected_code, caught.exception.code)
 
+    def test_agent_eval_dependency_is_preflighted_without_second_execution(
+        self,
+    ) -> None:
+        cases = (
+            ("valid", None),
+            ("untracked", "ci-gate-entrypoint-untracked"),
+            ("symlink", "ci-gate-entrypoint-symlink"),
+            ("mode", "ci-gate-entrypoint-mode"),
+            ("identity", "ci-gate-entrypoint-identity"),
+        )
+        for case, expected_code in cases:
+            with (
+                self.subTest(case=case),
+                tempfile.TemporaryDirectory(dir="/tmp") as directory,
+            ):
+                root = pathlib.Path(directory).resolve()
+                REAL_SUBPROCESS_RUN(
+                    ["git", "init", "-q"],
+                    cwd=root,
+                    check=True,
+                )
+
+                def add_entrypoint(
+                    relative: str,
+                    *,
+                    mode: int = 0o755,
+                    tracked: bool = True,
+                ) -> pathlib.Path:
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(
+                        "#!/usr/bin/env python3\nraise SystemExit(0)\n",
+                        encoding="utf-8",
+                    )
+                    path.chmod(mode)
+                    if tracked:
+                        REAL_SUBPROCESS_RUN(
+                            ["git", "add", "--", relative],
+                            cwd=root,
+                            check=True,
+                        )
+                        if mode & 0o111:
+                            REAL_SUBPROCESS_RUN(
+                                [
+                                    "git",
+                                    "update-index",
+                                    "--chmod=+x",
+                                    "--",
+                                    relative,
+                                ],
+                                cwd=root,
+                                check=True,
+                            )
+                    return path
+
+                add_entrypoint("scripts/lib/gate/ci_gate_adapters.py")
+                dependency = root / "evals/agent_output_eval.py"
+                if case == "untracked":
+                    add_entrypoint(
+                        "evals/agent_output_eval.py",
+                        tracked=False,
+                    )
+                elif case == "symlink":
+                    target = add_entrypoint("evals/target.py")
+                    dependency.parent.mkdir(parents=True, exist_ok=True)
+                    dependency.symlink_to(target.name)
+                    REAL_SUBPROCESS_RUN(
+                        ["git", "add", "--", "evals/agent_output_eval.py"],
+                        cwd=root,
+                        check=True,
+                    )
+                elif case == "mode":
+                    add_entrypoint(
+                        "evals/agent_output_eval.py",
+                        mode=0o644,
+                    )
+                else:
+                    add_entrypoint("evals/agent_output_eval.py")
+                    if case == "identity":
+                        dependency.write_text(
+                            "#!/usr/bin/env python3\nraise SystemExit(9)\n",
+                            encoding="utf-8",
+                        )
+
+                invocation = dataclasses.replace(
+                    _invocation(
+                        "leaf.agent-output-eval-fixture-gate",
+                        "scripts/lib/gate/ci_gate_adapters.py",
+                    ),
+                    argv=("run-agent-output-eval",),
+                )
+                child_calls: list[str] = []
+                dependency_fds: list[int] = []
+                real_open_entrypoint = runner._open_entrypoint_at
+
+                def record_dependency_fd(
+                    root_fd: int,
+                    path: pathlib.PurePosixPath,
+                ) -> int:
+                    descriptor = real_open_entrypoint(root_fd, path)
+                    if path == pathlib.PurePosixPath("evals/agent_output_eval.py"):
+                        dependency_fds.append(descriptor)
+                    return descriptor
+
+                with (
+                    mock.patch.object(
+                        runner,
+                        "_open_entrypoint_at",
+                        side_effect=record_dependency_fd,
+                    ),
+                    mock.patch.object(
+                        runner,
+                        "_run_verified_child",
+                        side_effect=lambda _root_fd, item, _environment: (
+                            child_calls.append(item.invocation.gate_id) or 0
+                        ),
+                    ),
+                ):
+                    if expected_code is None:
+                        self.assertEqual(
+                            0,
+                            runner.execute_execution_plan(
+                                root,
+                                (invocation,),
+                                {"PATH": os.environ.get("PATH", os.defpath)},
+                            ),
+                        )
+                    else:
+                        with self.assertRaises(contract.GateContractError) as caught:
+                            runner.execute_execution_plan(
+                                root,
+                                (invocation,),
+                                {"PATH": os.environ.get("PATH", os.defpath)},
+                            )
+                        self.assertEqual(expected_code, caught.exception.code)
+
+                self.assertEqual(
+                    (
+                        ["leaf.agent-output-eval-fixture-gate"]
+                        if expected_code is None
+                        else []
+                    ),
+                    child_calls,
+                )
+                for descriptor in dependency_fds:
+                    with self.assertRaises(OSError) as caught:
+                        os.fstat(descriptor)
+                    self.assertEqual(errno.EBADF, caught.exception.errno)
+
     def test_path_replacement_after_open_executes_verified_descriptor(self) -> None:
         path = self.add_entrypoint(
             "scripts/validation/bound.py",
@@ -443,15 +593,6 @@ class DescriptorExecutionTests(unittest.TestCase):
         self._assert_python_startup_ignores_untracked_sitecustomize()
 
     def _assert_descriptor_root_survives_path_replacement(self) -> None:
-        (self.root / ".env.example").write_text(
-            "ORIGINAL_ROOT=1\n",
-            encoding="utf-8",
-        )
-        REAL_SUBPROCESS_RUN(
-            ["git", "add", "--", ".env.example"],
-            cwd=self.root,
-            check=True,
-        )
         adapter_source = pathlib.Path(adapters.__file__).read_text(encoding="utf-8")
         self.add_entrypoint(
             "scripts/lib/gate/ci_gate_adapters.py",
@@ -483,20 +624,21 @@ class DescriptorExecutionTests(unittest.TestCase):
                         (
                             dataclasses.replace(
                                 _invocation(
-                                    "setup.compose-env",
+                                    "leaf.shell-syntax",
                                     "scripts/lib/gate/ci_gate_adapters.py",
                                 ),
-                                argv=("prepare-compose-env",),
+                                argv=("check-shell-syntax",),
                             ),
                         ),
                         {"PATH": os.environ.get("PATH", os.defpath)},
                     ),
                 )
-                self.assertEqual(
-                    "ORIGINAL_ROOT=1\n",
-                    (original_root / ".env").read_text(encoding="utf-8"),
+                self.assertTrue(
+                    (original_root / "scripts/lib/gate/ci_gate_adapters.py").is_file()
                 )
-                self.assertFalse((self.root / ".env").exists())
+                self.assertFalse(
+                    (self.root / "scripts/lib/gate/ci_gate_adapters.py").exists()
+                )
             finally:
                 if replaced:
                     shutil.rmtree(self.root)
@@ -552,15 +694,6 @@ class DescriptorExecutionTests(unittest.TestCase):
             "scripts/lib/gate/ci_gate_adapters.py",
             adapter_source,
         )
-        (self.root / ".env.example").write_text(
-            "SAFE_EXAMPLE=1\n",
-            encoding="utf-8",
-        )
-        REAL_SUBPROCESS_RUN(
-            ["git", "add", "--", ".env.example"],
-            cwd=self.root,
-            check=True,
-        )
         fake_bin = self.root / "fake-bin"
         fake_bin.mkdir()
         fake_uvx = fake_bin / "uvx"
@@ -572,10 +705,10 @@ class DescriptorExecutionTests(unittest.TestCase):
         plan = (
             dataclasses.replace(
                 _invocation(
-                    "setup.compose-env",
+                    "leaf.shell-syntax",
                     "scripts/lib/gate/ci_gate_adapters.py",
                 ),
-                argv=("prepare-compose-env",),
+                argv=("check-shell-syntax",),
             ),
             dataclasses.replace(
                 _invocation(
@@ -594,14 +727,9 @@ class DescriptorExecutionTests(unittest.TestCase):
             ),
         )
         self.assertEqual(
-            b"SAFE_EXAMPLE=1\n",
-            (self.root / ".env").read_bytes(),
-        )
-        self.assertEqual(
             b'{"runs":[]}\n',
             (self.root / "results.sarif").read_bytes(),
         )
-        (self.root / ".env").unlink()
         (self.root / "results.sarif").unlink()
 
     def _fd_inventory_uvx_source(self) -> str:

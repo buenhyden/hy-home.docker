@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -28,8 +28,10 @@ W17 as separate coherent units, then W20 by domain starting with auth; W21
 verification applies to each unit and the final approved result. Operations
 execution planning remains on hold, including synthetic runtime rehearsals.
 Task 0006 owns approval and evidence; package status is not execution approval.
-Preserve the new implementation branch/worktrees at delivery unless the user
-separately requests their integration or cleanup.
+The latest separate user instruction prioritizes committing the in-progress
+snapshot, integrating it into local main and force-cleaning the task-owned
+branch/worktrees. Task 0006 records this disposition and the remaining findings;
+Git integration does not promote incomplete work units or package status.
 
 ## Dependencies
 
@@ -260,7 +262,8 @@ Owner: writable CI/CD contributor. Root alone coordinates shared contract,
 manifest and Task changes; independent code/security reviewers do not write.
 Files: `.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py`,
 `scripts/lib/gate/github_workflow_contract.py`, `scripts/lib/gate/ci_gate_adapters.py`,
-`scripts/validation/ci_gate_runner.py`, their existing `tests/lib/gate/` and
+`scripts/validation/ci_gate_runner.py`, the active
+`scripts/validation/check-storybook-contract.sh` graph consumer, their existing `tests/lib/gate/` and
 `tests/validation/test_ci_gate_*.py` consumers, and affected manifest/docs only.
 
 1. Capture expanded invocation and setup plans for changed/local,
@@ -278,6 +281,14 @@ Files: `.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py`,
    argv/env admission and required failure propagation. Retire only the unused
    parser closure; keep active helpers and add missing negative cases first.
 4. Compare before/after semantic leaf coverage and invocation multiplicity.
+   The confirmed eval overlap retains the existing bounded-output adapter and
+   fixture unittest leaf; remove only the direct duplicate evaluator route.
+   Verify child failure, output boundaries and one effective eval call per
+   selected context. Preserve the inner evaluator's existing pre-execution
+   tracked-file and object-identity check using the current verifier, without
+   scheduling a second evaluation. Preserve active frontend setup prerequisites when removing
+   obsolete structural pins; unchanged valid plans alone do not prove malformed
+   contracts still fail closed.
    Exercise workflow contract and gate library/CLI regressions. Review the exact
    diff before the graph cutover commit; no test-count or node-count target.
 

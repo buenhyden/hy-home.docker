@@ -164,64 +164,12 @@
   },
   "gate_nodes": [
     {
-      "gate_id": "ci.validation-changed",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "ci.docs-traceability",
-        "ci.repo-contracts",
-        "ci.agent-output-eval-fixture-gate",
-        "ci.supply-chain-fixture-policy",
-        "ci.dependency-vulnerability-audit",
-        "ci.git-flow-contract",
-        "ci.compose-validation",
-        "ci.infrastructure-hardening",
-        "ci.template-security-baseline",
-        "ci.quickwin-baseline",
-        "ci.pre-commit",
-        "ci.frontend-quality",
-        "ci.storybook-coverage",
-        "ci.zizmor"
-      ]
-    },
-    {
-      "gate_id": "ci.validation-full",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "ci.docs-traceability",
-        "ci.repo-contracts",
-        "ci.agent-output-eval-fixture-gate",
-        "ci.supply-chain-fixture-policy",
-        "ci.dependency-vulnerability-audit",
-        "ci.git-flow-contract",
-        "ci.compose-validation",
-        "ci.infrastructure-hardening",
-        "ci.template-security-baseline",
-        "ci.quickwin-baseline",
-        "ci.pre-commit",
-        "ci.frontend-quality",
-        "ci.storybook-coverage",
-        "ci.zizmor"
-      ]
-    },
-    {
       "gate_id": "ci.agent-output-eval-fixture-gate",
       "kind": "aggregate",
       "opaque": false,
       "children": [
         "leaf.agent-output-eval-fixture-regressions",
         "leaf.agent-output-eval-fixture-gate"
-      ]
-    },
-    {
-      "gate_id": "ci.compose-validation",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.compose-validation",
-        "leaf.postgres-logical-upgrade-config"
       ]
     },
     {
@@ -261,58 +209,6 @@
       ]
     },
     {
-      "gate_id": "ci.infrastructure-hardening",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.infrastructure-hardening"
-      ]
-    },
-    {
-      "gate_id": "ci.pre-commit",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "setup.precommit-python-dependencies",
-        "leaf.pre-commit"
-      ]
-    },
-    {
-      "gate_id": "ci.quickwin-baseline",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.quickwin-baseline"
-      ]
-    },
-    {
-      "gate_id": "ci.repo-contracts",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.repo-metadata-base",
-        "setup.repo-python-dependencies",
-        "leaf.repo-document-metadata",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions",
-        "leaf.repository-integrity-regressions",
-        "leaf.document-lifecycle-regressions",
-        "leaf.ci-gate-contract-regressions",
-        "leaf.ci-gate-runner-regressions",
-        "leaf.ci-gate-adapter-regressions",
-        "leaf.workflow-contract-regressions",
-        "leaf.repo-contracts-control-plane-regressions",
-        "leaf.ci-precommit-regressions",
-        "leaf.document-governance-library-regressions",
-        "leaf.compose-baseline-regressions",
-        "leaf.workflow-contract",
-        "leaf.operations-catalog",
-        "leaf.repo-contracts"
-      ]
-    },
-    {
       "gate_id": "ci.storybook-coverage",
       "kind": "aggregate",
       "opaque": false,
@@ -320,25 +216,6 @@
         "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
         "leaf.storybook-coverage"
-      ]
-    },
-    {
-      "gate_id": "ci.supply-chain-fixture-policy",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.supply-chain-fixture-policy",
-        "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness"
-      ]
-    },
-    {
-      "gate_id": "ci.template-security-baseline",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "setup.compose-env",
-        "leaf.template-security-baseline"
       ]
     },
     {
@@ -919,17 +796,6 @@
       "suite_key": "repository-integrity-regressions"
     },
     {
-      "gate_id": "leaf.repo-contracts",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-script-manifest.py",
-      "argv": [],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "repo-contracts"
-    },
-    {
       "gate_id": "leaf.repo-contracts-control-plane-regressions",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1162,18 +1028,6 @@
       ]
     },
     {
-      "gate_id": "setup.compose-env",
-      "kind": "setup",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "prepare-compose-env"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": false
-    },
-    {
       "gate_id": "setup.frontend-node-dependencies",
       "kind": "setup",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1189,32 +1043,6 @@
       "opaque": false
     },
     {
-      "gate_id": "setup.precommit-python-dependencies",
-      "kind": "setup",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "install-python-requirements",
-        "scripts/requirements-pre-commit.txt"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 20,
-      "opaque": false
-    },
-    {
-      "gate_id": "setup.repo-python-dependencies",
-      "kind": "setup",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "install-python-requirements",
-        "scripts/requirements.txt"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": false
-    },
-    {
       "gate_id": "setup.storybook-playwright",
       "kind": "setup",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1225,20 +1053,6 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": false
-    }
-  ],
-  "job_roots": [
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "validation-changed",
-      "root_gate_id": "ci.validation-changed",
-      "classification": "required-quality"
-    },
-    {
-      "workflow": ".github/workflows/ci-quality.yml",
-      "job_id": "validation-full",
-      "root_gate_id": "ci.validation-full",
-      "classification": "required-quality"
     }
   ],
   "public_gate": {
@@ -1292,13 +1106,6 @@
       ]
     },
     "validators": [
-      {
-        "suite": "agent-governance",
-        "gate_id": "public.validator.evals.agent_output_eval.py",
-        "entrypoint": "evals/agent_output_eval.py",
-        "argv": ["--check-fixtures", "--check-regressions"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.infrastructure-hardening",

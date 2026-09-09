@@ -19,19 +19,13 @@ SUBCOMMANDS = (
     "verify-metadata-base",
     "check-diff-hygiene",
     "check-shell-syntax",
-    "install-python-requirements",
     "run-unittest",
     "run-agent-output-eval",
     "run-npm",
     "check-git-flow",
-    "prepare-compose-env",
     "install-playwright",
     "run-zizmor-sarif",
 )
-_REQUIREMENT_PATHS = {
-    "scripts/requirements.txt",
-    "scripts/requirements-pre-commit.txt",
-}
 _NPM_PREFIX = ("--prefix", "projects/storybook/nextjs")
 _NPM_SCRIPTS = {"lint", "typecheck", "build", "build-storybook", "coverage"}
 # The structural boundary admits only the two authoritative test roots and
@@ -46,7 +40,6 @@ _UNITTEST_MODULE = re.compile(
     r"\.test_[A-Za-z0-9_]+(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z"
 )
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
-_GIT_OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
     re.IGNORECASE,
@@ -56,7 +49,6 @@ _PROC_FD_ROOT = re.compile(r"/proc/self/fd/([0-9]+)\Z")
 _CHILD_TERMINATION_SECONDS = 0.25
 _CLEANUP_ERROR_CODES = frozenset(
     {
-        "ci-gate-adapter-compose-cleanup",
         "ci-gate-adapter-sarif-cleanup",
     }
 )
@@ -153,9 +145,6 @@ ADAPTER_CONTEXTS = MappingProxyType(
         "install-playwright": _CI_CONTEXTS,
         "run-npm": _CI_CONTEXTS,
         "run-zizmor-sarif": _CI_CONTEXTS,
-        # Workflow setup steps, never admitted as gate leaves.
-        "install-python-requirements": frozenset(),
-        "prepare-compose-env": frozenset(),
     }
 )
 _NPM_ARGUMENT_SHAPES = frozenset(
@@ -186,10 +175,6 @@ def validate_adapter_argv(argv: tuple[str, ...]) -> None:
         if arguments[-len(_NPM_PREFIX) :] != _NPM_PREFIX:
             _argument_error()
         if arguments[: -len(_NPM_PREFIX)] not in _NPM_ARGUMENT_SHAPES:
-            _argument_error()
-        return
-    if command == "install-python-requirements":
-        if len(arguments) != 1 or arguments[0] not in _REQUIREMENT_PATHS:
             _argument_error()
         return
     if arguments:
@@ -233,23 +218,6 @@ def _dispatch_adapter(
     if command == "check-shell-syntax":
         _no_arguments(arguments)
         return _check_shell_syntax(canonical_root, environ)
-    if command == "install-python-requirements":
-        if len(arguments) != 1 or arguments[0] not in _REQUIREMENT_PATHS:
-            _argument_error()
-        return _returncode(
-            _run_child(
-                (
-                    "python3",
-                    "-m",
-                    "pip",
-                    "install",
-                    "-r",
-                    arguments[0],
-                ),
-                root=canonical_root,
-                environ=environ,
-            )
-        )
     if command == "run-unittest":
         if (
             len(arguments) < 2
@@ -281,10 +249,6 @@ def _dispatch_adapter(
     if command == "check-git-flow":
         _no_arguments(arguments)
         _check_git_flow(canonical_root, environ)
-        return 0
-    if command == "prepare-compose-env":
-        _no_arguments(arguments)
-        _prepare_compose_env(canonical_root, environ)
         return 0
     if command == "install-playwright":
         _no_arguments(arguments)
@@ -833,188 +797,6 @@ def _check_git_flow(root: pathlib.Path, environ: Mapping[str, str]) -> None:
             "ci-gate-adapter-git-flow",
             "the pull request identity does not match policy",
         )
-
-
-def _prepare_compose_env(
-    root: pathlib.Path,
-    environ: Mapping[str, str],
-) -> None:
-    root_fd = _owned_root_descriptor(root)
-    source_fd = -1
-    destination_fd = -1
-    created = False
-    product_error: BaseException | None = None
-    try:
-        try:
-            source_fd = os.open(
-                ".env.example",
-                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
-                dir_fd=root_fd,
-            )
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            ) from None
-        try:
-            source_metadata = os.fstat(source_fd)
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            ) from None
-        if (
-            not stat.S_ISREG(source_metadata.st_mode)
-            or source_metadata.st_size > _MAX_CAPTURE_BYTES
-        ):
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            )
-        provenance = _tracked_regular_source(root, environ)
-        if provenance is None:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            )
-        try:
-            current_metadata = os.stat(
-                ".env.example",
-                dir_fd=root_fd,
-                follow_symlinks=False,
-            )
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            ) from None
-        if (
-            current_metadata.st_dev != source_metadata.st_dev
-            or current_metadata.st_ino != source_metadata.st_ino
-        ):
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            )
-        try:
-            payload = _read_bounded(source_fd)
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            ) from None
-        tracked_blob = _run_child(
-            ("git", "cat-file", "blob", provenance),
-            root=root,
-            environ=_git_environment(environ),
-            capture_output=True,
-        )
-        if tracked_blob.returncode != 0 or tracked_blob.stdout != payload:
-            raise AdapterError(
-                "ci-gate-adapter-compose-source",
-                "the compose example source is invalid",
-            )
-        try:
-            destination_fd = os.open(
-                ".env",
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
-                0o600,
-                dir_fd=root_fd,
-            )
-            created = True
-        except OSError as error:
-            if error.errno in {errno.EEXIST, errno.ELOOP}:
-                raise AdapterError(
-                    "ci-gate-adapter-compose-env-exists",
-                    "the compose environment destination already exists",
-                ) from None
-            raise AdapterError(
-                "ci-gate-adapter-compose-output",
-                "the compose environment destination is unavailable",
-            ) from None
-        try:
-            _write_all(destination_fd, payload)
-            os.fsync(destination_fd)
-        except OSError:
-            raise AdapterError(
-                "ci-gate-adapter-compose-output",
-                "the compose environment destination is unavailable",
-            ) from None
-    except BaseException as error:
-        product_error = (
-            AdapterError(
-                "ci-gate-adapter-compose-output",
-                "the compose environment destination is unavailable",
-            )
-            if isinstance(error, OSError)
-            else error
-        )
-
-    descriptor_cleanup_failed = False
-    for descriptor in (destination_fd, source_fd):
-        if descriptor < 0:
-            continue
-        try:
-            os.close(descriptor)
-        except OSError:
-            descriptor_cleanup_failed = True
-
-    unlink_cleanup_failed = False
-    if created and (product_error is not None or descriptor_cleanup_failed):
-        try:
-            os.unlink(".env", dir_fd=root_fd)
-        except OSError:
-            unlink_cleanup_failed = True
-
-    if descriptor_cleanup_failed or unlink_cleanup_failed:
-        raise AdapterError(
-            "ci-gate-adapter-compose-cleanup",
-            "the compose environment could not be cleaned up",
-        ) from None
-    if product_error is not None:
-        try:
-            raise product_error
-        finally:
-            product_error = None
-
-
-def _tracked_regular_source(
-    root: pathlib.Path,
-    environ: Mapping[str, str],
-) -> str | None:
-    result = _run_child(
-        (
-            "git",
-            "--literal-pathspecs",
-            "ls-files",
-            "--stage",
-            "-z",
-            "--error-unmatch",
-            "--",
-            ".env.example",
-        ),
-        root=root,
-        environ=_git_environment(environ),
-        capture_output=True,
-    )
-    if result.returncode != 0:
-        return None
-    records = (result.stdout or b"").rstrip(b"\0").split(b"\0")
-    if len(records) != 1:
-        return None
-    try:
-        metadata, path = records[0].split(b"\t", 1)
-        mode, object_id, stage = metadata.decode("ascii").split(" ")
-    except (UnicodeDecodeError, ValueError):
-        return None
-    if (
-        mode not in {"100644", "100755"}
-        or stage != "0"
-        or path != b".env.example"
-        or _GIT_OBJECT_ID.fullmatch(object_id) is None
-    ):
-        return None
-    return object_id
 
 
 def _run_zizmor_sarif(

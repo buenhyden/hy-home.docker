@@ -14,10 +14,16 @@ import sys
 
 root = pathlib.Path.cwd()
 sys.path.insert(0, str(root))
-from scripts.lib.gate.ci_gate_contract import load_contract_document, parse_public_gate_contract
+from scripts.lib.gate.ci_gate_contract import (
+    expand_public_gate_ids,
+    load_contract_document,
+    parse_public_gate_contract,
+)
 from scripts.lib.gate.github_workflow_contract import (
-    GateContractError, WorkflowContractError, expand_gate_ids,
-    load_workflow_contract, validate_workflows,
+    GateContractError,
+    WorkflowContractError,
+    load_workflow_contract,
+    validate_workflows,
 )
 
 failures: list[str] = []
@@ -59,11 +65,11 @@ try:
     )
     public = parse_public_gate_contract(load_contract_document(root))
     roots = next(route.root_gate_ids for route in public.suites if route.name == "repository-integrity")
-    reachable: set[str] = set()
-    for gate in ("ci.frontend-quality", "ci.storybook-coverage"):
+    storybook_roots = ("ci.frontend-quality", "ci.storybook-coverage")
+    for gate in storybook_roots:
         if gate not in roots:
             failures.append(f"{contract_path}: full public profile omits {gate}")
-        reachable.update(expand_gate_ids(contract.gate_registry, "ci", gate, False))
+    reachable = set(expand_public_gate_ids(contract.gate_registry, storybook_roots))
     declared = {node.gate_id: list(node.argv) for node in contract.gate_registry.nodes}
     for gate_id, expected_argv in sorted(required_gate_argv.items()):
         if gate_id not in reachable:

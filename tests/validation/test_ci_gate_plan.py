@@ -28,76 +28,6 @@ REAL_SUBPROCESS_RUN = subprocess.run
 REAL_SHUTIL_RMTREE = shutil.rmtree
 
 
-def _leaf(
-    gate_id: str,
-    *,
-    entrypoint: str = "scripts/validation/leaf.py",
-    argv: tuple[str, ...] = (),
-) -> contract.GateNode:
-    return contract.GateNode(
-        gate_id=gate_id,
-        kind=contract.GateKind.LEAF,
-        suite_key=gate_id.removeprefix("leaf."),
-        entrypoint=pathlib.PurePosixPath(entrypoint),
-        argv=argv,
-        cwd=pathlib.PurePosixPath("."),
-        allowed_env_keys=(),
-        timeout_minutes=1,
-        opaque=True,
-        children=(),
-    )
-
-
-def _setup(gate_id: str) -> contract.GateNode:
-    return contract.GateNode(
-        gate_id=gate_id,
-        kind=contract.GateKind.SETUP,
-        suite_key=None,
-        entrypoint=pathlib.PurePosixPath("scripts/validation/setup.sh"),
-        argv=(),
-        cwd=pathlib.PurePosixPath("."),
-        allowed_env_keys=(),
-        timeout_minutes=1,
-        opaque=False,
-        children=(),
-    )
-
-
-def _registry() -> contract.GateRegistry:
-    nodes = (
-        contract.GateNode(
-            gate_id="local.test",
-            kind=contract.GateKind.AGGREGATE,
-            suite_key=None,
-            entrypoint=None,
-            argv=(),
-            cwd=None,
-            allowed_env_keys=(),
-            timeout_minutes=None,
-            opaque=False,
-            children=(
-                "setup.repo-python-dependencies",
-                "leaf.repo-contracts",
-                "leaf.repo-contracts",
-            ),
-        ),
-        _setup("setup.repo-python-dependencies"),
-        _leaf("leaf.repo-contracts"),
-    )
-    return contract.GateRegistry(
-        nodes=nodes,
-        job_roots=(
-            contract.JobRoot(
-                ".github/workflows/ci-quality.yml",
-                "validation-changed",
-                "local.test",
-                "required-quality",
-            ),
-        ),
-        public_roots=("local.test",),
-    )
-
-
 def _invocation(
     gate_id: str,
     entrypoint: str,
@@ -522,6 +452,39 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 ]
                 self.assertEqual(len(keys), len(set(keys)))
 
+    def test_full_plan_runs_the_agent_eval_once_through_the_adapter(self) -> None:
+        fixture_module = "tests.validation.test_agent_output_eval_fixtures"
+        for context in (
+            runner.ExecutionContext.LOCAL,
+            runner.ExecutionContext.PULL_REQUEST,
+            runner.ExecutionContext.PUSH,
+            runner.ExecutionContext.PUSH_INITIAL,
+            runner.ExecutionContext.WORKFLOW_DISPATCH,
+        ):
+            with self.subTest(context=context.value):
+                plan = build_public_plan("full", context)
+                self.assertEqual(
+                    1,
+                    sum(
+                        item.entrypoint
+                        == pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
+                        and item.argv == ("run-agent-output-eval",)
+                        for item in plan
+                    ),
+                )
+                self.assertEqual(
+                    0,
+                    sum(
+                        item.entrypoint
+                        == pathlib.PurePosixPath("evals/agent_output_eval.py")
+                        for item in plan
+                    ),
+                )
+                self.assertEqual(
+                    1,
+                    sum(fixture_module in item.argv for item in plan),
+                )
+
     def test_required_runner_interfaces_are_exact(self) -> None:
         self.assertEqual(
             (
@@ -535,49 +498,11 @@ class CiGateRunnerContractTests(unittest.TestCase):
             tuple(field.name for field in dataclasses.fields(runner.GateInvocation)),
         )
 
-    def test_build_plan_preserves_order_and_deduplicates_gate_ids(self) -> None:
-        plan = runner.build_execution_plan(
-            _registry(),
-            "ci",
-            None,
-            True,
-        )
-        self.assertEqual(
-            (
-                "setup.repo-python-dependencies",
-                "leaf.repo-contracts",
-            ),
-            tuple(invocation.gate_id for invocation in plan),
-        )
-
-    def test_unknown_profile_and_gate_fail_closed(self) -> None:
-        with self.assertRaises(contract.GateContractError) as profile_error:
-            runner.build_execution_plan(
-                _registry(),
-                "unknown",
-                None,
-                True,
-            )
-        self.assertEqual("ci-gate-profile-unknown", profile_error.exception.code)
-        with self.assertRaises(contract.GateContractError) as gate_error:
-            runner.build_execution_plan(
-                _registry(),
-                "ci",
-                "leaf.unknown",
-                False,
-            )
-        self.assertEqual(
-            "ci-gate-selection-unreachable",
-            gate_error.exception.code,
-        )
-
     def test_fake_executor_receives_each_leaf_once_in_order(self) -> None:
         seen: list[str] = []
-        plan = runner.build_execution_plan(
-            _registry(),
-            "ci",
-            None,
-            True,
+        plan = (
+            _invocation("setup.frontend", "scripts/validation/setup.py"),
+            _invocation("leaf.repository", "scripts/validation/leaf.py"),
         )
         result = runner.execute_execution_plan(
             pathlib.Path.cwd(),
@@ -586,10 +511,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             executor=lambda invocation: seen.append(invocation.gate_id) or 0,
         )
         self.assertEqual(0, result)
-        self.assertEqual(
-            ["setup.repo-python-dependencies", "leaf.repo-contracts"],
-            seen,
-        )
+        self.assertEqual(["setup.frontend", "leaf.repository"], seen)
 
     def test_nonzero_fake_child_is_propagated_and_stops_plan(self) -> None:
         seen: list[str] = []
@@ -611,24 +533,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         )
         self.assertEqual(["leaf.first"], seen)
-
-    def test_list_and_dry_run_are_deterministic_and_value_free(self) -> None:
-        plan = runner.build_execution_plan(
-            _registry(),
-            "ci",
-            None,
-            True,
-        )
-        rendered = runner.render_execution_plan(plan)
-        self.assertEqual(rendered, runner.render_execution_plan(plan))
-        self.assertEqual(
-            (
-                "setup.repo-python-dependencies\tscripts/validation/setup.sh",
-                "leaf.repo-contracts\tscripts/validation/leaf.py",
-            ),
-            rendered,
-        )
-        self.assertNotIn("hostile-secret-value", "\n".join(rendered))
 
     def test_cli_rejects_obsolete_and_unknown_arguments(self) -> None:
         for arguments in (

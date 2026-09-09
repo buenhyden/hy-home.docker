@@ -22,12 +22,10 @@ EXPECTED_SUBCOMMANDS = (
     "verify-metadata-base",
     "check-diff-hygiene",
     "check-shell-syntax",
-    "install-python-requirements",
     "run-unittest",
     "run-agent-output-eval",
     "run-npm",
     "check-git-flow",
-    "prepare-compose-env",
     "install-playwright",
     "run-zizmor-sarif",
 )
@@ -53,6 +51,16 @@ class ChildRecorder:
 
 
 class CiGateAdapterTests(unittest.TestCase):
+    def test_retired_setup_commands_are_rejected_by_the_argv_contract(self) -> None:
+        for argv in (
+            ("install-python-requirements", "scripts/requirements.txt"),
+            ("prepare-compose-env",),
+        ):
+            with self.subTest(argv=argv):
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    adapters.validate_adapter_argv(argv)
+                self.assertEqual("ci-gate-adapter-command", caught.exception.code)
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = pathlib.Path(self.temporary.name).resolve()
@@ -156,23 +164,6 @@ class CiGateAdapterTests(unittest.TestCase):
             recorder.calls[1][0],
         )
 
-    def test_install_python_requirements_has_two_exact_admitted_paths(
-        self,
-    ) -> None:
-        for requirement in (
-            "scripts/requirements.txt",
-            "scripts/requirements-pre-commit.txt",
-        ):
-            with self.subTest(requirement=requirement):
-                result, recorder = self.run_with_recorder(
-                    ("install-python-requirements", requirement)
-                )
-                self.assertEqual(0, result)
-                self.assertEqual(
-                    ("python3", "-m", "pip", "install", "-r", requirement),
-                    recorder.calls[0][0],
-                )
-
     def test_run_unittest_requires_modules_then_literal_verbose_flag(
         self,
     ) -> None:
@@ -198,7 +189,6 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         self._assert_run_child_bounds_stdout_and_stderr_before_returning()
         self._assert_run_child_normalizes_spawn_error_without_payload()
-        self._assert_eval_invalid_utf8_is_normalized()
 
     def test_run_unittest_accepts_exact_test_surfaces(self) -> None:
         modules = (
@@ -288,6 +278,72 @@ class CiGateAdapterTests(unittest.TestCase):
             ),
             recorder.calls[0][0],
         )
+
+    def test_run_agent_output_eval_propagates_child_and_rejects_bad_output(
+        self,
+    ) -> None:
+        invalid_outputs = (
+            ("missing-fixtures", b"regressions_check=pass\n"),
+            ("missing-regressions", b"fixtures_check=pass\n"),
+            (
+                "nul",
+                b"fixtures_check=pass\nregressions_check=pass\n\0",
+            ),
+            (
+                "oversize",
+                b"fixtures_check=pass\nregressions_check=pass\n"
+                + b"x" * (adapters._MAX_CAPTURE_BYTES + 1),
+            ),
+            (
+                "invalid-utf8",
+                b"fixtures_check=pass\nregressions_check=pass\n\xff",
+            ),
+        )
+        expected_argv = (
+            "bash",
+            "evals/run-agent-output-eval-fixtures.sh",
+            "--check-fixtures",
+            "--check-regressions",
+        )
+        nonzero = ChildRecorder(
+            [subprocess.CompletedProcess(("bash",), 23, b"", b"failure")]
+        )
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=nonzero),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            self.assertEqual(
+                23,
+                adapters.run_adapter(
+                    self.root,
+                    ("run-agent-output-eval",),
+                    {"PATH": "/usr/bin"},
+                ),
+            )
+        self.assertEqual("", stdout.getvalue())
+        self.assertEqual(expected_argv, nonzero.calls[0][0])
+
+        for label, output in invalid_outputs:
+            recorder = ChildRecorder(
+                [subprocess.CompletedProcess(("bash",), 0, output, b"")]
+            )
+            with (
+                self.subTest(case=label),
+                mock.patch.object(adapters, "_run_child", side_effect=recorder),
+                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+                self.assertRaises(adapters.AdapterError) as caught,
+            ):
+                adapters.run_adapter(
+                    self.root,
+                    ("run-agent-output-eval",),
+                    {"PATH": "/usr/bin"},
+                )
+            self.assertEqual(
+                "ci-gate-adapter-eval-output",
+                caught.exception.code,
+            )
+            self.assertEqual("", stdout.getvalue())
+            self.assertEqual(expected_argv, recorder.calls[0][0])
 
     def test_run_npm_accepts_only_three_closed_grammar_shapes(self) -> None:
         commands = (
@@ -592,215 +648,6 @@ class CiGateAdapterTests(unittest.TestCase):
                     self.assertLessEqual(len(message.splitlines()[0]), limit)
                     self.assertIsNotNone(pattern.fullmatch(message))
 
-    def test_prepare_compose_env_is_exclusive_tracked_and_preserves_existing(
-        self,
-    ) -> None:
-        REAL_SUBPROCESS_RUN(["git", "init", "-q"], cwd=self.root, check=True)
-        source = self.root / ".env.example"
-        source.write_bytes(b"SAFE_EXAMPLE=1\n")
-        REAL_SUBPROCESS_RUN(
-            ["git", "add", "--", ".env.example"],
-            cwd=self.root,
-            check=True,
-        )
-        self.assertEqual(
-            0,
-            adapters.run_adapter(
-                self.root,
-                ("prepare-compose-env",),
-                {"PATH": "/usr/bin", "CI": "true"},
-            ),
-        )
-        destination = self.root / ".env"
-        self.assertEqual(source.read_bytes(), destination.read_bytes())
-        destination.write_bytes(b"EXISTING_PRIVATE_BYTES\n")
-        with self.assertRaises(adapters.AdapterError) as caught:
-            adapters.run_adapter(
-                self.root,
-                ("prepare-compose-env",),
-                {"PATH": "/usr/bin", "CI": "true"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-env-exists",
-            caught.exception.code,
-        )
-        self.assertEqual(b"EXISTING_PRIVATE_BYTES\n", destination.read_bytes())
-        self._assert_prepare_compose_env_rejects_non_blob_identical_sources()
-        self._assert_prepare_compose_env_rejects_path_replacement_after_open()
-        self._assert_compose_copy_normalizes_zero_short_write_and_cleans_partial()
-        cleanup_events: list[tuple[str, int | str]] = []
-        metadata = mock.Mock(
-            st_mode=0o100600,
-            st_size=1,
-            st_dev=11,
-            st_ino=12,
-        )
-
-        def fail_compose_close(descriptor: int) -> None:
-            cleanup_events.append(("close", descriptor))
-            raise OSError(f"private descriptor {descriptor}")
-
-        def fail_compose_unlink(
-            path: str,
-            *,
-            dir_fd: int,
-        ) -> None:
-            self.assertEqual(700, dir_fd)
-            cleanup_events.append(("unlink", path))
-            raise OSError("private compose path")
-
-        with (
-            mock.patch.object(
-                adapters,
-                "_owned_root_descriptor",
-                return_value=700,
-            ),
-            mock.patch.object(
-                adapters.os,
-                "open",
-                side_effect=(701, 702),
-            ),
-            mock.patch.object(adapters.os, "fstat", return_value=metadata),
-            mock.patch.object(adapters.os, "stat", return_value=metadata),
-            mock.patch.object(
-                adapters,
-                "_tracked_regular_source",
-                return_value="0" * 40,
-            ),
-            mock.patch.object(adapters, "_read_bounded", return_value=b"x"),
-            mock.patch.object(
-                adapters,
-                "_run_child",
-                return_value=subprocess.CompletedProcess(
-                    ("git",),
-                    0,
-                    b"x",
-                    b"",
-                ),
-            ),
-            mock.patch.object(
-                adapters,
-                "_write_all",
-                side_effect=OSError("private operation payload"),
-            ),
-            mock.patch.object(adapters.os, "close", side_effect=fail_compose_close),
-            mock.patch.object(adapters.os, "unlink", side_effect=fail_compose_unlink),
-            self.assertRaises(adapters.AdapterError) as cleanup_error,
-        ):
-            adapters._prepare_compose_env(
-                pathlib.Path("/proc/self/fd/700"),
-                {"PATH": "/usr/bin"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-cleanup",
-            cleanup_error.exception.code,
-        )
-        self.assertNotIn("private", str(cleanup_error.exception))
-        self.assertEqual(
-            [
-                ("close", 702),
-                ("close", 701),
-                ("unlink", ".env"),
-            ],
-            cleanup_events,
-        )
-        cleanup_events = []
-
-        def close_after_success(descriptor: int) -> None:
-            cleanup_events.append(("close", descriptor))
-            if descriptor == 712:
-                raise OSError("private destination close")
-
-        def unlink_after_close(
-            path: str,
-            *,
-            dir_fd: int,
-        ) -> None:
-            self.assertEqual(710, dir_fd)
-            cleanup_events.append(("unlink", path))
-
-        with (
-            mock.patch.object(
-                adapters,
-                "_owned_root_descriptor",
-                return_value=710,
-            ),
-            mock.patch.object(
-                adapters.os,
-                "open",
-                side_effect=(711, 712),
-            ),
-            mock.patch.object(adapters.os, "fstat", return_value=metadata),
-            mock.patch.object(adapters.os, "stat", return_value=metadata),
-            mock.patch.object(
-                adapters,
-                "_tracked_regular_source",
-                return_value="0" * 40,
-            ),
-            mock.patch.object(adapters, "_read_bounded", return_value=b"x"),
-            mock.patch.object(
-                adapters,
-                "_run_child",
-                return_value=subprocess.CompletedProcess(
-                    ("git",),
-                    0,
-                    b"x",
-                    b"",
-                ),
-            ),
-            mock.patch.object(adapters, "_write_all"),
-            mock.patch.object(adapters.os, "fsync"),
-            mock.patch.object(adapters.os, "close", side_effect=close_after_success),
-            mock.patch.object(adapters.os, "unlink", side_effect=unlink_after_close),
-            self.assertRaises(adapters.AdapterError) as cleanup_error,
-        ):
-            adapters._prepare_compose_env(
-                pathlib.Path("/proc/self/fd/710"),
-                {"PATH": "/usr/bin"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-cleanup",
-            cleanup_error.exception.code,
-        )
-        self.assertEqual(
-            [
-                ("close", 712),
-                ("close", 711),
-                ("unlink", ".env"),
-            ],
-            cleanup_events,
-        )
-        with (
-            mock.patch.object(
-                adapters,
-                "_adopt_root",
-                return_value=(pathlib.Path("/proc/self/fd/713"), 713),
-            ),
-            mock.patch.object(
-                adapters,
-                "_dispatch_adapter",
-                side_effect=adapters.AdapterError(
-                    "ci-gate-adapter-compose-cleanup",
-                    "the compose environment could not be cleaned up",
-                ),
-            ),
-            mock.patch.object(
-                adapters.os,
-                "close",
-                side_effect=OSError("private root close payload"),
-            ),
-            self.assertRaises(adapters.AdapterError) as priority_error,
-        ):
-            adapters.run_adapter(
-                self.root,
-                ("prepare-compose-env",),
-                {"PATH": "/usr/bin"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-cleanup",
-            priority_error.exception.code,
-        )
-
     def test_install_playwright_uses_the_fixed_child_vector(self) -> None:
         result, recorder = self.run_with_recorder(("install-playwright",))
         self.assertEqual(0, result)
@@ -1016,11 +863,6 @@ class CiGateAdapterTests(unittest.TestCase):
                 ("bash;curl",),
                 {"PATH": "/usr/bin"},
                 "ci-gate-adapter-command",
-            ),
-            (
-                ("install-python-requirements", "../requirements.txt"),
-                {"PATH": "/usr/bin"},
-                "ci-gate-adapter-arguments",
             ),
             (
                 (
@@ -1477,28 +1319,6 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual("ci-gate-adapter-child-exec", caught.exception.code)
         self.assertNotIn("private executable path", str(caught.exception))
 
-    def _assert_eval_invalid_utf8_is_normalized(self) -> None:
-        with mock.patch.object(
-            adapters,
-            "_run_child",
-            return_value=subprocess.CompletedProcess(
-                ("bash",),
-                0,
-                b"fixtures_check=pass\nregressions_check=pass\n\xff",
-                b"",
-            ),
-        ):
-            with self.assertRaises(adapters.AdapterError) as caught:
-                adapters.run_adapter(
-                    self.root,
-                    ("run-agent-output-eval",),
-                    {"PATH": "/usr/bin"},
-                )
-        self.assertEqual(
-            "ci-gate-adapter-eval-output",
-            caught.exception.code,
-        )
-
     def _assert_sarif_partial_is_removed_after_exception_and_retry_succeeds(
         self,
     ) -> None:
@@ -1543,135 +1363,6 @@ class CiGateAdapterTests(unittest.TestCase):
             b'{"partial":true}',
             (self.root / "results.sarif").read_bytes(),
         )
-
-    def _assert_prepare_compose_env_rejects_non_blob_identical_sources(
-        self,
-    ) -> None:
-        for case in ("modified", "untracked", "symlink", "nonregular"):
-            with self.subTest(case=case):
-                case_root = self.root / case
-                case_root.mkdir()
-                REAL_SUBPROCESS_RUN(
-                    ["git", "init", "-q"],
-                    cwd=case_root,
-                    check=True,
-                )
-                source = case_root / ".env.example"
-                if case == "untracked":
-                    source.write_bytes(b"UNTRACKED=1\n")
-                elif case == "symlink":
-                    target = case_root / "target"
-                    target.write_bytes(b"TARGET=1\n")
-                    source.symlink_to("target")
-                elif case == "nonregular":
-                    source.mkdir()
-                else:
-                    source.write_bytes(b"STAGED=1\n")
-                    REAL_SUBPROCESS_RUN(
-                        ["git", "add", "--", ".env.example"],
-                        cwd=case_root,
-                        check=True,
-                    )
-                    source.write_bytes(b"MODIFIED=1\n")
-                with self.assertRaises(adapters.AdapterError) as caught:
-                    adapters.run_adapter(
-                        case_root,
-                        ("prepare-compose-env",),
-                        {"PATH": "/usr/bin", "CI": "true"},
-                    )
-                self.assertEqual(
-                    "ci-gate-adapter-compose-source",
-                    caught.exception.code,
-                )
-                self.assertFalse((case_root / ".env").exists())
-
-    def _assert_prepare_compose_env_rejects_path_replacement_after_open(
-        self,
-    ) -> None:
-        case_root = self.root / "replaced"
-        case_root.mkdir()
-        REAL_SUBPROCESS_RUN(["git", "init", "-q"], cwd=case_root, check=True)
-        source = case_root / ".env.example"
-        source.write_bytes(b"STAGED=1\n")
-        REAL_SUBPROCESS_RUN(
-            ["git", "add", "--", ".env.example"],
-            cwd=case_root,
-            check=True,
-        )
-        real_provenance = adapters._tracked_regular_source
-
-        def replace_after_provenance(*args: object, **kwargs: object):
-            result = real_provenance(*args, **kwargs)
-            source.rename(case_root / ".env.original")
-            source.write_bytes(b"REPLACED=1\n")
-            return result
-
-        with (
-            mock.patch.object(
-                adapters,
-                "_tracked_regular_source",
-                side_effect=replace_after_provenance,
-            ),
-            self.assertRaises(adapters.AdapterError) as caught,
-        ):
-            adapters.run_adapter(
-                case_root,
-                ("prepare-compose-env",),
-                {"PATH": "/usr/bin", "CI": "true"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-source",
-            caught.exception.code,
-        )
-        self.assertFalse((case_root / ".env").exists())
-
-    def _assert_compose_copy_normalizes_zero_short_write_and_cleans_partial(
-        self,
-    ) -> None:
-        case_root = self.root / "short-write"
-        case_root.mkdir()
-        REAL_SUBPROCESS_RUN(["git", "init", "-q"], cwd=case_root, check=True)
-        source = case_root / ".env.example"
-        source.write_bytes(b"STAGED=1\n")
-        REAL_SUBPROCESS_RUN(
-            ["git", "add", "--", ".env.example"],
-            cwd=case_root,
-            check=True,
-        )
-        real_write = os.write
-        zero_writes = 0
-
-        def zero_destination_write(
-            descriptor: int,
-            payload: bytes | memoryview,
-        ) -> int:
-            nonlocal zero_writes
-            target = pathlib.Path(f"/proc/self/fd/{descriptor}")
-            if target.resolve() == case_root / ".env":
-                zero_writes += 1
-                if zero_writes == 1:
-                    return 0
-                raise OSError("private short-write payload")
-            return real_write(descriptor, payload)
-
-        with (
-            mock.patch.object(
-                adapters.os,
-                "write",
-                side_effect=zero_destination_write,
-            ),
-            self.assertRaises(adapters.AdapterError) as caught,
-        ):
-            adapters.run_adapter(
-                case_root,
-                ("prepare-compose-env",),
-                {"PATH": "/usr/bin", "CI": "true"},
-            )
-        self.assertEqual(
-            "ci-gate-adapter-compose-output",
-            caught.exception.code,
-        )
-        self.assertFalse((case_root / ".env").exists())
 
 
 if __name__ == "__main__":

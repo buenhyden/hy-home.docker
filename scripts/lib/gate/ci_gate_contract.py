@@ -51,7 +51,6 @@ _LONG_OPTION = re.compile(r"^--[a-z][a-z0-9-]*$")
 _ARGUMENT_VALUE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]*$")
 _REJECTED_OPTIONS = frozenset({"--help"})
 _COMPLETE_CAPABILITY_ARGV = {
-    "agent_output_eval.py": ("--check-fixtures", "--check-regressions"),
     "check-agent-governance-contract.py": (
         "--mode",
         "repository",
@@ -69,133 +68,14 @@ _TOP_LEVEL_FIELDS = frozenset(
         "schema_version",
         "workflows",
         "gate_nodes",
-        "job_roots",
         "public_gate",
         "actions",
     }
 )
-_INTERNAL_CI_ROOTS = {
-    "docs-traceability": "ci.docs-traceability",
-    "repo-contracts": "ci.repo-contracts",
-    "agent-output-eval-fixture-gate": "ci.agent-output-eval-fixture-gate",
-    "supply-chain-fixture-policy": "ci.supply-chain-fixture-policy",
-    "dependency-vulnerability-audit": "ci.dependency-vulnerability-audit",
-    "git-flow-contract": "ci.git-flow-contract",
-    "compose-validation": "ci.compose-validation",
-    "infrastructure-hardening": "ci.infrastructure-hardening",
-    "template-security-baseline": "ci.template-security-baseline",
-    "quickwin-baseline": "ci.quickwin-baseline",
-    "pre-commit": "ci.pre-commit",
-    "frontend-quality": "ci.frontend-quality",
-    "storybook-coverage": "ci.storybook-coverage",
-    "zizmor": "ci.zizmor",
-}
-
-
-_INTERNAL_ROOT_CHILDREN = {
-    "ci.docs-traceability": ("leaf.docs-traceability",),
-    "ci.repo-contracts": (
-        "leaf.repo-metadata-base",
-        "setup.repo-python-dependencies",
-        "leaf.repo-document-metadata",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions",
-        "leaf.repository-integrity-regressions",
-        "leaf.document-lifecycle-regressions",
-        "leaf.ci-gate-contract-regressions",
-        "leaf.ci-gate-runner-regressions",
-        "leaf.ci-gate-adapter-regressions",
-        "leaf.workflow-contract-regressions",
-        "leaf.repo-contracts-control-plane-regressions",
-        "leaf.ci-precommit-regressions",
-        # Added 2026-08-29. The fourteen mirrored `tests/lib/document_governance`
-        # suites that `scripts/manifest.yaml` registers were executed by no
-        # profile, and four of them had rotted unnoticed until they were run by
-        # hand. This pin exists so a CI root cannot gain or lose a child
-        # silently; it is amended here deliberately so that those 278 tests gate.
-        "leaf.document-governance-library-regressions",
-        # Added 2026-08-29 alongside the suite name above, for the same reason:
-        # the two Compose baseline gates ran with no failing-case coverage.
-        "leaf.compose-baseline-regressions",
-        "leaf.workflow-contract",
-        "leaf.operations-catalog",
-        "leaf.repo-contracts",
-    ),
-    "ci.agent-output-eval-fixture-gate": (
-        "leaf.agent-output-eval-fixture-regressions",
-        "leaf.agent-output-eval-fixture-gate",
-    ),
-    "ci.supply-chain-fixture-policy": (
-        "leaf.supply-chain-fixture-policy",
-        "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness",
-    ),
-    "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),
-    "ci.git-flow-contract": ("leaf.git-flow-contract",),
-    "ci.compose-validation": (
-        "setup.compose-env",
-        "leaf.compose-validation",
-        "leaf.postgres-logical-upgrade-config",
-    ),
-    "ci.infrastructure-hardening": (
-        "setup.compose-env",
-        "leaf.infrastructure-hardening",
-    ),
-    "ci.template-security-baseline": (
-        "setup.compose-env",
-        "leaf.template-security-baseline",
-    ),
-    "ci.quickwin-baseline": (
-        "setup.compose-env",
-        "leaf.quickwin-baseline",
-    ),
-    "ci.pre-commit": (
-        "setup.precommit-python-dependencies",
-        "leaf.pre-commit",
-    ),
-    "ci.frontend-quality": (
-        "setup.frontend-node-dependencies",
-        "leaf.frontend-lint",
-        "leaf.frontend-typecheck",
-        "leaf.frontend-build",
-        "leaf.frontend-quality",
-    ),
-    "ci.storybook-coverage": (
-        "setup.frontend-node-dependencies",
-        "setup.storybook-playwright",
-        "leaf.storybook-coverage",
-    ),
-    "ci.zizmor": ("leaf.zizmor",),
-}
-_REQUIRED_JOB_ROOTS = {
-    "validation-changed": "ci.validation-changed",
-    "validation-full": "ci.validation-full",
-}
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "ci.frontend-quality",
     "ci.storybook-coverage",
 )
-_REQUIRED_ROOT_CHILDREN = {
-    root_gate_id: tuple(_INTERNAL_CI_ROOTS.values())
-    for root_gate_id in _REQUIRED_JOB_ROOTS.values()
-}
-# Derived from `_INTERNAL_ROOT_CHILDREN` since 2026-08-29. It was a second
-# literal listing the same suites, so every new gate suite had to be written
-# into both tables by hand and could silently disagree. The invariant is pinned
-# by `PinDerivationTests` in `tests/lib/gate/test_ci_gate_contract.py`; a root
-# that legitimately needs the two to differ has to change that test first.
-_INTERNAL_ROOT_SUITES = {
-    job_id: tuple(
-        gate_id.removeprefix("leaf.")
-        for gate_id in _INTERNAL_ROOT_CHILDREN[root_gate_id]
-        if gate_id.startswith("leaf.")
-    )
-    for job_id, root_gate_id in _INTERNAL_CI_ROOTS.items()
-}
-_ALL_CI_SUITES = tuple(
-    suite for job_id in _INTERNAL_CI_ROOTS for suite in _INTERNAL_ROOT_SUITES[job_id]
-)
-_REQUIRED_JOB_SUITES = {job_id: _ALL_CI_SUITES for job_id in _REQUIRED_JOB_ROOTS}
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
         "leaf.local-document-corpus-lifecycle-tests",
@@ -227,11 +107,43 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
         # Added 2026-08-29. Carries the failing-case suite for both Compose
-        # baseline gates into the local profiles; the CI side is pinned under
-        # `ci.repo-contracts`.
+        # baseline gates into the local profiles.
         "leaf.compose-baseline-regressions",
     ),
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
+}
+_REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
+    "ci.agent-output-eval-fixture-gate": (
+        "leaf.agent-output-eval-fixture-regressions",
+        "leaf.agent-output-eval-fixture-gate",
+    ),
+    "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),
+    "ci.docs-traceability": ("leaf.docs-traceability",),
+    "ci.frontend-quality": (
+        "setup.frontend-node-dependencies",
+        "leaf.frontend-lint",
+        "leaf.frontend-typecheck",
+        "leaf.frontend-build",
+        "leaf.frontend-quality",
+    ),
+    "ci.git-flow-contract": ("leaf.git-flow-contract",),
+    "ci.storybook-coverage": (
+        "setup.frontend-node-dependencies",
+        "setup.storybook-playwright",
+        "leaf.storybook-coverage",
+    ),
+    "ci.zizmor": ("leaf.zizmor",),
+}
+_SETUP_PREREQUISITES = {
+    "setup.storybook-playwright": ("setup.frontend-node-dependencies",),
+    "leaf.frontend-lint": ("setup.frontend-node-dependencies",),
+    "leaf.frontend-typecheck": ("setup.frontend-node-dependencies",),
+    "leaf.frontend-build": ("setup.frontend-node-dependencies",),
+    "leaf.frontend-quality": ("setup.frontend-node-dependencies",),
+    "leaf.storybook-coverage": (
+        "setup.frontend-node-dependencies",
+        "setup.storybook-playwright",
+    ),
 }
 _SECRET_ENV_SHAPE = re.compile(
     r"(?:SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|AUTH|API_KEY|PRIVATE_KEY)",
@@ -442,17 +354,8 @@ class GateNode:
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class JobRoot:
-    workflow: str
-    job_id: str
-    root_gate_id: str
-    classification: str
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
 class GateRegistry:
     nodes: tuple[GateNode, ...]
-    job_roots: tuple[JobRoot, ...]
     public_roots: tuple[str, ...]
 
 
@@ -670,7 +573,7 @@ def parse_gate_registry(
     _require_fields(
         document,
         _TOP_LEVEL_FIELDS,
-        {"schema_version", "gate_nodes", "job_roots"},
+        {"schema_version", "gate_nodes"},
         "ci-gate-document-fields",
         path,
     )
@@ -710,17 +613,12 @@ def parse_gate_registry(
             path,
             "gate identifiers must be unique",
         )
-    raw_jobs = _require_records(document["job_roots"], "ci-gate-job-roots-type", path)
-    job_roots = tuple(
-        _parse_job_root(record, f"{path}#job_roots[{index}]")
-        for index, record in enumerate(raw_jobs)
-    )
     public = parse_public_gate_contract(document)
     public_roots = public_root_gate_ids(
         public,
         public.suite_names,
     )
-    return GateRegistry(nodes, job_roots, public_roots)
+    return GateRegistry(nodes, public_roots)
 
 
 def parse_public_gate_contract(
@@ -1129,23 +1027,6 @@ def validate_gate_registry(
         )
         return tuple(findings)
 
-    job_mapping = {
-        job.job_id: job.root_gate_id
-        for job in registry.job_roots
-        if job.workflow == ".github/workflows/ci-quality.yml"
-        and job.classification == "required-quality"
-    }
-    if (
-        len(job_mapping) != len(registry.job_roots)
-        or job_mapping != _REQUIRED_JOB_ROOTS
-    ):
-        finding(
-            "ci-gate-required-job-roots",
-            "job_roots",
-            "required quality must map to the exact two workflow jobs",
-        )
-        return tuple(findings)
-
     node_by_id = {node.gate_id: node for node in registry.nodes}
     if len(node_by_id) != len(registry.nodes):
         finding(
@@ -1154,7 +1035,17 @@ def validate_gate_registry(
             "gate identifiers must be unique",
         )
         return tuple(findings)
-    roots = tuple(job_mapping.values()) + registry.public_roots
+    roots = registry.public_roots
+    missing_active_roots = (set(_REQUIRED_ACTIVE_AGGREGATE_CHILDREN) - set(roots)) | (
+        set(_REQUIRED_ACTIVE_AGGREGATE_CHILDREN) - set(node_by_id)
+    )
+    if missing_active_roots:
+        finding(
+            "ci-gate-active-aggregate-root",
+            "public_gate",
+            "every active CI aggregate must remain a registered public root",
+        )
+        return tuple(findings)
     missing_roots = {gate_id for gate_id in roots if gate_id not in node_by_id}
     missing_children = {
         child
@@ -1175,6 +1066,26 @@ def validate_gate_registry(
             "ci-gate-cycle",
             "gate_nodes",
             "the gate graph must be acyclic",
+        )
+        return tuple(findings)
+
+    aggregate_violation = _active_aggregate_child_violation(node_by_id)
+    if aggregate_violation is not None:
+        aggregate, child = aggregate_violation
+        finding(
+            "ci-gate-active-aggregate-child",
+            f"gate_nodes/{aggregate}",
+            f"{aggregate} must retain required child {child}",
+        )
+        return tuple(findings)
+
+    setup_violation = _setup_prerequisite_violation(node_by_id, roots)
+    if setup_violation is not None:
+        root_gate_id, prerequisite, consumer = setup_violation
+        finding(
+            "ci-gate-setup-prerequisite",
+            f"gate_nodes/{root_gate_id}",
+            f"{prerequisite} must precede {consumer} on every public route",
         )
         return tuple(findings)
 
@@ -1200,61 +1111,7 @@ def validate_gate_registry(
             "gate_nodes",
             "semantic suite keys must be unique",
         )
-        finding(
-            "ci-gate-suite-owner-duplicate",
-            "job_roots",
-            "a semantic suite has more than one required owner",
-        )
         return tuple(findings)
-
-    topological_ids = _topological_ids(node_by_id)
-    for root_gate_id, expected_children in _INTERNAL_ROOT_CHILDREN.items():
-        if node_by_id[root_gate_id].children != expected_children:
-            finding(
-                "ci-gate-internal-root-children",
-                f"gate_nodes/{root_gate_id}",
-                "internal CI roots must retain their exact ordered children",
-            )
-            return tuple(findings)
-    for job in registry.job_roots:
-        path_counts = _bounded_path_counts(
-            node_by_id,
-            topological_ids,
-            job.root_gate_id,
-        )
-        if any(
-            count > 1
-            for gate_id, count in path_counts.items()
-            if node_by_id[gate_id].kind is GateKind.LEAF
-        ):
-            finding(
-                "ci-gate-suite-reachable-duplicate",
-                "job_roots",
-                "a semantic suite is reachable more than once from a workflow",
-            )
-            return tuple(findings)
-        if (
-            node_by_id[job.root_gate_id].children
-            != _REQUIRED_ROOT_CHILDREN[job.root_gate_id]
-        ):
-            finding(
-                "ci-gate-required-root-children",
-                f"gate_nodes/{job.root_gate_id}",
-                "required roots must retain their exact ordered children",
-            )
-            return tuple(findings)
-        actual_suites = tuple(
-            node_by_id[gate_id].suite_key
-            for gate_id in _expanded_ids(node_by_id, (job.root_gate_id,))
-            if node_by_id[gate_id].kind is GateKind.LEAF
-        )
-        if actual_suites != _REQUIRED_JOB_SUITES[job.job_id]:
-            finding(
-                "ci-gate-suite-owner",
-                "job_roots",
-                "required suites must belong to their exact required root",
-            )
-            return tuple(findings)
 
     for gate_id, expected_children in _LOCAL_AGGREGATE_CHILDREN.items():
         if node_by_id[gate_id].children != expected_children:
@@ -1297,17 +1154,19 @@ def validate_gate_registry(
     return tuple(sorted(set(findings)))
 
 
-def expand_gate_ids(
+def expand_public_gate_ids(
     registry: GateRegistry,
-    profile: str,
-    gate_id: str | None,
-    all_roots: bool,
+    root_gate_ids: tuple[str, ...],
 ) -> tuple[str, ...]:
-    if (gate_id is None) == (not all_roots):
+    if (
+        not root_gate_ids
+        or len(root_gate_ids) != len(set(root_gate_ids))
+        or any(gate_id not in registry.public_roots for gate_id in root_gate_ids)
+    ):
         raise GateContractError(
-            "ci-gate-selection",
-            "gate",
-            "select exactly one gate or all roots",
+            "ci-gate-public-roots",
+            "public_gate",
+            "selected roots must be unique registered public roots",
         )
     if len(registry.nodes) > _MAX_GATE_NODES:
         raise GateContractError(
@@ -1342,23 +1201,23 @@ def expand_gate_ids(
             "gate_nodes",
             "the gate graph must be acyclic",
         )
-    if profile != "ci":
+    aggregate_violation = _active_aggregate_child_violation(node_by_id)
+    if aggregate_violation is not None:
+        aggregate, child = aggregate_violation
         raise GateContractError(
-            "ci-gate-profile-unknown",
-            "profile",
-            "the selected internal profile must be ci",
+            "ci-gate-active-aggregate-child",
+            f"gate_nodes/{aggregate}",
+            f"{aggregate} must retain required child {child}",
         )
-    roots = tuple(job.root_gate_id for job in registry.job_roots)
-    selected = roots if all_roots else (gate_id,)
-    if gate_id is not None:
-        admitted = set(_expanded_all_ids(node_by_id, roots))
-        if gate_id not in admitted:
-            raise GateContractError(
-                "ci-gate-selection-unreachable",
-                "gate",
-                "the selected gate is not reachable from the profile",
-            )
-    return _expanded_ids(node_by_id, selected)
+    setup_violation = _setup_prerequisite_violation(node_by_id, root_gate_ids)
+    if setup_violation is not None:
+        root_gate_id, prerequisite, consumer = setup_violation
+        raise GateContractError(
+            "ci-gate-setup-prerequisite",
+            f"gate_nodes/{root_gate_id}",
+            f"{prerequisite} must precede {consumer} on every public route",
+        )
+    return _expanded_ids(node_by_id, root_gate_ids)
 
 
 def _require_fields(
@@ -1511,17 +1370,6 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
     )
 
 
-def _parse_job_root(record: Mapping[str, object], path: str) -> JobRoot:
-    fields = frozenset({"workflow", "job_id", "root_gate_id", "classification"})
-    _require_fields(record, fields, set(fields), "ci-gate-job-fields", path)
-    return JobRoot(
-        _string(record["workflow"], "ci-gate-job-value", path),
-        _string(record["job_id"], "ci-gate-job-value", path),
-        _string(record["root_gate_id"], "ci-gate-job-value", path),
-        _string(record["classification"], "ci-gate-job-value", path),
-    )
-
-
 def _expanded_all_ids(
     node_by_id: Mapping[str, GateNode], roots: tuple[str, ...]
 ) -> tuple[str, ...]:
@@ -1554,6 +1402,39 @@ def _expanded_ids(
     )
 
 
+def _setup_prerequisite_violation(
+    node_by_id: Mapping[str, GateNode],
+    roots: tuple[str, ...],
+) -> tuple[str, str, str] | None:
+    for root_gate_id in roots:
+        ordered = _expanded_ids(node_by_id, (root_gate_id,))
+        positions = {gate_id: index for index, gate_id in enumerate(ordered)}
+        for consumer, prerequisites in _SETUP_PREREQUISITES.items():
+            consumer_index = positions.get(consumer)
+            if consumer_index is None:
+                continue
+            for prerequisite in prerequisites:
+                prerequisite_index = positions.get(prerequisite)
+                if prerequisite_index is None or prerequisite_index >= consumer_index:
+                    return root_gate_id, prerequisite, consumer
+    return None
+
+
+def _active_aggregate_child_violation(
+    node_by_id: Mapping[str, GateNode],
+) -> tuple[str, str] | None:
+    for aggregate, required_children in _REQUIRED_ACTIVE_AGGREGATE_CHILDREN.items():
+        node = node_by_id.get(aggregate)
+        if node is None:
+            continue
+        if node.kind is not GateKind.AGGREGATE:
+            return aggregate, required_children[0]
+        for child in required_children:
+            if child not in node.children:
+                return aggregate, child
+    return None
+
+
 def _graph_has_cycle(node_by_id: Mapping[str, GateNode]) -> bool:
     state: dict[str, int] = {}
     for start in node_by_id:
@@ -1577,40 +1458,6 @@ def _graph_has_cycle(node_by_id: Mapping[str, GateNode]) -> bool:
                 state[child] = 1
                 stack.append((child, 0))
     return False
-
-
-def _topological_ids(node_by_id: Mapping[str, GateNode]) -> tuple[str, ...]:
-    indegree = {gate_id: 0 for gate_id in node_by_id}
-    for node in node_by_id.values():
-        for child in node.children:
-            indegree[child] += 1
-    pending = [gate_id for gate_id in node_by_id if indegree[gate_id] == 0]
-    ordered: list[str] = []
-    index = 0
-    while index < len(pending):
-        gate_id = pending[index]
-        index += 1
-        ordered.append(gate_id)
-        for child in node_by_id[gate_id].children:
-            indegree[child] -= 1
-            if indegree[child] == 0:
-                pending.append(child)
-    return tuple(ordered)
-
-
-def _bounded_path_counts(
-    node_by_id: Mapping[str, GateNode],
-    topological_ids: tuple[str, ...],
-    root: str,
-) -> dict[str, int]:
-    counts = {root: 1}
-    for gate_id in topological_ids:
-        count = counts.get(gate_id, 0)
-        if not count:
-            continue
-        for child in node_by_id[gate_id].children:
-            counts[child] = min(2, counts.get(child, 0) + count)
-    return counts
 
 
 def _json_depth_within_limit(source: str) -> bool:

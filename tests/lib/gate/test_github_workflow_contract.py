@@ -15,6 +15,8 @@ import tempfile
 import unittest
 from unittest import mock
 
+from scripts.lib.gate import ci_gate_contract as gate_contract
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
@@ -36,21 +38,6 @@ REQUIRED_CI_JOBS = frozenset(
         "validation-changed",
         "validation-full",
     }
-)
-SUPPLY_CHAIN_SEMANTIC_COMMANDS = (
-    (
-        "python3 -m unittest tests.validation.test_compose_core_readiness "
-        "tests.lib.ops.test_postgres_logical_upgrade_rehearsal "
-        "tests.lib.supply_chain.test_grype_db_seed "
-        "tests.validation.test_supply_chain_policy "
-        "tests.validation.test_sample_service_delivery_rehearsal -v"
-    ),
-    "python3 scripts/validation/check-supply-chain-policy.py --check",
-    ("bash scripts/security/generate-supply-chain-sample-service-summary.sh --check"),
-)
-CONTROL_PLANE_SEMANTIC_COMMANDS = (
-    ("python3 -m unittest tests.validation.test_agent_governance_ci_routing -v"),
-    ("python3 -m unittest tests.validation.test_agent_output_eval_fixtures -v"),
 )
 
 
@@ -198,13 +185,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
                             for node in data["gate_nodes"]
                             if node["gate_id"]
                             == (
-                                "ci.validation-full"
+                                "ci.storybook-coverage"
                                 if case == "full-child"
                                 else "leaf.storybook-coverage"
                             )
                         )
                         if case == "full-child":
-                            node["children"].remove("ci.storybook-coverage")
+                            node["children"].remove("leaf.storybook-coverage")
                         else:
                             node["argv"][2] = "test"
                     self.write_contract_document(root, data)
@@ -305,7 +292,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_ci_installs_each_frontend_dependency_tree_once(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         nodes = {node.gate_id: node for node in contract.gate_registry.nodes}
-        selected = self.module.expand_gate_ids(contract.gate_registry, "ci", None, True)
+        selected = gate_contract.expand_public_gate_ids(
+            contract.gate_registry,
+            contract.gate_registry.public_roots,
+        )
         installers = [
             nodes[key]
             for key in selected
@@ -344,11 +334,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual((), compose[0].allowed_env_keys)
         self.assertIn(
             "leaf.compose-validation",
-            nodes["ci.compose-validation"].children,
+            nodes["local.compose-validation"].children,
         )
         self.assertIn(
-            "leaf.compose-validation",
-            nodes["local.compose-validation"].children,
+            "local.compose-validation",
+            contract.gate_registry.public_roots,
         )
 
     def test_full_job_preserves_every_declared_compose_selection(self) -> None:
@@ -404,25 +394,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
         self.assertEqual(2, len(ci.jobs))
-        # 84 since 2026-08-29: leaf.document-governance-library-regressions,
-        # which runs the fourteen mirrored tests/lib/document_governance suites
-        # that no profile executed until then.
-        # 85 since 2026-08-29: leaf.compose-baseline-regressions, which carries
-        # the first failing-case coverage for the two Compose baseline gates.
-        # 86 since 2026-08-30: leaf.local-document-metadata-tests, the 261-test
-        # metadata suite, which ran under no profile while it was red.
-        # 87 since 2026-08-30: leaf.local-hook-rule-tests, covering the evaluator
-        # that finally reads the Stage 00 hook rules.
-        # 88 since 2026-08-31: leaf.local-document-corpus-recovery, which
-        # Derived, not pinned: the parsed registry must hold exactly the
-        # gate_nodes the contract document declares.
         declared = self.load_contract_document(ROOT)["gate_nodes"]
         self.assertEqual(len(declared), len(contract.gate_registry.nodes))
-        self.assertEqual(2, len(contract.gate_registry.job_roots))
-        self.assertEqual(
-            REQUIRED_CI_JOBS,
-            frozenset(job.job_id for job in contract.gate_registry.job_roots),
-        )
         public = self.module.parse_public_gate_contract(
             self.load_contract_document(ROOT)
         )
@@ -435,11 +408,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (),
             self.module.validate_gate_registry(ROOT, contract.gate_registry),
         )
-        expanded = self.module.expand_gate_ids(
+        expanded = gate_contract.expand_public_gate_ids(
             contract.gate_registry,
-            "ci",
-            None,
-            True,
+            contract.gate_registry.public_roots,
         )
         self.assertTrue(expanded)
         self.assertEqual(len(expanded), len(set(expanded)))
@@ -884,33 +855,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             with self.subTest(job_id=job_id):
                 self.assertEqual(expected_checkout, job["steps"][0])
 
-    def test_workflow_and_registry_co_mutations_fail_closed(self) -> None:
-        with self.workflow_fixture() as root:
-            workflow = root / ".github/workflows/ci-quality.yml"
-            workflow.write_text(
-                workflow.read_text(encoding="utf-8").replace(
-                    "run: python3 scripts/validation/run-ci-gate.py --profile changed",
-                    "run: python3 scripts/validation/run-ci-gate.py "
-                    "--profile ci --gate leaf.docs-traceability",
-                    1,
-                ),
-                encoding="utf-8",
-            )
-            document = self.load_contract_document(root)
-            for record in document["job_roots"]:
-                if record["job_id"] == "validation-changed":
-                    record["root_gate_id"] = "leaf.docs-traceability"
-                    break
-            self.write_contract_document(root, document)
-            findings = self.module.validate_workflows(
-                root,
-                self.module.load_workflow_contract(root),
-            )
-        self.assertIn(
-            "ci-gate-required-job-roots",
-            {finding.code for finding in findings},
-        )
-
     def test_public_profiles_share_one_validator_definition(self) -> None:
         document = self.load_contract_document(ROOT)
         public = self.module.parse_public_gate_contract(document)
@@ -956,11 +900,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "ci.storybook-coverage",
             document["public_gate"]["suite_roots"]["repository-integrity"],
         )
-        expanded = self.module.expand_gate_ids(
+        expanded = gate_contract.expand_public_gate_ids(
             contract.gate_registry,
-            "ci",
-            "ci.storybook-coverage",
-            False,
+            ("ci.storybook-coverage",),
         )
         self.assertEqual(
             (
@@ -986,8 +928,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             nodes[gate_id]["argv"],
         )
         self.assertNotIn("profiles", nodes[gate_id])
-        self.assertIn(gate_id, nodes["ci.repo-contracts"]["children"])
-        self.assertNotIn(gate_id, nodes["ci.validation-full"]["children"])
         self.assertIn(
             gate_id,
             document["public_gate"]["suite_roots"]["agent-governance"],
@@ -1015,55 +955,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             json.dumps(document, indent=2) + "\n",
             encoding="utf-8",
         )
-
-    def append_aggregate_program(
-        self,
-        root: pathlib.Path,
-        program: str,
-    ) -> None:
-        aggregate = root / "scripts/validation/check-repo-contracts.sh"
-        aggregate.write_text(
-            aggregate.read_text(encoding="utf-8") + "\n" + program.rstrip() + "\n",
-            encoding="utf-8",
-        )
-
-    def append_workflow_program(
-        self,
-        root: pathlib.Path,
-        *,
-        name: str,
-        program: str,
-    ) -> None:
-        workflow = root / ".github/workflows/ci-quality.yml"
-        text = workflow.read_text(encoding="utf-8")
-        anchor = "      - name: Check docs traceability sync\n"
-        step = f"      - name: {name}\n        shell: bash\n        run: |\n" + "".join(
-            f"          {line}\n" for line in program.splitlines()
-        )
-        self.assertIn(anchor, text)
-        workflow.write_text(
-            text.replace(anchor, step + anchor, 1),
-            encoding="utf-8",
-        )
-
-    def semantic_finding_codes(
-        self,
-        root: pathlib.Path,
-    ) -> set[str]:
-        findings = self.module.validate_workflows(
-            root,
-            self.module.load_workflow_contract(root),
-        )
-        return {
-            finding.code
-            for finding in findings
-            if finding.code
-            in {
-                "expensive-command-ownership-duplicate",
-                "workflow-aggregate-source-invalid",
-                "workflow-semantic-command-source-invalid",
-            }
-        }
 
     def test_security_and_ownership_mutation_matrix_fails_closed(self) -> None:
         sentinel = "private-workflow-sentinel"
@@ -1308,636 +1199,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.assertIn(
                     "workflow-permission-baseline-invalid",
                     {finding.code for finding in findings},
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_direct_and_transitive_duplicates_fail_closed(
-        self,
-    ) -> None:
-        workflows = {
-            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
-        }
-        repo_steps = workflows[".github/workflows/ci-quality.yml"].data["jobs"][
-            "repo-contracts"
-        ]["steps"]
-        repo_commands = "\n".join(
-            str(step.get("run", "")) for step in repo_steps if isinstance(step, dict)
-        )
-        for marker in (
-            "scripts/validation/check-agentic-audit-semantic-freshness.py",
-            "scripts/validation/check-agent-governance-contract.py",
-        ):
-            with self.subTest(label="current-direct-owner", marker=marker):
-                self.assertNotIn(marker, repo_commands)
-
-        cases = ("direct-wrapper", "transitive-aggregate")
-        for label in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                workflow = root / ".github/workflows/ci-quality.yml"
-                workflow_text = workflow.read_text(encoding="utf-8")
-                if label == "direct-wrapper":
-                    owner = (
-                        "      - name: Check repository contracts\n"
-                        "        run: bash scripts/validation/"
-                        "check-repo-contracts.sh\n"
-                    )
-                    duplicate = (
-                        "      - name: Duplicate hardening owner\n"
-                        "        run: if ! bash scripts/hardening/"
-                        "check-all-hardening.sh >/tmp/result; then exit 1; fi\n"
-                    )
-                    self.assertIn(owner, workflow_text)
-                    workflow.write_text(
-                        workflow_text.replace(owner, duplicate + owner, 1),
-                        encoding="utf-8",
-                    )
-                else:
-                    aggregate = root / "scripts/validation/check-repo-contracts.sh"
-                    aggregate.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(
-                        ROOT / "scripts/validation/check-repo-contracts.sh",
-                        aggregate,
-                    )
-                    aggregate.write_text(
-                        aggregate.read_text(encoding="utf-8")
-                        + (
-                            "\nif ! bash scripts/hardening/"
-                            "check-all-hardening.sh >/tmp/result; then\n"
-                            "  exit 1\n"
-                            "fi\n"
-                        ),
-                        encoding="utf-8",
-                    )
-                findings = self.module.validate_workflows(
-                    root,
-                    self.module.load_workflow_contract(root),
-                )
-                self.assertIn(
-                    "expensive-command-ownership-duplicate",
-                    {finding.code for finding in findings},
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_supply_chain_semantic_commands_are_all_transitively_owned(
-        self,
-    ) -> None:
-        for command in SUPPLY_CHAIN_SEMANTIC_COMMANDS:
-            with self.subTest(command=command), self.workflow_fixture() as root:
-                aggregate = root / "scripts/validation/check-repo-contracts.sh"
-                aggregate.write_text(
-                    aggregate.read_text(encoding="utf-8") + f"\n{command}\n",
-                    encoding="utf-8",
-                )
-                findings = self.module.validate_workflows(
-                    root,
-                    self.module.load_workflow_contract(root),
-                )
-                self.assertIn(
-                    "expensive-command-ownership-duplicate",
-                    {finding.code for finding in findings},
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_workflow_contract_co_mutations_fail_code_baseline(
-        self,
-    ) -> None:
-        cases = (
-            (
-                "repo-contracts-control-plane-regressions",
-                "repo-contracts",
-                CONTROL_PLANE_SEMANTIC_COMMANDS[0],
-                "Check agent governance CI routing mutations",
-            ),
-            (
-                "agent-output-eval-fixture-regressions",
-                "agent-output-eval-fixture-gate",
-                CONTROL_PLANE_SEMANTIC_COMMANDS[1],
-                "Check agent-output eval fixture regressions",
-            ),
-            (
-                "supply-chain-deterministic-policy",
-                "supply-chain-fixture-policy",
-                SUPPLY_CHAIN_SEMANTIC_COMMANDS[1],
-                "Check deterministic supply-chain policy fixtures",
-            ),
-            (
-                "supply-chain-summary-freshness",
-                "supply-chain-fixture-policy",
-                SUPPLY_CHAIN_SEMANTIC_COMMANDS[2],
-                "Check supply-chain summary freshness",
-            ),
-        )
-        for identifier, job, command, step_name in cases:
-            with self.subTest(identifier=identifier), self.workflow_fixture() as root:
-                workflow = root / ".github/workflows/ci-quality.yml"
-                workflow_text = workflow.read_text(encoding="utf-8")
-                workflow_step = f"      - name: {step_name}\n        run: {command}\n"
-                self.assertIn(workflow_step, workflow_text)
-                workflow.write_text(
-                    workflow_text.replace(workflow_step, "", 1),
-                    encoding="utf-8",
-                )
-
-                contract_path = root / ".github/workflow-contract.yml"
-                contract_text = contract_path.read_text(encoding="utf-8")
-                owner_command = f"          - {command}\n"
-                owner_record = (
-                    f"  - id: {identifier}\n"
-                    "    workflow: .github/workflows/ci-quality.yml\n"
-                    f"    job: {job}\n"
-                    f"    command: {command}\n"
-                )
-                self.assertIn(owner_command, contract_text)
-                self.assertIn(owner_record, contract_text)
-                contract_path.write_text(
-                    contract_text.replace(owner_command, "", 1).replace(
-                        owner_record,
-                        "",
-                        1,
-                    ),
-                    encoding="utf-8",
-                )
-                with self.assertRaises(self.module.WorkflowContractError) as raised:
-                    self.module.load_workflow_contract(root)
-                self.assertEqual(
-                    "contract-expensive-owner-baseline-invalid",
-                    raised.exception.code,
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_shell_grammar_is_fail_closed_and_data_safe(
-        self,
-    ) -> None:
-        marker = "scripts/hardening/check-all-hardening.sh"
-        cases = (
-            (
-                "direct-executable",
-                f"./{marker}\n",
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "variable-indirection",
-                f'checker="{marker}"\nbash "$checker"\n',
-                {"expensive-command-ownership-duplicate"},
-            ),
-            (
-                "unknown-wrapper",
-                f"run_gate {marker}\n",
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "comment",
-                f"# bash {marker}\n",
-                set(),
-            ),
-            (
-                "quoted-data",
-                f"printf '%s\\n' 'bash {marker}'\n",
-                set(),
-            ),
-            (
-                "heredoc-data",
-                f"cat <<'REPORT'\nbash {marker}\nREPORT\n",
-                set(),
-            ),
-            (
-                "quoted-heredoc-lookalike-before-executable",
-                (f"printf '%s\\n' '<<REPORT'\n./{marker}\nREPORT\n"),
-                {"workflow-aggregate-source-invalid"},
-            ),
-        )
-        for label, mutation, expected_codes in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                aggregate = root / "scripts/validation/check-repo-contracts.sh"
-                aggregate.write_text(
-                    aggregate.read_text(encoding="utf-8") + "\n" + mutation,
-                    encoding="utf-8",
-                )
-                findings = self.module.validate_workflows(
-                    root,
-                    self.module.load_workflow_contract(root),
-                )
-                relevant_codes = {
-                    finding.code
-                    for finding in findings
-                    if finding.code
-                    in {
-                        "expensive-command-ownership-duplicate",
-                        "workflow-aggregate-source-invalid",
-                    }
-                }
-                self.assertEqual(expected_codes, relevant_codes)
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_complete_program_variable_matrix(
-        self,
-    ) -> None:
-        marker = "scripts/hardening/check-all-hardening.sh"
-        safe_cases = (
-            (
-                "literal-assignment-later-interpreter",
-                f'checker="{marker}"\nbash "$checker"',
-            ),
-            (
-                "literal-assignment-same-line-direct",
-                f'checker={marker}; bash "${{checker}}"',
-            ),
-        )
-        for label, program in safe_cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                self.append_workflow_program(
-                    root,
-                    name=f"Duplicate semantic owner {label}",
-                    program=program,
-                )
-                self.assertIn(
-                    "expensive-command-ownership-duplicate",
-                    self.semantic_finding_codes(root),
-                )
-
-        ambiguous_cases = (
-            (
-                "dynamic-assignment",
-                (
-                    'prefix="${DYNAMIC_ROOT:-}"\n'
-                    f'checker="${{prefix}}/{marker}"\n'
-                    'bash "$checker"'
-                ),
-            ),
-            (
-                "variable-indirection",
-                (f'checker="{marker}"\npointer=checker\nbash "${{!pointer}}"'),
-            ),
-            (
-                "unresolved-variable",
-                (f'expected="{marker}"\nbash "$unresolved_checker" "$expected"'),
-            ),
-            (
-                "dynamic-direct-executable",
-                ('checker="${DYNAMIC_CHECKER:-}"\n"$checker"'),
-            ),
-        )
-        for label, program in ambiguous_cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                self.append_workflow_program(
-                    root,
-                    name=f"Ambiguous semantic owner {label}",
-                    program=program,
-                )
-                self.assertIn(
-                    "workflow-semantic-command-source-invalid",
-                    self.semantic_finding_codes(root),
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_non_script_semantic_commands_normalize_safe_wrappers_and_continuations(
-        self,
-    ) -> None:
-        cases = (
-            (
-                "command-python",
-                (
-                    "command python3 -m unittest "
-                    "tests.validation.test_agent_governance_ci_routing -v"
-                ),
-            ),
-            (
-                "env-npm",
-                (
-                    "env LC_ALL=C npm audit --audit-level=high "
-                    "--prefix projects/storybook/nextjs"
-                ),
-            ),
-            (
-                "env-options-npm",
-                (
-                    "env -i --unset HOME LC_ALL=C "
-                    "npm audit --audit-level=high "
-                    "--prefix projects/storybook/nextjs"
-                ),
-            ),
-            (
-                "continued-python",
-                (
-                    "command python3 -m unittest \\\n"
-                    "  tests.validation.test_agent_governance_ci_routing \\\n"
-                    "  -v"
-                ),
-            ),
-        )
-        for label, program in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                self.append_workflow_program(
-                    root,
-                    name=f"Equivalent non-script owner {label}",
-                    program=program,
-                )
-                self.assertIn(
-                    "expensive-command-ownership-duplicate",
-                    self.semantic_finding_codes(root),
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_rejects_dynamic_shell_and_path_aliases(
-        self,
-    ) -> None:
-        marker = "scripts/hardening/check-all-hardening.sh"
-        sentinel = "private-semantic-payload"
-        cases = (
-            ("shell-c", f"bash -c 'bash {marker}'"),
-            ("eval", f"eval 'bash {marker}'"),
-            ("source", f"source {marker}"),
-            ("unknown-wrapper", f"run_gate {marker}"),
-            (
-                "command-substitution-echo",
-                f'echo "$({marker} {sentinel})"',
-            ),
-            (
-                "command-substitution-printf",
-                f'printf "%s\\n" "$(bash {marker} {sentinel})"',
-            ),
-            (
-                "process-substitution",
-                f"diff <(bash {marker}) /dev/null",
-            ),
-            (
-                "noncanonical-dot-dot",
-                ("bash scripts/validation/../hardening/check-all-hardening.sh"),
-            ),
-            (
-                "noncanonical-double-slash",
-                "bash scripts//hardening/check-all-hardening.sh",
-            ),
-            (
-                "noncanonical-absolute",
-                f'bash "$PWD/{marker}"',
-            ),
-        )
-        for label, program in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                self.append_aggregate_program(root, program)
-                findings = self.module.validate_workflows(
-                    root,
-                    self.module.load_workflow_contract(root),
-                )
-                self.assertIn(
-                    "workflow-aggregate-source-invalid",
-                    {finding.code for finding in findings},
-                )
-                self.assertTrue(
-                    all(sentinel not in finding.message for finding in findings)
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_heredoc_interpolation_is_fail_closed(
-        self,
-    ) -> None:
-        marker = "scripts/hardening/check-all-hardening.sh"
-        cases = (
-            (
-                "quoted-heredoc-data",
-                (f"cat <<'REPORT'\n$(bash {marker})\nREPORT"),
-                set(),
-            ),
-            (
-                "unquoted-heredoc-command-substitution",
-                (f"cat <<REPORT\n$(bash {marker})\nREPORT"),
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "unquoted-heredoc-backtick-substitution",
-                (f"cat <<REPORT\n`bash {marker}`\nREPORT"),
-                {"workflow-aggregate-source-invalid"},
-            ),
-        )
-        for label, program, expected_codes in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                self.append_aggregate_program(root, program)
-                self.assertEqual(
-                    expected_codes,
-                    self.semantic_finding_codes(root),
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_owner_recurses_literal_helpers_and_fails_closed_on_cycles(
-        self,
-    ) -> None:
-        marker = "scripts/hardening/check-all-hardening.sh"
-        cases = ("one-helper", "nested-helper", "python-helper", "cycle")
-        for label in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                helper_root = root / "scripts/validation"
-                helper_root.mkdir(parents=True, exist_ok=True)
-                first = helper_root / "task4-semantic-helper-a.sh"
-                second = helper_root / "task4-semantic-helper-b.sh"
-                if label == "one-helper":
-                    first.write_text(
-                        f"#!/usr/bin/env bash\nbash {marker}\n",
-                        encoding="utf-8",
-                    )
-                    expected = {"expensive-command-ownership-duplicate"}
-                elif label == "nested-helper":
-                    first.write_text(
-                        (
-                            "#!/usr/bin/env bash\n"
-                            "bash scripts/validation/"
-                            "task4-semantic-helper-b.sh\n"
-                        ),
-                        encoding="utf-8",
-                    )
-                    second.write_text(
-                        f"#!/usr/bin/env bash\nbash {marker}\n",
-                        encoding="utf-8",
-                    )
-                    expected = {"expensive-command-ownership-duplicate"}
-                elif label == "python-helper":
-                    first = first.with_suffix(".py")
-                    first.write_text(
-                        (
-                            "#!/usr/bin/env python3\n"
-                            "import subprocess\n"
-                            "subprocess.run(\n"
-                            f'    ["bash", "{marker}"],\n'
-                            "    check=True,\n"
-                            ")\n"
-                        ),
-                        encoding="utf-8",
-                    )
-                    expected = {"expensive-command-ownership-duplicate"}
-                else:
-                    first.write_text(
-                        (
-                            "#!/usr/bin/env bash\n"
-                            "bash scripts/validation/"
-                            "task4-semantic-helper-b.sh\n"
-                        ),
-                        encoding="utf-8",
-                    )
-                    second.write_text(
-                        (
-                            "#!/usr/bin/env bash\n"
-                            "bash scripts/validation/"
-                            "task4-semantic-helper-a.sh\n"
-                        ),
-                        encoding="utf-8",
-                    )
-                    expected = {"workflow-aggregate-source-invalid"}
-                self.append_aggregate_program(
-                    root,
-                    (
-                        "python3 scripts/validation/task4-semantic-helper-a.py"
-                        if label == "python-helper"
-                        else ("bash scripts/validation/task4-semantic-helper-a.sh")
-                    ),
-                )
-                self.assertTrue(expected.issubset(self.semantic_finding_codes(root)))
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_semantic_helper_depth_file_byte_and_symlink_limits_fail_closed(
-        self,
-    ) -> None:
-        cases = ("depth", "files", "bytes", "symlink")
-        for label in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                helper_root = root / "scripts/validation"
-                helper_root.mkdir(parents=True, exist_ok=True)
-                if label == "depth":
-                    for index in range(10):
-                        successor = (
-                            f"bash scripts/validation/task4-depth-{index + 1}.sh\n"
-                            if index < 9
-                            else "true\n"
-                        )
-                        (helper_root / f"task4-depth-{index}.sh").write_text(
-                            "#!/usr/bin/env bash\n" + successor,
-                            encoding="utf-8",
-                        )
-                    entry = "bash scripts/validation/task4-depth-0.sh"
-                elif label == "files":
-                    invocations: list[str] = []
-                    for index in range(65):
-                        relative = f"scripts/validation/task4-file-{index}.sh"
-                        (root / relative).write_text(
-                            "#!/usr/bin/env bash\ntrue\n",
-                            encoding="utf-8",
-                        )
-                        invocations.append(f"bash {relative}")
-                    entry = "\n".join(invocations)
-                elif label == "bytes":
-                    relative = "scripts/validation/task4-large-helper.sh"
-                    (root / relative).write_text(
-                        "#!/usr/bin/env bash\n#" + ("x" * (256 * 1024)) + "\n",
-                        encoding="utf-8",
-                    )
-                    entry = f"bash {relative}"
-                else:
-                    target = helper_root / "task4-helper-target.sh"
-                    target.write_text(
-                        "#!/usr/bin/env bash\ntrue\n",
-                        encoding="utf-8",
-                    )
-                    link = helper_root / "task4-helper-link.sh"
-                    os.symlink(target.name, link)
-                    entry = "bash scripts/validation/task4-helper-link.sh"
-                self.append_aggregate_program(root, entry)
-                self.assertIn(
-                    "workflow-aggregate-source-invalid",
-                    self.semantic_finding_codes(root),
-                )
-
-    @unittest.skip("Wave A retains the inactive semantic parser until Wave C")
-    def test_direct_local_executable_requires_tracked_mode_and_admitted_shebang(
-        self,
-    ) -> None:
-        marker = pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
-        cases = (
-            (
-                "tracked-executable",
-                "copy",
-                True,
-                {"expensive-command-ownership-duplicate"},
-            ),
-            (
-                "tracked-non-executable",
-                "copy",
-                False,
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "untracked-executable",
-                "copy-untracked",
-                True,
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "invalid-shebang",
-                "invalid-shebang",
-                True,
-                {"workflow-aggregate-source-invalid"},
-            ),
-            (
-                "symlink",
-                "symlink",
-                True,
-                {"workflow-aggregate-source-invalid"},
-            ),
-        )
-        for label, setup, executable, expected_codes in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                path = root.joinpath(*marker.parts)
-                path.parent.mkdir(parents=True, exist_ok=True)
-                if setup == "copy":
-                    shutil.copy2(ROOT.joinpath(*marker.parts), path)
-                elif setup == "copy-untracked":
-                    shutil.copy2(ROOT.joinpath(*marker.parts), path)
-                elif setup == "invalid-shebang":
-                    path.write_text(
-                        "#!/usr/bin/env ruby\nexit 0\n",
-                        encoding="utf-8",
-                    )
-                else:
-                    target = path.with_name("tracked-target.sh")
-                    target.write_text(
-                        "#!/usr/bin/env bash\nexit 0\n",
-                        encoding="utf-8",
-                    )
-                    path.unlink()
-                    os.symlink(target.name, path)
-                if not path.is_symlink():
-                    path.chmod(0o755 if executable else 0o644)
-
-                subprocess.run(
-                    ["git", "init", "-q"],
-                    cwd=root,
-                    check=True,
-                    capture_output=True,
-                )
-                if setup != "copy-untracked":
-                    subprocess.run(
-                        ["git", "add", marker.as_posix()],
-                        cwd=root,
-                        check=True,
-                        capture_output=True,
-                    )
-                    if setup == "copy":
-                        subprocess.run(
-                            [
-                                "git",
-                                "update-index",
-                                ("--chmod=+x" if executable else "--chmod=-x"),
-                                marker.as_posix(),
-                            ],
-                            cwd=root,
-                            check=True,
-                            capture_output=True,
-                        )
-                self.append_aggregate_program(
-                    root,
-                    f"./{marker.as_posix()}",
-                )
-                self.assertEqual(
-                    expected_codes,
-                    self.semantic_finding_codes(root),
                 )
 
     def test_alternate_boolean_trigger_keys_cannot_masquerade_as_on(
