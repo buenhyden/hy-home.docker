@@ -37,9 +37,11 @@ Use a relative path instead of a machine-specific `file://` URL.
 <!-- BLOCKED: absolute file URL -->
 [document link](file:///home/hy/projects/hy-home.docker/docs/01.requirements/0001-gateway.md)
 
-<!-- ALLOWED: relative link -->
-[document link](../../../docs/01.requirements/0001-gateway.md)
-[document link](../../../docs/01.requirements/0001-gateway.md)
+<!-- ALLOWED from inside docs/: relative link -->
+[document link](../01.requirements/0001-gateway.md)
+
+<!-- ALLOWED from outside docs/: entry point plus the path as text -->
+[Documentation index](../../../docs/README.md) - `docs/01.requirements/0001-gateway.md`
 ```
 
 Calculate relative paths from the current file location.

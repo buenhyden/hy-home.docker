@@ -66,9 +66,10 @@ analytics/
 
 ## Related Documents
 
-- **System Guide**: [Operations data catalog](../../../docs/05.operations/catalog/04-data/README.md)
-- **Policies**: [Operations data catalog](../../../docs/05.operations/catalog/04-data/README.md)
-- **Runbooks**: [Operations data catalog](../../../docs/05.operations/catalog/04-data/README.md)
+- **System Guide**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
+- **Policies**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
+- **Runbooks**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
+- [Documentation index](../../../docs/README.md)
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.

@@ -40,7 +40,7 @@ created: "2026-09-03"
 ### Out of Scope
 
 - 살아 있는 모델 호출과 제공자 간 비교 점수
-- 픽스처의 서술적 근거 문서 — [Stage 90 픽스처 참조](../docs/90.references/data/0064-agent-output-eval-fixtures/README.md)가 소유합니다
+- 픽스처의 서술적 근거 문서 — Stage 90 픽스처 참조 (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)가 소유합니다
 - 회귀 테스트 자체 — `tests/validation/test_agent_output_eval_fixtures.py`가 소유합니다
 
 ## Structure
@@ -69,7 +69,7 @@ bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regression
 
 ## How to Work in This Area
 
-1. 픽스처를 추가하거나 임계값을 바꾸기 전에 [Stage 90 픽스처 참조](../docs/90.references/data/0064-agent-output-eval-fixtures/README.md)를 먼저 갱신합니다 → 하니스가 그 문서를 카탈로그 근거로 읽습니다.
+1. 픽스처를 추가하거나 임계값을 바꾸기 전에 Stage 90 픽스처 참조 (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)를 먼저 갱신합니다 → 하니스가 그 문서를 카탈로그 근거로 읽습니다.
 2. `agent_output_eval.py`의 `FIXTURES` 항목을 참조 문서와 일치시킵니다 → `--check-fixtures`가 `pass`.
 3. 회귀 집합을 함께 갱신합니다 → `--check-regressions`가 `pass`.
 4. `scripts/manifest.yaml`의 해당 행을 갱신합니다 → `python3 scripts/validation/check-script-manifest.py`가 종료 코드 `0`.
@@ -81,9 +81,10 @@ bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regression
 
 ## Related Documents
 
-- [Fixture reference](../docs/90.references/data/0064-agent-output-eval-fixtures/README.md)
+- Fixture reference (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)
 - [Provider model evaluation skill](../.agents/skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../scripts/manifest.yaml)
 - [Scripts surface](../scripts/README.md)
 - [Test surface](../tests/README.md)
 - [Root README](../README.md)
+- [Documentation index](../docs/README.md)

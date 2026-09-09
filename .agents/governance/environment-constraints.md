@@ -84,7 +84,7 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
 ## 3. Verification
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
-- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode traceability` and link/stale-reference checks for edited files.
+- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all` and link/stale-reference checks for edited files.
 - Direct `pre-commit run` execution by agents is prohibited. At an approved
   final QA gate, use only
   `scripts/validation/run-agent-precommit-all-files.sh` from an initially clean

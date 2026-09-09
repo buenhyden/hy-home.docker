@@ -59,11 +59,12 @@ nosql/
 
 ## Related Documents
 
-- **Architecture**: [Data Tier Architecture Description](../../../docs/02.architecture/descriptions/0004-data-architecture.md)
-- **Guides**: [NoSQL Guides](../../../docs/05.operations/catalog/04-data/README.md)
-- **Policies**: [NoSQL Policies](../../../docs/05.operations/catalog/04-data/README.md)
-- **Runbooks**: [NoSQL Runbooks](../../../docs/05.operations/catalog/04-data/README.md)
+- **Architecture**: Data Tier Architecture Description (`docs/02.architecture/descriptions/0004-data-architecture.md`)
+- **Guides**: NoSQL Guides (`docs/05.operations/catalog/04-data/README.md`)
+- **Policies**: NoSQL Policies (`docs/05.operations/catalog/04-data/README.md`)
+- **Runbooks**: NoSQL Runbooks (`docs/05.operations/catalog/04-data/README.md`)
 - **Source**: [Data Tier Root](../README.md)
+- [Documentation index](../../../docs/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

@@ -27,6 +27,7 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
     read_bounded_regular,
+    tracked_paths,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DocumentRegistry,
@@ -37,11 +38,18 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
 
 
 DOC_ROOT = pathlib.Path("docs")
+# The graph reads every tracked Markdown document plus the LLM entry point.
+# An explicit support list used to decide which documents outside `docs/` were
+# checked, so a README that linked into a stage was simply not looked at; the
+# tracked set removes that blind spot without letting untracked trees such as
+# `projects/**/node_modules` into the graph.
+# The provider adapters and the LLM entry point stay named rather than tracked-
+# derived: a symlinked provider directory takes its contents out of the tracked
+# set, and the graph has to report that escape instead of quietly skipping it.
 SUPPORT_DOCS = (
     pathlib.Path(".claude/provider.md"),
     pathlib.Path(".codex/provider.md"),
-    pathlib.Path("README.md"),
-    pathlib.Path("scripts/README.md"),
+    pathlib.Path("llms.txt"),
 )
 # A document whose status records a past observation is not a current route.
 # Its links are evidence of what resolved when it was written.
@@ -74,27 +82,20 @@ def _routing_status(
 
 
 def _paths(root: pathlib.Path) -> list[pathlib.Path]:
-    paths: set[pathlib.Path] = set()
     registry_path = root / "docs/99.templates/registry.json"
     registry = load_registry(registry_path) if registry_path.exists() else None
-    for relative in (DOC_ROOT, pathlib.Path(".agents")):
-        stage = root / relative
-        if stage.is_symlink():
-            paths.add(stage)
-        elif stage.is_dir():
-            paths.update(
-                path
-                for path in stage.rglob("*.md")
-                if (path.is_file() or path.is_symlink())
-                and _routing_status(root, path, registry)
-            )
-    paths.update(
-        root / relative
-        for relative in SUPPORT_DOCS
-        if ((root / relative).is_file() or (root / relative).is_symlink())
-        and _routing_status(root, root / relative, registry)
+    candidates = {
+        root / relative.as_posix()
+        for relative in tracked_paths(root)
+        if relative.suffix == ".md"
+    }
+    candidates.update(root / relative for relative in SUPPORT_DOCS)
+    return sorted(
+        path
+        for path in candidates
+        if (path.is_file() or path.is_symlink())
+        and _routing_status(root, path, registry)
     )
-    return sorted(paths)
 
 
 def _parser() -> argparse.ArgumentParser:

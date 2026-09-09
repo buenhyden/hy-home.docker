@@ -65,7 +65,7 @@ nginx/
 | Labels | Not declared |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `nginx` |
-| Operations | [Guide](../../../docs/05.operations/catalog/01-gateway/0011-nginx/guide.md), [Policy](../../../docs/05.operations/catalog/01-gateway/0011-nginx/policy.md), [Runbook](../../../docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md) |
+| Operations | Guide (`docs/05.operations/catalog/01-gateway/0011-nginx/guide.md`), Policy (`docs/05.operations/catalog/01-gateway/0011-nginx/policy.md`), Runbook (`docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with static hardening checks; inspect service logs only when an approved Nginx runtime context is already running. |
 
@@ -118,7 +118,8 @@ healthcheck:
 ## Related Documents
 
 - [01-gateway Root README](../README.md)
-- [Nginx Guide](../../../docs/05.operations/catalog/01-gateway/0011-nginx/guide.md)
-- [Gateway Operations Policy](../../../docs/05.operations/catalog/01-gateway/0011-nginx/policy.md)
-- [Nginx Runbook](../../../docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md)
-- [SSO Setup Guide](../../../docs/05.operations/catalog/02-auth/README.md)
+- Nginx Guide (`docs/05.operations/catalog/01-gateway/0011-nginx/guide.md`)
+- Gateway Operations Policy (`docs/05.operations/catalog/01-gateway/0011-nginx/policy.md`)
+- Nginx Runbook (`docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md`)
+- SSO Setup Guide (`docs/05.operations/catalog/02-auth/README.md`)
+- [Documentation index](../../../docs/README.md)

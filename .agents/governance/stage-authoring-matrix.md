@@ -60,4 +60,5 @@ stale generated files eligible for automatic deletion.
 
 - [Documentation protocol](documentation-protocol.md)
 - [SDLC](sdlc.md)
-- [Stage 99 registry](../../docs/99.templates/registry.json)
+- Stage 99 registry (`docs/99.templates/registry.json`)
+- [Documentation index](../../docs/README.md)

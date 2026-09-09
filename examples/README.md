@@ -65,5 +65,6 @@ examples/
 - [Root README](../README.md)
 - [Infrastructure surface](../infra/README.md)
 - [Sample web service seed](sample-web-service/README.md)
-- [Operations catalog](../docs/05.operations/catalog/README.md)
-- [README template](../docs/99.templates/templates/common/readme-repository.template.md)
+- Operations catalog (`docs/05.operations/catalog/README.md`)
+- README template (`docs/99.templates/templates/common/readme-repository.template.md`)
+- [Documentation index](../docs/README.md)

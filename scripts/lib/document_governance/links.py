@@ -24,6 +24,10 @@ _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 _CATALOG_PAIR = re.compile(r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)")
+_DOC_ROOT = "docs"
+# Stage directories are numbered by construction, so the pattern keeps matching
+# a stage that is added or removed without a second list to keep in step.
+_STAGE_DIRECTORY = re.compile(rf"^{_DOC_ROOT}/[0-9]{{2}}\.[^/]+(?:/|$)")
 _ACTIVE_STAGE_PREFIXES = (
     "docs/01.requirements/",
     "docs/02.architecture/",
@@ -691,9 +695,30 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     return sorted(set(findings))
 
 
+def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
+    """Keep stage documents reachable from outside `docs/` through one entry point.
+
+    A file outside `docs/` cannot know when a stage document is superseded,
+    renamed or archived, so a direct link into a stage rots silently: most of
+    the links this rule first rejected already pointed at specs that no longer
+    exist. `docs/README.md` is the one route that stays valid, and naming a
+    stage path as text keeps the reference without claiming it resolves.
+    """
+
+    findings: list[LinkFinding] = list(graph.input_findings)
+    for link in graph.links:
+        if link.source.as_posix().startswith(f"{_DOC_ROOT}/"):
+            continue
+        if not _STAGE_DIRECTORY.match(link.target.as_posix()):
+            continue
+        findings.append(_finding(link, "stage-link-outside-docs", link.raw_target))
+    return sorted(set(findings))
+
+
 MODE_HANDLERS = {
     "traceability": check_traceability,
     "alignment": check_alignment,
+    "entrypoint": check_entrypoint,
 }
 
 

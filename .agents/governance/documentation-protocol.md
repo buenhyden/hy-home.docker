@@ -31,6 +31,24 @@ Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
 progress, or handoff authorities when the canonical package already owns the
 content. Root `DESIGN.md` remains UI and design-system authority only.
 
+### Entry point for documents outside `docs/`
+
+A file outside `docs/` links to `docs/README.md` and to no other document under
+a numbered stage directory. The stage index is not an exception: a link to
+`docs/03.specs/README.md` is a link into a stage.
+
+A file outside `docs/` cannot see when a stage document is superseded, renamed,
+or retired, so a direct link there rots without anyone noticing. When this rule
+was first enforced, thirteen of the links it rejected already pointed at specs
+that had been retired to Stage 98 and no longer existed.
+
+Naming a stage path or artifact ID as text is unaffected, and machine inputs
+such as `docs/99.templates/registry.json` stay readable as code text; what the
+rule removes is the clickable route. `leaf.docs-traceability` owns enforcement
+through the `entrypoint` mode of `check-document-links.py`, which reads every
+tracked Markdown document plus `llms.txt`. Links between documents inside
+`docs/` keep their existing rules.
+
 ## Authoring Rules
 
 1. Select the registry profile before creating or moving a document.
@@ -317,6 +335,7 @@ package is retired.
 ## Related Documents
 
 - [Stage authoring matrix](stage-authoring-matrix.md)
-- [Stage 99 registry](../../docs/99.templates/registry.json)
+- Stage 99 registry (`docs/99.templates/registry.json`)
 - [SDLC](sdlc.md)
 - [Task checklists](task-checklists.md)
+- [Documentation index](../../docs/README.md)

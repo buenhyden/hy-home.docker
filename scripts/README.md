@@ -126,7 +126,7 @@ script.
 | Agentic Audit Semantic Freshness       | [check-agentic-audit-semantic-freshness.py](./validation/check-agentic-audit-semantic-freshness.py) | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
-| Document Link Contract Gate            | [check-document-links.py](./validation/check-document-links.py)                            | Run traceability and implementation-alignment checks together with `--mode all` through one canonical leaf |
+| Document Link Contract Gate            | [check-document-links.py](./validation/check-document-links.py)                            | Run traceability, implementation-alignment, and stage entry-point checks together with `--mode all` through one canonical leaf |
 | Typed Gate Contract Library            | [ci_gate_contract.py](./lib/gate/ci_gate_contract.py)                                    | Parse and validate the dependency-free strict-JSON schema-v2 gate DAG, suite ownership, required roots, and local profile roots |
 | Typed Gate Runner                      | [run-ci-gate.py](./validation/run-ci-gate.py)                                              | Explain or execute the closed `changed` and `full` public profiles through tracked descriptor-bound entrypoints with minimal environments and bounded timeouts |
 | Typed Gate Adapters                    | [ci_gate_adapters.py](./lib/gate/ci_gate_adapters.py)                                    | Implement the closed argument grammar used by typed gate leaves without shell interpolation or ambient secret forwarding |
@@ -366,7 +366,7 @@ not copy atomic validator commands.
 # Enforce all six public suites
 python3 scripts/validation/run-ci-gate.py --profile full
 
-# Enforce active document traceability and implementation alignment once
+# Enforce traceability, implementation alignment, and the docs entry point once
 python3 scripts/validation/check-document-links.py --mode all
 
 # Enforce Quick Win baseline
@@ -504,13 +504,14 @@ generators; it never invokes runtime-changing rows.
 ## Related Documents
 
 - [🤖 Agent Governance](../AGENTS.md)
-- [⚙️ Operations Baseline](../docs/05.operations/README.md)
-- [📘 Runbooks](../docs/05.operations/README.md)
-- [LLM Wiki Maintenance](../docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md)
-- [LLM Wiki Generated Index](../docs/90.references/data/0082-llm-wiki-index/README.md)
+- ⚙️ Operations Baseline (`docs/05.operations/README.md`)
+- 📘 Runbooks (`docs/05.operations/README.md`)
+- LLM Wiki Maintenance (`docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md`)
+- LLM Wiki Generated Index (`docs/90.references/data/0082-llm-wiki-index/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
 - [Agent Evaluation Harness](../evals/README.md) - the sibling automation root; `evals/README.md` owns the eval surface this manifest also registers
-- [Workspace Governance Authority](../docs/02.architecture/decisions/0032-canonical-agent-governance-home.md)
-- [Document Profile Registry](../docs/99.templates/registry.json)
+- Workspace Governance Authority (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- Document Profile Registry (`docs/99.templates/registry.json`)
+- [Documentation index](../docs/README.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
