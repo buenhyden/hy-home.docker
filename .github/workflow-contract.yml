@@ -1390,6 +1390,16 @@
       ],
       "security_disposition": "approved-node24"
     },
+    "astral-sh/setup-uv": {
+      "sha": "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
+      "runtime": "node24",
+      "manifest_url": "https://raw.githubusercontent.com/astral-sh/setup-uv/20cfd1bf945f4377ade1205e4dbc17946fc9a30d/action.yml",
+      "retrieved_at": "2026-09-02",
+      "consumers": [
+        ".github/workflows/ci-quality.yml"
+      ],
+      "security_disposition": "approved-node24"
+    },
     "github/codeql-action/upload-sarif": {
       "sha": "cdf488f595d80d6e07e03d4674febd5ab45fa938",
       "runtime": "node24",

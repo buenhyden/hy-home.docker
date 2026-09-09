@@ -475,7 +475,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        self.assertEqual(7, len(contract.actions))
+        self.assertEqual(8, len(contract.actions))
         self.assertEqual(
             {"node24"},
             {action.runtime for action in contract.actions},
@@ -507,31 +507,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
             changed_steps[1]["uses"],
         )
-        # `uv` was installed by both jobs and used by nothing: no gate leaf,
-        # requirements file, or pre-commit code path referenced it.
-        self.assertNotIn(
-            "astral-sh/setup-uv",
-            "\n".join(
-                str(step.get("uses", ""))
-                for workflow in workflows.values()
-                for job in workflow.data.get("jobs", {}).values()
-                for step in job.get("steps", [])
-                if isinstance(step, dict)
-            ),
-        )
+        setup_uv = "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
+        self.assertEqual(setup_uv, changed_steps[3]["uses"])
+        self.assertEqual(setup_uv, full_steps[3]["uses"])
         self.assertEqual(
             (
                 self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile changed",
             ),
-            (changed_steps[3]["run"], changed_steps[4]["run"]),
+            (changed_steps[4]["run"], changed_steps[5]["run"]),
         )
         self.assertEqual(
             (
                 self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile full",
             ),
-            (full_steps[3]["run"], full_steps[4]["run"]),
+            (full_steps[4]["run"], full_steps[5]["run"]),
         )
         self.assertEqual(
             "pre-commit==4.6.1\n",
