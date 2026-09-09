@@ -48,6 +48,40 @@ elsewhere.
 
 ## Work Log
 
+### W29 Remote required-check convergence (2026-09-09)
+
+Local passes failed to predict the hosted required check twice, for two
+unrelated reasons. Both are properties of the local/remote boundary rather than
+defects introduced by this work.
+
+The first two hosted `validation-changed` failures reported
+`body-heading-forbidden` on documents every local run had accepted. The local
+pre-commit path runs `check-document-metadata.py --mode check-active` over the
+active document set; the pull request job runs `--mode check-changed` against
+`TEMPLATE_GATE_BASE`. It is the same checker with a different selection, so a
+heading introduced inside an unregistered body section is invisible to one and
+fatal to the other. Re-running the checker locally with the hosted mode and
+base reproduced the failure exactly, and the six new headings were folded into
+registry-allowed sections instead of widening the registry.
+
+The third failure was `ci-gate-adapter-git-flow`, reached only because the
+first cause was fixed. `_check_git_flow` reads `.cz.toml` and applies the commit
+schema to `PR_TITLE` and to the branch name. The branch name was valid; the
+pull request title was 81 characters against `message_length_limit = 75`. No
+repository file was wrong, so no repository file was changed: the pull request
+title was shortened and re-checked against the same `schema_pattern` and limit
+before the edit.
+
+The adapter cannot be exercised standalone. `_owned_root_descriptor` fails
+closed unless the gate runner hands it a verified root descriptor, so the local
+reproduction read `.cz.toml` directly and applied the same two rules to the
+candidate titles.
+
+The `data/` category README told a retiring package to remove its row above the
+retirement rule while the Packages table sits below it. No gate reads a
+direction word, so the one instruction a future retirement would follow was
+corrected by reading.
+
 ### W28 Stage 90 disposition and index correction (2026-09-09)
 
 The instruction was to delete prior content under `docs/90.references/audits/`
@@ -2098,6 +2132,37 @@ in-progress.
 
 ## Verification Evidence
 
+### Remote required-check observations (2026-09-09)
+
+Hosted results below are read back from GitHub for pull request 151. None is a
+local result, and none proves remote branch protection state.
+
+| Run | Head | Check | Result | Evidence |
+| --- | --- | --- | --- | --- |
+| `34329769577` | `af9f27f6f` | `validation-changed` | FAIL | `metadata check-changed: selected=18 violations=1` |
+| `34335700317` | `9489c023b` | `validation-changed` | FAIL | `metadata check-changed: selected=36 violations=4` |
+| `34337431013` | `522bda7be` | `validation-changed` | FAIL | `FAIL [ci-gate-adapter-git-flow]: the pull request identity does not match policy` |
+| `34337431013` | `522bda7be` | `validation-full` | NOT_APPLICABLE | reported `skipping`; the job is push/dispatch only |
+| n/a | `522bda7be` | CodeQL, `Analyze (actions)`, `Analyze (javascript-typescript)`, `Analyze (python)`, `triage`, GitGuardian | PASS | `gh pr checks 151` |
+
+Local reproduction of the metadata failure, in the hosted mode and base:
+`TEMPLATE_GATE_BASE=85ab22f97476187e1c2855cbb05c2610d4eaf006 python3
+scripts/validation/check-document-metadata.py --mode check-changed` reported
+`selected=36 violations=4` before the fix and `selected=36 violations=0` after.
+`check-document-links.py --mode all` reports `documents=845 links=6638
+failures=0`.
+
+Approved remote mutation record. Approval source: the user's chosen branch and
+pull request delivery route. Target repository: `buenhyden/hy-home.docker`.
+Target object: pull request 151 title. Command class: `gh pr edit --title`.
+Before state: 81 characters, over the schema limit. After state: 71 characters,
+`schema_pattern` matched and within `message_length_limit = 75`, read back with
+`gh pr view`. Recovery path: set the previous title back with the same command.
+No protection, ruleset, check, review, merge or release state was touched.
+
+Remote branch protection state remains unverified. Pull request 151 is a draft
+and merging is the owner's action.
+
 ### W22-W24 local execution (2026-09-09)
 
 Context: WSL2 Linux 6.18.33.2, Python 3.12.3, git 2.43.0, bash 5.2.21,
@@ -3512,6 +3577,17 @@ followed. At that checkpoint cleanup did not waive its acceptance criterion 15;
 the Spec/Plan stayed active and this Task stayed in-progress. The current
 relocation acceptance and execution limits are recorded separately above.
 No completed archive packet or new Spec/Plan/Task was created.
+
+### W28-W29 commits (2026-09-09)
+
+| SHA | Subject | Unit |
+| --- | --- | --- |
+| `6f650192f` | `docs(governance): Retire the two Stage 90 packages that had no consumer` | W28 retirement and tombstones |
+| `9489c023b` | `docs(references): Narrow the repository map to the LLM Wiki it describes` | W28 DATA-0083 role reduction |
+| `522bda7be` | `fix(docs): Keep new prose inside the registered body contracts` | W29 hosted body-contract fix |
+| `8c1cca682` | `docs(references): Point the retirement rule at the table it means` | W29 index direction fix |
+
+No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
 
 ## Rulings
 
