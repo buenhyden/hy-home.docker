@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-10"
 ---
 
 # Agentic Engineering Policy
@@ -18,6 +18,12 @@ selection and permission mappings live in `.agents/governance/providers/registry
 - Discover repository evidence and the approved Spec, Plan, and Task before mutation.
 - Keep one primary owner for each logical unit and independent review separate.
 - Delegation cannot broaden approval, mutation scope, runtime access, or permissions.
+- Invoking a skill runs a procedure; it does not select a role. The already
+  selected role's permission profile and the approved Task scope keep governing,
+  and each skill's `agents/openai.yaml` keeps invocation explicit. Route to the
+  skill's owner role when the procedure needs what the current role lacks. A
+  skill states its own preconditions and does not restate this rule, because a
+  copy that drifts is worse than a reference that cannot.
 - Record commands, results, recovery, skipped checks, and blockers in the Task.
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files

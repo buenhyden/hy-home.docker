@@ -48,6 +48,44 @@ elsewhere.
 
 ## Work Log
 
+### W32 The skill invocation rule gets an owner (2026-09-10)
+
+An audit of the 14 canonical roles and 23 canonical skills measured paragraph
+duplication across the skill corpus. Of 161 distinct paragraphs only two are
+shared, so the corpus is well factored, but one of the two was shared by all 23
+skills and it was a rule rather than a reference:
+
+```text
+Invoke this procedure explicitly. Invocation does not select a role or grant
+the owning role's permissions. Use the already selected role's permission
+profile and approved Task scope; route to the owner when incompatible.
+```
+
+Its canonical owner held only a summary. `.agents/README.md` says "Discovery
+never broadens permission" inside a how-to list, so the precise rule lived in 23
+copies while the owner carried the gist. That inverts the ownership this package
+has been restoring everywhere else.
+
+`agentic.md` now owns the rule in Execution Rules, beside the delegation bullet
+that is its sibling, and each skill carries a two-line pointer instead. The
+duplication count is unchanged at two shared paragraphs, which is the point: the
+shared text is now a reference that cannot disagree with its owner rather than a
+rule that can. The first sentence was doubly redundant, because
+`agents/openai.yaml` already sets `allow_implicit_invocation: false` and the
+contract rejects any other value.
+
+No contract asserted the removed prose, the renderer reports `providers=2
+drift=0` because Claude skill adapters are pointers that never copied the body,
+and the link graph grew by 24 resolved links with zero failures.
+
+Three further audit findings are recorded but not acted on. Sixteen of the 23
+skills have no keyword route in `scripts/hooks/agent-event-hook.sh`, so they are
+only reachable by name. Twenty-two of the 23 name no executable artifact, which
+may be deliberate, since `scripts/manifest.yaml` and the gate DAG already own
+execution and copying command names into skills would recreate the duplication
+this package removes. And `hook-developer`, `skill-creator` and `drift-detector`
+declare no skill at all.
+
 ### W31 The contract now proves a leaf can start (2026-09-09)
 
 W30 reverted the removal but left the gap that allowed it. The Action registry

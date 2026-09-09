@@ -17,9 +17,8 @@ metadata:
 
 ## Preconditions
 
-Invoke this procedure explicitly. Invocation does not select a role or grant the
-owning role's permissions. Use the already selected role's permission profile and
-approved Task scope; route to the owner when incompatible.
+Explicit invocation only, under the
+[agent execution rules](../../governance/agentic.md#execution-rules).
 
 Changed authored files and their language/document style contracts must be identified; generated files remain owned by their generators.
 

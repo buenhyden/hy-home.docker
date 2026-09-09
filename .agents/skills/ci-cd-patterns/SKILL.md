@@ -17,9 +17,8 @@ metadata:
 
 ## Preconditions
 
-Invoke this procedure explicitly. Invocation does not select a role or grant the
-owning role's permissions. Use the already selected role's permission profile and
-approved Task scope; route to the owner when incompatible.
+Explicit invocation only, under the
+[agent execution rules](../../governance/agentic.md#execution-rules).
 
 The delivery contract, repository workflow state, and protected remote-action boundary must be known before selecting a pipeline pattern.
 
