@@ -623,9 +623,9 @@ def _completion_visible_lines(body: str) -> list[str]:
             fence = opening[1]
             continue
         parts: list[str] = []
-        for token in re.split(r"(<!--|-->)", line):
+        for token in re.split(r"(<!--|--!?>)", line):
             if comment:
-                if token == "-->":
+                if re.fullmatch(r"--!?>", token):
                     comment = False
             elif token == "<!--":
                 comment = True
