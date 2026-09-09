@@ -44,7 +44,7 @@ created: "2026-05-17"
 1. 실행 중인 performance service를 확인한다.
 
    ```bash
-   docker ps --format '{{.Names}}\t{{.Status}}' | rg '^(locust-master|locust-worker|k6-master)\b'
+   docker ps --format '{{.Names}}\t{{.Status}}' | rg '^(locust-master|locust-worker|k6)\b'
    ```
 
 2. Locust leaf가 실행 중이면 Locust runbook의 stop 절차를 따른다.

@@ -54,7 +54,7 @@ This policy applies to the service, workflow, or operational control surface des
 
 #### 2. 리소스 및 비용 관리
 
-- 현재 k6 leaf는 `k6-master` 단일 service로 유지하며, 미사용 시 승인된 런타임 외에는 기동하지 않는다.
+- k6 leaf는 `k6` 단일 service로 유지하며, 승인된 런타임 외에는 기동하지 않는다. `k6`는 `testing` profile만 선언하므로 `tooling` 선택으로는 기동되지 않는다.
 - Locust 결과와 테스트 evidence의 보존은 관련 Task/Incident 정책을 따른다.
 
 #### 3. 보안 표준

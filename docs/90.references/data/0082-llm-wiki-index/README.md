@@ -865,6 +865,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/08-ai/open-webui/README.md](../../../../infra/08-ai/open-webui/README.md) | folder index |
 | [infra/08-ai/open-webui/docker-compose.yml](../../../../infra/08-ai/open-webui/docker-compose.yml) | YAML config |
 | [infra/09-tooling/README.md](../../../../infra/09-tooling/README.md) | folder index |
+| [infra/09-tooling/k6/Dockerfile](../../../../infra/09-tooling/k6/Dockerfile) | source path |
 | [infra/09-tooling/k6/README.md](../../../../infra/09-tooling/k6/README.md) | folder index |
 | [infra/09-tooling/k6/docker-compose.yml](../../../../infra/09-tooling/k6/docker-compose.yml) | YAML config |
 | [infra/09-tooling/locust/Dockerfile](../../../../infra/09-tooling/locust/Dockerfile) | source path |

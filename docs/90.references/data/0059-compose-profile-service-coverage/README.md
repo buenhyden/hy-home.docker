@@ -100,8 +100,8 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `storage` | 2 | `minio` (infra/04-data/lake-and-object/minio/docker-compose.yml), `minio-create-buckets` (infra/04-data/lake-and-object/minio/docker-compose.yml) |
 | `storage-cluster` | 4 | `minio1` (infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml), `minio2` (infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml), `minio3` (infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml), `minio4` (infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml) |
 | `sync` | 1 | `syncthing` (infra/09-tooling/syncthing/docker-compose.yml) |
-| `testing` | 2 | `k6-master` (infra/09-tooling/k6/docker-compose.yml), `locust-master` (infra/09-tooling/locust/docker-compose.yml) |
-| `tooling` | 10 | `k6-master` (infra/09-tooling/k6/docker-compose.yml), `locust-master` (infra/09-tooling/locust/docker-compose.yml), `locust-worker` (infra/09-tooling/locust/docker-compose.yml), `registry` (infra/09-tooling/registry/docker-compose.yml), `sonarqube` (infra/09-tooling/sonarqube/docker-compose.yml), `syncthing` (infra/09-tooling/syncthing/docker-compose.yml), `terraform` (infra/09-tooling/terraform/docker-compose.yml), `terrakube-api` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-executor` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-ui` (infra/09-tooling/terrakube/docker-compose.yml) |
+| `testing` | 2 | `k6` (infra/09-tooling/k6/docker-compose.yml), `locust-master` (infra/09-tooling/locust/docker-compose.yml) |
+| `tooling` | 9 | `locust-master` (infra/09-tooling/locust/docker-compose.yml), `locust-worker` (infra/09-tooling/locust/docker-compose.yml), `registry` (infra/09-tooling/registry/docker-compose.yml), `sonarqube` (infra/09-tooling/sonarqube/docker-compose.yml), `syncthing` (infra/09-tooling/syncthing/docker-compose.yml), `terraform` (infra/09-tooling/terraform/docker-compose.yml), `terrakube-api` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-executor` (infra/09-tooling/terrakube/docker-compose.yml), `terrakube-ui` (infra/09-tooling/terrakube/docker-compose.yml) |
 | `workflow` | 12 | `airflow-apiserver` (infra/07-workflow/airflow/docker-compose.yml), `airflow-dag-processor` (infra/07-workflow/airflow/docker-compose.yml), `airflow-init` (infra/07-workflow/airflow/docker-compose.yml), `airflow-scheduler` (infra/07-workflow/airflow/docker-compose.yml), `airflow-statsd-exporter` (infra/07-workflow/airflow/docker-compose.yml), `airflow-triggerer` (infra/07-workflow/airflow/docker-compose.yml), `airflow-worker` (infra/07-workflow/airflow/docker-compose.yml), `flower` (infra/07-workflow/airflow/docker-compose.yml), `n8n` (infra/07-workflow/n8n/docker-compose.yml), `n8n-task-runner` (infra/07-workflow/n8n/docker-compose.yml), `n8n-task-runner-worker` (infra/07-workflow/n8n/docker-compose.yml), `n8n-worker` (infra/07-workflow/n8n/docker-compose.yml) |
 
 ## Stage Coverage
@@ -152,7 +152,7 @@ It does not replace Compose files, operations runbooks, or runtime validation.
 | `infra/07-workflow/n8n/docker-compose.yml` | 6 | `dedicated-valkey`, `dev`, `workflow` |
 | `infra/08-ai/ollama/docker-compose.yml` | 2 | `ai`, `dev` |
 | `infra/08-ai/open-webui/docker-compose.yml` | 1 | `ai` |
-| `infra/09-tooling/k6/docker-compose.yml` | 1 | `testing`, `tooling` |
+| `infra/09-tooling/k6/docker-compose.yml` | 1 | `testing` |
 | `infra/09-tooling/locust/docker-compose.yml` | 2 | `testing`, `tooling` |
 | `infra/09-tooling/registry/docker-compose.yml` | 1 | `registry`, `tooling` |
 | `infra/09-tooling/sonarqube/docker-compose.yml` | 1 | `sast`, `tooling` |

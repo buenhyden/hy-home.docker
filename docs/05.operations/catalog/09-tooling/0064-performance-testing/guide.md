@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 `locust` leaf의 master/worker 구성과 `k6` leaf의 단일 `k6-master` Locust wrapper를 제공하며, 둘 다 Locust 결과 통계와 host port UI 경계를 사용한다.
+이 문서는 `09-tooling` 성능 테스트 워크플로우의 공통 사용 기준을 설명한다. 현재 구현은 두 가지다. `locust` leaf는 master/worker 구성과 host port UI를 제공하고, `k6` leaf는 UI 없이 시나리오를 한 번 실행한 뒤 지표를 Prometheus remote write로 내보낸다.
 
 ### Usage Type
 
@@ -37,7 +37,7 @@ created: "2026-05-10"
 ### Prerequisites
 
 - `locust` leaf는 `locust-master`, `locust-worker` 분산 실행에 사용한다.
-- `k6` leaf는 현재 단일 `k6-master` Locust wrapper이며 별도 worker service가 없다.
+- `k6` leaf는 단일 `k6` 작업이며 worker service가 없다. 결과는 UI가 아니라 Grafana `k6 Prometheus` 대시보드에서 본다.
 - Root `infra_net` context가 필요하다.
 - 대규모 테스트는 승인된 테스트 윈도우와 대상 서비스 owner 승인이 필요하다.
 

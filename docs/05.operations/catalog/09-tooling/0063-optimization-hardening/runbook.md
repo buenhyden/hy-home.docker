@@ -59,7 +59,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
    - Middleware drift: SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
    - Network drift: tooling compose의 `infra_net` external 선언을 복원한다.
    - Locust drift: `locust-worker` command와 worker process healthcheck를 복원한다.
-   - k6 drift: `k6-master` service name과 `k6-data:/mnt/locust:rw` volume 계약을 복원한다.
+   - k6 drift: `k6` service name과 `k6-data:/scripts:ro` volume 계약을 복원한다.
    - Documentation drift: active docs에서 없는 worker/route/version/service-local standalone claims를 제거한다.
 
 4. 재검증한다.
