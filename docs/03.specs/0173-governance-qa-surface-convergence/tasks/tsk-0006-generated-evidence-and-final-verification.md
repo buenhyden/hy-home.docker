@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.8.1"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,68 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W25-W27 operations ownership, merge rules and hook chain (2026-09-09)
+
+A later instruction added three items: review `docs/05.operations/` for content
+that belongs to `.agents/`, `.claude/` or `.codex/`; unify the merge policy; and
+make the global Codex/Claude hooks and the workspace hooks all run.
+
+W25 found one document to correct and nothing to move. The operations catalog
+holds 209 tracked files, and only
+`00-workspace/0004-harness-agent-first-engineering/policy.md` stated agent
+governance rather than operations. Two of its controls had drifted from the
+canonical sources they summarised. The model row claimed the supervisor runs on
+`opus` and workers on `sonnet`; roles actually declare a `work_profile` and the
+Provider Registry maps it, so five workers resolve through `adversarial-review`
+to the supervisor's model and `drift-detector` resolves through
+`routine-validation` to `haiku` — the summary was wrong for six of thirteen
+workers and omitted Codex entirely. The Codex row still forbade a native catalog
+"unless governance explicitly adopts" one, while the registry already declares
+`native_agent_pattern: .codex/agents/{agent_id}.toml` and fourteen adapters
+exist. Both rows now name their owner and the document states which side of the
+harness it owns. No other Stage 05 document repeats a model name or the Codex
+boundary, and `.agents/` content that mentions runtime operations is approval
+boundaries and skill procedure rather than duplicated runbooks, so no document
+was moved. Creating a migration where the evidence showed none was needed would
+have been the wrong outcome.
+
+W26 unified the merge rules. They were stated in three places and had already
+diverged: branch deletion required owner approval in
+`.github/rulesets/main-protection.md` but not in `github-governance.md`, and the
+recovery-commit and draft-PR rules each appeared twice. Section 3 of
+`github-governance.md` is now the single owner, carries the complete deletion
+condition and states the pull-request-only route to `main` that section 1
+already required. `git-workflow.md` and the ruleset record defer to it, and the
+ruleset file now says plainly that it records observed settings rather than
+issuing rules.
+
+W27 made both hook sets run. The user-global `core.hooksPath` points at the ECC
+Codex hook directory and the repository-local value pointed at `.git/hooks`, so
+the local value won and the two global hooks never ran here — the mirror image
+of the 2026-09-06 problem, where the global value won and the workspace hooks
+never ran. An untracked dispatcher directory now runs the global hook and then
+the workspace hook for `pre-commit`, `commit-msg`, `pre-push` and `post-commit`,
+capturing stdin once so the `pre-push` ref list reaches both, and failing on the
+first non-zero exit. This is machine configuration inside `.git/`: nothing
+tracked changed, no user-global file was written, and
+`git config --local core.hooksPath .git/hooks` restores the previous behaviour.
+
+Delivery follows the reviewed policy rather than the literal request. The
+instruction asked for a direct push to `origin/main`; section 1 of
+`github-governance.md` forbids agents pushing to `main`, and the last
+authenticated protection read-back still requires a pull request before merge.
+The user chose the branch and pull-request route when asked. There is no
+development branch or linked worktree to clean up: every commit in this session
+was made on local `main`, and `git worktree list` reports the primary checkout
+only.
+
+`origin/main` also moved during the session. Pull request #150, a CodeQL autofix
+for an HTML-comment regexp in `spec_packages.py`, was merged remotely, and a
+merge commit `9a2582aeb` brought it into local `main` at 16:31. That merge was
+not made by this session and no repository hook performs one; it is preserved as
+a user-owned change, and `tests.lib.document_governance.test_spec_packages`
+passed 35 tests against it.
 
 ### W22-W24 entry-point boundary and evidence convergence (2026-09-09)
 
@@ -3301,6 +3363,9 @@ pushed:
 | `2ce13c246` | `docs(governance): Route stage documents through one entry point` | W23 mode, policy, tests and 99 files |
 | `ca1f0cace` | `ci(actions): Drop the unused uv setup from both quality jobs` | W24 workflow, contract, allowed list, tests |
 | `0917f1028` | `docs(tests): Describe the fixture policy the tree actually uses` | `tests/README.md` correction |
+| `8f145425d` | `docs(qa): Record measured local QA cost and the explain boundary` | Measured execution map |
+| `1e792dad6` | `docs(governance): Point harness controls at their canonical owner` | W25 operations ownership |
+| `fbec1d354` | `docs(governance): Give merge and branch rules a single owner` | W26 merge-rule unification |
 
 The first W22 attempt was rejected by `commitizen`: the schema allows a single
 body paragraph, and the message had three. The W23 commit was rejected twice by

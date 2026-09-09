@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -71,6 +71,9 @@ Git integration does not promote incomplete work units or package status.
 22. W22: Give manifest evidence one grammar and close the W17 consumer finding.
 23. W23: Bound stage-document links outside `docs/` to one entry point.
 24. W24: Remove CI setup that has no consumer and record the QA execution map.
+25. W25: Return operations controls that restate agent governance to their owner.
+26. W26: Give merge and branch-lifecycle rules a single owner.
+27. W27: Run the global provider hooks and the workspace hooks together.
 
 ### W1-W6: Preserve integrated migration
 
