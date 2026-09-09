@@ -30,6 +30,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - scripts/lib/gate/ci_gate_adapters.py
   - scripts/validation/generate-audit-implementation-matrix.sh
   - tests/validation/test_agent_output_eval_fixtures.py
   disposition: retain

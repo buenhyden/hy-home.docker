@@ -27,7 +27,6 @@ from tests.validation._script_manifest_support import (
     REQUIRED_FIELDS,
     ROOT,
     TASK12_RETIRED_SCRIPTS,
-    _python_imports_target,
     is_runbook_authority,
     reference_proves_use,
     tracked_paths,
@@ -38,6 +37,7 @@ MANIFEST_CHECKER = ROOT / "scripts/validation/check-script-manifest.py"
 
 
 def load_manifest_checker():
+    """Load the gate checker here so this module proves it tests that file."""
     spec = importlib.util.spec_from_file_location(
         "check_script_manifest", MANIFEST_CHECKER
     )
@@ -482,14 +482,19 @@ class ScriptManifestTests(unittest.TestCase):
                 self.assertEqual(row["consumers"], sorted(set(row["consumers"])))
                 self.assertIsInstance(row["tests"], list)
                 self.assertEqual(row["tests"], sorted(set(row["tests"])))
-                for reference in [*row["consumers"], *row["tests"]]:
-                    self.assertIn(reference, self.repository_paths)
-                    self.assertTrue((ROOT / reference).is_file())
-                    self.assertFalse(reference.startswith(FORBIDDEN_EVIDENCE_PREFIXES))
-                    self.assertTrue(
-                        reference_proves_use(reference, row["path"]),
-                        f"{reference} does not invoke/import {row['path']}",
-                    )
+                for field in ("consumers", "tests"):
+                    for reference in row[field]:
+                        self.assertIn(reference, self.repository_paths)
+                        self.assertTrue((ROOT / reference).is_file())
+                        self.assertFalse(
+                            reference.startswith(FORBIDDEN_EVIDENCE_PREFIXES)
+                        )
+                        self.assertTrue(
+                            reference_proves_use(
+                                reference, row["path"], is_test=field == "tests"
+                            ),
+                            f"{reference} does not invoke/import {row['path']}",
+                        )
                 successor = row["successor"]
                 if row["disposition"] == "retain":
                     self.assertIsNone(successor)
@@ -560,20 +565,28 @@ class ScriptManifestTests(unittest.TestCase):
             row["tests"],
         )
 
+    def test_eval_wrapper_declares_its_gate_adapter_consumer(self) -> None:
+        """The CI gate adapter runs the wrapper, so it is a declared consumer."""
+        row = self.rows_by_path["evals/run-agent-output-eval-fixtures.sh"]
+        self.assertEqual("retain", row["disposition"])
+        self.assertIn("scripts/lib/gate/ci_gate_adapters.py", row["consumers"])
+        self.assertEqual(
+            [
+                "scripts/lib/gate/ci_gate_adapters.py",
+                "scripts/validation/generate-audit-implementation-matrix.sh",
+                "tests/validation/test_agent_output_eval_fixtures.py",
+            ],
+            row["consumers"],
+        )
+
     def test_python_import_evidence_recognizes_package_member_imports(self) -> None:
         adapter = "scripts/validation/check-document-metadata.py"
-        self.assertTrue(
-            _python_imports_target(
-                adapter,
-                "scripts/lib/document_governance/metadata_contract.py",
-            )
-        )
-        self.assertTrue(
-            _python_imports_target(
-                adapter,
-                "scripts/lib/document_governance/metadata_validator.py",
-            )
-        )
+        for member in (
+            "scripts/lib/document_governance/metadata_contract.py",
+            "scripts/lib/document_governance/metadata_validator.py",
+        ):
+            with self.subTest(member=member):
+                self.assertTrue(reference_proves_use(adapter, member))
 
     def test_mutation_classes_follow_observed_script_behavior(self) -> None:
         for row in self.rows:
@@ -1234,6 +1247,33 @@ class ScriptManifestValidationTests(unittest.TestCase):
                 for finding in self.checker.check_manifest(root, manifest_path)
             }
             self.assertIn("tests-unproven", codes)
+
+    def test_python_evidence_follows_a_module_local_child_helper(self) -> None:
+        """A child started through one module-local helper is still execution."""
+        target = "evals/example-runner.sh"
+        delegated = (
+            "import subprocess\n"
+            "def _run_child(argv):\n"
+            "    return subprocess.run(list(argv), check=False)\n"
+            "def run():\n"
+            "    return _run_child(('bash', 'evals/example-runner.sh'))\n"
+        )
+        self.assertTrue(
+            self.checker._reference_proves_use(
+                "scripts/example.py", delegated, target, is_test=False
+            )
+        )
+        inert = (
+            "def _describe(argv):\n"
+            "    return list(argv)\n"
+            "def run():\n"
+            "    return _describe(('bash', 'evals/example-runner.sh'))\n"
+        )
+        self.assertFalse(
+            self.checker._reference_proves_use(
+                "scripts/example.py", inert, target, is_test=False
+            )
+        )
 
     def test_yaml_semantic_evidence_accepts_exact_entry_only(self) -> None:
         target = "scripts/example.py"
