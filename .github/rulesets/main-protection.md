@@ -7,8 +7,8 @@ settings by itself.
 ## Observation Boundary
 
 - The dated public snapshot remains at
-  `docs/90.references/data/0071-github-actions-control-plane-observation/data.yaml`;
-  it is historical evidence and is not rewritten as current state.
+  the retired DATA-0071 package, preserved under `docs/98.archive/retired/`;
+  it is superseded historical evidence and is not current state.
 - On 2026-09-05, the repository owner approved a PATCH limited to
   `branches/main/protection/required_status_checks`. The applied state and full
   protection read-back are recorded in

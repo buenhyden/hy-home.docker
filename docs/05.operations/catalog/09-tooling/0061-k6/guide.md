@@ -48,7 +48,7 @@ created: "2026-05-10"
    - 서비스명: `k6-master`
    - profiles: `tooling`, `testing`
    - mount: `k6-data:/mnt/locust:rw`
-   - UI port mapping: `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}`
+   - UI port mapping: `${K6_HOST_PORT:-18189}:${K6_PORT:-8089}`
 2. 테스트 시나리오를 `infra/09-tooling/k6/locustfile.py` 기준으로 준비한다.
 
    ```python
@@ -64,11 +64,19 @@ created: "2026-05-10"
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `python3 scripts/validation/run-ci-gate.py --profile changed`
 4. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`이 해석되는지 확인한다.
-5. 서비스 기동 후 UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
+5. 서비스 기동 후 UI는 host port `http://localhost:${K6_HOST_PORT:-18189}` 경계에서 확인한다.
 6. 테스트 중 Locust 요청 통계, target SLI 저하, `k6-master` healthcheck 상태를 evidence로 기록한다.
 
 ### Common Pitfalls
 
+- **미해결 결함: 빌드 컨텍스트에 Dockerfile이 없다.** `k6-master`는 `build: .`을
+  선언하지만 `infra/09-tooling/k6/`에는 `Dockerfile`이 없다. 따라서 `tooling`
+  또는 `testing` profile로 기동하면 빌드 단계에서 실패한다. 정적 렌더링과
+  `run-ci-gate.py`는 이 결함을 잡지 못한다. 두 도구를 모두 유지할 의도였는지가
+  선행 질문이므로 이 subject의 소유자 판단이 필요하다. 해결 방향은 두 가지다.
+  이 leaf를 실제 k6 engine으로 만들거나, 디렉터리를 제거하고
+  `infra/09-tooling/locust/`만 남긴다. 후자를 고르면 이 subject 문서도 함께
+  은퇴한다.
 - 현재 leaf에는 별도 worker service가 없다. worker scaling 절차가 필요하면 `locust.md`의 `locust-worker` 기준을 사용한다.
 - service-local compose 파일만 단독으로 `docker compose config`하면 root `infra_net` context가 없어 실패할 수 있다.
 - `k6` 이름만 보고 JavaScript k6 script를 투입하면 현재 container command와 맞지 않는다.
@@ -94,4 +102,3 @@ created: "2026-05-10"
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
-- [Open defect CDR-04](../../../../90.references/audits/0097-compose-domain-defect-register/README.md) - 이 subject가 소유한 미해결 결함

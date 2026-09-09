@@ -1,15 +1,12 @@
 ---
-title: "Reference: Compose Domain Defect Register"
-version: "1.0.0"
-type: "reference/audit-pack"
-status: "published"
-owner: "@buenhyden"
-updated: "2026-09-04"
-layer: "references"
-artifact_id: "AUD-0097"
+profile_id: audit
+status: retired
+artifact_id: AUD-0097
+artifact_type: audit
 parent_ids: []
-created: "2026-09-04"
-observed_at: "2026-09-04"
+created: '2026-09-04'
+updated: '2026-09-09'
+observed_at: '2026-09-04'
 ---
 
 # Reference: Compose Domain Defect Register

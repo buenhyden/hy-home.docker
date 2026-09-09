@@ -1,6 +1,6 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -74,6 +74,7 @@ Git integration does not promote incomplete work units or package status.
 25. W25: Return operations controls that restate agent governance to their owner.
 26. W26: Give merge and branch-lifecycle rules a single owner.
 27. W27: Run the global provider hooks and the workspace hooks together.
+28. W28: Apply the Stage 90 retirement preconditions and correct both indexes.
 
 ### W1-W6: Preserve integrated migration
 

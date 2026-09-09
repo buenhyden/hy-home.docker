@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,51 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W28 Stage 90 disposition and index correction (2026-09-09)
+
+The instruction was to delete prior content under `docs/90.references/audits/`
+and `data/`, migrate anything that must move, and update both index READMEs.
+Consumer analysis decided what "prior" meant. Of the 29 packages, eight are
+generated with a registered generator and freshness check, fourteen audits are
+named by `audit_criterion_contract.py` as its expected pack, and the rest are
+read by code or by a frozen archive record. Exactly three had no code consumer,
+and the retirement preconditions were applied to each rather than deleting by
+age, which the documentation protocol forbids outright.
+
+AUD-0097 is retired. Three of its four defects are fixed in the tree: the
+hardening suite no longer pins a Valkey tag literal, no compose file publishes
+host 8000, and no exporter targets `mng-n8n-valkey`. Four Stage 05 guides still
+linked the register as the owner of an open finding that had already closed, so
+the register was producing false open-defect claims. CDR-04 is still real and
+worse than recorded: `infra/09-tooling/k6/` declares `build: .` with no
+Dockerfile, its command is `locust -f /mnt/locust/locustfile.py --master`, and
+its volume mounts `/mnt/locust`, so the leaf is a locust copy that cannot build
+under `tooling` or `testing`. That finding, and the decision it needs, moved
+into the k6 guide, whose two stale `LOCUST_*` port variables were corrected to
+the `K6_*` ones the compose file actually uses.
+
+DATA-0071 is retired. It is a 2026-07-26 public-metadata observation that
+declared itself non-authoritative, and two authenticated protection read-backs
+on 2026-09-05 and 2026-09-08 supersede it in `.github/rulesets/main-protection.md`,
+which previously linked the superseded snapshot beside its own newer evidence.
+
+DATA-0067 was retired and then restored inside this unit. Its payload names
+the `docs/00.agent-governance/` paths that the canonical-home migration removed,
+which reads like dead residue, and the initial consumer scan found no code
+reference. The corpus
+lifecycle gate then reported `historical-manifest-drift`: `promoted.py` resolves
+the Migration record's `DATA-0067` row and compares this package's payload with
+its recovery blob byte for byte. The package is that comparison's anchor and its
+consumer is a frozen archive body no change may rewrite, so precondition three
+could not be met. The retirement was withdrawn, the tombstone deleted, the
+identity space returned to 204, and `data/README.md` now records why the
+package stays. The gate caught an error a reading of the file alone did not.
+
+Both index READMEs were updated. The audits index already stated the retirement
+procedure; the data index did not, so it now carries the same lifecycle rule
+plus the constraint that a generated package is not retired while its generator
+still writes it. Each index lists its retired packages and the reason.
 
 ### W25-W27 operations ownership, merge rules and hook chain (2026-09-09)
 

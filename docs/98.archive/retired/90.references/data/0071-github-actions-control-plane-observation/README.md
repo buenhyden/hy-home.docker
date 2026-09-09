@@ -1,15 +1,12 @@
 ---
-title: "Github Actions Control Plane Observation"
-version: "1.0.0"
-type: "reference/data-pack"
-status: "published"
-owner: "@buenhyden"
-updated: "2026-09-04"
-layer: "references"
-artifact_id: "DATA-0071"
+profile_id: data
+status: retired
+artifact_id: DATA-0071
+artifact_type: data
 parent_ids: []
-created: "2026-08-23"
-observed_at: "2026-08-23"
+created: '2026-08-23'
+updated: '2026-09-09'
+observed_at: '2026-08-23'
 ---
 
 # Github Actions Control Plane Observation
