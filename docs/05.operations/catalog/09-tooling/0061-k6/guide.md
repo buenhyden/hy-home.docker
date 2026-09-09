@@ -70,13 +70,20 @@ created: "2026-05-10"
 ### Common Pitfalls
 
 - **미해결 결함: 빌드 컨텍스트에 Dockerfile이 없다.** `k6-master`는 `build: .`을
-  선언하지만 `infra/09-tooling/k6/`에는 `Dockerfile`이 없다. 따라서 `tooling`
-  또는 `testing` profile로 기동하면 빌드 단계에서 실패한다. 정적 렌더링과
-  `run-ci-gate.py`는 이 결함을 잡지 못한다. 두 도구를 모두 유지할 의도였는지가
-  선행 질문이므로 이 subject의 소유자 판단이 필요하다. 해결 방향은 두 가지다.
-  이 leaf를 실제 k6 engine으로 만들거나, 디렉터리를 제거하고
-  `infra/09-tooling/locust/`만 남긴다. 후자를 고르면 이 subject 문서도 함께
-  은퇴한다.
+  선언하지만 `infra/09-tooling/k6/`에는 `Dockerfile`도 `locustfile.py`도 없고
+  `README.md`와 `docker-compose.yml`만 있다. 따라서 `tooling` 또는 `testing`
+  profile로 기동하면 빌드 단계에서 실패한다. 정적 렌더링과 `run-ci-gate.py`는
+  이 결함을 잡지 못한다.
+- **현재 compose는 locust leaf의 복사본이다.** command, mount 경로 `/mnt/locust`,
+  healthcheck port 8089가 `locust-master`와 같고 worker service만 빠져 있다.
+  반면 세 개의 추적 표면은 실제 k6를 전제한다.
+  `infra/06-observability/grafana/dashboards/Infrastructure/k6.json`은 패널 17개의
+  `k6 Prometheus` 대시보드이고, `.github/dependabot.yml`은 이 디렉터리를 docker
+  ecosystem으로 등록하며, `K6_HOST_PORT`/18189는 `testing`에서 두 서비스가 18089를
+  두고 충돌하던 것을 나누려고 만들어졌다. 즉 의도는 실제 k6였고 구현만 locust
+  복사본에 머문 상태다. 해소 방향은 이 subject 소유자의 판단이며, 실제 k6 engine
+  전환은 런타임 검증이 필요한 인프라 변경이라 별도 승인 대상이다. 디렉터리를
+  제거하는 방향을 고르면 위 세 표면과 이 subject 문서가 함께 정리 대상이 된다.
 - 현재 leaf에는 별도 worker service가 없다. worker scaling 절차가 필요하면 `locust.md`의 `locust-worker` 기준을 사용한다.
 - service-local compose 파일만 단독으로 `docker compose config`하면 root `infra_net` context가 없어 실패할 수 있다.
 - `k6` 이름만 보고 JavaScript k6 script를 투입하면 현재 container command와 맞지 않는다.
