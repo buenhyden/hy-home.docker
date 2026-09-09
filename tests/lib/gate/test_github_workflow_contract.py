@@ -475,7 +475,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        self.assertEqual(7, len(contract.actions))
+        self.assertEqual(8, len(contract.actions))
         self.assertEqual(
             {"node24"},
             {action.runtime for action in contract.actions},
@@ -507,31 +507,22 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
             changed_steps[1]["uses"],
         )
-        # `uv` was installed by both jobs and used by nothing: no gate leaf,
-        # requirements file, or pre-commit code path referenced it.
-        self.assertNotIn(
-            "astral-sh/setup-uv",
-            "\n".join(
-                str(step.get("uses", ""))
-                for workflow in workflows.values()
-                for job in workflow.data.get("jobs", {}).values()
-                for step in job.get("steps", [])
-                if isinstance(step, dict)
-            ),
-        )
+        setup_uv = "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
+        self.assertEqual(setup_uv, changed_steps[3]["uses"])
+        self.assertEqual(setup_uv, full_steps[3]["uses"])
         self.assertEqual(
             (
                 self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile changed",
             ),
-            (changed_steps[3]["run"], changed_steps[4]["run"]),
+            (changed_steps[4]["run"], changed_steps[5]["run"]),
         )
         self.assertEqual(
             (
                 self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile full",
             ),
-            (full_steps[3]["run"], full_steps[4]["run"]),
+            (full_steps[4]["run"], full_steps[5]["run"]),
         )
         self.assertEqual(
             "pre-commit==4.6.1\n",
@@ -626,6 +617,66 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     ("bootstrap", expected[job_id]),
                     tuple(map(self._static_gate_profile, programs)),
                 )
+
+    def test_every_program_a_gate_leaf_spawns_is_installed_by_both_jobs(self) -> None:
+        """A leaf that cannot start is a contract failure, not a runtime one."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        programs = self.module._adapter_programs(ROOT)
+        self.assertIsNotNone(programs)
+        self.assertIn("uvx", programs)
+        self.assertEqual(
+            (),
+            self.module._leaf_program_findings(programs, documents_by_path),
+        )
+
+    def test_removing_an_installing_action_fails_both_quality_jobs(self) -> None:
+        """Deleting the setup step must fail here, never at spawn time."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        document = documents_by_path[".github/workflows/ci-quality.yml"]
+        stripped = copy.deepcopy(document)
+        for job in stripped.data["jobs"].values():
+            job["steps"] = [
+                step
+                for step in job["steps"]
+                if not str(step.get("uses", "")).startswith("astral-sh/setup-uv@")
+            ]
+        findings = self.module._leaf_program_findings(
+            self.module._adapter_programs(ROOT),
+            {**documents_by_path, ".github/workflows/ci-quality.yml": stripped},
+        )
+        self.assertEqual({"leaf-program-uninstalled"}, {f.code for f in findings})
+        self.assertEqual(2, len(findings))
+
+    def test_an_unmapped_or_unreadable_spawned_program_fails_closed(self) -> None:
+        """A new program with no declared installer is a failure, not a default."""
+
+        documents_by_path = {
+            document.path: document for document in self.module.load_workflows(ROOT)
+        }
+        self.assertEqual(
+            ["leaf-program-unmapped"],
+            [
+                finding.code
+                for finding in self.module._leaf_program_findings(
+                    ("cargo",), documents_by_path
+                )
+            ],
+        )
+        self.assertEqual(
+            ["leaf-program-source-unreadable"],
+            [
+                finding.code
+                for finding in self.module._leaf_program_findings(
+                    None, documents_by_path
+                )
+            ],
+        )
 
     def test_bootstrap_projection_is_exact_and_ordered(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)

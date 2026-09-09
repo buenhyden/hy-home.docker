@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import dataclasses
 import os
 import pathlib
@@ -212,6 +213,10 @@ _ACTION_REGISTRY_BASELINE: Final = (
     (
         "actions/stale",
         "4391f3da665fdf50b6810c1a66712fb9ba21aa93",
+    ),
+    (
+        "astral-sh/setup-uv",
+        "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
     ),
     (
         "github/codeql-action/upload-sarif",
@@ -1124,6 +1129,102 @@ def _workflow_projection_findings(
     return tuple(findings)
 
 
+# A gate leaf fails at spawn time when the program it runs is absent from the
+# runner, and the Action registry cannot see that: it proves an Action is
+# declared, pinned and named by a consumer, never that a leaf can start. These
+# three names tie the two together so that removing a setup step is a contract
+# failure rather than a runtime one.
+_ADAPTER_SOURCE: Final = "scripts/lib/gate/ci_gate_adapters.py"
+_RUNNER_BASELINE_PROGRAMS: Final = frozenset({"bash", "git", "python3"})
+_LEAF_PROGRAM_PROVIDERS: Final = {
+    "npm": "actions/setup-node",
+    "npx": "actions/setup-node",
+    "uvx": "astral-sh/setup-uv",
+}
+_QUALITY_WORKFLOW: Final = ".github/workflows/ci-quality.yml"
+
+
+def _adapter_programs(root: pathlib.Path) -> tuple[str, ...] | None:
+    """Return every program the adapters spawn, or None when unreadable."""
+    try:
+        tree = ast.parse((root / _ADAPTER_SOURCE).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError, UnicodeError, ValueError):
+        return None
+    programs: set[str] = set()
+    for node in ast.walk(tree):
+        if (
+            not isinstance(node, ast.Call)
+            or not isinstance(node.func, ast.Name)
+            or node.func.id != "_run_child"
+            or not node.args
+        ):
+            continue
+        argv = node.args[0]
+        if not isinstance(argv, (ast.Tuple, ast.List)) or not argv.elts:
+            return None
+        first = argv.elts[0]
+        if not isinstance(first, ast.Constant) or not isinstance(first.value, str):
+            return None
+        programs.add(first.value)
+    return tuple(sorted(programs))
+
+
+def _leaf_program_findings(
+    programs: tuple[str, ...] | None,
+    documents_by_path: dict[str, WorkflowDocument],
+) -> tuple[WorkflowFinding, ...]:
+    if programs is None:
+        return (
+            _finding(
+                "leaf-program-source-unreadable",
+                _ADAPTER_SOURCE,
+                "the programs a gate leaf spawns cannot be read",
+            ),
+        )
+    document = documents_by_path.get(_QUALITY_WORKFLOW)
+    if document is None:
+        return (
+            _finding(
+                "leaf-program-workflow-missing",
+                _QUALITY_WORKFLOW,
+                "the quality workflow that installs leaf programs is absent",
+            ),
+        )
+    findings: list[WorkflowFinding] = []
+    jobs = document.data.get("jobs")
+    installed_by_job: dict[str, set[str]] = {}
+    for job_id, job in (jobs or {}).items():
+        steps = job.get("steps") if isinstance(job, dict) else None
+        installed_by_job[str(job_id)] = {
+            str(step["uses"]).partition("@")[0]
+            for step in (steps or [])
+            if isinstance(step, dict) and isinstance(step.get("uses"), str)
+        }
+    for program in programs:
+        if program in _RUNNER_BASELINE_PROGRAMS:
+            continue
+        provider = _LEAF_PROGRAM_PROVIDERS.get(program)
+        if provider is None:
+            findings.append(
+                _finding(
+                    "leaf-program-unmapped",
+                    _ADAPTER_SOURCE,
+                    "a spawned program declares no installing Action",
+                )
+            )
+            continue
+        for job_id in sorted(installed_by_job):
+            if provider not in installed_by_job[job_id]:
+                findings.append(
+                    _finding(
+                        "leaf-program-uninstalled",
+                        _QUALITY_WORKFLOW,
+                        f"job {job_id} does not install a program its leaves spawn",
+                    )
+                )
+    return tuple(findings)
+
+
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
     return WorkflowFinding(code=code, path=path, message=message)
 
@@ -1208,6 +1309,7 @@ def validate_workflows(
     documents_by_path = {document.path: document for document in documents}
     specs_by_path = {spec.path: spec for spec in contract.workflows}
     findings.extend(_permission_baseline_findings(documents_by_path, specs_by_path))
+    findings.extend(_leaf_program_findings(_adapter_programs(root), documents_by_path))
     for path in sorted(set(specs_by_path) - set(documents_by_path)):
         findings.append(
             _finding("workflow-missing", path, "registered workflow is missing")
