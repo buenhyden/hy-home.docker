@@ -20,7 +20,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the [
 The current tree defines the package set: a package exists because its README is
 present and satisfies its Stage 99 profile. It is retired by deleting it in the
 same change that migrates its needed meaning to a canonical owner, updates every
-inbound consumer, removes its row above, and records a Tombstone. A retired
+inbound consumer, removes its row below, and records a Tombstone. A retired
 `DATA-` number is never reissued.
 
 Most packages here are generated. A generated package is refreshed by its
