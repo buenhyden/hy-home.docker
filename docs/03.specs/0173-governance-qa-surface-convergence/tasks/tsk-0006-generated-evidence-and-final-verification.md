@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,30 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W18 audit consumer reconciliation (2026-09-09)
+
+W19 is committed as `b600e7c0115c4890febd7f316d93ae42821e406a` through normal
+hooks. Root verified the four excluded W18/auth working files were restored
+byte-for-byte, the index is empty, and primary main is still clean at `62fd2fcd5`.
+W18 now corrects current DML-09's stale corpus/backlog claim, AUT-07's fixture
+file-count description and DML-13's retired owner/CLI guidance in their two existing audit reports. The current report
+states profile/scope invariants rather than freezing another dated census;
+DATA-0065 is generated from those authored sources. Authored report versions and
+updated dates record only these actual corrections.
+
+The dated tracked-path observation is 185 READMEs: 182 selected exactly one of
+15 registered profiles; `_workspace/repo-support/README.md`, `tests/lib/README.md`
+and `tests/validation/README.md` are outside registered document-path scope.
+Their repository-support/test guidance is not a missing document-corpus
+migration. Stable 11-report/161-criterion membership and the frozen 903-entry
+migration/recovery proof remain unchanged. The preserved 37-row baseline block remains unchanged; the corrected current
+criterion/README rows and generated DATA-0065 are the audit-table changes.
+No parser, schema, fixture or test behavior needed modification.
+
+The auth semantic-transfer candidate is prepared but uncommitted and excluded
+from this audit commit. Its domain-owner review was requested separately;
+AD-0014 remains active and no archive or runtime action has occurred.
 
 ### W17-W21 approved implementation (2026-09-09)
 
@@ -1726,6 +1750,36 @@ in-progress.
 
 ## Verification Evidence
 
+### W19 delivery and W18 candidate checks (2026-09-09)
+
+W19 normal commit ran in the delivery checkout with the prepared tool PATH,
+`PYTHONDONTWRITEBYTECODE=1`, and the unchanged common hooks bound using command-local
+`git -c core.hooksPath=/home/hy/projects/hy-home.docker/.git/hooks`. The staged
+188-path snapshot excluded W18 and auth; all writers paused during the hook's
+normal unstaged-file save/restore. `cz check --message-length-limit 75 --message
+'docs(governance): Remove obsolete operations authoring residue'` exited 0 before
+the expensive hooks. Normal commit exited 0 in 469.28 seconds: formatter,
+public changed, secret detection and commit-msg passed. Commit read-back is
+`b600e7c0115c4890febd7f316d93ae42821e406a`; four unstaged SHA-256 values match their
+pre-hook values, the index is empty, and primary main remains unchanged/clean.
+
+W18 commands below are source-attributed worker results in the same delivery
+cwd, Python 3.12 prepared PATH and actual working tree against `62fd2fcd5`.
+W19 advanced HEAD only after these checks; W18 source and parser bytes did not
+change across that commit. No network, model, service or hosted command ran.
+
+| Command / target | Exit | Result and limit |
+| --- | --- | --- |
+| `bash scripts/validation/generate-audit-implementation-matrix.sh --write` twice, then `--check` | 0 / 0 / 0 | PASS; second write identical, DATA-0065 SHA-256 `e45a5ab93d4de5f7ce187fb4543355caf239a85b371c086fecc0075d09b85aed`; derived status totals change with DML-09 source disposition |
+| `PYTHONPATH=. python3 -m unittest tests.validation.test_audit_criterion_contract tests.validation.test_agentic_audit_semantic_freshness` | 0 | PASS, 49 tests, 3.383 seconds; structural/semantic rejection coverage retained |
+| `python3 scripts/validation/audit_criterion_contract.py` | 0 | PASS, 11 reports / 161 rows / 161 unique criteria |
+| `python3 scripts/validation/check-agentic-audit-semantic-freshness.py` | 0 | PASS, 11 assertions |
+| `git diff --check` on W18 candidate | 0 | PASS |
+| Root DML-13 owner/CLI correction: registered matrix `--write` twice then `--check` | 0 / 0 / 0 | PASS; second write identical, updated DATA-0065 SHA-256 `8ddef55cf2f8daa6ec727cfd3cdc0711eeb4a23112cc660e1697c22badad6c4d`; generator owns every output change |
+| Root rerun of the same two focused unittest modules after DML-13 input changed | 0 | PASS, 49 tests, 2.630 seconds; source correction and generated output verified together |
+| Root metadata changed on the pre-DML-13 four-file review candidate | 0 | PASS, selected 4 / zero violations, 21.87 seconds; final normal hooks cover later report/receipt edits |
+| Initial unsupported `python3 scripts/validation/audit_criterion_contract.py --check` | 2 | FAIL usage only; corrected to the supported no-argument CLI above, not a validation bypass |
+
 ### W17-W21 implementation checks (2026-09-09)
 
 Unless stated otherwise, cwd is `.worktrees/qa-convergence-implementation`,
@@ -1847,7 +1901,7 @@ option A approval and W16 planning do not authorize it.
 | 25 | W16 | PASS: planning proposal reviewed, validated and committed as `9153c055f` through normal hooks; later local integration/cleanup authorized separately | This Task inventory, Spec proposal and Plan W16-W21 |
 | 26 | W17 | NOT_RUN: approved implementation pending | Existing public workflow contract, gate libraries and their regressions |
 | 27 | W18 | NOT_RUN: approved implementation pending | Criterion manifest, current audit source, lifecycle and historical recovery owners |
-| 28 | W19 | NOT_RUN: approved implementation pending | Active Stage 05 targets and metadata residue contract |
+| 28 | W19 | PASS: reviewed residue cleanup committed as `b600e7c01`; normal hooks and preservation read-back passed | Active Stage 05 targets and metadata residue contract |
 | 29 | W20 | NOT_RUN: per-domain transfer and review not performed | Retained Stage 02 owners and registered preservation records |
 | 30 | W21 | NOT_RUN: follows approved implementation; no hosted/runtime success inferred | Public QA definition and this Task's future execution receipts |
 
@@ -2513,6 +2567,20 @@ were restored to `in-progress` immediately after the test, and
 
 ## Review Evidence
 
+### W18 exact-diff review (2026-09-09)
+
+Independent read-only rules-engineer `a_policy_review` reviewed the exact W18
+four-file candidate against `b600e7c0115c4890febd7f316d93ae42821e406a`:
+Specification PASS / Quality APPROVED, zero findings. Diff SHA-256
+`7da0fdddc7759d102b734d96da2c4878ae270c91af1a740b70accc7078c2475e`
+contains current AUT-07, DML-09 and DML-13 corrections, registered DATA-0065 and
+Task evidence. Registered-scope enforcement supports DML-09 Implemented; census
+values stay dated observations. The specific 37-row baseline and 903-entry
+recovery proof are preserved; no parser/schema/fixture/test behavior changed.
+The earlier broad preservation claim was corrected. Contributor-recorded
+checks remain source-attributed, not independently rerun. Final normal hooks
+and commit read-back are pending; this receipt lies outside the reviewed hash.
+
 ### W19 exact-diff review (2026-09-09)
 
 Independent read-only rules-engineer `a_policy_review` reviewed the exact W19
@@ -2754,6 +2822,12 @@ prose with the exact Registry exceptions as part of the approved integration,
 not by editing frozen migration bodies. No merge or main mutation occurred.
 
 ## Commit Ledger
+
+W19 implementation: `b600e7c0115c4890febd7f316d93ae42821e406a`,
+`docs(governance): Remove obsolete operations authoring residue`. The commit
+contains the approved implementation-plan update, context-reviewed marker
+cleanup and AD-0030 resolution with review/verification receipts. Normal hooks
+passed; excluded W18/auth files were preserved. No main or remote integration.
 
 W16 planning delivery: `9153c055fb8a26afd2da474e2f228819dfc864b5`,
 `docs(qa): Plan remaining convergence work`, three documents, normal Git hooks
