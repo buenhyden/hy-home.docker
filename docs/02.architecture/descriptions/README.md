@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-10"
 layer: "architecture"
 ---
 
@@ -26,9 +26,10 @@ ADR을 기록한다.
 
 ## Scope
 
-이 디렉터리는 현재 26개의 Description을 보유한다. Description은 구현
+이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
 계획이나 운영 절차를 소유하지 않고, 실제로 연결된 Requirement Package, ADR, Spec과
-Operations 문서의 역할을 대체하지 않는다.
+Operations 문서의 역할을 대체하지 않는다. 개수는 유지 기준이 아니므로 아래
+Current Inventory와 실제 파일 목록이 권위이다.
 
 ### C4 and arc42 Placement
 
