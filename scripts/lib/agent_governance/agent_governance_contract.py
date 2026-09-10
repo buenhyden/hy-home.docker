@@ -52,6 +52,7 @@ REGISTRY_KEYS = {
     "models",
     "model_catalog_policy",
     "permissions",
+    "tool_profiles",
     "semantic_events",
     "hook_contracts",
     "projections",
@@ -127,6 +128,7 @@ class RoleRecord:
     tier: str
     work_profile: str
     permission_profile: str
+    tool_profile: str
     skill_ids: tuple[str, ...]
     source_path: pathlib.PurePosixPath
     source_text: str
@@ -756,6 +758,7 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
                 tier=_string(values, "tier", relative),
                 work_profile=_string(values, "work_profile", relative),
                 permission_profile=_string(values, "permission_profile", relative),
+                tool_profile=_string(values, "tool_profile", relative),
                 skill_ids=_identifiers(
                     values.get("skill_ids"), field="skill_ids", path=relative
                 ),
@@ -900,15 +903,34 @@ def validate_contract_bundle(
     skills = set(skill_ids)
     work_profiles = bundle.registry.get("work_profiles")
     permissions = bundle.registry.get("permissions")
-    if not isinstance(work_profiles, dict) or not isinstance(permissions, dict):
+    tool_profiles = bundle.registry.get("tool_profiles")
+    if (
+        not isinstance(work_profiles, dict)
+        or not isinstance(permissions, dict)
+        or not isinstance(tool_profiles, dict)
+        or not tool_profiles
+    ):
         findings.append(
             _finding(
                 REGISTRY,
                 "AGC-PROVIDER-REGISTRY",
-                "work profiles and permissions are required",
+                "work profiles, permissions, and tool profiles are required",
             )
         )
         return sorted(set(findings))
+    for name, tools in tool_profiles.items():
+        if (
+            not isinstance(tools, list)
+            or not tools
+            or not all(isinstance(tool, str) and tool for tool in tools)
+        ):
+            findings.append(
+                _finding(
+                    REGISTRY,
+                    "AGC-TOOL-PROFILE",
+                    f"tool profile {name} must list at least one tool name",
+                )
+            )
     models = bundle.registry.get("models")
     if not isinstance(models, dict) or not models:
         findings.append(
@@ -924,6 +946,13 @@ def validate_contract_bundle(
                 _finding(
                     role.source_path, "AGC-PERMISSION", "unknown permission profile"
                 )
+            )
+        # A role owns which tools it may use. The renderer reads this mapping
+        # rather than inferring a list, so an unknown profile has to fail here
+        # instead of silently becoming whatever the renderer defaults to.
+        if role.tool_profile not in tool_profiles:
+            findings.append(
+                _finding(role.source_path, "AGC-TOOL-PROFILE", "unknown tool profile")
             )
         for skill_id in role.skill_ids:
             if skill_id not in skills:

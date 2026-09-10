@@ -74,6 +74,7 @@
       "tier",
       "work_profile",
       "permission_profile",
+      "tool_profile",
       "skill_ids",
       "owner_agent",
       "name",
@@ -123,6 +124,7 @@
       "scope": "{{SCOPE}}",
       "skill_id": "{{SKILL_ID}}",
       "tier": "{{TIER}}",
+      "tool_profile": "{{TOOL_PROFILE}}",
       "title": "{{TITLE}}",
       "work_profile": "{{WORK_PROFILE}}",
       "year": "{{YEAR}}",
@@ -1710,6 +1712,7 @@
         "tier",
         "work_profile",
         "permission_profile",
+        "tool_profile",
         "skill_ids"
       ],
       "optional_frontmatter": [

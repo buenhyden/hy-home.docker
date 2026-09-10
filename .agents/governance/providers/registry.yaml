@@ -205,6 +205,14 @@ model_catalog_policy:
 permissions:
   read-only: {claude: plan, codex: read-only}
   workspace-write: {claude: acceptEdits, codex: workspace-write}
+# A role's allowed tools follow from what the role does, not from the two-value
+# permission enum. The renderer used to infer the list, which made a generated
+# projection the owner of role intent; the mapping lives here instead, beside
+# the permission translation it sits next to in every native surface.
+tool_profiles:
+  inspection: [Read, Grep, Glob]
+  observation: [Read, Grep, Glob, Bash]
+  execution: [Read, Grep, Glob, Edit, Write, Bash]
 semantic_events:
   claude: [SessionStart, PreToolUse, PostToolUse, Stop, SessionEnd, PreCompact, UserPromptSubmit]
   codex: [SessionStart, PreToolUse, PostToolUse, Stop, PreCompact, UserPromptSubmit]

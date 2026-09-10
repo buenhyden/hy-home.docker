@@ -10,6 +10,7 @@ scope: "qa"
 tier: "worker"
 work_profile: "complex-implementation"
 permission_profile: "workspace-write"
+tool_profile: "execution"
 skill_ids:
 - "e2e-testing"
 - "style-validation"

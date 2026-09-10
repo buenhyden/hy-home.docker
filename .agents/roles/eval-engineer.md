@@ -10,6 +10,7 @@ scope: "qa"
 tier: "worker"
 work_profile: "adversarial-review"
 permission_profile: "read-only"
+tool_profile: "inspection"
 skill_ids:
 - "provider-model-evaluation"
 - "workspace-audit-revalidation"

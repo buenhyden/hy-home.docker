@@ -1705,6 +1705,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "tier": "worker",
             "work_profile": "routine-validation",
             "permission_profile": "read-only",
+            "tool_profile": "inspection",
             "skill_ids": ["policy-gate-agent"],
             "generated_by": "scripts/validation/check-document-metadata.py",
         }

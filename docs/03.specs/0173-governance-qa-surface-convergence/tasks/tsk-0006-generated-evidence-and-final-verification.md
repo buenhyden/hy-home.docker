@@ -48,6 +48,49 @@ elsewhere.
 
 ## Work Log
 
+### W36 A role owns the tools it may use (2026-09-10)
+
+A role audit measured the 14 canonical roles against role definition, output
+contract, and allowed tools. Two of those three are already healthy: the
+strongest boundary overlap between any two roles is a 0.14 Jaccard on
+Purpose plus Use When, and all 14 carry Outputs, Success Criteria, and Failure
+and Escalation. `drift-detector`, `hook-developer`, and `skill-creator` declaring
+no skill is not a defect either; each works on a surface rather than invoking a
+reusable procedure, and each says so.
+
+The third dimension was missing entirely. No role declared tools.
+`provider_surface_renderer.py` chose them:
+
+```text
+tools = ["Read", "Grep", "Glob"]
+if permission_profile == "workspace-write":
+    tools.extend(["Edit", "Write", "Bash"])
+```
+
+Fourteen roles therefore shared two tool sets decided by a two-value enum inside
+a generated projection, which the bootstrap policy says may never own role
+intent. `doc-writer`, `incident-responder`, and `hook-developer` received an
+identical `Edit`/`Write`/`Bash`, so role identity did not determine tool access.
+
+One role was actually contradicted by this. `drift-detector` exists to compare
+declared infrastructure with observed state, and its own failure clause speaks
+of runtime access being unavailable, yet the inspection tool set left it able to
+read files and nothing else. It could not observe the runtime its definition is
+about.
+
+Roles now declare a `tool_profile`, the registry maps it beside the permission
+translation it already owned, and the renderer looks it up with nothing to fall
+back to. Three profiles cover the corpus because only three distinct tool lists
+are warranted: `inspection` for the six read-only reviewers, `observation` for
+`drift-detector`, and `execution` for the seven that write. A profile with no
+member was not invented, and a test rejects two profiles that carry the same
+list, because a distinction that changes nothing will drift.
+
+The rendered diff is one line: `drift-detector` gains `Bash` and keeps
+`permissionMode: plan`, so every mutation stays gated. Collapsing `observation`
+into `inspection` was observed to fail the distinctness test, so that guard is
+load-bearing.
+
 ### W35 Five skills and the LLM Wiki residue (2026-09-10)
 
 A skill audit measured 23 canonical skills. Twenty-one are exactly 53-55 lines

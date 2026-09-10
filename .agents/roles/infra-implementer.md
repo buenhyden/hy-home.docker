@@ -10,6 +10,7 @@ scope: "infra"
 tier: "worker"
 work_profile: "complex-implementation"
 permission_profile: "workspace-write"
+tool_profile: "execution"
 skill_ids:
 - "compose-stack-agent"
 - "docker-compose-patterns"

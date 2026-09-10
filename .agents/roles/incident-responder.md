@@ -10,6 +10,7 @@ scope: "ops"
 tier: "worker"
 work_profile: "complex-implementation"
 permission_profile: "workspace-write"
+tool_profile: "execution"
 skill_ids:
 - "incident-response"
 ---

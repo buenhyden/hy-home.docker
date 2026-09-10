@@ -10,6 +10,7 @@ scope: "agentic"
 tier: "supervisor"
 work_profile: "long-horizon-supervision"
 permission_profile: "read-only"
+tool_profile: "inspection"
 skill_ids:
 - "execution-plan-agent"
 - "task-breakdown-agent"

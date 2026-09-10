@@ -10,6 +10,7 @@ scope: "agentic"
 tier: "worker"
 work_profile: "adversarial-review"
 permission_profile: "read-only"
+tool_profile: "inspection"
 skill_ids:
 - "policy-gate-agent"
 - "requirements-to-design-agent"
