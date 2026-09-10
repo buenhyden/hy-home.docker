@@ -73,6 +73,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_agent_function_routes.py
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_stop_gate_deferred_paths.py
   - tests/validation/test_validator_entrypoints.py

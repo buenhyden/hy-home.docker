@@ -526,6 +526,7 @@ user_prompt_submit() {
   HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
 import json
 import os
+import pathlib
 import sys
 
 project = sys.argv[1]
@@ -538,84 +539,151 @@ except Exception:
 
 prompt = str(data.get("prompt", "")).lower()
 
-FUNCTIONS = [
-    {
-        "label": "compose-stack-agent",
-        "path": ".agents/skills/compose-stack-agent/SKILL.md",
-        "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
-        "keywords": [
-            "healthcheck", "health check", "restart policy",
-            "qw-001", "qw-002", "qw-003", "qw-004", "qw-005", "quickwin",
-            "compose stack", "infra tier",
-        ],
-    },
-    {
-        "label": "requirements-to-design-agent",
-        "path": ".agents/skills/requirements-to-design-agent/SKILL.md",
-        "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
-        "keywords": [
-            "prd", "ard", "requirements to design", "architecture decision",
-            "stage 01", "stage 02", "01.requirements", "02.architecture", "adr",
-        ],
-    },
-    {
-        "label": "execution-plan-agent",
-        "path": ".agents/skills/execution-plan-agent/SKILL.md",
-        "desc": "Stage 03 스펙→플랜 분해 및 실행 계획 작성",
-        "keywords": [
-            "execution plan", "spec to plan", "stage 03",
-            "03.specs", "plan template", "implementation plan",
-        ],
-    },
-    {
-        "label": "task-breakdown-agent",
-        "path": ".agents/skills/task-breakdown-agent/SKILL.md",
-        "desc": "플랜→태스크 분해 및 실행 증거 기록",
-        "keywords": [
-            "task breakdown", "task evidence", "plan to task",
-            "effort estimation", "execution task", "task template",
-        ],
-    },
-    {
-        "label": "ops-runbook-agent",
-        "path": ".agents/skills/ops-runbook-agent/SKILL.md",
-        "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
-        "keywords": [
-            "runbook", "stage 05", "05.operations", "backup procedure",
-            "recovery procedure", "incident runbook", "ops runbook",
-        ],
-    },
-    {
-        "label": "knowledge-map-agent",
-        "path": ".agents/skills/knowledge-map-agent/SKILL.md",
-        "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
-        "keywords": [
-            "graphify", "knowledge graph", "traceability gap", "orphaned doc",
-            "cross-document", "missing link", "knowledge map",
-        ],
-    },
-    {
-        "label": "policy-gate-agent",
-        "path": ".agents/skills/policy-gate-agent/SKILL.md",
-        "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
-        "keywords": [
-            "policy gate", "validation suite", "public gate",
-            "changed profile", "full profile",
-            "policy validation",
-        ],
-    },
-]
+# Routing owns keywords only. The skill id derives the canonical path and the
+# skill's own `description` is the routing summary, so a route cannot drift from
+# the procedure it points at and a new skill needs one keyword line, not a copy
+# of its identity.
+ROUTES = {
+    "adr-writing": [
+        "adr", "architecture decision record", "decision record",
+        "alternatives considered", "write a decision",
+    ],
+    "change-review-execution": [
+        "change review", "diff review", "review this diff", "commit range",
+        "specification compliance", "independent verdict",
+    ],
+    "ci-cd-patterns": [
+        "ci gate", "ci/cd", "github actions", "workflow contract",
+        "required check", "pipeline gate", "least-privilege job",
+    ],
+    "code-review-dimensions": [
+        "code review", "review dimensions", "review checklist",
+        "maintainability review",
+    ],
+    "compose-stack-agent": [
+        "healthcheck", "health check", "restart policy",
+        "qw-001", "qw-002", "qw-003", "qw-004", "qw-005", "quickwin",
+        "compose stack", "infra tier",
+    ],
+    "container-threat-modeling": [
+        "threat model", "trust boundary", "attack surface",
+        "container security", "exploit path",
+    ],
+    "deployment-pipeline-design": [
+        "deployment pipeline", "release pipeline", "rollout", "canary",
+        "blue-green", "artifact promotion", "approval gate",
+    ],
+    "docker-compose-patterns": [
+        "docker compose", "compose pattern", "compose topology",
+        "service topology", "compose profile",
+    ],
+    "e2e-testing": [
+        "e2e", "end-to-end", "end to end", "acceptance scenario",
+        "smoke test", "user journey",
+    ],
+    "execution-plan-agent": [
+        "execution plan", "spec to plan", "stage 03",
+        "03.specs", "plan template", "implementation plan",
+    ],
+    "incident-response": [
+        "incident", "outage", "postmortem", "post-mortem", "escalation",
+        "service degradation",
+    ],
+    "infra-cross-validate": [
+        "cross validate", "cross-validate", "infra review",
+        "infrastructure review", "cross-file review",
+    ],
+    "infra-validate": [
+        "infra validate", "infrastructure validation", "compose validate",
+        "static infrastructure check", "runtime observation",
+    ],
+    "knowledge-map-agent": [
+        "graphify", "knowledge graph", "traceability gap", "orphaned doc",
+        "cross-document", "missing link", "knowledge map",
+    ],
+    "ops-runbook-agent": [
+        "runbook", "stage 05", "05.operations", "backup procedure",
+        "recovery procedure", "incident runbook", "ops runbook",
+    ],
+    "policy-gate-agent": [
+        "policy gate", "validation suite", "public gate",
+        "changed profile", "full profile",
+        "policy validation",
+    ],
+    "provider-model-evaluation": [
+        "provider registry", "provider evaluation", "model selection",
+        "model evaluation", "llm provider", "native schema",
+    ],
+    "requirements-to-design-agent": [
+        "prd", "ard", "requirements to design", "architecture decision",
+        "stage 01", "stage 02", "01.requirements", "02.architecture", "adr",
+    ],
+    "security-audit": [
+        "security audit", "vulnerability", "secret scan", "hardcoded secret",
+        "privilege escalation", "exposed input",
+    ],
+    "style-validation": [
+        "pre-commit", "precommit", "markdownlint", "yamllint", "shellcheck",
+        "lint", "formatting", "style check", "document metadata",
+    ],
+    "task-breakdown-agent": [
+        "task breakdown", "task evidence", "plan to task",
+        "effort estimation", "execution task", "task template",
+    ],
+    "test-authoring": [
+        "red test", "failing test", "regression test", "write a test",
+        "test first", "tdd", "witnessed test",
+    ],
+    "workspace-audit-revalidation": [
+        "revalidate", "revalidation", "stale audit", "audit refresh",
+        "workspace audit",
+    ],
+}
 
-matched = [function for function in FUNCTIONS if any(keyword in prompt for keyword in function["keywords"])]
+
+def canonical_summary(skill_id):
+    """Read the matched skill's own description.
+
+    Routing summarises nothing itself: an unreadable or description-less skill
+    routes with its path alone rather than with a guess that could drift.
+    """
+    path = pathlib.Path(project) / ".agents/skills" / skill_id / "SKILL.md"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    seen_opening_fence = False
+    for line in text.splitlines():
+        if line.strip() == "---":
+            if seen_opening_fence:
+                break
+            seen_opening_fence = True
+            continue
+        if line.startswith("description:"):
+            value = line[len("description:"):].strip()
+            if value.startswith('"'):
+                try:
+                    return json.loads(value)
+                except ValueError:
+                    return value.strip('"')
+            return value
+    return ""
+
+
+matched = [
+    skill_id
+    for skill_id, keywords in ROUTES.items()
+    if any(keyword in prompt for keyword in keywords)
+]
 
 if not matched:
     sys.exit(0)
 
 lines = ["Canonical agent function routes that may apply to this prompt:"]
-for function in matched:
-    lines.append(
-        f"  - **{function['label']}** (`{function['path']}`): {function['desc']}"
-    )
+for skill_id in matched:
+    entry = f"  - **{skill_id}** (`.agents/skills/{skill_id}/SKILL.md`)"
+    summary = canonical_summary(skill_id)
+    lines.append(f"{entry}: {summary}" if summary else entry)
 
 print(json.dumps({
     "hookSpecificOutput": {

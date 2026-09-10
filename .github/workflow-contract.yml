@@ -581,6 +581,7 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_hook_rules",
+        "tests.validation.test_agent_function_routes",
         "tests.lib.hooks.test_tool_payload",
         "tests.validation.test_provider_native_payloads",
         "-v"

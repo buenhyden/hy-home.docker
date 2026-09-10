@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence."
 metadata:
   title: "infra-validate"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-09-10"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -26,6 +26,10 @@ The approved infrastructure change and its validation contract must identify whi
 
 - Approved infrastructure change and validation contract.
 - Expected rendered configuration, health behavior, and rollback boundary.
+- The registered validators that implement the checks below, named once in
+  `scripts/manifest.yaml`; which of them this change type requires is owned by
+  the [verification matrix](../../governance/quality-standards.md#5-change-type-verification-matrix).
+  Naming a command here instead would copy both owners into a third place.
 
 ## Procedure
 
