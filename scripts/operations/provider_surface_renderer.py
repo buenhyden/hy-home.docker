@@ -188,13 +188,25 @@ def _marker(source: pathlib.PurePosixPath, *, comment: str = "html") -> str:
     return f"<!-- {text} -->" if comment == "html" else f"# {text}"
 
 
+def _tools(state: AgentGovernanceState, role: RoleRecord) -> tuple[str, ...]:
+    """Return the role's allowed tools from the registry, never a local guess.
+
+    The list used to be inferred here from the two-value permission enum, which
+    made this generated projection the owner of role intent and gave every
+    workspace-write role the same tools regardless of what it does. The role
+    declares a `tool_profile` and the registry maps it; the contract rejects an
+    unknown profile, so there is nothing to fall back to.
+    """
+
+    profiles = state.registry["tool_profiles"]
+    return tuple(profiles[role.tool_profile])
+
+
 def _claude_agent(
     state: AgentGovernanceState, role: RoleRecord, output: pathlib.PurePosixPath
 ) -> bytes:
     selection = _selection(state, role, "claude")
-    tools = ["Read", "Grep", "Glob"]
-    if role.permission_profile == "workspace-write":
-        tools.extend(["Edit", "Write", "Bash"])
+    tools = _tools(state, role)
     lines = [
         "---",
         f"name: {_yaml_scalar(role.agent_id)}",

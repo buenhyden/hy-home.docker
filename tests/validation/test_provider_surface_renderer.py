@@ -149,6 +149,79 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_role_tools_come_from_the_registry_not_the_renderer(self) -> None:
+        """A role owns which tools it may use.
+
+        The renderer used to infer the list from the two-value permission enum,
+        which made this generated projection the owner of role intent and gave
+        every workspace-write role the same tools whatever it does. Each role
+        declares a `tool_profile`; the registry maps it; the renderer only
+        looks it up.
+        """
+
+        import yaml
+
+        root = pathlib.Path(__file__).resolve().parents[2]
+        registry = yaml.safe_load(
+            (root / ".agents/governance/providers/registry.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        profiles = registry["tool_profiles"]
+        self.assertTrue(profiles, "the registry must own at least one tool profile")
+
+        # No two profiles may carry the same tool list: a distinction that
+        # changes nothing is a distinction that will drift.
+        rendered = {name: tuple(tools) for name, tools in profiles.items()}
+        self.assertEqual(
+            len(set(rendered.values())), len(rendered), "tool profiles must differ"
+        )
+
+        for role_path in sorted((root / ".agents/roles").glob("*.md")):
+            text = role_path.read_text(encoding="utf-8")
+            match = re.search(r'^tool_profile: "([^"]+)"', text, re.M)
+            with self.subTest(role=role_path.stem):
+                self.assertIsNotNone(match, "every role declares a tool profile")
+                assert match is not None
+                profile = match.group(1)
+                self.assertIn(profile, profiles)
+                agent = (root / ".claude/agents" / f"{role_path.stem}.md").read_text(
+                    encoding="utf-8"
+                )
+                declared = re.findall(r'^- "([A-Za-z]+)"$', agent, re.M)
+                self.assertEqual(
+                    list(profiles[profile]),
+                    declared[: len(profiles[profile])],
+                    "the rendered adapter must carry exactly the profile's tools",
+                )
+
+    def test_an_observation_role_can_reach_runtime_a_reviewer_cannot(self) -> None:
+        """`drift-detector` compares declared configuration with observed state.
+
+        With the inspection tool set it could read files and nothing else, so it
+        could not observe the runtime its own definition is about. It is the one
+        read-only role that needs to run a non-mutating command, and separating
+        `observation` from `inspection` is what lets it say so without also
+        gaining write access.
+        """
+
+        import yaml
+
+        root = pathlib.Path(__file__).resolve().parents[2]
+        registry = yaml.safe_load(
+            (root / ".agents/governance/providers/registry.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertIn("Bash", registry["tool_profiles"]["observation"])
+        self.assertNotIn("Bash", registry["tool_profiles"]["inspection"])
+        self.assertNotIn("Write", registry["tool_profiles"]["observation"])
+
+        agent = (root / ".claude/agents/drift-detector.md").read_text(encoding="utf-8")
+        self.assertIn('- "Bash"', agent)
+        # Read-only permission still gates every mutation.
+        self.assertIn('permissionMode: "plan"', agent)
+
     def test_empty_agent_home_is_not_a_valid_canonical_source(self) -> None:
         renderer = load_renderer()
         with tempfile.TemporaryDirectory() as directory:

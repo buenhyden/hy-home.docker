@@ -1,6 +1,6 @@
 ---
 name: "provider-model-evaluation"
-description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and deterministic model-free regression evidence."
+description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and deterministic model-free regression evidence. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 disable-model-invocation: true
 ---
 

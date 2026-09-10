@@ -53,6 +53,7 @@
     "tier": {"type": "string", "minLength": 1},
     "work_profile": {"type": "string", "minLength": 1},
     "permission_profile": {"type": "string", "minLength": 1},
+    "tool_profile": {"type": "string", "minLength": 1},
     "skill_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
     "function_id": {"type": "string", "minLength": 1},
     "owner_agent": {"type": "string", "minLength": 1},

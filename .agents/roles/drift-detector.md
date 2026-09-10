@@ -10,6 +10,7 @@ scope: "infra"
 tier: "worker"
 work_profile: "routine-validation"
 permission_profile: "read-only"
+tool_profile: "observation"
 skill_ids: []
 ---
 

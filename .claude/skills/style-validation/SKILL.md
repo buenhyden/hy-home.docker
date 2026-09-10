@@ -1,6 +1,6 @@
 ---
 name: "style-validation"
-description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership."
+description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 disable-model-invocation: true
 ---
 

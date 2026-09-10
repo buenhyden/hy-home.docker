@@ -10,6 +10,7 @@ scope: "{{SCOPE}}"
 tier: "{{TIER}}"
 work_profile: "{{WORK_PROFILE}}"
 permission_profile: "{{PERMISSION_PROFILE}}"
+tool_profile: "{{TOOL_PROFILE}}"
 skill_ids:
 - "{{SKILL_ID}}"
 ---

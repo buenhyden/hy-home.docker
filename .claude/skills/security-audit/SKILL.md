@@ -1,6 +1,6 @@
 ---
 name: "security-audit"
-description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings."
+description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings. Reach for it when someone asks whether a change has a security problem, wants exposed inputs or privilege paths examined, or asks whether a new dependency is safe to take. Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
 disable-model-invocation: true
 ---
 

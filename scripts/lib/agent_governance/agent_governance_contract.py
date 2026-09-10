@@ -52,6 +52,7 @@ REGISTRY_KEYS = {
     "models",
     "model_catalog_policy",
     "permissions",
+    "tool_profiles",
     "semantic_events",
     "hook_contracts",
     "projections",
@@ -127,6 +128,7 @@ class RoleRecord:
     tier: str
     work_profile: str
     permission_profile: str
+    tool_profile: str
     skill_ids: tuple[str, ...]
     source_path: pathlib.PurePosixPath
     source_text: str
@@ -756,6 +758,7 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
                 tier=_string(values, "tier", relative),
                 work_profile=_string(values, "work_profile", relative),
                 permission_profile=_string(values, "permission_profile", relative),
+                tool_profile=_string(values, "tool_profile", relative),
                 skill_ids=_identifiers(
                     values.get("skill_ids"), field="skill_ids", path=relative
                 ),
@@ -900,15 +903,34 @@ def validate_contract_bundle(
     skills = set(skill_ids)
     work_profiles = bundle.registry.get("work_profiles")
     permissions = bundle.registry.get("permissions")
-    if not isinstance(work_profiles, dict) or not isinstance(permissions, dict):
+    tool_profiles = bundle.registry.get("tool_profiles")
+    if (
+        not isinstance(work_profiles, dict)
+        or not isinstance(permissions, dict)
+        or not isinstance(tool_profiles, dict)
+        or not tool_profiles
+    ):
         findings.append(
             _finding(
                 REGISTRY,
                 "AGC-PROVIDER-REGISTRY",
-                "work profiles and permissions are required",
+                "work profiles, permissions, and tool profiles are required",
             )
         )
         return sorted(set(findings))
+    for name, tools in tool_profiles.items():
+        if (
+            not isinstance(tools, list)
+            or not tools
+            or not all(isinstance(tool, str) and tool for tool in tools)
+        ):
+            findings.append(
+                _finding(
+                    REGISTRY,
+                    "AGC-TOOL-PROFILE",
+                    f"tool profile {name} must list at least one tool name",
+                )
+            )
     models = bundle.registry.get("models")
     if not isinstance(models, dict) or not models:
         findings.append(
@@ -924,6 +946,13 @@ def validate_contract_bundle(
                 _finding(
                     role.source_path, "AGC-PERMISSION", "unknown permission profile"
                 )
+            )
+        # A role owns which tools it may use. The renderer reads this mapping
+        # rather than inferring a list, so an unknown profile has to fail here
+        # instead of silently becoming whatever the renderer defaults to.
+        if role.tool_profile not in tool_profiles:
+            findings.append(
+                _finding(role.source_path, "AGC-TOOL-PROFILE", "unknown tool profile")
             )
         for skill_id in role.skill_ids:
             if skill_id not in skills:
@@ -1256,6 +1285,24 @@ def canonical_source_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, .
     return _canonical_source_paths(_load_yaml(root, REGISTRY))
 
 
+# A skill owns the code, reference material, and output templates only it uses.
+# The canonical home is otherwise a closed set, and it stays closed: exactly
+# these three directory names may appear inside a skill package, their contents
+# are the skill's own and are not registered file by file, and nothing else at a
+# skill's top level is admitted. The traversal does not descend into them, so an
+# asset tree cannot smuggle a new canonical input past the inventory.
+SKILL_OWNED_DIRECTORIES = frozenset({"scripts", "references", "assets"})
+
+
+def _skill_owned(relative: pathlib.PurePosixPath, observed: set[str]) -> frozenset[str]:
+    """Return the skill-owned directory names present in a skill package."""
+
+    parts = relative.parts
+    if len(parts) != 3 or parts[:2] != (".agents", "skills"):
+        return frozenset()
+    return frozenset(observed & SKILL_OWNED_DIRECTORIES)
+
+
 def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
     """Validate registered structure without reading or mutating unknown contents."""
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
@@ -1274,9 +1321,16 @@ def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
                 if count > 2048:
                     raise ValueError("canonical inventory is oversized")
                 entries.append(entry)
-        if {entry.name for entry in entries} != directories[relative]:
+        expected = directories[relative]
+        observed = {entry.name for entry in entries}
+        owned = _skill_owned(relative, observed)
+        if observed - owned != expected:
             raise ValueError(f"unregistered or missing canonical input in {relative}")
         for entry in sorted(entries, key=lambda item: item.name):
+            if entry.name in owned:
+                if not stat.S_ISDIR(entry.stat(follow_symlinks=False).st_mode):
+                    raise ValueError("skill-owned entry is not a directory")
+                continue
             child_relative = relative / entry.name
             before = entry.stat(follow_symlinks=False)
             if child_relative in directories:

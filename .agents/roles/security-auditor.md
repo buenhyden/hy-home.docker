@@ -10,6 +10,7 @@ scope: "security"
 tier: "worker"
 work_profile: "adversarial-review"
 permission_profile: "read-only"
+tool_profile: "inspection"
 skill_ids:
 - "container-threat-modeling"
 - "security-audit"

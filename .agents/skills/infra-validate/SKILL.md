@@ -1,9 +1,9 @@
 ---
 name: "infra-validate"
-description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence."
+description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -33,7 +33,10 @@ The approved infrastructure change and its validation contract must identify whi
 
 ## Procedure
 
-1. Run syntax, schema, Compose rendering, referenced-path, and secret-boundary checks on the exact change.
+1. Run `scripts/static-checks.sh`. It reports every check it ran and, just as
+   importantly, names the ones it did not: an omitted line reads like a passing
+   one, so runtime observation and secret access appear as `NOT_RUN` rather
+   than disappearing.
 2. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
 3. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
 

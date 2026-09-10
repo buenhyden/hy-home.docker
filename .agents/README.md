@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-10"
 layer: "agent-governance"
 ---
 
@@ -22,7 +22,11 @@ native adapters. The canonical home is authored content, never renderer output.
   bootstrap, and SDLC behavior.
 - `roles/` owns stable identities, responsibilities, permissions, and handoff.
 - `skills/<skill_id>/SKILL.md` owns callable procedures; skill-local
-  `agents/openai.yaml` requires explicit invocation.
+  `agents/openai.yaml` requires explicit invocation. A skill may also own
+  `scripts/` for the executable code only it runs, `references/` for detail its
+  body would otherwise inline, and `assets/` for templates its output uses.
+  Those three names are the whole allowance: their contents are the skill's own
+  and need no registry row, and nothing else may appear at a skill's top level.
 - `knowledge/` owns verified routing from a repository surface to its
   canonical owner, plus repository vocabulary and verification coverage.
 - `prompts/` owns reusable input and output contracts for recurring work.
@@ -54,8 +58,9 @@ Stage 98 record and Git history retain completed evidence.
     └── agents/openai.yaml
 ```
 
-Only registered canonical entries are permitted. Unknown entries are preserved
-and reported for review. `knowledge/` and `prompts/` route to canonical owners
+Only registered canonical entries are permitted, apart from the three
+skill-owned directories named above. Unknown entries are preserved and reported
+for review. `knowledge/` and `prompts/` route to canonical owners
 and declare contracts; neither states an obligation, holds a procedure body, or
 owns execution state. No common runtime, progress ledger, installer, or
 generated role surface is introduced here.

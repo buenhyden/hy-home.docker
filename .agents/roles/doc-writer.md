@@ -10,6 +10,7 @@ scope: "docs"
 tier: "worker"
 work_profile: "evidence-research"
 permission_profile: "workspace-write"
+tool_profile: "execution"
 skill_ids:
 - "adr-writing"
 - "knowledge-map-agent"
