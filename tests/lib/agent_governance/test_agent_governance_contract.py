@@ -163,6 +163,51 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 with self.assertRaises(contract.ContractLoadError):
                     contract.load_agent_governance(root)
 
+    def test_a_skill_owns_its_scripts_references_and_assets(self) -> None:
+        """A skill may carry the code, references, and templates only it uses.
+
+        The canonical home is a closed set, which previously meant a skill could
+        hold nothing but `SKILL.md` and its invocation controls. Three directory
+        names are admitted inside a skill package and their contents are the
+        skill's own, so an asset does not need a registry row to exist. The
+        traversal does not descend into them, so nothing inside can become an
+        unreviewed canonical input.
+        """
+
+        for name in sorted(contract.SKILL_OWNED_DIRECTORIES):
+            with self.subTest(directory=name), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                copy_governance_fixture(root)
+                owned = root / ".agents/skills/adr-writing" / name
+                (owned / "nested").mkdir(parents=True)
+                (owned / "nested" / "payload.txt").write_text("x", encoding="utf-8")
+                self.assertEqual([], contract.validate_canonical_agent_home(root))
+
+    def test_a_skill_may_not_invent_another_directory_or_a_loose_file(self) -> None:
+        """The lift is exactly three names; everything else stays refused."""
+
+        for relative in ("helpers/run.sh", "stray.md"):
+            with self.subTest(entry=relative), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                copy_governance_fixture(root)
+                target = root / ".agents/skills/adr-writing" / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("x", encoding="utf-8")
+                findings = contract.validate_canonical_agent_home(root)
+                self.assertIn("AGC-CANONICAL-HOME", {item.code for item in findings})
+
+    def test_a_skill_owned_name_must_be_a_directory(self) -> None:
+        """`scripts` as a file would slip past a name-only allowance."""
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            copy_governance_fixture(root)
+            (root / ".agents/skills/adr-writing/scripts").write_text(
+                "not a directory", encoding="utf-8"
+            )
+            findings = contract.validate_canonical_agent_home(root)
+            self.assertIn("AGC-CANONICAL-HOME", {item.code for item in findings})
+
     def test_plausible_unregistered_policy_is_rejected_without_reading(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)

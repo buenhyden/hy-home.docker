@@ -1,9 +1,9 @@
 ---
 name: "policy-gate-agent"
-description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence."
+description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence. Reach for it when someone asks whether a change passes the gates, which gate failed and who owns the fix, what has not been checked yet, or whether a protected file needs approval before merge. Do NOT use it to run the fix, to review code quality, or to approve a protected surface; it reports the verdict and its owner, and changes nothing."
 metadata:
   title: "policy-gate-agent"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -30,7 +30,8 @@ The governed change, canonical policy owner, typed contract, and applicable appr
   gate DAG in `.github/workflow-contract.yml` owns which gates exist and how they
   compose; the [execution boundary](../../governance/quality-standards.md#4-execution-boundary)
   owns which of them may run locally. Deriving that set by hand invites a verdict
-  that no gate actually produced.
+  that no gate actually produced, so read `references/reading-the-gate-dag.md`
+  for how to expand it into rows before filling any of them in.
 
 ## Procedure
 
@@ -42,7 +43,10 @@ The governed change, canonical policy owner, typed contract, and applicable appr
 
 ## Outputs
 
-- A policy-gate verdict with evidence, owner, and unresolved approvals.
+- A policy-gate verdict with evidence, owner, and unresolved approvals, in the
+  shape of `assets/verdict.md`. Its gate table carries one row per in-scope
+  gate, written before the results are known, because a gate with no row is a
+  gate nobody looked at.
 
 ## Gates
 

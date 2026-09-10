@@ -1,6 +1,6 @@
 ---
 name: "policy-gate-agent"
-description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence."
+description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence. Reach for it when someone asks whether a change passes the gates, which gate failed and who owns the fix, what has not been checked yet, or whether a protected file needs approval before merge. Do NOT use it to run the fix, to review code quality, or to approve a protected surface; it reports the verdict and its owner, and changes nothing."
 disable-model-invocation: true
 ---
 

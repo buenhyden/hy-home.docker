@@ -1285,6 +1285,24 @@ def canonical_source_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, .
     return _canonical_source_paths(_load_yaml(root, REGISTRY))
 
 
+# A skill owns the code, reference material, and output templates only it uses.
+# The canonical home is otherwise a closed set, and it stays closed: exactly
+# these three directory names may appear inside a skill package, their contents
+# are the skill's own and are not registered file by file, and nothing else at a
+# skill's top level is admitted. The traversal does not descend into them, so an
+# asset tree cannot smuggle a new canonical input past the inventory.
+SKILL_OWNED_DIRECTORIES = frozenset({"scripts", "references", "assets"})
+
+
+def _skill_owned(relative: pathlib.PurePosixPath, observed: set[str]) -> frozenset[str]:
+    """Return the skill-owned directory names present in a skill package."""
+
+    parts = relative.parts
+    if len(parts) != 3 or parts[:2] != (".agents", "skills"):
+        return frozenset()
+    return frozenset(observed & SKILL_OWNED_DIRECTORIES)
+
+
 def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
     """Validate registered structure without reading or mutating unknown contents."""
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
@@ -1303,9 +1321,16 @@ def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
                 if count > 2048:
                     raise ValueError("canonical inventory is oversized")
                 entries.append(entry)
-        if {entry.name for entry in entries} != directories[relative]:
+        expected = directories[relative]
+        observed = {entry.name for entry in entries}
+        owned = _skill_owned(relative, observed)
+        if observed - owned != expected:
             raise ValueError(f"unregistered or missing canonical input in {relative}")
         for entry in sorted(entries, key=lambda item: item.name):
+            if entry.name in owned:
+                if not stat.S_ISDIR(entry.stat(follow_symlinks=False).st_mode):
+                    raise ValueError("skill-owned entry is not a directory")
+                continue
             child_relative = relative / entry.name
             before = entry.stat(follow_symlinks=False)
             if child_relative in directories:

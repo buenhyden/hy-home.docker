@@ -1,9 +1,9 @@
 ---
 name: "style-validation"
-description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership."
+description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.2.0"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -28,10 +28,16 @@ Changed authored files and their language/document style contracts must be ident
 - Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
 - The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
   which owns which of these may be run locally and on what scope.
+- `scripts/classify-changed-files.sh`, which this skill owns, for the bucket
+  split the procedure below reads.
 
 ## Procedure
 
-1. Classify changed files by formatter, linter, syntax, metadata, and generated-owner obligations.
+1. Run `scripts/classify-changed-files.sh` and read its buckets. Classification
+   is mechanical, so it is fixed in that script rather than re-derived by
+   whoever is looking; the `generated` bucket is the one that matters most,
+   because a formatter that rewrites a generated file produces a diff its owner
+   never made.
 2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
 3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
 

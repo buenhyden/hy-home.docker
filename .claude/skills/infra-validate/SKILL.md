@@ -1,6 +1,6 @@
 ---
 name: "infra-validate"
-description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence."
+description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 disable-model-invocation: true
 ---
 

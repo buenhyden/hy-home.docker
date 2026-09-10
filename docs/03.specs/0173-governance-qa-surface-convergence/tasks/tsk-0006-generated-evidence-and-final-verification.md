@@ -48,6 +48,50 @@ elsewhere.
 
 ## Work Log
 
+### W37 A skill owns the code and material only it uses (2026-09-10)
+
+The canonical home admitted exactly `SKILL.md` and `agents/openai.yaml` inside a
+skill, so a skill could not carry the script it runs, the detail its body should
+not inline, or the template its output uses. Three directory names are now
+admitted: `scripts`, `references`, and `assets`. Their contents are the skill's
+own and need no registry row, the traversal does not descend into them so
+nothing inside becomes an unreviewed canonical input, and the rest of the
+package stays closed. A directory called `helpers` and a loose file at a skill's
+top level were both observed to stay refused, and a `scripts` entry that is a
+file rather than a directory is refused too.
+
+The corpus was then measured against the published guidance for writing skills.
+None of the 23 descriptions carried the phrasing a caller would actually use,
+none carried a negative trigger, none of the bodies held a verifiable list or a
+code block, and one named an executable. Descriptions ran 120 to 157 characters
+against a 1024 limit, so the room was there and unused. With no `references`,
+progressive disclosure stopped at two levels rather than three.
+
+Five skills were changed, chosen where an owned artifact earns its place rather
+than where the gap was widest. `style-validation` now runs
+`scripts/classify-changed-files.sh` for a classification that was mechanical but
+re-derived by whoever was looking. `infra-validate` runs
+`scripts/static-checks.sh`, which reports `NOT_RUN` for runtime observation and
+secret access instead of omitting them, since an omitted line reads like a
+passing one. `policy-gate-agent`, `provider-model-evaluation`, and
+`security-audit` gained the output shape their named results lacked and a
+reference for the detail their bodies could not hold.
+
+Two things were deliberately not done. Stage 99 owns the ADR, incident,
+runbook, and postmortem templates, so no skill asset reproduces a stage
+document; the assets are verdicts, dispositions, and finding tables, which are
+not stage documents at all. And the descriptions gained trigger and negative
+phrasing without losing the "Use when" opening the corpus already shared.
+
+Writing the classifier surfaced a defect prose would have kept: its
+generated-file detector read five lines, and every generated surface here places
+its marker after frontmatter, so it found none. Widening the window to twenty
+lines moved four generated files out of the formatter buckets. The static-check
+script surfaced a second: it reported `FAIL` on a `SC2004` style finding while
+the registered gate passes, because `.pre-commit-config.yaml` owns
+`--severity=warning` and the script had invented a stricter rule. It now matches
+the owner.
+
 ### W36 A role owns the tools it may use (2026-09-10)
 
 A role audit measured the 14 canonical roles against role definition, output
