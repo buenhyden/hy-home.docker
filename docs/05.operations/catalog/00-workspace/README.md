@@ -38,7 +38,6 @@ policy for controls, and runbook for ordered recovery or validation.
 | [environment-key comparison](0003-env-key-comparison/guide.md) | Guide |
 | [harness engineering](0004-harness-agent-first-engineering/guide.md) | [Guide](0004-harness-agent-first-engineering/guide.md), [Policy](0004-harness-agent-first-engineering/policy.md), [Runbook](0004-harness-agent-first-engineering/runbook.md) |
 | [infrastructure optimization governance](0006-infrastructure-optimization-governance/policy.md) | Policy |
-| [LLM Wiki maintenance](0007-llm-wiki-maintenance/guide.md) | [Guide](0007-llm-wiki-maintenance/guide.md), [Policy](0007-llm-wiki-maintenance/policy.md), [Runbook](0007-llm-wiki-maintenance/runbook.md) |
 | [new-service onboarding](0008-new-service-onboarding/guide.md) | Guide |
 | [release management](0009-release-management/runbook.md) | Runbook |
 | [sensitive environment comparison](0010-sensitive-env-vars-comparison/guide.md) | Guide |

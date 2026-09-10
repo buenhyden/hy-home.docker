@@ -27,6 +27,39 @@ def archive_api():
 
 
 class MigrationStateTests(unittest.TestCase):
+    def test_tombstone_identity_inherits_the_retired_artifact_id(self) -> None:
+        """A tombstone names which artifact it records, not where it sits.
+
+        The pre-catalog layout carried the document kind in the directory. The
+        catalog layout carries it in the filename and the number in the package,
+        so without the catalog branch a retired triple would inherit `GDE` for
+        all three members and stop identifying what each tombstone records.
+        """
+
+        catalog = "docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance"
+        for member, expected in (
+            ("guide", "tomb-GDE-0007"),
+            ("policy", "tomb-POL-0007"),
+            ("runbook", "tomb-RUN-0007"),
+        ):
+            with self.subTest(member=member):
+                self.assertEqual(
+                    expected,
+                    self.archive.tombstone_identity(f"{catalog}/{member}.md", "0232"),
+                )
+
+        # The pre-catalog layout keeps deriving from its directory marker, and
+        # the number still comes from the tombstone file there.
+        for retired, expected in (
+            ("docs/05.operations/policies/09-tooling/k6.md", "tomb-POL-0091"),
+            ("docs/05.operations/runbooks/09-tooling/k6.md", "tomb-RUN-0091"),
+            ("docs/05.operations/guides/03-security/01.setup.md", "tomb-GDE-0091"),
+        ):
+            with self.subTest(retired=retired):
+                self.assertEqual(
+                    expected, self.archive.tombstone_identity(retired, "0091")
+                )
+
     def setUp(self) -> None:
         self.archive = archive_api()
         self.commit = "494065806794980080b081439298d7b534d10803"

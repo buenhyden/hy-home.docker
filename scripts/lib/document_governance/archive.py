@@ -174,11 +174,25 @@ def recover_legacy_parent_identities(root: pathlib.Path) -> set[str]:
 
 
 _RETIRED_ROLE_PREFIXES = (("/policies/", "POL"), ("/runbooks/", "RUN"))
+# The pre-catalog layout put the document kind in the directory, so the two
+# markers above were enough to tell a policy from a runbook. The catalog layout
+# puts the kind in the filename and the number in the package, so a retired
+# catalog triple would otherwise inherit `GDE` for all three of its members and
+# lose which artifact each tombstone records.
+_CATALOG_MEMBER = re.compile(
+    r"docs/05\.operations/catalog/[0-9]{2}-[^/]+/(?P<number>[0-9]{4})-[^/]+/"
+    r"(?P<member>guide|policy|runbook)\.md$"
+)
+_CATALOG_MEMBER_PREFIXES = {"guide": "GDE", "policy": "POL", "runbook": "RUN"}
 
 
 def tombstone_identity(retired: str, number: str) -> str:
     """Derive the inherited `tomb-<retired artifact id>` tombstone identity."""
 
+    catalog = _CATALOG_MEMBER.match(retired)
+    if catalog is not None:
+        prefix = _CATALOG_MEMBER_PREFIXES[catalog.group("member")]
+        return f"tomb-{prefix}-{int(catalog.group('number')):04d}"
     for root, pattern, prefix in _RETIRED_IDENTITY_ROOTS:
         if retired.startswith(root):
             match = pattern.match(retired)

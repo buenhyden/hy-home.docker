@@ -1,15 +1,12 @@
 ---
-title: "LLM Wiki Maintenance Usage Guide"
-version: "1.0.0"
-type: "operation/guide"
-status: "active"
-owner: "@buenhyden"
-updated: "2026-09-04"
-layer: "operations"
-artifact_id: "GDE-0007"
-parent_ids:
-- "SPEC-0096"
-created: "2026-07-04"
+profile_id: guide
+status: active
+artifact_id: GDE-0007
+artifact_type: guide
+parent_ids: []
+created: '2026-07-04'
+updated: '2026-09-04'
+observed_at: '2026-09-04'
 ---
 
 # LLM Wiki Maintenance Usage Guide

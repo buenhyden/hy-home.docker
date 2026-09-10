@@ -113,10 +113,10 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
 This project has a graphify knowledge graph at `graphify-out/`.
 
 - Before architecture or codebase answers, read `graphify-out/GRAPH_REPORT.md`.
-- If `graphify-out/wiki/index.md` exists, prefer it over raw-file browsing. It
-  has not existed in this repository; the tracked index that does is the LLM
-  Wiki under `docs/90.references/data/0082-llm-wiki-index/`, which has its own
-  generator and freshness check and is not a Graphify output.
+- `graphify-out/wiki/index.md` has never existed in this repository, and the
+  tracked index that used to stand in for it was retired on 2026-09-10 with its
+  generator. No generated path index exists now, so navigation runs through the
+  canonical entry points in `llms.txt` and the per-surface READMEs.
 - Use Graphify as a navigation aid only when corpus health is clean.
 - If Graphify output includes `volumes/`, gitlink/submodule content, minified/generated artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory only.
 - Corroborate architecture and codebase conclusions against tracked source files, `.agents/`, and active stage docs.

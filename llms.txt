@@ -1,4 +1,4 @@
-# hy-home.docker LLM Wiki
+# hy-home.docker LLM Entry Points
 
 ## Purpose
 
@@ -13,8 +13,6 @@ This file is the repo-local LLM entrypoint for `hy-home.docker`. It points agent
 - [Infrastructure index](infra/README.md)
 - [Script and validator index](scripts/README.md)
 - [Secret handling index](secrets/README.md)
-- LLM Wiki generated index (`docs/90.references/data/0082-llm-wiki-index/README.md`)
-- LLM Wiki repository map (`docs/90.references/data/0083-repository-map/README.md`)
 
 ## Boundaries
 
@@ -22,9 +20,10 @@ This file is the repo-local LLM entrypoint for `hy-home.docker`. It points agent
 - Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and governance docs.
 - Do not include or disclose secret values, credentials, private keys, tokens, shell history, or log databases.
 - Treat `secrets/` as path and policy context only unless a direct user request explicitly requires otherwise.
-- Exclude `volumes/`, generated or minified artifacts, and dependency trees from LLM Wiki evidence.
+- Exclude `volumes/`, generated or minified artifacts, and dependency trees from the evidence boundary.
 - Treat `graphify-out/` as advisory navigation context only when present; it is not authoritative source material.
 
 ## Scope
 
-This LLM Wiki is repo-local only. It defines a generated tracked repo-local path index, but it does not define a public website, `llms-full.txt`, Graphify publication pipeline, external model call, deployment workflow, or Docker runtime behavior.
+This file is repo-local only. It is curated by hand: the generated path index it once pointed at was retired on
+2026-09-10 with its generator, so navigation now runs through the canonical entry points above. It does not define a public website, `llms-full.txt`, Graphify publication pipeline, external model call, deployment workflow, or Docker runtime behavior.

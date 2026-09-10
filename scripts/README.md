@@ -31,7 +31,6 @@ created: "2026-02-21"
 ### In Scope
 
 - Repository validation, implementation-alignment checks, contract checks, local QA gate orchestration, and agent event hook automation scripts.
-- Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local preflight validation mode and safe secret file generation utility.
 - Script inventory and lifecycle ownership rules for canonical purpose-folder paths.
@@ -50,7 +49,7 @@ scripts/
 ├── validation/          # Compose, repo, docs, template, quickwin, and preflight checks
 ├── hardening/           # Unified hardening check with tier arguments
 ├── hooks/               # Provider-neutral hook dispatcher and post-tool validation
-├── knowledge/           # LLM Wiki and Graphify advisory utilities
+├── knowledge/           # Graphify advisory utilities
 ├── operations/          # Local operations, delivery rehearsal, and generated evidence owners
 ├── security/            # Local supply-chain verification and generated summary ownership
 ├── requirements.txt     # Python modules required by repository validation scripts
@@ -82,7 +81,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 | Validation | `scripts/validation/run-ci-gate.py`, `scripts/lib/gate/ci_gate_contract.py`, `scripts/validation/ci_gate_runner.py`, `scripts/lib/gate/ci_gate_adapters.py`, and the public validator routes registered in `.github/workflow-contract.yml` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
-| Knowledge  | `scripts/knowledge/generate-llm-wiki.py`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
+| Knowledge  | `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
 | Operations | `scripts/operations/check-compose-core-readiness.sh`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `scripts/operations/rehearse-sample-service-delivery.sh`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/operations/provider_surface_renderer.py`, `scripts/operations/use-qa-ci-tools.sh`, `scripts/operations/sync-tech-stack-versions.sh` |
 | Security   | `scripts/security/seed-grype-db-cache.sh`, `scripts/security/verify-sample-service-supply-chain.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh`                                                                                                                                                                                                                                                                                     |
 | Libraries  | `scripts/lib/hardening-lib.sh`, `scripts/lib/ops/compose-core-readiness.sh`, `scripts/requirements.txt`, `scripts/requirements-pre-commit.txt` |
@@ -143,7 +142,6 @@ script.
 | Grype DB Cache Seed Harness              | [seed-grype-db-cache.sh](./security/seed-grype-db-cache.sh)                                  | Task7-owned approved-network seed-only entrypoint; publishes a validated private cache generation while the supply-chain advisory remains offline                                                                 |
 | Supply-chain Local Rehearsal            | [verify-sample-service-supply-chain.sh](./security/verify-sample-service-supply-chain.sh)    | Preflight, fixture-only, and optional local advisory baseline/candidate verification with an ephemeral `/tmp` signing key                                                                                        |
 | Supply-chain Summary Generator          | `generate-supply-chain-sample-service-summary.sh` | Generate or check the concise tracked local supply-chain reference summary                                                                                                                        |
-| LLM Wiki Generator                     | `generate-llm-wiki.py`                                    | Generate and check both the repo-local path index and Stage 90 source-bucket/category coverage snapshot                                                                                                                               |
 | Graphify Health Report                 | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                          | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, current-task routing, post-edit style validation/formatting, logical commit completion reminders, and Stop gating        |
 | Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Check safe changed paths with available formatting/lint tools, diff hygiene, and syntax checks; completion-time aggregate validation belongs to Stop |
@@ -205,7 +203,6 @@ under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
 | Agent QA/CI environment     | `source scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Generated index maintenance | `scripts/knowledge/generate-llm-wiki.py --write`, `scripts/operations/generate-compose-profile-service-coverage.sh --write`, `scripts/operations/generate-tech-stack-version-provenance.sh --write`, `scripts/validation/generate-audit-implementation-matrix.sh --write`, `scripts/validation/generate-security-automation-readiness.sh --write`, `scripts/security/generate-supply-chain-sample-service-summary.sh --write` |
 | Internal library            | `scripts/lib/hardening-lib.sh`, `scripts/lib/ops/compose-core-readiness.sh` |
 
 `scripts/operations/gen-secrets.sh` is a manual operation entrypoint. Its
@@ -398,12 +395,6 @@ bash scripts/validation/run-agent-precommit-all-files.sh \
   --task docs/03.specs/9999-example-change/tasks/tsk-0001-example.md \
   --allow-prefix docs/ \
   --allow-prefix scripts/
-
-# Generate both repo-local LLM Wiki artifacts
-python3 scripts/knowledge/generate-llm-wiki.py --write
-
-# Verify both LLM Wiki artifacts are fresh
-python3 scripts/knowledge/generate-llm-wiki.py --check
 
 # Report advisory Graphify corpus health
 ./scripts/knowledge/report-graphify-health.sh

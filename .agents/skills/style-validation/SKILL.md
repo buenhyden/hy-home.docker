@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership."
 metadata:
   title: "style-validation"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-09-10"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -26,6 +26,8 @@ Changed authored files and their language/document style contracts must be ident
 
 - Changed authored files and style contract.
 - Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
+- The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
+  which owns which of these may be run locally and on what scope.
 
 ## Procedure
 
@@ -44,7 +46,15 @@ Changed authored files and their language/document style contracts must be ident
 
 ## Failure Handling
 
-Stop on unexpected paths, formatter oscillation, or conflicting style authorities; do not run direct all-files pre-commit or delete content to satisfy lint.
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
+
+A prohibition without its permitted counterpart is what makes a caller
+improvise, so the counterpart is named here: the one approved all-files route is
+`scripts/validation/run-agent-precommit-all-files.sh`. It is not a free
+substitute. The [execution boundary](../../governance/quality-standards.md#4-execution-boundary)
+owns the conditions it carries, and those conditions decide whether an all-files
+pass is available at all. Read them before reaching for it; the normal answer to
+a scoped change is the scoped check, not the whole tree.
 
 ## Related Documents
 

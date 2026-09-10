@@ -1,6 +1,6 @@
 ---
 name: "knowledge-map-agent"
-description: "Use when tracked documentation navigation or generated knowledge maps need canonical ownership, safe source coverage, and freshness verification."
+description: "Use when tracked documentation navigation needs canonical ownership, safe source coverage, and corroboration of advisory graph output against tracked source."
 disable-model-invocation: true
 ---
 

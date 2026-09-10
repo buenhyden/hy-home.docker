@@ -118,7 +118,7 @@ in the task evidence.
 
 | Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` and LLM Wiki regeneration via `scripts/knowledge/generate-llm-wiki.py --write` when docs are added, removed, or renamed | Public document suites selected by the changed-path contract | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
+| Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` | Public document suites selected by the changed-path contract | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
 | Historical-file cleanup                     | Documentation checks, stale active-reference scans, and minimal metadata/link checks                                                                                                                       | Remote docs implementation-alignment, traceability, and repo contracts | Task evidence and Git recovery reference                              | Domain tests, coverage, Docker runtime checks                        |
 | Governance or provider policy docs           | Documentation checks plus `python3 scripts/operations/provider_surface_renderer.py --check` when provider surfaces are affected                                                                          | Remote repo contracts and required checks                        | Provider renderer check output and policy-gate evidence                | Runtime tests unless behavior/config changed                         |
 | Provider adapter, hook, or validation script | Targeted script self-check, `python3 scripts/validation/run-ci-gate.py --profile changed` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped route rationale is explicit |
@@ -134,10 +134,9 @@ Some artifacts are generated from repository content and must be regenerated as
 part of QA before completion. Treat regeneration as a verification step, not an
 optional cleanup.
 
-- **LLM Wiki outputs**: when documents are added, removed, or renamed under
-  indexed scopes, regenerate both tracked outputs with
-  `python3 scripts/knowledge/generate-llm-wiki.py --write`. Use `--check` for
-  read-only freshness validation; a stale output is a hard failure.
+- **Generated path indexes**: none exist. The repo-local LLM Wiki and its two
+  tracked outputs were retired on 2026-09-10 with their generator, so adding,
+  removing, or renaming a document no longer carries a regeneration step.
 - **Knowledge graph**: `graphify-out/` is local generated intelligence and is
   not tracked. `.gitignore` governs the whole directory, so a rebuild produces
   no diff, needs no commit, and cannot conflict with the `pre-commit`

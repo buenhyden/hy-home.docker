@@ -3,11 +3,11 @@ name: "test-authoring"
 description: "Use when a behavioral contract or reproducible defect needs a witnessed RED test, minimal correction, GREEN result, and regression coverage."
 metadata:
   title: "test-authoring"
-  version: "1.1.0"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-09-10"
   function_id: "test-authoring"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -26,6 +26,10 @@ A behavioral contract and reproducible failure or not-yet-implemented expectatio
 
 - Behavioral contract and failure reproduction.
 - Existing test framework, fixtures, environment boundary, and acceptance criteria.
+- The registered suites and how they are invoked, owned by the typed gate DAG in
+  `.github/workflow-contract.yml`. A suite run outside that contract can fail for
+  reasons the contract prevents, so a standalone invocation proves less than it
+  appears to.
 
 ## Procedure
 
@@ -45,6 +49,12 @@ A behavioral contract and reproducible failure or not-yet-implemented expectatio
 ## Failure Handling
 
 If the failure cannot be reproduced or the fixture is nondeterministic, stop and isolate the environment rather than weakening assertions.
+
+Separate a regression from an environment artifact before reporting either. A
+suite invoked differently from the way its gate invokes it can fail on
+import path, working directory, or a missing descriptor while the code under
+test is correct. Reproduce the failure the way the contract runs it, and if the
+two disagree, the disagreement is the finding.
 
 ## Related Documents
 
