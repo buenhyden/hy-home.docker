@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-10"
 created: "2025-11-12"
 ---
 
@@ -95,10 +95,11 @@ hy-home.docker/
 | `infra/` Compose files | 41 | `docker-compose*.yml` 40개와 `docker-compose*.yaml` 1개. 루트가 41개를 모두 주석 없이 include함 |
 | `infra/` Compose service directories | 40 | service README 누락 0개 |
 | Root `include:` entries | 41 | 파일 목록은 기동 대상을 결정하지 않음. 선택한 profile이 결정하며 정의는 POL-0078이 소유함 |
-| Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
-| `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
-| Parent-repo tracked README files | 173 | `git ls-files '*README.md'` 기준의 tracked README inventory |
+| Root Compose secret declarations | 70 | 루트 `docker-compose.yml`의 최상위 `secrets:` 키 개수. 선언된 secret 파일 누락 0개 |
+| Parent-repo tracked README files | 185 | `git ls-files '*README.md'` 기준의 tracked README inventory |
 | README refresh contract | path-appropriate template coverage | `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
+
+표의 모든 수치는 추적 트리에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
 
 ## Prerequisites
 
