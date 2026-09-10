@@ -17,7 +17,6 @@ from scripts.lib.gate.ci_gate_contract import (
     select_public_suites,
 )
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 

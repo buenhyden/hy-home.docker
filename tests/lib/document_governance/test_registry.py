@@ -13,31 +13,31 @@ import unittest
 from unittest import mock
 
 import scripts.lib.document_governance.registry as registry_module
-from scripts.lib.document_governance.registry import (
-    document_type,
-    DEFAULT_REGISTRY,
-    RegistryError,
-    _path_patterns_overlap,
-    classify_path,
-    declares_frozen_legacy_record,
-    declares_frozen_legacy_status,
-    load_registry,
-    _declares_provider_binding,
-    resolve_template_placeholders,
-    validate_frontmatter,
-    validate_registry,
-)
+from scripts.lib.document_governance import metadata_validator
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
-    build_registry_profiles,
     build_manifest,
+    build_registry_profiles,
     infer_artifact_type,
     parse_frontmatter,
     validate_body_contract,
     validate_record,
 )
-from scripts.lib.document_governance import metadata_validator
+from scripts.lib.document_governance.registry import (
+    DEFAULT_REGISTRY,
+    RegistryError,
+    _declares_provider_binding,
+    _path_patterns_overlap,
+    classify_path,
+    declares_frozen_legacy_record,
+    declares_frozen_legacy_status,
+    document_type,
+    load_registry,
+    resolve_template_placeholders,
+    validate_frontmatter,
+    validate_registry,
+)
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 

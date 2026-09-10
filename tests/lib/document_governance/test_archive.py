@@ -13,7 +13,6 @@ from unittest import mock
 
 import yaml
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 TASK10_BASELINE = "f259c139fb7da166609029cdd3657de87e639f6b"
 
@@ -322,7 +321,7 @@ class MigrationStateTests(unittest.TestCase):
             else:
                 self.assertFalse((ROOT / row["source_path"]).is_file())
             self.assertNotIn(row["source_path"], sources)
-        for mutation in (rows[:-1], rows + [rows[0]], [rows[1], rows[0], *rows[2:]]):
+        for mutation in (rows[:-1], [*rows, rows[0]], [rows[1], rows[0], *rows[2:]]):
             raw = (
                 "```yaml\n" + yaml.safe_dump({**compact, "rows": mutation}) + "```\n"
             ).encode()

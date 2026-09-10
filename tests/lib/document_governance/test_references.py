@@ -1,17 +1,15 @@
 from __future__ import annotations
 
+import contextlib
+import json
+import os
 import pathlib
 import re
-import os
-import contextlib
-import io
-import json
 import shutil
 import subprocess
 import tempfile
 import unittest
 from unittest import mock
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 

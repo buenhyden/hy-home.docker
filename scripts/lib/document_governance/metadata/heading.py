@@ -10,18 +10,9 @@ from collections.abc import Mapping
 
 from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text as _parse_frontmatter_text,
-    safe_load_unique as _safe_load_unique,
 )
-from scripts.lib.document_governance.registry import (
-    _declares_provider_binding,
-    document_type,
-    DocumentRegistry,
-    RegistryError,
-    classify_path as classify_registered_path,
-    declares_frozen_legacy_record,
-    resolve_template_placeholders,
-    validate_frontmatter,
-    validate_profile_values,
+from scripts.lib.document_governance.frontmatter import (
+    safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.metadata.profile import (
     CREDENTIAL_KEY_NAME,
@@ -38,7 +29,6 @@ from scripts.lib.document_governance.metadata.profile import (
     Finding,
     MachineTemplateParseError,
     OpenApiInspection,
-    ProfileError,
     Record,
     _finding,
     _profile_mapping,
@@ -47,6 +37,19 @@ from scripts.lib.document_governance.metadata.profile import (
     _typed_target_types,
     matching_template_roles,
     registered_generated_owner,
+)
+from scripts.lib.document_governance.registry import (
+    DocumentRegistry,
+    RegistryError,
+    _declares_provider_binding,
+    declares_frozen_legacy_record,
+    document_type,
+    resolve_template_placeholders,
+    validate_frontmatter,
+    validate_profile_values,
+)
+from scripts.lib.document_governance.registry import (
+    classify_path as classify_registered_path,
 )
 
 
@@ -968,7 +971,7 @@ BodyDeficitKey = tuple[str, str, str, str]
 def _private_deficit_identity(code: str, value: str) -> str:
     """Return a deterministic internal identity that is never rendered."""
 
-    return hashlib.sha256(f"{code}\0{value}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{code}\0{value}".encode()).hexdigest()
 
 
 def _body_deficit_multiset(

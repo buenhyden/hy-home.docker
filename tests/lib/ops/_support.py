@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 LIBRARY = ROOT / "scripts/lib/ops/compose-core-readiness.sh"
 RUNNER = ROOT / "scripts/operations/check-compose-core-readiness.sh"

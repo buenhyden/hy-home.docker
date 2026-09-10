@@ -5,18 +5,17 @@ from __future__ import annotations
 
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
+)
+from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text as _parse_frontmatter_text,
+)
+from scripts.lib.document_governance.frontmatter import (
     read_frontmatter_values as parse_frontmatter,
+)
+from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.identity_history import collect_issued_identities
-from scripts.lib.document_governance.registry import (
-    DEFAULT_REGISTRY,
-    DocumentRegistry,
-    RegistryError,
-    load_registry,
-    validate_frontmatter,
-)
 from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
     _native_migration_compaction_witness,
@@ -30,8 +29,8 @@ from scripts.lib.document_governance.metadata.lifecycle import (
 )
 from scripts.lib.document_governance.metadata.profile import (
     EXPECTED_EXCEPTION_SCHEMA,
-    TARGET_MARKDOWN_PREFIXES,
     TARGET_MARKDOWN_FILES,
+    TARGET_MARKDOWN_PREFIXES,
     Finding,
     ProfileError,
     Record,
@@ -54,19 +53,25 @@ from scripts.lib.document_governance.metadata.reference import (
     render_report,
     validate_repository_contracts,
 )
-
+from scripts.lib.document_governance.registry import (
+    DEFAULT_REGISTRY,
+    DocumentRegistry,
+    RegistryError,
+    load_registry,
+    validate_frontmatter,
+)
 
 __all__ = (
     "DEFAULT_REGISTRY",
-    "DocumentRegistry",
     "EXPECTED_EXCEPTION_SCHEMA",
+    "TARGET_MARKDOWN_FILES",
+    "TARGET_MARKDOWN_PREFIXES",
+    "DocumentRegistry",
     "Finding",
     "FrontmatterError",
     "ProfileError",
     "Record",
     "RegistryError",
-    "TARGET_MARKDOWN_PREFIXES",
-    "TARGET_MARKDOWN_FILES",
     "_introduced_body_findings",
     "_native_migration_compaction_witness",
     "_parse_frontmatter_text",
@@ -78,9 +83,9 @@ __all__ = (
     "build_current_manifest",
     "build_manifest",
     "build_registry_profiles",
+    "classify_template_role",
     "collect_issued_identities",
     "collect_records_at_ref",
-    "classify_template_role",
     "infer_artifact_type",
     "load_profiles",
     "load_registry",

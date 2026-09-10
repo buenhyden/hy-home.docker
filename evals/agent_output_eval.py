@@ -12,9 +12,8 @@ import re
 import stat
 import subprocess
 import sys
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Iterable, Sequence
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURE_REFERENCE = pathlib.PurePosixPath("evals/fixture-catalog.md")
@@ -1103,7 +1102,7 @@ def _expand_sensitive_component(component: str) -> tuple[str, ...]:
         if prefix.endswith("rotationpolicy"):
             return ("secret", "metadata", "overflow")
         if prefix:
-            return _expand_sensitive_component_base(prefix) + ("rotation", "policy")
+            return (*_expand_sensitive_component_base(prefix), "rotation", "policy")
     return _expand_sensitive_component_base(component)
 
 
@@ -1144,7 +1143,7 @@ def _expand_sensitive_component_base(component: str) -> tuple[str, ...]:
         if component.endswith(alias):
             prefix = component[: -len(alias)]
             if prefix:
-                return (prefix,) + expanded
+                return (prefix, *expanded)
     for suffix in _SENSITIVE_GENERIC_FUSED_SUFFIXES:
         if component.endswith(suffix):
             prefix = component[: -len(suffix)]

@@ -16,18 +16,18 @@ from scripts.lib.document_governance.identity_history import (
     IdentityHistoryError,
     validate_allocation_transition,
 )
+from scripts.lib.document_governance.metadata.heading import _machine_template_path
+from scripts.lib.document_governance.metadata.profile import (
+    TARGET_MARKDOWN_FILES,
+    TARGET_MARKDOWN_PREFIXES,
+    Finding,
+    ProfileError,
+    Record,
+)
 from scripts.lib.document_governance.registry import DocumentRegistry
 from scripts.lib.document_governance.spec_packages import (
     SpecPackageError,
     resolve_lifecycle_base,
-)
-from scripts.lib.document_governance.metadata.heading import _machine_template_path
-from scripts.lib.document_governance.metadata.profile import (
-    TARGET_MARKDOWN_PREFIXES,
-    TARGET_MARKDOWN_FILES,
-    Finding,
-    ProfileError,
-    Record,
 )
 
 

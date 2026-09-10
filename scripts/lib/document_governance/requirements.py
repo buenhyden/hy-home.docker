@@ -22,7 +22,6 @@ from scripts.lib.document_governance.registry import (
     validate_requirement_allocation_transition,
 )
 
-
 MAX_REQUIREMENT_BYTES = 512 * 1024
 MAX_REQUIREMENT_ITEMS = 2048
 _PACKAGE_PATH = re.compile(r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md")

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 import contextlib
+import json
+import os
 import pathlib
 import re
 import shutil
@@ -11,7 +12,6 @@ import tempfile
 import time
 import types
 import unittest
-import json
 from unittest import mock
 
 import yaml
@@ -25,7 +25,6 @@ from scripts.lib.document_governance.operations_catalog import (
     validate_active_operations_references,
     validate_current_operations,
 )
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 

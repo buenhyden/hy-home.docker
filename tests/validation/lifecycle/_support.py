@@ -9,7 +9,6 @@ import sys
 
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "scripts/validation/check-document-corpus-lifecycle.py"
 REGISTRY = ROOT / "docs/99.templates/registry.json"

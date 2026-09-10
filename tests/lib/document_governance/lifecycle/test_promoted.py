@@ -8,7 +8,6 @@ from unittest import mock
 
 from scripts.lib.document_governance.lifecycle import promoted
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 
 

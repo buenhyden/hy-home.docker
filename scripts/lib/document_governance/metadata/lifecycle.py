@@ -11,27 +11,14 @@ import yaml
 
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
+)
+from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text as _parse_frontmatter_text,
+)
+from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
 from scripts.lib.document_governance.git_provenance import resolve_git_provenance
-from scripts.lib.document_governance.operations_catalog import (
-    OperationsAuthorityError,
-    read_bounded_regular,
-)
-from scripts.lib.document_governance.registry import (
-    DocumentRegistry,
-    PRESERVED_RECORD_PREFIX,
-    RegistryError,
-    preserved_origin_path,
-    classify_path as classify_registered_path,
-    declares_frozen_legacy_record,
-    declares_frozen_legacy_status,
-    document_type,
-    validate_frontmatter,
-    validate_profile_values,
-)
-from scripts.lib.document_governance.taxonomy import validate_stable_identity
 from scripts.lib.document_governance.metadata.heading import _validate_template_source
 from scripts.lib.document_governance.metadata.identity import (
     _decode_git_paths,
@@ -39,15 +26,14 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_markdown,
 )
 from scripts.lib.document_governance.metadata.profile import (
-    _normalized_document_values,
     APPROVED_MIGRATION_PATHS,
     EXPECTED_ARCHIVE_DISPOSITIONS,
     EXPECTED_PRESERVATION_CLASSES,
     EXPECTED_SNAPSHOT_ARCHIVE_DISPOSITIONS,
     LEGACY_EXCEPTION_CODES,
     MIGRATION_TYPED_KEYS,
-    TARGET_MARKDOWN_PREFIXES,
     TARGET_MARKDOWN_FILES,
+    TARGET_MARKDOWN_PREFIXES,
     TYPED_EXAMPLE_FIXTURE_PARENT_IDS,
     TYPED_EXAMPLE_FIXTURE_PATH,
     TYPED_EXAMPLE_FIXTURE_STATUS,
@@ -61,6 +47,7 @@ from scripts.lib.document_governance.metadata.profile import (
     _contains_template_placeholder,
     _finding,
     _has_parent_cycle,
+    _normalized_document_values,
     _normalized_target_path,
     _profile_mapping,
     _relation_ids_for_record,
@@ -79,7 +66,25 @@ from scripts.lib.document_governance.metadata.profile import (
     infer_artifact_type,
     registered_generated_owner,
 )
-
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    read_bounded_regular,
+)
+from scripts.lib.document_governance.registry import (
+    PRESERVED_RECORD_PREFIX,
+    DocumentRegistry,
+    RegistryError,
+    declares_frozen_legacy_record,
+    declares_frozen_legacy_status,
+    document_type,
+    preserved_origin_path,
+    validate_frontmatter,
+    validate_profile_values,
+)
+from scripts.lib.document_governance.registry import (
+    classify_path as classify_registered_path,
+)
+from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 # Historical Git blob origins only; never a current filesystem authority.
 GOVERNANCE_RETIRED_PATHS = ("docs/00.agent-governance",)

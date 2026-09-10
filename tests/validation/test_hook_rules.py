@@ -289,6 +289,7 @@ class DispatcherTests(unittest.TestCase):
             text=True,
             cwd=self.root,
             env=environment,
+            check=False,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         return json.loads(result.stdout) if result.stdout.strip() else {}
@@ -355,6 +356,7 @@ class DispatcherFailureTests(unittest.TestCase):
             text=True,
             cwd=self.root,
             env=environment,
+            check=False,
         )
 
     def assert_denied(self, result: subprocess.CompletedProcess[str]) -> None:

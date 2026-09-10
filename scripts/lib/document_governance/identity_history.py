@@ -993,10 +993,12 @@ def validate_allocation_transition(
                 _record(identity, issued_slots)
                 if all(
                     name not in high_water
-                    or name in merged_marks
-                    and all(
-                        fork_marks[name] < number <= merged_marks[name]
-                        for number in numbers
+                    or (
+                        name in merged_marks
+                        and all(
+                            fork_marks[name] < number <= merged_marks[name]
+                            for number in numbers
+                        )
                     )
                     for name, numbers in issued_slots.items()
                 ):
@@ -1136,8 +1138,10 @@ def validate_allocation_transition(
         _record(target_artifact_id, target_slots)
         if (
             source_metadata.get("artifact_id") != source_artifact_id
-            or target_base_metadata is not None
-            and target_base_metadata.get("artifact_id") != target_artifact_id
+            or (
+                target_base_metadata is not None
+                and target_base_metadata.get("artifact_id") != target_artifact_id
+            )
             or not _path_accepts_identity(source_path, source_artifact_id)
             or not _path_accepts_identity(target_path, target_artifact_id)
             or not source_slots

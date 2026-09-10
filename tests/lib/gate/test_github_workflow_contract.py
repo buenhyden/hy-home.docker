@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import dataclasses
 import contextlib
 import copy
+import dataclasses
 import importlib.util
 import json
 import os
@@ -16,7 +16,6 @@ import unittest
 from unittest import mock
 
 from scripts.lib.gate import ci_gate_contract as gate_contract
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"

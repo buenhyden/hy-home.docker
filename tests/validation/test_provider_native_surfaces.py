@@ -8,7 +8,6 @@ import unittest
 
 import yaml
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 RENDERER = ROOT / "scripts/operations/provider_surface_renderer.py"
 

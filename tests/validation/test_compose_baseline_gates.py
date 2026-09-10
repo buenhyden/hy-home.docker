@@ -16,7 +16,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 QUICKWIN = ROOT / "scripts/validation/check-quickwin-baseline.sh"
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
@@ -114,6 +113,7 @@ class BaselineGateHarness(unittest.TestCase):
             capture_output=True,
             text=True,
             env=self.gate_env(),
+            check=False,
         )
 
 
@@ -126,6 +126,7 @@ class QuickwinBaselineTests(BaselineGateHarness):
             capture_output=True,
             text=True,
             env=self.gate_env(),
+            check=False,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
@@ -213,6 +214,7 @@ class TemplateSecurityBaselineTests(BaselineGateHarness):
             capture_output=True,
             text=True,
             env=self.gate_env(),
+            check=False,
         )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 

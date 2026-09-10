@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 import collections.abc
 import dataclasses
-import errno
 import enum
+import errno
 import os
 import pathlib
 import re
@@ -22,9 +22,9 @@ from scripts.lib.gate import ci_gate_adapters
 
 try:
     from scripts.lib.gate.ci_gate_contract import (
+        PUBLIC_SUITE_NAMES,
         GateContractError,
         GateRegistry,
-        PUBLIC_SUITE_NAMES,
         PublicGateContract,
         PublicValidatorRoute,
         expand_public_gate_ids,
@@ -33,14 +33,14 @@ try:
         parse_public_gate_contract,
         public_root_gate_ids,
         select_public_suites,
-        validate_public_execution_argv,
         validate_gate_registry,
+        validate_public_execution_argv,
     )
 except ModuleNotFoundError:  # Direct sibling-script execution.
     from ci_gate_contract import (  # type: ignore[no-redef]
+        PUBLIC_SUITE_NAMES,
         GateContractError,
         GateRegistry,
-        PUBLIC_SUITE_NAMES,
         PublicGateContract,
         PublicValidatorRoute,
         expand_public_gate_ids,
@@ -49,8 +49,8 @@ except ModuleNotFoundError:  # Direct sibling-script execution.
         parse_public_gate_contract,
         public_root_gate_ids,
         select_public_suites,
-        validate_public_execution_argv,
         validate_gate_registry,
+        validate_public_execution_argv,
     )
 
 
@@ -1243,10 +1243,10 @@ def _create_python_bootstrap(
         )
         try:
             payload = (
-                "import os, sys\n"
-                "root = os.environ['HYHOME_CI_GATE_ROOT']\n"
-                "sys.path[:0] = [root, root + '/scripts/validation']\n"
-            ).encode("utf-8")
+                b"import os, sys\n"
+                b"root = os.environ['HYHOME_CI_GATE_ROOT']\n"
+                b"sys.path[:0] = [root, root + '/scripts/validation']\n"
+            )
             _write_all(descriptor, payload)
             os.fsync(descriptor)
         finally:

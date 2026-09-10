@@ -9,7 +9,6 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.lib.document_governance.lifecycle import contract as contract_module
 from tests.validation.lifecycle._support import ROOT, SCRIPT, lifecycle, run
 
 

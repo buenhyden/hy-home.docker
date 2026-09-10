@@ -27,7 +27,6 @@ from scripts.lib.gate.ci_gate_contract import (
     select_public_suites,
 )
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
 INCIDENT_ROUTE = "docs/05.operations/incidents/<year>/inc-####-<slug>/"
@@ -78,6 +77,8 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
     ) -> None:
         from scripts.lib.document_governance import (
             archive,
+        )
+        from scripts.lib.document_governance import (
             metadata_validator as metadata,
         )
 

@@ -14,7 +14,6 @@ import re
 import stat
 from collections.abc import Sequence
 
-
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
@@ -32,7 +31,6 @@ from scripts.lib.document_governance.registry import (
     classify_path,
     load_registry,
 )
-
 
 CATEGORIES = ("audits", "data", "research")
 PREFIX_BY_CATEGORY = {"audits": "AUD-", "data": "DATA-", "research": "RES-"}
@@ -82,7 +80,7 @@ class ReferencePackage:
     artifact_id: str
     profile_id: str
     text: str
-    documents: tuple["ReferenceDocument", ...]
+    documents: tuple[ReferenceDocument, ...]
 
     @property
     def overrides_normative_stage(self) -> bool:
@@ -936,10 +934,6 @@ def validate_current_references(root: pathlib.Path) -> tuple[Finding, ...]:
                 )
             )
 
-    # The current tree is the package set. A package exists because its
-    # README is here and satisfies the Stage 99 profile, not because a
-    # retired archive ledger once listed it.
-    observed_packages = {item.relative_package for item in corpus.packages}
     findings.extend(validate_protected_research(root))
 
     allowed_files = {
@@ -1056,7 +1050,9 @@ def delegated_member_paths(root: pathlib.Path) -> frozenset[str]:
     """Category indexes stay delegated; typed package documents use Registry."""
 
     prefix = pathlib.PurePosixPath("docs/90.references")
-    corpus = load_reference_packages(pathlib.Path(root) / prefix)
+    # Called for its validation: it raises on a malformed corpus. The result
+    # is unused because the delegated paths are fixed by CATEGORIES.
+    load_reference_packages(pathlib.Path(root) / prefix)
     return frozenset(
         {
             *((prefix / category / "README.md").as_posix() for category in CATEGORIES),

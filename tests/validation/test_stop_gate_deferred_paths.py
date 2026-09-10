@@ -60,6 +60,7 @@ class StopGateDeferredPathTests(unittest.TestCase):
             capture_output=True,
             text=True,
             env=environment,
+            check=False,
         )
         return result.returncode, result.stdout
 

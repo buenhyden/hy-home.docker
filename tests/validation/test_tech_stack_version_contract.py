@@ -23,7 +23,6 @@ from scripts.validation.ci_gate_runner import (
 )
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
@@ -431,13 +430,11 @@ class TechStackVersionContractTests(unittest.TestCase):
         ):
             with self.subTest(label=label):
                 result = self.run_compose_image_resolver(
-                    (
-                        "services:\n"
-                        "  target:\n"
-                        f"    image: {expected}\n"
-                        f"  {sibling_key}:\n"
-                        "    image: registry.example.test/team/other:9\n"
-                    )
+                    "services:\n"
+                    "  target:\n"
+                    f"    image: {expected}\n"
+                    f"  {sibling_key}:\n"
+                    "    image: registry.example.test/team/other:9\n"
                 )
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertEqual(f"{expected}\n", result.stdout)
@@ -452,13 +449,11 @@ class TechStackVersionContractTests(unittest.TestCase):
         ):
             with self.subTest(label=label):
                 result = self.run_compose_image_resolver(
-                    (
-                        "services:\n"
-                        "  target:\n"
-                        "    restart: unless-stopped\n"
-                        f"  {sibling_key}:\n"
-                        "    image: registry.example.test/team/other:9\n"
-                    )
+                    "services:\n"
+                    "  target:\n"
+                    "    restart: unless-stopped\n"
+                    f"  {sibling_key}:\n"
+                    "    image: registry.example.test/team/other:9\n"
                 )
                 self.assertEqual(2, result.returncode)
                 self.assertEqual("", result.stdout)
@@ -481,13 +476,11 @@ class TechStackVersionContractTests(unittest.TestCase):
         for label, first_key, second_key in duplicate_pairs:
             with self.subTest(label=label):
                 result = self.run_compose_image_resolver(
-                    (
-                        "services:\n"
-                        f"  {first_key}:\n"
-                        "    image: registry.example.test/team/app:1\n"
-                        f"  {second_key}:\n"
-                        "    image: registry.example.test/team/app:2\n"
-                    )
+                    "services:\n"
+                    f"  {first_key}:\n"
+                    "    image: registry.example.test/team/app:1\n"
+                    f"  {second_key}:\n"
+                    "    image: registry.example.test/team/app:2\n"
                 )
                 self.assertEqual(2, result.returncode)
                 self.assertEqual("", result.stdout)
@@ -508,15 +501,13 @@ class TechStackVersionContractTests(unittest.TestCase):
         for label, first_key, second_key in duplicate_pairs:
             with self.subTest(label=label):
                 result = self.run_compose_image_resolver(
-                    (
-                        "services:\n"
-                        "  target:\n"
-                        "    image: registry.example.test/team/app:1\n"
-                        f"  {first_key}:\n"
-                        "    image: registry.example.test/team/other:1\n"
-                        f"  {second_key}:\n"
-                        "    image: registry.example.test/team/other:2\n"
-                    )
+                    "services:\n"
+                    "  target:\n"
+                    "    image: registry.example.test/team/app:1\n"
+                    f"  {first_key}:\n"
+                    "    image: registry.example.test/team/other:1\n"
+                    f"  {second_key}:\n"
+                    "    image: registry.example.test/team/other:2\n"
                 )
                 self.assertEqual(2, result.returncode)
                 self.assertEqual("", result.stdout)

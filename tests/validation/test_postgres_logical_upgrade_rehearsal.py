@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import stat
@@ -13,9 +12,9 @@ import tempfile
 import textwrap
 import time
 import unittest
+from pathlib import Path
 
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/rehearse-postgres-logical-upgrade.sh"
@@ -246,8 +245,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 cwd=root,
                 env=env,
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=False,
             )
 
@@ -267,8 +265,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
             cwd=ROOT,
             env=env,
             text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             check=False,
         )
 
@@ -301,8 +298,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                     env=environment,
                     pass_fds=(held.fileno(),),
                     text=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    capture_output=True,
                     check=False,
                 )
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -409,8 +405,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                 cwd=ROOT,
                 env=environment,
                 text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 check=False,
                 timeout=30,
             )
@@ -701,8 +696,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         cwd=root,
                         env=env,
                         text=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
+                        capture_output=True,
                         check=False,
                     )
                     self.assertEqual(
@@ -1008,7 +1002,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
 
     def _preflight_with_stubs(
         self, run_mode: str, marker: Path
-    ) -> "subprocess.CompletedProcess[str]":
+    ) -> subprocess.CompletedProcess[str]:
         """Drive the preflight with every runtime call stubbed but the image gate."""
 
         return self.run_sourced(

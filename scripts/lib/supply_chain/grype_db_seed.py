@@ -14,7 +14,6 @@ import stat
 import sys
 from typing import Any
 
-
 SHA256_HEX_RE = re.compile(r"[0-9a-f]{64}")
 SHA256_RE = re.compile(r"sha256:[0-9a-f]{64}")
 TIMESTAMP_RE = re.compile(r"20[0-9]{2}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")

@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.0.5"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-10"
 ---
 
 # Agent Quality and Security Standards
@@ -220,7 +220,10 @@ Gate in `.agents/governance/github-governance.md`.
   boundary and report any resulting diff. Normal automatic Git commit hooks
   retain their existing authorization and must not be bypassed. Explicit
   fixes are reviewed separately and a second formatting pass must be unchanged.
-  Ruff format is the Python formatter; it does not imply Ruff lint execution.
+  Ruff format is the Python formatter and `ruff check` is the Python linter.
+  Both are registered hooks and both are pinned in `ruff.toml`, which owns the
+  format settings and the selected lint rules with the measurement behind each
+  selection and each exception.
 - Formatting settings are pinned in the repository, not left to a tool default
   or to whichever version a machine has. `ruff.toml` pins Python.
 - An agent editor hook may format a file only in agreement with the registered
@@ -229,6 +232,11 @@ Gate in `.agents/governance/github-governance.md`.
   `.prettierignore` does this for Prettier.
 - Do not add a second tool over a file type that already has an owner. Two
   formatters on one file type is a conflict, not redundancy.
+- A registered formatter or linter carries a `files` selector that names the
+  scope it owns. A tool that reads more file types than its owner declares is
+  the same defect as a second owner: `ruff format` also reformats Python
+  fenced inside Markdown, and invoked without that selector it rewrote a
+  frozen archive body. The selector, not the invoker's memory, is the boundary.
 - A validator must not depend on where a line breaks. A check that a formatter
   can break was satisfied by typography rather than by content, and the
   exemption belongs on the line as a stated marker.

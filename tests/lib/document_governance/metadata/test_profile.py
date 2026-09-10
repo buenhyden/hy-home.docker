@@ -9,9 +9,9 @@ import unittest
 
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
-    normalize_profile_frontmatter,
     _declares_provider_binding,
     document_type,
+    normalize_profile_frontmatter,
 )
 from tests.lib.document_governance.metadata._support import (
     REGISTRY,

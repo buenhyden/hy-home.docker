@@ -16,8 +16,6 @@ from typing import Any
 
 import yaml
 
-from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
-
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 from scripts.lib.document_governance.git_provenance import (
     HistoricalDocument,
@@ -25,7 +23,7 @@ from scripts.lib.document_governance.git_provenance import (
     recovery_commit_is_valid,
     verify_recovery_blobs_batch,
 )
-
+from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
 
 FROZEN_MIGRATION_SHA256 = (
     "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
@@ -809,10 +807,12 @@ def task10_rows(root: pathlib.Path) -> tuple[dict[str, Any], ...]:
             )
             or not isinstance(consumers, list)
             or any(_safe_path(consumer) is None for consumer in consumers)
-            or row.get("artifact_id") is not None
-            and (
-                not isinstance(row.get("artifact_id"), str)
-                or not row.get("artifact_id")
+            or (
+                row.get("artifact_id") is not None
+                and (
+                    not isinstance(row.get("artifact_id"), str)
+                    or not row.get("artifact_id")
+                )
             )
             or row.get("status") not in {"planned", "completed"}
         ):

@@ -7,7 +7,6 @@ import pathlib
 import re
 import stat
 
-
 _PROC_FD_ROOT = re.compile(r"/proc/self/fd/(0|[1-9][0-9]*)")
 
 

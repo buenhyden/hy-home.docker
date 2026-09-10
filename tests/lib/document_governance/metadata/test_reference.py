@@ -14,7 +14,6 @@ from scripts.lib.document_governance import archive as archive_authority
 from scripts.lib.document_governance.lifecycle.recovery import (
     run as run_recovery,
 )
-
 from scripts.lib.document_governance.metadata import reference as reference_module
 from scripts.lib.document_governance.metadata.heading import (
     extract_markdown_headings,

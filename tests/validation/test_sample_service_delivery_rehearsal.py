@@ -3,19 +3,18 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import stat
 import subprocess
 import tempfile
 import textwrap
 import unittest
+from pathlib import Path
 
 from tests.validation._sample_delivery_fixtures import (
     verdict_variant,
     write_verdict_variant,
 )
-
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/operations/rehearse-sample-service-delivery.sh"
@@ -869,7 +868,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             )
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         self.assertEqual(2, len(calls))
-        for reference, call in zip((baseline_ref, candidate_ref), calls):
+        for reference, call in zip((baseline_ref, candidate_ref), calls, strict=False):
             self.assertTrue(call.startswith("docker image inspect --format "), call)
             self.assertTrue(call.endswith(reference), call)
 

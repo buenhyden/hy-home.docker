@@ -13,7 +13,6 @@ import tempfile
 import unittest
 from unittest import mock
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 CLI = ROOT / "scripts/validation/check-document-links.py"
 METADATA_CLI = ROOT / "scripts/validation/check-document-metadata.py"
@@ -1025,10 +1024,10 @@ class DocumentLinksCliTests(unittest.TestCase):
         )
 
     def test_active_publications_do_not_instruct_deleted_shell_validators(self) -> None:
-        from scripts.lib.document_governance.frontmatter import read_frontmatter_values
         from scripts.lib.agent_governance.agent_governance_contract import (
             current_markdown_authority,
         )
+        from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 
         candidates = [ROOT / "README.md"]
         for root in (

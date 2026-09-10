@@ -14,7 +14,12 @@ from unittest import mock
 
 import yaml
 
-from scripts.lib.document_governance.lifecycle import public as public_module
+# Imported for its side effect and as the script manifest's evidence that this
+# test covers that module. The entrypoint re-exports its names, so the module
+# must be loaded before those attributes resolve. Not dead code.
+from scripts.lib.document_governance.lifecycle import (
+    public as public_module,  # noqa: F401
+)
 from tests.validation.lifecycle._support import (
     REGISTRY,
     ROOT,

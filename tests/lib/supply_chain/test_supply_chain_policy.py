@@ -6,17 +6,13 @@ import hashlib
 import importlib.util
 import io
 import json
-import os
 import pathlib
-import shlex
 import stat
-import subprocess
 import tarfile
 import tempfile
 import unittest
 from unittest import mock
 
-from tests.lib.gate.subprocess_support import gate_root_pass_fds
 from tests.lib.supply_chain._fixtures import (
     cosign_verification,
     cyclonedx_report,
@@ -25,7 +21,6 @@ from tests.lib.supply_chain._fixtures import (
     provenance_statement,
     scorecard_report,
 )
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 CHECKER_PATH = ROOT / "scripts/validation/check-supply-chain-policy.py"
@@ -715,10 +710,8 @@ class SupplyChainPolicyTests(unittest.TestCase):
                 source, mutation="oversized-layer"
             )
             original = getattr(self.checker, "OCI_LAYER_MAX_UNCOMPRESSED_BYTES", None)
-            setattr(
-                self.checker,
-                "OCI_LAYER_MAX_UNCOMPRESSED_BYTES",
-                int(expected["layer_uncompressed_size"]) - 1,
+            self.checker.OCI_LAYER_MAX_UNCOMPRESSED_BYTES = (
+                int(expected["layer_uncompressed_size"]) - 1
             )
             try:
                 with self.assertRaisesRegex(

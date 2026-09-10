@@ -7,11 +7,14 @@ import argparse
 import pathlib
 import sys
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from scripts.lib.document_governance.frontmatter import (  # noqa: E402
+    FrontmatterError,
+    parse_frontmatter_text,
+)
 from scripts.lib.document_governance.links import (  # noqa: E402
     MODE_HANDLERS,
     archive_direct_link_total,
@@ -19,10 +22,6 @@ from scripts.lib.document_governance.links import (  # noqa: E402
     removed_template_mention_total,
     run_mode,
     traceability_pair_total,
-)
-from scripts.lib.document_governance.frontmatter import (  # noqa: E402
-    FrontmatterError,
-    parse_frontmatter_text,
 )
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
@@ -35,7 +34,6 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     declares_frozen_legacy_status,
     load_registry,
 )
-
 
 DOC_ROOT = pathlib.Path("docs")
 # The graph reads every tracked Markdown document plus the LLM entry point.

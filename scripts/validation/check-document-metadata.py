@@ -6,14 +6,14 @@ from __future__ import annotations
 import pathlib
 import sys
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.lib.document_governance import metadata_contract as _contract  # noqa: E402
-from scripts.lib.document_governance import metadata_validator as _validator  # noqa: E402
-
+from scripts.lib.document_governance import (  # noqa: E402
+    metadata_validator as _validator,
+)
 
 DEFAULT_REGISTRY = _contract.DEFAULT_REGISTRY
 main = _validator.main

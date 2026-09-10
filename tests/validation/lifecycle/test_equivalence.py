@@ -10,7 +10,6 @@ from unittest import mock
 from scripts.lib.document_governance.lifecycle.contract import Finding
 from tests.validation.lifecycle._support import lifecycle
 
-
 SPEC_FINDING = Finding("docs/03.specs/0000-fixture/spec.md", "spec-sentinel", "x")
 PROMOTED_FINDING = Finding("docs/98.archive/fixture.md", "promoted-sentinel", "x")
 RECOVERY_FINDING = Finding("docs/98.archive/tombstones/f.md", "recovery-sentinel", "x")
@@ -63,7 +62,7 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
 
     def test_default_route_is_the_only_lifecycle_cli_shape(self) -> None:
         self.assertFalse(
-            hasattr(lifecycle, "MODES") and getattr(lifecycle, "MODES"),
+            hasattr(lifecycle, "MODES") and lifecycle.MODES,
             "the lifecycle CLI must expose no mode inventory",
         )
         parser = lifecycle._parser()

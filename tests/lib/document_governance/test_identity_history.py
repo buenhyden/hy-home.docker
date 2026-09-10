@@ -231,6 +231,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 cwd=root,
                 text=True,
                 capture_output=True,
+                check=False,
             )
             self.assertEqual(1, merge.returncode)
             write_registry(issued + 1)
@@ -278,6 +279,7 @@ class IdentityHistoryTests(unittest.TestCase):
                 cwd=root,
                 text=True,
                 capture_output=True,
+                check=False,
             )
             self.assertEqual(1, merge.returncode)
             conflicting.unlink()

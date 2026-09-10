@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import importlib.util
 import contextlib
+import importlib.util
 import io
 import os
 import pathlib
@@ -1260,7 +1260,7 @@ class AgentOutputEvalFixtureTests(unittest.TestCase):
         self.assertEqual(1_048_576, evaluator.MAX_SENSITIVE_LINE_BYTES)
         self.assertFalse(
             evaluator._contains_sensitive_assignment(
-                ("ordinary guidance\n" * evaluator.MAX_SENSITIVE_SCAN_LINES)
+                "ordinary guidance\n" * evaluator.MAX_SENSITIVE_SCAN_LINES
             )
         )
         self.assertTrue(

@@ -1,26 +1,25 @@
 from __future__ import annotations
 
-from collections import Counter
-from datetime import date
 import hashlib
 import io
 import json
-from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import tarfile
 import unittest
+from collections import Counter
+from datetime import date
+from pathlib import Path, PurePosixPath
 
 import yaml
 
-from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.archive import (
     APPROVED_MIGRATION_COMMIT,
     _migration_document,
 )
+from scripts.lib.document_governance.frontmatter import read_frontmatter_values
 from scripts.lib.document_governance.git_provenance import HistoricalDocument
 from scripts.lib.document_governance.links import parse_local_markdown_links
-
 
 ROOT = Path(__file__).resolve().parents[2]
 ADR = (

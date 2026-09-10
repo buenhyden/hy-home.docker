@@ -5,35 +5,35 @@ from __future__ import annotations
 
 import argparse
 import ast
-from dataclasses import dataclass
 import hashlib
 import os
-from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
-from typing import Any, Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
+from typing import Any
 
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from scripts.lib.gate.ci_gate_contract import (  # noqa: E402
-    ManifestContractError,
-    load_manifest_document,
-)
-from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E402
+from scripts.lib.agent_governance.agent_governance_contract import (
     ContractLoadError,
     canonical_source_paths,
     read_repository_text,
 )
-from scripts.lib.document_governance.git_provenance import (  # noqa: E402
+from scripts.lib.document_governance.git_provenance import (
     _run_git as run_bounded_git,
 )
-from scripts.lib.document_governance.registry import (  # noqa: E402
+from scripts.lib.document_governance.registry import (
     classify_path,
     load_registry,
 )
-
+from scripts.lib.gate.ci_gate_contract import (
+    ManifestContractError,
+    load_manifest_document,
+)
 
 REQUIRED_FIELDS = frozenset(
     {
@@ -668,10 +668,8 @@ def _python_proves_use(text: str, target: str) -> bool:
             and len(node.args) == 1
             and not node.keywords
             and (
-                isinstance(node.func, ast.Name)
-                and node.func.id in {"Path", "str"}
-                or isinstance(node.func, ast.Attribute)
-                and node.func.attr == "Path"
+                (isinstance(node.func, ast.Name) and node.func.id in {"Path", "str"})
+                or (isinstance(node.func, ast.Attribute) and node.func.attr == "Path")
             )
         ):
             return static_path(node.args[0])
@@ -715,9 +713,12 @@ def _python_proves_use(text: str, target: str) -> bool:
     def contains_exact_target(node: ast.AST, names: set[tuple[ast.AST, str]]) -> bool:
         return any(
             static_path(child) == target
-            or isinstance(child, ast.Name)
-            and (
-                (node_scopes[id(child)], child.id) in names or (tree, child.id) in names
+            or (
+                isinstance(child, ast.Name)
+                and (
+                    (node_scopes[id(child)], child.id) in names
+                    or (tree, child.id) in names
+                )
             )
             for child in ast.walk(node)
         )
@@ -758,20 +759,24 @@ def _python_proves_use(text: str, target: str) -> bool:
         return any(
             isinstance(call, ast.Call)
             and (
-                isinstance(call.func, ast.Name)
-                and visible(subprocess_calls, node_scopes[id(call)], call.func.id)
-                or isinstance(call.func, ast.Attribute)
-                and call.func.attr in invocation_names
-                and (
-                    visible(
-                        subprocess_modules,
-                        node_scopes[id(call)],
-                        attribute_root(call.func),
-                    )
-                    or visible(
-                        runpy_modules,
-                        node_scopes[id(call)],
-                        attribute_root(call.func),
+                (
+                    isinstance(call.func, ast.Name)
+                    and visible(subprocess_calls, node_scopes[id(call)], call.func.id)
+                )
+                or (
+                    isinstance(call.func, ast.Attribute)
+                    and call.func.attr in invocation_names
+                    and (
+                        visible(
+                            subprocess_modules,
+                            node_scopes[id(call)],
+                            attribute_root(call.func),
+                        )
+                        or visible(
+                            runpy_modules,
+                            node_scopes[id(call)],
+                            attribute_root(call.func),
+                        )
                     )
                 )
             )
@@ -812,13 +817,17 @@ def _python_proves_use(text: str, target: str) -> bool:
         ):
             return True
         if target_argument and (
-            isinstance(node.func, ast.Name)
-            and visible(subprocess_calls, scope, node.func.id)
-            or isinstance(node.func, ast.Attribute)
-            and call_name in invocation_names
-            and (
-                visible(subprocess_modules, scope, root_name)
-                or visible(runpy_modules, scope, root_name)
+            (
+                isinstance(node.func, ast.Name)
+                and visible(subprocess_calls, scope, node.func.id)
+            )
+            or (
+                isinstance(node.func, ast.Attribute)
+                and call_name in invocation_names
+                and (
+                    visible(subprocess_modules, scope, root_name)
+                    or visible(runpy_modules, scope, root_name)
+                )
             )
         ):
             return True
@@ -826,11 +835,15 @@ def _python_proves_use(text: str, target: str) -> bool:
             len(node.args) >= 2
             and contains_exact_target(node.args[1], target_names)
             and (
-                isinstance(node.func, ast.Name)
-                and visible(spec_calls, scope, node.func.id)
-                or isinstance(node.func, ast.Attribute)
-                and call_name == "spec_from_file_location"
-                and visible(importlib_modules, scope, root_name)
+                (
+                    isinstance(node.func, ast.Name)
+                    and visible(spec_calls, scope, node.func.id)
+                )
+                or (
+                    isinstance(node.func, ast.Attribute)
+                    and call_name == "spec_from_file_location"
+                    and visible(importlib_modules, scope, root_name)
+                )
             )
         ):
             return True

@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import pathlib
 
-from scripts.lib.document_governance.spec_packages import (
-    SpecPackageError,
-    load_spec_packages,
-    validate_repository_spec_package_lifecycle,
-)
 from scripts.lib.document_governance.lifecycle.contract import (
     Finding,
     _finding,
     metadata,
+)
+from scripts.lib.document_governance.spec_packages import (
+    SpecPackageError,
+    load_spec_packages,
+    validate_repository_spec_package_lifecycle,
 )
 
 

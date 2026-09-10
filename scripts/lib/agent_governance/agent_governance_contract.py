@@ -16,7 +16,6 @@ from types import MappingProxyType
 
 import yaml
 
-
 GOVERNANCE = pathlib.PurePosixPath(".agents")
 PROVIDERS = GOVERNANCE / "governance/providers"
 REGISTRY = PROVIDERS / "registry.yaml"
@@ -1249,7 +1248,7 @@ def _canonical_source_paths(
         raise ContractLoadError("AGC-CANONICAL-SOURCES")
     paths = tuple(_safe_relative(value) for value in values)
     if len(paths) != len(set(paths)) or any(
-        path.as_posix() != value for path, value in zip(paths, values)
+        path.as_posix() != value for path, value in zip(paths, values, strict=False)
     ):
         raise ContractLoadError("AGC-CANONICAL-SOURCES")
     required = {

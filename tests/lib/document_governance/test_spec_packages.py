@@ -19,7 +19,6 @@ from unittest import mock
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
 from scripts.lib.document_governance.registry import load_registry
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 

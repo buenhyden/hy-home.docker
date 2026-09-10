@@ -17,7 +17,6 @@ from tests.lib.ops._support import (
     ROOT,
 )
 
-
 LIBRARY = ROOT / "scripts/lib/ops/compose-core-readiness.sh"
 
 

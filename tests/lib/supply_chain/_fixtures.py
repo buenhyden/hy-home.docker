@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 SUBJECT_DIGEST = "sha256:" + "c" * 64
 ARCHIVE_DIGEST = "sha256:" + "d" * 64
 BUILD_CONTEXT_DIGEST = "sha256:" + "e" * 64

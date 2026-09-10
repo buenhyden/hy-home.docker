@@ -12,7 +12,6 @@ from unittest import mock
 
 from scripts.lib.gate import ci_gate_contract as contract
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
@@ -539,19 +538,20 @@ class CiGateContractTests(unittest.TestCase):
                 )
 
         depth = 1500
-        deep_nodes = tuple(
-            aggregate(
-                f"aggregate.deep-{index}",
-                (
+        deep_nodes = (
+            *tuple(
+                aggregate(
+                    f"aggregate.deep-{index}",
                     (
                         f"aggregate.deep-{index + 1}"
                         if index + 1 < depth
-                        else "leaf.deep"
+                        else "leaf.deep",
                     ),
-                ),
-            )
-            for index in range(depth)
-        ) + (leaf("leaf.deep", "deep"),)
+                )
+                for index in range(depth)
+            ),
+            leaf("leaf.deep", "deep"),
+        )
         deep_registry = contract.GateRegistry(
             deep_nodes,
             ("aggregate.deep-0",),

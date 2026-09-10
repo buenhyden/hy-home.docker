@@ -9,7 +9,6 @@ import subprocess
 import tempfile
 import unittest
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 HELPER_PATH = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 HARNESS_PATH = ROOT / "scripts/security/seed-grype-db-cache.sh"
@@ -506,6 +505,7 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
                     str(candidate),
                 ],
                 capture_output=True,
+                check=False,
             )
             self.assertEqual(0, result.returncode)
             result = subprocess.run(
@@ -516,6 +516,7 @@ class NetworkApprovalSurfaceTests(unittest.TestCase):
                     str(self.APPROVALS),
                 ],
                 capture_output=True,
+                check=False,
             )
             self.assertEqual(
                 1, result.returncode, "the tracked surface must grant nothing"

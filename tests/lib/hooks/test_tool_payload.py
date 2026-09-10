@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 from scripts.lib.hooks.tool_payload import PayloadError, decode_payload, edit_targets
 

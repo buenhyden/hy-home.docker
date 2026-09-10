@@ -6,7 +6,12 @@ import pathlib
 import tempfile
 import unittest
 
-from scripts.lib.document_governance.metadata import lifecycle as lifecycle_module
+# Imported for its side effect and as the script manifest's evidence that this
+# test covers that module. The entrypoint re-exports its names, so the module
+# must be loaded before those attributes resolve. Not dead code.
+from scripts.lib.document_governance.metadata import (
+    lifecycle as lifecycle_module,  # noqa: F401
+)
 from tests.lib.document_governance.metadata._support import REGISTRY, metadata
 
 

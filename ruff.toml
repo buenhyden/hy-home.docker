@@ -18,3 +18,54 @@ extend-exclude = ["graphify-out"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
+
+# Python lint authority for this repository.
+#
+# Until this section existed `ruff format` ran alone and `ruff check` reported
+# findings under a rule set nobody had adopted, so a linter result was never
+# actionable. The selection below was measured rather than chosen by taste.
+#
+# Selecting `PL` whole added 143 magic-value, 108 import-outside-top-level, 84
+# too-many-branches and 58 too-many-statements findings. Those are complexity
+# opinions that would force restructuring of working code, so only `PLW1510`
+# survives from that family: a `subprocess.run` without `check` silently
+# ignores a failed command, which is a correctness rule.
+#
+# `RUF001`/`RUF002`/`RUF003` are ignored because this repository documents in
+# Korean and those rules fire on legitimate Hangul and punctuation.
+#
+# What is deliberately not selected: `SIM`, `BLE`, `TRY`, `ISC`, `FLY`, `DTZ`
+# and `PIE`. `BLE001` and `TRY004` in particular disagree with the fail-closed
+# exception handling the validators rely on, and adopting them would be a
+# behavioral change rather than a lint adoption.
+
+[lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP", "RUF", "PLW1510"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+# Two modules re-export names they never call, so `F401` reads their public
+# surface as dead code. Removing those imports was measured, not assumed: it
+# left `document_corpus_lifecycle` without `render_migration_manifest`,
+# `ManifestEvidence` and nine more attributes that registered tests reach
+# through the entrypoint, and it broke the symmetry of the `try` / `except
+# ModuleNotFoundError` pair that lets a gate leaf run as a sibling script.
+[lint.per-file-ignores]
+"scripts/validation/check-document-corpus-lifecycle.py" = ["F401"]
+"scripts/lib/gate/github_workflow_contract.py" = ["F401"]
+
+# `B023` fires 59 times and every one is in a test, none in `scripts/` or
+# `evals/`. Each is the same shape: a closure built inside a `subTest` loop and
+# consumed within that same iteration, which is the benign case the rule cannot
+# distinguish from the harmful one. Binding each loop variable would change the
+# signature of nested helpers in nine files to no behavioural effect, so the
+# rule is suppressed where it only reports that shape and stays active over
+# production code, where an escaping closure would be a real defect.
+"tests/lib/document_governance/metadata/test_heading.py" = ["B023"]  # 2 occurrences
+"tests/lib/document_governance/test_references.py" = ["B023"]  # 5 occurrences
+"tests/lib/document_governance/test_registry.py" = ["B023"]  # 3 occurrences
+"tests/lib/document_governance/test_spec_packages.py" = ["B023"]  # 9 occurrences
+"tests/lib/gate/test_ci_gate_adapters.py" = ["B023"]  # 6 occurrences
+"tests/validation/test_ci_gate_execution_context.py" = ["B023"]  # 29 occurrences
+"tests/validation/test_ci_gate_plan.py" = ["B023"]  # 1 occurrences
+"tests/validation/test_provider_surface_renderer.py" = ["B023"]  # 2 occurrences
+"tests/validation/test_sample_service_delivery_rehearsal.py" = ["B023"]  # 2 occurrences

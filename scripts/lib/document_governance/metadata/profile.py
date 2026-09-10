@@ -48,20 +48,23 @@ from scripts.lib.agent_governance.agent_governance_contract import (  # noqa: E4
 )
 from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     parse_frontmatter_text as _parse_frontmatter_text,
+)
+from scripts.lib.document_governance.frontmatter import (  # noqa: E402
     read_frontmatter_values,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
     DEFAULT_REGISTRY,
     DocumentRegistry,
     RegistryError,
-    classify_path as classify_registered_path,
     load_registry,
     normalize_profile_frontmatter,
+)
+from scripts.lib.document_governance.registry import (  # noqa: E402
+    classify_path as classify_registered_path,
 )
 from scripts.lib.document_governance.taxonomy import (  # noqa: E402
     requirement_package_identity,
 )
-
 
 # Retain the validator's established public parser name while keeping the
 # shared implementation imported under its canonical library name.
@@ -1310,7 +1313,7 @@ def _target_glob_intersection_witness(left: str, right: str) -> str | None:
                 left_parts[left_index], right_parts[right_index]
             )
         if segment is not None:
-            queue.append((next_left, next_right, witness + (segment,)))
+            queue.append((next_left, next_right, (*witness, segment)))
     return None
 
 

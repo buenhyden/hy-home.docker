@@ -5,19 +5,18 @@ import json
 import os
 import pathlib
 import re
-import stat
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 import tomllib
 import unittest
-from unittest import mock
 from dataclasses import replace
 from types import SimpleNamespace
+from unittest import mock
 
 import yaml
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 RENDERER = ROOT / "scripts/operations/provider_surface_renderer.py"
@@ -82,8 +81,8 @@ def _copy_registered_file(
 
 def copy_fixture(root: pathlib.Path) -> None:
     from scripts.lib.agent_governance.agent_governance_contract import (
-        validate_canonical_agent_home,
         canonical_source_paths,
+        validate_canonical_agent_home,
     )
 
     findings = validate_canonical_agent_home(ROOT)
@@ -318,7 +317,8 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             copy_fixture(root)
-            protected = list((root / ".agents").rglob("*")) + [
+            protected = [
+                *list((root / ".agents").rglob("*")),
                 root / ".claude/provider.md",
                 root / ".codex/provider.md",
                 root / ".claude/settings.json",
@@ -578,7 +578,7 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
                 path = root / ".agents" / relative
                 text = path.read_text(encoding="utf-8")
                 if original is None:
-                    prefix, frontmatter, body = text.split("---", 2)
+                    _prefix, frontmatter, body = text.split("---", 2)
                     values = yaml.safe_load(frontmatter)
                     values["description"] = "Canonical x: injected procedure"
                     text = (

@@ -12,7 +12,6 @@ import threading
 import time
 from collections.abc import Iterable
 
-
 _OBJECT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 _RECOVERY_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 _GIT_TIMEOUT_SECONDS = 15

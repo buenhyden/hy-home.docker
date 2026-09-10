@@ -22,13 +22,14 @@ from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text,
 )
 from scripts.lib.document_governance.registry import (
-    document_type,
     RegistryError,
+    document_type,
     load_registry_document,
     path_matches_pattern,
+)
+from scripts.lib.document_governance.registry import (
     validate_registry as validate_canonical_registry,
 )
-
 
 REGISTRY_PATH = pathlib.PurePosixPath("docs/99.templates/registry.json")
 OPERATIONS_ROOT = pathlib.PurePosixPath("docs/05.operations")

@@ -7,6 +7,7 @@ import collections
 import collections.abc
 import dataclasses
 import hashlib
+import itertools
 import os
 import pathlib
 import re
@@ -17,7 +18,6 @@ import sys
 from typing import Any
 
 import yaml
-
 
 _ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
 
@@ -51,11 +51,11 @@ _VALIDATION_DIRECTORY = str(ROOT / "scripts/validation")
 if _VALIDATION_DIRECTORY not in sys.path:
     sys.path.insert(0, _VALIDATION_DIRECTORY)
 
+from scripts.lib.document_governance import metadata_contract  # noqa: E402
 from scripts.lib.document_governance.git_provenance import (  # noqa: E402
     HistoricalDocument,
     resolve_git_provenance,
 )
-from scripts.lib.document_governance import metadata_contract  # noqa: E402
 
 DEFAULT_PROFILES = ROOT / "docs/99.templates/registry.json"
 HISTORICAL_CONTRACT = HistoricalDocument(
@@ -1935,7 +1935,7 @@ def _surface_rollback_valid(root: pathlib.Path, commands: tuple[str, ...]) -> bo
             for commit in commits
         ):
             return False
-        for newer, older in zip(commits, commits[1:]):
+        for newer, older in itertools.pairwise(commits):
             order = _run_git(root, ["merge-base", "--is-ancestor", older, newer])
             if order.returncode != 0:
                 return False

@@ -12,17 +12,15 @@ import subprocess
 import time
 from collections.abc import Mapping, Sequence
 
-
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
 from scripts.lib.document_governance.registry import (
-    document_type,
     DocumentRegistry,
+    document_type,
     load_registry,
 )
-
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
 MAX_SPEC_PACKAGES = 256

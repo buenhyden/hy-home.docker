@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path, PurePosixPath
 import stat
+from pathlib import Path, PurePosixPath
 
 EDIT_TOOLS = frozenset({"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"})
 MAX_PAYLOAD_BYTES = 1024 * 1024

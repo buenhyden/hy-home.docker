@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
-
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON_ENTRYPOINTS = (

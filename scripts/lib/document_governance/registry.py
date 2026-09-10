@@ -18,10 +18,10 @@ from types import MappingProxyType
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
+
 from scripts.lib.document_governance.taxonomy import (
     registered_path_patterns_overlap as _path_patterns_overlap,
 )
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 DEFAULT_REGISTRY = ROOT / "docs/99.templates/registry.json"
@@ -91,7 +91,7 @@ class IdentitySpace:
     next_number: int
     current_issued: tuple[int, ...]
     reserved_history: tuple[int, ...]
-    child_spaces: Mapping[str, "IdentitySpace"]
+    child_spaces: Mapping[str, IdentitySpace]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -728,8 +728,10 @@ def validate_registry(
             if (
                 not isinstance(required_frontmatter, list)
                 or "type" not in required_frontmatter
-                or isinstance(optional_frontmatter, list)
-                and "type" in optional_frontmatter
+                or (
+                    isinstance(optional_frontmatter, list)
+                    and "type" in optional_frontmatter
+                )
             ):
                 findings.append(
                     RegistryFinding(

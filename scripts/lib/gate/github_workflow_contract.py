@@ -1657,7 +1657,7 @@ def validate_workflows(
                     "Action consumers differ from the registry",
                 )
             )
-    for identity in sorted(set(action_consumers) - set(registry)):
+    for _identity in sorted(set(action_consumers) - set(registry)):
         findings.append(
             _finding(
                 "action-unregistered",

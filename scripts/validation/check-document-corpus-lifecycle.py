@@ -10,13 +10,12 @@ import sys
 
 import yaml
 
-
 _BOOTSTRAP_DIRECTORY = str(pathlib.Path(__file__).resolve().parents[2])
 if _BOOTSTRAP_DIRECTORY not in sys.path:
     sys.path.insert(0, _BOOTSTRAP_DIRECTORY)
 
 
-from scripts.lib.document_governance.lifecycle.contract import (
+from scripts.lib.document_governance.lifecycle.contract import (  # noqa: E402
     DEFAULT_CONTRACT,
     DEFAULT_PROFILES,
     HISTORICAL_CONTRACT,
@@ -40,13 +39,15 @@ from scripts.lib.document_governance.lifecycle.contract import (
     metadata,
     render_migration_manifest,
 )
-from scripts.lib.document_governance.lifecycle.promoted import (
+from scripts.lib.document_governance.lifecycle.promoted import (  # noqa: E402
     _historical_promoted_findings,
 )
-from scripts.lib.document_governance.lifecycle.public import (
+from scripts.lib.document_governance.lifecycle.public import (  # noqa: E402
     _spec_package_lifecycle_findings,
 )
-from scripts.lib.document_governance.lifecycle.recovery import run as run_recovery
+from scripts.lib.document_governance.lifecycle.recovery import (  # noqa: E402
+    run as run_recovery,
+)
 
 
 def _is_safety_finding(finding: Finding) -> bool:

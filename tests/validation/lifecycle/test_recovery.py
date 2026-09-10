@@ -7,7 +7,13 @@ import tempfile
 import unittest
 
 from scripts.lib.document_governance.git_provenance import HistoricalDocument
-from scripts.lib.document_governance.lifecycle import recovery as recovery_module
+
+# Imported for its side effect and as the script manifest's evidence that this
+# test covers that module. The entrypoint re-exports its names, so the module
+# must be loaded before those attributes resolve. Not dead code.
+from scripts.lib.document_governance.lifecycle import (
+    recovery as recovery_module,  # noqa: F401
+)
 from tests.validation.lifecycle._support import commit_all, init_repo
 
 

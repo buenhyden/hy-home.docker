@@ -18,9 +18,8 @@ import stat
 import subprocess
 import sys
 import tarfile
-from typing import Any
 import zlib
-
+from typing import Any
 
 _ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
 
@@ -1035,7 +1034,7 @@ def validate_tool_registry(registry: Any) -> list[str]:
         errors.append("tool-registry-effective-date-invalid")
     tools = registry.get("tools")
     if not isinstance(tools, list) or len(tools) != len(TOOL_PINS):
-        return sorted(set(errors + ["tool-registry-tool-set-invalid"]))
+        return sorted(set([*errors, "tool-registry-tool-set-invalid"]))
     by_name = {row.get("name"): row for row in tools if isinstance(row, dict)}
     if set(by_name) != set(TOOL_PINS):
         errors.append("tool-registry-tool-set-invalid")
@@ -2206,11 +2205,11 @@ def validate_provenance_subject(provenance: Any, subject: Any) -> list[str]:
         errors.append("provenance-archive-subject-mismatch")
     predicate = provenance.get("predicate")
     if not isinstance(predicate, dict):
-        return sorted(set(errors + ["provenance-predicate-invalid"]))
+        return sorted(set([*errors, "provenance-predicate-invalid"]))
     build_definition = predicate.get("buildDefinition")
     run_details = predicate.get("runDetails")
     if not isinstance(build_definition, dict) or not isinstance(run_details, dict):
-        return sorted(set(errors + ["provenance-build-definition-invalid"]))
+        return sorted(set([*errors, "provenance-build-definition-invalid"]))
     params = build_definition.get("externalParameters")
     dependencies = build_definition.get("resolvedDependencies")
     builder = run_details.get("builder")

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 from tests.validation.test_hook_rules import copy_dispatcher_fixture
 

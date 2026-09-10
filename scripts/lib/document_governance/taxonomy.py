@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import PurePosixPath
-import re
-
 
 _YEAR_PART_PATTERN = re.compile(r"[0-9]{4}")
 _DATE_PREFIX_PATTERN = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}-")
@@ -157,7 +156,9 @@ def registered_path_patterns_overlap(left: str, right: str) -> bool:
     right_segments = right.split("/")
     return len(left_segments) == len(right_segments) and all(
         _segment_patterns_overlap(left_segment, right_segment)
-        for left_segment, right_segment in zip(left_segments, right_segments)
+        for left_segment, right_segment in zip(
+            left_segments, right_segments, strict=False
+        )
     )
 
 

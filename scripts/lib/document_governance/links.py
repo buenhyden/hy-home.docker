@@ -19,7 +19,6 @@ from scripts.lib.document_governance.operations_catalog import (
     read_bounded_regular,
 )
 
-
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
@@ -63,7 +62,6 @@ _ROOT_FILES = frozenset(
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
-        "AGENTS.md",
         "RTK.md",
         "docker-compose.yml",
         "llms.txt",
@@ -485,7 +483,7 @@ def _finding(link: DocumentLink, code: str, message: str) -> LinkFinding:
 
 
 def _document_profile(
-    nodes: dict[pathlib.PurePosixPath, "DocumentNode"],
+    nodes: dict[pathlib.PurePosixPath, DocumentNode],
     source: pathlib.PurePosixPath,
 ) -> str:
     """Return the source document's declared `type`, or an empty string."""

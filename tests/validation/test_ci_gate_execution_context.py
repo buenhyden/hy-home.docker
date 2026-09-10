@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import errno
-import io
 import os
 import pathlib
 import re
@@ -17,10 +16,8 @@ import traceback
 import unittest
 from unittest import mock
 
-import yaml
-
-from scripts.lib.gate import ci_gate_contract as contract
 from scripts.lib.gate import ci_gate_adapters as adapters
+from scripts.lib.gate import ci_gate_contract as contract
 from scripts.validation import ci_gate_runner as runner
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -1191,16 +1188,16 @@ class DescriptorExecutionTests(unittest.TestCase):
             ) -> object:
                 result = original(state, *args, **kwargs)
                 if event_name == "process-bound":
-                    self.assertIs(getattr(state, "process"), process)
+                    self.assertIs(state.process, process)
                 elif event_name == "pidfd-acquired":
-                    self.assertTrue(getattr(state, "pidfd_acquired"))
-                    self.assertEqual(91, getattr(state, "pidfd"))
+                    self.assertTrue(state.pidfd_acquired)
+                    self.assertEqual(91, state.pidfd)
                 elif event_name == "group-finalized":
-                    self.assertTrue(getattr(state, "group_finalized"))
+                    self.assertTrue(state.group_finalized)
                 elif event_name == "reap-started":
-                    self.assertTrue(getattr(state, "reap_started"))
+                    self.assertTrue(state.reap_started)
                 else:
-                    self.assertTrue(getattr(state, "pidfd_close_attempted"))
+                    self.assertTrue(state.pidfd_close_attempted)
                 trace.append((event_name, True))
                 if transition_for_phase == event_name:
                     raise interruption
@@ -1424,12 +1421,12 @@ class DescriptorExecutionTests(unittest.TestCase):
             ) -> object:
                 result = original(state, *args, **kwargs)
                 if event_name == "recovery-kill-completed":
-                    self.assertTrue(getattr(state, "recovery_kill_completed"))
+                    self.assertTrue(state.recovery_kill_completed)
                 elif event_name == "recovery-readiness-completed":
-                    self.assertTrue(getattr(state, "recovery_readiness_completed"))
-                    self.assertTrue(getattr(state, "recovery_leader_ready"))
+                    self.assertTrue(state.recovery_readiness_completed)
+                    self.assertTrue(state.recovery_leader_ready)
                 else:
-                    self.assertTrue(getattr(state, "reap_completed"))
+                    self.assertTrue(state.reap_completed)
                 trace.append((event_name, True))
                 if transition_for_phase == event_name:
                     raise interruption

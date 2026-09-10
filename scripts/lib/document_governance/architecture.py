@@ -14,12 +14,11 @@ from scripts.lib.document_governance.frontmatter import (
     frontmatter_record_from_text,
 )
 from scripts.lib.document_governance.registry import (
-    document_type,
     DocumentRegistry,
+    document_type,
     load_registry,
 )
 from scripts.lib.document_governance.taxonomy import architecture_identity
-
 
 MAX_ARCHITECTURE_BYTES = 512 * 1024
 MAX_ARCHITECTURE_DOCUMENTS = 256

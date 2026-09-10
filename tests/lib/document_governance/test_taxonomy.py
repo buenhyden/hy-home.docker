@@ -12,7 +12,6 @@ from scripts.lib.document_governance.taxonomy import (
     validate_stable_identity,
 )
 
-
 ROOT = Path(__file__).resolve().parents[3]
 LEDGER = ROOT / "docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md"
 

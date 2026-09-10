@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-import copy
-import gzip
-import hashlib
 import importlib.util
-import io
 import json
 import os
 import pathlib
@@ -14,18 +10,8 @@ import subprocess
 import tarfile
 import tempfile
 import unittest
-from unittest import mock
 
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
-from tests.lib.supply_chain._fixtures import (
-    cosign_verification,
-    cyclonedx_report,
-    grype_match,
-    grype_report,
-    provenance_statement,
-    scorecard_report,
-)
-
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CHECKER_PATH = ROOT / "scripts/validation/check-supply-chain-policy.py"

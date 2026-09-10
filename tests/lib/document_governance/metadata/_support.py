@@ -14,7 +14,6 @@ import yaml
 
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 CHECKER = ROOT / "scripts" / "validation" / "check-document-metadata.py"
 REGISTRY = ROOT / "docs/99.templates/registry.json"

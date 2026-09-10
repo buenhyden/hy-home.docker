@@ -1,19 +1,10 @@
 from __future__ import annotations
 
-import ast
 import importlib.util
-import sys
-from copy import deepcopy
-import json
-import os
 import re
-import shutil
 import subprocess
-import tempfile
-import unittest
-from pathlib import Path, PurePosixPath
-
-import yaml
+import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 OPERATIONS_MANIFEST_PATHS = (

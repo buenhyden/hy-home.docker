@@ -45,7 +45,7 @@ class Rule:
     name: str
     event: str
     action: str
-    conditions: tuple[tuple[str, "re.Pattern[str]"], ...]
+    conditions: tuple[tuple[str, re.Pattern[str]], ...]
     message: str
 
 

@@ -10,7 +10,6 @@ import re
 import stat
 import sys
 
-
 _ROOT_ERROR = "FAIL: invalid HYHOME_CI_GATE_ROOT"
 
 

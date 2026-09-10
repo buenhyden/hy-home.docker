@@ -11,43 +11,23 @@ import stat
 import sys
 from collections.abc import Mapping, Sequence
 
-from scripts.lib.document_governance.archive import recover_legacy_parent_identities
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
     load_architecture_documents,
     load_preserved_architecture_documents,
     validate_supersession_graph,
 )
+from scripts.lib.document_governance.archive import recover_legacy_parent_identities
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
+)
+from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text as _parse_frontmatter_text,
 )
 from scripts.lib.document_governance.identity_history import (
     IdentityHistoryError,
     collect_issued_identities,
     validate_identity_history,
-)
-from scripts.lib.document_governance.registry import (
-    _declares_provider_binding,
-    document_type,
-    DocumentRegistry,
-    RegistryError,
-    classify_path as classify_registered_path,
-    load_registry,
-    load_trusted_requirement_allocation_baseline,
-    resolve_template_placeholders,
-    normalize_profile_frontmatter,
-    validate_frontmatter,
-)
-from scripts.lib.document_governance.requirements import (
-    RequirementPackageError,
-    load_requirement_packages,
-)
-from scripts.lib.document_governance.spec_packages import (
-    SpecPackageError,
-    load_spec_packages,
-    resolve_lifecycle_base,
-    validate_repository_spec_package_lifecycle,
 )
 from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
@@ -68,13 +48,13 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_repository_markdown,
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
+    _governance_moved_body_baseline,
     _legacy_exception_evidence,
     _link_target_neutral_text,
     _record_from_text,
-    _task10_archive_moved_body_baseline,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
-    _governance_moved_body_baseline,
+    _task10_archive_moved_body_baseline,
     _text_at_ref,
     collect_records,
     collect_records_at_ref,
@@ -103,6 +83,30 @@ from scripts.lib.document_governance.metadata.profile import (
     build_manifest,
     build_registry_profiles,
     registered_generated_owner,
+)
+from scripts.lib.document_governance.registry import (
+    DocumentRegistry,
+    RegistryError,
+    _declares_provider_binding,
+    document_type,
+    load_registry,
+    load_trusted_requirement_allocation_baseline,
+    normalize_profile_frontmatter,
+    resolve_template_placeholders,
+    validate_frontmatter,
+)
+from scripts.lib.document_governance.registry import (
+    classify_path as classify_registered_path,
+)
+from scripts.lib.document_governance.requirements import (
+    RequirementPackageError,
+    load_requirement_packages,
+)
+from scripts.lib.document_governance.spec_packages import (
+    SpecPackageError,
+    load_spec_packages,
+    resolve_lifecycle_base,
+    validate_repository_spec_package_lifecycle,
 )
 
 _MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)\s]+)\)")
@@ -654,7 +658,7 @@ def _identity_state(record: Record, profile: dict[str, object], codes: set[str])
 def _relation_state(record: Record, profile: dict[str, object], codes: set[str]) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
-    required, optional, forbidden = _profile_sets(profile)
+    required, _optional, forbidden = _profile_sets(profile)
     if "parent_ids" in forbidden:
         parent_state = "not-applicable"
         order_state = "not-applicable"
@@ -702,7 +706,7 @@ def _lifecycle_state(
 ) -> str:
     if record.parse_error:
         return "unavailable-parser-error"
-    required, optional, forbidden = _profile_sets(profile)
+    required, _optional, forbidden = _profile_sets(profile)
     if "status" in forbidden:
         return "not-applicable"
     status = record.metadata.get("status")
