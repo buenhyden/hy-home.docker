@@ -17,9 +17,8 @@ metadata:
 
 ## Preconditions
 
-Invoke this procedure explicitly. Invocation does not select a role or grant the
-owning role's permissions. Use the already selected role's permission profile and
-approved Task scope; route to the owner when incompatible.
+Explicit invocation only, under the
+[agent execution rules](../../governance/agentic.md#execution-rules).
 
 The provider/model question, official source boundary, repository work profile,
 and synthetic comparison fixture must be explicit before evaluation begins.

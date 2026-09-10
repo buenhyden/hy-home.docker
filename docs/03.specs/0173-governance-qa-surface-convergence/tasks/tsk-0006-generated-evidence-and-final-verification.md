@@ -48,6 +48,79 @@ elsewhere.
 
 ## Work Log
 
+### W33 Prompt routing stops holding a second skill inventory (2026-09-10)
+
+Audit finding 3 read as a coverage gap: seven of 23 skills had a keyword route
+in `scripts/hooks/agent-event-hook.sh`, so sixteen were reachable only by name.
+Adding sixteen entries would have tripled the actual defect. Each entry carried
+a `label`, a `path` and a Korean `desc`, which is the canonical skill identity
+copied into a hand-maintained table, and the copies had already drifted: the
+routing summary for `policy-gate-agent` described what it does, while its own
+`description` states when to use it.
+
+Routing now owns keywords and nothing else. The skill id derives the path, and
+the summary is read back from the matched skill's own frontmatter at match time,
+so a route cannot disagree with the procedure it points at. Reading is confined
+to matched routes, leaving the cost of an unmatched prompt unchanged at zero
+file reads. An unreadable or description-less skill routes with its path alone
+rather than with a guess.
+
+`tests/validation/test_agent_function_routes.py` holds the corrected shape:
+every canonical skill is reachable, no route names a skill that does not exist,
+the block contains no `path`, `desc` or `label` key, every keyword is lowercase
+because the prompt is lowered before matching, and a matched route reports the
+skill's own description. Removing one route was observed to fail two of the five
+tests, so the coverage assertion is not vacuous. The suite is registered on
+`leaf.local-hook-rule-tests`, whose four modules pass together at 48 tests, and
+against the dispatcher in `scripts/manifest.yaml`.
+
+Audit finding 2 is piloted on one skill rather than applied to 23. `infra-validate`
+step 1 named five classes of check without naming what implements them, so a
+caller re-derived the registered validators every time. Its Inputs now point at
+`scripts/manifest.yaml` for the validator inventory and at the change-type
+verification matrix for which of them this change requires, without copying a
+command into a third place. Whether the remaining 22 skills want the same
+pointer is an owner decision: their uniform abstraction may be deliberate, and
+the evidence for the finding remains a single observed session.
+
+### W32 The skill invocation rule gets an owner (2026-09-10)
+
+An audit of the 14 canonical roles and 23 canonical skills measured paragraph
+duplication across the skill corpus. Of 161 distinct paragraphs only two are
+shared, so the corpus is well factored, but one of the two was shared by all 23
+skills and it was a rule rather than a reference:
+
+```text
+Invoke this procedure explicitly. Invocation does not select a role or grant
+the owning role's permissions. Use the already selected role's permission
+profile and approved Task scope; route to the owner when incompatible.
+```
+
+Its canonical owner held only a summary. `.agents/README.md` says "Discovery
+never broadens permission" inside a how-to list, so the precise rule lived in 23
+copies while the owner carried the gist. That inverts the ownership this package
+has been restoring everywhere else.
+
+`agentic.md` now owns the rule in Execution Rules, beside the delegation bullet
+that is its sibling, and each skill carries a two-line pointer instead. The
+duplication count is unchanged at two shared paragraphs, which is the point: the
+shared text is now a reference that cannot disagree with its owner rather than a
+rule that can. The first sentence was doubly redundant, because
+`agents/openai.yaml` already sets `allow_implicit_invocation: false` and the
+contract rejects any other value.
+
+No contract asserted the removed prose, the renderer reports `providers=2
+drift=0` because Claude skill adapters are pointers that never copied the body,
+and the link graph grew by 24 resolved links with zero failures.
+
+Three further audit findings are recorded but not acted on. Sixteen of the 23
+skills have no keyword route in `scripts/hooks/agent-event-hook.sh`, so they are
+only reachable by name. Twenty-two of the 23 name no executable artifact, which
+may be deliberate, since `scripts/manifest.yaml` and the gate DAG already own
+execution and copying command names into skills would recreate the duplication
+this package removes. And `hook-developer`, `skill-creator` and `drift-detector`
+declare no skill at all.
+
 ### W31 The contract now proves a leaf can start (2026-09-09)
 
 W30 reverted the removal but left the gap that allowed it. The Action registry
@@ -3636,6 +3709,8 @@ No completed archive packet or new Spec/Plan/Task was created.
 | `8cdfd3cbc` | `revert: Restore the uv setup the zizmor gate leaf needs` | W30 regression revert |
 | `fc0e1a2eb` | `docs(qa): Record the uv finding that was wrong and how it hid` | W30 correction record |
 | `4c40f1f51` | `feat(validation): Prove a gate leaf can start before the runner tries` | W31 guard, its tests and the W31 record |
+| `5cae95237` | `docs(governance): Give the skill invocation rule a canonical owner` | W32 rule owner and the 23 skill pointers |
+| `ace79c942` | `refactor(hooks): Derive prompt routes from the skills they point at` | W33 routing, its suite and the infra-validate pilot |
 
 `4c40f1f51` also carries the W31 Work Log entry, because that document stayed
 staged from an attempt `ruff format` had rejected. The subject names only the

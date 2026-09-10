@@ -17,9 +17,8 @@ metadata:
 
 ## Preconditions
 
-Invoke this procedure explicitly. Invocation does not select a role or grant the
-owning role's permissions. Use the already selected role's permission profile and
-approved Task scope; route to the owner when incompatible.
+Explicit invocation only, under the
+[agent execution rules](../../governance/agentic.md#execution-rules).
 
 An approved Plan, dependency map, acceptance criteria, and protected-surface decisions must be complete.
 
