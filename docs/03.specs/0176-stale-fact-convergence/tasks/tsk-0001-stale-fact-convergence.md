@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.15.0"
+version: "0.16.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-10"
 layer: "specs"
 artifact_id: "SPEC-0176-TSK-0001"
 parent_ids:
@@ -827,6 +827,35 @@ first: one asserts that benign churn in a traversed parent leaves identity
 unchanged while the full snapshot moves, the other that distinct directories
 still separate.
 
+### W16: The re-baseline that measured this package against a later HEAD (2026-09-10, local-executed)
+
+A repository-wide convergence request arrived on 2026-09-10 with local `main` at `82ebe9d22` and a clean worktree, asking for the governance, QA, CI/CD and commit surfaces to be investigated, converged and committed. It was written on the assumption that the convergence had not happened. Measuring this package's fourteen behavior-contract items against that HEAD showed thirteen already satisfied by W1-W15, and located the fourteenth as a sweep that reached two of the three files it needed to reach.
+
+| Contract item | Measured result at `82ebe9d22` |
+| --- | --- |
+| 1 Compose enablement wording | Zero hits for a bilingual predicate over `infra/**`, `docs/05.operations/catalog/**` and `docs/02.architecture/descriptions/**`. Recorded as a fifth predicate result and not as a promotion: this Task's Ruling on criterion 1 stands, and a fifth predicate finding nothing is exactly the weak evidence that Ruling describes |
+| 2 conditional-activation model | `infra/README.md:61` and root `README.md:95` both state unconditional include with profile selection |
+| 3 Compose counts | 41 root `include:` entries, 41 tracked Compose files, 40 service directories; every claim matches |
+| 4 retention owner chain | `REQ-0026:109` and `AD-0030:76` both state Spec, Plan and every Task |
+| 5 ADR-0031 preservation | `status: superseded` with `superseded_by: ADR-0033`, preserved under `docs/98.archive/superseded/` |
+| 6 no retroactive Plan or Task | unchanged |
+| 7 Stage 02 index | NOT satisfied; see below |
+| 8 repository map load order | `.agents/knowledge/**` and `.agents/prompts/**` appear in both the surface table and the restated order |
+| 9 knowledge provenance | each transcribed source carries its own commit |
+| 10 no dead branch as position | `codex/0173-agent-governance-home` resolves nowhere and appears in no active Spec or Plan. Its remaining occurrences are dated Work Log evidence inside SPEC-0173 `tsk-0006`, which is what a dated observation is supposed to look like |
+| 11 SPEC-0175 preserved | three bodies at `completed` under `docs/98.archive/completed/` |
+| 12 SPEC-0173 fixture sentence | `spec.md:124` reads "and the directory is absent" |
+| 13 generated outputs | `provider_surface_renderer.py --check` reported `PASS providers=2 drift=0` |
+| 14 changed profile | exit 0 in 28.37 s on a clean tree; 302 s once a Stage 02 document is in the change set, because three document suites join the fallback |
+
+Item 7 was a partial sweep. W9 corrected the parent `docs/02.architecture/README.md` by adopting the sibling `decisions/README.md` wording, and named the wording it adopted. It did not reach `docs/02.architecture/descriptions/README.md`, which kept `현재 26개의 Description을 보유한다` against a measured 25. The wording W9 chose is now in the third file, so the defect class is closed across all three rather than in two of them. Correcting 26 to 25 was available and was not taken, for the reason W9 had already recorded.
+
+Three numbers in the root README were outside every criterion. Criterion 2 verified that file's Compose counts and nothing else. The same snapshot table carried `Root Compose secret declarations | 69` against 70 top-level `secrets:` keys, `Parent-repo tracked README files | 173` against the 185 that its own note says `git ls-files '*README.md'` reports, and `secrets/ value/cert files | 94`, which matches neither the 19 tracked paths nor the 97 files on this disk. The first two are corrected and the secret row now names the source it is read from. The third row is removed rather than corrected, because `secrets/` is deliberately untracked: no check can reproduce a number there, and a number no check can reproduce is the thing this package exists to remove. A closing sentence records that rule so the row is not restored later.
+
+These three are the class the Deferred Item on enumeration and fence-integrity checks describes. They are not a regression of W1-W15, because no criterion asked for them.
+
+Nothing in this entry changes a recorded result, a status, or a criterion of this package or of SPEC-0173.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -972,6 +1001,8 @@ package's first criterion.
 | `eed5fa2f0` | W15 directory-identity guard fix |
 | `da964ba61` | W15 round-four corrections |
 | `5f912285d` | W15 round-five corrections |
+| `14554a768` | W16 Stage 02 sibling index wording |
+| `8a6c951b7` | W16 root README snapshot numbers |
 | pending | This Task record, the guard record, and the full PostgreSQL rehearsal evidence |
 
 ## Rulings

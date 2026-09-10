@@ -1,10 +1,10 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-10"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0006"
 parent_ids:
@@ -47,6 +47,16 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W38 The two examined owner decisions, measured rather than re-argued (2026-09-10, local-executed)
+
+A convergence request on 2026-09-10 reopened the two items this Task had recorded as owner decisions rather than defects. Both were measured at `82ebe9d22` on a clean worktree, and both stay as they are.
+
+The commit-time hook cost turned out not to be one number. `--profile changed` on a clean tree selects only the declared `repository-integrity` fallback and exits 0 in 28.37 s; six validator leaves account for 4.76 s of that and six regression suites, 237 tests, for 22.7 s. A change under `docs/02.architecture/` selects three document suites on top of that fallback, and the same command then takes 302 s. Two commits made in this session cost 289 s and 287 s end to end, hook included. The 29.9 s figure this Task recorded is a clean-tree measurement, so the item reads more honestly as "the hook runs the suites the change selects" than as a fixed price. Four fifths of the clean-tree cost is this repository's own regression suites, which is the part a move to `pre-push` would trade away, and the trade was not taken.
+
+`cancel-in-progress` on `main` pushes was examined against the contract rather than against intent. `.github/workflow-contract.yml` models concurrency at the workflow level only: its `jobs` entries carry `permissions`, `runs_on` and `timeout_minutes`, and `github_workflow_contract.py:1412` compares the workflow value alone. A job-level split would put a field in the workflow that the contract cannot express, which is the blind spot this repository spends its gates avoiding. Reaching the intended behaviour instead needs `cancel-in-progress` to carry a GitHub expression, and the parser requires a bool at `github_workflow_contract.py:733`, so that route needs a gate-library change and a new regression as well. What the current setting actually costs is smaller than either: `main` arrives through pull requests that have each passed `validation-changed`, and a cancelled `validation-full` is followed by a later push whose full run covers the cumulative tree. A cancellation costs one intermediate commit its own receipt; it does not leave the repository unvalidated. The item stays as recorded.
+
+No workflow, contract, or gate-library file changed in this entry. The document corrections this session made belong to SPEC-0176 and are recorded in that package's Task as W16.
 
 ### W37 A skill owns the code and material only it uses (2026-09-10)
 
