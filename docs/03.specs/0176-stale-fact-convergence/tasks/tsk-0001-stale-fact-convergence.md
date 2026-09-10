@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.16.0"
+version: "0.17.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-10"
 layer: "specs"
@@ -856,6 +856,12 @@ These three are the class the Deferred Item on enumeration and fence-integrity c
 
 Nothing in this entry changes a recorded result, a status, or a criterion of this package or of SPEC-0173.
 
+### W17: The two rows that outlived their inputs (2026-09-10, local-executed)
+
+Re-reading this Task's Deferred Items against `82ebe9d22` found two rows describing a repository that has moved. The lifecycle row waited on a push to carry the package at `draft`; `git show origin/main:` reports `draft` for the Spec, the Plan and this Task, so that push has happened and the row's blocking condition no longer holds. The enumeration row named the generated `DATA-0059` snapshot as the comparison input; that package is retired with a tombstone and SPEC-0173 W34 emptied Stage 90 data, so the design cannot be built as written.
+
+Neither row was wrong when it was written. Both are the finding this package exists to record: a statement that was true stops being true and nothing reads it again.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1042,8 +1048,8 @@ prefers the note removed, the instruction it annotates is intact.
 | Item | Blocking input or reason |
 | --- | --- |
 | Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
-| Registered checks for enumeration and fence integrity | Round five's diagnosis: the five recurrences share a property no text predicate has, and two mechanical checks would have caught all six documentation findings — every service/profile enumeration under Stage 01-05 and `infra/**` compared against the generated `DATA-0059` snapshot, and every fenced command in a README or runbook checked for being non-empty and naming a path that exists. Both belong under `scripts/**` and `tests/**` |
-| This package's own lifecycle walk to `active` | Measured, not assumed. The check rejects a non-initial status on a document absent from the base with `invalid-initial-status`, not with a transition-budget diagnostic. The package can advance one step after a push carries it at `draft`; no authorization here grants that push |
+| Registered checks for enumeration and fence integrity | The need stands and the design has expired. This row specified the enumeration check as a comparison against the generated `DATA-0059` snapshot; that package is retired to `docs/98.archive/retired/90.references/data/0059-compose-profile-service-coverage/` with a tombstone, and SPEC-0173 W34 emptied Stage 90 data, so the named input does not exist. Rebuilt on the resolved Compose configuration the check is still buildable; on the retired snapshot it is not |
+| This package's own lifecycle walk | The blocking condition is gone. `git show origin/main:` reports `status: "draft"` for this package's Spec, Plan and Task, so the push this row waited for has happened and the base carries all three at their initial status. The `spec`, `plan` and `task` lifecycles each admit exactly one edge from `draft`, so the walk is mechanical rather than a choice: `review`, `approved` and `ready`. Taken on this branch |
 | SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |
 

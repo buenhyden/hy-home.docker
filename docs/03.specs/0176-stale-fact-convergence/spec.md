@@ -2,9 +2,9 @@
 title: "Stale Fact Convergence Specification"
 version: "0.5.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-10"
 layer: "specs"
 artifact_id: "SPEC-0176"
 parent_ids:

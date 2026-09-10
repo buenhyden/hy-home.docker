@@ -1,6 +1,6 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -47,6 +47,16 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W39 Four deferred items that the record had outrun (2026-09-10, local-executed)
+
+A request to resolve the five remaining risks found that three of them were already resolved and the record had not been corrected. W20's semantic transfer is complete: AD-0014 is superseded by AD-0002 with reciprocal metadata and a preserved body. CDR-04 was decided by `55c7c13d8`, which converted the k6 leaf into a real k6 engine rather than retiring it. SPEC-0176's lifecycle walk was blocked on a push that has since happened: its Spec, Plan and Task are all on `origin/main` at `draft`, so the transition this Task described as unavailable is available.
+
+The fourth item is now genuinely resolved rather than found resolved. A Python linter is registered, and the adoption is recorded above.
+
+The fifth is not resolved and its design has expired. SPEC-0176 deferred two mechanical checks and specified the enumeration one as a comparison against the generated `DATA-0059` snapshot. That package is retired to `docs/98.archive/retired/90.references/data/0059-compose-profile-service-coverage/` with a tombstone, and W34 emptied Stage 90 data, so the input the design names does not exist. The need stands and the design has to be rebuilt on the resolved Compose configuration instead.
+
+Reading these four together, the pattern is the one SPEC-0176 exists to catch: a list of open items is itself a document, and nothing checks whether its sentences are still true.
 
 ### W38 The two examined owner decisions, measured rather than re-argued (2026-09-10, local-executed)
 
@@ -3939,20 +3949,20 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   not repeated. The npm-before-Playwright ordering and its malformed-order
   regressions are unchanged by W22-W24 and keep their existing receipts; no new
   independent review of them was requested or run.
-- W20 remains BLOCKED. Actual owner semantic-transfer and retirement approval is
-  still outstanding, AD-0014 stays active, and nothing in W22-W31 touches it.
-  No request in this session constitutes that owner's content review, and no
-  approval may be inferred from the delivery route the user chose.
-- CDR-04 remains an owner decision and its evidence is now complete rather than
-  a two-option sketch. `infra/09-tooling/k6/` holds only a README and a compose
-  file: no Dockerfile, no locustfile, and a service that copies `locust-master`
-  down to the `/mnt/locust` mount and the 8089 healthcheck. Three tracked
-  surfaces nevertheless presuppose a real k6 engine, so the intent is legible
-  even though the implementation never followed: a 17-panel `k6 Prometheus`
-  Grafana dashboard, a Dependabot docker entry for the directory, and the
-  `K6_HOST_PORT` split that exists only because `testing` selects both services.
-  Converting the leaf is an infrastructure change needing runtime verification;
-  removing it also retires those three surfaces. Neither is an agent decision.
+- W20 is discharged, and not by an approval given here. AD-0014 carries
+  `status: superseded` and `superseded_by: AD-0002`, its body is preserved at
+  `docs/98.archive/superseded/02.architecture/descriptions/`, and AD-0002 is
+  `active` with `supersedes: [AD-0014]`. Both files carry `updated: 2026-09-10`.
+  The transfer this item was waiting for happened; the record had not caught up.
+- CDR-04 is discharged by `55c7c13d8`, which took the convert option rather
+  than the retire option. `infra/09-tooling/k6/` now holds a `Dockerfile` that
+  is `FROM grafana/k6:2.2.0`, and the compose service runs `k6 run --out
+  experimental-prometheus-rw` with `K6_PROMETHEUS_RW_TREND_STATS` set to the
+  min, max, p(95) and p(99) the 17-panel Grafana dashboard queries, under the
+  `testing` profile with `restart: 'no'` for a one-shot job. The three surfaces
+  this item said presupposed a real engine now describe one. The earlier
+  description of a locust-copying service with no Dockerfile was accurate when
+  written and is superseded by that commit.
 - Hosted verification of `a23edf9b0`, `2ce13c246` and `0917f1028` is no longer
   NOT_RUN. The user's branch and pull request route authorized push and pull
   request creation, and pull request 151 carries these commits through the
@@ -3964,11 +3974,14 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   workflow `cancel-in-progress` on `main` pushes, and the 29.9-second
   `public-validation-changed` hook at commit time. Neither is a defect; both
   trade coverage against cost and were left as they are.
-- No Python linter is registered. `ruff format` is the only Python tool the
-  repository runs, `ruff.toml` has no `[lint]` section, and `ruff check` reports
-  findings under its default rule set that this repository has never adopted.
-  That is NOT_APPLICABLE for current verification, and adopting a linter would
-  be a separate reviewed change.
+- A Python linter is now registered. `ruff.toml` carries a `[lint]` section
+  whose selection was measured: `PL` as a family added 393 complexity findings
+  and only `PLW1510` survives it, and the Hangul ambiguity rules are off. Every
+  exception records what removing it did, because `F401` deleted eleven
+  re-exports and four manifest-evidence imports before that was understood, and
+  `B023` fires 59 times in tests and never in `scripts/`. `ruff check` is a
+  registered hook scoped to `\.pyi?$` and exits clean. NOT_APPLICABLE no longer
+  describes this item.
 - W17-W21 implementation is now approved by the latest Work Log. Unexecuted
   criteria remain NOT_RUN; they do not reopen completed option A work.
 - Operations execution planning is on hold by the 2026-09-09 user response.

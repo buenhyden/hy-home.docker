@@ -2,9 +2,9 @@
 title: "Stale Fact Convergence Implementation Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-10"
 layer: "specs"
 artifact_id: "SPEC-0176-PLAN-0001"
 parent_ids:

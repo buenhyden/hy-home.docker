@@ -1,10 +1,10 @@
 ---
 title: "03.specs"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-11"
 layer: "specs"
 ---
 
@@ -73,7 +73,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0173 | [Governance and QA Surface Convergence](0173-governance-qa-surface-convergence/spec.md) | active with active [Plan](0173-governance-qa-surface-convergence/plan.md); canonical `.agents` implementation and QA repairs are integrated on local main, Tasks 1-5 retain reviewed implementation milestones, and in-progress Task 6 owns package reconciliation plus the blocked aggregate and unobserved native-runtime evidence |
 | SPEC-0174 | Governance and QA Convergence | superseded by SPEC-0173; cancelled Plan and Task preserved with the full packet |
 | SPEC-0175 | [Governance Knowledge and Prompt Surface](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) and [Task](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) |
-| SPEC-0176 | [Stale Fact Convergence](0176-stale-fact-convergence/spec.md) | draft package converging documented facts on the tracked implementation: the retired Compose enablement wording, the preservation-owner chain, dead-branch position in the two in-flight packages, and three index and routing errors, with a draft [Plan](0176-stale-fact-convergence/plan.md) and draft [Task](0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) |
+| SPEC-0176 | [Stale Fact Convergence](0176-stale-fact-convergence/spec.md) | review package whose four fact clusters are converged on the tracked implementation: the retired Compose enablement wording, the preservation-owner chain, the dead-branch position in the two in-flight packages, and the index and routing errors. Its Task W16 measured the fourteen contract items at `82ebe9d22` and found the fourteenth reached in two of the three files its sweep needed, which this package then closed. Carries an approved [Plan](0176-stale-fact-convergence/plan.md) and a ready [Task](0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) |
 
 ## How to Work in This Area
 
