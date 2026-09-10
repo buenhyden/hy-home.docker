@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -156,13 +156,10 @@ bash scripts/validation/validate-docker-compose.sh
 이 명령은 선언된 모든 profile을 렌더링하고, 한 profile이 선택하는 두 서비스가
 같은 host port를 공개하면 실패한다.
 
-```bash
-bash scripts/operations/generate-compose-profile-service-coverage.sh --check
-```
-
-생성된 coverage snapshot이 현재 트리와 일치하는지 확인한다. snapshot의
-`Profile Coverage` 표에 나타나는 이름 집합은 이 문서의 세 표를 합친 집합과
-같아야 한다.
+이 문서의 세 표를 합친 이름 집합은 추적된 Compose 파일이 선언하는 `profiles:`
+값의 집합과 같아야 한다. 이전에는 생성된 coverage snapshot이 그 비교 대상이었으나
+생성기와 snapshot이 모두 은퇴했으므로, 지금의 권위는 `infra/**` 아래 Compose 파일
+자체다.
 
 ## Review Cadence
 

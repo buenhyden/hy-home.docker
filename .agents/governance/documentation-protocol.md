@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.3.0"
+version: "2.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-11"
 ---
 
 # Documentation Protocol
@@ -106,6 +106,16 @@ tracked Markdown document plus `llms.txt`. Links between documents inside
 13. Update cross-links in the same logical change.
 14. Record execution evidence in the co-located Stage 03 Task.
 15. Validate metadata, links, and stage-specific contracts before completion.
+16. Keep a fenced command block runnable: every repository path it names must be
+    a path a reader can open. Where a block's paths illustrate a rule or a shape
+    rather than naming a file — an anti-pattern example, a `git check-ignore`
+    probe, a deliberately absent search pattern — say so inside the block with
+    `# doc-paths: illustrative`, so the exemption is visible to the reader
+    instead of hidden in a predicate. `leaf.docs-traceability` enforces this
+    through the `commands` mode of `check-document-links.py`. Operator-created
+    files under `secrets/` and preserved bodies under `docs/98.archive/` are
+    outside the check: the first are untracked by design and the second are
+    supposed to name what the tree has since dropped.
 
 Language follows a document's audience, not its stage number. These surfaces are
 English-only because their readers are contracts, generators, and validators:

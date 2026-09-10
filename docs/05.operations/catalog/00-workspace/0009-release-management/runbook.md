@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 layer: "operations"
 artifact_id: "RUN-0009"
 parent_ids: []
@@ -56,7 +56,6 @@ created: "2026-06-04"
    ```bash
    python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
-   python3 scripts/knowledge/generate-llm-wiki.py --check
    ```
 
 4. Confirm Compose readiness only when the operation-specific approval permits its inputs and temporary files. Preflight sources a real `.env`; normal validation may create dummy inputs. Neither command is part of a document-only validation scope.

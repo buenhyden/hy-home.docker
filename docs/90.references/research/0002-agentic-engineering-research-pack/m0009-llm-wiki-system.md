@@ -1,10 +1,10 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.1.1"
+version: "1.1.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 layer: "references"
 artifact_id: "RES-0002-m0009"
 parent_ids:
@@ -186,6 +186,7 @@ registrations, literals, and safety rules. Therefore a repository-contract
 result never substitutes for:
 
 ```bash
+# doc-paths: illustrative
 bash scripts/knowledge/generate-llm-wiki-index.sh --check
 bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
 ```

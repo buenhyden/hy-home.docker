@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 created: "2026-03-05"
 ---
 
@@ -79,6 +79,7 @@ pattern without rewriting that ladder silently drops the second document.
 Verify the rule rather than trusting this sentence:
 
 ```bash
+# doc-paths: illustrative
 git check-ignore -v --no-index _workspace/repo-support/README.md
 git check-ignore -v _workspace/repo-support/scratch.json
 git ls-files _workspace/

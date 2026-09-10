@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.17.0"
+version: "0.18.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-11"
 layer: "specs"
 artifact_id: "SPEC-0176-TSK-0001"
 parent_ids:
@@ -862,6 +862,18 @@ Re-reading this Task's Deferred Items against `82ebe9d22` found two rows describ
 
 Neither row was wrong when it was written. Both are the finding this package exists to record: a statement that was true stops being true and nothing reads it again.
 
+### W18: One check earned its place and one did not (2026-09-11, local-executed)
+
+This row deferred two mechanical checks. Both were measured before either was written, and they came out differently.
+
+The fence check found real defects. Seven active surfaces carried a fenced command naming a script that no longer exists, all of them casualties of the generator retirement in SPEC-0173 W34: `.agents/governance/hooks/hookify.warn-hook-parity-edit.md` instructed `report-provider-hook-parity.sh`, the Compose profile vocabulary policy instructed the coverage generator whose `DATA-0059` output is itself retired, the release-management runbook and SPEC-0173's own plan instructed `generate-llm-wiki.py`, and `scripts/README.md` carried five such lines. None of these is reachable by a link check, because a fenced line is not a link. All are corrected, and `--mode commands` now exits 0.
+
+The check is a mode on `check-document-links.py` rather than a new validator, so `leaf.docs-traceability` reaches it through the `--mode all` it already runs and no gate node, suite, or contract entry changed. Preserved bodies under `docs/98.archive/` are excluded through the existing `_PRESERVED_LINK_PREFIXES`, because naming a dropped path is what a preserved record is for and its bytes may not be edited. `secrets/` is excluded because those files are the operator's. The remaining five blocks are illustrative rather than runnable — two anti-pattern examples, a `git check-ignore` probe whose argument must not exist, a negative search pattern, and a usage placeholder — and each says so with `# doc-paths: illustrative`, a stated marker in the document rather than a predicate that has to guess. Authoring rule 16 owns the marker.
+
+The enumeration check was not written, for the reason the row now records: 534 `--profile` references across tracked documents, one exception, and that one in a Stage 90 note about a different tool. Its original design named the generated `DATA-0059` snapshot as the comparison input, and rebuilding it on a static parse of the tracked Compose files is possible; what is missing is a defect for it to catch.
+
+Locating an enumeration inside prose is also the exact operation that produced five wrong predicates in W12 through W15. The fence check avoids that by reading a delimited block rather than a sentence, which is why it is the half of this row that could be built honestly.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1048,7 +1060,7 @@ prefers the note removed, the instruction it annotates is intact.
 | Item | Blocking input or reason |
 | --- | --- |
 | Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
-| Registered checks for enumeration and fence integrity | The need stands and the design has expired. This row specified the enumeration check as a comparison against the generated `DATA-0059` snapshot; that package is retired to `docs/98.archive/retired/90.references/data/0059-compose-profile-service-coverage/` with a tombstone, and SPEC-0173 W34 emptied Stage 90 data, so the named input does not exist. Rebuilt on the resolved Compose configuration the check is still buildable; on the retired snapshot it is not |
+| Registered checks for enumeration and fence integrity | The fence check is delivered and the enumeration check is not, both on measurement. `check-document-links.py --mode commands` is registered through the existing `leaf.docs-traceability` root and found seven active surfaces instructing a reader to run a script the tree no longer carries, including canonical governance and an operations policy. The enumeration check was measured before it was written: 534 `--profile` references across tracked documents name a declared profile, and the single exception is a Stage 90 research note about a different tool. A gate that catches nothing today is the surface growth this repository's own standards refuse, so the measurement is recorded here instead |
 | This package's own lifecycle walk | The blocking condition is gone. `git show origin/main:` reports `status: "draft"` for this package's Spec, Plan and Task, so the push this row waited for has happened and the base carries all three at their initial status. The `spec`, `plan` and `task` lifecycles each admit exactly one edge from `draft`, so the walk is mechanical rather than a choice: `review`, `approved` and `ready`. Taken on this branch |
 | SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |

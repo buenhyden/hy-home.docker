@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.11.0"
+version: "0.11.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-11"
 layer: "specs"
 artifact_id: "SPEC-0173-PLAN-0001"
 parent_ids:
@@ -485,7 +485,6 @@ python3 scripts/validation/check-github-workflow-contract.py
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-links.py --mode all
 python3 scripts/validation/check-document-corpus-lifecycle.py
-python3 scripts/knowledge/generate-llm-wiki.py --check
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
 python3 scripts/validation/run-ci-gate.py --profile changed
 python3 scripts/validation/run-ci-gate.py --profile full

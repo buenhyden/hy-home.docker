@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 created: "2026-02-21"
 ---
 
@@ -361,6 +361,7 @@ not copy atomic validator commands.
 ### Usage Examples
 
 ```bash
+# doc-paths: illustrative
 # Run real local preflight checks without creating dummy files
 ./scripts/validation/validate-docker-compose.sh --preflight
 
@@ -386,9 +387,6 @@ python3 scripts/validation/run-ci-gate.py --profile changed
 # Explain changed-path suite-to-validator ownership without execution
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
-# Generate and check the audit implementation matrix snapshot
-bash scripts/validation/generate-audit-implementation-matrix.sh --write
-bash scripts/validation/generate-audit-implementation-matrix.sh --check
 
 # Approved final QA only; prefixes must match the task's reviewed scope
 bash scripts/validation/run-agent-precommit-all-files.sh \
@@ -433,15 +431,7 @@ bash scripts/operations/sync-tech-stack-versions.sh --dry-run
 # Re-point the tech-stack registry to declared compose tags
 bash scripts/operations/sync-tech-stack-versions.sh
 
-# Generate the Docker Compose profile/service coverage reference
-bash scripts/operations/generate-compose-profile-service-coverage.sh --write
 
-# Verify the Docker Compose profile/service coverage reference is fresh
-bash scripts/operations/generate-compose-profile-service-coverage.sh --check
-
-# Generate and verify the tech-stack version provenance reference
-bash scripts/operations/generate-tech-stack-version-provenance.sh --write
-bash scripts/operations/generate-tech-stack-version-provenance.sh --check
 
 # Explicitly add optional QA/CI tools while preserving the current PATH priority
 source scripts/operations/use-qa-ci-tools.sh
@@ -485,9 +475,7 @@ Run the manifest and generated-output gates with:
 ```bash
 python3 scripts/validation/check-script-manifest.py
 python3 scripts/validation/check-script-manifest.py --check-generated
-python3 scripts/knowledge/generate-llm-wiki.py --check
 PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
-PYTHONPATH=. .venv/bin/python tests/validation/test_generate_llm_wiki.py
 ```
 
 The gate derives coverage from tracked plus present non-ignored Task-local

@@ -1133,7 +1133,7 @@ class DocumentLinksCliTests(unittest.TestCase):
             check=True,
             capture_output=True,
         ).stdout
-        for mode in ("traceability", "alignment", "entrypoint"):
+        for mode in ("traceability", "alignment", "entrypoint", "commands"):
             with self.subTest(mode=mode):
                 result = subprocess.run(
                     [sys.executable, str(CLI), "--mode", mode],
@@ -1280,3 +1280,100 @@ class LinkSelectionScopeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FencedCommandPathTests(unittest.TestCase):
+    """A fenced command must name repository paths a reader can actually open."""
+
+    def _findings(self, bodies: dict[str, str]) -> list:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_commands,
+        )
+
+        spec = importlib.util.spec_from_file_location("agent_home_commands", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for relative, body in bodies.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(body, encoding="utf-8")
+            track_repository(root)
+            paths = module._paths(root)
+            return check_commands(build_document_graph(paths, repo_root=root))
+
+    def test_command_naming_a_present_path_is_accepted(self) -> None:
+        findings = self._findings(
+            {
+                "scripts/run.sh": "#!/usr/bin/env bash\n",
+                "README.md": "```bash\nbash scripts/run.sh\n```\n",
+            }
+        )
+        self.assertEqual([], findings)
+
+    def test_command_naming_an_absent_path_is_reported(self) -> None:
+        findings = self._findings(
+            {
+                "scripts/keep.sh": "",
+                "README.md": "```bash\nbash scripts/gone.sh\n```\n",
+            }
+        )
+        self.assertEqual(1, len(findings))
+        self.assertEqual("document-command-path-missing", findings[0].code)
+        self.assertEqual("README.md:2", findings[0].path)
+        self.assertIn("scripts/gone.sh", findings[0].message)
+
+    def test_operator_created_secret_files_are_not_repository_artifacts(self) -> None:
+        findings = self._findings(
+            {
+                "secrets/.gitkeep": "",
+                "README.md": "```bash\ncat secrets/db_password\n```\n",
+            }
+        )
+        self.assertEqual([], findings)
+
+    def test_illustrative_marker_exempts_its_own_block_only(self) -> None:
+        body = (
+            "```bash\n# doc-paths: illustrative\nls docs/03.specs/0158-example/spec.md\n```\n"
+            "\n```bash\nbash scripts/gone.sh\n```\n"
+        )
+        findings = self._findings(
+            {"docs/README.md": "# Docs\n", "scripts/keep.sh": "", "README.md": body}
+        )
+        self.assertEqual(1, len(findings))
+        self.assertEqual("README.md:7", findings[0].path)
+
+    def test_only_command_fences_and_non_comment_lines_are_scanned(self) -> None:
+        body = (
+            "```python\nopen('scripts/gone.sh')\n```\n"
+            "\n```bash\n# see scripts/also-gone.sh for detail\n```\n"
+        )
+        self.assertEqual([], self._findings({"scripts/keep.sh": "", "README.md": body}))
+
+    def test_preserved_archive_bodies_are_not_scanned(self) -> None:
+        body = "```bash\nbash scripts/gone.sh\n```\n"
+        findings = self._findings(
+            {
+                "scripts/keep.sh": "",
+                "docs/98.archive/retired/05.operations/old.md": body,
+                "docs/98.archive/completed/03.specs/0001-x/spec.md": body,
+                "docs/98.archive/superseded/03.specs/0002-y/spec.md": body,
+            }
+        )
+        self.assertEqual([], findings)
+
+    def test_placeholder_tokens_are_not_treated_as_paths(self) -> None:
+        body = "```bash\nbash scripts/${NAME}.sh docs/<slug>/spec.md tests/*.py\n```\n"
+        self.assertEqual(
+            [],
+            self._findings(
+                {
+                    "scripts/keep.sh": "",
+                    "docs/README.md": "# Docs\n",
+                    "tests/keep.py": "",
+                    "README.md": body,
+                }
+            ),
+        )

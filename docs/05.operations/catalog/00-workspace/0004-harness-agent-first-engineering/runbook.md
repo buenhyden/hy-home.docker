@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -89,6 +89,7 @@ created: "2026-06-04"
 6. Run source-label scan.
 
    ```bash
+   # doc-paths: illustrative
    ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex .agents
    ```
 

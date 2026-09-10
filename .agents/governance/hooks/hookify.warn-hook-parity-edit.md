@@ -1,10 +1,10 @@
 ---
 title: "WARNING: hook parity contract review required"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/hook-policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -40,9 +40,9 @@ name: "warn-hook-parity-edit"
 **After completion, verify:**
 
 ```bash
-bash scripts/validation/report-provider-hook-parity.sh --validate-only
-bash scripts/validation/report-provider-hook-parity.sh --check
+python3 scripts/validation/check-agent-governance-contract.py --mode repository --section providers
 python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all
+python3 scripts/operations/provider_surface_renderer.py --check
 ```
 
 ## Related Documents

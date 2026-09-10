@@ -736,10 +736,106 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
     return sorted(set(findings))
 
 
+_COMMAND_FENCE_LANGUAGES = frozenset({"", "bash", "sh", "shell", "console", "zsh"})
+_ILLUSTRATIVE_COMMAND_MARKER = "# doc-paths: illustrative"
+_COMMAND_PATHS_UNTRACKED_BY_DESIGN = ("secrets/",)
+_COMMAND_PATH_PLACEHOLDERS = "<>${}*"
+_COMMAND_PATH_TOKEN = re.compile(
+    r"(?<![\w./-])\.?/?([A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)+)"
+)
+
+
+def _command_blocks(text: str) -> Iterable[tuple[int, tuple[str, ...]]]:
+    """Yield the first content line number and body of each command fence."""
+
+    fence: str | None = None
+    language = ""
+    start = 0
+    buffer: list[str] = []
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        marker = (
+            "```"
+            if stripped.startswith("```")
+            else "~~~"
+            if stripped.startswith("~~~")
+            else None
+        )
+        if marker is None:
+            if fence is not None:
+                buffer.append(line)
+            continue
+        if fence is None:
+            fence = marker
+            language = stripped[len(marker) :].strip().lower()
+            start = line_no + 1
+            buffer = []
+            continue
+        if fence == marker:
+            if language in _COMMAND_FENCE_LANGUAGES:
+                yield start, tuple(buffer)
+            fence = None
+            language = ""
+            buffer = []
+
+
+def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
+    """Report a fenced command that names a repository path nothing resolves.
+
+    A reader runs what a command block says. When the block names a script the
+    tree no longer carries, the document sends them at a path that cannot be
+    opened, and no link check sees it because a fenced line is not a link.
+
+    Only the repository's own top-level surfaces are candidates, so a URL, a
+    flag, or an unrelated word with a slash is not read as a path. `secrets/`
+    is excluded because those files are created by the operator and are
+    untracked by design, and a preserved body under `docs/98.archive/` is
+    excluded because naming a path the tree has since dropped is what a
+    preserved record is for and its bytes may not be edited to satisfy a check. A block whose paths are illustrative rather than
+    runnable declares that on its own first line with the stated marker, which
+    keeps the exemption visible in the document instead of in a predicate.
+    """
+
+    root = graph.repo_root
+    surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
+    findings: list[LinkFinding] = []
+    for node in graph.nodes:
+        if node.path.as_posix().startswith(_PRESERVED_LINK_PREFIXES):
+            continue
+        for start, lines in _command_blocks(node.text):
+            if any(line.strip() == _ILLUSTRATIVE_COMMAND_MARKER for line in lines):
+                continue
+            for offset, line in enumerate(lines):
+                if line.lstrip().startswith("#"):
+                    continue
+                for match in _COMMAND_PATH_TOKEN.finditer(line):
+                    token = match.group(1).rstrip(".,;:)")
+                    if any(char in token for char in _COMMAND_PATH_PLACEHOLDERS):
+                        continue
+                    if token.split("/", 1)[0] not in surfaces:
+                        continue
+                    if token.startswith(_COMMAND_PATHS_UNTRACKED_BY_DESIGN):
+                        continue
+                    if (root / token).exists():
+                        continue
+                    findings.append(
+                        LinkFinding(
+                            path=f"{node.path}:{start + offset}",
+                            code="document-command-path-missing",
+                            message=(
+                                f"fenced command names {token}, which the tree "
+                                "does not carry"
+                            ),
+                        )
+                    )
+    return sorted(set(findings))
+
+
 MODE_HANDLERS = {
     "traceability": check_traceability,
     "alignment": check_alignment,
     "entrypoint": check_entrypoint,
+    "commands": check_commands,
 }
 
 

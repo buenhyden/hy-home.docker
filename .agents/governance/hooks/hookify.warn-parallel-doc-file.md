@@ -1,10 +1,10 @@
 ---
 title: "WARNING: parallel replacement document file"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/hook-policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-11"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -34,6 +34,7 @@ name: "warn-parallel-doc-file"
 Edit the existing canonical file in place.
 
 ```bash
+# doc-paths: illustrative
 # WARNING: parallel replacement document file
 docs/03.specs/0158-example/spec-new.md
 
