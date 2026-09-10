@@ -3710,6 +3710,7 @@ No completed archive packet or new Spec/Plan/Task was created.
 | `fc0e1a2eb` | `docs(qa): Record the uv finding that was wrong and how it hid` | W30 correction record |
 | `4c40f1f51` | `feat(validation): Prove a gate leaf can start before the runner tries` | W31 guard, its tests and the W31 record |
 | `5cae95237` | `docs(governance): Give the skill invocation rule a canonical owner` | W32 rule owner and the 23 skill pointers |
+| `ace79c942` | `refactor(hooks): Derive prompt routes from the skills they point at` | W33 routing, its suite and the infra-validate pilot |
 
 `4c40f1f51` also carries the W31 Work Log entry, because that document stayed
 staged from an attempt `ruff format` had rejected. The subject names only the
