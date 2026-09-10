@@ -17,9 +17,7 @@ from typing import Iterable, Sequence
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-FIXTURE_REFERENCE = pathlib.PurePosixPath(
-    "docs/90.references/data/0064-agent-output-eval-fixtures/README.md"
-)
+FIXTURE_REFERENCE = pathlib.PurePosixPath("evals/fixture-catalog.md")
 CATALOG_CONTRACT = pathlib.PurePosixPath(".agents/governance/providers/registry.yaml")
 SYNTHETIC_INPUT_ROOTS = (pathlib.PurePosixPath("tests/fixtures/agent-output-eval"),)
 MAX_SYNTHETIC_INPUT_BYTES = 1_048_576
@@ -472,7 +470,6 @@ FIXTURES: dict[str, Fixture] = {
         (
             "docs/99.templates/templates/references/research-pack.template.md",
             "docs/90.references/README.md",
-            "docs/90.references/data/0082-llm-wiki-index/README.md",
         ),
         (Criterion("reference_contract", ("Sources", "Related Documents", "index")),),
         (
@@ -619,7 +616,6 @@ FIXTURES: dict[str, Fixture] = {
             ".agents/governance/workflows.md",
             ".agents/governance/providers/registry.yaml",
             "scripts/hooks/agent-event-hook.sh",
-            "docs/90.references/data/0072-provider-hook-parity-matrix/README.md",
         ),
         (Criterion("hook_semantics", ("deny", "block", "max_attempts", "escalate")),),
         (

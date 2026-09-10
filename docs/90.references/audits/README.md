@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "1.1.0"
+version: "2.0.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-10"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -13,13 +13,15 @@ created: "2026-07-02"
 
 ## Overview
 
-Point-in-time gap, implementation, and conformance assessments. Audit packages are evidence, not approval gates.
+Point-in-time gap, implementation, and conformance assessments. Audit packages
+are evidence, not approval gates.
 
-The Stage 90 authority boundary and package lifecycle rules are defined by the [References index](../README.md) and Stage 99 Registry.
+The Stage 90 authority boundary and package lifecycle rules are defined by the
+[References index](../README.md) and Stage 99 Registry.
 
 SPEC-0158 retires this category. The current tree defines the Stage 90 package
 set: a package exists because its README is present and satisfies its Stage 99
-profile, and it is retired by deleting it in the same change that migrates its
+profile, and it is retired by removing it in the same change that migrates its
 needed meaning to a canonical owner, updates every inbound consumer, and
 removes its row below. No archive ledger decides membership, so retiring a
 package is no longer a Stage 99 amendment.
@@ -32,34 +34,22 @@ a `package-member` profile and so allocates no global identity.
 
 ## Packages
 
-| Stable ID | Package | Status |
-| :--- | :--- | :--- |
-| [AUD-0019](./0019-readme/README.md) | Reference: Agentic Engineering Implementation Audit References | active |
-| [AUD-0020](./0020-agent-instructions-catalog-vibe-models/README.md) | Reference: Agent Instructions, Catalog, Vibe Coding, and Model Routing | active |
-| [AUD-0021](./0021-automation-candidates/README.md) | Reference: Agentic Engineering Automation Candidates | active |
-| [AUD-0022](./0022-compose-infrastructure-operations-readiness/README.md) | Reference: Compose, Infrastructure, and Operations Readiness | active |
-| [AUD-0023](./0023-frontmatter-semantic-inventory/README.md) | Reference: Frontmatter Semantic Inventory | active |
-| [AUD-0024](./0024-frontmatter-template-readme-implementation/README.md) | Reference: Frontmatter, Template, and README Implementation Audit | active |
-| [AUD-0025](./0025-harness-engineering-implementation/README.md) | Reference: Harness Engineering Implementation | active |
-| [AUD-0026](./0026-implementation-overview/README.md) | Reference: Agentic Engineering Implementation Overview | active |
-| [AUD-0027](./0027-loop-engineering-implementation/README.md) | Reference: Loop Engineering Implementation | active |
-| [AUD-0028](./0028-provider-harness-loop-implementation/README.md) | Reference: Provider Harness and Loop Implementation | active |
-| [AUD-0029](./0029-sdlc-document-contracts-implementation/README.md) | Reference: SDLC and Document Contracts Implementation Audit | active |
-| [AUD-0030](./0030-sdlc-quality-formatting-implementation/README.md) | Reference: SDLC Quality Formatting Implementation | active |
-| [AUD-0031](./0031-security-framework-maturity/README.md) | Reference: Security Framework Maturity Coverage | active |
-| [AUD-0032](./0032-workspace-rules-environment-implementation/README.md) | Reference: Workspace Rules and Environment Implementation | active |
-| [AUD-0033](../../98.archive/superseded/90.references/audits/0033-readme/README.md) | Reference: Agentic Engineering Implementation Audit Pack (2026-07-07 Update) | superseded |
+This category holds no packages, which completes the retirement SPEC-0158
+declared.
 
-## Canonical Current Audit
-
-The [implementation audit index](0019-readme/README.md) routes the current
-criterion reports and their [implementation overview](0026-implementation-overview/README.md).
-These reports remain point-in-time evidence, not policy authority.
+Fourteen packages were retired on 2026-09-10. Each was held live by a registered
+consumer rather than by a reader: the criterion contract that mapped its
+filename, the semantic-freshness checker that asserted its rows, the matrix
+generator that read the pack directory, and the metadata profile's path
+allow-list. All four were removed in the same change. Each preserved body is
+under `docs/98.archive/retired/90.references/audits/`, recorded by tombstones
+`tomb-AUD-0019` through `tomb-AUD-0032`.
 
 ## Dated Historical Snapshots
 
-The [superseded audit snapshot](../../98.archive/superseded/90.references/audits/0033-readme/README.md) retains its observation
-date in metadata; current package paths remain date-free.
+The superseded audit snapshot
+retains its observation date in metadata; current package paths remain
+date-free.
 
 AUD-0097 was retired on 2026-09-09. Three of its four defects were fixed in the
 tree while four operations guides still linked it as the owner of an open
@@ -69,13 +59,14 @@ owns it. The preserved body is under `docs/98.archive/retired/`, and
 
 ## Supersession Ledgers
 
-The snapshot and current audit index record reciprocal stable-ID supersession.
-[Migration 0003](../../98.archive/migrations/0003-workspace-governance-simplification.md)
+Migration 0003
 records historical path recovery.
 
 ## Authoring
 
-Create packages only under `audits/####-<slug>/` and use the matching Stage 99 template. Preserve observation dates, citations, provenance, and active-owner Traceability.
+Create packages only under `audits/####-<slug>/` and use the matching Stage 99
+template. Preserve observation dates, citations, provenance, and active-owner
+Traceability.
 
 ## Related Documents
 

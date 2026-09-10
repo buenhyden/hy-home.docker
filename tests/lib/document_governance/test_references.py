@@ -72,45 +72,6 @@ class ReferencePackageTests(unittest.TestCase):
                         with self.assertRaises(ValueError):
                             self.references.generated_reference_owners(root)
 
-    def test_public_metadata_checks_current_generated_links_not_historical_snapshots(
-        self,
-    ) -> None:
-        from scripts.lib.document_governance import metadata_validator
-        from scripts.lib.document_governance import archive
-
-        native_migration = archive._migration_document(ROOT)
-        context, root = self._fixture()
-        with (
-            context,
-            mock.patch.object(
-                archive, "_migration_document", return_value=native_migration
-            ),
-        ):
-            generated = (
-                root
-                / "docs/90.references/data/0072-provider-hook-parity-matrix/README.md"
-            )
-            historical = (
-                root
-                / "docs/90.references/audits/0031-security-framework-maturity/README.md"
-            )
-            generated.write_text(
-                generated.read_text()
-                + "\n[Broken current](../../../../__missing_generated_link__.md)\n"
-            )
-            historical.write_text(
-                historical.read_text()
-                + "\n[Old source](../../../../__historical_snapshot_link__.md)\n"
-            )
-            output = io.StringIO()
-            with contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-                code = metadata_validator.main(
-                    ["--root", str(root), "--mode", "check-active"]
-                )
-            self.assertNotEqual(0, code)
-            self.assertIn("__missing_generated_link__.md", output.getvalue())
-            self.assertNotIn("__historical_snapshot_link__.md", output.getvalue())
-
     def test_delegation_validates_exact_members_and_their_content(self) -> None:
         member = "docs/90.references/research/0002-agentic-engineering-research-pack/m0017-security-governance.md"
         for mutation, expected in (
@@ -181,10 +142,15 @@ class ReferencePackageTests(unittest.TestCase):
     def test_reference_roots_and_package_paths_are_exact(self) -> None:
         corpus = self.references.load_reference_packages(ROOT / "docs/90.references")
         self.assertEqual(("audits", "data", "research"), corpus.category_names)
-        self.assertEqual(
-            {"AUD-", "DATA-", "RES-"},
-            {item.artifact_id.rsplit("-", 1)[0] + "-" for item in corpus.packages},
-        )
+        # The three categories stay declared, but only `research` still carries
+        # packages: `audits` and `data` were emptied on 2026-09-10 when their
+        # consumers were removed. An observed prefix therefore proves a package
+        # exists, and every observed prefix must still be a declared one.
+        observed = {
+            item.artifact_id.rsplit("-", 1)[0] + "-" for item in corpus.packages
+        }
+        self.assertEqual({"RES-"}, observed)
+        self.assertLessEqual(observed, {"AUD-", "DATA-", "RES-"})
         self.assertTrue(
             all(
                 self.references.PACKAGE_PATH.fullmatch(item.relative_package)
@@ -285,13 +251,13 @@ class ReferencePackageTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             package = next(
-                (root / "docs/90.references/audits").glob(
+                (root / "docs/90.references/research").glob(
                     "[0-9][0-9][0-9][0-9]-*/README.md"
                 )
             )
             package.write_text(
                 package.read_text(encoding="utf-8").replace(
-                    'artifact_id: "AUD-', 'artifact_id: "RES-', 1
+                    'artifact_id: "RES-', 'artifact_id: "AUD-', 1
                 ),
                 encoding="utf-8",
             )
@@ -351,19 +317,6 @@ class ReferencePackageTests(unittest.TestCase):
             self.assertEqual(6, len(retired))
             self.assertTrue(all(item.path.name == "payload.md" for item in retired))
 
-    def test_generated_repository_map_rejects_missing_local_links(self) -> None:
-        context, root = self._fixture()
-        with context:
-            repository_map = (
-                root / "docs/90.references/data/0083-repository-map/README.md"
-            )
-            repository_map.write_text(
-                repository_map.read_text(encoding="utf-8")
-                + "\n[removed](../data/docker/README.md)\n",
-                encoding="utf-8",
-            )
-            self.assertIn("generated-data-link-missing", self.finding_codes(root))
-
     def test_reference_traversal_rejects_symlinks_fifos_and_budget_overflow(
         self,
     ) -> None:
@@ -371,7 +324,7 @@ class ReferencePackageTests(unittest.TestCase):
             with self.subTest(unsafe=unsafe):
                 context, root = self._fixture()
                 with context:
-                    data = root / "docs/90.references/data"
+                    data = root / "docs/90.references/research"
                     if unsafe == "broken-symlink":
                         (data / "0099-broken").symlink_to(
                             data / "missing", target_is_directory=True

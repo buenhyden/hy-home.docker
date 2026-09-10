@@ -130,7 +130,7 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [ADR-0033 Spec Package 전체 본문 보존](../decisions/0033-full-spec-package-preservation.md)
-- [ADR-0031 보존 기록으로서의 아카이브](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) (superseded)
+- ADR-0031 보존 기록으로서의 아카이브 (superseded)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)
 
 ## Related Documents

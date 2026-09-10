@@ -213,8 +213,15 @@ class MigrationStateTests(unittest.TestCase):
             for row, result in zip(retained, projected, strict=True)
             if row["target_path"] != result["target_path"]
         ]
+        # mig-0003-r0537 joined the approved retargets on 2026-09-10: emptying the
+        # Stage 90 data category moved the DATA-0067 payload under
+        # `docs/98.archive/retired/` with its bytes unchanged.
         self.assertEqual(
-            [f"mig-0003-r{n:04d}" for n in (233, 239, 242, 245, 248)], changed
+            sorted(
+                [f"mig-0003-r{n:04d}" for n in (233, 239, 242, 245, 248)]
+                + ["mig-0003-r0537"]
+            ),
+            sorted(changed),
         )
         expected_targets = {
             "mig-0003-r0233": "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
@@ -222,6 +229,7 @@ class MigrationStateTests(unittest.TestCase):
             "mig-0003-r0242": "docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md",
             "mig-0003-r0245": "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md",
             "mig-0003-r0248": "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md",
+            "mig-0003-r0537": "docs/98.archive/retired/90.references/data/0067-foundation/data.yaml",
         }
         for row, result in zip(retained, projected, strict=True):
             expected = {
@@ -268,8 +276,18 @@ class MigrationStateTests(unittest.TestCase):
             for row in approved["rows"]
             if row["row_id"] in {"mig-0003-r0848", "mig-0003-r0852"}
         ]
+        # Both rows are plans the migration never executed, so neither source
+        # may appear among the executed sources. `mig-0003-r0848` still has its
+        # source in the tree. `mig-0003-r0852` no longer does: its source was
+        # `report-provider-hook-parity.sh`, retired on 2026-09-10 with the rest
+        # of the Stage 90 generators, which makes that plan permanently
+        # unexecutable rather than merely unexecuted.
+        moot = {"mig-0003-r0852"}
         for row in unexecuted:
-            self.assertTrue((ROOT / row["source_path"]).is_file())
+            if row["row_id"] not in moot:
+                self.assertTrue((ROOT / row["source_path"]).is_file())
+            else:
+                self.assertFalse((ROOT / row["source_path"]).is_file())
             self.assertNotIn(row["source_path"], sources)
         for mutation in (rows[:-1], rows + [rows[0]], [rows[1], rows[0], *rows[2:]]):
             raw = (
@@ -1040,12 +1058,17 @@ class ArchiveMinimizationTests(unittest.TestCase):
         # against the approved Git blob; only frontmatter moved.
         # Repinned again when `version` became a required envelope key: the
         # body is byte-identical and only `version: 1.0.0` was added.
+        # Repinned 2026-09-10 under explicit owner approval to rewrite this
+        # frozen record: the `DATA-0067` row's `target_path` follows the payload
+        # to its preserved location. The payload bytes are unchanged, so the
+        # recovery comparison still proves the same equality; only the path the
+        # row names moved.
         path = (
             ROOT
             / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
         )
         self.assertEqual(
-            "91279cc54017e4ae76f431bb37b4eb474519ca386ddaf12e89d61db59676ca2c",
+            "64f91b18ab01da87c083f8bf5a90aa85002fd92171846261b04b05af9e75814c",
             self.archive.sha256_file(path),
         )
         self.assertFalse(

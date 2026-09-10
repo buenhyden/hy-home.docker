@@ -12,7 +12,6 @@ from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTHON_ENTRYPOINTS = (
-    "scripts/knowledge/generate-llm-wiki.py",
     "scripts/operations/provider_surface_renderer.py",
     "scripts/lib/agent_governance/agent_governance_contract.py",
     "evals/agent_output_eval.py",

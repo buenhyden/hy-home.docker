@@ -79,8 +79,6 @@ SELF_PATH = "scripts/validation/check-script-manifest.py"
 REQUIRED_LOCAL_PATHS = frozenset(
     {
         SELF_PATH,
-        "scripts/knowledge/generate-llm-wiki.py",
-        "tests/validation/test_generate_llm_wiki.py",
     }
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")

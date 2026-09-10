@@ -183,8 +183,8 @@ package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본
 | --- | --- |
 | Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md); current procedure: [LLM Wiki guide](05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
 | Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
-| Repository map | [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md) |
-| Generated index | [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md) |
+| Repository map | 90.references/data/0083-repository-map/README.md |
+| Generated index | 90.references/data/0082-llm-wiki-index/README.md |
 | Operations guide | [05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
 
 ## Related Documents
@@ -195,8 +195,8 @@ package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본
 - [03.specs/README.md](03.specs/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
-- [90.references/data/0082-llm-wiki-index/README.md](90.references/data/0082-llm-wiki-index/README.md)
-- [90.references/data/0083-repository-map/README.md](90.references/data/0083-repository-map/README.md)
+- 90.references/data/0082-llm-wiki-index/README.md
+- 90.references/data/0083-repository-map/README.md
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

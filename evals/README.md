@@ -49,6 +49,7 @@ created: "2026-09-03"
 | :--- | :--- |
 | `agent_output_eval.py` | 픽스처 카탈로그, 채점기, 임계값, 회귀 집합 |
 | `run-agent-output-eval-fixtures.sh` | 로컬·CI 공용 실행 진입점 |
+| [`fixture-catalog.md`](fixture-catalog.md) | 픽스처 카탈로그 본문. `agent_output_eval.py`가 자기 자신과 대조하는 계약 |
 | `README.md` | This file |
 
 ## Tech Stack

@@ -118,7 +118,7 @@ created: "2026-09-01"
 - [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0033 Spec Package 전체 본문 보존](../02.architecture/decisions/0033-full-spec-package-preservation.md)
-- [ADR-0031 보존 기록으로서의 아카이브](../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) (superseded)
+- ADR-0031 보존 기록으로서의 아카이브 (superseded)
 
 ## Related Documents
 

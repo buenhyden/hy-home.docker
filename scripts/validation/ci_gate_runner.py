@@ -127,13 +127,6 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
     for path, argv in (
         ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
-        ("scripts/knowledge/generate-llm-wiki.py", ("--check",)),
-        ("scripts/validation/generate-audit-implementation-matrix.sh", ("--check",)),
-        ("scripts/validation/generate-security-automation-readiness.sh", ("--check",)),
-        (
-            "scripts/security/generate-supply-chain-sample-service-summary.sh",
-            ("--check",),
-        ),
         ("scripts/validation/validate-docker-compose.sh", ()),
         ("scripts/validation/run-ci-precommit.sh", ()),
         ("tests/validation/test_run_ci_precommit.sh", ()),

@@ -24,6 +24,16 @@ files:
   tests:
   - tests/validation/test_agent_output_eval_fixtures.py
   - tests/validation/test_validator_entrypoints.py
+- path: evals/fixture-catalog.md
+  kind: contract
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - evals/README.md
+  disposition: retain
+  successor: null
+  tests: []
 - path: evals/run-agent-output-eval-fixtures.sh
   kind: runner
   authority: .agents/skills/provider-model-evaluation/SKILL.md
@@ -31,7 +41,6 @@ files:
   mutation: none
   consumers:
   - scripts/lib/gate/ci_gate_adapters.py
-  - scripts/validation/generate-audit-implementation-matrix.sh
   - tests/validation/test_agent_output_eval_fixtures.py
   disposition: retain
   successor: null
@@ -44,7 +53,6 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/validation/generate-security-automation-readiness.sh
   - tests/validation/test_script_manifest.py
   disposition: retain
   successor: null
@@ -101,32 +109,6 @@ files:
   tests:
   - tests/validation/test_agent_governance_ci_routing.py
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/knowledge/generate-llm-wiki.py
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - .agents/governance/quality-standards.md
-  - .github/workflow-contract.yml
-  - README.md
-  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/policy.md
-  - docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/runbook.md
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_generate_llm_wiki.py
-  - tests/validation/test_validator_entrypoints.py
-  check_command:
-  - python3
-  - scripts/knowledge/generate-llm-wiki.py
-  - --check
-  outputs:
-  - docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md
-  - docs/90.references/data/0082-llm-wiki-index/README.md
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
   authority: .github/workflow-contract.yml
@@ -568,40 +550,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/operations/generate-compose-profile-service-coverage.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
-  check_command:
-  - bash
-  - scripts/operations/generate-compose-profile-service-coverage.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0059-compose-profile-service-coverage/README.md
-- path: scripts/operations/generate-tech-stack-version-provenance.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
-  check_command:
-  - bash
-  - scripts/operations/generate-tech-stack-version-provenance.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0061-tech-stack-version-provenance/README.md
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
   authority: .agents/governance/providers/registry.yaml
@@ -682,23 +630,6 @@ files:
   disposition: retain
   successor: null
   tests: []
-- path: scripts/security/generate-supply-chain-sample-service-summary.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - .github/workflow-contract.yml
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_tech_stack_version_contract.py
-  check_command:
-  - bash
-  - scripts/security/generate-supply-chain-sample-service-summary.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0079-supply-chain-sample-service/README.md
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
@@ -717,34 +648,11 @@ files:
   mutation: runtime
   consumers:
   - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  - scripts/security/generate-supply-chain-sample-service-summary.sh
   disposition: retain
   successor: null
   tests:
   - tests/lib/supply_chain/test_grype_db_seed.py
   - tests/validation/test_supply_chain_wrapper.py
-- path: scripts/validation/agentic-audit-semantic-contract.json
-  kind: contract
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agentic_audit_semantic_freshness.py
-- path: scripts/validation/audit_criterion_contract.py
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_audit_criterion_contract.py
 - path: scripts/validation/check-agent-governance-contract.py
   kind: validator
   authority: .github/workflow-contract.yml
@@ -756,17 +664,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/check-agentic-audit-semantic-freshness.py
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agentic_audit_semantic_freshness.py
 - path: scripts/validation/check-document-corpus-lifecycle.py
   kind: validator
   authority: docs/99.templates/registry.json
@@ -867,7 +764,6 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - scripts/security/generate-supply-chain-sample-service-summary.sh
   disposition: retain
   successor: null
   tests:
@@ -902,65 +798,12 @@ files:
   - tests/validation/test_ci_gate_model.py
   - tests/validation/test_ci_gate_plan.py
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/validation/generate-audit-implementation-matrix.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - .github/workflow-contract.yml
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agentic_audit_semantic_freshness.py
-  - tests/validation/test_audit_criterion_contract.py
-  check_command:
-  - bash
-  - scripts/validation/generate-audit-implementation-matrix.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0065-audit-implementation-matrix/README.md
-- path: scripts/validation/generate-security-automation-readiness.sh
-  kind: generator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - .github/workflow-contract.yml
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_security_automation_readiness.py
-  check_command:
-  - bash
-  - scripts/validation/generate-security-automation-readiness.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0078-security-automation-readiness/README.md
-- path: scripts/validation/report-provider-hook-parity.sh
-  kind: validator
-  authority: .agents/governance/providers/registry.yaml
-  lifecycle: active
-  mutation: check-write
-  consumers:
-  - tests/validation/test_provider_hook_parity.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_provider_hook_parity.py
-  check_command:
-  - bash
-  - scripts/validation/report-provider-hook-parity.sh
-  - --check
-  outputs:
-  - docs/90.references/data/0072-provider-hook-parity-matrix/README.md
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
   consumers:
-  - scripts/validation/agentic-audit-semantic-contract.json
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null

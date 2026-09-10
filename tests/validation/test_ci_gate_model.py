@@ -214,14 +214,11 @@ class PublicSuiteModelTests(unittest.TestCase):
         expected_by_suite = {
             "agent-governance": {
                 "tests.lib.agent_governance.test_agent_governance_contract",
-                "tests.validation.test_provider_hook_parity",
                 "tests.validation.test_provider_native_surfaces",
                 "tests.validation.test_provider_surface_renderer",
                 "tests.validation.test_stop_gate_deferred_paths",
             },
             "document-lifecycle": {
-                "tests.validation.test_generate_llm_wiki",
-                "tests.validation.test_security_automation_readiness",
                 "tests.validation.test_workspace_governance_migration",
             },
             "operations": {
@@ -236,8 +233,6 @@ class PublicSuiteModelTests(unittest.TestCase):
             },
             "repository-integrity": {
                 "tests.lib.test_surface_ownership",
-                "tests.validation.test_agentic_audit_semantic_freshness",
-                "tests.validation.test_audit_criterion_contract",
                 "tests.validation.test_reference_stage_repo_contract",
                 "tests.validation.test_script_manifest",
                 "tests.validation.test_tech_stack_version_contract",

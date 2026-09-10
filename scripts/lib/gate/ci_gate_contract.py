@@ -61,7 +61,6 @@ _COMPLETE_CAPABILITY_ARGV = {
     "check-document-metadata.py": ("--mode", "check-changed"),
     "check-supply-chain-policy.py": ("--check",),
     "rehearse-postgres-logical-upgrade.sh": ("--check-config-only",),
-    "report-provider-hook-parity.sh": ("--check",),
 }
 _TOP_LEVEL_FIELDS = frozenset(
     {
@@ -97,7 +96,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.supply-chain": (
         "leaf.supply-chain-fixture-policy",
         "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness",
     ),
     "local.compose-validation": (
         "leaf.compose-validation",

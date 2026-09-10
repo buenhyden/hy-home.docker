@@ -79,8 +79,8 @@ ADR-0029는 공통 규범, 문서 machine contract, 실행기, native adapter의
 
 - [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
 - [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
-- [Predecessor authority decision](../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md)
-- [Preserved-record decision](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md)
+- Predecessor authority decision
+- Preserved-record decision
 - [Owning specification](../../03.specs/0173-governance-qa-surface-convergence/spec.md)
 - [Current plan](../../03.specs/0173-governance-qa-surface-convergence/plan.md)
 

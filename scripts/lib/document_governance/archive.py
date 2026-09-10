@@ -632,6 +632,20 @@ def _compact_mapping_selection(document: Mapping[str, Any]) -> list[dict[str, An
     for original, row in zip(document["rows"], selected, strict=True):
         if original["row_id"] in row_ids:
             row["target_path"] = task_targets[row["target_path"]]
+    # Approved 2026-09-10. Emptying the Stage 90 data category moved the
+    # `DATA-0067` payload under `docs/98.archive/retired/`. The bytes are
+    # unchanged, so the recovery comparison still proves the same equality; only
+    # the path the frozen row names moved, and the owner approved that rewrite.
+    retired_targets = {
+        "docs/90.references/data/0067-foundation/data.yaml": (
+            "docs/98.archive/retired/90.references/data/0067-foundation/data.yaml"
+        ),
+    }
+    for row in selected:
+        moved = retired_targets.get(row.get("target_path"))
+        if moved is not None:
+            row["target_path"] = moved
+
     omitted = {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
     return [
         row

@@ -455,17 +455,6 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     "docs/05.operations/runbooks/09-tooling/k6.md",  # retired-route-record
     "docs/05.operations/runbooks/09-tooling/locust.md",  # retired-route-record
     "docs/05.operations/runbooks/09-tooling/performance-testing.md",  # retired-route-record
-    "docs/90.references/audits/0019-readme/README.md",
-    "docs/90.references/audits/0021-automation-candidates/README.md",
-    "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
-    "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md",
-    "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
-    "docs/90.references/audits/0026-implementation-overview/README.md",
-    "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
-    "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
-    "docs/90.references/audits/0031-security-framework-maturity/README.md",
-    "docs/90.references/data/0076-llm-wiki-stage-category-coverage/README.md",
-    "docs/90.references/data/0082-llm-wiki-index/README.md",
     "docs/90.references/research/ref-0039-readme.md",
     "docs/90.references/research/ref-0043-automation-pipeline-workflow.md",
     "docs/90.references/research/ref-0044-docker-compose-infrastructure.md",
@@ -681,19 +670,6 @@ MIGRATION_TYPED_KEYS = frozenset(
 )
 APPROVED_MIGRATION_PATHS = frozenset(
     {
-        "docs/90.references/audits/0019-readme/README.md",
-        "docs/90.references/audits/0020-agent-instructions-catalog-vibe-models/README.md",
-        "docs/90.references/audits/0021-automation-candidates/README.md",
-        "docs/90.references/audits/0022-compose-infrastructure-operations-readiness/README.md",
-        "docs/90.references/audits/0024-frontmatter-template-readme-implementation/README.md",
-        "docs/90.references/audits/0025-harness-engineering-implementation/README.md",
-        "docs/90.references/audits/0026-implementation-overview/README.md",
-        "docs/90.references/audits/0027-loop-engineering-implementation/README.md",
-        "docs/90.references/audits/0028-provider-harness-loop-implementation/README.md",
-        "docs/90.references/audits/0029-sdlc-document-contracts-implementation/README.md",
-        "docs/90.references/audits/0030-sdlc-quality-formatting-implementation/README.md",
-        "docs/90.references/audits/0031-security-framework-maturity/README.md",
-        "docs/90.references/audits/0032-workspace-rules-environment-implementation/README.md",
         "docs/99.templates/templates/common/readme.template.md",
         "docs/99.templates/templates/operations/guide.template.md",
         "docs/99.templates/templates/operations/incident.template.md",
