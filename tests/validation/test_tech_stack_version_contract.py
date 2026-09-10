@@ -29,9 +29,6 @@ REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
 OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
-SUPPLY_CHAIN_SUMMARY_GENERATOR = (
-    ROOT / "scripts/security/generate-supply-chain-sample-service-summary.sh"
-)
 DOZZLE_COMPOSE = ROOT / "infra/11-laboratory/dozzle/docker-compose.yml"
 DRIFT_COMPONENTS = (
     "Traefik",
@@ -148,18 +145,6 @@ class TechStackVersionContractTests(unittest.TestCase):
         registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
         return {entry["component"]: entry for entry in registry["entries"]}
 
-    def test_supply_chain_summary_is_fresh(self) -> None:
-        completed = subprocess.run(
-            ["bash", str(SUPPLY_CHAIN_SUMMARY_GENERATOR), "--check"],
-            cwd=ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-            pass_fds=gate_root_pass_fds(ROOT),
-        )
-        self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
-
-    @staticmethod
     def run_compose_image_resolver_path(
         compose_path: pathlib.Path,
         service: str = "target",

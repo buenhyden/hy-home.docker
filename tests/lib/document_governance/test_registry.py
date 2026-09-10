@@ -781,11 +781,16 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
         profiles = build_registry_profiles(load_registry())
-        profiles["common"]["generated_outputs"] = generated_reference_owners(ROOT)
+        # No tracked generator writes a Stage 90 body any more, so
+        # `generated_reference_owners` is legitimately empty and cannot supply a
+        # positive case. The owner map is built here instead, which keeps the
+        # rule under test: a generated body must name its exact manifest owner.
+        self.assertEqual({}, generated_reference_owners(ROOT))
         path = pathlib.Path(
             "docs/90.references/data/0065-audit-implementation-matrix/README.md"
         )
         owner = "scripts/validation/generate-audit-implementation-matrix.sh"
+        profiles["common"]["generated_outputs"] = {path.as_posix(): owner}
         for candidate, generated_by, allowed in (
             (path, owner, True),
             (path, "scripts/forged.py", False),

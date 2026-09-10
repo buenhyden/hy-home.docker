@@ -1,0 +1,248 @@
+---
+profile_id: audit
+status: active
+artifact_id: AUD-0024
+artifact_type: audit
+parent_ids:
+- 'AUD-0026'
+created: '2026-07-05'
+updated: '2026-09-09'
+observed_at: '2026-07-05'
+---
+
+# Reference: Frontmatter, Template, and README Implementation Audit
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
+## Overview
+
+This reference preserves the dated implementation audit of document
+frontmatter, type profiles, templates, lifecycle meaning, README exceptions,
+and generated-document ownership. It records the DML assessment after
+T-AER-008 and T-AER-012 while separating changed/new enforcement from the
+advisory historical-corpus inventory.
+
+## Purpose
+
+Document the historical typed-metadata implementation and its enforcement boundary
+without presenting the advisory historical inventory as a completed corpus-wide
+migration.
+
+## Repository Role
+
+[canonical agent governance documentation policy](../../../../.agents/governance/documentation-protocol.md)
+and the [Stage 99 Registry](../../../99.templates/registry.json) remain the
+current owners. This advisory audit preserves its July baseline and recorded
+Spec 129 follow-up. Its old classifier, README exception, Stage 04, and Release
+profile claims are historical evidence, not current authoring instructions.
+The current model uses `type`, governed README envelopes, co-located Stage 03
+Tasks, and external release evidence without a Release profile.
+
+## Scope
+
+### In Scope
+
+- Top-frontmatter syntax, allowed status values, and legacy key signals
+- Artifact-type semantics, direct parents, supersession, freshness, and transitions
+- README and generated-document exceptions
+- Dated typed profiles, validator enforcement, and advisory inventory boundary
+
+### Out of Scope
+
+- Further schema/profile expansion or historical-corpus migration
+- Treating current filesystem paths or modification times as lifecycle evidence
+- Hand-editing generator-owned outputs
+
+## Definitions / Facts
+
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: July 2026 audit definitions.
+>
+> - **Syntactically valid** means a non-README target-stage leaf has top YAML
+>   frontmatter with one allowed status word.
+> - **Semantically correct** means the value and keys fit the inferred artifact
+>   type, current role, parents, replacement, review evidence, and transition history.
+> - **Type-inappropriate key** is a key present where its profile forbids it;
+>   the pre-remediation generic-key scan is historical context, while current
+>   profile enforcement is defined by the Stage 99 metadata profiles.
+> - **README exception** means role is normally derived from path, heading, and
+>   folder-index behavior rather than copied leaf lifecycle metadata.
+
+Current envelope, classifier, relationship, and exception rules come from the
+Registry; the old README exception below is not an authoring exemption.
+
+## Historical Syntax Baseline and Current Semantic Boundary
+
+The pre-remediation syntax results were reproduced at baseline
+`e4c92fa1e0e4e59af20efa9f1fcb104e3a8698eb` on 2026-07-11.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Check | Result | Syntax conclusion | Semantic limitation |
+| --- | --- | --- | --- |
+| `git ls-files 'docs/**/*.md' \| wc -l` | 872 | Current docs-only corpus scope is reproducible. | It is not the same scope as the dated repo-wide 930/948 snapshots. |
+| Allowed-status `rg -l` over Stage 01/02/03/04/05/90/98 | 635 | Exact Task 4 command result. | Body examples can match `rg`; top-frontmatter parsing is the authoritative breakdown. |
+| Top-frontmatter parse for Stage 01/02/03/04/05/90/98 | 366 active, 240 completed, 9 superseded, 20 archived; total 635 | Every one of 598 non-README leaves has an allowed top status; 37 READMEs also carry status. | Valid vocabulary does not prove currentness or a legal transition. |
+| README inventory in the brief's Stage 01-05/90/98/99 scope | 140 total; 37 with status and 103 without | No README has copied `status: draft`. | No explicit consumer/profile matrix currently explains each status-bearing README. |
+| Pre-remediation proposed and legacy key scan | 0 occurrences of `artifact_id`, `artifact_type`, `parent_ids`, `supersedes`, `reviewed_at`, `review_cycle`, `type`, `owner`, `updated`, `links`, `document_type`, or `template_type` at column 1 under `docs` | This is preserved dated baseline evidence, not current implementation state. | Current migrated documents and profiles now use the typed keys. |
+| Generated metadata | 6 tracked Stage 90 outputs have generator-owned `generated_by` plus generator-emitted `status: active` | Generator ownership is explicit for these outputs. | Freshness comes from canonical generator check/write modes, not human status edits. |
+| Superseded documents | 9 | Manual review found a current replacement route in every body. | No validator prevents a future replacement-free supersession or proves direction/transition history. |
+| Top fence in `docs/**/*.md` | 778/872 | Frontmatter is common. | The 94 without a top fence include profiles where lifecycle metadata is not required; absence alone is not a defect. |
+
+The 2026-07-03 report's 930 tracked Markdown / 745 top-frontmatter / 185
+missing snapshot and the 2026-07-04 report's 948 / 764 / 184 snapshot remain
+dated repo-wide evidence. They are not current implementation counts.
+
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: recorded Spec 129 follow-up to the July 2026 baseline; exact follow-up date not stated.
+> The Spec 129 foundation is later current-state evidence, not a rewrite of those
+> snapshots. The registry now classifies all 231 tracked READMEs through 17
+> non-overlapping profiles and fails closed on zero or multiple matches; the 37
+> status-bearing READMEs in the preserved audit baseline still await the next
+> migration wave. Frontmatter and multiple-parent order are deterministic
+> serialization only, never semantic priority. Release now has a distinct profile,
+> checker route, copyable template, selection route, and Stage 05 index, while no
+> Release event record exists.
+>
+> T-AER-008 implemented machine-readable profiles, a deterministic manifest and
+> checker, active-chain migration, changed/new blocking selection, transition
+> overrides, and focused tests. T-AER-012 then hardened deletion, identity-change,
+> explicit-base decoding, and referential-integrity behavior. The generated full
+> inventory remains advisory for historical findings; only the safe changed/new
+> and impacted-dependent selection is blocking.
+
+For current Release behavior, use the
+[external-release-evidence policy](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary).
+The criterion rows retain their observed historical verdicts and do not
+reclassify current profiles or authorize a new Release record.
+
+## Audit Criterion Records
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Criterion ID | External criterion | Workspace evidence | Implementation state | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DML-01 | Give every migrated leaf a stable identifier independent of path and heading. | T-AER-008 migrated the approved active chain to unique `artifact_id` values; the deterministic manifest rejects duplicates, and T-AER-012 covers rename and identity-change impact. | Implemented | 3 | Retain | Stage 99 metadata profiles and checker owner | Retain manifest, duplicate-ID, rename, and identity-change tests for migrated/changed documents. | Run focused metadata tests and changed/new checks from T-AER-008/012. | High for the enforced scope; no full historical-corpus migration claim. |
+| DML-02 | Apply required/optional/forbidden metadata through artifact-type profiles, not one universal key list. | `document-metadata-profiles.yaml` defines machine-readable required, optional, and forbidden keys by inferred artifact type, including README, generated, governance, template, archive, and unsupported exceptions. | Implemented | 3 | Retain | Stage 99 metadata profiles | Retain profile-specific validation and fixtures instead of introducing a universal key list. | Run the metadata profile unit suite and changed/new checker. | High. |
+| DML-03 | Record only direct upstream artifact IDs as resolvable parents, with deterministic multiple-parent handling. | Migrated documents use `parent_ids`; the checker builds a deterministic ID manifest and enforces resolvable direct parents, permitted roots, serialization order, self-reference, and cycles. Serialization follows registry type precedence and artifact ID only to stabilize presentation; list position never assigns semantic priority. T-AER-012 hardens impacted dependents across deletion and identity changes. | Implemented | 3 | Retain | Metadata checker and stage owners | Retain relation, serialization, and referential-integrity fixtures for current, staged, and explicit-base changes without adding priority semantics. | T-AER-008/012 focused tests plus Spec 129 parent-order fixtures and changed/new validation. | High for migrated/changed and impacted-dependent scope. |
+| DML-04 | Express replacement explicitly and preserve supersession direction. | Typed profiles support `supersedes`; the checker resolves replacement IDs and validates lifecycle/type direction, while human replacement links remain readable. | Implemented | 3 | Retain | Metadata checker and Stage 04 owner | Retain replacement-direction, missing-target, and dependent-impact fixtures. | Metadata semantic tests and T-AER-012 referential-integrity checks. | High for typed changed/new scope. |
+| DML-05 | Make `reviewed_at` and `review_cycle` type-dependent evidence-backed freshness fields. | Stage 99 profiles require, allow, or forbid `reviewed_at` and `review_cycle` by artifact type; changed/new validation checks values without using filesystem mtime as review proof. | Implemented | 3 | Retain | Artifact owners and Stage 99 profiles | Retain type-specific freshness validation; keep historical inventory findings advisory. | Profile tests and changed/new checker from T-AER-008. | High for enforced changed/new scope. |
+| DML-06 | Keep PRD/Spec, ARD/ADR, dated Plan/Task, and tier numbering type-specific and separate from lifecycle identity. | All scanned PRD/ARD/ADR/Spec-folder/Plan/Task names conform; the typed `artifact_id` layer is separately validated without suffix unification. | Implemented | 3 automated/enforced for naming | Retain | Documentation protocol | Preserve type-specific naming and separate stable identity. | Reproducible filename scans, metadata checks, and repository contracts. | High. |
+| DML-07 | Enforce forward transitions and keep superseded terminal and archived Stage 98-only after rollout. | The metadata contract separates status vocabulary from transitions, validates prior/current state for selected changes, keeps terminal states terminal, and restricts archived artifacts to Stage 98. | Implemented | 3 | Retain | Stage 99 lifecycle contract and checker owner | Retain forward, terminal, superseded, and archived-path fixtures. | Focused transition tests and changed/new validation from T-AER-008/012. | High for enforced changes. |
+| DML-08 | Require approval, reason, previous state, and explicit override for reverse transitions. | The checker rejects reverse transitions unless the Stage 04-approved override input identifies the path, previous state, current state, reason, and approval evidence; T-AER-012 reclosure used four explicit overrides. | Implemented | 3 | Retain | Stage 04 task owner and metadata checker | Retain negative/positive override fixtures and require scoped task evidence. | T-AER-008 transition tests and T-AER-012 four-override validation. | High. |
+| DML-09 | Derive README role from its profile unless a real metadata consumer is declared. | Tracked READMEs within registered document-path scope select exactly one profile; their declared envelope and consumer rules apply. Repository-support/test guidance outside that scope is not a documentation-migration backlog. | Implemented | 3 | Retain | Documentation protocol and README contract owners | Retain exact-one profile selection and consumer fixtures; derive classifier scope from registered document paths without bulk deletion or addition. | README profile/consumer unit tests and registered-scope derivation. | High for the registered document-path scope and its declared consumer rules. |
+| DML-10 | Keep generated metadata and content generator-owned and freshness-checked. | Six outputs declare `generated_by`; canonical scripts provide write/check modes and repo contracts check freshness. | Implemented | 3 automated/enforced | Retain | Generator/script owner | Keep metadata emitted by generators; add no human typed keys outside generator changes. | Generator declarations, write/check commands, clean regenerated diff. | High. |
+| DML-11 | Validate semantic profiles, relations, transitions, and replacements in addition to YAML syntax/vocabulary. | `check-document-metadata.py` parses typed profiles, builds the manifest, validates relations/replacements/lifecycle/freshness, emits the advisory inventory, and blocks safe changed/new plus impacted-dependent violations. | Implemented | 3 | Retain | Metadata checker owner | Retain focused semantic tests and repository-contract integration. | T-AER-008/012 metadata suites, inventory freshness, and changed/new checks. | High. |
+| DML-12 | Keep Incident, Postmortem, Runbook, and Release as distinct type profiles. | Incident, Postmortem, Runbook, and Release have distinct registry profiles and checker routes. Release also has a copyable template, selection route, and Stage 05 index; no Release event record exists, and none is required merely to prove profile separation. | Implemented | 3 | Retain | Stage 99 registry/template and Stage 05 release owners | Retain distinct profile/template fixtures; create Incident, Postmortem, or Release leaves only from qualifying event evidence. | Metadata profile tests, all-template instantiation tests, Release route checks, and event-leaf inventory. | High. |
+| DML-13 | Preserve stable criterion rows and evidence rather than a composite score. | The shared `audit_criterion_contract.py` schema owns the required fields; canonical reports preserve one complete row per criterion, and the generator/parser enforces the independent criterion membership. | Implemented | 3 | Retain | Canonical audit pack owner | Keep row-level evidence canonical and generated matrix freshness enforced. | Run `python3 scripts/validation/audit_criterion_contract.py` and `bash scripts/validation/generate-audit-implementation-matrix.sh --check`; confirm complete, unique criterion coverage. | High. |
+| DML-14 | Roll out advisory-first, review false positives, then block changed/new documents only. | The deterministic full-corpus inventory remains advisory, while T-AER-008 migrated the approved active chain and enabled blocking changed/new selection; T-AER-012 added impacted-dependent referential-integrity hardening without promoting unrelated historical findings. | Implemented | 3 | Retain | Metadata program and checker owners | Retain advisory inventory plus changed/new and impacted-dependent blocking boundaries. | Inventory write/check, focused tests, and T-AER-008/012 task evidence. | High; full historical-corpus migration remains intentionally unclaimed. |
+
+## Syntax Compliance Versus Semantic Correctness
+
+> Historical evidence (not current authority; source: Git history):
+> Observation boundary: recorded historical target-surface wave.
+> The target-surface wave exercises the profile model without introducing a
+> universal frontmatter shape. Root `archive/**` selects `content-archive`, while
+> `docs/98.archive/**` selects `sdlc-archive`; both keep semantic
+> `artifact_type: archive` but have different relation and preservation rules.
+> The target promotion candidate is blocking at 483 independently reviewed
+> `pass/pass` rows. Native GitHub,
+> Compose, script, configuration, and asset surfaces retain their consumer-native
+> schemas rather than receiving Markdown metadata.
+
+Current archive roles and frozen-body handling are owned by the
+[Stage 98 index](../../../98.archive/README.md) and Registry.
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Surface | Syntax result | Current semantic result |
+| --- | --- | --- |
+| Leaf lifecycle status | The dated syntax baseline remains preserved; current typed profiles validate allowed status by artifact role. | Implemented for migrated/changed documents, including transition and explicit reverse-override rules; historical inventory findings remain advisory. |
+| Supersession | Typed `supersedes` relations and terminal lifecycle rules are available. | Implemented for typed changed/new scope with replacement resolution/direction and referential-integrity impact checks. |
+| Templates | Changed and normalized target documents retain mapped heading/literal checks. | Typed changed/new metadata additionally validates profile, identity, parents, freshness, and lifecycle; body truth still requires review. |
+| README | The preserved baseline's mixed use conforms to the default exception better than a universal leaf rule; no draft copy was found. | Tracked README paths within registered document-path scope select exactly one profile and use its declared consumer semantics. Repository-support/test guidance outside that scope does not form a profile-adoption backlog. |
+| Generated outputs | Six current outputs are generator-owned and freshness-checked. | Implemented when regenerated canonically; human edits cannot establish freshness. |
+| Generic keys | Typed keys are profile-governed and legacy duplicate-purpose keys are globally forbidden. | Implemented for the checker scope; advisory findings do not rewrite historical files. |
+
+## Implemented Semantic Inventory and Enforcement Boundary
+
+The historical advisory inventory recorded the following row fields. These
+are preserved observations, not an independent current schema:
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Field | Required behavior |
+| --- | --- |
+| Path and inferred profile | Infer PRD, ARD, ADR, Spec/support contract, Plan, Task, Guide, Policy, Runbook, Incident, Postmortem, Release, Reference, Audit, Archive, README, generated, or explicit unsupported profile. |
+| Frontmatter parse result | Distinguish missing fence, malformed YAML, duplicate key, allowed syntax, and profile-semantic error. |
+| Identity | Report missing, valid, or duplicate `artifact_id`; resolve through a deterministic manifest. |
+| Relations | Resolve direct `parent_ids` and `supersedes`; report missing target, wrong root/type, nondeterministic order, self-reference, and cycle. |
+| Lifecycle | Report current status, profile-allowed states, stale-active signal, replacement-free supersession, archived-outside-Stage-98, and transition-evidence availability. |
+| Freshness | Report whether review fields are required/optional/forbidden and whether evidence-backed dates/cadence exist; never use mtime as proof. |
+| README/generated exception | Record profile reason and consumer/generator owner; flag copied leaf keys or human edits to generator-owned fields. |
+| Type-inappropriate keys | Evaluate required/optional/forbidden per profile, including generic `type`, `owner`, `updated`, `links`, `document_type`, and `template_type`. |
+| Enforcement disposition | Advisory-only, migration candidate, changed/new blocking candidate, generated exception, README exception, justified N/A, or separately approved historical cleanup. |
+
+The recorded implementation produced stable repeated reports and changed no
+document automatically. Current selection and blocking behavior must be checked
+against registered scripts and tests; this historical report does not freeze
+the old enforcement boundary.
+
+## Source Rules
+
+- Counts describe tracked files at their stated historical baseline.
+- Graphify's `30df271a` report is stale and advisory; it was not used as proof.
+- The DML criteria come from primary-source-backed Task 1 research, but active
+  schema ownership remains canonical governance and Stage 99 and approved current Stage 03 work.
+- Historical 930/948 counts remain dated evidence with their original scopes.
+
+## Sources
+
+- `Document metadata and lifecycle criteria` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `document-metadata-lifecycle` leaf) - DML-01 through DML-14
+- `SDLC document roles` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `sdlc-document-roles` leaf) - artifact-type boundaries
+- [Frontmatter contract](../../../99.templates/README.md) - current key/profile and README/generated rules
+- [Lifecycle status](../../../99.templates/README.md) - current status vocabulary and replacement requirement
+- [Documentation protocol](../../../../.agents/governance/documentation-protocol.md) - target-stage status, template, and numbering rules
+- [Audit template](../../../99.templates/templates/references/audit-pack.template.md) - current registered report profile
+
+## Maintenance
+
+- **Owner**: Documentation Specialist / Metadata program owner
+- **Review Cadence**: Reproduce before metadata profile, validator, or changed/new enforcement changes
+- **Update Trigger**: Frontmatter, template, README, generator, identity, relation, freshness, or lifecycle semantics change
+
+## Related Documents
+
+- [Audit pack README](../0019-readme/README.md)
+- [SDLC and document-contract audit](../0029-sdlc-document-contracts-implementation/README.md)
+- [SDLC quality and formatting summary](../0030-sdlc-quality-formatting-implementation/README.md)
+- [Implementation overview](../0026-implementation-overview/README.md)
+
+## Objective
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Criteria
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Evidence
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Findings
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Conformance
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Actions
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Traceability
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.

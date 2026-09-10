@@ -2720,7 +2720,7 @@ rows:
   action: rename
   recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525
 - source_path: docs/90.references/data/governance/document-corpus-lifecycle/ref-0067-foundation.yaml
-  target_path: docs/90.references/data/0067-foundation/data.yaml
+  target_path: docs/98.archive/retired/90.references/data/0067-foundation/data.yaml
   artifact_id: DATA-0067
   action: rename
   recovery_commit: 889d3868ecd0913cddac79a718584a54a8453525

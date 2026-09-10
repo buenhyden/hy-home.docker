@@ -315,9 +315,9 @@ Repository sources:
   [CI workflow](../../../../.github/workflows/ci-quality.yml), and
   [main protection record](../../../../.github/rulesets/main-protection.md).
 - [Implementation audits](../../audits/README.md),
-  [Compose profile data](../../data/0059-compose-profile-service-coverage/README.md),
-  [LLM Wiki index](../../data/0082-llm-wiki-index/README.md), and
-  [repository map](../../data/0083-repository-map/README.md).
+  Compose profile data,
+  LLM Wiki index, and
+  repository map.
 
 Each member owns its detailed claim and source inventory. This package-level
 list contains only sources shared across categories.
@@ -374,14 +374,14 @@ list contains only sources shared across categories.
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md), and
-  [ADR-0031](../../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md).
+  ADR-0031.
 - Implementation evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
   and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Operations: [Stage 05](../../../05.operations/README.md).
-- Audit/data: [AUD-0026](../../audits/0026-implementation-overview/README.md),
+- Audit/data: AUD-0026,
   [k6 guide](../../../05.operations/catalog/09-tooling/0061-k6/guide.md),
-  [DATA-0082](../../data/0082-llm-wiki-index/README.md), and
-  [DATA-0083](../../data/0083-repository-map/README.md).
+  DATA-0082, and
+  DATA-0083.
 - Package/index/template authority: [research index](../README.md),
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md),

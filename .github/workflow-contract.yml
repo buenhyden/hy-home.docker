@@ -401,8 +401,6 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_generate_llm_wiki",
-        "tests.validation.test_security_automation_readiness",
         "tests.validation.test_workspace_governance_migration",
         "-v"
       ],
@@ -549,19 +547,6 @@
       "suite_key": "local-agent-governance-contract"
     },
     {
-      "gate_id": "leaf.local-audit-matrix-freshness",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/generate-audit-implementation-matrix.sh",
-      "argv": [
-        "--check"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-audit-matrix-freshness"
-    },
-    {
       "gate_id": "leaf.local-diff-hygiene",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -642,19 +627,6 @@
       "suite_key": "local-document-corpus-lifecycle-tests"
     },
     {
-      "gate_id": "leaf.local-llm-wiki-freshness",
-      "kind": "leaf",
-      "entrypoint": "scripts/knowledge/generate-llm-wiki.py",
-      "argv": [
-        "--check"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-llm-wiki-freshness"
-    },
-    {
       "gate_id": "leaf.local-script-manifest",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-script-manifest.py",
@@ -677,19 +649,6 @@
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "local-provider-surface-drift"
-    },
-    {
-      "gate_id": "leaf.local-security-readiness-freshness",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/generate-security-automation-readiness.sh",
-      "argv": [
-        "--check"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "local-security-readiness-freshness"
     },
     {
       "gate_id": "leaf.local-shell-syntax",
@@ -737,7 +696,6 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_provider_hook_parity",
         "tests.validation.test_provider_native_surfaces",
         "tests.validation.test_provider_surface_renderer",
         "tests.validation.test_stop_gate_deferred_paths",
@@ -782,8 +740,6 @@
       "argv": [
         "run-unittest",
         "tests.lib.test_surface_ownership",
-        "tests.validation.test_agentic_audit_semantic_freshness",
-        "tests.validation.test_audit_criterion_contract",
         "tests.validation.test_reference_stage_repo_contract",
         "tests.validation.test_script_manifest",
         "tests.validation.test_tech_stack_version_contract",
@@ -895,19 +851,6 @@
       "suite_key": "supply-chain-fixture-policy"
     },
     {
-      "gate_id": "leaf.supply-chain-summary-freshness",
-      "kind": "leaf",
-      "entrypoint": "scripts/security/generate-supply-chain-sample-service-summary.sh",
-      "argv": [
-        "--check"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 5,
-      "opaque": true,
-      "suite_key": "supply-chain-summary-freshness"
-    },
-    {
       "gate_id": "leaf.template-security-baseline",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-template-security-baseline.sh",
@@ -1001,8 +944,7 @@
       "opaque": false,
       "children": [
         "leaf.supply-chain-fixture-policy",
-        "leaf.supply-chain-deterministic-policy",
-        "leaf.supply-chain-summary-freshness"
+        "leaf.supply-chain-deterministic-policy"
       ]
     },
     {
@@ -1078,10 +1020,7 @@
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions",
-        "leaf.local-llm-wiki-freshness",
-        "leaf.local-audit-matrix-freshness",
-        "leaf.local-security-readiness-freshness"
+        "leaf.document-lifecycle-regressions"
       ],
       "operations": [
         "leaf.operations-catalog",
@@ -1115,24 +1054,10 @@
         "contexts": ["pull_request", "push", "workflow_dispatch"]
       },
       {
-        "suite": "repository-integrity",
-        "gate_id": "public.validator.scripts.validation.audit_criterion_contract.py",
-        "entrypoint": "scripts/validation/audit_criterion_contract.py",
-        "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
         "suite": "agent-governance",
         "gate_id": "leaf.local-agent-governance-contract",
         "entrypoint": "scripts/validation/check-agent-governance-contract.py",
         "argv": ["--mode", "repository", "--section", "all"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "public.validator.scripts.validation.check-agentic-audit-semantic-freshness.py",
-        "entrypoint": "scripts/validation/check-agentic-audit-semantic-freshness.py",
-        "argv": [],
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       },
       {
@@ -1210,13 +1135,6 @@
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
-      },
-      {
-        "suite": "agent-governance",
-        "gate_id": "public.validator.scripts.validation.report-provider-hook-parity.sh",
-        "entrypoint": "scripts/validation/report-provider-hook-parity.sh",
-        "argv": ["--check"],
         "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
       }
     ],

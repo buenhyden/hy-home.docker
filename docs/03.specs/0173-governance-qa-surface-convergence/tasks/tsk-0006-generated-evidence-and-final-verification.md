@@ -48,6 +48,58 @@ elsewhere.
 
 ## Work Log
 
+### W34 Stage 90 audits and data are emptied with their consumers (2026-09-10)
+
+The owner asked for `docs/90.references/audits/` and `docs/90.references/data/`
+to hold nothing but their README. The investigation found the opposite of a
+stale corpus: all 27 packages were `status: published`, none older than
+2026-09-04, and every one was named by code. `AUDIT_PACK_DIR` in the matrix
+generator defaults to the audit directory, `profile.py` carried eleven package
+paths in a hard-coded allow-list, and `audit_criterion_contract.py` mapped audit
+filenames one by one. Emptying the folders first would have failed six
+registered gates. The concern was raised and the owner chose the full reset
+including contracts, so the work ran in the order SPEC-0173 already states for
+this corpus: Stage 90 data "remains current only while a current consumer
+exists", which makes consumer removal the change and document removal its
+consequence.
+
+Removed: four gate leaves and three public validators; ten scripts totalling
+5,171 lines, including the LLM Wiki generator, the audit matrix generator, the
+security-readiness generator, the provider-hook-parity reporter and the audit
+criterion contract; ten manifest rows; five test modules and 333 lines of
+generator-specific test bodies whose subjects no longer exist.
+
+Preserved: all 27 package bodies under
+`docs/98.archive/retired/90.references/`, with tombstones `0205` through `0231`
+and the tombstone identity space advanced to 231.
+
+Two corrections during the work. `sync-tech-stack-versions.sh` was on the first
+removal list and does not belong there: it writes the Stage 99 registry, not a
+Stage 90 package, and its leaf stays. That is the same class of error as the uv
+removal in W30, caught this time before it was executed. And DATA-0067 was
+retired although the category README said it must stay; its remaining consumer
+is not a reader but the lifecycle gate's byte comparison against the frozen
+Migration 0003 recovery blob. The owner declined restoring it and approved
+rewriting the frozen record instead, so the Migration row was repointed to the
+preserved path, `archive.py` records the approved retarget beside the five that
+already existed, and the pinned ledger digest was repinned. `data.yaml` is
+byte-identical at its new location, so the comparison proves the same equality
+against the same bytes.
+
+The owner then set a new boundary: outside Stage 98 only `completed/` may be
+linked, and only `operation/incident` and `operation/postmortem` records may
+cite the rest. 58 links across 17 documents became plain text, the
+`active-archive-link` rule was narrowed from active stages to every document
+outside the archive and from three exempt folders to one, and the profile
+exception was added. `docs/98.archive/README.md` owns the rule; three tests hold
+it, including the exception and its negative case. A deliberately injected
+violation was observed to fail the check, so the rule is not vacuous.
+
+Verification: 1,142 unit tests pass, `run-ci-gate.py --profile changed` exits 0,
+links report `documents=872 links=6590 failures=0`, metadata reports
+`selected=400 violations=0`. There is no LLM Wiki freshness step left to run,
+because the generator that owned it was removed.
+
 ### W33 Prompt routing stops holding a second skill inventory (2026-09-10)
 
 Audit finding 3 read as a coverage gap: seven of 23 skills had a keyword route
@@ -3253,7 +3305,7 @@ NOT_RUN observations are not converted into live PASS evidence.
 | 20 | W7/W10 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
 | 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
 | 22 | W13 | PASS: prepared tool priority, explicit-only helper use, repeat stability and missing-tool behavior; independent code review approved. | [Post-tool hook](../../../../scripts/hooks/post-tool-validate.sh) |
-| 23 | W14 | PASS: generator reuses the same validated pack once per invocation; distinct override and existing negative paths remain checked. | [Semantic validator](../../../../scripts/validation/check-agentic-audit-semantic-freshness.py) |
+| 23 | W14 | PASS: generator reuses the same validated pack once per invocation; distinct override and existing negative paths remain checked. | `check-agentic-audit-semantic-freshness.py` |
 | 24 | W12/W14/W15 | PASS: corrected owner/event/path guidance and generated output; committed full/all-files receipts above; remote observations remain baseline-SHA/event evidence only. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 
 ### Why all six Tasks read `in-progress` (2026-09-07, local-executed)

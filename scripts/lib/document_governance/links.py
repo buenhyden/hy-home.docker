@@ -39,6 +39,13 @@ _PRESERVED_LINK_PREFIXES = (
     "docs/98.archive/superseded/",
     "docs/98.archive/retired/",
 )
+# Only `completed/` may be referenced from outside the archive. The rest of the
+# archive is preserved evidence, not a citable current source, so an outside
+# document naming it invites a superseded record to be read as current state.
+# Incident and postmortem records are the exception: reconstructing what
+# happened is exactly the case where the preserved body is the right citation.
+_CITABLE_ARCHIVE_PREFIX = "docs/98.archive/completed/"
+_ARCHIVE_CITING_PROFILES = ("operation/incident", "operation/postmortem")
 _ROOT_PREFIXES = (
     ".agents/",
     "docs/",
@@ -477,6 +484,26 @@ def _finding(link: DocumentLink, code: str, message: str) -> LinkFinding:
     return LinkFinding(f"{link.source.as_posix()}:{link.line}", code, message)
 
 
+def _document_profile(
+    nodes: dict[pathlib.PurePosixPath, "DocumentNode"],
+    source: pathlib.PurePosixPath,
+) -> str:
+    """Return the source document's declared `type`, or an empty string."""
+
+    node = nodes.get(source)
+    if node is None:
+        return ""
+    lines = node.text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return ""
+    for line in lines[1:60]:
+        if line.strip() == "---":
+            break
+        if line.startswith("type:"):
+            return line.split(":", 1)[1].strip().strip('"').strip("'")
+    return ""
+
+
 def _node_map(graph: DocumentGraph) -> dict[pathlib.PurePosixPath, DocumentNode]:
     return {node.path: node for node in graph.nodes}
 
@@ -563,17 +590,13 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             findings.append(_finding(link, "link-outside-repository", link.raw_target))
             continue
         target_text = link.target.as_posix()
-        active_source = link.source.as_posix().startswith(_ACTIVE_STAGE_PREFIXES)
+        outside_archive = not link.source.as_posix().startswith("docs/98.archive/")
         if (
-            active_source
+            outside_archive
             and target_text.startswith("docs/98.archive/")
             and target_text != "docs/98.archive/README.md"
-            and not target_text.startswith("docs/98.archive/migrations/")
-            # The rule guards against an active document depending on content
-            # that is no longer there. A preserved record is there: a successor
-            # naming its predecessor, or an index showing where an entry went,
-            # resolves to a real file. A tombstone is still only a pointer.
-            and not target_text.startswith(_PRESERVED_LINK_PREFIXES)
+            and not target_text.startswith(_CITABLE_ARCHIVE_PREFIX)
+            and _document_profile(nodes, link.source) not in _ARCHIVE_CITING_PROFILES
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
         target_path, target_error = _regular_target(graph, link.target)

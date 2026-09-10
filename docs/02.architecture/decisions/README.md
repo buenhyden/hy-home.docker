@@ -48,15 +48,15 @@ docs/02.architecture/decisions/
 
 - `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
 - `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
-- [`ADR-0027`](../../98.archive/superseded/02.architecture/decisions/0027-stage-00-canonical-adapter-model.md):
+- `ADR-0027`:
   ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence strategy.
-- [`ADR-0029`](../../98.archive/superseded/02.architecture/decisions/0029-workspace-governance-authority.md):
+- `ADR-0029`:
   ADR-0032가 supersede한 이전 workspace governance authority decision.
-- [`ADR-0030`](../../98.archive/superseded/02.architecture/decisions/0030-tombstone-retirement-record.md):
+- `ADR-0030`:
   ADR-0031이 supersede한 Tombstone-only preservation decision.
-- [`ADR-0031`](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md):
+- `ADR-0031`:
   ADR-0033이 supersede한 Spec-only preservation decision.
 - [`ADR-0032`](./0032-canonical-agent-governance-home.md):
   공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 active decision.

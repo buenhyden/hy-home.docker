@@ -52,6 +52,21 @@ Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테�
 `README.md`는 이 스테이지에서 유일하게 현재 유효한 문서이며 보존 기록이
 아닙니다.
 
+### 외부 참조 경계
+
+Stage 98 바깥의 문서는 `completed/` 하위만 링크할 수 있습니다. 나머지
+(`retired/`, `superseded/`, `migrations/`, `tombstones/`)는 보존된 증거이지
+인용 가능한 현재 출처가 아니며, 바깥에서 링크하면 대체된 기록이 현재 상태로
+읽힐 여지를 만듭니다. 필요한 의미는 현재 소유자에게 이전되어 있어야 하고,
+보존된 본문은 Git history와 이 스테이지 안에서 확인합니다.
+
+예외는 `operation/incident`와 `operation/postmortem` 프로파일뿐입니다. 무슨
+일이 있었는지를 재구성하는 기록에서는 보존된 본문이 바로 그 시점의 올바른
+인용 대상입니다.
+
+이 경계는 `check-document-links.py`의 `active-archive-link`가 강제합니다.
+Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
+
 ## Structure
 
 ```text

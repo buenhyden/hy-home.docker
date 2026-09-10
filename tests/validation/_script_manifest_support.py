@@ -52,26 +52,18 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
     "graphify-out/",
     "docs/98.archive/",
     "docs/04.execution/",
-    "docs/90.references/data/0082-llm-wiki-index/",
 )
 MUTATION_OVERRIDES = {
     "scripts/hooks/post-tool-validate.sh": "check-write",
-    "scripts/knowledge/generate-llm-wiki.py": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
-    "scripts/operations/generate-compose-profile-service-coverage.sh": "check-write",
-    "scripts/operations/generate-tech-stack-version-provenance.sh": "check-write",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
-    "scripts/security/generate-supply-chain-sample-service-summary.sh": "check-write",
     "scripts/security/seed-grype-db-cache.sh": "runtime",
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
     "scripts/validation/check-document-corpus-lifecycle.py": "check-write",
     "scripts/validation/check-document-metadata.py": "check-write",
-    "scripts/validation/generate-audit-implementation-matrix.sh": "check-write",
-    "scripts/validation/generate-security-automation-readiness.sh": "check-write",
-    "scripts/validation/report-provider-hook-parity.sh": "check-write",
     "scripts/operations/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/operations/check-compose-core-readiness.sh": "runtime",
@@ -79,7 +71,6 @@ MUTATION_OVERRIDES = {
 }
 MANDATORY_DISPOSITIONS = {
     "scripts/hooks/post-tool-validate.sh": "retain",
-    "scripts/knowledge/generate-llm-wiki.py": "retain",
 }
 TASK12_RETIRED_SCRIPTS = frozenset(
     {

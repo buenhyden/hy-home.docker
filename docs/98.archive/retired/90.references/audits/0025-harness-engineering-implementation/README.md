@@ -1,0 +1,180 @@
+---
+profile_id: audit
+status: active
+artifact_id: AUD-0025
+artifact_type: audit
+parent_ids:
+- 'AUD-0026'
+created: '2026-07-05'
+updated: '2026-09-06'
+observed_at: '2026-07-05'
+---
+
+# Reference: Harness Engineering Implementation
+
+Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+Earlier Stage 00 paths, inventories, provider projections, and check results
+below remain dated observations, not current instructions or new runtime
+acceptance evidence. Source links now navigate to current owners; the
+original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+
+## Overview
+
+This reference assesses every `HAR-*` criterion in the canonical harness
+research against tracked workspace evidence at baseline `507cd505` on
+2026-07-11 and bounded revalidation through 2026-07-27. It is advisory Stage
+90 evidence, not active harness policy.
+
+## Purpose
+
+Distinguish a provider feature from repository adoption, and distinguish both
+from canonical agent governance policy or an inference about live runtime behavior.
+
+## Repository Role
+
+This report feeds approved Stage 03/04 follow-up. canonical agent governance, provider adapters,
+scripts, CI, and runtime configuration remain authoritative for behavior.
+
+## Scope
+
+### In Scope
+
+- Instruction discovery, subagents, tools/MCP, lifecycle interception,
+  isolation/approval, model routing, and evaluation/evidence.
+- Tracked `.claude`, `.codex`, and `.agents` surfaces and canonical validators.
+
+### Out of Scope
+
+- Provider, model-policy, hook, CI, script, runtime, secret, or remote changes.
+- Claims about user-global configuration, account entitlement, or live egress.
+
+## Definitions / Facts
+
+- States use `Implemented`, `Partial`, `Missing`, `Not Applicable`, and
+  `Needs Revalidation` exactly.
+- Enforcement depth is `0` absent, `1` documented, `2` partially applied,
+  `3` automated/enforced, and `4` measured with a closed feedback loop.
+
+> Historical evidence (not current authority; source: Git history):
+> The tracked tree contained 14 canonical roles (one supervisor and thirteen
+> workers), 24 functions, and 14 generated role adapters on each of the
+> Claude, Codex, Gemini, and shared compatibility surfaces. Function skills
+> intentionally projected to 24 Claude and 24 shared `.agents` directories;
+> Gemini consumed the canonical functions through generated agents rather than
+> a duplicate `.gemini/skills` tree. `sync-provider-surfaces.sh --check`
+> reported three providers and zero drift; this did not prove native runtime
+> acceptance or account entitlement.
+
+## Assessment Method
+
+The audit read the canonical `HAR-01` through `HAR-07` research rows, Stage 00
+governance, provider notes, all tracked role/model literals, hook definitions,
+the sync generator, and the agent-output fixture runner. Graphify was built
+from older commit `30df271a` and was used only for navigation; every finding
+below is corroborated by tracked source.
+
+## Audit Criteria
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Criterion ID | External criterion | Workspace evidence | Status | Enforcement depth | Disposition | Canonical owner | Automation impact | Verification | Confidence |
+| --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |
+| HAR-01 | Discover hierarchical provider instructions with explicit precedence. | Thin `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` shims route to `docs/00.agent-governance/rules/bootstrap.md`; provider sync validates projections. | Implemented | 3 | Retain | Stage 00 bootstrap and provider notes | Existing sync/contracts; add no parallel instruction layer. | `bash scripts/operations/sync-provider-surfaces.sh --check`; inspect root shims. | High: direct tracked evidence; loading still does not prove compliance. |
+| HAR-02 | Use native isolated subagents with bounded schema, tools, model, and handoff. | Stage 00 defines one supervisor and thirteen workers; the renderer emits 14 strict native role adapters for Claude, Codex, and Gemini plus 14 shared compatibility adapters. Schema and drift checks pass, while live provider acceptance remains unproved. | Partial | 3 | Retain | Stage 00 subagent protocol plus provider adapters | Retain synchronized lifecycle/schema projections and provider semantic checks; require separate native acceptance evidence. | Compare `subagent-protocol.md` with all four role directories, run provider sync `--check`, and inspect current PIC evidence. | High for tracked parity; live provider acceptance is unobserved. |
+| HAR-03 | Bound tools/MCP by native controls and repository authority. | Approval/environment rules and canonical scripts bound actions, but tracked role metadata is not a tool/path allowlist and no shared tracked project MCP baseline exists. | Partial | 2 | Improve | Stage 00 approval boundaries and provider configuration owners | Candidate denied-action/tool-boundary tests; do not inspect or overwrite user-global config. | Inspect `approval-boundaries.md`, role adapters, and tracked provider config paths. | High for policy; runtime MCP/permissions are unknown. |
+| HAR-04 | Intercept lifecycle events without inventing cross-provider event parity. | One typed seven-event contract renders seven Claude and seven Gemini native mappings plus six Codex native mappings; Codex `SessionEnd` is explicitly unsupported. Repository checks validate the tracked commands and semantics, but live interception evidence is absent. | Partial | 3 | Retain | Stage 00 hook contract and provider adapters | Retain generated hook-parity semantics and the explicit unsupported-event boundary; do not infer live interception. | Run provider sync and hook-parity checks; inspect `.claude/settings.json`, `.codex/hooks.json`, `.gemini/settings.json`, and provider notes. | High for tracked configuration; live provider interception is unobserved. |
+| HAR-05 | Separate sandbox isolation, approval, network, and repository authority. | Stage 00 documents protected actions and environment constraints; provider settings expose different controls. Tracked files cannot prove the executing sandbox profile, unattended mode, egress, or user-global settings. | Partial | 2 | Improve | Stage 00 environment and approval rules | Record actual execution mode in task evidence where available; do not infer global state. | Inspect `environment-constraints.md`, `approval-boundaries.md`, and task evidence. | Medium-high: policy is direct; runtime mode is intentionally unobserved. |
+| HAR-06 | Select exact models and provider-native reasoning controls with coupled validation. | Five typed profiles map eleven cataloged models exactly: adversarial review and long-horizon supervision use Opus 5 / Sol / Gemini 3.6; complex implementation uses Sonnet 5 / Sol / Gemini 3.6; evidence research uses Sonnet 5 / Terra / Gemini 3.5 Lite; routine validation uses Haiku 4.5 / Terra / Gemini 3.5 Lite. Exact provider-native effort/thinking values, source records, renderer output, and repository validators are coupled. The selected current IDs are recorded as stable, but entitlement and runtime acceptance remain separately unverified. There is no active fallback graph and implicit substitution is prohibited. | Implemented | 3 | Retain | `subagent-protocol.md` and provider-model contract | Preserve atomic contract/renderer/adapter/validator/evidence updates and require explicit review before any policy rollback. | Run model-contract, provider-sync, and repository-contract checks; inspect exact adapter literals and the no-fallback invariant. | High for tracked policy and controls; runtime availability is explicitly out of scope. |
+| HAR-07 | Connect deterministic validation, task evidence, and semantic evaluation. | The typed gate, CI/local routing, Stage 04 evidence, eleven versioned fixtures, sixteen synthetic regressions, exact thresholds, and value-free bounded evaluator form a deterministic corrective loop. The suite makes no live model-quality claim. | Implemented | 4 | Retain | QA scope and Stage 04 task owner | Retain the calibrated synthetic eval and independent review loop; add live/model comparative evaluation only under a separate approved contract. | `bash scripts/validation/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions`; `python3 scripts/validation/run-ci-gate.py --profile changed --explain`. | High: exact markers require fixtures `11/11` and regressions `16/16`. |
+
+## Findings
+
+- Structural projection, deterministic validation, and the calibrated synthetic
+  evaluator now close a measured depth-4 repository loop. Native compatibility,
+  live permission evidence, entitlement, and comparative model quality remain
+  separate unverified surfaces.
+
+> Historical evidence (not current authority; source: Git history):
+> Provider facts in the research pack did not change Stage 00 policy. In
+> particular, native Gemini CLI agents/hooks did not make `.agents` a native
+> `.gemini` implementation.
+
+## Gap / Follow-up
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Gap | Owner | Follow-up boundary |
+| --- | --- | --- |
+| Native agent-schema acceptance and tracked/live hook-event compatibility | Separate provider/runtime verification | Current Stage 00, generator, adapter, validator, and parity evidence is synchronized; retain Partial until native/live acceptance is observed. |
+| Gemini CLI native adoption versus Antigravity pointer behavior | Future approved provider task | Decide explicitly; do not relabel pointers as native adoption. |
+| Live or comparative model-quality scoring | QA/eval follow-up | The deterministic synthetic scorer is implemented; define a separate versioned dataset, privacy boundary, and provider-runtime contract before any live comparison. |
+| Runtime sandbox, entitlement, MCP, and egress facts | Executing task/provider owner | Record scoped observations only; leave unobserved global state unknown. |
+
+**Current local correction.**
+
+The current tracked provider projection has two providers, Claude and Codex.
+Run the sole renderer directly with
+`python3 scripts/operations/provider_surface_renderer.py --check` or
+`python3 scripts/operations/provider_surface_renderer.py --write`.
+The authored `.agents/skills` packages are canonical; the former
+`.agents/agents` compatibility projection remains retired. These repository-local
+facts do not reobserve or revise the dated external findings above.
+
+## Automation Impact
+
+Retain structural sync, exact fixture/regression scoring, and typed harness
+routing. Improve native-schema/event acceptance and live comparative scoring
+only through approved active-stage work; no audit-only runtime automation is
+introduced here.
+
+## Source Rules
+
+- Provider features come from the current primary-source ledger in the
+  canonical research pack; mutable pages prove retrieval-time facts only.
+- Workspace adoption comes from tracked files and command results.
+- canonical agent governance policy is neither inferred from provider features nor changed by
+  this audit.
+
+## Sources
+
+- `Harness research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `harness-engineering` leaf)
+- `Provider comparison research` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `provider-implementation-comparison` leaf)
+- Harness implementation map (retired path: `00.agent-governance/harness-implementation-map.md`)
+- Subagent protocol (retired path: `00.agent-governance/subagent-protocol.md`)
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
+
+## Maintenance
+
+- **Owner**: Agentic Workflow Specialist.
+- **Review Cadence**: After canonical agent governance, provider adapter, hook, model, or eval changes.
+- **Update Trigger**: Any `HAR-*` criterion evidence or enforcement depth changes.
+
+## Related Documents
+
+- [Audit pack README](../0019-readme/README.md)
+- [Loop implementation audit](../0027-loop-engineering-implementation/README.md)
+- [Provider implementation audit](../0028-provider-harness-loop-implementation/README.md)
+- [Agent instruction/catalog/model audit](../0020-agent-instructions-catalog-vibe-models/README.md)
+
+## Objective
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Criteria
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Evidence
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Conformance
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Actions
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.
+
+## Traceability
+
+This package preserves its existing audit evidence under the Stage 99 `audit` contract.

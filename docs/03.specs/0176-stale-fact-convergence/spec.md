@@ -316,7 +316,7 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 | [AD-0027 Agent Governance Canonical Adapter](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md) | Owns the canonical/adapter boundary the load-order correction restates |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Amended by this package to the accepted preservation unit |
 | [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Accepted by this package as the durable decision owner |
-| [ADR-0031 Archive as Preserved Record](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md) | Superseded and preserved by this package |
+| ADR-0031 Archive as Preserved Record | Superseded and preserved by this package |
 | [SPEC-0173 Governance and QA Surface Convergence](../0173-governance-qa-surface-convergence/spec.md) | Declared the retention-owner promotion this package performs; otherwise untouched |
 | [SPEC-0175 Governance Knowledge and Prompt Surface](../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Completed and preserved by this package |
 | [POL-0078 Compose Profile Vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) | Owns the profile model the Compose corrections converge on |

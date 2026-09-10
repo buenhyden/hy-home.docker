@@ -116,7 +116,7 @@ target의 Spec, Plan, 모든 Task 역시 위의 일반 원자적 보존 규칙�
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0031 보존 기록으로서의 아카이브](../../98.archive/superseded/02.architecture/decisions/0031-preserved-archive-record.md)
+- ADR-0031 보존 기록으로서의 아카이브
 - [SPEC-0173 Governance and QA Surface Convergence](../../03.specs/0173-governance-qa-surface-convergence/spec.md)
 - [SPEC-0173 implementation plan](../../03.specs/0173-governance-qa-surface-convergence/plan.md)
 - [SPEC-0173 Task 0006](../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
