@@ -62,7 +62,7 @@ repos:
     hooks:
       - id: ruff-format
         files: \.pyi?$
-      - id: ruff
+      - id: ruff-check
         files: \.pyi?$
 
   # --- 4. Actions & CI Configuration ---
