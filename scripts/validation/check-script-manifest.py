@@ -67,7 +67,6 @@ DISPOSITIONS = frozenset({"retain", "merge", "delete", "rewrite"})
 NON_EXECUTABLE_KINDS = frozenset({"contract", "dependency-manifest", "library"})
 FORBIDDEN_EVIDENCE_PREFIXES = (
     "docs/04.execution/",
-    "docs/90.references/data/0082-llm-wiki-index/",
     "docs/98.archive/",
     "graphify-out/",
 )

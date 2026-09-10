@@ -235,6 +235,5 @@ created: "2026-06-04"
 
 - [Operations index](../../../README.md)
 - [Runbooks index](../../../README.md)
-- [LLM Wiki maintenance runbook](../0007-llm-wiki-maintenance/runbook.md)
 - [Co-located Plans and Tasks](../../../../03.specs/README.md)
 - [Current Spec Package selection](../../../../03.specs/README.md)

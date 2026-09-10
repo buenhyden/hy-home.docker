@@ -25,7 +25,7 @@ Author and maintain canonical documentation, including generated knowledge-map f
 ## Use When
 
 - A typed lifecycle document, operations document, catalog index, or knowledge map changes.
-- Cross-links, README navigation, or generated LLM Wiki artifacts must be reconciled.
+- Cross-links or README navigation must be reconciled.
 
 ## Inputs
 

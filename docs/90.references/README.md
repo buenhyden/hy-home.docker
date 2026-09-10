@@ -42,7 +42,7 @@ reference describes a reader need and does not make a document Stage 90 evidence
 Generated data is refreshed by its registered generator, never hand-edited into
 a current version or runtime authority.
 
-Deprecated redirects, compatibility copies, `learning/`, and `llm-wiki/` are not current categories. Learning material is classified by meaning as a Stage 05 Guide or Research package; LLM navigation outputs are registered Data packages.
+Deprecated redirects, compatibility copies, `learning/`, and `llm-wiki/` are not current categories. Learning material is classified by meaning as a Stage 05 Guide or Research package.
 
 ### Lifecycle and Naming
 

@@ -67,9 +67,6 @@ hy-home.docker/
 - `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- `docs/90.references/data/0082-llm-wiki-index` - tracked source files 기반 LLM Wiki entrypoint
-- `docs/90.references/data/0083-repository-map/README.md` - curated repository map
-- `docs/90.references/data/0082-llm-wiki-index/README.md` - generated tracked path index
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
@@ -237,7 +234,6 @@ docker compose --profile core up -d
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
 - `python3 scripts/validation/check-document-links.py --mode alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사
-- `python3 scripts/knowledge/generate-llm-wiki.py --check` - LLM Wiki generated index and coverage freshness 검사
 - `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
 - `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
 - `bash scripts/hardening/check-all-hardening.sh` - 계층별 하드닝 기준 검사
@@ -281,8 +277,6 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - `docs/05.operations/README.md`
 - `docs/90.references/README.md`
 - `docs/90.references/data/README.md`
-- `docs/90.references/data/0082-llm-wiki-index/README.md`
-- `docs/90.references/data/0082-llm-wiki-index/README.md`
 - [`llms.txt`](./llms.txt)
 - `docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md`
 - Historical execution evidence: `plan-0028` (retained through the typed change ledger)

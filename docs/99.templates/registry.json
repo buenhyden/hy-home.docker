@@ -3941,8 +3941,8 @@
     "tombstone": {
       "prefix": "tomb-",
       "width": 4,
-      "high_water": 231,
-      "next_number": 232,
+      "high_water": 234,
+      "next_number": 235,
       "child_spaces": {}
     }
   },

@@ -1,15 +1,12 @@
 ---
-title: "LLM Wiki Maintenance Operations Policy"
-version: "1.0.0"
-type: "operation/policy"
-status: "active"
-owner: "@buenhyden"
-updated: "2026-09-04"
-layer: "operations"
-artifact_id: "POL-0007"
-parent_ids:
-- "SPEC-0096"
-created: "2026-07-04"
+profile_id: policy
+status: active
+artifact_id: POL-0007
+artifact_type: policy
+parent_ids: []
+created: '2026-07-04'
+updated: '2026-09-04'
+observed_at: '2026-09-04'
 ---
 
 # LLM Wiki Maintenance Operations Policy

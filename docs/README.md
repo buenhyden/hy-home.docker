@@ -179,13 +179,22 @@ package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본
 
 ## LLM Wiki Ownership and Historical Evidence
 
+The repo-local LLM Wiki was retired on 2026-09-10: its generator, its three
+generated indexes, and the operations package that maintained them were removed
+together, because Stage 90 evidence stays current only while a current consumer
+exists and every consumer of those indexes was removed in the same change.
+
+No generated path index exists now. Navigation runs through the curated entry
+points in `llms.txt` and the per-surface READMEs, and the advisory graph under
+`graphify-out/` stays advisory: `.agents/governance/environment-constraints.md`
+owns what may be concluded from it.
+
 | Evidence | Current State |
 | --- | --- |
-| Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md); current procedure: [LLM Wiki guide](05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
+| Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
 | Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
-| Repository map | 90.references/data/0083-repository-map/README.md |
-| Generated index | 90.references/data/0082-llm-wiki-index/README.md |
-| Operations guide | [05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md](./05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md) |
+| Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, each recorded by a tombstone |
+| Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, each recorded by a tombstone |
 
 ## Related Documents
 

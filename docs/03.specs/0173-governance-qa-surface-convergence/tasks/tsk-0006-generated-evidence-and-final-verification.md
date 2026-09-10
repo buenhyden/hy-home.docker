@@ -48,6 +48,51 @@ elsewhere.
 
 ## Work Log
 
+### W35 Five skills and the LLM Wiki residue (2026-09-10)
+
+A skill audit measured 23 canonical skills. Twenty-one are exactly 53-55 lines
+with exactly three procedure steps and no command reference, which is not
+evidence of quality but of a template standing in for the task: `adr-writing`
+writes one document and `incident-response` runs an outage, and they have the
+same skeleton and the same length. `.codex/skills` does not exist and that is
+correct, because the registry gives Codex no `native_skill_pattern` and has it
+read canonical directly; the 23 Claude adapters are generated pointers at
+drift=0 and are not independently improvable.
+
+One audit claim was wrong and is corrected here. `security-audit` was reported
+as declared by three roles; `grep -l "security-audit"` had matched
+`security-auditor` as a substring and counted prose escalations. Measured
+exactly against `skill_ids`, every skill has exactly one declaring role, a clean
+1:1 mapping, and no skill is over-referenced. `security-audit` left the priority
+list and `knowledge-map-agent` took its place on verified evidence.
+
+Five skills changed. `style-validation` forbade direct all-files pre-commit
+without naming the one approved wrapper, which is a prohibition whose caller has
+nowhere to go; the counterpart is now named beside it with the execution
+boundary owning its conditions. `policy-gate-agent` never named the gate DAG
+that produces the verdict it reports, and now distinguishes a gate that passed
+from one skipped, blocked, or never run. `incident-response` did not know that
+its own profile is the one exception to the archive citation boundary. And
+`knowledge-map-agent` still instructed a caller to regenerate indexes and verify
+freshness after W34 removed every generator that produced them.
+
+The LLM Wiki residue was then cleared from every active surface: the maintenance
+catalog package (`GDE-0007`, `POL-0007`, `RUN-0007`) is retired with tombstones
+`0232`-`0234`, `llms.txt` keeps its curated entry points without the two
+generated rows, and the quality matrix, verification surface map, doc-writer
+role, root README, docs README, and script index no longer instruct anyone to
+run a script that does not exist. `references.py` keeps its retired-root guards:
+those exist to stop a retired root returning and are not stale.
+
+Retiring a catalog triple exposed a contract gap. `tombstone_identity` read the
+document kind from a `/policies/` or `/runbooks/` directory marker, which the
+catalog layout does not have, so all three members would have inherited `GDE`
+and stopped identifying which artifact each tombstone records. The contract now
+reads the kind from the catalog filename and the number from the package.
+Neutralising that branch was observed to change `tomb-POL-0007` into
+`tomb-GDE-0233`, so the guard is load-bearing, and a test holds both the catalog
+and pre-catalog derivations.
+
 ### W34 Stage 90 audits and data are emptied with their consumers (2026-09-10)
 
 The owner asked for `docs/90.references/audits/` and `docs/90.references/data/`

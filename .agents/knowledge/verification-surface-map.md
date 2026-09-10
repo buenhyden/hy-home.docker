@@ -45,7 +45,7 @@ surface. A leaf may need inputs the current authorization does not cover.
 | `agent-governance` | provider surface drift; agent-output eval fixture gate; agent governance contract; agent governance regressions; provider governance regressions |
 | `document-contract` | repository metadata base; repository document metadata |
 | `document-graph` | documentation traceability |
-| `document-lifecycle` | document corpus lifecycle; document lifecycle regressions; LLM Wiki freshness; audit matrix freshness; security readiness freshness |
+| `document-lifecycle` | document corpus lifecycle; document lifecycle regressions |
 | `operations` | operations catalog; supply chain; Compose validation; infrastructure hardening; template security baseline; quickwin baseline |
 | `repository-integrity` | diff hygiene; shell syntax; script manifest; tech stack version drift; workflow harness; dependency vulnerability audit; git-flow contract; frontend quality; Storybook coverage; `zizmor`; pre-commit; repository integrity regressions |
 
@@ -117,14 +117,12 @@ from either route proves its own snapshot only.
 
 ## Generated Outputs and Staging Order
 
-The LLM Wiki generator builds its inventory from `git ls-files --cached`, so an
-added file is invisible to it until that file is staged. A freshness check can
-therefore pass on an unstaged candidate and become stale after staging. The
-security-readiness generator also derives its inventory from tracked paths;
-staged workflow deletion changes that generated workflow count.
-
-Run the freshness check after staging, and carry the regenerated LLM Wiki
-outputs in the same commit as the document that changed them. `graphify-out/`
+A generator that builds its inventory from `git ls-files --cached` cannot see an
+added file until that file is staged, so a freshness check can pass on an
+unstaged candidate and become stale the moment it is staged. The generators this
+described were retired on 2026-09-10, so no tracked output carries that hazard
+today; the rule is kept because it applies to the next one, and staging order is
+the thing to get right before believing a freshness result. `graphify-out/`
 is not a comparable case: it is untracked local output, so it produces no diff
 to separate and the intermediate-stash race it once caused cannot occur.
 
