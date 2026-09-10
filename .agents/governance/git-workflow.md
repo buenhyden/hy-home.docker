@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-11"
 ---
 
 # Git Workflow Governance
@@ -21,10 +21,13 @@ Use Conventional Commits with explicit scopes where possible.
   type vocabulary.
 - The description starts with a capital letter and does not end with a
   period. The body, when present, is one block with no blank line inside
-  it. Trailers come last, after a single blank line. `.cz.toml` is the sole
-  executable authority for the allowed types, message grammar, and header
-  length. Its interactive type choices explain each type; this policy governs
-  commit usage and workflow.
+  it, and no body line starts with a word followed by a colon and a space,
+  because the grammar cannot tell such a line from a trailer and stops
+  reading the body there. Rewrap the sentence rather than reaching for
+  `--no-verify`. Trailers come last, after a single blank line. `.cz.toml`
+  is the sole executable authority for the allowed types, message grammar,
+  and header length. Its interactive type choices explain each type; this
+  policy governs commit usage and workflow.
 - Validate a draft with
   `cz check --message-length-limit 75 --message "feat(auth): Add login guard"`
   before starting the commit. The `commit-msg` hook remains the final local
