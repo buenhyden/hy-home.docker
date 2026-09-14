@@ -12,7 +12,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
-    image: supabase/studio:2026.09.07-sha-7996410
+    image: supabase/studio:2026.09.14-sha-4dd8a95
     restart: unless-stopped
     depends_on:
       analytics:
@@ -90,7 +90,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-auth
-    image: supabase/gotrue:v2.196.0
+    image: supabase/gotrue:v2.197.0
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -126,7 +126,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
-    image: postgrest/postgrest:v16.2
+    image: postgrest/postgrest:v16.3
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -160,7 +160,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.134.10
+    image: supabase/realtime:v2.135.2
     restart: unless-stopped
     depends_on:
       db:
@@ -195,7 +195,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.74.0
+    image: supabase/storage-api:v1.77.0
     restart: unless-stopped
     read_only: false
     volumes:
@@ -236,7 +236,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-imgproxy
-    image: darthsim/imgproxy:v4.0.14
+    image: darthsim/imgproxy:v4.0.15
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -329,7 +329,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
-    image: supabase/logflare:1.50.11
+    image: supabase/logflare:1.50.12
     restart: unless-stopped
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
@@ -361,7 +361,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:17.6.1.168
+    image: supabase/postgres:17.6.1.171
     restart: unless-stopped
     read_only: false
     volumes:
@@ -427,7 +427,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-pooler
-    image: supabase/supavisor:2.9.12
+    image: supabase/supavisor:2.9.13
     restart: unless-stopped
     ports:
       - ${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432

@@ -404,7 +404,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.3.0
+    image: grafana/pyroscope:2.3.1
     container_name: infra-pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml

@@ -346,7 +346,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: danielqsj/kafka-exporter:v1.9.0
+    image: danielqsj/kafka-exporter:v1.10.0
     container_name: kafka-exporter
     read_only: true
     tmpfs:
