@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-14"
 layer: "architecture"
 ---
 
@@ -49,7 +49,7 @@ docs/02.architecture/decisions/
 - `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
 - `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
 - `ADR-0027`:
-  ADR-0029가 supersede한 Stage 00 adapter decision. 이 decision log에 유지한다.
+  ADR-0029가 supersede한 Stage 00 adapter decision.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
   local-isolated readiness evidence strategy.
 - `ADR-0029`:

@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
-version: "1.3.1"
+version: "1.3.2"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -23,7 +23,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 
 | Stable ID | Package | Status |
 | :--- | :--- | :--- |
-| RES-0001 | Agentic Engineering Research Pack | superseded, retiring — pre-deletion gate 4 admits no clickable link to it |
+| RES-0001 | Agentic Engineering Research Pack | retired; its body is preserved under `docs/98.archive/retired/` and recorded by a tombstone |
 | [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack | active |
 | RES-0080 | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
 | [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |
@@ -88,7 +88,7 @@ definitions.
 | Diátaxis and documentation architecture | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Documentation protocol](../../../.agents/governance/documentation-protocol.md) | Partial |
 | C4 Model and arc42 | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Architecture stage](../../02.architecture/README.md) | Partial |
 | ADR | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Architecture decisions](../../02.architecture/decisions/README.md) | Implemented |
-| LLM Wiki | [LLM Wiki system](./0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md) | Generated index and `generate-llm-wiki.py` | Implemented |
+| LLM Wiki | [LLM Wiki system](./0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md) | Retired on 2026-09-10 with its generator and generated indexes; navigation now runs through `llms.txt` and the per-surface READMEs | Retired |
 | Docker Compose and infrastructure | [Docker Compose and infrastructure](./0002-agentic-engineering-research-pack/m0005-docker-compose-infrastructure.md) | Compose readiness audit | Partial; static evidence exceeds runtime evidence |
 | CI/CD | [Automation pipeline](./0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Quality audit | Partial; CI is stronger than CD |
 | GitHub Actions | [GitHub Actions platform](./0084-github-actions-platform/README.md) | [CI workflow](../../../.github/workflows/ci-quality.yml) and [protection record](../../../.github/rulesets/main-protection.md) | Hosted aggregate jobs and 2026-09-05 remote check read-back verified |

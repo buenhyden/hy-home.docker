@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-14"
 ---
 
 # docs
@@ -80,7 +80,7 @@ docs/
 | define operational controls | `05.operations/catalog/` |
 | execute recovery or repeatable procedures | `05.operations/catalog/` |
 | record incidents or postmortems | `05.operations/incidents/<year>/inc-####-<slug>/` |
-| provide LLM-facing repository navigation | `90.references/data/0082-llm-wiki-index/` |
+| provide LLM-facing repository navigation | root `llms.txt` and the per-surface READMEs |
 | inspect a preserved body or its disposition record | `98.archive/` |
 
 ## Migration Map
@@ -204,8 +204,6 @@ owns what may be concluded from it.
 - [03.specs/README.md](03.specs/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
-- 90.references/data/0082-llm-wiki-index/README.md
-- 90.references/data/0083-repository-map/README.md
 - [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
