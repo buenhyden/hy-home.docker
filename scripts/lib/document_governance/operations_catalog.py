@@ -7,6 +7,7 @@ import datetime as dt
 import errno
 import os
 import pathlib
+import posixpath
 import re
 import selectors
 import signal
@@ -683,23 +684,60 @@ PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
     "docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md"
 )
 _INFRA_COMPOSE_FILE = re.compile(r"infra/.+/docker-compose[^/]*\.ya?ml")
-_PROFILE_ROW = re.compile(r"\| `(?P<name>[a-z0-9-]+)` \|.*\| *(?P<count>[0-9]+) *\|")
+# A profile row is a table row whose first cell is exactly one backticked name.
+# The mutually exclusive pairs table never matches, because its first cells
+# carry more than a single name.
+_PROFILE_ROW = re.compile(r"\| `(?P<name>[A-Za-z0-9][A-Za-z0-9_.-]*)` \|(?P<rest>.*)\|")
+
+
+class _ComposeLoader(yaml.SafeLoader):
+    """Safe loader that also reads the merge tags Compose defines."""
+
+
+def _construct_compose_tag(loader: yaml.SafeLoader, node: yaml.Node) -> object:
+    # Only plain data comes back, so the loader stays as safe as SafeLoader.
+    if isinstance(node, yaml.MappingNode):
+        return loader.construct_mapping(node)
+    if isinstance(node, yaml.SequenceNode):
+        return loader.construct_sequence(node)
+    if isinstance(node, yaml.ScalarNode):
+        return loader.construct_scalar(node)
+    return None
+
+
+for _compose_tag in ("!reset", "!override"):
+    _ComposeLoader.add_constructor(_compose_tag, _construct_compose_tag)
 
 
 def _compose_mapping(
     root: pathlib.Path, path: pathlib.PurePosixPath
 ) -> Mapping[str, object]:
     try:
-        value = yaml.safe_load(_read_text(root, path))
+        value = yaml.load(_read_text(root, path), Loader=_ComposeLoader)
     except yaml.YAMLError as error:
         raise OperationsAuthorityError(
             "compose-yaml-invalid", f"{path}: {error}"
         ) from error
+    if value is None:
+        return {}
     if not isinstance(value, Mapping):
         raise OperationsAuthorityError(
             "compose-yaml-invalid", f"{path}: top level is not a mapping"
         )
     return value
+
+
+def _include_paths(include: object) -> set[str]:
+    """Read string and `path:` mapping include entries as normalized paths."""
+
+    if not isinstance(include, Sequence) or isinstance(include, (str, bytes)):
+        return set()
+    paths: set[str] = set()
+    for item in include:
+        value = item.get("path") if isinstance(item, Mapping) else item
+        entries = (value,) if isinstance(value, str) else _string_items(value)
+        paths.update(posixpath.normpath(entry) for entry in entries)
+    return paths
 
 
 def validate_compose_profile_vocabulary(
@@ -722,8 +760,7 @@ def validate_compose_profile_vocabulary(
         if _INFRA_COMPOSE_FILE.fullmatch(path.as_posix())
     )
     tracked = {path.as_posix() for path in compose_files}
-    include = _compose_mapping(root, COMPOSE_ROOT).get("include")
-    included = set(_string_items(include))
+    included = _include_paths(_compose_mapping(root, COMPOSE_ROOT).get("include"))
     findings = [
         _finding(
             "compose-include-drift",
@@ -743,15 +780,46 @@ def validate_compose_profile_vocabulary(
     declared: Counter[str] = Counter()
     for path in compose_files:
         services = _compose_mapping(root, path).get("services")
-        for service in services.values() if isinstance(services, Mapping) else ():
-            if isinstance(service, Mapping):
-                declared.update(set(_string_items(service.get("profiles"))))
+        items = services.items() if isinstance(services, Mapping) else ()
+        for name, service in items:
+            profiles = set(
+                _string_items(
+                    service.get("profiles") if isinstance(service, Mapping) else None
+                )
+            )
+            if not profiles:
+                findings.append(
+                    _finding(
+                        "compose-service-profile-missing",
+                        path,
+                        f"service {name} declares no profile, "
+                        "so it starts when none is selected",
+                    )
+                )
+            declared.update(profiles)
 
     rows: dict[str, tuple[int, int]] = {}
     policy_text = _read_text(root, PROFILE_VOCABULARY_POLICY)
     for line_number, line in enumerate(policy_text.splitlines(), 1):
-        if match := _PROFILE_ROW.fullmatch(line.strip()):
-            rows.setdefault(match["name"], (int(match["count"]), line_number))
+        match = _PROFILE_ROW.fullmatch(line.strip())
+        if match is None:
+            continue
+        name, location = match["name"], f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
+        count = match["rest"].rsplit("|", 1)[-1].strip()
+        if name in rows:
+            message = (
+                f"profile {name} has more than one row; "
+                f"the first is line {rows[name][1]}"
+            )
+        elif not count.isdigit():
+            # Registered with no count, so the name is not also reported as
+            # having no row.
+            rows[name] = (-1, line_number)
+            message = f"profile {name} row has no integer service count"
+        else:
+            rows[name] = (int(count), line_number)
+            continue
+        findings.append(_finding("compose-profile-vocabulary-drift", location, message))
     for name in sorted(declared.keys() - rows.keys()):
         findings.append(
             _finding(
@@ -767,7 +835,7 @@ def validate_compose_profile_vocabulary(
             message = (
                 f"profile {name} has a row and no tracked Compose service declares it"
             )
-        elif count != declared[name]:
+        elif count >= 0 and count != declared[name]:
             message = (
                 f"profile {name} row counts {count} service(s); "
                 f"Compose declares {declared[name]}"

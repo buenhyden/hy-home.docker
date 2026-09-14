@@ -924,6 +924,88 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         with self.assertRaisesRegex(OperationsAuthorityError, "cluster.yaml"):
             validate_compose_profile_vocabulary(root)
 
+    def test_duplicate_row_is_rejected_even_when_the_first_row_matches(self) -> None:
+        root = self._repo(
+            rows=(
+                "| `alpha` | a | 2 |",
+                "| `dev` | a | 1 |",
+                "| `beta` | b | 1 |",
+                "| `alpha` | again | 9 |",
+            )
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    f"{self.POLICY}:6",
+                    "profile alpha has more than one row; the first is line 3",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_row_without_an_integer_count_is_rejected(self) -> None:
+        root = self._repo(
+            rows=("| `alpha` | a | two |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    f"{self.POLICY}:3",
+                    "profile alpha row has no integer service count",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_compose_merge_tags_and_an_empty_file_are_valid_input(self) -> None:
+        root = self._repo(services_b="  z:\n    profiles: !reset [beta]\n")
+        empty = root / "infra/c/docker-compose.yml"
+        empty.parent.mkdir(parents=True)
+        empty.write_text("", encoding="utf-8")
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8") + "  - infra/c/docker-compose.yml\n",
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        self.assertEqual([], self._findings(root))
+
+    def test_mapping_form_and_dot_prefixed_include_entries_are_read(self) -> None:
+        root = self._repo()
+        (root / "docker-compose.yml").write_text(
+            "include:\n"
+            "  - ./infra/a/docker-compose.yml\n"
+            "  - path: infra/b/docker-compose.cluster.yaml\n",
+            encoding="utf-8",
+        )
+        self.assertEqual([], self._findings(root))
+
+    def test_underscore_profile_name_is_matched_to_its_row(self) -> None:
+        root = self._repo(
+            services_b="  z:\n    profiles: [beta_two]\n",
+            rows=(
+                "| `alpha` | a | 2 |",
+                "| `dev` | a | 1 |",
+                "| `beta_two` | b | 1 |",
+            ),
+        )
+        self.assertEqual([], self._findings(root))
+
+    def test_service_without_profiles_is_rejected(self) -> None:
+        root = self._repo(services_b="  z:\n    profiles: [beta]\n  w:\n    image: x\n")
+        self.assertEqual(
+            [
+                (
+                    "compose-service-profile-missing",
+                    "infra/b/docker-compose.cluster.yaml",
+                    "service w declares no profile, so it starts when none is selected",
+                )
+            ],
+            self._findings(root),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
