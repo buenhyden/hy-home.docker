@@ -13,8 +13,10 @@ import signal
 import stat
 import subprocess
 import time
+from collections import Counter
 from collections.abc import Mapping, Sequence
 
+import yaml
 from markdown_it import MarkdownIt
 
 from scripts.lib.document_governance.frontmatter import (
@@ -674,6 +676,106 @@ def validate_active_operations_references(
                     )
                 )
     return tuple(sorted(set(findings)))
+
+
+COMPOSE_ROOT = pathlib.PurePosixPath("docker-compose.yml")
+PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
+    "docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md"
+)
+_INFRA_COMPOSE_FILE = re.compile(r"infra/.+/docker-compose[^/]*\.ya?ml")
+_PROFILE_ROW = re.compile(r"\| `(?P<name>[a-z0-9-]+)` \|.*\| *(?P<count>[0-9]+) *\|")
+
+
+def _compose_mapping(
+    root: pathlib.Path, path: pathlib.PurePosixPath
+) -> Mapping[str, object]:
+    try:
+        value = yaml.safe_load(_read_text(root, path))
+    except yaml.YAMLError as error:
+        raise OperationsAuthorityError(
+            "compose-yaml-invalid", f"{path}: {error}"
+        ) from error
+    if not isinstance(value, Mapping):
+        raise OperationsAuthorityError(
+            "compose-yaml-invalid", f"{path}: top level is not a mapping"
+        )
+    return value
+
+
+def validate_compose_profile_vocabulary(
+    root: pathlib.Path,
+) -> tuple[CatalogFinding, ...]:
+    """Hold POL-0078 and the root include list to the tracked Compose files.
+
+    Both state a fact the Compose files settle: the root file includes every
+    Compose file under infra/, and the policy's tables name every declared
+    profile with the number of services declaring it. The generated coverage
+    snapshot that used to be compared against them is retired, so the
+    comparison reads the Compose files directly. Only table rows are read,
+    never prose, because locating an enumeration inside a sentence is the
+    operation that kept producing wrong predicates.
+    """
+
+    compose_files = tuple(
+        path
+        for path in _tracked_paths(root, MAX_TRACKED_FILES)
+        if _INFRA_COMPOSE_FILE.fullmatch(path.as_posix())
+    )
+    tracked = {path.as_posix() for path in compose_files}
+    include = _compose_mapping(root, COMPOSE_ROOT).get("include")
+    included = set(_string_items(include))
+    findings = [
+        _finding(
+            "compose-include-drift",
+            COMPOSE_ROOT,
+            f"{path} is tracked and not included",
+        )
+        for path in sorted(tracked - included)
+    ] + [
+        _finding(
+            "compose-include-drift",
+            COMPOSE_ROOT,
+            f"{path} is included and is not a tracked Compose file under infra/",
+        )
+        for path in sorted(included - tracked)
+    ]
+
+    declared: Counter[str] = Counter()
+    for path in compose_files:
+        services = _compose_mapping(root, path).get("services")
+        for service in services.values() if isinstance(services, Mapping) else ():
+            if isinstance(service, Mapping):
+                declared.update(set(_string_items(service.get("profiles"))))
+
+    rows: dict[str, tuple[int, int]] = {}
+    policy_text = _read_text(root, PROFILE_VOCABULARY_POLICY)
+    for line_number, line in enumerate(policy_text.splitlines(), 1):
+        if match := _PROFILE_ROW.fullmatch(line.strip()):
+            rows.setdefault(match["name"], (int(match["count"]), line_number))
+    for name in sorted(declared.keys() - rows.keys()):
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                f"profile {name} is declared by {declared[name]} service(s) "
+                "and has no row",
+            )
+        )
+    for name, (count, line_number) in sorted(rows.items()):
+        location = f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
+        if name not in declared:
+            message = (
+                f"profile {name} has a row and no tracked Compose service declares it"
+            )
+        elif count != declared[name]:
+            message = (
+                f"profile {name} row counts {count} service(s); "
+                f"Compose declares {declared[name]}"
+            )
+        else:
+            continue
+        findings.append(_finding("compose-profile-vocabulary-drift", location, message))
+    return tuple(findings)
 
 
 def _frontmatter(text: str, path: pathlib.PurePosixPath) -> Mapping[str, object]:

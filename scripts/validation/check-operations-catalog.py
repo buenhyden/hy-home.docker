@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
     validate_active_operations_references,
+    validate_compose_profile_vocabulary,
     validate_current_operations,
 )
 
@@ -37,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
         findings = (
             *validate_current_operations(ROOT),
             *validate_active_operations_references(ROOT),
+            *validate_compose_profile_vocabulary(ROOT),
         )
     except OperationsAuthorityError as error:
         print(f"FAIL {error.code}: {error}")

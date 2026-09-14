@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -151,15 +151,18 @@ UI를 갖지 않게 되어 host port를 전혀 공개하지 않는다. 대신 `k
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
+python3 scripts/validation/check-operations-catalog.py
 ```
 
-이 명령은 선언된 모든 profile을 렌더링하고, 한 profile이 선택하는 두 서비스가
+첫 명령은 선언된 모든 profile을 렌더링하고, 한 profile이 선택하는 두 서비스가
 같은 host port를 공개하면 실패한다.
 
 이 문서의 세 표를 합친 이름 집합은 추적된 Compose 파일이 선언하는 `profiles:`
-값의 집합과 같아야 한다. 이전에는 생성된 coverage snapshot이 그 비교 대상이었으나
-생성기와 snapshot이 모두 은퇴했으므로, 지금의 권위는 `infra/**` 아래 Compose 파일
-자체다.
+값의 집합과 같아야 하고, 각 행의 서비스 수는 그 profile을 선언한 서비스 수와
+같아야 한다. 권위는 `infra/**` 아래 Compose 파일 자체다. 두 번째 명령이 표의
+행만 읽어 이 비교를 수행하고, root `include:` 목록이 `infra/` 하위 추적 Compose
+파일 전체와 일치하는지도 함께 확인한다. 은퇴한 coverage snapshot은 이 비교의
+입력이 아니다.
 
 ## Review Cadence
 
@@ -172,7 +175,7 @@ bash scripts/validation/validate-docker-compose.sh
 - **Subject**: [00-workspace](../README.md)
 - **Authority**: [SPEC-0156](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
 - **Deferred pairs**: [SPEC-0171](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
-- **Generated evidence**: Compose profile service coverage
+- **Verification**: `scripts/validation/check-operations-catalog.py`
 
 ## Related Documents
 

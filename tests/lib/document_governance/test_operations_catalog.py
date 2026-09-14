@@ -23,6 +23,7 @@ from scripts.lib.document_governance.operations_catalog import (
     _run_git_bounded,
     read_bounded_regular,
     validate_active_operations_references,
+    validate_compose_profile_vocabulary,
     validate_current_operations,
 )
 
@@ -762,6 +763,166 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
             subprocess.run(["git", "commit", "-qm", "fixture"], cwd=root, check=True)
             path.unlink()
             self.assertEqual((), validate_active_operations_references(root))
+
+
+class ComposeProfileVocabularyTests(unittest.TestCase):
+    POLICY = (
+        "docs/05.operations/catalog/00-workspace/"
+        "0078-compose-profile-vocabulary/policy.md"
+    )
+
+    def _repo(
+        self,
+        *,
+        include: tuple[str, ...] = (
+            "infra/a/docker-compose.yml",
+            "infra/b/docker-compose.cluster.yaml",
+        ),
+        services_b: str = "  z:\n    profiles: [beta]\n",
+        rows: tuple[str, ...] = (
+            "| `alpha` | a | 2 |",
+            "| `dev` | a | 1 |",
+            "| `beta` | b | 1 |",
+        ),
+    ) -> pathlib.Path:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        root = pathlib.Path(directory.name)
+        files = {
+            "docker-compose.yml": "include:\n"
+            + "".join(f"  - {item}\n" for item in include),
+            "infra/a/docker-compose.yml": (
+                "services:\n"
+                "  x:\n    profiles: [alpha, dev]\n"
+                "  y:\n    profiles: [alpha]\n"
+            ),
+            "infra/b/docker-compose.cluster.yaml": "services:\n" + services_b,
+            self.POLICY: "\n".join(
+                (
+                    "| Profile | 선택 대상 | 서비스 |",
+                    "| --- | --- | ---: |",
+                    *rows,
+                    "",
+                    "| 쌍 | 충돌 | 근거 |",
+                    "| --- | --- | --- |",
+                    "| `alpha` ↔ `beta` | host port 80 | 대체재 |",
+                    "",
+                )
+            ),
+        }
+        for relative, text in files.items():
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(text, encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        return root
+
+    def _findings(self, root: pathlib.Path) -> list[tuple[str, str, str]]:
+        return [
+            (finding.code, finding.path, finding.message)
+            for finding in validate_compose_profile_vocabulary(root)
+        ]
+
+    def test_current_repository_tables_and_include_list_match_compose(self) -> None:
+        self.assertEqual((), validate_compose_profile_vocabulary(ROOT))
+
+    def test_matching_fixture_has_no_findings(self) -> None:
+        self.assertEqual([], self._findings(self._repo()))
+
+    def test_declared_profile_without_a_row_is_rejected(self) -> None:
+        root = self._repo(services_b="  z:\n    profiles: [beta, gamma]\n")
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    self.POLICY,
+                    "profile gamma is declared by 1 service(s) and has no row",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_row_that_no_service_declares_is_rejected(self) -> None:
+        root = self._repo(
+            rows=(
+                "| `alpha` | a | 2 |",
+                "| `dev` | a | 1 |",
+                "| `beta` | b | 1 |",
+                "| `retired` | none | 3 |",
+            )
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    f"{self.POLICY}:6",
+                    "profile retired has a row and no tracked Compose service declares it",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_service_count_that_differs_from_compose_is_rejected(self) -> None:
+        root = self._repo(
+            rows=("| `alpha` | a | 3 |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    f"{self.POLICY}:3",
+                    "profile alpha row counts 3 service(s); Compose declares 2",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_tracked_compose_file_missing_from_root_include_is_rejected(self) -> None:
+        root = self._repo(include=("infra/a/docker-compose.yml",))
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8")
+            + "  # - infra/b/docker-compose.cluster.yaml\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-include-drift",
+                    "docker-compose.yml",
+                    "infra/b/docker-compose.cluster.yaml is tracked and not included",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_include_entry_that_is_not_a_tracked_compose_file_is_rejected(
+        self,
+    ) -> None:
+        root = self._repo(
+            include=(
+                "infra/a/docker-compose.yml",
+                "infra/b/docker-compose.cluster.yaml",
+                "infra/c/docker-compose.yml",
+            )
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-include-drift",
+                    "docker-compose.yml",
+                    "infra/c/docker-compose.yml is included and is not a tracked "
+                    "Compose file under infra/",
+                )
+            ],
+            self._findings(root),
+        )
+
+    def test_unparseable_compose_file_raises_authority_error(self) -> None:
+        root = self._repo(services_b="  z: [unclosed\n")
+        with self.assertRaisesRegex(OperationsAuthorityError, "cluster.yaml"):
+            validate_compose_profile_vocabulary(root)
 
 
 if __name__ == "__main__":
