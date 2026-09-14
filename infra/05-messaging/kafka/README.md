@@ -1,10 +1,10 @@
 ---
 title: "Kafka Event Streaming (05-messaging)"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 created: "2025-11-12"
 ---
 
@@ -91,7 +91,7 @@ kafka/
 | Mode       | KRaft                          | Integrated Metadata log   |
 | Registry   | CP-Schema-Registry             | 8.3.0                     |
 | UI         | Kafbat (Kafka UI)              | Web-based management      |
-| Exporter   | Kafka Exporter                 | `danielqsj/kafka-exporter:v1.9.0` |
+| Exporter   | Kafka Exporter                 | `danielqsj/kafka-exporter:v1.10.0` |
 
 ## Configuration
 

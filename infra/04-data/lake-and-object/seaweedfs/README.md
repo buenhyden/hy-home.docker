@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 created: "2025-12-06"
 ---
 
@@ -15,7 +15,7 @@ created: "2025-12-06"
 
 ## Overview
 
-SeaweedFS provides a distributed file and object storage surface for `hy-home.docker`. The current compose path is `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`, using image `chrislusf/seaweedfs:4.45` and the `data` profile.
+SeaweedFS provides a distributed file and object storage surface for `hy-home.docker`. The current compose path is `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`, using image `chrislusf/seaweedfs:4.47` and the `data` profile.
 
 ## Audience
 
@@ -58,7 +58,7 @@ seaweedfs/
 | --- | --- |
 | Purpose | SeaweedFS service leaf in `04-data`; services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount` |
 | Config files | `docker-compose.yml`, `config/security.toml.example` |
-| Config values | profile: `data`; image: `chrislusf/seaweedfs:4.45` |
+| Config values | profile: `data`; image: `chrislusf/seaweedfs:4.47` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
 | Networks | `infra_net`; static IPs `172.19.0.140` through `172.19.0.144` |
 | Volumes | `seaweedfs-master-data:/data:rw`, `seaweedfs-volume-data:/data:rw` |
@@ -83,7 +83,7 @@ seaweedfs/
 
 | Surface | Current Evidence |
 | --- | --- |
-| Image | `chrislusf/seaweedfs:4.45` |
+| Image | `chrislusf/seaweedfs:4.47` |
 | Master route | `https://seaweedfs.${DEFAULT_URL}` |
 | Filer/CDN route | `https://cdn.${DEFAULT_URL}` |
 | S3 route | `https://s3.${DEFAULT_URL}` |

@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 created: "2025-11-12"
 ---
 
@@ -16,7 +16,7 @@ created: "2025-11-12"
 
 ## Overview
 
-Keycloak은 `hy-home.docker` 생태계의 중앙 ID 제공자(IdP)이다. 사용자 인증, 세션 관리, OIDC/SAML 토큰 발행을 처리하며, Quarkus 기반 배포판(`quay.io/keycloak/keycloak:26.7.3-0`)을 인프라망 내에서 컨테이너 환경에 최적화하여 운영한다.
+Keycloak은 `hy-home.docker` 생태계의 중앙 ID 제공자(IdP)이다. 사용자 인증, 세션 관리, OIDC/SAML 토큰 발행을 처리하며, Quarkus 기반 배포판(`quay.io/keycloak/keycloak:26.7.3-1`)을 인프라망 내에서 컨테이너 환경에 최적화하여 운영한다.
 
 ## Audience
 
@@ -86,7 +86,7 @@ keycloak/
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Platform   | Keycloak (Quarkus)             | `quay.io/keycloak/keycloak:26.7.3-0` |
+| Platform   | Keycloak (Quarkus)             | `quay.io/keycloak/keycloak:26.7.3-1` |
 | Database   | PostgreSQL                     | Identity Persistence      |
 | Networking | Traefik                        | ForwardAuth/OIDC Ingress  |
 

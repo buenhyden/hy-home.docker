@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -48,7 +48,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/pyroscope:2.3.0|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/pyroscope:2.3.1|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Pyroscope config의 storage, ingestion limit, and privacy boundary를 확인한다.

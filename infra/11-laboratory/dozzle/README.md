@@ -1,10 +1,10 @@
 ---
 title: "Dozzle"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 created: "2026-03-27"
 ---
 
@@ -75,7 +75,7 @@ dozzle/
 
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |
-| Image      | amir20/dozzle | v10.10.0                |
+| Image      | amir20/dozzle | v11.0.1                 |
 | Interface  | Web UI       | Real-time streaming       |
 | Monitoring | Docker Logs  | via `/var/run/docker.sock`|
 
