@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Implementation Plan"
-version: "0.11.1"
+version: "0.11.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0173-PLAN-0001"
 parent_ids:
@@ -216,6 +216,8 @@ then test exact-once generation plus malformed/semantic/stale-output failures.
 Render current overview/candidate paths from existing path owners, regenerate
 the matrix, check freshness and a second write's byte identity. Retain the
 standalone validators, census and public graph; their redesign is option B.
+W34 later retired every file this unit owned, together with their consumers
+(`83d2e15f6`); the unit's result is historical and nothing here is current.
 
 W15 owns shared Spec/Plan/Task and manifest integration. Run focused regressions,
 the applicable local public profile, generated checks and independent review.
@@ -325,6 +327,9 @@ canonical `docs/90.references/audits/` reports and generated DATA-0065.
    second write's byte identity. Run the audit criterion/semantic tests and
    history recovery tests if their owner changes; commit source, tests and output
    together. No permanent second census registry or automatic historical rewrite.
+5. Delivered in `4645226de`. W34 later retired the audit census, its criterion
+   contract, DATA-0065 and both audit test modules with their consumers, so the
+   files named above are no longer tracked.
 
 ### W19: Active authoring-residue cleanup
 
@@ -365,13 +370,16 @@ lifecycle records. No unrelated infra changes.
 4. Apply registered supersession/archive/recovery after transfer and review.
    Preserve the selected source bytes and valid identity history. Update inbound
    links and indexes atomically; do not rewrite existing frozen archive bodies.
-5. Use `python3 scripts/knowledge/generate-llm-wiki.py --write` only when indexed
-   paths change, then `--check`. Verify metadata, all links and corpus lifecycle,
+5. The LLM Wiki generator this step once named was retired with its indexes in
+   W34, so no regeneration step remains. Verify metadata, all links and corpus lifecycle,
    plus relevant archive/identity regressions. Update the taxonomy test
    `AD_TO_REQUIREMENT_PACKAGE` active mapping in the same domain cutover and
    preserve retired/superseded ID and parent evidence through the existing
    archive/recovery checks. Record each reviewed disposition
    in the existing Task table, not a new migration framework or progress ledger.
+6. Only the auth pilot was delivered: AD-0002 supersedes AD-0014. The remaining
+   domains are the known violation AD-0030 records and are left to their owner.
+   Criterion 29 was amended to the delivered pilot on 2026-09-15.
 
 ### W21: Final QA and local delivery evidence
 
@@ -444,6 +452,10 @@ and `tests/lib/gate/test_github_workflow_contract.py`.
    so an unregistered action still fails the parity check.
 3. Record the measured local execution map. Compare only equal contexts, and do
    not convert a single hosted observation into a threshold.
+4. The removed `uv` setup step was restored by `8cdfd3cbc`, because the zizmor
+   gate leaf consumes it. `4c40f1f51` then added the `leaf-program-uninstalled`
+   check, so a gate leaf whose program no setup step installs fails the contract
+   instead of failing on a runner.
 
 ## Risk and Rollback
 
@@ -472,15 +484,14 @@ Domain-logic coverage is N/A for validation/configuration-only changes;
 behavioral safety regressions remain mandatory for changed validators.
 
 For the continuation, criterion 25 maps to W16; criteria 26/27/28/29/30 map
-to W17/W18/W19/W20/W21 respectively. Criteria 31/32/33 map to W22/W23/W24. Planning verification is limited to
-metadata contracts, changed document checks, links, LLM Wiki freshness and the
-policy-selected public changed route. Actual commands and exits belong in Task.
-The future minimum regression commands, used only for their approved changes,
-are:
+to W17/W18/W19/W20/W21 respectively. Criteria 31/32/33 map to W22/W23/W24, and
+W25/W26/W27/W28 map to criteria 28/24/21/27. Planning verification is limited to
+metadata contracts, changed document checks, links and the policy-selected
+public changed route. Actual commands and exits belong in Task. The minimum
+regression commands, used only for their approved changes, are:
 
 ```bash
 PYTHONPATH=. python3 -m unittest tests.lib.gate.test_ci_gate_contract tests.lib.gate.test_github_workflow_contract
-PYTHONPATH=. python3 -m unittest tests.validation.test_audit_criterion_contract tests.validation.test_agentic_audit_semantic_freshness
 python3 scripts/validation/check-github-workflow-contract.py
 python3 scripts/validation/check-document-metadata.py --mode check-contracts
 python3 scripts/validation/check-document-links.py --mode all

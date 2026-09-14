@@ -1,10 +1,10 @@
 ---
 title: "Generated Evidence and Final Verification Task"
-version: "0.12.0"
+version: "0.12.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0006"
 parent_ids:
@@ -47,6 +47,24 @@ elsewhere.
 - The final invocation-identity inventory and deletion consumer searches.
 
 ## Work Log
+
+### W40 Reconciled at HEAD and taken to completion (2026-09-15, local-executed)
+
+An operator request on 2026-09-14 asked for every Spec, Plan and Task to be checked for unfinished work and for statements that contradict the current implementation. It also asked that nothing unfinished be implemented. Work already implemented is to be recognised, and work that later implementation overtook is to be superseded or dropped. The request authorized commit, local integration, push and branch cleanup.
+
+An independent read-only review measured all 33 criteria at `f60c097cc`. Its findings were then checked again at `14d9ff6dc`. The PostgreSQL leaf this package had treated as its blocker is not one: the config-only leaf and the full rehearsal passed on 2026-09-07, and `56ed6b612` makes check mode skip the image identity check. The ruling that forbids a terminal status while a check is BLOCKED has no BLOCKED check to apply to.
+
+Four items were not met as their criteria were worded, and each is resolved by amendment rather than by new implementation.
+
+- Criteria 23 and 27 were met by W14 and W18, and W34 (`83d2e15f6`) then retired the generator, its semantic check and the audit census together with their consumers. Their earlier wording now describes files that are not tracked, so both criteria record the retirement.
+- Criterion 29 asked for every overlapping architecture pair to be consolidated. Only the auth pilot was delivered, and W39 called W20 discharged on that basis. That held for the pilot only; eight hardening Descriptions remain active and AD-0030 records them as a known violation. The criterion is narrowed to the delivered pilot, and the eight pairs are left to their owner rather than implemented here.
+- Criterion 30 lacked a final local receipt. `run-ci-gate.py --profile full` exited 0 at `14d9ff6dc` in a clean WSL2 checkout on 2026-09-15, and that run is the receipt.
+
+The receipt tables could not have passed the completion check as written. Two tables carried the same header, rows 25-30 still read NOT_RUN, and rows 20 and 24 joined several work units in one cell, which the check reads as an unknown unit. W4 and W25 through W28 had no row at all. The earlier table is now a dated note, and the package receipt holds one row per criterion and work unit pair.
+
+Two current-state sections were stale. The Commit Ledger said W17-W21 had no implementation commits, and the Deferred Items still called W20 discharged and priced the commit hook at a flat 29.9 s, where W38 measured 28 s to 302 s by change. Both are corrected. The dated entries above, W39 included, are left as written.
+
+Six current documents were also corrected against the implementation. `scripts/README.md` still described seven scripts that W34 retired as current entrypoints. The Plan still named the retired audit tests and the LLM Wiki generator, and it did not record that `8cdfd3cbc` reverted the W24 step removal. Task 0003 still described the tech-stack workflow as retained after `1aea9246a` deleted it.
 
 ### W39 Four deferred items that the record had outrun (2026-09-10, local-executed)
 
@@ -2828,14 +2846,9 @@ The final proposal names frontmatter/CODEOWNERS as the per-domain review owner
 and requires eventual-scope authorization for any final all-files run; completed
 option A approval and W16 planning do not authorize it.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
-| --- | --- | --- | --- |
-| 25 | W16 | PASS: planning proposal reviewed, validated and committed as `9153c055f` through normal hooks; later local integration/cleanup authorized separately | This Task inventory, Spec proposal and Plan W16-W21 |
-| 26 | W17 | NOT_RUN: approved implementation pending | Existing public workflow contract, gate libraries and their regressions |
-| 27 | W18 | PASS: current audit consumers reconciled and committed as `4645226de`; normal hooks passed | Criterion manifest, current audit source, lifecycle and historical recovery owners |
-| 28 | W19 | PASS: reviewed residue cleanup committed as `b600e7c01`; normal hooks and preservation read-back passed | Active Stage 05 targets and metadata residue contract |
-| 29 | W20 | NOT_RUN: per-domain transfer and review not performed | Retained Stage 02 owners and registered preservation records |
-| 30 | W21 | NOT_RUN: follows approved implementation; no hosted/runtime success inferred | Public QA definition and this Task's future execution receipts |
+At this checkpoint criterion 25 was PASS through `9153c055f` and criteria 26-30
+were not yet executed. Those states are dated to this entry. The package
+receipt below carries the result each criterion reached at completion.
 
 Full QA, live provider/model checks and new hosted runs are NOT_RUN for this
 planning-only change. Operations execution planning is held by the user, so no
@@ -3433,9 +3446,31 @@ and in the Commit Ledger; none re-dates older results. Row15 now reflects the
 independently reviewed applicable-check interpretation; separate native/hosted
 NOT_RUN observations are not converted into live PASS evidence.
 
+Rows 1-24 below were first recorded as provenance before the package closed. On
+2026-09-15 each row was re-measured at `14d9ff6dc`. Rows that joined two work
+units were split into one row per pair, and every criterion and work unit now
+appears at least once. Three criteria record an amendment rather than the
+result their earlier wording asked for, and the Work Log entry dated 2026-09-15
+explains each one.
+
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3 | PASS: five-context canonical-invocation uniqueness was observed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 1 | W3 | PASS: the six suite roots and the `changed` and `full` profiles are unchanged in the contract at `14d9ff6dc` | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 2 | W4 | PASS: bootstrap, hook and CI routing reach the same two jobs, and GitHub named `validation-changed` as the expected required check on the 2026-09-15 push | [Ruleset record](../../../../.github/rulesets/main-protection.md) |
+| 25 | W16 | PASS: the planning proposal was reviewed, validated and committed as `9153c055f` through normal hooks | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
+| 26 | W17 | PASS: `0823c0c46` removed the 13 suite-unreachable nodes and the job-root schema, `a23edf9b0` closed the review finding, and `tests/lib/gate/test_github_workflow_contract.py` holds no skip at `14d9ff6dc` | [Gate contract library](../../../../scripts/lib/gate/ci_gate_contract.py) |
+| 27 | W18 | PASS: `4645226de` reconciled the audit consumers; as amended, W34 then retired the census and its criterion contract with their consumers, so no current check reads a historical count | N/A: the audit census and its criterion contract were retired with their consumers in `83d2e15f6` |
+| 27 | W28 | PASS: W28 applied the Stage 90 retirement preconditions and corrected both indexes, the route W34 later used for every remaining audit and data package | [References index](../../../90.references/README.md) |
+| 28 | W19 | PASS: `b600e7c01` removed the reviewed operations authoring residue, and the metadata check exits 0 at `14d9ff6dc` | [Operations index](../../../05.operations/README.md) |
+| 28 | W25 | PASS: `1e792dad6` returned operations controls that restated agent governance to their canonical owner | [Operations index](../../../05.operations/README.md) |
+| 29 | W20 | PASS: as amended, AD-0002 supersedes AD-0014 with reciprocal metadata and a preserved body; the eight remaining pairs are the known violation AD-0030 records, outside this package | [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) |
+| 30 | W21 | PASS: W17-W24 each carry regression and normal-hook commit evidence, and the final local receipt is `run-ci-gate.py --profile full` exit 0 at `14d9ff6dc` in a clean WSL2 checkout on 2026-09-15; hosted, provider and operations observations stay separate | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
+| 31 | W22 | PASS: `_reference_proves_use` in `check-script-manifest.py` is the single owner, the suite delegates to it, and the checker exits 0 at `14d9ff6dc` | [Manifest checker](../../../../scripts/validation/check-script-manifest.py) |
+| 32 | W23 | PASS: `check-document-links.py --mode all`, which includes the `entrypoint` mode, reports failures=0 at `14d9ff6dc` | [Link library](../../../../scripts/lib/document_governance/links.py) |
+| 33 | W24 | PASS by another route: `8cdfd3cbc` restored the `uv` step the zizmor leaf consumes, and `4c40f1f51` added the `leaf-program-uninstalled` check that fails a leaf whose program no setup step installs | [Workflow contract library](../../../../scripts/lib/gate/github_workflow_contract.py) |
+| 21 | W27 | PASS: W27 installed an untracked dispatcher under `.git/` that runs the global hook and then the workspace hook for `pre-commit`, `commit-msg`, `pre-push` and `post-commit`, stopping at the first failure; no tracked file changed, and the change is recorded in `af9f27f6f` | N/A: the dispatcher is machine configuration inside `.git/` and has no tracked owner |
+| 24 | W26 | PASS: `fbec1d354` gave merge and branch-lifecycle rules a single owner | [Git workflow policy](../../../../.agents/governance/git-workflow.md) |
+| 1 | W1 | PASS: the authority decision and its provenance are preserved in ADR-0032, which is accepted | [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) |
 | 2 | W3 | PASS: the tracked contract retains the two quality jobs `validation-changed` and `validation-full`; only `validation-changed` is the desired PR required status context. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 3 | W3 | PASS: changed/local, changed/pull-request, full/local, full/push, and full/workflow-dispatch uniqueness regression passed. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 4 | W3 | PASS: gate/workflow regression evidence records the selected Compose and frontend bootstrap leaf de-duplication. | [Workflow contract](../../../../.github/workflow-contract.yml) |
@@ -3454,11 +3489,13 @@ NOT_RUN observations are not converted into live PASS evidence.
 | 17 | W8 | PASS: deterministic selector/model/Git snapshot regressions; initial/missing-base inputs fail safely; current integrated profiles recorded above. | [Gate selection](../../../../scripts/validation/ci_gate_runner.py) |
 | 18 | W9 | PASS: Commitizen/adapter/translated-hook matrix and subsequent actual git-cliff2.13.1 matrix148inputs/296context-render calls; all exit0. | [Commit contract](../../../../.cz.toml) |
 | 19 | W10 | PASS: required drift leaf exact-once in five contexts and workflow/security regressions; new hosted run NOT_RUN. | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 20 | W7/W10 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
+| 20 | W7 | PASS: current local/remote evidence boundaries and authenticated baseline read-back; no merge-ready or new hosted completion claim. | [Current checks](#current-convergence-checks-2026-09-08) |
+| 20 | W10 | PASS: the workflow removal kept local exit, context and input reporting, and hosted jobs stay separate evidence | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 21 | W11 | PASS: shared payload/permission/negative-path tests and independent security/code approval; live provider delivery NOT_RUN. | [Native payload library](../../../../scripts/lib/hooks/tool_payload.py) |
 | 22 | W13 | PASS: prepared tool priority, explicit-only helper use, repeat stability and missing-tool behavior; independent code review approved. | [Post-tool hook](../../../../scripts/hooks/post-tool-validate.sh) |
-| 23 | W14 | PASS: generator reuses the same validated pack once per invocation; distinct override and existing negative paths remain checked. | `check-agentic-audit-semantic-freshness.py` |
-| 24 | W12/W14/W15 | PASS: corrected owner/event/path guidance and generated output; committed full/all-files receipts above; remote observations remain baseline-SHA/event evidence only. | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 23 | W14 | PASS: W14 made the generator reuse its validated pack once per invocation; as amended, W34 retired the generator, its semantic check and every audit package with their consumers, and neither script is tracked at `14d9ff6dc` | N/A: the generator and its semantic check were retired with their consumers in `83d2e15f6` |
+| 24 | W12 | PASS: corrected owner, event and path guidance matches its executable owner | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 24 | W15 | PASS: option A verification and its disposition carry committed full and all-files receipts; remote observations remain baseline-SHA and event evidence only | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
 
 ### Why all six Tasks read `in-progress` (2026-09-07, local-executed)
 
@@ -3821,7 +3858,7 @@ W16 planning delivery: `9153c055fb8a26afd2da474e2f228819dfc864b5`,
 `docs(qa): Plan remaining convergence work`, three documents, normal Git hooks
 PASS and exit 0. The later three-document disposition receipt is a separate
 logical documentation commit; its SHA belongs to final Git read-back.
-W17-W21 have no implementation commits.
+W16 itself had no implementation commit; the W17-W24 commits are listed above.
 The first attempt exited 1 because the formatter changed the newly separated
 acceptance list. HEAD remained at the baseline; no commit was created and no
 hook was bypassed. The corrected continuous list passed the retry recorded above.
@@ -3949,11 +3986,13 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   not repeated. The npm-before-Playwright ordering and its malformed-order
   regressions are unchanged by W22-W24 and keep their existing receipts; no new
   independent review of them was requested or run.
-- W20 is discharged, and not by an approval given here. AD-0014 carries
+- W20 delivered its auth pilot and no more. AD-0014 carries
   `status: superseded` and `superseded_by: AD-0002`, its body is preserved at
   `docs/98.archive/superseded/02.architecture/descriptions/`, and AD-0002 is
-  `active` with `supersedes: [AD-0014]`. Both files carry `updated: 2026-09-10`.
-  The transfer this item was waiting for happened; the record had not caught up.
+  `active` with `supersedes: [AD-0014]`. The other eight Description pairs are
+  still active, and AD-0030 records them as a known violation. An earlier entry
+  called W20 discharged, which held for the pilot only. Criterion 29 was amended
+  to the pilot on 2026-09-15, and the eight pairs are left to their owner.
 - CDR-04 is discharged by `55c7c13d8`, which took the convert option rather
   than the retire option. `infra/09-tooling/k6/` now holds a `Dockerfile` that
   is `FROM grafana/k6:2.2.0`, and the compose service runs `k6 run --out
@@ -3971,9 +4010,10 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   Workflow dispatch, branch-protection change, deployment and release remain
   outside the authorization.
 - Two examined items are recorded as owner decisions rather than changes:
-  workflow `cancel-in-progress` on `main` pushes, and the 29.9-second
-  `public-validation-changed` hook at commit time. Neither is a defect; both
-  trade coverage against cost and were left as they are.
+  workflow `cancel-in-progress` on `main` pushes, and the commit-time
+  `public-validation-changed` hook, which runs the suites the change selects and
+  measured 28 s on a clean tree and 302 s with a Stage 02 document in W38.
+  Neither is a defect; both trade coverage against cost and were left as they are.
 - A Python linter is now registered. `ruff.toml` carries a `[lint]` section
   whose selection was measured: `PL` as a family added 393 complexity findings
   and only `PLW1510` survives it, and the Hangul ambiguity rules are off. Every
@@ -3982,8 +4022,8 @@ No `--no-verify`, `SKIP`, hook change or unrelated file accompanied any commit.
   `B023` fires 59 times in tests and never in `scripts/`. `ruff check` is a
   registered hook scoped to `\.pyi?$` and exits clean. NOT_APPLICABLE no longer
   describes this item.
-- W17-W21 implementation is now approved by the latest Work Log. Unexecuted
-  criteria remain NOT_RUN; they do not reopen completed option A work.
+- W17-W21 implementation was approved and delivered. Every criterion now has a
+  PASS or amended receipt in Verification Evidence; none is carried as NOT_RUN.
 - Operations execution planning is on hold by the 2026-09-09 user response.
   Neither synthetic rehearsal nor live service planning/execution is included.
 - W16 local integration and cleanup completed at `62fd2fcd5848f23ff05b2eb9622f22457017992d`.

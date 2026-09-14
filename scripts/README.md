@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-15"
 created: "2026-02-21"
 ---
 
@@ -82,8 +82,8 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                                                                         |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                          |
 | Knowledge  | `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                      |
-| Operations | `scripts/operations/check-compose-core-readiness.sh`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `scripts/operations/rehearse-sample-service-delivery.sh`, `scripts/operations/generate-compose-profile-service-coverage.sh`, `scripts/operations/generate-tech-stack-version-provenance.sh`, `scripts/operations/provider_surface_renderer.py`, `scripts/operations/use-qa-ci-tools.sh`, `scripts/operations/sync-tech-stack-versions.sh` |
-| Security   | `scripts/security/seed-grype-db-cache.sh`, `scripts/security/verify-sample-service-supply-chain.sh`, `scripts/security/generate-supply-chain-sample-service-summary.sh`                                                                                                                                                                                                                                                                                     |
+| Operations | `scripts/operations/check-compose-core-readiness.sh`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-postgres-logical-upgrade.sh`, `scripts/operations/rehearse-sample-service-delivery.sh`, `scripts/operations/provider_surface_renderer.py`, `scripts/operations/use-qa-ci-tools.sh`, `scripts/operations/sync-tech-stack-versions.sh` |
+| Security   | `scripts/security/seed-grype-db-cache.sh`, `scripts/security/verify-sample-service-supply-chain.sh`                                                                                                                                                                                                                                                                                     |
 | Libraries  | `scripts/lib/hardening-lib.sh`, `scripts/lib/ops/compose-core-readiness.sh`, `scripts/requirements.txt`, `scripts/requirements-pre-commit.txt` |
 
 ## How to Work in This Area
@@ -122,7 +122,6 @@ script.
 | Compose Core Readiness Library         | [compose-core-readiness.sh](./lib/ops/compose-core-readiness.sh)                            | Shared fail-closed identity, path, render, readiness, recovery, evidence, redaction, and cleanup functions; source only through the operation or focused tests                                                    |
 | PostgreSQL Logical Recovery Rehearsal  | [rehearse-postgres-logical-upgrade.sh](./operations/rehearse-postgres-logical-upgrade.sh)   | Check configuration with `--check-config-only` or run the approved pinned synthetic PostgreSQL 17.6-to-18.4 logical backup, isolated restore, semantic integrity, negative-path, atomic verdict, and owned-cleanup contract |
 | Agent Governance Contract Check        | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py)       | Validate duplicate-key-safe typed canonical agent governance artifact, catalog, provider/model, path-authority, and adoption contracts; repository sections activate only after their owning convergence task                     |
-| Agentic Audit Semantic Freshness       | `check-agentic-audit-semantic-freshness.py` | Enforce the bounded canonical-audit closure assertions and lifecycle routes from tracked repository evidence                                                                                                     |
 | Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py)                    | Parse typed metadata profiles, generate/check the advisory inventory, and enforce safely selected changed/new Markdown without rewriting documents                                                              |
 | Document Corpus Lifecycle Gate         | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py)    | Enforce migration contracts, promoted manifests, impacted records, safe Git provenance, duplicate reports, review signals, directory budgets, and deterministic lifecycle evidence without mutating corpus documents |
 | Document Link Contract Gate            | [check-document-links.py](./validation/check-document-links.py)                            | Run traceability, implementation-alignment, and stage entry-point checks together with `--mode all` through one canonical leaf |
@@ -134,14 +133,10 @@ script.
 | Storybook Contract Check               | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                     | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
 | QuickWin Baseline Check                | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                       | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
-| Audit Implementation Matrix Snapshot   | `generate-audit-implementation-matrix.sh` | Generate and check the Stage 90 audit implementation matrix snapshot for audit report coverage, overview categories, automation candidate closure, generated evidence surfaces, and residual gap signals |
-| Audit Criterion Completeness Contract  | `audit_criterion_contract.py`                     | Enforce the exact report/row manifest, field schema, non-empty fields, IDs/prefixes, vocabularies, cardinalities, and uniqueness used by the matrix check |
-| Security Automation Readiness Snapshot | `generate-security-automation-readiness.sh` | Generate and check the Stage 90 security automation readiness snapshot for vulnerability gate, SBOM, provenance/attestation, Scorecard, workflow security, secret scanning, Dependabot, and hardening coverage |
 | Controlled Agent Pre-commit Wrapper    | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh)           | Run the configured all-files hook suite only at an approved final QA gate in a clean linked worktree, with tracked task evidence, explicit allowed path prefixes, and a value-free first-failure diagnostic       |
 | Supply-chain Fixture Policy             | [check-supply-chain-policy.py](./validation/check-supply-chain-policy.py)                    | Deterministically validate local pins, subject, exception, SBOM, provenance, signature, and advisory Scorecard fixtures without network access                                                                    |
 | Grype DB Cache Seed Harness              | [seed-grype-db-cache.sh](./security/seed-grype-db-cache.sh)                                  | Task7-owned approved-network seed-only entrypoint; publishes a validated private cache generation while the supply-chain advisory remains offline                                                                 |
 | Supply-chain Local Rehearsal            | [verify-sample-service-supply-chain.sh](./security/verify-sample-service-supply-chain.sh)    | Preflight, fixture-only, and optional local advisory baseline/candidate verification with an ephemeral `/tmp` signing key                                                                                        |
-| Supply-chain Summary Generator          | `generate-supply-chain-sample-service-summary.sh` | Generate or check the concise tracked local supply-chain reference summary                                                                                                                        |
 | Graphify Health Report                 | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                          | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, current-task routing, post-edit style validation/formatting, logical commit completion reminders, and Stop gating        |
 | Post Tool Validation                   | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                      | Check safe changed paths with available formatting/lint tools, diff hygiene, and syntax checks; completion-time aggregate validation belongs to Stop |
@@ -152,8 +147,6 @@ script.
 | Sample Service Delivery Rehearsal      | [rehearse-sample-service-delivery.sh](./operations/rehearse-sample-service-delivery.sh)     | Validate fixture contracts or run the canonical-gated local baseline/canary promotion, rollback, atomic evidence, and owned-cleanup state machine                                                              |
 | Provider Surface Renderer              | [provider_surface_renderer.py](./operations/provider_surface_renderer.py)                   | Render native Claude/Codex roles and thin Claude skill adapters from canonical `.agents` sources with confined, bounded writes; Codex reads canonical native skill packages. `--check` is read-only and `--write` applies                                  |
 | Tech-Stack Version Sync                | [sync-tech-stack-versions.sh](./operations/sync-tech-stack-versions.sh)                     | Re-point curated `infra/tech-stack.versions.json` images to declared compose tags; default writes, `--check` verifies, `--dry-run` previews                                                                     |
-| Compose Profile Coverage Snapshot      | `generate-compose-profile-service-coverage.sh` | Generate the Stage 90 Docker Compose profile/service coverage reference with `--write`; use `--check` for read-only freshness verification                                                                     |
-| Tech-Stack Version Provenance Snapshot | `generate-tech-stack-version-provenance.sh` | Generate the Stage 90 tech-stack registry drift severity and source provenance reference with `--write`; use `--check` for read-only freshness verification                                                    |
 
 ## Hardening Tier Arguments
 
@@ -198,7 +191,7 @@ under `tests/lib/document_governance/`; CLI and aggregate contracts remain under
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CI / quality gate           | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
-| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `scripts/validation/generate-audit-implementation-matrix.sh`, `scripts/validation/generate-security-automation-readiness.sh`, `evals/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
+| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `evals/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
@@ -241,23 +234,6 @@ validator plan rather than as the run's full contents or cost.
 PR and non-initial push bases are validated and forwarded as
 `TEMPLATE_GATE_BASE`; local, initial push, and workflow dispatch use the explicit
 active-corpus metadata mode without inventing a comparison base.
-
-`scripts/validation/audit_criterion_contract.py` is the shared parser and exact
-manifest for the audit matrix check. It rejects missing/unexpected reports, malformed
-headers/separators/rows, any criterion row that does not have ten non-empty
-trimmed fields, invalid state/depth/disposition values, missing/unexpected IDs,
-wrong report/prefix/total counts, and duplicate IDs. The generated frontmatter
-semantic inventory is a named non-criterion pack artifact and does not change
-the exact eleven-report / 161-row criterion cardinality.
-
-`scripts/validation/check-agentic-audit-semantic-freshness.py` is the bounded
-canonical-audit semantic gate used by repository contracts, the audit matrix
-generator, and the existing CI quality job. It proves that the eleven declared
-closure assertions agree with their canonical rows, tracked evidence, completed
-task evidence, stale-phrase exclusions, and audit-pack lifecycle routes. It is
-offline and history-independent; it does not prove live runtime readiness,
-remote CI or branch-protection enforcement, provider entitlement, deployment
-state, broad security scanning, or semantic model quality.
 
 `scripts/validation/check-document-metadata.py` uses the Stage 99 typed profile
 contract and PyYAML safe loading with duplicate-key rejection. `--mode report`
@@ -327,22 +303,6 @@ evidence must use this same narrow claim. Task and existing allow-prefix path
 components must not be symlinks; a nonexistent allow-prefix tail remains valid
 for new output. Any before/after Git snapshot failure exits `6` rather than
 treating an empty path set as success.
-
-`scripts/validation/generate-audit-implementation-matrix.sh` reads the agentic
-engineering implementation audit pack through the shared contract and reads
-generated evidence surfaces to create a Stage 90 governance data snapshot. It
-fails before write or freshness comparison when the criterion contract or its
-overview/candidate structure is invalid. It does not rewrite audit conclusions,
-change CI gates, run model calls, run scanners, generate SBOMs, sign artifacts,
-attest builds, query remote GitHub, or read secrets. Its `--check` mode is used
-by repo contracts to keep the generated matrix fresh.
-
-`scripts/validation/generate-security-automation-readiness.sh` reads tracked
-workflow, script, governance, Dependabot, hardening, and registry-reference
-surfaces to generate a Stage 90 security automation readiness snapshot. It does
-not run vulnerability scanners, generate SBOMs, sign artifacts, attest builds,
-query registries, query remote GitHub, or read secrets. Its `--check` mode is
-used by repo contracts to keep the generated snapshot fresh.
 
 Repo-local Hookify validation is selected through
 `python3 scripts/validation/run-ci-gate.py --profile changed`; provider hooks do

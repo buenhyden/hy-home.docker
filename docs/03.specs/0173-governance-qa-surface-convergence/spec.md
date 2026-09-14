@@ -1,10 +1,10 @@
 ---
 title: "Governance and QA Surface Convergence Specification"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0173"
 parent_ids:
@@ -81,8 +81,8 @@ planning remains on hold. Prior W16 integration/cleanup is complete; it does
 not authorize new remote writes or terminal package promotion. The latest
 separate user request now prioritizes committing the in-progress snapshot,
 local main integration and force cleanup of task-owned branches/worktrees;
-Task 0006 owns that disposition and outstanding acceptance. Current nonterminal
-metadata remains unchanged.
+Task 0006 owns that disposition and the package's acceptance, including the
+2026-09-15 reconciliation that took the package to its terminal status.
 
 The approved scope is bounded to the existing public QA graph and its inactive
 semantic-parser consumers, audit census and current evidence consumers, active
@@ -221,8 +221,9 @@ ownership and preservation belong to REQ-0026, AD-0030 and Stage 99.
 - `examples/operations/**`: reusable synthetic operational rehearsal input.
 - `tests/lib/**`: library behavior tests and deterministic builders.
 - `tests/validation/**`: CLI, entrypoint, execution-context, and aggregate tests.
-- `docs/90.references/data/**`: generated or advisory evidence that remains
-  current only while a current consumer exists.
+- `docs/90.references/`: dated, non-authoritative evidence that remains current
+  only while a current consumer exists; W34 emptied its generated data and
+  audit categories.
 
 The gate runner exposes one canonical identity helper with this contract:
 
@@ -273,11 +274,15 @@ def canonical_invocation_key(
 
 ## Acceptance Contract
 
-Criteria 1-24 retain the existing contract. Criterion 25 is the authorized W16
-planning deliverable; criteria 26-30 cover the newly approved W17-W21 work and
-remain NOT_RUN until verified. This continuation grants no new main integration,
-remote write or runtime authority. Keep the numbered criteria in one continuous list so formatting
-preserves the Plan and Task references.
+Criteria 1-24 retain the existing contract. Criterion 25 is the W16 planning
+deliverable, criteria 26-30 cover W17-W21, and criteria 31-33 cover W22-W24.
+Three criteria were amended on 2026-09-15 when the package was reconciled for
+completion, and Task 0006 records each amendment with its evidence. Criteria 23
+and 27 were met and then outlived their subject, because W34 retired the audit
+generator, its semantic check and the audit census together with their
+consumers. Criterion 29 is narrowed to the auth pilot the package delivered. No
+amendment turns an unexecuted check into a PASS. Keep the numbered criteria in
+one continuous list so formatting preserves the Plan and Task references.
 
 1. The six public suite names and two public profiles remain unchanged.
 2. `validation-changed` and `validation-full` remain the quality jobs for PR
@@ -344,9 +349,12 @@ preserves the Plan and Task references.
 22. Post-edit validation preserves the explicitly prepared tool search order;
     it does not automatically promote user-global tools over that environment.
     Explicit bootstrap remains separate from source-preserving check execution.
-23. The audit matrix generator reuses the pack already validated by its semantic
-    check, while malformed input, semantic failure and stale output still fail.
-    The standalone validators and public aggregate remain behaviorally intact.
+23. The audit matrix generator reused the pack already validated by its semantic
+    check, while malformed input, semantic failure and stale output still failed.
+    Amended: W34 (`83d2e15f6`) retired that generator, its semantic check and
+    every Stage 90 audit package together with their consumers, so no current
+    route generates or checks an audit matrix and the public aggregate carries
+    neither leaf.
 24. Current provider, ownership, changelog and metadata-base guidance each matches
     its executable owner. Registered generated text uses current document paths;
     new remote observations retain their actual SHA and event.
@@ -361,17 +369,20 @@ preserves the Plan and Task references.
     parser helpers have no active caller; each formerly skipped safety intent
     has an active negative test or a reviewed explanation that its syntax is
     rejected at the current boundary. Missing/cyclic/unsafe contracts still fail.
-27. After approval, current corpus checks derive coverage from canonical owners
-    without historical counts as current acceptance. Stable criterion omission,
-    duplicate IDs, invalid schema, stale output and corrupt recovery evidence
-    still fail. Dated audit facts are distinguished from current observations.
+27. After approval, current corpus checks derived coverage from canonical owners
+    without historical counts as current acceptance. Amended: W34 then retired
+    the audit census and its criterion contract with their consumers, so no
+    current check reads a historical count. Corrupt recovery evidence still
+    fails through the archive recovery check.
 28. After approval, the reviewed active operations-document scope has no obsolete
     authoring residue; valid examples, procedure content, IDs and frozen archive
     bytes remain intact. Metadata report generation is not claimed as its source.
-29. After approval, every reviewed architecture capability has an unambiguous
-    owner and a source-clause-to-destination mapping. Unique obligations are
-    preserved before supersession; active links and generated navigation resolve
-    to the retained owner, with registered archive and recovery evidence.
+29. After approval, the auth pilot capability has one owner and a
+    source-clause-to-destination mapping: AD-0002 supersedes AD-0014, whose body
+    is preserved with reciprocal metadata, and active links resolve to AD-0002.
+    Amended to the delivered pilot. The eight remaining Description pairs are
+    the known violation AD-0030 records, left to their owner, and are not
+    consolidated by this package.
 30. After approval, each coherent implementation unit has relevant regression,
     exact diff review and normal-hook commit evidence. Final local validation
     names its snapshot and context; hosted, provider and operations observations

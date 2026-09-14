@@ -1,10 +1,10 @@
 ---
 title: "Script and Operation Ownership Task"
-version: "0.10.0"
+version: "0.10.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0003"
 parent_ids:
@@ -397,7 +397,9 @@ This evidence checkpoint does not predict its own commit identity.
   rather than accidental: the workflow header and the governance row both state
   that the required leaf runs first, and two regressions compare the workflow
   run step against the leaf entrypoint and argv and assert the leaf is in a
-  built pull-request plan.
+  built pull-request plan. Superseded by `1aea9246a` (Task 0006 W10), which
+  deleted the workflow and kept `leaf.local-tech-stack-version-drift` as the
+  required detection.
 - The `eslint-nextjs` skip claim was corrected in `e023c14bf` for
   `m0001-platform-mechanics.md` and `m0014-quality-ci-formatting.md`, which were
   wrong at their own `observed_at` rather than overtaken later, and which
