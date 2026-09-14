@@ -409,6 +409,34 @@ def _path_accepts_identity(path: str, identity: str) -> bool:
     return False
 
 
+_PRESERVED_DECISION_TASK = re.compile(
+    r"docs/98\.archive/completed/03\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*"
+    r"/tasks/tsk-[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
+)
+
+
+def _is_decision_task(path: str, identity: str, registry: DocumentRegistry) -> bool:
+    """Accept a current Task, or one preserved whole after completion.
+
+    Completion moves a package to the archive with every Task, so the Task that
+    recorded a recovery decision keeps carrying it there. Without this, the
+    retention policy and identity recovery cannot both hold. A superseded or
+    retired Task is withdrawn authority and is not a decision owner.
+    """
+
+    from scripts.lib.document_governance.registry import classify_path
+
+    if classify_path(path, registry) == "task":
+        return _path_accepts_identity(path, identity)
+    upper = identity.upper()
+    return (
+        _PRESERVED_DECISION_TASK.fullmatch(path) is not None
+        and classify_path(path, registry) == "archive-record-completed"
+        and upper.startswith("SPEC-")
+        and "-TSK-" in upper
+    )
+
+
 def _record_line(path: str, line: str, collected: dict[str, set[int]]) -> None:
     normalized = line[1:] if line.startswith(("+", "-")) else line
     if re.match(r"^[ \t]*artifact_id[ \t]*:", normalized, re.IGNORECASE):
@@ -1080,8 +1108,7 @@ def validate_allocation_transition(
             or not decision_path.startswith(IDENTITY_SOURCE_PREFIXES)
             or not isinstance(decision_artifact_id, str)
             or current.get(decision_path) != decision_artifact_id
-            or classify_path(decision_path, registry) != "task"
-            or not _path_accepts_identity(decision_path, decision_artifact_id)
+            or not _is_decision_task(decision_path, decision_artifact_id, registry)
             or not isinstance(target_artifact_id, str)
             or classify_path(target_path, registry) != "research-member"
             or classify_path(source_path, registry) is not None

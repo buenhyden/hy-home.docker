@@ -1,10 +1,10 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.1.2"
+version: "1.1.3"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-15"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
@@ -490,7 +490,7 @@ This local definition change is not evidence of a hosted run.
 
 Use a fresh authenticated read-back and separately approved field-level changes
 for protection recovery. Do not restore obsolete check lists from this member.
-[Task 0006](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
+[Task 0006](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
 owns the actual current remote observations and local verification. The dated
 inventories and 2026-09-05 result above remain historical observations.
 

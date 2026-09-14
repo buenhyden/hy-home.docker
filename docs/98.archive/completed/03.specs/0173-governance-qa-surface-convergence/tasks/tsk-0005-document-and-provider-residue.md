@@ -1,10 +1,10 @@
 ---
 title: "Document and Provider Residue Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0173-TSK-0005"
 parent_ids:

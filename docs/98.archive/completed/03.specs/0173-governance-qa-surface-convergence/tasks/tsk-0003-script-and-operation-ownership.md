@@ -2,7 +2,7 @@
 title: "Script and Operation Ownership Task"
 version: "0.10.1"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"

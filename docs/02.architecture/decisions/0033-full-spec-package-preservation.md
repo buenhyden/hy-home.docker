@@ -1,10 +1,10 @@
 ---
 title: "Spec Package 전체 본문 보존"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0033"
 parent_ids:
@@ -117,9 +117,9 @@ target의 Spec, Plan, 모든 Task 역시 위의 일반 원자적 보존 규칙�
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
 - ADR-0031 보존 기록으로서의 아카이브
-- [SPEC-0173 Governance and QA Surface Convergence](../../03.specs/0173-governance-qa-surface-convergence/spec.md)
-- [SPEC-0173 implementation plan](../../03.specs/0173-governance-qa-surface-convergence/plan.md)
-- [SPEC-0173 Task 0006](../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
+- [SPEC-0173 Governance and QA Surface Convergence](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md)
+- [SPEC-0173 implementation plan](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/plan.md)
+- [SPEC-0173 Task 0006](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md)
 
 ADR-0031은 이 결정이 대체한 accepted predecessor입니다. SPEC-0176이 이
 결정을 accepted로 전환하면서 같은 결과 tree에서 ADR-0031을 superseded로

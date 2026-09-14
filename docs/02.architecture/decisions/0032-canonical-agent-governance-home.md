@@ -1,10 +1,10 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -81,8 +81,8 @@ ADR-0029는 공통 규범, 문서 machine contract, 실행기, native adapter의
 - [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
 - Predecessor authority decision
 - Preserved-record decision
-- [Owning specification](../../03.specs/0173-governance-qa-surface-convergence/spec.md)
-- [Current plan](../../03.specs/0173-governance-qa-surface-convergence/plan.md)
+- [Owning specification](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md)
+- [Current plan](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/plan.md)
 
 ## Compliance
 

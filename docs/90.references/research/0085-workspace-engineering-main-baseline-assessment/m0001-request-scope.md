@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Request Scope"
-version: "0.3.1"
+version: "0.3.2"
 type: "reference/research"
 status: "review"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 layer: "references"
 artifact_id: "RES-0085-m0001"
 parent_ids:
@@ -15,7 +15,7 @@ identity_recovery:
   source_commit: "db21aebf079fcc4e867779861b49c2283b7f8f01"
   source_path: "docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/REQUEST-SCOPE.md"
   source_artifact_id: "RES-0085-SCOPE"
-  decision_path: "docs/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md"
+  decision_path: "docs/98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md"
   decision_artifact_id: "SPEC-0173-TSK-0001"
   disposition: "consolidated"
 ---
@@ -167,4 +167,4 @@ separate owner and the repository SDLC chain.
 - [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
 - [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
 - [GitHub Actions platform research](../0084-github-actions-platform/README.md)
-- [Current identity-recovery decision](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)
+- [Current identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)

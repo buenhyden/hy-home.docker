@@ -447,6 +447,40 @@ class IdentityHistoryTests(unittest.TestCase):
                 ),
             )
 
+            # A completed package is preserved whole under the archive, so its
+            # Task still carries the recovery decision after leaving Stage 03.
+            # A superseded or retired Task is not a decision owner.
+            preserved_path = (
+                "docs/98.archive/completed/03.specs/0104-decision/tasks/"
+                "tsk-0001-recovery.md"
+            )
+            for disposition, allowed in (
+                ("completed", True),
+                ("superseded", False),
+                ("retired", False),
+            ):
+                moved = preserved_path.replace("/completed/", f"/{disposition}/")
+                with self.subTest(disposition=disposition):
+                    findings = identity_history.validate_allocation_transition(
+                        root,
+                        load_registry(),
+                        {target_path: "RES-0085-m0001", moved: "SPEC-0104-TSK-0001"},
+                        base,
+                        recovery_evidence={
+                            target_path: {
+                                **recovery[target_path],
+                                "decision_path": moved,
+                            }
+                        },
+                        decision_evidence={moved: decision_evidence[decision_path]},
+                    )
+                    self.assertEqual(
+                        allowed,
+                        "identity-recovery-invalid"
+                        not in {item.code for item in findings},
+                        findings,
+                    )
+
             recovery[target_path]["source_artifact_id"] = "RES-0084-SCOPE"
             findings = identity_history.validate_allocation_transition(
                 root,

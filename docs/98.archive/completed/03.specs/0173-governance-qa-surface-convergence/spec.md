@@ -2,7 +2,7 @@
 title: "Governance and QA Surface Convergence Specification"
 version: "0.7.1"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"

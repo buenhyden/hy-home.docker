@@ -2,7 +2,7 @@
 title: "Generated Evidence and Final Verification Task"
 version: "0.12.1"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -3467,7 +3467,7 @@ explains each one.
 | 30 | W21 | PASS: W17-W24 each carry regression and normal-hook commit evidence, and the final local receipt is `run-ci-gate.py --profile full` exit 0 at `14d9ff6dc` in a clean WSL2 checkout on 2026-09-15; hosted, provider and operations observations stay separate | [This Task](tsk-0006-generated-evidence-and-final-verification.md) |
 | 31 | W22 | PASS: `_reference_proves_use` in `check-script-manifest.py` is the single owner, the suite delegates to it, and the checker exits 0 at `14d9ff6dc` | [Manifest checker](../../../../scripts/validation/check-script-manifest.py) |
 | 32 | W23 | PASS: `check-document-links.py --mode all`, which includes the `entrypoint` mode, reports failures=0 at `14d9ff6dc` | [Link library](../../../../scripts/lib/document_governance/links.py) |
-| 33 | W24 | PASS by another route: `8cdfd3cbc` restored the `uv` step the zizmor leaf consumes, and `4c40f1f51` added the `leaf-program-uninstalled` check that fails a leaf whose program no setup step installs | [Workflow contract library](../../../../scripts/lib/gate/github_workflow_contract.py) |
+| 33 | W24 | PASS: by another route, `8cdfd3cbc` restored the `uv` step the zizmor leaf consumes, and `4c40f1f51` added the `leaf-program-uninstalled` check that fails a leaf whose program no setup step installs | [Workflow contract library](../../../../scripts/lib/gate/github_workflow_contract.py) |
 | 21 | W27 | PASS: W27 installed an untracked dispatcher under `.git/` that runs the global hook and then the workspace hook for `pre-commit`, `commit-msg`, `pre-push` and `post-commit`, stopping at the first failure; no tracked file changed, and the change is recorded in `af9f27f6f` | N/A: the dispatcher is machine configuration inside `.git/` and has no tracked owner |
 | 24 | W26 | PASS: `fbec1d354` gave merge and branch-lifecycle rules a single owner | [Git workflow policy](../../../../.agents/governance/git-workflow.md) |
 | 1 | W1 | PASS: the authority decision and its provenance are preserved in ADR-0032, which is accepted | [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) |
@@ -3478,7 +3478,7 @@ explains each one.
 | 6 | W3 | PASS: named obsolete wrapper candidates have no tracked current consumer in the reviewed surface. | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 7 | W3 | PASS: retained-command ownership and aggregate routing were checked by the manifest and gate regressions. | [Script manifest](../../../../scripts/manifest.yaml) |
 | 8 | W3 | PASS: residue scan found no production `scripts/` reference to `tests/` or `tests/fixtures/`. | [Surface-ownership test](../../../../tests/lib/test_surface_ownership.py) |
-| 9 | W3 | PASS after clean-checkout repair: tracked behavioral ownership, 25/21 Compose case discovery and full-profile exact-once registration passed in the 115-test follow-up. | [Clean-worktree ownership repair](#clean-worktree-ownership-repair) |
+| 9 | W3 | PASS: after clean-checkout repair, tracked behavioral ownership, 25/21 Compose case discovery and full-profile exact-once registration passed in the 115-test follow-up. | [Clean-worktree ownership repair](#clean-worktree-ownership-repair) |
 | 10 | W3 | PASS: retained supply-chain fixture and validation boundary evidence is recorded in the focused suites. | [Supply-chain tests](../../../../tests/lib/supply_chain/test_supply_chain_policy.py) |
 | 11 | W1 | PASS: current-path grammar and full-history recovery remain separately enforced by the focused document-governance checks. | [Spec package validator](../../../../scripts/lib/document_governance/spec_packages.py) |
 | 12 | W1 | PASS: the exact SPEC-0172 source receipt and superseded full-packet mirror are recorded on this Task; ordinary SPEC-0174 disposition remains a registered lifecycle route. | [Branch-integration receipt](tsk-0006-generated-evidence-and-final-verification.md) |

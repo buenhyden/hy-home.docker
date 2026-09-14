@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.0.1"
+version: "2.0.2"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 layer: "references"
 artifact_id: "RES-0084"
 parent_ids: []
@@ -114,7 +114,7 @@ The member owns the detailed source inventory and claim-by-claim analysis.
   [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md), and
   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md).
 - Implementation/evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
-  and [current lifecycle reconciliation](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+  and [current lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - Templates and Registry: [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md), and
   [Registry](../../../99.templates/registry.json).

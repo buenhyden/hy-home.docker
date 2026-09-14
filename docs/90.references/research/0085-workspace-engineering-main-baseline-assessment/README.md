@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.3.1"
+version: "0.3.2"
 type: "reference/research-pack"
 status: "review"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 layer: "references"
 artifact_id: "RES-0085"
 parent_ids: []
@@ -86,7 +86,7 @@ Detailed current findings are not repeated here. They are consolidated in
   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   and [research-member template](../../../99.templates/templates/references/research.template.md).
 - [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) and
-  [current identity-recovery decision](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+  [current identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
 - [CI workflow](../../../../.github/workflows/ci-quality.yml),
   [workflow contract](../../../../.github/workflow-contract.yml), and
   [main protection record](../../../../.github/rulesets/main-protection.md).
@@ -123,7 +123,7 @@ Detailed current findings are not repeated here. They are consolidated in
 - Lifecycle authority: [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md),
   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md), and
   ADR-0031.
-- Current identity-recovery owner: [SPEC-0173 Task 1](../../../03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
+- Current identity-recovery owner: [SPEC-0173 Task 1](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md);
   the [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) retains the dated implementation result.
 - Operations authority: [Stage 05](../../../05.operations/README.md).
 - Audit/data evidence: implementation overview,
