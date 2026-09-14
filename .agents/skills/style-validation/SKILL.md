@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-09-14"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -28,12 +28,14 @@ Changed authored files and their language/document style contracts must be ident
 - Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
 - The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
   which owns which of these may be run locally and on what scope.
-- `scripts/classify-changed-files.sh`, which this skill owns, for the bucket
-  split the procedure below reads.
+- [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh),
+  which this skill owns beside this file rather than at the repository root,
+  for the bucket split the procedure below reads.
 
 ## Procedure
 
-1. Run `scripts/classify-changed-files.sh` and read its buckets. Classification
+1. Run [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh)
+   from this skill's directory and read its buckets. Classification
    is mechanical, so it is fixed in that script rather than re-derived by
    whoever is looking; the `generated` bucket is the one that matters most,
    because a formatter that rewrites a generated file produces a diff its owner

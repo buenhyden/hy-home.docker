@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-09-14"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -33,7 +33,9 @@ The approved infrastructure change and its validation contract must identify whi
 
 ## Procedure
 
-1. Run `scripts/static-checks.sh`. It reports every check it ran and, just as
+1. Run [`scripts/static-checks.sh`](./scripts/static-checks.sh), which this skill
+   owns beside this file rather than at the repository root. It reports every
+   check it ran and, just as
    importantly, names the ones it did not: an omitted line reads like a passing
    one, so runtime observation and secret access appear as `NOT_RUN` rather
    than disappearing.
