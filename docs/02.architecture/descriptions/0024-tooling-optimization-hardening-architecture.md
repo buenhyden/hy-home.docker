@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -118,7 +118,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0021-tooling-optimization-hardening.md](../../01.requirements/0010-tooling.md)
+- **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](0009-tooling-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)

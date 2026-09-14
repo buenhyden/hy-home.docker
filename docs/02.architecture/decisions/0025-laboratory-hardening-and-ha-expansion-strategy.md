@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0025"
 parent_ids:
@@ -77,7 +77,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0012-laboratory.md)
+- **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Architecture Description**: [../02.architecture/descriptions/0025-laboratory-optimization-hardening-architecture.md](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](../descriptions/0011-laboratory-architecture.md)
 - **Related ADR**: [ADR-0011](0011-laboratory-services.md)

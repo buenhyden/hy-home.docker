@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -112,7 +112,7 @@ created: "2026-03-28"
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0006-messaging.md)
+- **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](0005-messaging-architecture.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/guide.md)

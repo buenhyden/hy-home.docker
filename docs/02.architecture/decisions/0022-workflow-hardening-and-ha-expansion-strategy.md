@@ -1,10 +1,10 @@
 ---
 title: "Workflow Hardening and HA Expansion Strategy"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0022"
 parent_ids:
@@ -84,7 +84,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0019-workflow-optimization-hardening.md](../../01.requirements/0008-workflow.md)
+- **PRD**: [../01.requirements/0008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [../02.architecture/descriptions/0022-workflow-optimization-hardening-architecture.md](../descriptions/0022-workflow-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](../descriptions/0007-workflow-architecture.md)
 - **Related ADR**: [ADR-0007](0007-airflow-n8n-hybrid-workflow.md)

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0019"
 parent_ids:
@@ -77,7 +77,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0016-data-optimization-hardening.md](../../01.requirements/0004-data.md)
+- **PRD**: [../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Architecture Description**: [../02.architecture/descriptions/0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/004-data/spec.md](../descriptions/0004-data-architecture.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md)

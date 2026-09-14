@@ -1,10 +1,10 @@
 ---
 title: "Observability Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0021"
 parent_ids:
@@ -76,7 +76,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0007-observability.md)
+- **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Architecture Description**: [../02.architecture/descriptions/0021-observability-optimization-hardening-architecture.md](../descriptions/0021-observability-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/007-observability/spec.md](../descriptions/0006-observability-architecture.md)
 - **Related ADR**: [ADR-0006](0006-lgtm-stack-selection.md)

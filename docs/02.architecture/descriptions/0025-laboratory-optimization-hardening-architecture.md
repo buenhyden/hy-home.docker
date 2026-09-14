@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
@@ -106,7 +106,7 @@ This hardening Architecture Description does not introduce production data owner
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0022-laboratory-optimization-hardening.md](../../01.requirements/0012-laboratory.md)
+- **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)

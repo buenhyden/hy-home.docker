@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -66,7 +66,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 ### AI Agent Architecture
 
-- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.10.2-cuda`.
+- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.11.3-cuda`.
 - **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
 - **Memory & Context Strategy**: SQLite-based chat persistence.
 - **Guardrail Boundary**: SSO access control and GPU resource limits.

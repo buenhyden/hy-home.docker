@@ -1,10 +1,10 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.3.3"
+version: "1.3.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -119,7 +119,7 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   않습니다. 활성 운영 문서에 남은 자기 경로 주석은 본문·절차·식별자를
   보존하며 제거했습니다. 정비 결과는 SPEC-0173-TSK-0006의 현재 실행 증거로
   추적하며, 관측한 문서 수를 영구 계약으로 고정하지 않습니다.
-- 9개 도메인이 살아 있는 Stage 02 Description을 둘씩 가집니다. base
+- 8개 도메인이 살아 있는 Stage 02 Description을 둘씩 가집니다. base
   description과 `*-optimization-hardening` description이 관계 선언 없이
   공존하며 어느 쪽도 다른 쪽의 상위 집합이 아닙니다. REQ-0026-FR-0005는
   capability마다 Stage 02 owner 하나를 요구하므로 이는 알려진 위반입니다.

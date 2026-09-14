@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -108,7 +108,7 @@ created: "2026-03-28"
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0018-observability-optimization-hardening.md](../../01.requirements/0007-observability.md)
+- **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Spec**: [../03.specs/007-observability/spec.md](0006-observability-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)

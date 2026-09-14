@@ -1,10 +1,10 @@
 ---
 title: "Canonical Knowledge and Prompt Surfaces"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:
@@ -165,6 +165,10 @@ or remote branch protection.
   consolidates into `.agents/knowledge/`; that move touches the LLM Wiki
   generator, `llms.txt`, and a registered data lifecycle, so it is not part of
   this decision.
+  Discharged without a consolidation. SPEC-0173 retired DATA-0083 and the LLM
+  Wiki generator on 2026-09-10 and recorded each with a tombstone, so no map is
+  left to move. The instruction above is kept verbatim. Noted by SPEC-0176; the
+  decision body is unchanged.
 - Restore a current owner for the external capability-intake decision boundary
   that [RES-0002-m0003](../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
   describes but the current Provider Registry no longer carries.

@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -119,7 +119,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0020-ai-optimization-hardening.md](../../01.requirements/0009-ai.md)
+- **PRD**: [../01.requirements/0009-ai.md](../../01.requirements/0009-ai.md)
 - **Spec**: [../03.specs/009-ai/spec.md](0008-ai-architecture.md)
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/guide.md)

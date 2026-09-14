@@ -1,10 +1,10 @@
 ---
 title: "Tooling Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0024"
 parent_ids:
@@ -82,7 +82,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0021-tooling-optimization-hardening.md](../../01.requirements/0010-tooling.md)
+- **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Architecture Description**: [../02.architecture/descriptions/0024-tooling-optimization-hardening-architecture.md](../descriptions/0024-tooling-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](../descriptions/0009-tooling-architecture.md)
 - **Related ADR**: [ADR-0009](0009-tooling-services.md)

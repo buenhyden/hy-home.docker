@@ -1,10 +1,10 @@
 ---
 title: "Vault Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0018"
 parent_ids:
@@ -80,7 +80,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0015-security-optimization-hardening.md](../../01.requirements/0003-security.md)
+- **PRD**: [../01.requirements/0003-security.md](../../01.requirements/0003-security.md)
 - **Architecture Description**: [../02.architecture/descriptions/0018-security-optimization-hardening-architecture.md](../descriptions/0018-security-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/003-security/spec.md](../descriptions/0003-security-architecture.md)
 - **Related ADR**: [ADR-0003](0003-vault-as-secrets-manager.md)

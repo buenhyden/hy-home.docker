@@ -1,10 +1,10 @@
 ---
 title: "Messaging Hardening and HA Expansion Strategy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "architecture"
 artifact_id: "ADR-0020"
 parent_ids:
@@ -77,7 +77,7 @@ The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/0017-messaging-optimization-hardening.md](../../01.requirements/0006-messaging.md)
+- **PRD**: [../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
 - **Architecture Description**: [../02.architecture/descriptions/0020-messaging-optimization-hardening-architecture.md](../descriptions/0020-messaging-optimization-hardening-architecture.md)
 - **Spec**: [../03.specs/006-messaging/spec.md](../descriptions/0005-messaging-architecture.md)
 - **Related ADR**: [ADR-0005](0005-kafka-vs-rabbitmq-selection.md)
