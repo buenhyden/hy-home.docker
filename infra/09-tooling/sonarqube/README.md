@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -53,7 +53,7 @@ sonarqube/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | SonarQube Community | `sonarqube:26.5.0.122743-community` |
+| **Service** | SonarQube Community | `sonarqube:26.9.0.129388-community` |
 | **Database** | PostgreSQL | Management Cluster |
 | **Network** | Traefik | SSL termination |
 | **Storage** | Bind Mount | `${DEFAULT_TOOLING_DIR}/sonarqube` |

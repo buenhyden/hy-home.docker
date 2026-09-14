@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -57,7 +57,7 @@ created: "2026-05-17"
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image(`hyhome/n8n:2.29.5-local`)를 사용하도록 확인한다.
-   - Dockerfile non-root runtime(`USER node`)와 entrypoint secret guard를 확인한다.
+   - Dockerfile non-root runtime(`USER 1000`)와 entrypoint secret guard를 확인한다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`

@@ -1,10 +1,10 @@
 ---
 title: "Grafana Visualization and Dashboards"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2026-01-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-`infra/06-observability/grafana` contains the Grafana implementation for the `06-observability` tier. Grafana runs as compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.1.0`, persists runtime state in `grafana-data`, mounts provisioning and dashboard trees read-only, and uses Keycloak Generic OAuth role mapping for access control.
+`infra/06-observability/grafana` contains the Grafana implementation for the `06-observability` tier. Grafana runs as compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.2.1`, persists runtime state in `grafana-data`, mounts provisioning and dashboard trees read-only, and uses Keycloak Generic OAuth role mapping for access control.
 
 ## Audience
 
@@ -57,7 +57,7 @@ grafana/
 | Compose service | `grafana` in `infra/06-observability/docker-compose.yml` |
 | Compose linkage | Declared in `infra/06-observability/docker-compose.yml` |
 | Container | `infra-grafana` |
-| Image | `grafana/grafana:13.1.0` |
+| Image | `grafana/grafana:13.2.1` |
 | Config files | `provisioning/datasources/datasource.yml`, `provisioning/dashboards/dashboards.yml`, dashboard JSON files |
 | Config values | Datasource UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`; Pyroscope datasource type `grafana-pyroscope-datasource`; dashboard providers `editable: false`; role mapping for `/admins` and `/editors` |
 | Volumes | `./grafana/provisioning:/etc/grafana/provisioning:ro`, `./grafana/dashboards:/etc/grafana/dashboards:ro`, `grafana-data:/var/lib/grafana:rw` |

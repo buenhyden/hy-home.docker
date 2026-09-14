@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0054"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-17"
      - healthcheck/depends_on 계약 복원
    - n8n image drift:
      - compose custom image 설정 복원
-     - Dockerfile `USER node`, entrypoint secret guard 복원
+     - Dockerfile `USER 1000`, entrypoint secret guard 복원
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`

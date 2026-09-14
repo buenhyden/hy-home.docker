@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow 3.2.2, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow 3.3.1, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
 
 ---
 

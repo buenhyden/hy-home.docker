@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.6.0을 사용하며, three-node cluster compose는 optional variant다.
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.8.0을 사용하며, three-node cluster compose는 optional variant다.
 
 ## Policy Scope
 

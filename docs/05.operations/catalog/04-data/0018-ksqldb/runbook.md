@@ -1,10 +1,10 @@
 ---
 title: "ksqlDB Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0018"
 parent_ids:
@@ -59,7 +59,7 @@ created: "2026-05-17"
 3. CLI가 필요한 경우 `ksql` profile로 접속한다.
 
    ```bash
-   docker run --rm --network infra_net confluentinc/cp-ksqldb-cli:8.0.5 ksql http://ksqldb-server:8088
+   docker run --rm --network infra_net confluentinc/cp-ksqldb-cli:8.0.7 ksql http://ksqldb-server:8088
    ```
 
 4. Query mutation은 evidence 확보 후 수행한다.

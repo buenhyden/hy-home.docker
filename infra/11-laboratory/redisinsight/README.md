@@ -1,10 +1,10 @@
 ---
 title: "Laboratory RedisInsight"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2026-03-26"
 ---
 
@@ -73,7 +73,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Image | `redis/redisinsight:3.6.0` | Current compose tag |
+| Image | `redis/redisinsight:3.8.0` | Current compose tag |
 | Port | `5540` (Internal) | Managed by Traefik |
 | Storage | `redisinsight-data` | Persistent volume for connections |
 

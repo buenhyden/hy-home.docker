@@ -1,10 +1,10 @@
 ---
 title: "10-communication - Communication Tier"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 created: "2025-11-12"
 ---
 
@@ -68,7 +68,7 @@ graph TD
 bash scripts/hardening/check-all-hardening.sh 10-communication
 ```
 
-runtime 시작/중지는 root include 활성화와 운영 승격 evidence가 준비된 뒤 승인된 절차로 수행한다.
+runtime 시작/중지는 `communication` profile 선택과 운영 승격 evidence가 준비된 뒤 승인된 절차로 수행한다.
 
 ### Key Ports
 

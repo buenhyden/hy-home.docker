@@ -1,10 +1,10 @@
 ---
 title: "Neo4j"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -79,7 +79,7 @@ neo4j/
 
 | Category   | Technology        | Notes                     |
 | ---------- | ----------------- | ------------------------- |
-| Engine     | `neo4j:5.26.26-community` | Community single service |
+| Engine     | `neo4j:5.26.30-community` | Community single service |
 | Protocol   | Bolt / HTTP / S   | Exposed internally as 7687 / 7474 / 7473 |
 | Security   | Docker Secrets    | `neo4j_password`          |
 | Route      | Traefik HTTP      | `neo4j.${DEFAULT_URL}` to `${NEO4J_HTTP_PORT:-7474}` |

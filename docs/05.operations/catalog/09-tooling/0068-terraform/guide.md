@@ -1,10 +1,10 @@
 ---
 title: "Operations: Terraform Policy Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0068"
 parent_ids:
@@ -76,7 +76,7 @@ Terraform is used in `hy-home.docker` to provision and manage cloud resources (A
 
 Instead of a long-running service, Terraform is treated as a **job**.
 
-- Use root compose plus the Terraform leaf compose so the optional `infra_net` context is present.
+- Use root compose plus the Terraform leaf compose so the root `infra_net` context is present.
 - Profiles: specify `tooling` and `iac` when rendering or running the helper.
 
 #### 2. State Management

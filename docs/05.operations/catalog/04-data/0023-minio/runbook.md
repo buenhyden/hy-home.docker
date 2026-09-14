@@ -1,10 +1,10 @@
 ---
 title: "MinIO Object Storage Health Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0023"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. optional cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
+이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. `storage-cluster` profile의 cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
 
 ### Purpose
 
@@ -40,7 +40,7 @@ created: "2026-05-17"
 - [ ] Confirm this is a health/status verification task, not bucket deletion, credential rotation, or volume restore.
 - [ ] Confirm Docker Secret files exist without printing their values.
 - [ ] Confirm `${DEFAULT_DATA_DIR}/minio/data-1` is the approved runtime data location.
-- [ ] Confirm optional cluster compose is out of scope unless explicitly named in the task.
+- [ ] Confirm the `storage-cluster` compose is out of scope unless explicitly named in the task.
 
 ### Steps
 
@@ -107,7 +107,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If bucket deletion, volume restore, optional cluster recovery, or credential rotation is required, stop and escalate with captured evidence.
+N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If bucket deletion, volume restore, `storage-cluster` recovery, or credential rotation is required, stop and escalate with captured evidence.
 
 ## Escalation
 

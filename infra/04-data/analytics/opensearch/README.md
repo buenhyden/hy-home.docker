@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-15"
 created: "2025-11-12"
 ---
 
@@ -28,7 +28,7 @@ created: "2025-11-12"
 
 ### In Scope
 
-- OpenSearch 3.x custom build와 OpenSearch Dashboards 3.6.0을 위한 Docker 인프라
+- OpenSearch 3.x custom build와 OpenSearch Dashboards 3.8.0을 위한 Docker 인프라
 - 자원 할당(JVM Heap) 및 볼륨 영속성 관리
 - 보안 설정 (Docker Secrets, HTTPS 적용)
 - 커스텀 빌드 이미지를 통한 플러그인 관리

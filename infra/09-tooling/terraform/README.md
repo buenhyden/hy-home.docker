@@ -1,10 +1,10 @@
 ---
 title: "Terraform Infrastructure Tool"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2026-01-15"
 ---
 
@@ -15,7 +15,7 @@ created: "2026-01-15"
 
 ## Overview
 
-`infra/09-tooling/terraform/` provides a standardized Terraform execution container. The service uses `hashicorp/terraform:1.15.5`, mounts a local `workspace/` directory, and exposes host cloud credential directories as read-only mounts for local IaC workflows.
+`infra/09-tooling/terraform/` provides a standardized Terraform execution container. The service uses `hashicorp/terraform:1.16.1`, mounts a local `workspace/` directory, and exposes host cloud credential directories as read-only mounts for local IaC workflows.
 
 This README is the service-level entrypoint. It describes the Compose surface and links to the canonical guide, operations policy, and runbook.
 
@@ -81,7 +81,7 @@ terraform/
 
 | Component | Technology | Version / Source | Role |
 | --- | --- | --- | --- |
-| Engine | HashiCorp Terraform | `hashicorp/terraform:1.15.5` | IaC CLI |
+| Engine | HashiCorp Terraform | `hashicorp/terraform:1.16.1` | IaC CLI |
 | Runtime | Docker Compose | `tooling`, `iac` profiles | Containerized execution |
 | Workspace | Bind mount | `./workspace:/workspace:rw` | Terraform working directory |
 | Credentials | Host bind mounts | `$HOME/.aws`, `$HOME/.azure` read-only | Cloud provider access |

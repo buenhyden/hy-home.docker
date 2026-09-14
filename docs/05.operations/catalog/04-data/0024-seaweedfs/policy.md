@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -35,7 +35,7 @@ created: "2026-05-17"
 ## Controls
 
 - **Required**:
-  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.38` and the current five-service set.
+  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.45` and the current five-service set.
   - Health checks are documented for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`; `seaweedfs-mount` has no compose healthcheck.
   - `seaweedfs-mount` privileged/SYS_ADMIN behavior must be treated as host-impacting.
   - Public access must use the declared Traefik routes: `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`.

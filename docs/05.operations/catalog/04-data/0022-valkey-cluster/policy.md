@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -36,7 +36,7 @@ created: "2026-05-17"
   - Authentication and node-to-node `masterauth` use Docker Secret `service_valkey_password`.
   - The six data volumes are bound under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`.
   - Cluster initialization uses `valkey-cluster-init`; destructive re-initialization is not allowed as a documentation-only operation.
-  - Compose-facing documentation must list the current service set and image family `valkey/valkey:9.1.0-alpine`.
+  - Compose-facing documentation must list the current service set and image family `valkey/valkey:9.1.2-alpine`.
   - Persistence controls must match current config evidence: RDB snapshots and AOF are enabled.
 - **Allowed**:
   - Metadata-only compose validation with `docker compose ... config`.

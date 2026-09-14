@@ -1,10 +1,10 @@
 ---
 title: "Syncthing"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -53,7 +53,7 @@ syncthing/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | Syncthing | `syncthing/syncthing:2.1.1` |
+| **Service** | Syncthing | `syncthing/syncthing:2.1.3` |
 | **Protocol** | BEP (Block Exchange Protocol) | P2P Sync |
 | **Network** | Traefik | SSL GUI termination |
 | **Data Storage** | Bind Mount | `${DEFAULT_RESOURCES_DIR}` |

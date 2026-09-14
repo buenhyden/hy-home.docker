@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -36,7 +36,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
   - Tempo service는 `template-stateful-high`, image
     `hy/tempo:3.0.2-custom`, user `10001:10001`, read-only config mount,
     persistent `tempo-data` volume을 유지한다.
-  - Custom Tempo image는 upstream `grafana/tempo:3.0.2`, non-root user
+  - Custom Tempo image는 upstream `grafana/tempo:3.0.3`, non-root user
     `10001:10001`, and `/docker-entrypoint.sh` secret guard를 유지한다.
   - OTLP receiver는 internal gRPC `4317`과 HTTP `4318` endpoints를 유지한다.
   - HTTP/query/health surface는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck를
@@ -77,7 +77,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - Tempo config:
   `rg -n 'block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: minio:9000|secret_key: \\$\\{MINIO_APP_USER_PASSWORD\\}' infra/06-observability/tempo/config/tempo.yaml`
 - Custom image secret guard:
-  `rg -n 'FROM grafana/tempo:3.0.2|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
+  `rg -n 'FROM grafana/tempo:3.0.3|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 

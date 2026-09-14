@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 Cassandra 단일 노드와 `cassandra-exporter` 운영 기준을 정의한다. 기준은 현재 tracked compose의 `cassandra:5.0.8`, `bitnami/cassandra-exporter:2.3.11`, `infra_net`, Docker Secret, `${DEFAULT_DATA_DIR}/cassandra/node1` 볼륨 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 Cassandra 단일 노드와 `cassandra-exporter` 운영 기준을 정의한다. 기준은 현재 tracked compose의 `cassandra:5.0.9`, `bitnami/cassandra-exporter:2.3.11`, `infra_net`, Docker Secret, `${DEFAULT_DATA_DIR}/cassandra/node1` 볼륨 구성이다.
 
 ## Policy Scope
 

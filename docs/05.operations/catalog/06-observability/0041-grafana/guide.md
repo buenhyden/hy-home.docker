@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 `grafana/grafana:13.1.0`으로 실행되는 visualization hub이며, provisioned datasources, provisioned dashboards, Keycloak OAuth role mapping, and protected route를 통해 metrics, logs, traces, alerts, and profiles를 한 화면에서 탐색한다.
+이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 `grafana/grafana:13.2.1`으로 실행되는 visualization hub이며, provisioned datasources, provisioned dashboards, Keycloak OAuth role mapping, and protected route를 통해 metrics, logs, traces, alerts, and profiles를 한 화면에서 탐색한다.
 
 ### Usage Type
 
@@ -49,7 +49,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-med|image: grafana/grafana:13.1.0|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-med|image: grafana/grafana:13.2.1|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Datasource provisioning boundary를 확인한다.

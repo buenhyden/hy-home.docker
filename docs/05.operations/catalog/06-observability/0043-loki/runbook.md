@@ -1,10 +1,10 @@
 ---
 title: "Loki Readiness and Storage Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0043"
 parent_ids:
@@ -60,7 +60,7 @@ created: "2026-05-17"
 3. Custom image and secret expansion boundary를 확인한다.
 
    ```bash
-   rg -n 'FROM grafana/loki:3.7.3|ENTRYPOINT \\[\"/docker-entrypoint.sh\"\\]|-config.expand-env=true|MINIO_APP_USER_PASSWORD|/run/secrets/minio_app_user_password|exec /usr/bin/loki' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
+   rg -n 'FROM grafana/loki:3.7.7|ENTRYPOINT \\[\"/docker-entrypoint.sh\"\\]|-config.expand-env=true|MINIO_APP_USER_PASSWORD|/run/secrets/minio_app_user_password|exec /usr/bin/loki' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
    ```
 
 4. MinIO storage, retention, compactor, and ruler boundary를 확인한다.

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -72,7 +72,7 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 
 - 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
 - Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
-- 클러스터 init은 `curlimages/curl:8.20.0` 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
+- 클러스터 init은 `curlimages/curl:8.22.0` 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 
 ## Common Checks
 

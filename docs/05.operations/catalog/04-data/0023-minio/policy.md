@@ -1,10 +1,10 @@
 ---
 title: "MinIO Object Storage Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "POL-0023"
 parent_ids:
@@ -26,7 +26,7 @@ created: "2026-05-17"
 
 - **Systems**: `minio`, `minio-create-buckets`
 - **Configs**: `infra/04-data/lake-and-object/minio/docker-compose.yml` and `docker-compose.cluster.yaml`; the root file includes both and the profile selects between them
-- **Profiles**: `storage`, `obs`, `dev`
+- **Profiles**: `minio`은 `storage`, `obs`, `dev`, `nginx`, `minio-create-buckets`는 `storage`, `obs`, `dev`
 - **Networks**: `infra_net`
 - **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or object-storage runtime boundaries
 

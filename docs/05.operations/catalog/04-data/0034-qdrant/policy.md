@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 `qdrant/qdrant:v1.18.1-unprivileged`, 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
+이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 `qdrant/qdrant:v1.19.1-unprivileged`, 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
 
 ## Policy Scope
 

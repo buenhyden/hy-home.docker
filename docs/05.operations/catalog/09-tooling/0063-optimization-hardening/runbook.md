@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: restore the documented hardening baseline for optional `09-tooling` compose leaves.
+> Scope: restore the documented hardening baseline for the profile-selected `09-tooling` compose leaves.
 
 이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, `infra_net` external 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
 
 ### Purpose
 
-service-local compose 단독 검증과 root optional context를 혼동하지 않고, 현재 구현에 맞는 하드닝 기준선을 재확인한다.
+service-local compose 단독 검증과 root compose context를 혼동하지 않고, 현재 구현에 맞는 하드닝 기준선을 재확인한다.
 
 ## When to Use
 
@@ -30,7 +30,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 - SonarQube/Terrakube/Syncthing middleware chain drifts.
 - Locust worker healthcheck or command contract drifts.
 - k6 wrapper volume or service-name documentation drifts.
-- Active docs reintroduce service-local standalone config claims for optional tooling leaves.
+- Active docs reintroduce service-local standalone config claims for profile-selected tooling leaves.
 
 ## Procedure
 
@@ -76,7 +76,7 @@ service-local compose 단독 검증과 root optional context를 혼동하지 않
 - tooling hardening script 실패 0건.
 - repo contracts 실패 0건.
 - optimization-hardening guide/policy/runbook links가 guide, policy, runbook 각각의 목적 bucket을 가리킨다.
-- optional tooling leaf runtime 검증은 root network/secret/dependency context 필요성이 문서화되어 있다.
+- profile로 선택되는 tooling leaf runtime 검증은 root network/secret/dependency context 필요성이 문서화되어 있다.
 
 ### Observability and Evidence Sources
 
@@ -108,7 +108,7 @@ Use only the focused restore steps above. If service runtime, data mutation, or 
 
 ## Escalation
 
-Escalate to the tooling owner when hardening remains failed after focused restore, secret exposure risk appears, optional root context cannot be reconstructed, or runtime service changes are required.
+Escalate to the tooling owner when hardening remains failed after focused restore, secret exposure risk appears, root compose context cannot be reconstructed, or runtime service changes are required.
 
 ## Traceability
 

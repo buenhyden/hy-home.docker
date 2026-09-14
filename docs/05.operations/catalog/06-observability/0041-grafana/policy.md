@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -26,7 +26,7 @@ provisioning, Keycloak role mapping, secret boundary, protected route를
 이 정책은 current `infra/06-observability/grafana` compose, provisioning,
 dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
-- **Systems**: compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.1.0`, volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
+- **Systems**: compose service `grafana`, container `infra-grafana`, image `grafana/grafana:13.2.1`, volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -46,7 +46,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
     `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`를 기준으로 한다.
   - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret
     file reference로만 주입한다.
-  - Service는 `template-stateful-med`, image `grafana/grafana:13.1.0`,
+  - Service는 `template-stateful-med`, image `grafana/grafana:13.2.1`,
     read-only provisioning/dashboard mounts, persistent `grafana-data`
     volume을 유지한다.
   - Grafana route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
@@ -76,7 +76,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-med|image: grafana/grafana:13.1.0|grafana_admin_password|grafana_client_secret|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-med|image: grafana/grafana:13.2.1|grafana_admin_password|grafana_client_secret|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Provisioning boundary:
   `rg -n 'editable: false|uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning`
 - Dashboard count:

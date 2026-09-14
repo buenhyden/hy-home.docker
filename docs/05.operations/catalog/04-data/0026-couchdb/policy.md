@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 `couchdb:3.5.2`, `curlimages/curl:8.20.0`, `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 `couchdb:3.5.2`, `curlimages/curl:8.22.0`, `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
 ## Policy Scope
 

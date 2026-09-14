@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -45,7 +45,7 @@ CouchDB는 데이터 동기화 및 복제에 특화된 문서 지향 NoSQL 데�
 | Category   | Technology                 | Notes                      |
 | :--------- | :------------------------- | :------------------------- |
 | Engine     | `couchdb:3.5.2`            | Cluster Nodes              |
-| Init Job   | `curlimages/curl:8.20.0`   | Bootstrap Automation       |
+| Init Job   | `curlimages/curl:8.22.0`   | Bootstrap Automation       |
 | Proxy      | `traefik`                  | HTTP API & TLS Termination |
 | Network    | `infra_net`                | Erlang Distribution        |
 

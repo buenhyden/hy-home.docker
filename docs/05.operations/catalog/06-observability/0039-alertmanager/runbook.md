@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0039"
 parent_ids:
@@ -54,7 +54,7 @@ created: "2026-05-17"
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.33.0|container_name: infra-alertmanager|alertmanager-data|smtp_username|smtp_password|slack_webhook|ALERTMANAGER_PORT|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.34.0|container_name: infra-alertmanager|alertmanager-data|smtp_username|smtp_password|slack_webhook|ALERTMANAGER_PORT|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 3. Secret 값이 아닌 placeholder와 route/receiver config만 확인한다.

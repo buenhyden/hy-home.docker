@@ -1,10 +1,10 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0003"
 parent_ids: []
@@ -62,20 +62,22 @@ created: "2026-06-04"
 
 ## Common Checks
 
-- `.env.example`의 현재 tracked key 수는 322개다.
+- `.env.example`의 tracked key 수는 고정 숫자로 적지 않고
+  `grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env.example | sort -u | wc -l`로
+  측정한다. 아래 요약은 감사 기준일의 측정값이다.
 - local `.env`가 존재할 때만 값은 출력하지 않고 key 이름 집합을 비교한다.
 - local `.env`가 없으면 실제 key 수나 차이를 추정하지 않고 `not observed`로
   기록한다.
 
 ### 감사 기준일
 
-2026-08-14
+2026-09-14
 
 ### 요약
 
 | 항목                    | 결과                                          |
 | ----------------------- | --------------------------------------------- |
-| `.env.example` 키 수    | 322                                           |
+| `.env.example` 키 수    | 343                                           |
 | `.env` 키 수            | not observed (local file absent)              |
 | 키셋 동일 여부          | not evaluated                                  |
 | `.env.example`에만 존재 | not evaluated                                  |

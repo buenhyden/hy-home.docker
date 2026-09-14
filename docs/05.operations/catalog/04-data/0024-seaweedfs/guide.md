@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-10"
 
 ### Overview
 
-SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. 현재 구현은 `data` profile에서 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`를 실행하며, all services use `infra_net` and image `chrislusf/seaweedfs:4.38`.
+SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. 현재 구현은 `data` profile에서 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`를 실행하며, all services use `infra_net` and image `chrislusf/seaweedfs:4.45`.
 
 ### Usage Type
 
@@ -75,7 +75,7 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 
 ### Common Pitfalls
 
-- Referring to old SeaweedFS image versions. The current compose image is `chrislusf/seaweedfs:4.38`.
+- Referring to old SeaweedFS image versions. The current compose image is `chrislusf/seaweedfs:4.45`.
 - Assuming SeaweedFS security config is mounted into the current compose. Only
   `config/security.toml.example` remains as a future scaffold; the current
   service definitions do not mount or use it. Activation is a separate approved runtime change.

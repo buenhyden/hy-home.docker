@@ -1,10 +1,10 @@
 ---
 title: "Neo4j Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0033"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active specialized data service인 Neo4j 운영 기준을 정의한다. 기준은 현재 tracked compose의 `neo4j:5.26.26-community`, 단일 `neo4j` service, `data`/`graph` profiles, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route다.
+이 정책은 root-active specialized data service인 Neo4j 운영 기준을 정의한다. 기준은 현재 tracked compose의 `neo4j:5.26.30-community`, 단일 `neo4j` service, `data`/`graph` profiles, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route다.
 
 ## Policy Scope
 

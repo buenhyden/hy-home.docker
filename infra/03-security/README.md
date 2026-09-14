@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security)"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -66,7 +66,7 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Secret Mgmt | HashiCorp Vault               | `hashicorp/vault:2.0.3`   |
+| Secret Mgmt | HashiCorp Vault               | `hashicorp/vault:2.1.0`   |
 | Storage    | Raft (Integrated)              | Single-node current state; HA expansion planned |
 | Injection  | Vault Agent                    | Sidecar pattern           |
 | OS         | Alpine Linux (Container)       | Minimal surface area      |

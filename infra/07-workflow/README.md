@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Orchestration | Apache Airflow              | v3.2.2 (CeleryExecutor)   |
+| Orchestration | Apache Airflow              | v3.3.1 (CeleryExecutor)   |
 | Automation  | n8n                          | v2.29.5-local             |
 | Broker      | Valkey                       | the `dedicated-valkey` profile starts `airflow-valkey` and `n8n-valkey`; without it the host defaults resolve to the shared `mng-valkey` |
 | Database    | PostgreSQL                   | Management PostgreSQL (`mng-pg`) |

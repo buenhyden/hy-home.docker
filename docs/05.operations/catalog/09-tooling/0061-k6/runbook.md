@@ -1,10 +1,10 @@
 ---
 title: "k6 Wrapper Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0061"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-테스트 부하를 안전하게 중단하고 root optional compose context와 k6 종료 상태를 확인한 뒤 재실행 여부를 판단한다.
+테스트 부하를 안전하게 중단하고 root compose context와 k6 종료 상태를 확인한 뒤 재실행 여부를 판단한다.
 
 ## When to Use
 
@@ -62,7 +62,7 @@ created: "2026-05-17"
    docker compose $K6_COMPOSE_FILES --profile testing logs --tail=100 k6
    ```
 
-4. root optional context가 필요한 검증 경계를 확인한다.
+4. root compose context가 필요한 검증 경계를 확인한다.
 
    ```bash
    bash scripts/hardening/check-all-hardening.sh 09-tooling

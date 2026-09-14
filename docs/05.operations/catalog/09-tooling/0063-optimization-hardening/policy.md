@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-05-10"
   - SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
   - tooling compose는 `infra_net` external 경계 선언을 유지한다.
   - locust-worker healthcheck를 유지한다.
-  - k6 volume 계약(`k6-data:/mnt/locust:rw`)을 유지한다.
+  - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.
   - tooling 변경은 `check-all-hardening.sh 09-tooling` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - optimization-hardening 문서(PRD~Procedure) 링크를 유지해야 한다.
 - **Allowed**:
@@ -75,7 +75,7 @@ created: "2026-05-10"
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
-- Runtime compose rendering for optional tooling services must use root network/secret/dependency context, not service-local compose files alone.
+- Runtime compose rendering for profile-selected tooling services must use root network/secret/dependency context, not service-local compose files alone.
 
 ## Review Cadence
 

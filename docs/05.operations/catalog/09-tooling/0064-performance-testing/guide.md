@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-05-10"
 
 ### Purpose
 
-성능 테스트를 실행하기 전에 어떤 leaf를 선택해야 하는지, root optional compose 경계와 승인/검증 절차를 어떻게 적용해야 하는지 안내한다.
+성능 테스트를 실행하기 전에 어떤 leaf를 선택해야 하는지, root compose와 profile 선택 경계, 승인/검증 절차를 어떻게 적용해야 하는지 안내한다.
 
 ### Prerequisites
 

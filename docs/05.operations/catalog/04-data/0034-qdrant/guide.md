@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `qdrant/qdrant:v1.18.1-unprivileged`, 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
+이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `qdrant/qdrant:v1.19.1-unprivileged`, 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
 
 ### Usage Type
 

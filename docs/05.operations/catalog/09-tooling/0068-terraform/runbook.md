@@ -1,10 +1,10 @@
 ---
 title: "Terraform Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0068"
 parent_ids:
@@ -33,7 +33,7 @@ guide에, 운영 통제 기준은 policy에 남기고, 이 문서는 반복 가�
 
 ### 1. Confirm Execution Context
 
-저장소 루트에서 정적 기준선을 먼저 확인한다. `infra/09-tooling/terraform/docker-compose.yml`은 root `infra_net` context가 필요한 optional leaf이므로 service-local compose 단독 config를 성공 기준으로 삼지 않는다.
+저장소 루트에서 정적 기준선을 먼저 확인한다. `infra/09-tooling/terraform/docker-compose.yml`은 root `infra_net` context가 필요하고 `tooling`/`iac` profile이 선택하는 leaf이므로 service-local compose 단독 config를 성공 기준으로 삼지 않는다.
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling

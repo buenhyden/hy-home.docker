@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -54,7 +54,7 @@ created: "2026-05-17"
 2. Compose and config boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/pyroscope:2.1.0|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/pyroscope:2.3.0|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
    rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml
    ```
 

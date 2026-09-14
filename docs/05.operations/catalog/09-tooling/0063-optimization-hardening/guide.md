@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -66,7 +66,7 @@ created: "2026-05-17"
 ### Common Pitfalls
 
 - 공개 라우터에 SSO 체인을 누락하는 실수
-- service-local compose 단독 config 실패를 root optional context와 구분하지 못하는 실수
+- service-local compose 단독 config 실패를 root compose context와 구분하지 못하는 실수
 - locust worker health 상태를 확인하지 않는 실수
 - k6 leaf에 존재하지 않는 worker 또는 Traefik route를 문서화하는 실수
 

@@ -1,10 +1,10 @@
 ---
 title: "MinIO Object Storage Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0023"
 parent_ids:
@@ -37,7 +37,7 @@ MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S
 
 ### Purpose
 
-이 가이드는 현재 MinIO service set, Traefik entrypoint, initialized buckets, secret boundary, 일반 확인 절차를 설명한다. 단일 compose와 optional cluster compose를 혼동하지 않도록 한다.
+이 가이드는 현재 MinIO service set, Traefik entrypoint, initialized buckets, secret boundary, 일반 확인 절차를 설명한다. 단일 compose(`storage`)와 `storage-cluster` profile이 선택하는 cluster compose를 혼동하지 않도록 한다.
 
 ### Prerequisites
 

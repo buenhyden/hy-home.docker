@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -54,7 +54,7 @@ Open WebUI 서비스 운영 전반:
 - 배포 전 체크:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-  - runtime 승인 후 root include 활성화 상태에서 `open-webui` container-internal health endpoint 응답 확인
+  - runtime 승인 후 `ai` profile 선택 상태에서 `open-webui` container-internal health endpoint 응답 확인
   - Open WebUI -> Ollama/Qdrant container-internal 연결성 확인
 - 운영 중 체크:
   - 인증 실패율, 5xx 비율, 인덱싱 실패율 모니터링

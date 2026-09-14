@@ -1,10 +1,10 @@
 ---
 title: "Apache Cassandra"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -44,7 +44,7 @@ Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데�
 
 | Category   | Technology                           | Notes                      |
 | :--------- | :----------------------------------- | :------------------------- |
-| Engine     | `cassandra:5.0.8`                    | Main Data Node             |
+| Engine     | `cassandra:5.0.9`                    | Main Data Node             |
 | Monitoring | `bitnami/cassandra-exporter:2.3.11` | Metrics Collection         |
 | Network    | `infra_net`                          | Internal Traffic Isolation |
 | Resource   | `template-stateful-high`             | High Performance Profile   |

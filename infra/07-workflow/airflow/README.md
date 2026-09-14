@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -82,7 +82,7 @@ airflow/
 
 | Category | Technology | Version | Notes |
 | :--- | :--- | :--- | :--- |
-| Engine | Apache Airflow | v3.2.2 | Python 기반 |
+| Engine | Apache Airflow | v3.3.1 | Python 기반 |
 | Executor | CeleryExecutor | Distributed | 분산 워커 노드 확장 |
 | Broker | Valkey (Redis-compatible) | 9.1.0; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` by default, `airflow-valkey` under the `dedicated-valkey` profile | 태스크 큐 및 메시지 브로커 |
 | DB | PostgreSQL | Management PostgreSQL | 메타데이터 및 상태 저장 |

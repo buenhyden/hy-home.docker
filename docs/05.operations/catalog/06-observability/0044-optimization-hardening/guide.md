@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -57,7 +57,7 @@ created: "2026-05-17"
    - entrypoint에서 MinIO secret 존재를 선검증한다.
 5. 자동 검증 및 CI 반영
    - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-   - CI workflow에 `infrastructure-hardening` job 반영 여부 확인
+   - `.github/workflow-contract.yml`에 `leaf.infrastructure-hardening` gate가 등록되어 있는지 확인
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 

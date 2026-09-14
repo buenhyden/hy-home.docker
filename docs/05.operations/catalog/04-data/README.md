@@ -1,10 +1,10 @@
 ---
 title: "Operations — 04 Data"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 ---
 
@@ -61,7 +61,7 @@ evidence, rollback or recovery, and escalation boundaries.
 
 - [Operations index](../../README.md)
 - [Data infrastructure](../../../../infra/04-data/README.md)
-- [Guides index](README.md)
-- [Policies index](README.md)
-- [Runbooks index](README.md)
+- [Guides index](../../README.md)
+- [Policies index](../../README.md)
+- [Runbooks index](../../README.md)
 - [Incident records](../../incidents/README.md)

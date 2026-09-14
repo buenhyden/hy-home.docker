@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -40,7 +40,7 @@ created: "2026-05-10"
 ### Prerequisites
 
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
-- root `docker-compose.yml`에서 `infra/08-ai/ollama/docker-compose.yml` include가 승인되어 활성화되어야 한다.
+- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` profile을 선택해야 한다.
 - `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
 - 기본 포트/엔드포인트:
@@ -107,7 +107,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-- Runtime approval 후 root include를 활성화한 상태에서 `docker compose exec ollama ollama list`
+- Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec ollama ollama list`
 
 ## Runbook Handoff
 

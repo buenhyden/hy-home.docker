@@ -1,10 +1,10 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0059"
 parent_ids: []
@@ -64,7 +64,7 @@ created: "2026-03-25"
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-- Runtime approval 후 root include를 활성화한 상태에서 `docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections`
+- Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections`
 
 ## Runbook Handoff
 

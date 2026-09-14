@@ -1,10 +1,10 @@
 ---
 title: "11-laboratory - Management & Laboratory Tier"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 created: "2026-03-26"
 ---
 
@@ -79,7 +79,7 @@ HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 11-laboratory
 ```
 
-Runtime start/stop은 root include 활성 상태와 운영자 승인 범위를 확인한 뒤 수행한다. Service-local standalone compose rendering은 root `infra_net`, secret, common template context를 보존하지 못하므로 readiness evidence로 사용하지 않는다.
+Runtime start/stop은 `admin` profile 선택과 운영자 승인 범위를 확인한 뒤 수행한다. Service-local standalone compose rendering은 root `infra_net`, secret, common template context를 보존하지 못하므로 readiness evidence로 사용하지 않는다.
 
 ### Key Ports
 

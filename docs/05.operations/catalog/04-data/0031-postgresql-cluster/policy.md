@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 3.6.12 tag, HAProxy `haproxy:3.3.10`, Spilo/Patroni `ghcr.io/zalando/spilo-17:4.0-p3`, init job `postgres:18.4-alpine`, postgres exporters `prometheuscommunity/postgres-exporter:v0.19.1`, Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 `quay.io/coreos/etcd:v3.7.1` tag, HAProxy `haproxy:3.4.4`, Spilo/Patroni `ghcr.io/zalando/spilo-17:4.0-p3`, init job `postgres:18.6-alpine`, postgres exporters `prometheuscommunity/postgres-exporter:v0.20.1`, Docker Secret 기반 credential 구성이다.
 
 ## Policy Scope
 

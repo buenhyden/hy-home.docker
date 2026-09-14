@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -30,7 +30,10 @@ created: "2026-05-17"
 ## Controls
 
 - **Required**:
-  - `REGISTRY_STORAGE_DELETE_ENABLED: "true"` 설정 유지 (GC를 위해 필수).
+  - 삭제 API를 켜는 `REGISTRY_STORAGE_DELETE_ENABLED`는 현재
+    `infra/09-tooling/registry/docker-compose.yml`에 설정되어 있지 않으므로
+    삭제와 garbage collection은 비활성 기본값이다. 이를 켜려면 compose 변경과
+    같은 논리 변경에서 이 control을 갱신한다.
   - 이미지 푸시 전 태그 컨벤션 준수 (`registry:<port>/<project>/<image>:<tag>`).
 - **Allowed**:
   - `insecure-registries`를 통한 내부 망 접근.

@@ -1,10 +1,10 @@
 ---
 title: "Qdrant"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -78,7 +78,7 @@ qdrant/
 
 | Category   | Technology   | Notes                          |
 | ---------- | ------------ | ------------------------------ |
-| Engine     | `qdrant/qdrant:v1.18.1-unprivileged` | Single unprivileged service |
+| Engine     | `qdrant/qdrant:v1.19.1-unprivileged` | Single unprivileged service |
 | REST API   | HTTP         | Port 6333                      |
 | gRPC API   | gRPC         | Port 6334                      |
 | Persistence | Local Bind  | `${DEFAULT_DATA_DIR}/qdrant/data` |

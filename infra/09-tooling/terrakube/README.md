@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -81,9 +81,9 @@ terrakube/
 
 | Component | Image / Source | Role |
 | --- | --- | --- |
-| `terrakube-api` | `azbuilder/api-server:2.31.2` | API server and metadata orchestration |
-| `terrakube-ui` | `azbuilder/terrakube-ui:2.31.2` | Web management UI |
-| `terrakube-executor` | `azbuilder/executor:2.31.2` | Terraform job execution |
+| `terrakube-api` | `azbuilder/api-server:2.33.1` | API server and metadata orchestration |
+| `terrakube-ui` | `azbuilder/terrakube-ui:2.33.1` | Web management UI |
+| `terrakube-executor` | `azbuilder/executor:2.33.1` | Terraform job execution |
 | Metadata | Management PostgreSQL | Terrakube database |
 | State storage | MinIO S3-compatible bucket `tfstate` | Terraform state and output storage |
 | Identity | Keycloak / DEX validation | SSO integration |

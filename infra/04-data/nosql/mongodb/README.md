@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2025-11-12"
 ---
 
@@ -44,7 +44,7 @@ MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 
 
 | Category   | Technology                 | Notes                      |
 | :--------- | :------------------------- | :------------------------- |
-| Engine     | `mongo:8.2.11-noble`       | Core Database Engine       |
+| Engine     | `mongo:8.3.8-noble`       | Core Database Engine       |
 | Management | `mongo-express:1-18-alpine3.19` | Web-based GUI Admin |
 | Monitoring | `percona/mongodb_exporter:2.37` | Prometheus Metrics |
 | Security   | Internal KeyFile Auth      | Replica Set Synchronization|

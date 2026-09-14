@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 MongoDB replica set 운영 기준을 정의한다. 기준은 현재 tracked compose의 `mongo:8.2.11-noble`, `mongo-express:1-18-alpine3.19`, `percona/mongodb_exporter:2.37`, `MyReplicaSet`, `mongo-key` named volume, Docker Secret 기반 root/admin credential 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 MongoDB replica set 운영 기준을 정의한다. 기준은 현재 tracked compose의 `mongo:8.3.8-noble`, `mongo-express:1-18-alpine3.19`, `percona/mongodb_exporter:2.37`, `MyReplicaSet`, `mongo-key` named volume, Docker Secret 기반 root/admin credential 구성이다.
 
 ## Policy Scope
 

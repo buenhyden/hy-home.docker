@@ -1,10 +1,10 @@
 ---
 title: "Neo4j Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0033"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `neo4j:5.26.26-community`, 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
+이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `neo4j:5.26.30-community`, 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
 
 ### Usage Type
 

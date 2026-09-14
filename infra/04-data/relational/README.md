@@ -1,10 +1,10 @@
 ---
 title: "Relational Databases (04-data/relational)"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 created: "2026-03-27"
 ---
 
@@ -69,7 +69,7 @@ relational/
 | DB Engine  | `ghcr.io/zalando/spilo-17:4.0-p3`         | Patroni/PostgreSQL nodes  |
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
 | DCS        | etcd 3.6.12                               | Distributed Locks         |
-| Router     | `haproxy:3.3.10`                          | Traffic Distribution      |
+| Router     | `haproxy:3.4.4`                          | Traffic Distribution      |
 | Init Job   | `postgres:18.4-alpine`                    | Role/database sync        |
 
 ## Getting Started

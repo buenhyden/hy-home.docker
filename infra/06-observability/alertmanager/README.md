@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 created: "2026-01-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-Alertmanager handles alerts sent by Prometheus, then deduplicates, groups, inhibits, silences, and routes them to the configured receiver integrations. In this stack it runs as `infra-alertmanager`, uses `prom/alertmanager:v0.33.0`, stores runtime state in `alertmanager-data`, and renders Docker Secret values into an ephemeral `/tmp/config.yml` at startup.
+Alertmanager handles alerts sent by Prometheus, then deduplicates, groups, inhibits, silences, and routes them to the configured receiver integrations. In this stack it runs as `infra-alertmanager`, uses `prom/alertmanager:v0.34.0`, stores runtime state in `alertmanager-data`, and renders Docker Secret values into an ephemeral `/tmp/config.yml` at startup.
 
 ## Audience
 

@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0025"
 parent_ids:
@@ -70,7 +70,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 
 ### Common Pitfalls
 
-- 현재 구현은 `cassandra:5.0.8` 단일 노드다. 다중 노드 quorum, repair 자동화, zero-downtime node rotation을 구현된 기능처럼 문서화하지 않는다.
+- 현재 구현은 `cassandra:5.0.9` 단일 노드다. 다중 노드 quorum, repair 자동화, zero-downtime node rotation을 구현된 기능처럼 문서화하지 않는다.
 - 데이터 볼륨은 `${DEFAULT_DATA_DIR}/cassandra/node1`에 bind되고 container에는 `/bitnami/cassandra`로 mount된다. `/var/lib/cassandra` 기준 설명은 현재 compose와 맞지 않는다.
 - 평문 password 환경 변수를 전제로 한 명령을 사용하지 않는다. compose는 `/run/secrets/cassandra_password`를 사용한다.
 

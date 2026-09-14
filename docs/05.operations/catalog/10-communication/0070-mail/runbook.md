@@ -1,10 +1,10 @@
 ---
 title: "Mail Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0070"
 parent_ids:
@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: Stalwart and MailHog static/runtime recovery for the optional `10-communication` mail compose.
+> Scope: Stalwart and MailHog static/runtime recovery for the `10-communication` mail compose that the `communication` profile selects.
 
 이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩의 검증 실패, UI 접근 실패, SMTP/IMAP 연결 실패가 발생했을 때 운영자가 증거를 보존하고 안전하게 복구 또는 에스컬레이션하기 위한 절차를 정의한다.
 
 ### Purpose
 
-메일 서비스 장애 원인을 확인하되, secret 노출, 데이터 삭제, 검증되지 않은 rollback 명령을 피하고 현재 root optional compose 경계에 맞는 evidence를 남긴다.
+메일 서비스 장애 원인을 확인하되, secret 노출, 데이터 삭제, 검증되지 않은 rollback 명령을 피하고 현재 root compose와 `communication` profile 경계에 맞는 evidence를 남긴다.
 
 ## When to Use
 

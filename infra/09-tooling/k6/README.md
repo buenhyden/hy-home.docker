@@ -1,24 +1,24 @@
 ---
 title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 created: "2026-03-26"
 ---
 
 <!-- [ID:09-tooling:k6] -->
 # 🧪 k6 Performance Testing Infrastructure
 
-> Distributed performance benchmarking and user simulation for `hy-home.docker`.
+> One-shot k6 performance benchmarking for `hy-home.docker`.
 
 ## Overview
 
-이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위한 분산 부하 테스트 엔진을 제공합니다.
+이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위해 k6 시나리오를 한 번 실행하는 부하 테스트 작업을 제공합니다.
 
 > [!NOTE]
-> **Implementation Detail**: 현재 이 디렉토리(`infra/09-tooling/k6`)는 **Locust** 엔진을 통해 마스터-워커 분산 부하 구조를 구현하고 있습니다.
+> **Implementation Detail**: 이 디렉토리(`infra/09-tooling/k6`)는 `testing` profile이 선택하는 단일 `k6` 서비스로 실제 k6 engine을 한 번 실행하고 종료합니다. 분산 master-worker 부하는 `infra/09-tooling/locust`가 담당합니다.
 
 ## Audience
 

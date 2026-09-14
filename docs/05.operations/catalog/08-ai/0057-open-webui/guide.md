@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -39,7 +39,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- root `docker-compose.yml`에서 `infra/08-ai/ollama/docker-compose.yml` 및 `infra/08-ai/open-webui/docker-compose.yml` include가 승인되어 활성화되어야 한다.
+- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` profile을 선택해야 한다.
 - `open-webui`, `ollama`, `qdrant` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - `ollama` 컨테이너가 `http://ollama:${OLLAMA_PORT:-11434}`로 접근 가능해야 한다.
 - `qdrant` 컨테이너가 `http://qdrant:${QDRANT_PORT:-6333}`로 접근 가능해야 한다.
@@ -100,7 +100,7 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-- Runtime approval 후 root include를 활성화한 상태에서 `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`
+- Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`
 
 ## Runbook Handoff
 

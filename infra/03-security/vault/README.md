@@ -1,10 +1,10 @@
 ---
 title: "Vault Secret Management"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-14"
 created: "2026-01-15"
 ---
 
@@ -55,7 +55,7 @@ vault/
 
 | Category    | Technology      | Notes                  |
 | ----------- | --------------- | ---------------------- |
-| Platform    | Vault (Go)      | `hashicorp/vault:2.0.3` |
+| Platform    | Vault (Go)      | `hashicorp/vault:2.1.0` |
 | Persistence | Raft            | Single-node integrated storage |
 | Sidecar     | Vault Agent     | Auto-auth & Templating |
 | Runtime     | Official container image | Root compose profile service |

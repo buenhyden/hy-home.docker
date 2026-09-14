@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -64,7 +64,7 @@ created: "2026-05-17"
 
 - 실행 중이던 load generator가 stopped 또는 healthy-idle 상태다.
 - target SLI와 shared tier health가 정상 범위로 회복됐다.
-- 관련 guide/policy/runbook이 현재 service names와 root optional boundary를 유지한다.
+- 관련 guide/policy/runbook이 현재 service names와 root compose와 profile 선택 경계를 유지한다.
 
 ### Observability and Evidence Sources
 

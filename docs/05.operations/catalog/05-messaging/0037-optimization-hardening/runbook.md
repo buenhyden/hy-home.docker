@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-17"
    - 이미지 회귀:
      - `kafka-ui` 이미지를 고정 태그로 복원
    - dev 경로 오류:
-     - `./jmx-exporter`, `./kafbat-ui/dynamic_config.yaml` 경로로 복원
+     - `./jmx-exporter`, `./kafbat-ui/dynamic_config.template.yaml` 경로로 복원
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
    - `bash scripts/validation/check-template-security-baseline.sh`

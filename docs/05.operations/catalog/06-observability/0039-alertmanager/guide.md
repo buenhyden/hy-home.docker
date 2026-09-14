@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-14"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.33.0|container_name: infra-alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.34.0|container_name: infra-alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Alertmanager config template boundary를 확인한다.
