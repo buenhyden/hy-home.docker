@@ -174,7 +174,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.37.10
+    image: n8nio/runners:2.38.7
     container_name: n8n-task-runner
     read_only: false
     depends_on:
@@ -212,7 +212,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.37.10
+    image: n8nio/runners:2.38.7
     container_name: n8n-task-runner-worker
     read_only: false
     depends_on:
@@ -284,7 +284,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: oliver006/redis_exporter:v1.91.0-alpine
+    image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: n8n-valkey-exporter
     read_only: true
     networks:
