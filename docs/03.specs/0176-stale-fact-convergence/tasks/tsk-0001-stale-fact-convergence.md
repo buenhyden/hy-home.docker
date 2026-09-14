@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.18.0"
+version: "0.19.0"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-14"
 layer: "specs"
 artifact_id: "SPEC-0176-TSK-0001"
 parent_ids:
@@ -874,11 +874,48 @@ The enumeration check was not written, for the reason the row now records: 534 `
 
 Locating an enumeration inside prose is also the exact operation that produced five wrong predicates in W12 through W15. The fence check avoids that by reading a delimited block rather than a sentence, which is why it is the half of this row that could be built honestly.
 
+### W19: The enumeration check, built on the owner's table, and criterion 1 amended (2026-09-14, local-executed)
+
+The operator asked for both open items to be resolved, approved fixing separate defects found along the way, and authorized commit, local merge, push, and branch cleanup. That push authorization is the operator's, given for this entry. It does not change what this Task's Inputs recorded for earlier entries, and the hook-blocked direct push to `main` is still not attempted by another route. `git fetch` showed `origin/main` at `1bfa67525`, equal to local `main`, so the commits W16 through W18 produced are already on the remote.
+
+W18 measured the wrong input. It counted `--profile` references in prose, found one exception in 534, and concluded there was no defect to catch. The enumeration that has an owner is POL-0078's three tables. Its Verification section states two facts: the tables' names equal the declared `profiles:` values, and each row's service count equals the number of services declaring that profile. The root `include:` comment states a third, that every Compose file under `infra/` appears in the list. The input that used to be compared against those numbers was the `DATA-0059` snapshot, retired in SPEC-0173 W34, and nothing has read them since. A stated invariant without a check is the class this package exists to record, whether or not it has drifted yet.
+
+`validate_compose_profile_vocabulary` in `scripts/lib/document_governance/operations_catalog.py` makes the comparison, and `check-operations-catalog.py` calls it, so `leaf.operations-catalog` reaches it without a new gate node, suite, contract entry, or manifest row. It reads only table rows, a backticked name in the first cell and an integer in the last, so the mutually exclusive pairs table is never read as vocabulary. It parses every tracked `infra/**/docker-compose*.yml` and `.yaml` with `yaml.safe_load`. YAML drops comments, so a commented `include:` entry is reported as missing rather than guessed at.
+
+Eight tests were written first and failed first on the import. They cover the current repository, a matching fixture, a declared profile with no row, a row no service declares, a wrong service count, a tracked file missing from `include:`, an included path that is not a tracked Compose file, and an unparseable Compose file. All eight pass. On the current tree the check reports zero findings over 41 files, 138 services, and 28 profiles. Three drifts injected into the real tree through the reader produced exactly three findings: the `data` count lowered to 57, the `sync` row removed, and the `k6` include line commented out.
+
+```text
+compose-include-drift: docker-compose.yml: infra/09-tooling/k6/docker-compose.yml is tracked and not included
+compose-profile-vocabulary-drift: …/policy.md: profile sync is declared by 1 service(s) and has no row
+compose-profile-vocabulary-drift: …/policy.md:59: profile data row counts 57 service(s); Compose declares 58
+```
+
+Criterion 1 is amended in the Spec rather than promoted. This Task's Ruling that kept it NOT MET is sound and stands: no text predicate over a bilingual prose corpus has been shown complete. That also means no evidence could ever satisfy the old wording, which makes it a permanent NOT MET rather than a criterion. W9 met the same shape with a count criterion and amended it to require a routing statement. The amended criterion requires what can be proven. A registered check holds the fact every include-state sentence depends on, and the two owners state the model. The five predicate results are recorded as supporting evidence and not as proof. The original universal negative is not claimed.
+
+Three other statements in the Spec had gone stale through this package's own work and are corrected. The out-of-scope list named every validator as unchanged, although W18 and W19 each changed one. The interfaces section and the operational impact section said the same. The Open Question about this package's own lifecycle walk had been answered by the walk. POL-0078's Traceability also named the retired coverage generator as its evidence, and it now names the check.
+
+Two separate defects were found and fixed. `.agents/skills/style-validation/SKILL.md` and `.agents/skills/infra-validate/SKILL.md` named the scripts they own as `scripts/classify-changed-files.sh` and `scripts/static-checks.sh`. A reader takes those as repository-root paths, where no such file exists, and the link checker reads them the same way: `_normalized_target` resolves a `scripts/` prefix from the root. Written as `./scripts/…` links, both now resolve beside the skill and are checked. The first attempt without `./` produced three `missing-link-target` findings, and that is how the resolution rule was found.
+
+One observation was investigated and is not a defect. `test_python_entrypoints_expose_closed_cli_help` fails three subtests under a bare `python3 -m unittest`, because `ci_gate_contract.py`, `ci_gate_runner.py`, and `github_workflow_contract.py` import `scripts.` without touching `sys.path`. Commit `17bb5cdd5` chose that on purpose. It replaced the path manipulation with an isolated, descriptor-anchored bootstrap passed as `PYTHONPATH` under `PYTHONSAFEPATH=1`, so the test passes only through the registered gate. Restoring `sys.path.insert` to satisfy a bare runner would undo that hardening. The code is not changed.
+
+The first attempt to commit the check failed in `public-validation-changed` on `test_timeout_still_cleans`. It exited 60 (`owned-cleanup-failed`) where the test expects 20. The test overrides the budget to 5 seconds in total with a 2 second cleanup reserve, which is tighter than the script's own timeout negative case of 20 and 8. It then passed three times alone and twelve times concurrently, and the retried commit passed the same hook. Because it was not reproduced, the budget is not changed on a guess. It is recorded so that a recurrence has a first data point.
+
+```text
+python3 -m unittest …ComposeProfileVocabularyTests          Ran 8 tests  OK
+python3 scripts/validation/check-operations-catalog.py      operations-catalog: PASS
+check-document-links.py --mode all                          documents=881 links=6593 failures=0
+check-agent-governance-contract.py                          PASS failures=0
+provider_surface_renderer.py --check                        PASS providers=2 drift=0
+check-document-metadata.py                                  exit 0
+markdownlint-cli2 (four edited documents)                   0 error(s)
+ruff check / ruff format --check (three Python files)       clean
+```
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W12, W14 | NOT MET. Recorded PASS three times and falsified three times. The first two predicates searched English against a Korean corpus; the third searched a vocabulary list and missed `not included in the current root compose stack by default`; the fourth searched claim shape and still missed `infra/09-tooling/k6/README.md:71`, whose sibling `locust/README.md:70` had already been corrected in the same sweep. A fifth shape has no include vocabulary at all: `REQ-0012:45` encoded the retired model as a four-name service list while six services carry `admin`. Corrected in W14 round four; the criterion is recorded as NOT MET rather than PASS because this Task's own Ruling forbids promoting a check to PASS on the strength of a predicate that has now been wrong four times, and no predicate here has ever been shown complete | [spec.md criterion 1](../spec.md) |
+| 1 | W12, W14, W19 | PASS against the criterion as amended in W19, and not against its earlier wording, which was never met and is not claimed. `check-operations-catalog.py` holds the include list and the POL-0078 tables to the tracked Compose files. It exits 0 on the current tree and reports three findings for three injected drifts. The history that forced the amendment follows. Before W19, this row read NOT MET. Recorded PASS three times and falsified three times. The first two predicates searched English against a Korean corpus; the third searched a vocabulary list and missed `not included in the current root compose stack by default`; the fourth searched claim shape and still missed `infra/09-tooling/k6/README.md:71`, whose sibling `locust/README.md:70` had already been corrected in the same sweep. A fifth shape has no include vocabulary at all: `REQ-0012:45` encoded the retired model as a four-name service list while six services carry `admin`. Corrected in W14 round four; the criterion is recorded as NOT MET rather than PASS because this Task's own Ruling forbids promoting a check to PASS on the strength of a predicate that has now been wrong four times, and no predicate here has ever been shown complete | [spec.md criterion 1](../spec.md) |
 | 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
 | 3 | W4, W15 | PASS only after round five. The system scope sentence was corrected in W4, but a second SPEC-0171 deferral clause survived 97 lines below it in the same file (`POL-0078:140-142`), and the scope sentence itself said `24개` where the tables define 28. Both corrected in W15 | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
@@ -1060,7 +1097,6 @@ prefers the note removed, the instruction it annotates is intact.
 | Item | Blocking input or reason |
 | --- | --- |
 | Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
-| Registered checks for enumeration and fence integrity | The fence check is delivered and the enumeration check is not, both on measurement. `check-document-links.py --mode commands` is registered through the existing `leaf.docs-traceability` root and found seven active surfaces instructing a reader to run a script the tree no longer carries, including canonical governance and an operations policy. The enumeration check was measured before it was written: 534 `--profile` references across tracked documents name a declared profile, and the single exception is a Stage 90 research note about a different tool. A gate that catches nothing today is the surface growth this repository's own standards refuse, so the measurement is recorded here instead |
 | This package's own lifecycle walk | The blocking condition is gone. `git show origin/main:` reports `status: "draft"` for this package's Spec, Plan and Task, so the push this row waited for has happened and the base carries all three at their initial status. The `spec`, `plan` and `task` lifecycles each admit exactly one edge from `draft`, so the walk is mechanical rather than a choice: `review`, `approved` and `ready`. Taken on this branch |
 | SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |

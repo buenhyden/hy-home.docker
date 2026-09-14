@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/spec"
 status: "review"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-14"
 layer: "specs"
 artifact_id: "SPEC-0176"
 parent_ids:
@@ -131,8 +131,8 @@ the correction is recorded beside it.
   - The generated LLM Wiki outputs under `docs/90.references/data/`, regenerated
     by the registered generator and never hand-edited.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any
-  Compose service, profile, image, or network value, every validator and gate,
-  the Provider Registry, every role and skill identity, and the frozen bodies
+  Compose service, profile, image, or network value, every gate node, suite, and
+  contract entry, the Provider Registry, every role and skill identity, and the frozen bodies
   already under `docs/98.archive/`.
 - Two surfaces change in a bounded, named way rather than being unchanged.
   `docs/99.templates/registry.json` advances `identity_spaces.spec` from 175 to
@@ -141,6 +141,10 @@ the correction is recorded beside it.
   SPEC-0173, only two stale sentences and the link targets of the ADR-0031 move
   are edited; no status, acceptance criterion, or Task evidence of that package
   changes.
+- Two validators gained one bounded check each, under scope extensions the Task
+  records: `check-document-links.py --mode commands` in W18, and the Compose
+  include and profile-vocabulary comparison in `check-operations-catalog.py` in
+  W19. Each runs under the leaf that already invoked its validator.
 - SPEC-0173 remains active and blocked. Its Rulings forbid a new policy, Spec,
   Plan, or Task inside that package, so this work takes its own package. This
   package corrects two stale sentences in SPEC-0173's own documents, repoints the
@@ -232,9 +236,11 @@ siblings stay is what the retention guard rejects.
 
 ## Interfaces and Data
 
-No executable interface changes. The public validation entrypoints, the provider
-projection interface, the registered generators, and the Stage 99 contracts are
-inputs to this package and are not modified by it.
+No executable interface changes. The public validation entrypoints keep their
+arguments and exit contract; the two validators named in Boundaries report more
+findings, not different ones. The provider projection interface, the registered
+generators, and the Stage 99 contracts are inputs to this package and are not
+modified by it.
 
 The only machine-read structures this package writes are document frontmatter
 fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
@@ -255,14 +261,17 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 
 ## Acceptance Contract
 
-1. Zero tracked current-authority documents assert a commented, optional, or
-   absent root include for a Compose file the root `include:` list contains.
-   The verifying predicate covers every language the corpus uses. Stage 01-05
-   documents are authored in Korean under the output-style contract, so an
-   English-only predicate cannot satisfy this criterion no matter how many
-   literals it carries, and a low match count from such a predicate is not
-   evidence. Two successive English-only predicates reported this criterion
-   met while seven Korean and English assertions survived.
+1. The fact every include-state sentence depends on is held by a registered
+   check rather than by a text predicate. `check-operations-catalog.py` fails
+   when a tracked Compose file under `infra/` is missing from the root
+   `include:` list, when that list names a file that is not a tracked Compose
+   file, and when the POL-0078 profile tables disagree with the declared
+   `profiles:` values by name or by service count. The include model is stated
+   by its two owners, the root `include:` comment and POL-0078. This criterion
+   was amended in W19. Its earlier wording required zero current documents to
+   assert a commented, optional, or absent root include, and no evidence could
+   satisfy that: five bilingual predicates were wrong in five ways, and none was
+   shown complete. Their results remain supporting evidence and are not proof.
 2. `infra/README.md` states the measured file, directory, and include counts and
    carries no four-state include vocabulary.
 3. `docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`
@@ -326,14 +335,12 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 - SPEC-0173's aggregate remains blocked on the actual PostgreSQL operating and
   image leaf. This package closes its retention-owner dependency and does not
   change that blocker.
-- The three new documents of this package cannot transition on the branch that
-  creates them, because the transition check reads the merge base with
-  `origin/main`. Whether they advance depends on the remote carrying them, which
-  no authorization here grants.
 
 ## Operational Impact
 
-No runtime, service, image, network, profile, secret, permission, model, hook, or
-gate behavior changes. Every edit is to a document or a comment. The one
+No runtime, service, image, network, profile, secret, permission, model, or hook
+behavior changes. Two validators report more findings, as Boundaries states, and
+no gate node, suite, or argument changes. Every other edit is to a document or a
+comment. The one
 structural change is the move of four bodies inside `docs/`: SPEC-0175's three
 members to `completed/` and `ADR-0031` to `superseded/`.
