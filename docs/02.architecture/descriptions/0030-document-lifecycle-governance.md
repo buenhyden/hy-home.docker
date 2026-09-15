@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -137,7 +137,8 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   트리, Tombstone의 recovery commit과 `retired/` 짝 요구 및 `completed/`·
   `superseded/` 기록의 Tombstone 거부, Migration의 path mapping과 recovery 섹션,
   정의되지 않은 Retention Envelope, 등록되지 않은 Git-history-only profile이
-  그것입니다. 정책은 이를 전환으로 명시하고 SPEC-0177이 이전을 소유합니다.
+  그것입니다. 정책은 이를 전환으로 명시하며, SPEC-0177이 앞의 다섯을 옮기고
+  Git-history-only profile은 등록하지 않습니다.
 
 ## Traceability
 

@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -126,6 +126,32 @@ decision identity with its parent Description, and the test failed with
 `adr` and `spec` identity spaces moved to 35 and 177, and `REQ-0026.FR` to 15
 for the three new functional requirements.
 
+### W2: The four Open Questions answered, and the Spec put to review (2026-09-15, local-executed)
+
+The operator asked for SPEC-0177 to be reviewed and taken forward. Reviewing it
+showed that nothing past W2 could start in this integration. The Spec is
+`draft`, each document admits one transition per integration, and
+`_validate_execution_states` in `spec_packages.py` requires an `active` Spec for
+an `active` Plan or an `in-progress` Task. Implementation therefore waits for
+the Spec to reach `active`, which is two integrations after this one.
+
+The four Open Questions were design choices, so they went to the operator with
+a recommendation each, and each recommendation was taken.
+
+| Question | Answer | Reason it was recommended |
+| --- | --- | --- |
+| Where the Retention Envelope lives | A Retention Catalog table in the Stage 98 README | The operator's text calls it the catalog's envelope and routes frozen records through the index; a README table needs no change to the Stage 98 root allowlist |
+| Where a withdrawn body's reason is named | In the same catalog row, as the value its class must name | A frozen body cannot be edited, and one row per record keeps every class obligation in one place a check can read |
+| Which profiles are Git-history-only | None in this package | Registering one would amend `REQ-0026` and `ADR-0033` Decision 5 as well, which widens the package for a need nothing has shown |
+| How acceptance treats `ADR-0033` | `ADR-0035` supersedes it and restates its full-package unit | Supersession here is whole-document, and one decision should own Stage 98 disposition |
+
+The Spec is amended to the answers and moves from `draft` to `review`. The Plan
+and this Task stay `draft`, because the governance rule adds a Plan and Tasks
+only for an approved change, and advancing them now would not reach `active`
+any sooner. The policy, the Stage 98 README, `AD-0030` and `ADR-0035` now say
+that this package moves five of the six lagging contracts and registers no
+Git-history-only profile.
+
 ## Verification Evidence
 
 No acceptance criterion is claimed. The package is `draft`, and every criterion
@@ -172,6 +198,7 @@ leave.
 | Commit | Scope |
 | --- | --- |
 | `fb29286b2` | W1 Stage 98 model applied to governance and the package opened |
+| `e7ec6e78b` | W1 review corrections naming the six lagging contracts on every surface |
 
 ## Rulings
 
@@ -182,4 +209,4 @@ leave.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W2 to W8 | The Spec's Open Questions, then one integration per lifecycle step |
+| W3 to W8 | The Spec is `review`. W3 to W6 start once the Spec is `active` with an `active` Plan and an `in-progress` Task, two integrations after W2 |

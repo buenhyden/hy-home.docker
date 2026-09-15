@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -84,8 +84,10 @@ Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
 
 ### 전환 중인 계약
 
-등록된 계약은 여섯 곳에서 이 모델보다 앞서 있으며, SPEC-0177이 그
-이전을 소유합니다.
+등록된 계약은 여섯 곳에서 이 모델보다 앞서 있습니다. SPEC-0177은 앞의 다섯을
+옮기고 Git-history-only profile은 등록하지 않으므로, 여섯째는 이후 결정이 그
+profile을 등록할 때까지 유지됩니다. SPEC-0177이 수락되면 새 기록의 Retention
+Envelope는 이 README의 Retention Catalog 표가 담습니다.
 
 | 영역 | 현재 강제 | 모델 |
 | --- | --- | --- |

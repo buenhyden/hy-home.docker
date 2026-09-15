@@ -1,6 +1,6 @@
 ---
 title: "Stage 98 보존 class와 route 처분"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -104,12 +104,13 @@ Stage 03 package의 완료 보존 단위는 바뀌지 않습니다. Spec, Plan, 
   직접 인용할 수 있습니다.
 - 새 Tombstone과 Migration은 복구 commit과 경로 원장을 적지 않습니다. 기존 봉인
   기록은 그 필드를 역사로 유지하므로, 수락 이후 한동안 두 형태가 공존합니다.
-- `retired/` 보존본과 Tombstone의 짝 요구가 사라지므로, 철회 사유를 담을 다른
-  위치가 필요합니다. SPEC-0177이 그 위치를 정하기 전에는 수락할 수 없습니다.
-- 수락 시 ADR-0033의 철회 짝 조항(Decision 4)이 바뀝니다. Git-only 대안을 배제한
-  ADR-0033 Decision 5와 REQ-0026의 Constraint는 Git-history-only profile을
-  등록하는 순간 충돌하므로, SPEC-0177은 ADR-0033을 supersede하거나 두 조항을
-  좁히는 방식 중 하나를 수락 변경 안에서 정합니다.
+- `retired/` 보존본과 Tombstone의 짝 요구가 사라지므로, 철회 사유는 Stage 98
+  README의 Retention Catalog 행이 담습니다. 그 행은 기록의 경로, class, class가
+  이름으로 가져야 하는 값, source Git object를 한 번씩 적습니다.
+- 수락 시 ADR-0033의 철회 짝 조항(Decision 4)이 바뀌므로, 이 결정은 ADR-0033의
+  전체 package 보존 단위를 다시 적고 수락과 함께 ADR-0033을 supersede합니다.
+  SPEC-0177은 Git-history-only profile을 등록하지 않으므로, Git-only 대안을
+  배제한 ADR-0033 Decision 5와 REQ-0026의 Constraint는 그대로 유지됩니다.
 
 ## Traceability
 
@@ -130,5 +131,5 @@ Retention Envelope 검사의 실제 실행 결과를 기록해야 합니다.
 ## Follow-up
 
 SPEC-0177이 validator와 template을 이전하고, Retention Envelope의 형태를
-정하고, 이 결정을 `accepted`로 전환합니다. 그 변경은 ADR-0033과의 관계를 같은
-결과 tree에서 정리합니다.
+정하고, 이 결정을 `accepted`로 전환합니다. 그 변경은 같은 결과 tree에서
+ADR-0033을 supersede합니다.

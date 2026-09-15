@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "2.5.0"
+version: "2.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -304,8 +304,9 @@ the archived record itself.
 
 #### Transition
 
-The registered contracts predate this model in six places, and SPEC-0177 owns
-moving them.
+The registered contracts predate this model in six places. SPEC-0177 owns
+moving the first five. It registers no Git-history-only profile, so the sixth
+stays until a later decision registers one.
 
 1. The link validator admits only the index and `completed/`.
 2. No `resolved/` subtree is known to the Registry or the Stage 98 loader, which

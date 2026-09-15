@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Implementation Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -24,7 +24,8 @@ and a check disagree without a named transition.
 
 - The policy section, the Stage 98 README, `REQ-0026`, `AD-0030`, and
   `ADR-0035` land in the change that opens this package.
-- The Spec's three Open Questions are answered before W2 starts.
+- The Spec's four Open Questions were answered by the operator on 2026-09-15,
+  and W2 recorded the answers.
 - Each document admits one lifecycle transition per integration, so the package
   walks `draft` to `completed` across several integrations.
 
@@ -35,13 +36,15 @@ and a check disagree without a named transition.
 2. W2: Answer the Open Questions and amend the Spec.
 3. W3: Move the link boundary to admit `resolved/` and route every other class
    through the index, with tests.
-4. W4: Define and register the Retention Envelope and its check.
+4. W4: Add the Retention Catalog table to the Stage 98 README and the check that
+   requires a valid row for every record created after acceptance.
 5. W5: Drop the ledger fields and the Tombstone pairing for records created after
    acceptance, keeping every sealed record valid.
 6. W6: Register the `resolved/` profile and admit it in the Stage 98 loader and
    the link graph, with a fixture test.
-7. W7: Accept `ADR-0035`, resolve its relation to `ADR-0033`, and remove the
-   transition paragraph and its restatements.
+7. W7: Accept `ADR-0035`, supersede `ADR-0033` with its full-package unit
+   restated and its inbound links repointed, and remove the transition paragraph
+   and its restatements.
 8. W8: Run the changed profile, obtain an independent review, and complete and
    preserve the package.
 
