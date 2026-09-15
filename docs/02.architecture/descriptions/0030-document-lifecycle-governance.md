@@ -132,9 +132,11 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   capability마다 Stage 02 owner 하나를 요구하므로 이는 알려진 위반입니다.
   hardening 서술의 조항 다수가 다른 문서에 없어 단순 은퇴로는 해소되지
   않으며, 두 서술의 병합 또는 명시적 계층 선언이 필요합니다.
-- 등록된 check가 ADR-0035의 Stage 98 모델보다 앞선 계약을 강제합니다.
-  Tombstone의 recovery commit과 `retired/` 짝 요구, Migration의 path mapping과
-  recovery 섹션, 정의되지 않은 Retention Envelope, `resolved/` 인용 미허용이
+- 등록된 계약이 ADR-0035의 Stage 98 모델보다 여섯 곳에서 앞서 있습니다.
+  `resolved/` 인용 미허용, Registry와 `load_archive`가 모르는 `resolved/` 하위
+  트리, Tombstone의 recovery commit과 `retired/` 짝 요구 및 `completed/`·
+  `superseded/` 기록의 Tombstone 거부, Migration의 path mapping과 recovery 섹션,
+  정의되지 않은 Retention Envelope, 등록되지 않은 Git-history-only profile이
   그것입니다. 정책은 이를 전환으로 명시하고 SPEC-0177이 이전을 소유합니다.
 
 ## Traceability

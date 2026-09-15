@@ -38,7 +38,8 @@ and a check disagree without a named transition.
 4. W4: Define and register the Retention Envelope and its check.
 5. W5: Drop the ledger fields and the Tombstone pairing for records created after
    acceptance, keeping every sealed record valid.
-6. W6: Register the `resolved/` profile and its lint exclusion.
+6. W6: Register the `resolved/` profile and admit it in the Stage 98 loader and
+   the link graph, with a fixture test.
 7. W7: Accept `ADR-0035`, resolve its relation to `ADR-0033`, and remove the
    transition paragraph and its restatements.
 8. W8: Run the changed profile, obtain an independent review, and complete and

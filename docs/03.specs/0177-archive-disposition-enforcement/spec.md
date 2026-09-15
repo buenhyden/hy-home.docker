@@ -27,7 +27,7 @@ the disposition names, and no Stage 98 record carries a second recovery ledger.
 
 The canonical policy, the Stage 98 README, `REQ-0026`, and `AD-0030` state that
 model in the same change that opens this package, and `ADR-0035` records the
-choice as `proposed`. The executable contracts predate it in four places, and
+choice as `proposed`. The executable contracts predate it in six places, and
 this package owns moving them. Until it completes, the registered checks keep
 enforcing their current subset, which the policy names explicitly.
 
@@ -40,8 +40,12 @@ enforcing their current subset, which the policy names explicitly.
   - `scripts/lib/document_governance/links.py`, whose archive boundary admits
     only `completed/` and the index.
   - `scripts/lib/document_governance/archive.py`, which requires a
-    `Recovery Commit` section in every Tombstone and pairs every `retired/` body
-    with one Tombstone.
+    `Recovery Commit` section in every Tombstone, pairs every `retired/` body
+    with one Tombstone, rejects a Tombstone for a `completed/` or `superseded/`
+    record, and admits only the registered preservation subtrees at the Stage 98
+    root, which do not include `resolved/`.
+  - The Git-history-only disposition, which no profile registers and which
+    `REQ-0026`'s Constraint and `ADR-0033` Decision 5 currently exclude.
   - `docs/99.templates/registry.json`, the Tombstone and Migration templates, and
     `.markdownlint-cli2.yaml`, for the `resolved/` class and the new record
     shapes.
@@ -51,8 +55,11 @@ enforcing their current subset, which the policy names explicitly.
 - Out of scope: rewriting any sealed Tombstone or Migration, editing any frozen
   body, and creating a `resolved/` directory before a closed Incident exists.
 - Authorization: local edits, commits, integration into `main`, and push, as the
-  operator granted for the change that opened this package. Each later
-  integration records its own authorization in the Task.
+  operator directed for the change that opened this package.
+  `.agents/governance/github-governance.md` makes a pull request the default
+  route to `main`, so a direct push under that direction is reported as a rule
+  bypass rather than presented as the policy route. Each later integration
+  records its own authorization in the Task.
 
 ## Behavior Contract
 
@@ -65,11 +72,13 @@ enforcing their current subset, which the policy names explicitly.
    ledger, self-designed body digest, branch SHA, or recovery commit. A sealed
    record authored before acceptance keeps its recorded form and still passes.
 3. A `retired/` body authored after acceptance does not require a paired
-   Tombstone. Why it was withdrawn is named by its Retention Envelope.
-4. A `resolved/` class is registered as a frozen retention profile, and its
-   directory appears only with its first record.
-5. The Retention Envelope names each record's class obligation and its source
-   Git object exactly once, and a registered check reads it.
+   Tombstone. Where its withdrawal reason is named is decided under the Open
+   Questions before the pairing is released.
+4. A `resolved/` class is registered as a frozen retention profile and admitted
+   by the Stage 98 loader and link graph, and its directory appears only with its
+   first record.
+5. The Retention Envelope names each record's source Git object exactly once,
+   and a registered check reads it.
 
 ## Technical Approach
 
@@ -96,7 +105,7 @@ recorded in the Spec before implementation.
 | Failure mode | Guardrail |
 | --- | --- |
 | A sealed Tombstone or Migration is rewritten to the new shape | The new contract is keyed on creation after acceptance; the corpus check keeps admitting the recorded form |
-| The Tombstone pairing is released before a withdrawal reason has another owner | The Envelope work unit precedes the pairing change, and the corpus check fails a new `retired/` body without an Envelope |
+| The Tombstone pairing is released before a withdrawal reason has another owner | The Envelope work unit precedes the pairing change, and the corpus check fails a new `retired/` body whose withdrawal reason is not named |
 | The link boundary admits `superseded/` or `retired/` by widening a prefix list | Tests assert rejection for each non-citable disposition and admission for `completed/`, `resolved/`, and the index |
 | The policy states a rule no check enforces and no transition names | The policy's transition paragraph lists every lagging check until acceptance removes it |
 
@@ -106,17 +115,18 @@ recorded in the Spec before implementation.
    `resolved/`, rejects `superseded/`, `retired/`, `tombstones/`, and
    `migrations/`, and keeps the incident and postmortem exception, each proven
    by a test.
-2. The Registry registers a `resolved/` retention profile, and
-   `.markdownlint-cli2.yaml` ignores that tree by the change that first creates
-   it.
+2. The Registry registers a `resolved/` retention profile, `load_archive` and
+   the link graph admit a `resolved/` subtree, and a test builds one from a
+   fixture. The Stage 98 README names the lint exclusion as an obligation of the
+   change that first creates the directory.
 3. The Retention Envelope is defined in the Stage 98 index or Registry, names
-   each class obligation and the source Git object once, and a registered check
-   validates it for records created after acceptance.
+   the source Git object once, and a registered check validates it for records
+   created after acceptance.
 4. The Tombstone and Migration templates and `archive.py` no longer require a
    recovery commit, path mapping, or recovery section for records created after
    acceptance, and every existing sealed record still passes.
-5. A `retired/` body created after acceptance passes without a Tombstone when its
-   Envelope names the withdrawal reason.
+5. A `retired/` body created after acceptance passes without a Tombstone when
+   its withdrawal reason is named where the answered Open Question places it.
 6. `ADR-0035` is `accepted`, and its relation to `ADR-0033` is resolved in the
    same result tree.
 7. The transition paragraph is removed from the policy, and `REQ-0026`, `AD-0030`,
@@ -141,7 +151,11 @@ recorded in the Spec before implementation.
   a Registry-owned sidecar. The acceptance of criterion 3 waits on this answer.
 - Whether acceptance supersedes `ADR-0033` by restating its full-package unit, or
   narrows only its withdrawal clause.
-- Which profiles, if any, are Git-history-only. None is registered today.
+- Where a withdrawn body's reason is named once the Tombstone pairing is
+  released.
+- Which profiles, if any, are Git-history-only. None is registered today, and
+  registering one conflicts with `REQ-0026`'s Constraint and `ADR-0033` Decision
+  5 as they stand, so the answer amends both.
 
 ## Operational Impact
 

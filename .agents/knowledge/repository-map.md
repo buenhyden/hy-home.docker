@@ -41,7 +41,7 @@ anything outside this repository.
 | `docs/03.specs/**` | the active Spec Package; its Task owns execution evidence | bounded change contract | metadata, corpus lifecycle, spec package tests |
 | `docs/05.operations/**` | the operations catalog subject | operator procedure and incidents | operations catalog check |
 | `docs/90.references/**` | Research, Audit, or Data package | non-normative dated evidence | metadata, reference protection tests |
-| `docs/98.archive/**` | retention classes holding frozen bodies, and Tombstone and Migration route records | frozen bodies are never edited; only the index, `completed/` and `resolved/` are citable | corpus lifecycle, archive recovery, archive link boundary |
+| `docs/98.archive/**` | retention classes holding frozen bodies, and Tombstone and Migration route records | frozen bodies are never edited; the index and `completed/` are the admitted link targets until SPEC-0177 admits `resolved/` | corpus lifecycle, archive recovery, archive link boundary |
 | `docs/99.templates/registry.json` | the Stage 99 registry | document shape, path, identity, lifecycle | registry and metadata suites |
 | `.github/workflow-contract.yml` | executable composition and public suite membership | workflow contract plus security review | `check-github-workflow-contract.py` |
 | `.github/workflows/**` | the workflow files | least privilege, pinned actions, no secrets in `run` | actionlint, workflow contract |

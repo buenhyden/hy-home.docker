@@ -104,11 +104,12 @@ Stage 03 package의 완료 보존 단위는 바뀌지 않습니다. Spec, Plan, 
   직접 인용할 수 있습니다.
 - 새 Tombstone과 Migration은 복구 commit과 경로 원장을 적지 않습니다. 기존 봉인
   기록은 그 필드를 역사로 유지하므로, 수락 이후 한동안 두 형태가 공존합니다.
-- `retired/` 보존본과 Tombstone의 짝 요구가 사라지므로, 철회 사유를 담는
-  위치를 Retention Envelope가 대신 소유해야 합니다. 그 형태가 정해지기 전에는
-  수락할 수 없습니다.
-- 수락 시 ADR-0033의 철회 짝 조항이 바뀌므로, SPEC-0177은 ADR-0033을
-  supersede하거나 그 조항을 좁히는 방식 중 하나를 수락 변경 안에서 정합니다.
+- `retired/` 보존본과 Tombstone의 짝 요구가 사라지므로, 철회 사유를 담을 다른
+  위치가 필요합니다. SPEC-0177이 그 위치를 정하기 전에는 수락할 수 없습니다.
+- 수락 시 ADR-0033의 철회 짝 조항(Decision 4)이 바뀝니다. Git-only 대안을 배제한
+  ADR-0033 Decision 5와 REQ-0026의 Constraint는 Git-history-only profile을
+  등록하는 순간 충돌하므로, SPEC-0177은 ADR-0033을 supersede하거나 두 조항을
+  좁히는 방식 중 하나를 수락 변경 안에서 정합니다.
 
 ## Traceability
 

@@ -84,15 +84,17 @@ Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
 
 ### 전환 중인 계약
 
-등록된 check는 네 곳에서 이 모델보다 앞선 계약을 강제하며, SPEC-0177이 그
+등록된 계약은 여섯 곳에서 이 모델보다 앞서 있으며, SPEC-0177이 그
 이전을 소유합니다.
 
 | 영역 | 현재 강제 | 모델 |
 | --- | --- | --- |
 | 링크 경계 | archive 밖에서 index와 `completed/`만 허용 | `resolved/`도 허용 |
-| Tombstone | `Recovery Commit` 섹션 필수, `retired/` 보존본마다 짝 요구 | recovery commit 없음, 짝 요구 없음 |
+| `resolved/` 적재 | Registry와 Stage 98 loader가 모르는 하위 트리라 만들면 적재 실패 | 첫 기록과 함께 만드는 retention class |
+| Tombstone | `Recovery Commit` 섹션 필수, `retired/` 보존본마다 짝 요구, `completed/`·`superseded/` 기록에는 Tombstone 거부 | recovery commit 없음, 짝 요구 없음 |
 | Migration | `Path Mapping`과 `Recovery` 섹션 필수 | 이동한 범위와 현재 owner만 |
-| Retention Envelope | 정의되지 않음 | source Git object를 한 번 이름으로 가짐 |
+| Retention Envelope | 정의되지 않음, 철회 사유는 Tombstone이 담음 | source Git object를 한 번 이름으로 가짐 |
+| Git-history-only 처분 | 등록된 profile 없음, 모든 처분이 frozen 본문 유지 | profile이 정할 때 호환 사본 없이 허용 |
 
 전환 동안 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과
 Migration은 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지

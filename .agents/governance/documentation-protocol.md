@@ -304,13 +304,24 @@ the archived record itself.
 
 #### Transition
 
-The registered checks predate this model in five places, and SPEC-0177 owns
-moving them. The link validator admits only the index and `completed/`. The
-Tombstone template and the corpus check require a `Recovery Commit` section and
-pair every `retired/` body with one Tombstone. The Migration template requires
-`Path Mapping` and `Recovery` sections. No Retention Envelope is defined yet. No
-profile is registered as Git-history-only, so every current disposition keeps a
-frozen body. Until SPEC-0177 completes, a new record satisfies the registered
+The registered contracts predate this model in six places, and SPEC-0177 owns
+moving them.
+
+1. The link validator admits only the index and `completed/`.
+2. No `resolved/` subtree is known to the Registry or the Stage 98 loader, which
+   admits only the registered preservation subtrees at the archive root, so a
+   `resolved/` directory fails to load until SPEC-0177 registers it.
+3. The Tombstone template and the corpus check require a `Recovery Commit`
+   section, pair every `retired/` body with one Tombstone, and reject a
+   Tombstone for a `completed/` or `superseded/` record.
+4. The Migration template requires `Path Mapping` and `Recovery` sections.
+5. No Retention Envelope is defined, so a Tombstone still carries the
+   withdrawal reason.
+6. No profile is registered as Git-history-only. Until one is, every current
+   disposition keeps a frozen body, and the requirement and accepted decision
+   that forbid leaving a preserved body in Git alone apply unchanged.
+
+Until SPEC-0177 completes, a new record satisfies the registered
 template and check, and a sealed Tombstone or Migration keeps the form it was
 written in rather than being rewritten to this model.
 
@@ -377,9 +388,10 @@ contracts the transition names, and a sealed Tombstone keeps the form it was
 written in.
 
 A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
-namespace of the document it retires. Every stage that can retire a document has
-one. A missing namespace is a namespace to create, never a reason to remove a
-document without its Tombstone.
+namespace of the document it retires, and the change that writes a stage's
+first Tombstone creates that namespace. During the transition a missing
+namespace is a namespace to create, never a reason to remove a document without
+its Tombstone.
 
 ### Divergent branch package handoff
 

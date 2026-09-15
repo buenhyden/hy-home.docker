@@ -135,18 +135,19 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
 - Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
-- `completed/`와 `superseded/` 보존본은 역사적 증거로 직접 인용할 수 있지만,
-  같은 문맥에서 현재 공통 Agent 거버넌스 또는 Stage 01/02/05 소유자를 함께 연결해야 합니다.
-  `retired/`, Tombstone, Migration은 현재 권위의 의존성이 아니며 Stage 98
-  README를 통해 탐색합니다.
+- Stage 98에서 직접 링크할 수 있는 것은 index와 `completed/` 보존본이며,
+  SPEC-0177이 link validator를 옮기면 `resolved/`가 더해집니다. `superseded/`
+  대신 후속을, `retired/`, Tombstone, Migration 대신 현재 route를 인용하고,
+  이름을 불러야 하는 frozen 기록은 식별자로 부른 뒤 Stage 98 README에서
+  찾습니다.
 
 ## Template Usage
 
 Select the role in the [Registry](99.templates/registry.json) and copy its source
 from the [template catalog](99.templates/templates/README.md). Spec, Plan, Task,
 and machine contracts are co-located in Stage 03. Requirement child identities
-are owned by their package; Stage 98 contains frozen preserved bodies and their
-separate migration or tombstone disposition records.
+are owned by their package; Stage 98 contains retention classes that hold frozen
+bodies and route dispositions that hold none.
 
 ## Document Contract Validation
 

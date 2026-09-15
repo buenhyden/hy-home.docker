@@ -113,10 +113,16 @@ created: "2026-09-01"
 - 변경의 비교 base는 그 변경의 분기 지점이므로, base에서 terminal이 아닌
   status는 그 문서를 은퇴시키는 동일한 변경이 terminal로 관측할 수 없습니다.
   따라서 terminal-status 의무는 base 대비 강제가 아니라 Tombstone에 기록됩니다.
-- REQ-0026-FR-0013부터 REQ-0026-FR-0015는 ADR-0035가 `proposed`인 동안 전환 중입니다. 등록된
-  check가 강제하는 REQ-0026-FR-0002의 Tombstone 짝과 recovery commit, 그리고 아래
-  Acceptance Criteria의 recovery commit 조항은 SPEC-0177이 check를 옮기고 이
-  요구사항을 다시 개정할 때까지 유지됩니다. 이미 봉인된 Tombstone과 Migration은
+- REQ-0026-FR-0013부터 REQ-0026-FR-0015는 ADR-0035가 `proposed`인 동안 전환
+  중입니다. 옛 모델을 서술하는 다음 조항은 등록된 check가 강제하므로 SPEC-0177이
+  check를 옮기고 이 요구사항을 다시 개정할 때까지 유지됩니다:
+  REQ-0026-FR-0002의 Tombstone 짝과 recovery commit, REQ-0026-FR-0003의
+  Tombstone 없는 제거 거부, REQ-0026-FR-0008의 stage별 Tombstone namespace,
+  REQ-0026-FR-0012의 Tombstone이 담는 철회 사유, REQ-0026-NFR-0007의 package당
+  Tombstone, 그리고 아래 Acceptance Criteria의 recovery commit과 namespace 조항.
+  Git-history-only 처분은 profile이 그렇게 등록할 때만 적용되며 현재 그런 profile은
+  없으므로, 보존 대상 본문을 Git-only로 남기지 않는다는 위 첫 Constraint도 그대로
+  적용됩니다. 이미 봉인된 Tombstone과 Migration은
   기록 당시 형태를 유지하며 새 계약에 맞추어 다시 쓰지 않습니다.
 
 ## Acceptance Criteria
