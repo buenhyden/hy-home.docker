@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Policy Scope
 
-- **Systems**: `opensearch`, `opensearch-dashboards`, optional `opensearch-node1..3`
+- **Systems**: `opensearch`, `opensearch-dashboards`, and `opensearch-node1..3` under the `data-cluster` profile
 - **Secrets**: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`
 - **Persistence**: `opensearch-data`, `opensearch-dashboards-data`, `data-cluster` profile node volumes
 - **Environments**: repo-local, development, homelab, and production-like rehearsals

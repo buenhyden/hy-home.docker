@@ -68,7 +68,7 @@ relational/
 | ---------- | ----------------------------------------- | ------------------------- |
 | DB Engine  | `ghcr.io/zalando/spilo-17:4.0-p3`         | Patroni/PostgreSQL nodes  |
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
-| DCS        | etcd 3.6.12                               | Distributed Locks         |
+| DCS        | etcd 3.7.1                                | Distributed Locks         |
 | Router     | `haproxy:3.4.4`                          | Traffic Distribution      |
 | Init Job   | `postgres:18.6-alpine`                    | Role/database sync        |
 

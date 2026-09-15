@@ -966,7 +966,7 @@ provider_surface_renderer.py --check                    PASS providers=2 drift=0
 | 3 | W15 | PASS: round five removed a second SPEC-0171 deferral clause 97 lines below the first and corrected `24개` to the 28 profiles the tables define | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
 | 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
-| 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | preserved ADR-0031 |
+| 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | N/A: the preserved body sits under `superseded/`, which an active document names rather than links |
 | 7 | W5 | PASS: FR-0009, Constraints and Acceptance Criteria state the Spec/Plan/Task preservation unit; no transient-removal clause remains | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
 | 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block names 0030- and 0034- | [Stage 02 index](../../../02.architecture/README.md) |
 | 8 | W16 | PASS: the routing wording W9 adopted now also stands in `descriptions/README.md`, the third file of the class | [Stage 02 index](../../../02.architecture/README.md) |
@@ -1143,6 +1143,23 @@ modules and the operations catalog check, and compared every documented
 | 12 | low | A non-ASCII digit passed `isdigit()` and aborted the leaf in `int()`; the row pattern would also read a future non-profile table | Accepted for the digit, with a test written first that failed on `ValueError`. The row pattern is kept: a stray row is reported as drift rather than passing silently, and Compose profile names may contain dots |
 | 13 | low | Criterion 16 named no command or exit code for W20 | Accepted. The W20 row records the renderer run and its output |
 
+### Independent review round eight (2026-09-15, local-executed)
+
+A reviewer who had not written them read `a83780c60` in full, ran the operations
+catalog tests, and applied the completion rules to the receipt. Disposition
+`block` for this package on three findings.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | high | The criterion 6 owner cell `preserved ADR-0031` was neither a link nor an `N/A:` reason, so completion would reject it | Accepted. The cell states why it is not a link, since `superseded/` is not a link target |
+| 2 | medium | `infra/04-data/relational/README.md` listed etcd 3.6.12 in the table W21 edited, and Compose pins `quay.io/coreos/etcd:v3.7.1` | Accepted and corrected. Round seven compared `repo:tag` strings only, and this row names a version in prose |
+| 3 | low | The OpenSearch policy scope still said optional nodes, and its README listed only the `data` profile | Accepted. Both name `data-cluster` |
+
+The changed profile ran on the clean tree at `fb29286b2`, which carries W21:
+`GATE_EXIT=0`, every FAIL line an `AOE-CATALOG` negative marker. These three
+corrections move the path set again, so criterion 17 still waits on the
+completing integration.
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -1185,6 +1202,7 @@ modules and the operations catalog check, and compared every documented
 | `658114fff` | W20 SPEC-0173 reconciliation at HEAD |
 | `c36bda522` | W20 SPEC-0173 completion and the preserved-Task recovery fix |
 | `9c039bcf9` | W20 round-six answers and the Spec approval |
+| `a83780c60` | W21 round-seven answers and the second lifecycle step |
 
 ## Rulings
 
