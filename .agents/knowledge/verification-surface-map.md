@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.5.1"
+version: "0.6.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-15"
 created: "2026-09-06"
-observed_at: "2026-09-08"
+observed_at: "2026-09-15"
 review_cycle: "on-gate-change"
 ---
 
@@ -66,12 +66,13 @@ The suite table above lists these among their roots because CI reaches them.
 | `leaf.frontend-quality` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
 | `leaf.storybook-coverage` | Needs `npm ci` and a Playwright browser install | Install both, then run the package script directly |
 | `leaf.dependency-vulnerability-audit` | `npm audit` reads a remote advisory database | Run the audit where that network access is approved |
-| `leaf.zizmor` | Runs a `uv`-installed pinned `zizmor` and writes SARIF | Install the pinned version where that is approved |
+| `leaf.zizmor` | Runs pinned `zizmor==1.28.0` through `uvx` and writes `results.sarif` | Install the pinned version where that is approved |
 
 Dependency installation is a setup leaf, never part of a local gate run: the
-local gate installs nothing. `install-playwright` and `run-zizmor-sarif` are
-independently restricted to CI contexts inside the adapter, so removing a leaf
-from this list alone would not make it reachable.
+local gate installs nothing. `run-npm`, `install-playwright` and
+`run-zizmor-sarif` are restricted to CI contexts, and `check-git-flow` to
+`pull_request`, inside the adapter, so removing a leaf from this list alone
+would not make it reachable.
 
 ## What a Change Selects
 
@@ -93,10 +94,10 @@ of an unmatched path.
 
 For `changed`, the contract's `changed_root_rules` then selects the optional
 frontend-quality and Storybook roots within those suites. Their current inputs
-are workflow/pre-commit definitions, the Next.js package, scripts, and tests.
-Known document/provider/root-tool paths alone omit those optional roots; the
-dependency audit and other required roots remain selected. An unknown valid
-path retains every root of its fallback-selected suite. Unavailable or invalid
+are `.github/`, `.pre-commit-config.yaml`, `projects/storybook/nextjs/`,
+`scripts/`, and `tests/`. Known paths outside those prefixes omit those optional
+roots; the dependency audit and other required roots remain selected. An
+unknown valid path retains every root of every selected suite. Unavailable or invalid
 changed-path evidence fails closed before planning. `full` retains all suite
 roots before the execution-context exclusions above apply.
 
@@ -138,9 +139,15 @@ to separate and the intermediate-stash race it once caused cannot occur.
 
 ## Provenance
 
-Suite/path/root routing and public hook settings were revalidated against
-`.github/workflow-contract.yml`, `scripts/lib/gate/ci_gate_contract.py` and
-`.pre-commit-config.yaml` on 2026-09-08 after the convergence implementation.
+Every section was re-read against the tracked sources at repository commit
+`e7ec6e78b` on 2026-09-15. Each source is named with the commit that last
+changed it, because they changed at different times: suite, path, and root
+routing from `.github/workflow-contract.yml` and
+`scripts/lib/gate/ci_gate_contract.py`, both last changed at `83d2e15f6`; hook
+settings from `.pre-commit-config.yaml`, last changed at `8ed7905fb`; and the
+adapter context sets from `scripts/lib/gate/ci_gate_adapters.py`, last changed
+at `0823c0c46`. The 2026-09-08 revalidation named no commit, so this re-read
+replaces it rather than extending it.
 The previous claim that the path rules were unchanged is superseded by the
 explicit root-tool rules and optional-root selection now described above.
 The workflow contract remains the execution authority; a disagreement between
@@ -150,15 +157,17 @@ and staging-recovery receipts belong to the current Spec Package Task.
 The local exclusion table is transcribed from `_LOCAL_EXCLUDED_GATE_IDS` and
 `_PR_ONLY_GATE_IDS` in `scripts/validation/ci_gate_runner.py`, and the reasons
 from the `gate_nodes` entries and adapter context sets those identifiers reach,
-read at `6aa4287e21c56a7073356f67cb2c214df46618a7` on 2026-09-08. A registered
+re-read at `e7ec6e78b` on 2026-09-15, where the runner was last changed at
+`78d6b72f6`. The constants and every row were unchanged since the earlier read at
+`6aa4287e2`, although `gate_nodes` had renamed and removed setup nodes. A registered
 test compares the identifiers in that table against the runner constant, so the
 two cannot drift apart silently.
 
 The Test Ownership table has a different source and had no stated one when this
 map was written, which is how it came to describe a `tests/fixtures/` layer that
 a completed convergence had already emptied. Its rows are now read from
-`git ls-files` on 2026-09-07, which reports zero tracked paths under that
-prefix. A row here names a location that the tracked tree actually contains.
+`git ls-files` at `e7ec6e78b` on 2026-09-15, which reports zero tracked paths
+under that prefix, as it did on 2026-09-07. A row here names a location that the tracked tree actually contains.
 
 ## Refresh Triggers
 

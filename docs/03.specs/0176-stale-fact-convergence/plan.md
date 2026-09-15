@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Implementation Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -97,6 +97,8 @@ document.
 20. W20: Answer review round six, reconcile the receipts and take the first
     lifecycle step.
 21. W21: Answer review round seven and take the second lifecycle step.
+22. W22: Answer review rounds eight and nine, record the changed profile on the
+    final path set, and complete and preserve the package.
 
 ## Risk and Rollback
 

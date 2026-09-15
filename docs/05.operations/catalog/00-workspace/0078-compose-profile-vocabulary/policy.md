@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -174,7 +174,7 @@ python3 scripts/validation/check-operations-catalog.py
 
 - **Subject**: [00-workspace](../README.md)
 - **Authority**: [SPEC-0156](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
-- **Deferred pairs**: [SPEC-0171](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
+- **Sibling pairs resolved by**: [SPEC-0171](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
 - **Verification**: `scripts/validation/check-operations-catalog.py`
 
 ## Related Documents

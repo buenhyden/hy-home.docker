@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -139,7 +139,11 @@ the correction is recorded beside it.
     `scripts/README.md`, AD-0013, AD-0020 through AD-0026, ADR-0018 through
     ADR-0026, `docs/90.references/research/README.md`, and the SPEC-0173
     package it completed. W21 added the OpenSearch and MinIO topology wording,
-    REQ-0005-FR-0003, and one PostgreSQL tag round seven found.
+    REQ-0005-FR-0003, and one PostgreSQL tag round seven found. Round eight's
+    corrections added the etcd version row and the OpenSearch scope and profile
+    wording, and W22 added the provenance of
+    `.agents/knowledge/verification-surface-map.md` and the POL-0078 Traceability
+    label that still read SPEC-0171 as pending.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any
   Compose service, profile, image, or network value, every gate node, suite, and
   contract entry, the Provider Registry, every role and skill identity, and the frozen bodies
@@ -306,8 +310,10 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
    no transient Plan/Task removal clause.
 8. `docs/02.architecture/README.md` routes to the per-directory indexes and the
    tracked file list as the count authority, in the same terms
-   `decisions/README.md` already uses, and its structure block names `0030-` and
-   `0034-` as the highest identifiers.
+   `decisions/README.md` already uses, and its structure block names the highest
+   identifier present in each directory. Amended in W22: the criterion first
+   named `0030-` and `0034-`, which were the highest at W9, and ADR-0035 later
+   made `0035-` the correct value under Behavior Contract 7.
 9. Every entry path that enumerates canonical categories names
    `.agents/knowledge/` and `.agents/prompts/` with the conditions
    `bootstrap.md` states. This covers `.agents/knowledge/repository-map.md`
@@ -317,13 +323,16 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
     sources were read at different times.
 11. Neither active Spec package contains `codex/0173-agent-governance-home` in a
     current-position statement, and each states how position is read from Git.
-12. SPEC-0173's Spec no longer describes `tests/fixtures/` as current, and
-    `git diff` shows no other change to its acceptance criteria.
+12. SPEC-0173's Spec no longer describes `tests/fixtures/` as current, and W7's
+    diff shows no other change to its acceptance criteria. W20's later
+    amendments of SPEC-0173 criteria 23, 27 and 29 are that package's own record,
+    in its Task 0006.
 13. SPEC-0175's Spec, Plan, and Task are `completed` and present under
     `docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/`,
     with no member left under `docs/03.specs/`.
 14. `docs/03.specs/README.md` describes SPEC-0175 as preserved and lists
-    SPEC-0176 as the active package.
+    SPEC-0176. Amended in W22: the criterion said "as the active package", which
+    stops being true the moment this package completes.
 15. `docs/README.md` does not claim co-located Plan and Task evidence for a
     preserved package that holds only a Spec.
 16. Every registered generated output touched by this package is fresh on the

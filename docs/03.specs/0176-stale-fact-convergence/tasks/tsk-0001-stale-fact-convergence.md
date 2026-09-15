@@ -1,6 +1,6 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.20.0"
+version: "0.21.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -947,6 +947,38 @@ python3 scripts/validation/check-operations-catalog.py  operations-catalog: PASS
 provider_surface_renderer.py --check                    PASS providers=2 drift=0
 ```
 
+### W22: Rounds eight and nine, and the completion (2026-09-15, local-executed)
+
+The operator asked for SPEC-0176 and SPEC-0177 to be reviewed and taken forward.
+For this package that meant completion, which criterion 18 allows only once an
+independent review of the whole package has had its findings corrected. Round
+nine was that review. It found no defect in the round-eight corrections and
+blocked completion on criteria that no longer held as written.
+
+Three criteria had been written against a moment rather than a property.
+Criterion 8 named `0034-` as the highest decision identifier, which ADR-0035 made
+false; criterion 12 claimed no other change to SPEC-0173's criteria, which W20's
+amendments made false; and criterion 14 required SPEC-0176 to be listed as the
+active package, which completion itself makes false. Each is amended to the
+property it was checking, and the earlier receipt rows stay as dated evidence.
+
+Criterion 10 was different. Its receipt said PASS, and the tree no longer
+supported it: `d8a96ad4c` on 2026-09-08 rewrote the map's Provenance to a date
+with no commit, which `.agents/knowledge/README.md` forbids. The criterion was
+kept and the map was corrected. A read-only re-observation checked every section
+against `e7ec6e78b`, confirmed that `tests.validation.test_ci_gate_execution_context`
+passes, and found five wording errors while every table row still held. The
+zizmor row described an install where `uvx` runs a pin, the CI-only adapter list
+omitted `run-npm` and the `pull_request`-only `check-git-flow`, and the optional
+root rule understated both its inputs and its fallback. These are corrected, and
+the Provenance names the commit that last changed each source.
+
+POL-0078's Traceability still labelled SPEC-0171 as "Deferred pairs" beside a
+body that calls it completed, and the label now says what SPEC-0171 did. The
+Deferred Items are closed, and the question about the ADR-0007 and ADR-0022
+notes becomes a Ruling, because a completed record cannot hold an item with no
+owner.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -968,15 +1000,19 @@ provider_surface_renderer.py --check                    PASS providers=2 drift=0
 | 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
 | 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | N/A: the preserved body sits under `superseded/`, which an active document names rather than links |
 | 7 | W5 | PASS: FR-0009, Constraints and Acceptance Criteria state the Spec/Plan/Task preservation unit; no transient-removal clause remains | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
-| 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block names 0030- and 0034- | [Stage 02 index](../../../02.architecture/README.md) |
+| 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block named 0030- and 0034-, the highest identifiers at W9 | [Stage 02 index](../../../02.architecture/README.md) |
 | 8 | W16 | PASS: the routing wording W9 adopted now also stands in `descriptions/README.md`, the third file of the class | [Stage 02 index](../../../02.architecture/README.md) |
+| 8 | W22 | PASS: criterion 8 now requires the highest identifier present, and the structure block names `0030-` and `0035-`, which `git ls-files` shows are the highest in each directory at `e7ec6e78b` | [Stage 02 index](../../../02.architecture/README.md) |
 | 9 | W6 | PASS: step 3 names both categories with the conditions bootstrap.md states, and names bootstrap.md as the owner of the order | [repository map](../../../../.agents/knowledge/repository-map.md) |
 | 10 | W6 | PASS: the workflow contract half is unchanged since 9ede309a5 and the pre-commit half is dated to 9051977aa, each named separately | [verification surface map](../../../../.agents/knowledge/verification-surface-map.md) |
+| 10 | W22 | PASS: `d8a96ad4c` had replaced the per-source commits with a date, which the knowledge index rule forbids; the Provenance now names `e7ec6e78b` and the commit that last changed each source, and those commits differ | [verification surface map](../../../../.agents/knowledge/verification-surface-map.md) |
 | 11 | W7 | PASS: `git rev-parse --verify` resolves neither the local nor the remote branch; both packages now state the three Git commands | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
 | 12 | W7 | PASS: contract 9 names the underscore-prefixed modules; `git ls-files tests/fixtures` returns zero paths and no acceptance criterion changed | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
+| 12 | W22 | PASS: criterion 12 is scoped to W7's diff, and W20's amendments of SPEC-0173 criteria 23, 27 and 29 stay recorded in SPEC-0173 Task 0006 | [SPEC-0173 Task 0006](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) |
 | 13 | W8 | PASS: all three members are `completed` under the archive path and at W8 `ls docs/03.specs/` showed only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
 | 14 | W8 | PASS: the index row describes SPEC-0175 as preserved with its archive paths and lists SPEC-0176 as the package in flight | [Stage 03 index](../../README.md) |
 | 14 | W1 | PASS: W1 added the Stage 03 index row that lists SPEC-0176 and advanced `identity_spaces.spec` to 176 | [Stage 03 index](../../README.md) |
+| 14 | W22 | PASS: criterion 14 no longer requires SPEC-0176 to be listed as active, and the index row lists it | [Stage 03 index](../../README.md) |
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
 | 16 | W10 | PASS: the generated outputs this package touched are fresh by the generators that remain, and `provider_surface_renderer.py --check` reports PASS providers=2 drift=0; the AUD-0023 report, the LLM Wiki and the hook parity matrix this row first cited were retired with their generators on 2026-09-10 and are no longer outputs | [Provider renderer](../../../../scripts/operations/provider_surface_renderer.py) |
 | 16 | W18 | PASS: seven fenced commands that named retired generators were corrected, and `check-document-links.py --mode commands` exits 0 | [Documentation protocol rule 16](../../../../.agents/governance/documentation-protocol.md) |
@@ -988,6 +1024,7 @@ provider_surface_renderer.py --check                    PASS providers=2 drift=0
 | 18 | W15 | PASS: rounds three through five reviewed the W13 and W14 corrections, and every accepted finding was corrected in W14 and W15 | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W20 | PASS: round six reviewed `e43380153` through `f60c097cc` and blocked with ten findings, and W20 corrected each one | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W21 | PASS: round seven reviewed `018d437b3` through `9c039bcf9` and blocked with thirteen findings, and W21 corrected each accepted one; those corrections are not yet reviewed | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W22 | PASS: rounds eight and nine reviewed the round-seven corrections and the whole package for completion; every accepted finding is corrected in `a51c1de93` and W22 | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 
 ### Predicate Triage for criterion 1 (2026-09-07, local-executed)
 
@@ -1160,6 +1197,26 @@ The changed profile ran on the clean tree at `fb29286b2`, which carries W21:
 corrections move the path set again, so criterion 17 still waits on the
 completing integration.
 
+### Independent review round nine (2026-09-15, local-executed)
+
+A reviewer who had not written the package read the Spec, the Plan, the whole
+Task and `a51c1de93`, compared the edited tables with the Compose pins, replayed
+the receipt rules with the module's own helpers, and spot-checked each criterion
+against `e7ec6e78b`. Disposition `block` for completion.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | high | Criterion 8 named `0034-` as the highest decision identifier after ADR-0035 existed | Accepted. Amended to the highest identifier present, with a W22 row |
+| 2 | high | Criterion 10 was PASS while the map's Provenance named no commit | Accepted. The map was re-observed and corrected rather than the criterion weakened |
+| 3 | medium | Criterion 14 required the package to be listed as active, which completion falsifies | Accepted. Amended to "lists SPEC-0176" |
+| 4 | medium | Criterion 12 claimed no other change to SPEC-0173's criteria | Accepted. Scoped to W7's diff |
+| 5 | medium | No work unit covered the round-eight fixes or the completion | Accepted. W22 added to the Plan with rows for 8, 10, 12, 14, 17 and 18 |
+| 6 | medium | The Deferred Items described pre-completion state, and one had no owner | Accepted. Closed, with the ADR-0007 and ADR-0022 question moved to the Rulings |
+| 7 | low | The ledger omitted `a51c1de93` | Accepted |
+| 8 | low | The scope sentence stopped at round seven | Accepted. Round eight and W22 surfaces named |
+| 9 | low | POL-0078's Traceability label read SPEC-0171 as deferred | Accepted and corrected |
+| 10 | advisory | The Overview is written in the present tense of the opening audit | Not changed. It is the audit that opened the package, and the Work Log dates every later fact |
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -1203,6 +1260,7 @@ completing integration.
 | `c36bda522` | W20 SPEC-0173 completion and the preserved-Task recovery fix |
 | `9c039bcf9` | W20 round-six answers and the Spec approval |
 | `a83780c60` | W21 round-seven answers and the second lifecycle step |
+| `a51c1de93` | W21 round-eight corrections |
 
 ## Rulings
 
@@ -1219,6 +1277,10 @@ completing integration.
   discovery, provider entitlement, Hosted CI, or remote state.
 - Unexecuted checks are recorded as NOT_RUN or BLOCKED with their missing input
   and are never promoted to a PASS.
+- The notes on `ADR-0007` and `ADR-0022` stay. They record a realization change on
+  decisions that remain in force, which the retention rule permits because it
+  forbids silence rather than change. A decision owner who prefers them removed
+  changes them through a superseding decision, not by editing this record.
 
 ### ADR-0034's discharged Follow-up, resolved on the rule's text (2026-09-07, local-executed)
 
@@ -1241,10 +1303,7 @@ prefers the note removed, the instruction it annotates is intact.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Review of the round-seven corrections | Round seven blocked with thirteen findings and W21 corrects each accepted one. Criterion 18 requires an independent review of corrections before completion, so the completing integration owns that review |
-| The changed profile on the final path set | Criterion 17 names the changed profile on the path set completion leaves. W20 recorded the full profile at its own head, and each later commit moves the path set, so the run belongs to the completing integration |
-| This package's own lifecycle walk | One step remains after W21 takes the Spec and Plan to `active` and this Task to `in-progress`. The completing integration moves all three to `completed` and preserves them together |
-| Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |
+| None | Every item was closed in W22: rounds eight and nine reviewed the corrections, the changed profile ran on the final path set, the lifecycle walk completes, and the ADR-0007 and ADR-0022 question is a Ruling |
 
 ## Related Documents
 
