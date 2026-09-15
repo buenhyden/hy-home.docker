@@ -2419,3 +2419,80 @@ class RegistryIndexContractTests(unittest.TestCase):
         for index_path, member_profile in registry.indexes.items():
             with self.subTest(index=index_path):
                 self.assertIn(member_profile, registry.profiles)
+
+
+class ArchiveDispositionModelTests(unittest.TestCase):
+    """The Stage 98 model switch is a Registry fact bound to ADR-0035."""
+
+    def test_switch_is_bound_to_the_adr_0035_decision_in_both_directions(
+        self,
+    ) -> None:
+        """`adopted` is the acceptance of ADR-0035, and `transition` is its absence.
+
+        The decision is found by identity in Stage 02 or Stage 98, so the
+        binding still holds once ADR-0035 is itself superseded and preserved.
+        """
+
+        from scripts.lib.document_governance.frontmatter import (
+            read_frontmatter_values,
+        )
+
+        model = load_registry().common.get("archive_disposition_model")
+        candidates = [
+            *sorted((ROOT / "docs/02.architecture/decisions").glob("*.md")),
+            *sorted(
+                (ROOT / "docs/98.archive").glob("*/02.architecture/decisions/*.md")
+            ),
+        ]
+        statuses = [
+            values.get("status")
+            for path in candidates
+            if path.name != "README.md"
+            and (values := read_frontmatter_values(path)).get("artifact_id")
+            == "ADR-0035"
+        ]
+        self.assertEqual(1, len(statuses), "ADR-0035 must exist exactly once")
+        if model == "adopted":
+            self.assertIn(statuses[0], {"accepted", "superseded"})
+        else:
+            self.assertEqual("transition", model)
+            self.assertEqual("proposed", statuses[0])
+
+    def test_switch_value_is_required_and_closed(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        for value in (None, "retired", "", 1):
+            with self.subTest(value=value):
+                broken = json.loads(json.dumps(raw))
+                if value is None:
+                    broken["common"].pop("archive_disposition_model", None)
+                else:
+                    broken["common"]["archive_disposition_model"] = value
+                self.assertTrue(validate_registry(broken))
+
+    def test_root_reader_defaults_to_transition_and_rejects_unknown_values(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.registry import (
+            archive_disposition_model,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            self.assertEqual("transition", archive_disposition_model(root))
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            for value, expected in (
+                ("adopted", "adopted"),
+                ("transition", "transition"),
+            ):
+                registry.write_text(
+                    json.dumps({"common": {"archive_disposition_model": value}}),
+                    encoding="utf-8",
+                )
+                self.assertEqual(expected, archive_disposition_model(root))
+            registry.write_text(
+                json.dumps({"common": {"archive_disposition_model": "later"}}),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                archive_disposition_model(root)

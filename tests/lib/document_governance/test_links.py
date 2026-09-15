@@ -886,6 +886,101 @@ class DocumentGraphTests(unittest.TestCase):
                 codes = {finding.code for finding in check_alignment(graph)}
                 self.assertEqual(not allowed, "active-archive-link" in codes, profile)
 
+    def _archive_boundary_codes(
+        self, model: str | None, folder: str, profile: str | None = None
+    ) -> set[str]:
+        """Link one outside document into one Stage 98 folder under a model."""
+
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            if model is not None:
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(
+                    f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+                    encoding="utf-8",
+                )
+            source = root / "docs/05.operations/incidents/0001-outage.md"
+            target = root / f"docs/98.archive/{folder}/0001-record.md"
+            source.parent.mkdir(parents=True)
+            target.parent.mkdir(parents=True)
+            front = f'---\ntype: "{profile}"\n---\n\n' if profile else ""
+            source.write_text(
+                f"{front}# Source\n\n[record](../../98.archive/{folder}/0001-record.md)\n",
+                encoding="utf-8",
+            )
+            target.write_text("# Record\n", encoding="utf-8")
+            graph = build_document_graph([source, target], repo_root=root)
+            return {finding.code for finding in check_alignment(graph)}
+
+    def test_adopted_model_admits_resolved_and_rejects_other_dispositions(
+        self,
+    ) -> None:
+        """Citability follows what each disposition names once ADR-0035 is accepted."""
+
+        for folder, citable in (
+            ("completed", True),
+            ("resolved", True),
+            ("superseded", False),
+            ("retired", False),
+            ("tombstones", False),
+            ("migrations", False),
+        ):
+            with self.subTest(folder=folder):
+                codes = self._archive_boundary_codes("adopted", folder)
+                self.assertEqual(not citable, "active-archive-link" in codes, folder)
+
+    def test_adopted_model_keeps_the_incident_and_postmortem_exception(self) -> None:
+        for profile, allowed in (
+            ("operation/incident", True),
+            ("operation/postmortem", True),
+            ("operation/runbook", False),
+        ):
+            with self.subTest(profile=profile):
+                codes = self._archive_boundary_codes("adopted", "retired", profile)
+                self.assertEqual(not allowed, "active-archive-link" in codes, profile)
+
+    def test_transition_model_keeps_resolved_outside_the_boundary(self) -> None:
+        """The switch at `transition` leaves the boundary exactly as it was."""
+
+        for model in (None, "transition"):
+            with self.subTest(model=model):
+                self.assertIn(
+                    "active-archive-link",
+                    self._archive_boundary_codes(model, "resolved"),
+                )
+                self.assertNotIn(
+                    "active-archive-link",
+                    self._archive_boundary_codes(model, "completed"),
+                )
+
+    def test_resolved_body_outbound_links_are_skipped_only_when_adopted(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        for model, skipped in (("transition", False), ("adopted", True)):
+            with self.subTest(model=model), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(
+                    f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+                    encoding="utf-8",
+                )
+                body = root / "docs/98.archive/resolved/05.operations/0001-outage.md"
+                body.parent.mkdir(parents=True)
+                body.write_text("# Outage\n\n[gone](../../gone.md)\n", encoding="utf-8")
+                graph = build_document_graph([body], repo_root=root)
+                codes = {finding.code for finding in check_alignment(graph)}
+                self.assertEqual(not skipped, "missing-link-target" in codes, model)
+
     def test_alignment_preserves_removed_template_detection(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,

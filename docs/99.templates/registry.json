@@ -23,6 +23,7 @@
       "retired",
       "sealed"
     ],
+    "archive_disposition_model": "transition",
     "archive_source_prefixes": [
       "docs/",
       "archive/",

@@ -1,8 +1,8 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.3.1"
+version: "0.4.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -209,14 +209,47 @@ with eight text amendments, applied before this integration.
 | G | low | The Spec said REQ-0026-NFR-0006 requires a base, which it does not | Accepted. It now says a base is not a fixed input |
 | H | low | The receipt note still called the package `draft` | Accepted |
 
+### W3: The Registry switch, and the link boundary behind it (2026-09-15, local-executed)
+
+The operator asked for SPEC-0177 to be taken forward after the approval
+integration reached `origin/main` at `d04c8cf51`. This integration moves the
+Spec and the Plan to `active` and this Task to `in-progress`, and lands W3 to W6
+with the switch at `transition`.
+
+The tests came first and failed first: seven new tests ran against the
+unchanged code with four failures and one import error. The switch is
+`common.archive_disposition_model` in the Registry. The Registry schema closes
+`common` with `additionalProperties: false`, so the key is also declared there,
+as an enum of `transition` and `adopted` and a required member. The schema is
+not in the Plan's W3 file list, and without it every Registry load fails.
+
+`registry.archive_disposition_model(root)` reads the value from the Registry
+under a repository root. The link and archive checks work from a root and not
+from a loaded Registry, and a fixture root carries none, so absence reads as
+`transition`. A value outside the pair raises instead of choosing a model.
+
+`links.py` asks the root for the model in `check_alignment` and
+`check_commands`. At `adopted`, `resolved/` joins `completed/` as a citable
+target and joins the preserved prefixes whose outbound links are not checked.
+At `transition`, both lists are the ones the module had before. The binding test
+finds `ADR-0035` by `artifact_id` in Stage 02 or under any Stage 98 class, and
+requires `accepted` or `superseded` at `adopted` and `proposed` at `transition`.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest tests.lib.document_governance.test_links tests.lib.document_governance.test_registry` | exit 0, 147 tests |
+| `python3 scripts/validation/check-document-links.py --mode all` before the change, on a stash | `documents=885 links=6655 archive_direct_links_total=61 failures=0` |
+| The same command after the change | The same counts, `failures=0` |
+
 ## Verification Evidence
 
-No acceptance criterion is claimed. The package is approved, and every
-criterion is owned by a later work unit.
+No acceptance criterion is complete. Rows record each criterion and work-unit
+pair as its unit lands.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W3 | NOT_RUN: the link boundary has not moved | N/A: pending W3 |
+| 1 | W3 | PASS: the corpus link run reports the same counts and no failure before and after W3, and `test_transition_model_keeps_resolved_outside_the_boundary` proves the boundary inert at `transition` | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
+| 2 | W3 | PASS: `test_adopted_model_admits_resolved_and_rejects_other_dispositions`, `test_adopted_model_keeps_the_incident_and_postmortem_exception`, and `test_resolved_body_outbound_links_are_skipped_only_when_adopted` | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 
 ## Review Evidence
 
@@ -268,4 +301,4 @@ leave.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W3 to W8 | The Spec and Plan are `approved` and this Task `ready`. W3 to W6 start in the next integration with the Spec and Plan `active` and this Task `in-progress`; W7 and W8 take one integration each |
+| W4 to W8 | W4 to W6 land in this integration after W3, with the switch at `transition`; W7 and W8 take one integration each |

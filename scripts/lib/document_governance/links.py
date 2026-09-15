@@ -18,6 +18,10 @@ from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
 )
+from scripts.lib.document_governance.registry import (
+    ARCHIVE_MODEL_ADOPTED,
+    archive_disposition_model,
+)
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 _LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
@@ -44,6 +48,17 @@ _PRESERVED_LINK_PREFIXES = (
 # Incident and postmortem records are the exception: reconstructing what
 # happened is exactly the case where the preserved body is the right citation.
 _CITABLE_ARCHIVE_PREFIX = "docs/98.archive/completed/"
+# Once ADR-0035 is adopted, citability follows what each disposition names:
+# `resolved/` names a corrective-work owner and joins `completed/`, and its body
+# is preserved like the others, so its outbound links are not checked either.
+_ADOPTED_CITABLE_ARCHIVE_PREFIXES = (
+    _CITABLE_ARCHIVE_PREFIX,
+    "docs/98.archive/resolved/",
+)
+_ADOPTED_PRESERVED_LINK_PREFIXES = (
+    *_PRESERVED_LINK_PREFIXES,
+    "docs/98.archive/resolved/",
+)
 _ARCHIVE_CITING_PROFILES = ("operation/incident", "operation/postmortem")
 _ROOT_PREFIXES = (
     ".agents/",
@@ -502,6 +517,14 @@ def _document_profile(
     return ""
 
 
+def _preserved_link_prefixes(graph: DocumentGraph) -> tuple[str, ...]:
+    """Return the preserved-body prefixes the graph root's archive model admits."""
+
+    if archive_disposition_model(graph.repo_root) == ARCHIVE_MODEL_ADOPTED:
+        return _ADOPTED_PRESERVED_LINK_PREFIXES
+    return _PRESERVED_LINK_PREFIXES
+
+
 def _node_map(graph: DocumentGraph) -> dict[pathlib.PurePosixPath, DocumentNode]:
     return {node.path: node for node in graph.nodes}
 
@@ -574,8 +597,14 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
+    preserved_prefixes = _preserved_link_prefixes(graph)
+    citable_prefixes = (
+        _ADOPTED_CITABLE_ARCHIVE_PREFIXES
+        if archive_disposition_model(graph.repo_root) == ARCHIVE_MODEL_ADOPTED
+        else (_CITABLE_ARCHIVE_PREFIX,)
+    )
     for link in graph.links:
-        if link.source.as_posix().startswith(_PRESERVED_LINK_PREFIXES):
+        if link.source.as_posix().startswith(preserved_prefixes):
             # A preserved record's outbound links named what existed when it was
             # written. Requiring them to resolve now would force edits to the
             # record the archive exists to preserve. Links *into* a preserved
@@ -593,7 +622,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             outside_archive
             and target_text.startswith("docs/98.archive/")
             and target_text != "docs/98.archive/README.md"
-            and not target_text.startswith(_CITABLE_ARCHIVE_PREFIX)
+            and not target_text.startswith(citable_prefixes)
             and _document_profile(nodes, link.source) not in _ARCHIVE_CITING_PROFILES
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
@@ -799,8 +828,9 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
     root = graph.repo_root
     surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
     findings: list[LinkFinding] = []
+    preserved_prefixes = _preserved_link_prefixes(graph)
     for node in graph.nodes:
-        if node.path.as_posix().startswith(_PRESERVED_LINK_PREFIXES):
+        if node.path.as_posix().startswith(preserved_prefixes):
             continue
         for start, lines in _command_blocks(node.text):
             if any(line.strip() == _ILLUSTRATIVE_COMMAND_MARKER for line in lines):

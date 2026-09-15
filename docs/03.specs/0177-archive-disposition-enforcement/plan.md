@@ -1,8 +1,8 @@
 ---
 title: "Archive Disposition Enforcement Implementation Plan"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"

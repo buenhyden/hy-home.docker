@@ -24,6 +24,7 @@
       "additionalProperties": false,
       "properties": {
         "allowed_statuses": { "$ref": "#/$defs/stringList" },
+        "archive_disposition_model": { "enum": ["transition", "adopted"] },
         "archive_source_prefixes": { "$ref": "#/$defs/stringList" },
         "frontmatter_order": { "$ref": "#/$defs/stringList" },
         "generated_outputs": { "$ref": "#/$defs/stringMap" },
@@ -78,6 +79,7 @@
         }
       },
       "required": [
+        "archive_disposition_model",
         "template_initial_version",
         "spec_completion_evidence"
       ]
