@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.0.14"
+version: "1.0.15"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -74,6 +74,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0174 | Governance and QA Convergence | superseded by SPEC-0173; cancelled Plan and Task preserved with the full packet |
 | SPEC-0175 | [Governance Knowledge and Prompt Surface](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) and [Task](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) |
 | SPEC-0177 | [Archive Disposition Enforcement](0177-archive-disposition-enforcement/spec.md) | active package that moves the link validator, the Tombstone and Migration contracts, and the Retention Envelope onto the Stage 98 model the policy states behind a Registry switch, and accepts ADR-0035, superseding ADR-0033. The operator answered its four Open Questions on 2026-09-15. Carries an active [Plan](0177-archive-disposition-enforcement/plan.md) and an in-progress [Task](0177-archive-disposition-enforcement/tasks/tsk-0001-archive-disposition-enforcement.md) |
+| SPEC-0178 | [Archive Occupancy, Route Citation, and Frozen Identity](0178-archive-occupancy-citation-and-frozen-identity/spec.md) | draft package proposing ADR-0036: a completed Task admitted in an unfinished package, route records closed to every citation, and preserved units compared with their catalog `Source`. It activates only after SPEC-0177 completes and carries no Plan or Task until approved |
 | SPEC-0176 | [Stale Fact Convergence](../98.archive/completed/03.specs/0176-stale-fact-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0176-stale-fact-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md); its criteria 1, 8, 12 and 14 were amended to the properties they check, and its Task records nine review rounds |
 
 ## How to Work in This Area

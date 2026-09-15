@@ -3909,15 +3909,15 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 35,
-      "next_number": 36,
+      "high_water": 36,
+      "next_number": 37,
       "child_spaces": {}
     },
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 177,
-      "next_number": 178,
+      "high_water": 178,
+      "next_number": 179,
       "child_spaces": {}
     },
     "operations-subject": {
@@ -3937,8 +3937,8 @@
     "research": {
       "prefix": "RES-",
       "width": 4,
-      "high_water": 95,
-      "next_number": 96,
+      "high_water": 96,
+      "next_number": 97,
       "child_spaces": {}
     },
     "audit": {
