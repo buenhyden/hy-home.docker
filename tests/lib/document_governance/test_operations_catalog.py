@@ -959,6 +959,22 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             self._findings(root),
         )
 
+    def test_non_ascii_digit_count_is_rejected_rather_than_aborting(self) -> None:
+        # "²".isdigit() is true and int("²") raises, which aborted the leaf.
+        root = self._repo(
+            rows=("| `alpha` | a | ² |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+        )
+        self.assertEqual(
+            [
+                (
+                    "compose-profile-vocabulary-drift",
+                    f"{self.POLICY}:3",
+                    "profile alpha row has no integer service count",
+                )
+            ],
+            self._findings(root),
+        )
+
     def test_compose_merge_tags_and_an_empty_file_are_valid_input(self) -> None:
         root = self._repo(services_b="  z:\n    profiles: !reset [beta]\n")
         empty = root / "infra/c/docker-compose.yml"

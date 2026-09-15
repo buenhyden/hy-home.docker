@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-05-10"
 
 ### Purpose
 
-- OpenSearch primary stack과 optional cluster variant를 구분한다.
+- `data` profile의 primary stack과 `data-cluster` profile의 three-node topology를 구분한다.
 - HTTPS, Docker Secrets, Traefik route, Dashboards route를 이해한다.
 - index 작업 전 policy/runbook handoff를 확인한다.
 

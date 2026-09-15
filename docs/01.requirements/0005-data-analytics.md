@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier (04-data/analytics) Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "requirements"
 artifact_id: "REQ-0005"
 parent_ids: []
@@ -58,7 +58,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **REQ-0005-FR-0001**: InfluxDB 3 Core 단일 compose, database 이름, port `8181`, `/api/v3/write_lp` endpoint/schema, current healthcheck가 문서와 정적 source에서 일치해야 한다. Token provisioning과 authenticated write acceptance는 별도 runtime 승인 전까지 검증된 것으로 간주하지 않는다.
 - **REQ-0005-FR-0002**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
-- **REQ-0005-FR-0003**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, optional cluster variant, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
+- **REQ-0005-FR-0003**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, profile이 선택하는 cluster topology, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
 - **REQ-0005-FR-0004**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
 
 ## Constraints

@@ -1,10 +1,10 @@
 ---
 title: "MinIO Object Storage"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 created: "2025-11-12"
 ---
 
@@ -33,7 +33,7 @@ MinIO is the object storage service for `hy-home.docker`. This leaf is the only 
 - Root-active MinIO service and bucket bootstrap behavior
 - Docker Secret names and mount paths, without secret values
 - Traefik API/console route surface
-- Optional cluster variant identification
+- `storage-cluster` topology identification
 
 ### Out of Scope
 

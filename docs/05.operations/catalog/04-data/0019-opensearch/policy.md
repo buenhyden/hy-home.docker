@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.8.0을 사용하며, three-node cluster compose는 optional variant다.
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.8.0을 사용하며, three-node cluster topology는 같은 Compose 파일에서 `data-cluster` profile이 선택한다.
 
 ## Policy Scope
 
 - **Systems**: `opensearch`, `opensearch-dashboards`, optional `opensearch-node1..3`
 - **Secrets**: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`
-- **Persistence**: `opensearch-data`, `opensearch-dashboards-data`, optional cluster node volumes
+- **Persistence**: `opensearch-data`, `opensearch-dashboards-data`, `data-cluster` profile node volumes
 - **Environments**: repo-local, development, homelab, and production-like rehearsals
 
 ## Controls

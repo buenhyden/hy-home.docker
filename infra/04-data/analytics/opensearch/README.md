@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -54,7 +54,7 @@ opensearch/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; optional cluster variant services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
+| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; `data-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `data` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml`; the single-node topology is the `data` profile and the three-node topology is `data-cluster`, both in that one file |

@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.19.1"
+version: "0.20.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -925,6 +925,28 @@ SPEC-0173 was taken to completion rather than implemented further; its Task 0006
 
 Round six and its dispositions are recorded under Review Evidence. This entry takes one lifecycle step: the Spec moves from `review` to `approved`. The Plan and the Task stay where they are, because an active Plan or an in-progress Task requires an active Spec.
 
+### W21: Round seven, and the second lifecycle step (2026-09-15, local-executed)
+
+The round-six corrections were reviewed by a reviewer who had not made them, and
+the thirteen findings are recorded under Review Evidence with their
+dispositions. Two of them were blockers of the kind W20 had already met in
+SPEC-0173: a result cell that opened with a qualifier, and work units that no
+receipt row named. A completion check that reads the receipt would have
+rejected this package on both.
+
+This entry takes the second lifecycle step. The Spec moves from `approved` to
+`active`, the Plan from `approved` to `active`, and this Task from `ready` to
+`in-progress`, measured against `origin/main` at `9c039bcf9`, where the first
+step already stands. The corrections this entry makes are themselves
+unreviewed, so completion still waits on a review of them and on the changed
+profile over the final path set.
+
+```text
+python3 -m unittest …test_operations_catalog          Ran 51 tests  OK
+python3 scripts/validation/check-operations-catalog.py  operations-catalog: PASS
+provider_surface_renderer.py --check                    PASS providers=2 drift=0
+```
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -932,7 +954,14 @@ Round six and its dispositions are recorded under Review Evidence. This entry ta
 | 1 | W12 | PASS: supporting evidence under the amended criterion; the bilingual predicate closed the language gap its English-only predecessors left, and it is not claimed complete | [spec.md criterion 1](../spec.md) |
 | 1 | W14 | PASS: supporting evidence under the amended criterion; the claim-shape sweep corrected the residue rounds three and four found, and round six showed it moved the blind spot rather than closing it | [spec.md criterion 1](../spec.md) |
 | 1 | W19 | PASS: as amended in W19, `check-operations-catalog.py` holds the root include list and the POL-0078 tables to the tracked Compose files, exits 0 on the current tree and reports each injected drift; the root `include:` comment and POL-0078 state the model | [Operations catalog check](../../../../scripts/validation/check-operations-catalog.py) |
-| 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
+| 1 | W3 | PASS: supporting evidence under the amended criterion; the retired enablement wording was replaced at its owners with the profile that selects each service | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 1 | W13 | PASS: supporting evidence under the amended criterion; the duplicate `oauth2-proxy` profile and the two-leaf residue were corrected and the `_workspace` tracking check was registered | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 1 | W17 | PASS: supporting evidence under the amended criterion; the enumeration row's comparison input was shown retired, which W19 replaced with the POL-0078 tables | [this Task](tsk-0001-stale-fact-convergence.md) |
+| 1 | W20 | PASS: `018d437b3` hardened the check against the cases round six found and `904c844c2` corrected the residue it named; `check-operations-catalog.py` reports PASS | [Operations catalog check](../../../../scripts/validation/check-operations-catalog.py) |
+| 1 | W21 | PASS: round seven's OpenSearch and MinIO topology residue now names the `data-cluster` and `storage-cluster` profiles, and a non-ASCII digit count is reported rather than aborting the leaf; 51 tests OK | [Operations catalog check](../../../../scripts/validation/check-operations-catalog.py) |
+| 2 | W4 | PASS: after review correction, `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
+| 2 | W2 | PASS: the counts W4 wrote were measured first from the tracked tree, with the commands recorded in the W2 entry | [infra README](../../../../infra/README.md) |
+| 2 | W16 | PASS: re-measured at `82ebe9d22`, 41 include entries, 41 tracked Compose files and 40 service directories, and the root README snapshot rows outside the criterion corrected | [root README](../../../../README.md) |
 | 3 | W4 | PASS: the system scope sentence counts only files that exist | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 3 | W15 | PASS: round five removed a second SPEC-0171 deferral clause 97 lines below the first and corrected `24개` to the 28 profiles the tables define | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
@@ -940,18 +969,25 @@ Round six and its dispositions are recorded under Review Evidence. This entry ta
 | 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | preserved ADR-0031 |
 | 7 | W5 | PASS: FR-0009, Constraints and Acceptance Criteria state the Spec/Plan/Task preservation unit; no transient-removal clause remains | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
 | 8 | W9 | PASS: the count is replaced by the routing statement the sibling index already uses, and the structure block names 0030- and 0034- | [Stage 02 index](../../../02.architecture/README.md) |
+| 8 | W16 | PASS: the routing wording W9 adopted now also stands in `descriptions/README.md`, the third file of the class | [Stage 02 index](../../../02.architecture/README.md) |
 | 9 | W6 | PASS: step 3 names both categories with the conditions bootstrap.md states, and names bootstrap.md as the owner of the order | [repository map](../../../../.agents/knowledge/repository-map.md) |
 | 10 | W6 | PASS: the workflow contract half is unchanged since 9ede309a5 and the pre-commit half is dated to 9051977aa, each named separately | [verification surface map](../../../../.agents/knowledge/verification-surface-map.md) |
 | 11 | W7 | PASS: `git rev-parse --verify` resolves neither the local nor the remote branch; both packages now state the three Git commands | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
 | 12 | W7 | PASS: contract 9 names the underscore-prefixed modules; `git ls-files tests/fixtures` returns zero paths and no acceptance criterion changed | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
-| 13 | W8 | PASS: all three members are `completed` under the archive path and `ls docs/03.specs/` shows only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
+| 13 | W8 | PASS: all three members are `completed` under the archive path and at W8 `ls docs/03.specs/` showed only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
 | 14 | W8 | PASS: the index row describes SPEC-0175 as preserved with its archive paths and lists SPEC-0176 as the package in flight | [Stage 03 index](../../README.md) |
+| 14 | W1 | PASS: W1 added the Stage 03 index row that lists SPEC-0176 and advanced `identity_spaces.spec` to 176 | [Stage 03 index](../../README.md) |
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
 | 16 | W10 | PASS: the generated outputs this package touched are fresh by the generators that remain, and `provider_surface_renderer.py --check` reports PASS providers=2 drift=0; the AUD-0023 report, the LLM Wiki and the hook parity matrix this row first cited were retired with their generators on 2026-09-10 and are no longer outputs | [Provider renderer](../../../../scripts/operations/provider_surface_renderer.py) |
+| 16 | W18 | PASS: seven fenced commands that named retired generators were corrected, and `check-document-links.py --mode commands` exits 0 | [Documentation protocol rule 16](../../../../.agents/governance/documentation-protocol.md) |
+| 16 | W20 | PASS: on 2026-09-15 `provider_surface_renderer.py --check` printed `PASS providers=2 drift=0` with exit 0; no other registered generator remains for the outputs this package touched | [Provider renderer](../../../../scripts/operations/provider_surface_renderer.py) |
 | 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
+| 17 | W20 | PASS: `run-ci-gate.py --profile full` exited GATE_EXIT=0 on the clean tree at `9c039bcf9`, every FAIL line an `AOE-CATALOG` negative marker. This is the full profile at W20's head, not the changed profile on the final path set, which the completing integration still runs | [this Task](tsk-0001-stale-fact-convergence.md) |
 | 18 | W11 | PASS: round one, two reviewers over `git diff e37b2dbcd..3725e08c7`; eleven of twelve accepted findings were corrected and one was routed to another author | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W12 | PASS: round two reviewed the corrections themselves; both blocking findings held on re-measurement and were corrected, and finding 3 is recorded at its measured scale | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W15 | PASS: rounds three through five reviewed the W13 and W14 corrections, and every accepted finding was corrected in W14 and W15 | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W20 | PASS: round six reviewed `e43380153` through `f60c097cc` and blocked with ten findings, and W20 corrected each one | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W21 | PASS: round seven reviewed `018d437b3` through `9c039bcf9` and blocked with thirteen findings, and W21 corrected each accepted one; those corrections are not yet reviewed | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 
 ### Predicate Triage for criterion 1 (2026-09-07, local-executed)
 
@@ -1083,6 +1119,30 @@ amendment goalpost-shaped only while Behavior Contract 1 kept the old wording,
 which finding 2 closes. The corrections this round produced are themselves
 unreviewed, and the Deferred Items carry that.
 
+### Independent review round seven (2026-09-15, local-executed)
+
+One reviewer, not the author, reviewed the eight commits from `018d437b3`
+through `9c039bcf9`. It read both code diffs, the Spec, the Plan and this Task's
+W20 onward in full, sampled the large documentation commits, ran both test
+modules and the operations catalog check, and compared every documented
+`repo:tag` with the Compose pins. Disposition `block`.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | blocker | The criterion 2 / W4 result cell opened with a qualifier and failed the completion regex | Accepted. Rewritten as `PASS: after review correction, …` |
+| 2 | blocker | W1, W2, W3, W13, W16, W17, W18 and W20 had no receipt row | Accepted. One row per unit added, each against the criterion its entry serves |
+| 3 | high | Criterion 17 rested on the W11 gate run, which predates W12 to W20 | Accepted in part. A W20 row records the full profile at `9c039bcf9`; the changed-profile run on the final path set stays with the completing integration |
+| 4 | high | The Spec, the Plan and a Ruling still said SPEC-0173 was untouched and not advanced | Accepted. Each now names W20's completion as a unit of its own |
+| 5 | medium | The Spec's in-scope list omitted the surfaces W20 changed | Accepted. W20 and W21 surfaces added |
+| 6 | medium | OpenSearch documents still called the three-node topology an optional variant | Accepted. The policy, guide, runbook and README now name the `data-cluster` profile, and REQ-0005-FR-0003 and the MinIO policy and README name their profile-selected topologies too |
+| 7 | medium | `infra/04-data/relational/README.md` listed `postgres:18.4-alpine` for the init job, which Compose pins at 18.6 | Accepted and corrected. The 18.4 pins under `examples/operations/postgres-logical-upgrade/` and the rehearsal script are deliberate rehearsal targets and are kept |
+| 8 | medium | The criterion 13 cell read as a current directory listing | Accepted. It is dated to W8 |
+| 9 | medium | Criterion 18 had no row for round six or for this round | Accepted. Rows for W20 and W21 added |
+| 10 | low | The ledger omitted `83d2e15f6` and `2a7470f82`, which edited this package | Accepted. Both added, with `9c039bcf9` |
+| 11 | low | The Plan said W6 and W7 spend the transition budget | Accepted. W5 and W8 do |
+| 12 | low | A non-ASCII digit passed `isdigit()` and aborted the leaf in `int()`; the row pattern would also read a future non-profile table | Accepted for the digit, with a test written first that failed on `ValueError`. The row pattern is kept: a stray row is reported as drift rather than passing silently, and Compose profile names may contain dots |
+| 13 | low | Criterion 16 named no command or exit code for W20 | Accepted. The W20 row records the renderer run and its output |
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -1110,6 +1170,8 @@ unreviewed, and the Deferred Items carry that.
 | `41e83d25e` | W15 Task record, the guard record, and the full PostgreSQL rehearsal evidence |
 | `be696fe52` | W16 and W17 Task record |
 | `0d1b0dee4` | W17 Deferred Item corrections |
+| `83d2e15f6` | SPEC-0173 W34 commit that also unlinked this package's references to the preserved ADR-0031 body |
+| `2a7470f82` | SPEC-0173 commit that also rewrote this package's AD-0014 scope line after AD-0002 superseded it |
 | `d8214fc09` | W18 fenced command path check and the seven surfaces it found |
 | `1bfa67525` | W18 commit grammar body constraint |
 | `578e85850` | W19 Compose include and profile check |
@@ -1122,6 +1184,7 @@ unreviewed, and the Deferred Items carry that.
 | `14d9ff6dc` | W20 tech-stack registry and document tags after the merged image bumps |
 | `658114fff` | W20 SPEC-0173 reconciliation at HEAD |
 | `c36bda522` | W20 SPEC-0173 completion and the preserved-Task recovery fix |
+| `9c039bcf9` | W20 round-six answers and the Spec approval |
 
 ## Rulings
 
@@ -1130,7 +1193,8 @@ unreviewed, and the Deferred Items carry that.
   runtime Docker operations and asked for the config-only run. The extension is
   recorded here rather than taken silently: SPEC-0173's `tsk-0006` gained the
   execution evidence, which is that Task's own business, and its version moved
-  to 0.4.10. Nothing else in that package was touched.
+  to 0.4.10. Nothing else in that package was touched until W20, which completed it under
+  the operator's 2026-09-14 request.
 - A guard that fires is treated as correct until proven otherwise; the change is
   adjusted rather than the guard weakened.
 - Static configuration and local test results never establish native runtime
@@ -1159,8 +1223,9 @@ prefers the note removed, the instruction it annotates is intact.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Review of the round-six corrections | Round six reviewed `e43380153` through `f60c097cc` and blocked with ten findings, and W20 corrects every one. Criterion 18 requires an independent review of corrections before completion, and the round that found them cannot also judge them, so the completing integration owns that review |
-| This package's own lifecycle walk | Two steps remain after W20 takes the Spec from `review` to `approved`. The next integration takes the Spec to `active`, the Plan to `active` and the Task to `in-progress`, because an active Plan or an in-progress Task requires an active Spec. The integration after that completes all three and preserves them together |
+| Review of the round-seven corrections | Round seven blocked with thirteen findings and W21 corrects each accepted one. Criterion 18 requires an independent review of corrections before completion, so the completing integration owns that review |
+| The changed profile on the final path set | Criterion 17 names the changed profile on the path set completion leaves. W20 recorded the full profile at its own head, and each later commit moves the path set, so the run belongs to the completing integration |
+| This package's own lifecycle walk | One step remains after W21 takes the Spec and Plan to `active` and this Task to `in-progress`. The completing integration moves all three to `completed` and preserves them together |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |
 
 ## Related Documents

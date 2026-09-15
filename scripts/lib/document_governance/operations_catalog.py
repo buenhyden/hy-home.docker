@@ -811,7 +811,7 @@ def validate_compose_profile_vocabulary(
                 f"profile {name} has more than one row; "
                 f"the first is line {rows[name][1]}"
             )
-        elif not count.isdigit():
+        elif not (count.isascii() and count.isdigit()):
             # Registered with no count, so the name is not also reported as
             # having no row.
             rows[name] = (-1, line_number)

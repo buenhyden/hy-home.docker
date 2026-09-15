@@ -1,6 +1,6 @@
 ---
 title: "MinIO Object Storage Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -56,11 +56,11 @@ Exceptions require explicit owner or user approval and must record scope, affect
 - Run `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config` after changing compose-facing documentation.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
-- Search updated docs for active/optional cluster confusion, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
+- Search updated docs for confusion between the `storage` and `storage-cluster` topologies, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
 
 ## Review Cadence
 
-Review on any change to MinIO compose services, image tag, profiles, network, secret refs, Traefik routes, bucket bootstrap job, optional cluster variant, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
+Review on any change to MinIO compose services, image tag, profiles, network, secret refs, Traefik routes, bucket bootstrap job, `storage-cluster` topology, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
 
 ---
 

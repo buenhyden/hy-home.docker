@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Implementation Plan"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -24,7 +24,7 @@ result trees rather than as intermediate authority states.
 
 The transition budget is the binding constraint on sequence. The metadata check
 reads `previous_status` from the merge base with `origin/main`, so each document
-admits one transition on this branch. W6 and W7 each spend that budget on the
+admits one transition on this branch. W5 and W8 each spend that budget on the
 documents they move, and no later unit may need a second transition on the same
 document.
 
@@ -96,6 +96,7 @@ document.
 19. W19: Register the Compose include and profile check and amend criterion 1.
 20. W20: Answer review round six, reconcile the receipts and take the first
     lifecycle step.
+21. W21: Answer review round seven and take the second lifecycle step.
 
 ## Risk and Rollback
 
@@ -106,7 +107,7 @@ document.
 | The retention promotion leaves an intermediate authority state | W5 applies both transitions, the move, the reciprocal metadata, and both amendments in one result tree | Revert the W5 commit; no other unit depends on its tree |
 | A frozen body is edited to agree with the new contract | `ADR-0031` is compared before and after the move and only its transition-owned frontmatter differs | Restore the pre-move body from Git and redo the move |
 | A second transition is attempted on a document already advanced on this branch | The budget is measured against the merge base in W1 and each promotion unit spends it once | Leave the document where it stands and record the unmet remote precondition |
-| SPEC-0173 is advanced as a side effect of W7 | W7 touches two sentences and no status, and the diff is reviewed against its acceptance criteria | Revert the two hunks; SPEC-0173's blocked aggregate is untouched |
+| SPEC-0173 is advanced as a side effect of W7 | W7 touches two sentences and no status, and the diff is reviewed against its acceptance criteria | Revert the two hunks. W20 later completed SPEC-0173 under the operator's 2026-09-14 request, as a named unit rather than a side effect |
 | SPEC-0175's members move without the index | W8 stages the three moves and the index row together | Revert the W8 commit; the package returns to completion-ready |
 | A generated output is hand-edited | W10 runs generators only and never edits their outputs | Regenerate and restage |
 
@@ -143,7 +144,9 @@ one before it.
   and are never promoted to a PASS.
 - No package already preserved under `docs/98.archive/` gains a retroactively
   authored member, and no frozen body is edited.
-- SPEC-0173 is not advanced, completed, or restructured by this package.
+- SPEC-0173 is not advanced, completed, or restructured as a side effect of this
+  package. W20 completed it as its own unit under the operator's 2026-09-14
+  request, and SPEC-0173's Task 0006 W40 records that work.
 
 ## Related Documents
 

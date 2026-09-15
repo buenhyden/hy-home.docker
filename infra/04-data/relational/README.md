@@ -1,10 +1,10 @@
 ---
 title: "Relational Databases (04-data/relational)"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 created: "2026-03-27"
 ---
 
@@ -70,7 +70,7 @@ relational/
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
 | DCS        | etcd 3.6.12                               | Distributed Locks         |
 | Router     | `haproxy:3.4.4`                          | Traffic Distribution      |
-| Init Job   | `postgres:18.4-alpine`                    | Role/database sync        |
+| Init Job   | `postgres:18.6-alpine`                    | Role/database sync        |
 
 ## Getting Started
 

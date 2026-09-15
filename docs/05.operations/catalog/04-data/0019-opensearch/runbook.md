@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-15"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -16,9 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: OpenSearch primary stack readiness, HTTPS health checks, and optional cluster variant evidence.
+> Scope: OpenSearch primary stack readiness, HTTPS health checks, and `data-cluster` topology evidence.
 
-이 런북은 OpenSearch primary stack 또는 optional cluster variant의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; cluster variant는 `opensearch-node1..3` service names를 사용한다.
+이 런북은 OpenSearch primary stack(`data` profile) 또는 three-node topology(`data-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; three-node topology는 `opensearch-node1..3` service names를 사용한다.
 
 ### Purpose
 
@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 - primary `opensearch` healthcheck fails
 - Dashboards cannot connect to OpenSearch
-- optional cluster variant has unhealthy node or shard allocation issues
+- `data-cluster` topology has unhealthy node or shard allocation issues
 
 ## Procedure
 

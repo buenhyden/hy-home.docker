@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -133,6 +133,13 @@ the correction is recorded beside it.
   - The generated LLM Wiki outputs under `docs/90.references/data/`, regenerated
     by the registered generator and never hand-edited. They were retired with
     their generator on 2026-09-10, so none remains.
+  - W20 added the surfaces its repository-wide audit corrected: the image tags
+    and implementation claims in operations and infra documents, including
+    `infra/tech-stack.versions.json` and the documents that follow it,
+    `scripts/README.md`, AD-0013, AD-0020 through AD-0026, ADR-0018 through
+    ADR-0026, `docs/90.references/research/README.md`, and the SPEC-0173
+    package it completed. W21 added the OpenSearch and MinIO topology wording,
+    REQ-0005-FR-0003, and one PostgreSQL tag round seven found.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any
   Compose service, profile, image, or network value, every gate node, suite, and
   contract entry, the Provider Registry, every role and skill identity, and the frozen bodies
@@ -141,14 +148,15 @@ the correction is recorded beside it.
   `docs/99.templates/registry.json` advances `identity_spaces.spec` from 175 to
   176 and nothing else, because allocating this package's own identifier requires
   it and the metadata check rejects the package without it. Inside
-  SPEC-0173, only two stale sentences and the link targets of the ADR-0031 move
-  are edited; no status, acceptance criterion, or Task evidence of that package
-  changes.
+  SPEC-0173, W7 edited only two stale sentences and the link targets of the
+  ADR-0031 move. W20 later amended criteria 23, 27 and 29, completed the
+  package and preserved it, as the SPEC-0173 bullet below records.
 - Three validator changes were made under scope extensions the Task records:
   `check-document-links.py --mode commands` in W18, the Compose include and
   profile-vocabulary comparison in `check-operations-catalog.py` in W19, and in
   W20 the identity recovery check in `identity_history.py`, which now accepts a
-  recovery decision held by a Task preserved as completed. Each runs under the
+  recovery decision held by a Task preserved as completed. W21 made the profile
+  count parse reject a non-ASCII digit instead of aborting the leaf. Each runs under the
   leaf that already invoked its validator.
 - SPEC-0173 was active and blocked when this package opened. Its Rulings forbid a new policy, Spec,
   Plan, or Task inside that package, so this work takes its own package. This
@@ -267,7 +275,7 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 | A count is corrected by arithmetic on the old number | Each count is re-measured from the tracked tree at edit time and the command is recorded |
 | More than one lifecycle transition per document is attempted on this branch | The transition budget is measured against the merge base first, and a document needing a second transition is left where it stands with the reason recorded |
 | The retention promotion silently widens into a policy rewrite | `.agents/governance/documentation-protocol.md` already carries the accepted model and is not edited by this package |
-| SPEC-0173 is advanced or completed as a side effect | This package changes two stale sentences in SPEC-0173 and nothing else in it; its blocked aggregate and Task evidence are untouched |
+| SPEC-0173 is advanced or completed as a side effect | W7 changed two stale sentences in SPEC-0173 and nothing else. Its completion in W20 was a named unit under the operator's request, recorded in its own Task 0006 W40 |
 | A generated output is hand-edited | Generated outputs are produced only by their registered generator and their freshness check is run after staging |
 
 ## Acceptance Contract
@@ -337,7 +345,7 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Amended by this package to the accepted preservation unit |
 | [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Accepted by this package as the durable decision owner |
 | ADR-0031 Archive as Preserved Record | Superseded and preserved by this package |
-| [SPEC-0173 Governance and QA Surface Convergence](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) | Declared the retention-owner promotion this package performs; otherwise untouched |
+| [SPEC-0173 Governance and QA Surface Convergence](../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) | Declared the retention-owner promotion this package performs; reconciled, completed and preserved in W20 |
 | [SPEC-0175 Governance Knowledge and Prompt Surface](../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | Completed and preserved by this package |
 | [POL-0078 Compose Profile Vocabulary](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) | Owns the profile model the Compose corrections converge on |
 
