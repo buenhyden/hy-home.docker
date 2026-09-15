@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "2.5.1"
+version: "2.5.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -308,16 +308,19 @@ The registered contracts predate this model in six places. SPEC-0177 owns
 moving the first five. It registers no Git-history-only profile, so the sixth
 stays until a later decision registers one.
 
-1. The link validator admits only the index and `completed/`.
-2. No `resolved/` subtree is known to the Registry or the Stage 98 loader, which
-   admits only the registered preservation subtrees at the archive root, so a
-   `resolved/` directory fails to load until SPEC-0177 registers it.
+1. The link validator admits only the index and `completed/`. The adopted
+   boundary is implemented behind the Registry switch
+   `common.archive_disposition_model` and does not apply at `transition`.
+2. The Registry holds an `archive-record-resolved` profile, and the Stage 98
+   loader admits a `resolved/` subtree only when the switch is `adopted`, so at
+   `transition` a `resolved/` directory still fails to load.
 3. The Tombstone template and the corpus check require a `Recovery Commit`
    section, pair every `retired/` body with one Tombstone, and reject a
    Tombstone for a `completed/` or `superseded/` record.
 4. The Migration template requires `Path Mapping` and `Recovery` sections.
-5. No Retention Envelope is defined, so a Tombstone still carries the
-   withdrawal reason.
+5. The Retention Catalog check is implemented behind the switch and does not
+   apply at `transition`, and the index holds no catalog yet, so a Tombstone
+   still carries the withdrawal reason.
 6. No profile is registered as Git-history-only. Until one is, every current
    disposition keeps a frozen body, and the requirement and accepted decision
    that forbid leaving a preserved body in Git alone apply unchanged.

@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "2.0.2"
+version: "2.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -91,11 +91,11 @@ Envelope는 이 README의 Retention Catalog 표가 담습니다.
 
 | 영역 | 현재 강제 | 모델 |
 | --- | --- | --- |
-| 링크 경계 | archive 밖에서 index와 `completed/`만 허용 | `resolved/`도 허용 |
-| `resolved/` 적재 | Registry와 Stage 98 loader가 모르는 하위 트리라 만들면 적재 실패 | 첫 기록과 함께 만드는 retention class |
+| 링크 경계 | archive 밖에서 index와 `completed/`만 허용. `resolved/`를 허용하는 코드는 Registry 스위치 뒤에 있으며 `transition`에서 적용되지 않음 | `resolved/`도 허용 |
+| `resolved/` 적재 | Registry에 `archive-record-resolved` profile이 있고 loader 지원도 스위치 뒤에 있으나, `transition`에서는 loader가 `resolved/` 하위 트리를 거부하므로 만들면 적재 실패 | 첫 기록과 함께 만드는 retention class |
 | Tombstone | `Recovery Commit` 섹션 필수, `retired/` 보존본마다 짝 요구, `completed/`·`superseded/` 기록에는 Tombstone 거부 | recovery commit 없음, 짝 요구 없음 |
 | Migration | `Path Mapping`과 `Recovery` 섹션 필수 | 이동한 범위와 현재 owner만 |
-| Retention Envelope | 정의되지 않음, 철회 사유는 Tombstone이 담음 | source Git object를 한 번 이름으로 가짐 |
+| Retention Envelope | Retention Catalog 검사 코드는 스위치 뒤에 있으나 `transition`에서 적용되지 않고 catalog 표도 아직 없음, 철회 사유는 Tombstone이 담음 | source Git object를 한 번 이름으로 가짐 |
 | Git-history-only 처분 | 등록된 profile 없음, 모든 처분이 frozen 본문 유지 | profile이 정할 때 호환 사본 없이 허용 |
 
 전환 동안 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과
