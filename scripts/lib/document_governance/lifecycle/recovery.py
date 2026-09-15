@@ -5,6 +5,7 @@ from __future__ import annotations
 import pathlib
 
 from scripts.lib.document_governance import archive as archive_authority
+from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
 
 
 def run(root: pathlib.Path) -> int:
@@ -44,7 +45,7 @@ def run(root: pathlib.Path) -> int:
     violations = len(findings) + len(boundary) + len(occupancy)
     preserved = sum(
         1
-        for disposition in ("completed", "superseded", "retired")
+        for disposition in PRESERVED_DISPOSITIONS
         for _ in (root / "docs/98.archive" / disposition).rglob("*.md")
         if (root / "docs/98.archive" / disposition).is_dir()
     )

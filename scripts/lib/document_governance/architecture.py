@@ -14,6 +14,7 @@ from scripts.lib.document_governance.frontmatter import (
     frontmatter_record_from_text,
 )
 from scripts.lib.document_governance.registry import (
+    PRESERVED_DISPOSITIONS,
     DocumentRegistry,
     document_type,
     load_registry,
@@ -375,7 +376,7 @@ def load_preserved_architecture_documents(
     active_registry = load_registry() if registry is None else registry
     _validate_registry_contract(active_registry)
     paths: list[pathlib.Path] = []
-    for disposition in ("completed", "superseded", "retired"):
+    for disposition in PRESERVED_DISPOSITIONS:
         for directory in ("descriptions", "decisions"):
             child_root = archive_root / disposition / "02.architecture" / directory
             if not child_root.is_dir():

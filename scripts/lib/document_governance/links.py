@@ -20,6 +20,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
+    admitted_preserved_dispositions,
     archive_disposition_model,
 )
 
@@ -37,11 +38,6 @@ _ACTIVE_STAGE_PREFIXES = (
     "docs/03.specs/",
     "docs/05.operations/",
 )
-_PRESERVED_LINK_PREFIXES = (
-    "docs/98.archive/completed/",
-    "docs/98.archive/superseded/",
-    "docs/98.archive/retired/",
-)
 # Only `completed/` may be referenced from outside the archive. The rest of the
 # archive is preserved evidence, not a citable current source, so an outside
 # document naming it invites a superseded record to be read as current state.
@@ -53,10 +49,6 @@ _CITABLE_ARCHIVE_PREFIX = "docs/98.archive/completed/"
 # is preserved like the others, so its outbound links are not checked either.
 _ADOPTED_CITABLE_ARCHIVE_PREFIXES = (
     _CITABLE_ARCHIVE_PREFIX,
-    "docs/98.archive/resolved/",
-)
-_ADOPTED_PRESERVED_LINK_PREFIXES = (
-    *_PRESERVED_LINK_PREFIXES,
     "docs/98.archive/resolved/",
 )
 _ARCHIVE_CITING_PROFILES = ("operation/incident", "operation/postmortem")
@@ -520,9 +512,12 @@ def _document_profile(
 def _preserved_link_prefixes(graph: DocumentGraph) -> tuple[str, ...]:
     """Return the preserved-body prefixes the graph root's archive model admits."""
 
-    if archive_disposition_model(graph.repo_root) == ARCHIVE_MODEL_ADOPTED:
-        return _ADOPTED_PRESERVED_LINK_PREFIXES
-    return _PRESERVED_LINK_PREFIXES
+    return tuple(
+        f"docs/98.archive/{disposition}/"
+        for disposition in admitted_preserved_dispositions(
+            archive_disposition_model(graph.repo_root)
+        )
+    )
 
 
 def _node_map(graph: DocumentGraph) -> dict[pathlib.PurePosixPath, DocumentNode]:

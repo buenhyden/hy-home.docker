@@ -563,6 +563,85 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 " ".join(self.archive.validate_preservation_boundary(root)),
             )
 
+    def test_resolved_is_a_registered_retention_class(self) -> None:
+        from scripts.lib.document_governance.registry import (
+            PRESERVED_DISPOSITIONS,
+            classify_path,
+            load_registry,
+            preserved_origin_path,
+        )
+
+        self.assertIn("resolved", PRESERVED_DISPOSITIONS)
+        body = "docs/98.archive/resolved/05.operations/incidents/0001-outage.md"
+        self.assertEqual(
+            "docs/05.operations/incidents/0001-outage.md", preserved_origin_path(body)
+        )
+        registry = load_registry()
+        self.assertEqual("archive-record-resolved", classify_path(body, registry))
+        self.assertEqual(
+            "unmanaged",
+            registry.profiles["archive-record-resolved"]["frontmatter_policy"],
+        )
+
+    def test_resolved_subtree_is_admitted_only_when_the_model_is_adopted(self) -> None:
+        """A `resolved/` fixture loads at `adopted` and fails the loader before it."""
+
+        for model, admitted in (("transition", False), ("adopted", True)):
+            with self.subTest(model=model), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(
+                    f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+                    encoding="utf-8",
+                )
+                archive_root = root / "docs/98.archive"
+                incident = archive_root / "resolved/05.operations/incidents"
+                for directory_path in (
+                    archive_root / "migrations",
+                    archive_root / "tombstones",
+                    incident,
+                ):
+                    directory_path.mkdir(parents=True)
+                (archive_root / "README.md").write_text("# Archive\n", encoding="utf-8")
+                (incident / "0001-outage.md").write_text("# Outage\n", encoding="utf-8")
+                if admitted:
+                    inventory = self.archive.load_archive(archive_root)
+                    self.assertIn("resolved", inventory.root_entries)
+                else:
+                    with self.assertRaises(ValueError):
+                        self.archive.load_archive(archive_root)
+
+    def test_resolved_record_must_not_carry_a_sealed_tombstone(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory) / "98.archive"
+            (root / "tombstones").mkdir(parents=True)
+            (root / "tombstones/0001-outage.md").write_text(
+                "## Retired Path\n\n`docs/05.operations/incidents/0001-outage.md`\n",
+                encoding="utf-8",
+            )
+            record = root / "resolved/05.operations/incidents/0001-outage.md"
+            record.parent.mkdir(parents=True)
+            record.write_text("# Outage\n", encoding="utf-8")
+            self.assertIn(
+                "resolved record must not carry a tombstone",
+                " ".join(self.archive.validate_preservation_boundary(root)),
+            )
+
+    def test_no_module_names_the_preserved_dispositions_literally(self) -> None:
+        """Every site reads `PRESERVED_DISPOSITIONS`, so a new class reaches all."""
+
+        offenders = [
+            path.relative_to(ROOT).as_posix()
+            for path in sorted((ROOT / "scripts/lib/document_governance").rglob("*.py"))
+            if path.name != "registry.py"
+            and re.search(
+                r"\"completed\",\s*\"superseded\"",
+                path.read_text(encoding="utf-8"),
+            )
+        ]
+        self.assertEqual([], offenders)
+
     def test_active_stages_hold_no_terminal_document(self) -> None:
         """A terminal document has left current work and must be preserved.
 

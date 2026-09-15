@@ -241,6 +241,33 @@ requires `accepted` or `superseded` at `adopted` and `proposed` at `transition`.
 | `python3 scripts/validation/check-document-links.py --mode all` before the change, on a stash | `documents=885 links=6655 archive_direct_links_total=61 failures=0` |
 | The same command after the change | The same counts, `failures=0` |
 
+### W6: `resolved` registered behind the switch (2026-09-15, local-executed)
+
+W6 ran before W4 and W5 because the catalog and the withdrawal rule read the
+disposition list it changes. Four tests came first and failed first: three
+failures and one error.
+
+`PRESERVED_DISPOSITIONS` now names `resolved`, and the Registry holds an
+unmanaged `archive-record-resolved` profile with the shape of the other three
+retention classes. `admitted_preserved_dispositions(model)` returns the full
+list at `adopted` and drops `resolved` at `transition`. `load_archive` reads the
+model from the root two levels above the archive and admits a `resolved/`
+subtree only when it is adopted. `links.py` derives its preserved prefixes from
+the same function, so the explicit adopted tuple W3 added is gone.
+
+The Spec names three sites that listed the older dispositions literally. The
+search found a fourth, the preserved Stage 02 loader in `architecture.py`.
+All four read the constant now, and a test rejects the literal in any module
+other than `registry.py`. `validate_preservation_boundary` rejects a sealed
+Tombstone on every retention class other than `retired`, which now includes
+`resolved`. No `resolved/` directory was created.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest` over `test_archive`, `test_links`, `test_registry`, `metadata.test_reference`, `test_architecture` | exit 0, 218 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` before W6, on a stash, and after | Both `violations=0` and `migrations=3 tombstones=140 preserved=200 decisions=286 recovery_rows=374 violations=0` |
+| `python3 scripts/validation/check-document-links.py --mode all` before and after | Both `PASS` |
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -250,6 +277,8 @@ pair as its unit lands.
 | --- | --- | --- | --- |
 | 1 | W3 | PASS: the corpus link run reports the same counts and no failure before and after W3, and `test_transition_model_keeps_resolved_outside_the_boundary` proves the boundary inert at `transition` | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 2 | W3 | PASS: `test_adopted_model_admits_resolved_and_rejects_other_dispositions`, `test_adopted_model_keeps_the_incident_and_postmortem_exception`, and `test_resolved_body_outbound_links_are_skipped_only_when_adopted` | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
+| 1 | W6 | PASS: the corpus lifecycle and link runs report the same output before and after W6, and `test_resolved_subtree_is_admitted_only_when_the_model_is_adopted` proves the loader unchanged at `transition` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 3 | W6 | PASS: `test_resolved_is_a_registered_retention_class`, `test_resolved_subtree_is_admitted_only_when_the_model_is_adopted`, `test_resolved_record_must_not_carry_a_sealed_tombstone`, and `test_no_module_names_the_preserved_dispositions_literally` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 
 ## Review Evidence
 

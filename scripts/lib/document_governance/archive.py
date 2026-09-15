@@ -23,7 +23,11 @@ from scripts.lib.document_governance.git_provenance import (
     recovery_commit_is_valid,
     verify_recovery_blobs_batch,
 )
-from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
+from scripts.lib.document_governance.registry import (
+    PRESERVED_DISPOSITIONS,
+    admitted_preserved_dispositions,
+    archive_disposition_model,
+)
 
 FROZEN_MIGRATION_SHA256 = (
     "271f21c50cf4ab765422ee552de244a4340c160e53149231eb6be45f03476ab9"
@@ -996,9 +1000,7 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
         expected[retired] = tombstone.as_posix()
 
     preserved: dict[str, set[str]] = {
-        "completed": set(),
-        "superseded": set(),
-        "retired": set(),
+        disposition: set() for disposition in PRESERVED_DISPOSITIONS
     }
     for disposition in preserved:
         subtree = archive_root / disposition
@@ -1021,7 +1023,9 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
             )
     for origin in sorted(preserved["retired"] - set(expected)):
         findings.append(f"{origin}: retired record has no tombstone")
-    for disposition in ("completed", "superseded"):
+    for disposition in PRESERVED_DISPOSITIONS:
+        if disposition == "retired":
+            continue
         for origin in sorted(preserved[disposition] & set(expected)):
             findings.append(
                 f"{origin}: {disposition} record must not carry a tombstone"
@@ -1041,7 +1045,8 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         # A disposition subtree exists only once something is preserved into
         # it, so each is optional; nothing outside this set may appear.
         required_entries = {"README.md", "migrations", "tombstones"}
-        allowed_entries = required_entries | set(PRESERVED_DISPOSITIONS)
+        model = archive_disposition_model(pathlib.Path(archive_root).parent.parent)
+        allowed_entries = required_entries | set(admitted_preserved_dispositions(model))
         if not required_entries <= set(entries) or not set(entries) <= allowed_entries:
             raise ValueError(
                 "Stage 98 root must contain README.md, migrations/, tombstones/, "

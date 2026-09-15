@@ -40,13 +40,29 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # contract; scoping that exemption to the archive keeps it off every live
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
-PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired")
+PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired", "resolved")
 # `common.archive_disposition_model` says whether ADR-0035's Stage 98 model is
 # adopted. At `transition` every archive check keeps its earlier behavior, and a
 # registered test binds `adopted` to the acceptance of that decision.
 ARCHIVE_MODEL_TRANSITION = "transition"
 ARCHIVE_MODEL_ADOPTED = "adopted"
 ARCHIVE_DISPOSITION_MODELS = (ARCHIVE_MODEL_TRANSITION, ARCHIVE_MODEL_ADOPTED)
+# The retention class the model adds. Before adoption no check admits it.
+_ADOPTION_ONLY_DISPOSITIONS = frozenset({"resolved"})
+
+
+def admitted_preserved_dispositions(model: str) -> tuple[str, ...]:
+    """Return the retention classes a Stage 98 model admits, in registered order."""
+
+    if model == ARCHIVE_MODEL_ADOPTED:
+        return PRESERVED_DISPOSITIONS
+    return tuple(
+        disposition
+        for disposition in PRESERVED_DISPOSITIONS
+        if disposition not in _ADOPTION_ONLY_DISPOSITIONS
+    )
+
+
 # Roots a document may have been retired from, mirroring the registry's
 # `archive_source_prefixes`. `docs/` is the implicit default.
 LEGACY_ARCHIVE_SOURCE_ROOTS = frozenset({"archive/"})
