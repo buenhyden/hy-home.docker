@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -306,6 +306,72 @@ accepts the base.
 | `python3 -m unittest tests.lib.document_governance.test_archive tests.validation.lifecycle.test_equivalence tests.lib.document_governance.metadata.test_reference` | exit 0, 69 tests |
 | `python3 scripts/validation/check-document-corpus-lifecycle.py` after W4 | exit 0, `violations=0`, and the same recovery counts as before W6 |
 
+### Assessment: archive consistency, the W4b amendment, and a follow-up package (2026-09-15, local-executed)
+
+The operator supplied a cross-repository archive review prompt and asked for
+this repository's archive policy, structure, contracts, and checks to be
+investigated and reconciled. The session authorized local edits only: no
+staging, commit, or push, and no change to how any check behaves.
+
+The investigation ran on the clean, non-shallow tree at `e233d2a19`, the commit
+the prompt had observed. Its item-by-item result is recorded once, in
+[RES-0096](../../../90.references/research/0096-archive-disposition-consistency/README.md);
+this entry records only what changed here and the evidence for it. Two facts
+decided the design. The catalog W4 added cannot record an Incident bundle as one
+unit or name a corrective-work owner without an uppercase identifier, and its
+coverage reads only `*.md`, although `ADR-0035` names both. And the SPEC-0173 and
+SPEC-0176 completing commits changed `version`, `status`, and Task evidence in
+the move itself, so the byte identity REQ-0026-FR-0012 requires is held by no Git
+object.
+
+The operator decided the design in turn.
+
+| Question | Answer |
+| --- | --- |
+| Scope of the session | Design, including the policy changes the assessment surfaced; no check changes |
+| Where each change lives | Split: the gaps against `ADR-0035` become W4b of this package; the changes of meaning go to `ADR-0036` and SPEC-0178 |
+| Catalog units, `Names`, and coverage (W4b) | Approved as proposed, literals `no durable contract` and `no corrective action:` included |
+| Occupancy | A `completed` Task is admitted in an active package; a `cancelled` Task stays a finding |
+| Incident citation exception | Approved: route records are closed to every source; incident and postmortem records keep retention-class bodies |
+| Frozen identity | Approved: one completing commit, compared with its `Source` except registered lifecycle fields |
+| Artifacts | Approved, with the transition wording of the Stage 98 index and the policy corrected |
+
+The changes:
+
+- The Spec moves to 1.2.0: Behavior Contracts 6 and 7 and criteria 4 and 7 take
+  the Incident bundle unit, the per-class `Names` forms, and coverage over every
+  regular file, and the byte comparison of `Source` is recorded as out of scope.
+  The Plan moves to 1.2.0 with W4b, which lands with W5.
+- `ADR-0036` (`proposed`), SPEC-0178 (`draft`, no Plan or Task), and RES-0096
+  (`draft`) are added, with the Registry `adr`, `spec`, and `research` identity
+  spaces moved to 36, 178, and 96, the `ADR_TO_AD` row naming `AD-0030`, and a row
+  in each of the three stage indexes. `ADR-0036` carries no `supersedes`,
+  because `architecture.py` rejects a superseding document that is not yet
+  effective; its Follow-up names the supersession its acceptance adds.
+- The policy's Transition items 1, 2, and 5 and the matching rows of the Stage 98
+  index said the Registry and loader do not know `resolved/` and that no
+  Retention Envelope is defined. The `archive-record-resolved` profile is
+  registered, and the loader admission and the catalog check are implemented
+  behind the switch and inactive at `transition`; the text now says so. No rule
+  changes.
+
+| Check | Result |
+| --- | --- |
+| Before any edit: `python3 -m unittest tests.lib.document_governance.test_archive tests.lib.document_governance.test_links tests.lib.document_governance.test_registry tests.lib.document_governance.metadata.test_reference tests.validation.lifecycle.test_equivalence` | exit 0, 216 tests |
+| Before any edit: `python3 scripts/validation/check-document-corpus-lifecycle.py` and `python3 scripts/validation/check-document-links.py --mode all` | Both exit 0; `violations=0`; `links=6662 failures=0` |
+| After the edits: `python3 -m unittest tests.lib.document_governance.test_taxonomy tests.lib.document_governance.test_registry` | exit 0, 108 tests |
+| After the edits: `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `e233d2a19`, `selected=10 violations=0`; by count, the ten are the seven modified tracked documents and the three new ones |
+| After the edits: `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=885 links=6666 failures=0`; the CLI reads tracked documents, so the three new documents were outside this run |
+| After the edits: `build_document_graph` over every tracked Markdown file plus the three new documents, through every `MODE_HANDLERS` mode, compared with the same graph without them | 20 links read from the new documents and no added finding; the three findings present in both graphs sit in the frozen legacy Migrations `0002` and `0003`, which the CLI excludes as non-routing |
+| After the edits: `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, the same recovery counts, `violations=0` |
+| First `python3 scripts/validation/run-ci-gate.py --profile changed`, after this entry was first written | exit 1: `test_current_index_status_matches_each_current_spec` failed for SPEC-0178, because its `draft` index row contained the word `active` |
+| The same command after the index row and the review corrections below | exit 0; no FAIL line other than the `AOE-CATALOG` negative markers |
+| The `build_document_graph` comparison repeated after the review corrections | 20 links read from the new documents and no added finding |
+
+No all-files or full-profile run was made, because neither was authorized, and
+both are NOT_RUN. No hosted CI ran. This entry's final rows were written after
+the second gate run, so that run does not cover these rows.
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -353,6 +419,29 @@ exited `GATE_EXIT=0`, and every FAIL line was an `AOE-CATALOG` negative marker.
 The corrections move the path set, so that run is not evidence for the tree they
 leave.
 
+### Independent review of the assessment (2026-09-15, local-executed)
+
+One reviewer in the read-only `rules-engineer` role, not the author, read the
+three new documents in full and the current text of every modified surface, and
+checked their claims against the code. It had no shell, so it could not read the
+exact diff or rule out a change in a file this entry does not name. It confirmed
+every code claim it checked and raised no high finding.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | medium | `AD-0030` also states the incident exception and was outside SPEC-0178's scope | Accepted. `AD-0030` is in scope, and criterion 6 adds a search for any remaining statement of a replaced rule |
+| 2 | medium | SPEC-0178 required the final-tree gate result in a Task whose body its own rule freezes before that tree exists | Accepted. The Task records the run on the tree holding every content change, and the completing tree's run is reported in the integration report |
+| 3 | low | Identity-space prefixes cannot recognize `inc-2026-0001` | Accepted. Behavior Contract 7 and W4b recognize identifiers by the profiles' `artifact_id_pattern` values |
+| 4 | low | The policy said the `resolved` profile and loader admission were both behind the switch, while only the admission is | Accepted, in the policy and in this entry |
+| 5 | low | The Plan still counted four integrations | Accepted. It names five |
+| 6 | low | SPEC-0178 and `ADR-0036` did not state the terminal-package case | Accepted |
+| 7 | low | "the index row" did not name the Retention Catalog row | Accepted |
+| 8 | low | Behavior Contract 7's sentence that a byte comparison stays Task evidence tacitly accepts the REQ-0026-FR-0012 mismatch | Not changed. The sentence predates this change, rewording it would change the approved contract, and the new out-of-scope sentence already names SPEC-0178 |
+| 9 | low | SPEC-0178 reopened `updated` as an Open Question after the operator approved the field list | Accepted. The question is removed |
+
+The reviewer also asked for the metadata count to be explained and for the gate
+run to be recorded; both are in the Assessment entry above.
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -361,6 +450,11 @@ leave.
 | `e7ec6e78b` | W1 review corrections naming the six lagging contracts on every surface |
 | `a9a13c5f3` | W2 Open Question answers and the Spec at `review` |
 | `d174fc50b` | SPEC-0176 completion, which dated this Task's consumer list |
+| `67b92b2d4` | W2 approval review and the Spec and Plan at `approved` |
+| `d04c8cf51` | W2 second approval review amendments |
+| `96897db14` | W3 activation and the link boundary behind the switch |
+| `a012dcae6` | W6 `resolved` registered behind the switch |
+| `e233d2a19` | W4 Retention Catalog check and the row a change adds |
 
 ## Rulings
 
@@ -371,4 +465,9 @@ leave.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W4 to W8 | W4 to W6 land in this integration after W3, with the switch at `transition`; W7 and W8 take one integration each |
+| W5 and W4b | Land together in the next integration, with the switch at `transition` |
+| W7 | One integration after W5 and W4b |
+| W8 | One integration after W7 |
+| SPEC-0178 and `ADR-0036` | Draft and proposed; activation requires this package completed and its own approval |
+| An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | No approved owner |
+| The assessment's own integration | Local edits only; staging, commit, and push await the operator |

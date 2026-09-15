@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Implementation Plan"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -26,9 +26,12 @@ and a check disagree without a named transition.
   landed in the change that opened this package.
 - The Spec's four Open Questions were answered by the operator on 2026-09-15,
   and the approval review's findings were settled in the Spec before approval.
+- The operator approved the W4b amendment on 2026-09-15 after the assessment
+  RES-0096 records. It changes no status and lands with W5.
 - Each document admits one lifecycle transition per integration. The package
-  therefore takes four integrations: approval; activation with W3 to W6;
-  adoption with W7; and completion with W8.
+  therefore takes five integrations: approval; activation, which landed W3, W6,
+  and W4; W5 with W4b, with the switch still at `transition`; adoption with W7;
+  and completion with W8.
 
 ## Execution Sequence
 
@@ -51,7 +54,17 @@ and a check disagree without a named transition.
    `scripts/lib/document_governance/lifecycle/recovery.py`,
    `scripts/validation/check-document-corpus-lifecycle.py`,
    `tests/lib/document_governance/test_archive.py`, and the recovery tests.
-5. W5: Parse and validate the new Tombstone and Migration shapes beside the
+5. W4b: Extend the Retention Catalog to the units and names `ADR-0035` already
+   states, inert at `transition`: an Incident bundle directory as a tree unit,
+   with package and bundle shapes read from the Registry `spec` and `incident`
+   path patterns; the per-class `Names` forms of Behavior Contract 7, with
+   identifiers recognized by the Registry profiles' `artifact_id_pattern`
+   values; and coverage over
+   every regular file a change adds. Files:
+   `scripts/lib/document_governance/archive.py`,
+   `tests/lib/document_governance/test_archive.py`. It lands in the integration
+   that carries W5.
+6. W5: Parse and validate the new Tombstone and Migration shapes beside the
    sealed ones, add `sealed_section_shapes` support, reject an added sealed-shape
    record, apply the exactly-one withdrawal rule, and let
    `_recorded_retirements` accept a catalog row, inert at `transition`. Files:
@@ -60,28 +73,28 @@ and a check disagree without a named transition.
    `scripts/lib/document_governance/metadata/heading.py` with the base passed from
    `scripts/validation/check-document-metadata.py --mode check-changed`,
    `scripts/lib/document_governance/spec_packages.py`, and their tests.
-6. W6: Register `resolved`: `PRESERVED_DISPOSITIONS`, the
+7. W6: Register `resolved`: `PRESERVED_DISPOSITIONS`, the
    `archive-record-resolved` profile, `load_archive` admission behind the switch,
    and the literal sites in `archive.py`, `links.py`, and
    `lifecycle/recovery.py`, with a fixture test. Files: those modules,
    `docs/99.templates/registry.json`, `tests/lib/document_governance/test_archive.py`,
    `tests/lib/document_governance/metadata/test_reference.py`.
-7. W7: Adopt the model in one result tree: the switch, the Registry section
+8. W7: Adopt the model in one result tree: the switch, the Registry section
    lists, both templates, `ADR-0035` accepted with `ADR-0033`'s surviving rules
    restated, `ADR-0033` preserved with its catalog row and repointed links, and
    the rewrite of every surface criterion 9 names.
-8. W8: Run the changed profile, obtain an independent review, and complete and
+9. W8: Run the changed profile, obtain an independent review, and complete and
    preserve the package with its own catalog row.
 
 | Acceptance criterion | Work unit |
 | --- | --- |
-| 1 | W3, W4, W5, W6 |
+| 1 | W3, W4, W4b, W5, W6 |
 | 2 | W3 |
 | 3 | W6 |
-| 4 | W4 |
+| 4 | W4, W4b |
 | 5 | W5 |
 | 6 | W5 |
-| 7 | W4 |
+| 7 | W4, W4b |
 | 8 | W7 |
 | 9 | W7 |
 | 10 | W8 |

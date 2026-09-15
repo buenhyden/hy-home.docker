@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -73,7 +73,9 @@ policy names explicitly.
   any profile as Git-history-only; and a trigger that moves a closed Incident into
   `resolved/`. `TERMINAL_DOCUMENT_STATUSES` in `archive.py` excludes `resolved` and
   `published`, so nothing yet requires that move, and the gap is recorded here
-  rather than closed.
+  rather than closed. A comparison of the bytes, modes, and members of a
+  `Source` object with its frozen unit is also out of scope; SPEC-0178 proposes
+  it.
 - Authorization: local edits, commits, integration into `main`, and push, as the
   operator directed for the change that opened this package.
   `.agents/governance/github-governance.md` makes a pull request the default
@@ -112,25 +114,35 @@ policy names explicitly.
    outside consumer and pairs with no body, so it may name the route of a record
    in any retention class; the rule that a `completed/` or `superseded/` record
    carries no Tombstone binds sealed-shape Tombstones.
-6. A change that adds a record under `completed/`, `superseded/`, `retired/`, or
-   `resolved/` that is absent from its base adds that record's Retention Catalog
-   row in the same change.
+6. A change that adds a regular file of any type under `completed/`,
+   `superseded/`, `retired/`, or `resolved/` that is absent from its base adds
+   the Retention Catalog row of that file's unit in the same change, unless the
+   unit already has one.
 7. The Retention Catalog is the table under `## Retention Catalog` in the Stage 98
    README, with the header `| Record | Class | Names | Source |`. It holds one
-   row per unit, a Spec package directory or a standalone document.
+   row per unit: a Spec package directory, an Incident bundle directory, or a
+   standalone document. The package and bundle directory shapes are read from
+   the Registry `spec` and `incident` profile path patterns, not restated in the
+   check.
    - `Record` is a code span of the unit's path under `docs/98.archive/`; a
-     package path ends with `/`.
+     package or bundle path ends with `/`.
    - `Class` is the disposition directory, and equals the class in `Record`.
-   - `Names` is the value the class must name: the identifiers a `completed`
-     unit promoted to, the successor identifier of a `superseded` unit, the
-     withdrawal reason of a `retired` unit, and the corrective-work owner and
-     closure evidence of a `resolved` unit. It is never empty, and outside
-     `retired` it contains at least one artifact identifier.
+   - `Names` is the value the class must name, and is never empty. An
+     identifier is recognized by the `artifact_id_pattern` values of the
+     Registry's profiles, so `inc-2026-0001` is one, and no form requires an
+     identifier that was not issued.
+     - `completed`: at least one identifier it promoted to, a code span of the
+       canonical owner path it promoted to, or the literal `no durable contract`.
+     - `superseded`: the successor identifier.
+     - `retired`: the withdrawal reason.
+     - `resolved`: the Incident identifier, and its corrective-work owner as an
+       identifier, a code span of an owner path, or `no corrective action:`
+       followed by the reason.
    - `Source` is a code span `<commit>:<path>`. The path equals
      `preserved_origin_path` of `Record`, the commit is an ancestor of `HEAD`, and
-     the object resolves to a blob for a document or a tree for a package. A
-     moving change cannot name its own commit, so it names the base commit its
-     source existed at.
+     the object resolves to a blob for a document or a tree for a package or
+     bundle. A moving change cannot name its own commit, so it names the base
+     commit its source existed at.
    `Source` is the one source Git object the model permits. No Tombstone,
    Migration, or body names another. A byte comparison between the source and
    the frozen body remains Task evidence, because a completing change also sets
@@ -227,7 +239,10 @@ because the catalog lives in the index the loader already admits.
    `resolved/` subtree from a fixture.
 4. The Retention Catalog check validates the header, one row per unit, the class
    match, the class value, and each `Source` rule, and a test covers each failure,
-   including an orphaned commit and a path that differs from the origin.
+   including an orphaned commit and a path that differs from the origin. Tests
+   also admit an Incident bundle row with a tree `Source`, reject that bundle
+   recorded as two document rows, and cover each `Names` form of Behavior
+   Contract 7 for acceptance and for rejection.
 5. The new Tombstone and Migration shapes parse and validate without a recovery
    commit, path mapping, or recovery section. The sealed shapes pass with their
    existing invariants, a change that adds a sealed-shape record is rejected, a
@@ -236,7 +251,7 @@ because the catalog lives in the index the loader already admits.
    `_recorded_retirements` accepts a catalog row, and a retired package with
    neither fails, each proven by a test.
 7. A change that adds a preserved record without its catalog row is rejected,
-   proven by a test.
+   proven by a test, including a change that adds only a non-Markdown member.
 8. In one result tree: the switch is `adopted`; the `tombstone` and `migration`
    `required_sections` hold the new shapes and `sealed_section_shapes` the old;
    the templates carry the new shapes; `ADR-0035` is `accepted` and restates
@@ -269,6 +284,7 @@ because the catalog lives in the index the loader already admits.
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Owns the validator structure this package changes |
 | [ADR-0035 Stage 98 Retention Classes and Route Dispositions](../../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md) | The decision this package accepts |
 | [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Superseded by `ADR-0035` on acceptance, with its surviving rules restated |
+| [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md) | The dated assessment that found the catalog unit, `Names`, and coverage gaps W4b closes |
 
 ## Open Questions
 
