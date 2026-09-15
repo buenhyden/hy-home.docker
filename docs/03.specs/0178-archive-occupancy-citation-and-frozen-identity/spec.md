@@ -1,10 +1,10 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "specs"
 artifact_id: "SPEC-0178"
 parent_ids:
@@ -30,14 +30,18 @@ commit changes status, version, and Task evidence in the same commit.
 `ADR-0036` proposes the resolution. This package moves the checks and the
 governing text onto it, and accepts `ADR-0036`, in one result tree.
 
+On 2026-09-16 the operator also assigned this package the one gap RES-0096 left
+without an owner, its item A11: an Incident can reach `resolved` without
+recording when it closed.
+
 ## Boundaries and Inputs
 
 - Inputs: `ADR-0036`, RES-0096, the Stage 98 sections of
   `.agents/governance/documentation-protocol.md`, `REQ-0026`, and the state
   SPEC-0177 leaves on completion.
 - Precondition: SPEC-0177 is completed and preserved, `ADR-0035` is `accepted`,
-  and `common.archive_disposition_model` is `adopted`. This Spec stays `draft`
-  or `review` until then.
+  and `common.archive_disposition_model` is `adopted`. This package is not
+  activated before then.
 - In scope:
   - `scripts/lib/document_governance/archive.py`:
     `validate_active_stage_occupancy` and the Retention Catalog source check.
@@ -46,6 +50,8 @@ governing text onto it, and accepts `ADR-0036`, in one result tree.
   - `docs/99.templates/registry.json` and
     `docs/99.templates/contracts/document-profile.schema.json`: a
     `common.frozen_transition_fields` list.
+  - The `incident` profile in `docs/99.templates/registry.json`: a
+    `required_frontmatter_by_status` entry for `resolved`.
   - The tests under `tests/lib/document_governance/` that cover each of these.
   - The acceptance of `ADR-0036`, its supersession of `ADR-0035`, and the
     in-place amendment of REQ-0026-FR-0009, REQ-0026-FR-0012,
@@ -57,10 +63,9 @@ governing text onto it, and accepts `ADR-0036`, in one result tree.
     `.agents/skills/incident-response/SKILL.md`.
 - Out of scope: any edit to a frozen body or sealed record; a catalog row or
   identity comparison for a record preserved before the Retention Catalog
-  existed; `TERMINAL_DOCUMENT_STATUSES` for `resolved` and `published`; a
-  conditional requirement for an Incident's `resolved_at`, which RES-0096
-  records as open; a machine check of the context an incident gives when it
-  cites a `superseded/` or `retired/` body.
+  existed; `TERMINAL_DOCUMENT_STATUSES` for `resolved` and `published`; and a
+  machine check of the context an incident gives when it cites a
+  `superseded/` or `retired/` body.
 
 ## Behavior Contract
 
@@ -89,6 +94,10 @@ governing text onto it, and accepts `ADR-0036`, in one result tree.
    for byte.
 8. A missing `Source` object is a finding, never a pass.
 9. A preserved record with no catalog row is not compared.
+10. An `operation/incident` whose status is `resolved` carries a nonempty
+    `resolved_at`. A missing key, a null, or an empty string is a
+    `status-frontmatter-required` finding, and the value keeps the `date-time`
+    format the frontmatter schema declares.
 
 ## Technical Approach
 
@@ -121,6 +130,10 @@ what Behavior Contract 7 admits, the move, the two index rows, and consumers.
 The pre-commit changed profile gates that tree, and its result is reported in
 the integration report rather than written into the frozen Task.
 
+Behavior Contract 10 uses the Registry's existing status-conditional
+frontmatter contract, which the `postmortem` profile already applies to
+`reviewed_at` at `published`. It adds one Registry entry and no check.
+
 No new Registry switch is added. Every behavior lands in the result tree that
 accepts `ADR-0036`.
 
@@ -145,6 +158,7 @@ declared in the schema as a required array of unique strings. New finding codes:
 | A formatter converts line endings in a preserved body | Line endings are part of the compared bytes |
 | A shallow clone lacks the `Source` object | Behavior Contract 8 reports it; hosted CI checks out full history |
 | A historical body is rewritten to satisfy the comparison | Behavior Contract 9 compares only records with a catalog row, and frozen records are never edited |
+| An Incident is closed without a closure date | Behavior Contract 10 requires `resolved_at` at `resolved` |
 
 ## Acceptance Contract
 
@@ -175,6 +189,9 @@ declared in the schema as a required array of unique strings. New finding codes:
    completing tree, reported in the integration report.
 8. An independent exact-diff review reports no finding outside the recorded
    authorization, and every accepted finding is corrected before completion.
+9. A test proves Behavior Contract 10: a `resolved` Incident with a valid
+   `resolved_at` passes; one with the key absent, null, or empty fails; and an
+   Incident at `mitigated` passes without it.
 
 ## Traceability
 
@@ -188,9 +205,9 @@ declared in the schema as a required array of unique strings. New finding codes:
 
 ## Open Questions
 
-1. Does the Stage 01 and 02 standalone judgment of Behavior Contract 3 need the
-   same `completed`-member admission for any container other than a Stage 03
-   package? RES-0096 found no such container.
+None is open. The draft asked whether any container other than a Stage 03
+package needs the `completed`-member admission of Behavior Contract 2. RES-0096
+found none, so Behavior Contract 3 keeps every other stage per document.
 
 ## Operational Impact
 

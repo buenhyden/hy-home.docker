@@ -1,10 +1,10 @@
 ---
 title: "Archive Disposition Consistency Assessment"
-version: "0.1.0"
+version: "0.1.1"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "references"
 artifact_id: "RES-0096"
 parent_ids: []
@@ -75,7 +75,7 @@ Registry identifiers.
 | A08 Completion and disposition approval | A finished Task can say so before its package is disposed | The policy directs a finished Task of an unfinished package to hold `in-progress`; `_validate_execution_states` constrains only `in-progress` and `blocked` Tasks | Status field contradicts the recorded fact by rule | static code | SPEC-0178 (completed Tasks only) |
 | A09 Promotion receipt | One receipt owner | SPEC-0176's Task carries the receipt rows; the divergent handoff uses `branch_integration_receipts` | Consistent | source read | Keep |
 | A10 Atomicity | Status change and move land in one result tree | `REQ-0026-FR-0009` and `ADR-0033` Decision 3 require it; the SPEC-0173 and SPEC-0176 completing commits edit status inside the move; pre-commit runs `run-ci-gate.py --profile changed` per commit | Consistent | reproduced | Keep |
-| A11 Closure evidence | A resolved Incident carries a closure date | The `incident` profile lists `resolved_at` as optional and declares no status-conditional requirement, while `postmortem` requires `reviewed_at` at `published` | Gap | static code | Open; no approved owner yet |
+| A11 Closure evidence | A resolved Incident carries a closure date | The `incident` profile lists `resolved_at` as optional and declares no status-conditional requirement, while `postmortem` requires `reviewed_at` at `published` | Gap | static code | SPEC-0178 Behavior Contract 10, assigned by the operator on 2026-09-16 |
 | A12 Catalog | One row per unit naming what its class must name | W4 checks header, rows, class, and `Source`; the index has no catalog section yet, which is inert at `transition`; `Names` requires an uppercase identifier outside `retired` | Policy–implementation gap for `Names` | reproduced | SPEC-0177 W4b |
 | A13 Git provenance | `Source` proves the original object | The check covers path, ancestry, and object type, not bytes, mode, or members; `ci-quality.yml` checks out with `fetch-depth: 0` | Partial by design (SPEC-0177 Behavior Contract 7) | static code | SPEC-0178 |
 | A14 Freeze and allowed transforms | A preserved body is byte-identical to its body at the move | Completing commits change `version`, `status`, and Task evidence in the same commit, so no Git object holds the pre-move bytes; relative links are not rebased | Requirement–practice mismatch (`REQ-0026-FR-0012`) | reproduced | SPEC-0178 |
@@ -148,7 +148,8 @@ read-only on 2026-09-15.
   SPEC-0177 completing.
 - Items A05 and A24 describe implemented but inactive code as absent. Correcting
   that wording changes no rule.
-- Item A11 has no owner in either package and stays open.
+- Item A11 had no owner in either package when this assessment was written.
+  The operator assigned it to SPEC-0178 on 2026-09-16.
 
 ## Traceability
 
