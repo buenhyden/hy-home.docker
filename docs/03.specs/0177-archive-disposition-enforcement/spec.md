@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -48,11 +48,15 @@ policy names explicitly.
   - `scripts/lib/document_governance/registry.py`: `PRESERVED_DISPOSITIONS` and
     `preserved_origin_path`, and the loading of the new profile fields.
   - `scripts/lib/document_governance/spec_packages.py`: `_recorded_retirements`,
-    which treats a Tombstone as the only record of a retirement, and
-    `_ordinary_preserved_paths`, which counts only `completed/` and
-    `superseded/` as preservation.
-  - `scripts/lib/document_governance/lifecycle/recovery.py`, whose preserved
-    count names the three dispositions literally.
+    which treats a Tombstone as the only record of a retirement.
+  - `scripts/lib/document_governance/lifecycle/recovery.py`, whose `run` takes no
+    comparison base and whose preserved count names the three dispositions
+    literally, and `scripts/validation/check-document-corpus-lifecycle.py`,
+    which calls it.
+  - `scripts/lib/document_governance/metadata/heading.py`, whose
+    `_registered_section_findings` does not receive the base that
+    `scripts/validation/check-document-metadata.py --mode check-changed`
+    resolves.
   - `docs/99.templates/registry.json`: the `tombstone` and `migration` profiles,
     a new `archive-record-resolved` profile, and the
     `common.archive_disposition_model` switch.
@@ -99,10 +103,15 @@ policy names explicitly.
    Migration keeps its registered sections, and a new Migration has `Purpose`,
    `Moved Scope`, `Current Owner`, `Approval`, `Traceability`.
 4. A change that adds a Tombstone or Migration absent from its comparison base
-   must use the new shape. The rule is derived from the base and the tree, as
-   REQ-0026-NFR-0006 requires, and no identity cutoff or path list takes part.
+   must use the new shape. A comparison base is not a fixed input, so the rule
+   keeps REQ-0026-NFR-0006's exclusion, and no identity cutoff or path list takes
+   part.
 5. Every `retired/` record has exactly one withdrawal record: a sealed Tombstone
-   that pairs with it, or a Retention Catalog row.
+   that pairs with it, or a Retention Catalog row. Completion and supersession are
+   never recorded as a withdrawal. A new-shape Tombstone records a route for an
+   outside consumer and pairs with no body, so it may name the route of a record
+   in any retention class; the rule that a `completed/` or `superseded/` record
+   carries no Tombstone binds sealed-shape Tombstones.
 6. A change that adds a record under `completed/`, `superseded/`, `retired/`, or
    `resolved/` that is absent from its base adds that record's Retention Catalog
    row in the same change.
@@ -158,6 +167,13 @@ full-corpus run therefore admits every tracked record in the shape it was
 written in, and a change that adds a record in the sealed shape is rejected when
 it is made.
 
+Two checks receive the base for this. Behavior Contracts 4 and 6 run in
+`check-document-corpus-lifecycle.py`, which passes the base from
+`resolve_lifecycle_base` into `lifecycle/recovery.run`. The sealed-shape base
+condition runs in `check-document-metadata.py --mode check-changed`, which passes
+its `BaseSelection` to `_registered_section_findings`. Without a base, both admit
+every tracked record, which is the full-corpus behavior above.
+
 `ADR-0035` supersedes `ADR-0033` rather than narrowing it, because supersession
 here is whole-document. It therefore restates every rule of `ADR-0033` that stays
 in force: owner transfer before terminal transition, full-package preservation,
@@ -193,7 +209,7 @@ because the catalog lives in the index the loader already admits.
 | A record in the sealed shape is added after adoption | The change-aware check rejects a sealed-shape record absent from its base |
 | The pairing is released with no withdrawal owner | Every `retired/` record needs exactly one of a sealed pairing or a catalog row |
 | A catalog row names a commit a rebase or squash orphaned | The ancestor check fails closed and the row must be corrected |
-| The switch is set without the decision being accepted | A registered test binds `adopted` to `ADR-0035` reading `accepted`, in both directions |
+| The switch is set without the decision being accepted | A registered test binds `adopted` to `ADR-0035`, found by identity in Stage 02 or Stage 98, having left `proposed` through `accepted`, in both directions |
 | A new rule is live while the policy still describes the transition | Every new rule reads the switch, and W7 changes the switch and the text in one result tree |
 | The link boundary admits `superseded/` or `retired/` by widening a prefix list | Tests assert rejection for each non-citable disposition and admission for `completed/`, `resolved/`, and the index |
 
@@ -231,9 +247,15 @@ because the catalog lives in the index the loader already admits.
 9. In the same result tree: the policy's Transition list keeps only its sixth
    item, as a standing statement; `REQ-0026` amends in place, with a version
    bump, REQ-0026-FR-0002, REQ-0026-FR-0003, REQ-0026-FR-0008, REQ-0026-FR-0012,
-   REQ-0026-NFR-0007, the transition Constraint, and the Acceptance Criteria on
-   Tombstone removal, the recovery commit, and the namespace; and `AD-0030` and the
-   Stage 98 README no longer describe a lagging check or a mandatory pairing.
+   REQ-0026-NFR-0007, its first two Constraints and the transition Constraint,
+   and the Acceptance Criteria on Tombstone removal, the recovery commit, and the
+   namespace; the policy rewrites Retirement preconditions item 4, its Tombstone
+   scope section, and its "Until SPEC-0177 completes" sentence; and `AD-0030`, the
+   Stage 98 README, `.agents/knowledge/repository-map.md`,
+   `.agents/skills/incident-response/SKILL.md`,
+   `docs/02.architecture/decisions/README.md`, and `docs/README.md` no longer
+   describe a lagging check, a mandatory pairing, or a rule conditioned on
+   SPEC-0177 or `ADR-0035`.
 10. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0 on the
     final path set, with the command and exit code recorded.
 11. An independent exact-diff review reports no finding outside the current

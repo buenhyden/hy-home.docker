@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Implementation Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -37,22 +37,28 @@ and a check disagree without a named transition.
 2. W2: Answer the Open Questions, settle the approval review, and approve the
    Spec and this Plan.
 3. W3: Add `common.archive_disposition_model` at `transition` with the test that
-   binds `adopted` to `ADR-0035` reading `accepted`, and move the link boundary
+   binds `adopted` to `ADR-0035`, found by identity in Stage 02 or Stage 98,
+   having left `proposed` through `accepted`, and move the link boundary
    behind it. Files: `docs/99.templates/registry.json`,
    `scripts/lib/document_governance/registry.py`,
    `scripts/lib/document_governance/links.py`,
    `tests/lib/document_governance/test_links.py`,
    `tests/lib/document_governance/test_registry.py`.
 4. W4: Add the Retention Catalog check and the change-aware rule that a preserved
-   record added without its row is rejected, inert at `transition`. Files:
+   record added without its row is rejected, inert at `transition`, with the
+   comparison base passed into the recovery run. Files:
    `scripts/lib/document_governance/archive.py`,
-   `tests/lib/document_governance/test_archive.py`.
+   `scripts/lib/document_governance/lifecycle/recovery.py`,
+   `scripts/validation/check-document-corpus-lifecycle.py`,
+   `tests/lib/document_governance/test_archive.py`, and the recovery tests.
 5. W5: Parse and validate the new Tombstone and Migration shapes beside the
    sealed ones, add `sealed_section_shapes` support, reject an added sealed-shape
    record, apply the exactly-one withdrawal rule, and let
    `_recorded_retirements` accept a catalog row, inert at `transition`. Files:
    `scripts/lib/document_governance/archive.py`,
-   `scripts/lib/document_governance/registry.py`, the metadata heading check,
+   `scripts/lib/document_governance/registry.py`,
+   `scripts/lib/document_governance/metadata/heading.py` with the base passed from
+   `scripts/validation/check-document-metadata.py --mode check-changed`,
    `scripts/lib/document_governance/spec_packages.py`, and their tests.
 6. W6: Register `resolved`: `PRESERVED_DISPOSITIONS`, the
    `archive-record-resolved` profile, `load_archive` admission behind the switch,
@@ -63,7 +69,7 @@ and a check disagree without a named transition.
 7. W7: Adopt the model in one result tree: the switch, the Registry section
    lists, both templates, `ADR-0035` accepted with `ADR-0033`'s surviving rules
    restated, `ADR-0033` preserved with its catalog row and repointed links, and
-   the rewrite of the policy, `REQ-0026`, `AD-0030`, and the Stage 98 README.
+   the rewrite of every surface criterion 9 names.
 8. W8: Run the changed profile, obtain an independent review, and complete and
    preserve the package with its own catalog row.
 

@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -195,10 +195,24 @@ findings settled, the Spec and the Plan move to `approved` and this Task to
 `ready`. W3 to W6 start when the Spec is `active`, which is the next
 integration.
 
+A second reviewer read the amended package against the code and approved it
+with eight text amendments, applied before this integration.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| A | high | No check was named for Behavior Contracts 4 and 6, and the hosts that would run them receive no comparison base | Accepted. The Technical Approach names `check-document-corpus-lifecycle.py` and `check-document-metadata.py --mode check-changed` with the base each passes, and W4 and W5 list those files |
+| B | medium | A test reading `ADR-0035` at its active path would fail once the decision is itself superseded | Accepted. The binding finds `ADR-0035` by identity in Stage 02 or Stage 98 |
+| C | medium | Criterion 9 missed text that also conditions a rule on the transition | Accepted. The policy's Retirement preconditions item 4, Tombstone scope, and "Until SPEC-0177 completes" sentence, REQ-0026's first two Constraints, and four more surfaces are named |
+| D | medium | `ADR-0035` dropped "completion and supersession create no Tombstone" and the rule that frozen records are never extended | Accepted. Both are restated, and Behavior Contract 5 decides that a new-shape Tombstone may name any class's route |
+| E | low | `_ordinary_preserved_paths` was in scope with no contract changing it | Accepted. Removed from scope |
+| F | low | The Plan's file map was incomplete | Accepted. As A |
+| G | low | The Spec said REQ-0026-NFR-0006 requires a base, which it does not | Accepted. It now says a base is not a fixed input |
+| H | low | The receipt note still called the package `draft` | Accepted |
+
 ## Verification Evidence
 
-No acceptance criterion is claimed. The package is `draft`, and every criterion
-is owned by a later work unit.
+No acceptance criterion is claimed. The package is approved, and every
+criterion is owned by a later work unit.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |

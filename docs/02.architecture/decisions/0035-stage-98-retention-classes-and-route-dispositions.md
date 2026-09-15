@@ -1,6 +1,6 @@
 ---
 title: "Stage 98 보존 class와 route 처분"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -113,6 +113,12 @@ Tombstone 짝 요구뿐입니다.
   집합 및 bytes를 변경 없이 `superseded/`에 보존하고, distinct active target Task가
   exact commit, path, identity와 integration receipt를 운반하는 예외 계약을
   유지합니다.
+- 완료와 대체는 철회로 기록하지 않습니다. 새 모양의 Tombstone은 저장소 밖
+  consumer의 route를 기록할 뿐 철회 기록이 아니므로, 어느 retention class의
+  route든 이름으로 가질 수 있습니다.
+- 이미 frozen 상태인 기록은 이 결정에 맞추기 위해 확장, 재구성 또는 수정하지
+  않으며, ADR-0031이 accepted였던 기간에 Spec만 보존된 package의 범위는 역사적
+  사실로 둡니다.
 
 ## Consequences
 
