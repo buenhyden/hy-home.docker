@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Implementation Plan"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"

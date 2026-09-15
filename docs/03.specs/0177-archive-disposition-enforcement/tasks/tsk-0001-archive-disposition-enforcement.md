@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -113,6 +113,10 @@ current link, and the enumerated consumers are the 32 documents that cite
 - `docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/README.md`
 - `docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md`
 - `docs/README.md`
+
+The list is dated 2026-09-15. SPEC-0176 completed later that day, and its two
+entries now sit under `docs/98.archive/completed/03.specs/`, where a preserved
+body's outbound links are not checked.
 
 Writing the change exposed one guard worth recording. A bare child identifier
 such as `FR-0013` in a Requirement or an active Spec is rejected by

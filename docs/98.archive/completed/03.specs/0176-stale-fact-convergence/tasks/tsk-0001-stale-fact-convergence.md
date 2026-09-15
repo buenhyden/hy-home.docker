@@ -1,8 +1,8 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.21.0"
+version: "0.21.1"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -979,6 +979,11 @@ Deferred Items are closed, and the question about the ADR-0007 and ADR-0022
 notes becomes a Ruling, because a completed record cannot hold an item with no
 owner.
 
+The changed profile ran on `93b89d4da` and printed `GATE_EXIT=0`. The
+completing commit then moved the Spec, the Plan and this Task to `completed`
+and preserved all three under `docs/98.archive/completed/03.specs/` together
+with the Stage 03 index row, in one result tree.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1019,6 +1024,7 @@ owner.
 | 16 | W20 | PASS: on 2026-09-15 `provider_surface_renderer.py --check` printed `PASS providers=2 drift=0` with exit 0; no other registered generator remains for the outputs this package touched | [Provider renderer](../../../../scripts/operations/provider_surface_renderer.py) |
 | 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
 | 17 | W20 | PASS: `run-ci-gate.py --profile full` exited GATE_EXIT=0 on the clean tree at `9c039bcf9`, every FAIL line an `AOE-CATALOG` negative marker. This is the full profile at W20's head, not the changed profile on the final path set, which the completing integration still runs | [this Task](tsk-0001-stale-fact-convergence.md) |
+| 17 | W22 | PASS: `python3 scripts/validation/run-ci-gate.py --profile changed` on the clean tree at `93b89d4da`, which holds every W22 content change, printed `GATE_EXIT=0`, and every FAIL line was an `AOE-CATALOG` negative marker. The completing commit changes only the three statuses, the move, and the index row, and its own pre-commit hook ran the changed suites on that tree | [this Task](tsk-0001-stale-fact-convergence.md) |
 | 18 | W11 | PASS: round one, two reviewers over `git diff e37b2dbcd..3725e08c7`; eleven of twelve accepted findings were corrected and one was routed to another author | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W12 | PASS: round two reviewed the corrections themselves; both blocking findings held on re-measurement and were corrected, and finding 3 is recorded at its measured scale | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 | 18 | W15 | PASS: rounds three through five reviewed the W13 and W14 corrections, and every accepted finding was corrected in W14 and W15 | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
@@ -1261,6 +1267,7 @@ against `e7ec6e78b`. Disposition `block` for completion.
 | `9c039bcf9` | W20 round-six answers and the Spec approval |
 | `a83780c60` | W21 round-seven answers and the second lifecycle step |
 | `a51c1de93` | W21 round-eight corrections |
+| `93b89d4da` | W22 round-nine corrections and the map provenance |
 
 ## Rulings
 
