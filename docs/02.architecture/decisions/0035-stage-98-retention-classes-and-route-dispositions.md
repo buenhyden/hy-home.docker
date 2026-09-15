@@ -1,6 +1,6 @@
 ---
 title: "Stage 98 보존 class와 route 처분"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -71,8 +71,9 @@ README는 `resolved/`가 필요하면 별도 계약 변경으로 검토한다고
    `retired/`는 후속 없이 철회된 규칙이나 범위와 철회 사유를, `resolved/`는
    종료된 Incident bundle과 게시된 Postmortem, 그리고 종료 근거와 현재 교정
    작업 owner를 이름으로 가집니다. 보존은 profile을 따릅니다. frozen 본문은
-   불변이고, Git-history-only 처분은 호환 사본 없이 복구 가능한 출처를
-   유지합니다. 처분에는 별도 승인이 필요합니다.
+   불변이고, Git-history-only 처분은 profile이 그렇게 등록할 때 호환 사본 없이
+   복구 가능한 출처를 유지합니다. 지금 그렇게 등록한 profile은 없습니다. 처분에는
+   별도 승인이 필요합니다.
 3. route disposition은 본문을 담지 않습니다. `tombstones/`는 저장소 밖
    consumer를 위한 은퇴 route, 그 후속 또는 부재, 사유를 이름으로 가지고,
    `migrations/`는 이동한 범위와 현재 owner를 `MIG-####`로 가집니다.
@@ -93,8 +94,25 @@ README는 `resolved/`가 필요하면 별도 계약 변경으로 검토한다고
    남습니다. 이미 봉인된 Tombstone과 Migration은 기록 당시 형태를 역사로
    유지하며 새 계약에 맞추어 다시 쓰지 않습니다.
 
-Stage 03 package의 완료 보존 단위는 바뀌지 않습니다. Spec, Plan, 모든 Task
-본문은 ADR-0033이 정한 대로 함께 보존됩니다.
+이 결정은 수락과 함께 ADR-0033을 대체하므로, ADR-0033이 소유하던 규칙 가운데
+계속 유효한 것을 다음과 같이 다시 적습니다. 바뀌는 것은 ADR-0033 Decision 4의
+Tombstone 짝 요구뿐입니다.
+
+- 현재 의미를 갖는 obligation, decision, structure, procedure와 current consumer가
+  요구하는 증거는 terminal 전환 전에 canonical 거버넌스 또는 Stage 01, 02, 05
+  owner로 옮기고, inbound consumer를 같은 논리 변경에서 새 owner로 전환합니다.
+- Stage 03 package의 Spec, Plan, 모든 Task는 등록된 lifecycle status와 실제
+  completion evidence를 먼저 갖추고, 미완료이거나 차단된 package는 active Stage 03에
+  남습니다.
+- terminal 전환과 처분은 하나의 결과 tree에서 원자적으로 이루어지며, Spec, Plan,
+  모든 Task의 전체 본문은 함께 해당 retention class로 이동해 frozen evidence가
+  됩니다.
+- profile이 frozen 본문을 보존하는 한, 그 본문을 Git-only 상태로 남기는 것은
+  보존의 대안이 아닙니다.
+- 승인된 divergent-branch package handoff는 source packet의 status와 전체 파일
+  집합 및 bytes를 변경 없이 `superseded/`에 보존하고, distinct active target Task가
+  exact commit, path, identity와 integration receipt를 운반하는 예외 계약을
+  유지합니다.
 
 ## Consequences
 
@@ -109,8 +127,9 @@ Stage 03 package의 완료 보존 단위는 바뀌지 않습니다. Spec, Plan, 
   이름으로 가져야 하는 값, source Git object를 한 번씩 적습니다.
 - 수락 시 ADR-0033의 철회 짝 조항(Decision 4)이 바뀌므로, 이 결정은 ADR-0033의
   전체 package 보존 단위를 다시 적고 수락과 함께 ADR-0033을 supersede합니다.
-  SPEC-0177은 Git-history-only profile을 등록하지 않으므로, Git-only 대안을
-  배제한 ADR-0033 Decision 5와 REQ-0026의 Constraint는 그대로 유지됩니다.
+  ADR-0033 Decision 5의 Git-only 배제는 이 결정이 다시 적어 유지하고,
+  SPEC-0177이 Git-history-only profile을 등록하지 않으므로 REQ-0026의 Constraint도
+  그대로 유지됩니다.
 
 ## Traceability
 
@@ -131,5 +150,6 @@ Retention Envelope 검사의 실제 실행 결과를 기록해야 합니다.
 ## Follow-up
 
 SPEC-0177이 validator와 template을 이전하고, Retention Envelope의 형태를
-정하고, 이 결정을 `accepted`로 전환합니다. 그 변경은 같은 결과 tree에서
-ADR-0033을 supersede합니다.
+정하고, 이 결정을 `accepted`로 전환합니다. 새 규칙은 Registry의
+`common.archive_disposition_model` 스위치 뒤에서 먼저 병합되고, 그 스위치를
+`adopted`로 바꾸는 결과 tree가 이 결정을 수락하고 ADR-0033을 supersede합니다.

@@ -1,8 +1,8 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -156,6 +156,45 @@ any sooner. The policy, the Stage 98 README, `AD-0030` and `ADR-0035` now say
 that this package moves five of the six lagging contracts and registers no
 Git-history-only profile.
 
+### W2 continued: The approval review, and the design it forced (2026-09-15, local-executed)
+
+The operator asked for SPEC-0177 to be taken forward on the day its Spec reached
+`review`. An independent reviewer read the Spec, the Plan, the policy, the
+Stage 98 README, `ADR-0035`, `REQ-0026`, `ADR-0033`, and the code the package
+changes, and blocked approval with ten findings, every one a text change.
+
+The finding that shaped the rest was that nothing said how a check tells a
+record created after acceptance from a sealed one. The reviewer proposed keying
+Tombstones and Migrations on identity numbers above their high water at
+acceptance. That leaves preserved bodies, which carry no number, without a rule,
+and a recorded cutoff is the fixed input REQ-0026-NFR-0006 excludes. The Spec
+instead keys on shape and on the comparison base. A record's headings say which
+contract it follows, a change that adds a record must use the new shape, and a
+full-corpus run admits every tracked record in the shape it was written in. The
+second choice follows from the operator's link rule, which conditions the new
+boundary on both acceptance and the validator move: every new rule sits behind
+one Registry switch that W7 flips in the same result tree that accepts
+`ADR-0035`, so no integration makes a policy sentence false.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | high | No rule said how a check knows a record was created after acceptance | Accepted. Shape and comparison-base keying behind the `common.archive_disposition_model` switch, with the reasoning above |
+| 2 | high | The catalog row's columns, unit, and `Source` validation were unstated | Accepted. Behavior Contract 7 names the columns, one row per package or standalone document, and the ancestor, origin-path, and object-type rules, and says why `Source` is the one permitted Git object |
+| 3 | high | `_recorded_retirements` and `_ordinary_preserved_paths` would still fail a retired package with only a catalog row | Accepted. Both are in scope, and Behavior Contract 9 restates REQ-0026-FR-0003 for the new record |
+| 4 | high | The Registry holds one section list per profile, so new shapes would reject sealed records | Accepted. `sealed_section_shapes` added, with the swap at W7 and the base condition for a sealed shape |
+| 5 | high | Superseding `ADR-0033` would drop its owner transfer, atomic transition, Git-only exclusion, and handoff rules | Accepted. `ADR-0035` now restates them, and only the Tombstone pairing changes |
+| 6 | medium | Landing the link boundary or `resolved/` before W7 would falsify transition sentences | Accepted. Every new rule reads the switch, and W7 changes the switch and the text together |
+| 7 | medium | Removing the transition paragraph would leave `REQ-0026` clauses that mandate the pairing | Accepted. Criterion 9 names each clause and the in-place amendment route |
+| 8 | medium | Three sites name the older dispositions literally, and nothing moves a closed Incident to `resolved/` | Accepted. The sites are in W6, and the missing move trigger is recorded as out of scope |
+| 9 | low | The Plan mapped no work unit to a criterion and named no files | Accepted. The Plan carries the map and the files per unit |
+| 10 | low | "Moves unchanged" contradicted the status change, and the lint file sat in scope while its change was deferred | Accepted. Criterion 8 uses the ADR-0031 precedent wording, and the lint exclusion is out of scope as the creating change's obligation |
+
+The Stage 98 README said "SPEC-0177이 수락되면", which named a Spec where the
+acceptance belongs to `ADR-0035`, and it now names the decision. With the
+findings settled, the Spec and the Plan move to `approved` and this Task to
+`ready`. W3 to W6 start when the Spec is `active`, which is the next
+integration.
+
 ## Verification Evidence
 
 No acceptance criterion is claimed. The package is `draft`, and every criterion
@@ -203,6 +242,8 @@ leave.
 | --- | --- |
 | `fb29286b2` | W1 Stage 98 model applied to governance and the package opened |
 | `e7ec6e78b` | W1 review corrections naming the six lagging contracts on every surface |
+| `a9a13c5f3` | W2 Open Question answers and the Spec at `review` |
+| `d174fc50b` | SPEC-0176 completion, which dated this Task's consumer list |
 
 ## Rulings
 
@@ -213,4 +254,4 @@ leave.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W3 to W8 | The Spec is `review`. W3 to W6 start once the Spec is `active` with an `active` Plan and an `in-progress` Task, two integrations after W2 |
+| W3 to W8 | The Spec and Plan are `approved` and this Task `ready`. W3 to W6 start in the next integration with the Spec and Plan `active` and this Task `in-progress`; W7 and W8 take one integration each |

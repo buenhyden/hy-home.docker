@@ -1,8 +1,8 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "specs"
@@ -26,10 +26,11 @@ repository. Whether an active document may cite a disposition follows from what
 the disposition names, and no Stage 98 record carries a second recovery ledger.
 
 The canonical policy, the Stage 98 README, `REQ-0026`, and `AD-0030` state that
-model in the same change that opens this package, and `ADR-0035` records the
-choice as `proposed`. The executable contracts predate it in six places, and
-this package owns moving them. Until it completes, the registered checks keep
-enforcing their current subset, which the policy names explicitly.
+model, and `ADR-0035` records the choice as `proposed`. The executable contracts
+predate it in six places. This package moves five of them and registers no
+Git-history-only profile, so the sixth stays. Until the package adopts the
+model, the registered checks keep enforcing their current subset, which the
+policy names explicitly.
 
 ## Boundaries and Inputs
 
@@ -37,25 +38,38 @@ enforcing their current subset, which the policy names explicitly.
   `.agents/governance/documentation-protocol.md`, `ADR-0035`, the Stage 98 README,
   and the measured link graph recorded in the Task.
 - In scope:
-  - `scripts/lib/document_governance/links.py`, whose archive boundary admits
-    only `completed/` and the index.
-  - `scripts/lib/document_governance/archive.py`, which requires a
-    `Recovery Commit` section in every Tombstone, pairs every `retired/` body
-    with one Tombstone, rejects a Tombstone for a `completed/` or `superseded/`
-    record, and admits only the registered preservation subtrees at the Stage 98
-    root, which do not include `resolved/`.
-  - `docs/99.templates/registry.json`, the Tombstone and Migration templates, and
-    `.markdownlint-cli2.yaml`, for the `resolved/` class and the new record
-    shapes.
-  - The Retention Catalog, a table in the Stage 98 README whose rows are the
-    Retention Envelopes of the records created after acceptance.
-  - The acceptance of `ADR-0035`, which supersedes `ADR-0033` and restates its
-    full-package preservation unit.
-- Out of scope: rewriting any sealed Tombstone or Migration, editing any frozen
-  body, creating a `resolved/` directory before a closed Incident exists, and
-  registering any profile as Git-history-only. `REQ-0026`'s Constraint and
-  `ADR-0033` Decision 5 keep excluding that disposition, and a later decision
-  owns any registration.
+  - `scripts/lib/document_governance/links.py`: `_CITABLE_ARCHIVE_PREFIX`, and
+    `_PRESERVED_LINK_PREFIXES`, which skips the outbound links of a preserved
+    record.
+  - `scripts/lib/document_governance/archive.py`: `_parse_tombstone_text` and
+    `TombstoneRecord`, `validate_preservation_boundary` and its literal
+    disposition set, the `load_archive` root allowlist, and
+    `load_task10_recovery_references`.
+  - `scripts/lib/document_governance/registry.py`: `PRESERVED_DISPOSITIONS` and
+    `preserved_origin_path`, and the loading of the new profile fields.
+  - `scripts/lib/document_governance/spec_packages.py`: `_recorded_retirements`,
+    which treats a Tombstone as the only record of a retirement, and
+    `_ordinary_preserved_paths`, which counts only `completed/` and
+    `superseded/` as preservation.
+  - `scripts/lib/document_governance/lifecycle/recovery.py`, whose preserved
+    count names the three dispositions literally.
+  - `docs/99.templates/registry.json`: the `tombstone` and `migration` profiles,
+    a new `archive-record-resolved` profile, and the
+    `common.archive_disposition_model` switch.
+  - `docs/99.templates/templates/archive/tombstone.template.md` and
+    `migration.template.md`.
+  - The Retention Catalog section of the Stage 98 README.
+  - The tests under `tests/lib/document_governance/` that cover each of these.
+  - The acceptance of `ADR-0035`, which supersedes `ADR-0033`, and the clauses of
+    the policy, `REQ-0026`, `AD-0030`, and the Stage 98 README that state the
+    transition or the Tombstone pairing.
+- Out of scope: rewriting any sealed Tombstone or Migration; editing any frozen
+  body; creating a `resolved/` directory before a closed Incident exists, and the
+  `.markdownlint-cli2.yaml` exclusion that the creating change owns; registering
+  any profile as Git-history-only; and a trigger that moves a closed Incident into
+  `resolved/`. `TERMINAL_DOCUMENT_STATUSES` in `archive.py` excludes `resolved` and
+  `published`, so nothing yet requires that move, and the gap is recorded here
+  rather than closed.
 - Authorization: local edits, commits, integration into `main`, and push, as the
   operator directed for the change that opened this package.
   `.agents/governance/github-governance.md` makes a pull request the default
@@ -65,111 +79,192 @@ enforcing their current subset, which the policy names explicitly.
 
 ## Behavior Contract
 
-1. A document outside Stage 98 links only to the Stage 98 index and the
-   retention classes whose own body still leads a reader to current authority:
-   `completed/` and `resolved/`. An `operation/incident` record and its
-   `operation/postmortem` are the only profiles that may link to any archive
-   path.
-2. A Tombstone or Migration authored after acceptance carries no redirect, path
-   ledger, self-designed body digest, branch SHA, or recovery commit. A sealed
-   record authored before acceptance keeps its recorded form and still passes.
-3. A `retired/` body authored after acceptance does not require a paired
-   Tombstone. Its withdrawal reason is named in its Retention Catalog row.
-4. A `resolved/` class is registered as a frozen retention profile and admitted
-   by the Stage 98 loader and link graph, and its directory appears only with its
-   first record.
-5. Each record created after acceptance has exactly one Retention Catalog row
-   in the Stage 98 README. The row names the record's path, its class, the value
-   its class must name, and its source Git object as `commit:path`, once, and a
-   registered check reads the table.
-6. No profile is registered as Git-history-only, so every disposition keeps a
-   frozen body.
+1. `common.archive_disposition_model` in the Registry is `transition` until the
+   package adopts the model. While it is `transition`, every check behaves as it
+   does before this package. Setting it to `adopted` is the acceptance of
+   `ADR-0035` and happens in the result tree that makes that transition. Items 2
+   to 10 describe the `adopted` state.
+2. A document outside Stage 98 links only to the Stage 98 index, `completed/`,
+   and `resolved/`. An `operation/incident` record and its `operation/postmortem`
+   are the only profiles that may link to any archive path. A `resolved/` body's
+   outbound links are not checked, like every other preserved body's.
+3. A record's shape is recognized by its headings, never by a date, an identity
+   number, or a list of paths. A sealed Tombstone has the headings `Retired Path`,
+   `Replacement`, `Reason`, `Recovery Commit`, `Traceability`, keeps a valid
+   recovery commit, and pairs with its `retired/` body. A new Tombstone has
+   `Retired Path`, `Successor`, `Reason`, `Traceability`. Its `Retired Path` stays
+   the repository path an outside consumer followed, so its `tomb-` identity is
+   still derived from the retired document. It names its successor or `none` and
+   the reason, and it carries no recovery commit and pairs with no body. A sealed
+   Migration keeps its registered sections, and a new Migration has `Purpose`,
+   `Moved Scope`, `Current Owner`, `Approval`, `Traceability`.
+4. A change that adds a Tombstone or Migration absent from its comparison base
+   must use the new shape. The rule is derived from the base and the tree, as
+   REQ-0026-NFR-0006 requires, and no identity cutoff or path list takes part.
+5. Every `retired/` record has exactly one withdrawal record: a sealed Tombstone
+   that pairs with it, or a Retention Catalog row.
+6. A change that adds a record under `completed/`, `superseded/`, `retired/`, or
+   `resolved/` that is absent from its base adds that record's Retention Catalog
+   row in the same change.
+7. The Retention Catalog is the table under `## Retention Catalog` in the Stage 98
+   README, with the header `| Record | Class | Names | Source |`. It holds one
+   row per unit, a Spec package directory or a standalone document.
+   - `Record` is a code span of the unit's path under `docs/98.archive/`; a
+     package path ends with `/`.
+   - `Class` is the disposition directory, and equals the class in `Record`.
+   - `Names` is the value the class must name: the identifiers a `completed`
+     unit promoted to, the successor identifier of a `superseded` unit, the
+     withdrawal reason of a `retired` unit, and the corrective-work owner and
+     closure evidence of a `resolved` unit. It is never empty, and outside
+     `retired` it contains at least one artifact identifier.
+   - `Source` is a code span `<commit>:<path>`. The path equals
+     `preserved_origin_path` of `Record`, the commit is an ancestor of `HEAD`, and
+     the object resolves to a blob for a document or a tree for a package. A
+     moving change cannot name its own commit, so it names the base commit its
+     source existed at.
+   `Source` is the one source Git object the model permits. No Tombstone,
+   Migration, or body names another. A byte comparison between the source and
+   the frozen body remains Task evidence, because a completing change also sets
+   the transition-owned status fields.
+8. `resolved` is a registered disposition. `PRESERVED_DISPOSITIONS` names it,
+   the Registry holds an unmanaged `archive-record-resolved` profile,
+   `load_archive` admits a `resolved/` subtree, and the sites that named the three
+   older dispositions literally read the constant instead.
+9. `_recorded_retirements` counts a `retired/` record with a Retention Catalog row
+   as a recorded retirement. A Stage 03 package retired after adoption passes
+   with its preserved body and its row and no Tombstone, and a removal with
+   neither still fails, which is REQ-0026-FR-0003 restated for the new record.
+10. No profile is registered as Git-history-only, so every disposition keeps a
+    frozen body.
 
 ## Technical Approach
 
-The package moves each check onto the model in the order that keeps every
-integration valid. The link boundary moves first, because it only widens what
-is admitted by one class and narrows nothing that exists today. The Retention
-Envelope is defined next, since the Tombstone pairing cannot be released until
-something else names why a body was withdrawn. The Tombstone and Migration
-contracts then drop their ledger fields for new records, keyed on the record's
-creation rather than on a list of legacy paths. `ADR-0035` is accepted last, in
-the same result tree that removes the transitional clauses from the policy,
-`REQ-0026`, and `AD-0030`. It supersedes `ADR-0033` rather than narrowing it,
-because supersession here is whole-document and one decision should own Stage 98
-disposition; the full-package preservation unit is restated, not changed.
+The model changes behavior in five checks, and the operator's link rule makes
+the change conditional on both the acceptance of `ADR-0035` and the validator
+move. A single Registry switch keeps that condition true in every integration.
+Work units W3 to W6 land with the switch at `transition`, so each new rule is
+inert on the real corpus and exercised only by tests that set the switch in a
+fixture. W7 sets the switch to `adopted` in the result tree that accepts
+`ADR-0035`, supersedes `ADR-0033`, changes the Registry section lists, and
+rewrites every text surface that describes the transition. No integration
+leaves the policy describing a check that behaves otherwise.
+
+Legacy and new records are told apart by shape, because a frozen body's
+frontmatter is unmanaged and keeps its original date, and because a date, an
+identity cutoff, or a path list would be the fixed input REQ-0026-NFR-0006
+excludes. The shape a new record must take is enforced where a check already
+sees the comparison base, which is the model the lifecycle checks use. A
+full-corpus run therefore admits every tracked record in the shape it was
+written in, and a change that adds a record in the sealed shape is rejected when
+it is made.
+
+`ADR-0035` supersedes `ADR-0033` rather than narrowing it, because supersession
+here is whole-document. It therefore restates every rule of `ADR-0033` that stays
+in force: owner transfer before terminal transition, full-package preservation,
+the atomic terminal transition, no Git-only preservation of a body a profile
+preserves, and the divergent-branch handoff. Only the Tombstone pairing of its
+fourth decision changes.
 
 ## Interfaces and Data
 
-`check-document-links.py` and `check-document-corpus-lifecycle.py` keep their
-arguments and exit contract; they change which inputs they admit. The Stage 99
-registry gains one retention profile and changes two template section lists.
-A Retention Envelope is one row of the Retention Catalog table in the Stage 98
-README, with the columns Behavior Contract 5 names. The Stage 98 root allowlist
-does not change, because the catalog lives in the index the loader already
-admits.
+`check-document-links.py`, `check-document-corpus-lifecycle.py`, and
+`check-document-metadata.py` keep their arguments and exit contract; they change
+which inputs they admit. The Registry gains:
+
+- `common.archive_disposition_model`, `transition` or `adopted`.
+- A `sealed_section_shapes` list on the `tombstone` and `migration` profiles.
+  Before W7 `required_sections` holds the sealed shape and
+  `sealed_section_shapes` is empty. W7 moves the new shape into
+  `required_sections` and the old list into `sealed_section_shapes`. A document
+  matches `required_sections`, or matches a sealed shape and exists at the
+  comparison base.
+- An `archive-record-resolved` profile with the unmanaged frontmatter policy of
+  the other retention classes.
+
+A Retention Envelope is one row of the Retention Catalog, with the columns
+Behavior Contract 7 names. The Stage 98 root allowlist does not change for it,
+because the catalog lives in the index the loader already admits.
 
 ## Failure Modes and Guardrails
 
 | Failure mode | Guardrail |
 | --- | --- |
-| A sealed Tombstone or Migration is rewritten to the new shape | The new contract is keyed on creation after acceptance; the corpus check keeps admitting the recorded form |
-| The Tombstone pairing is released before a withdrawal reason has another owner | The Envelope work unit precedes the pairing change, and the corpus check fails a new `retired/` body without a Retention Catalog row |
+| A sealed Tombstone or Migration is rewritten to the new shape | The sealed shape stays admitted for a record present at base, so nothing forces a rewrite, and the frozen-body check still covers preserved bodies |
+| A record in the sealed shape is added after adoption | The change-aware check rejects a sealed-shape record absent from its base |
+| The pairing is released with no withdrawal owner | Every `retired/` record needs exactly one of a sealed pairing or a catalog row |
+| A catalog row names a commit a rebase or squash orphaned | The ancestor check fails closed and the row must be corrected |
+| The switch is set without the decision being accepted | A registered test binds `adopted` to `ADR-0035` reading `accepted`, in both directions |
+| A new rule is live while the policy still describes the transition | Every new rule reads the switch, and W7 changes the switch and the text in one result tree |
 | The link boundary admits `superseded/` or `retired/` by widening a prefix list | Tests assert rejection for each non-citable disposition and admission for `completed/`, `resolved/`, and the index |
-| The policy states a rule no check enforces and no transition names | The policy's transition paragraph lists every lagging check until acceptance removes it |
 
 ## Acceptance Contract
 
-1. `links.py` admits links from outside Stage 98 to the index, `completed/`, and
-   `resolved/`, rejects `superseded/`, `retired/`, `tombstones/`, and
-   `migrations/`, and keeps the incident and postmortem exception, each proven
-   by a test.
-2. The Registry registers a `resolved/` retention profile, `load_archive` and
-   the link graph admit a `resolved/` subtree, and a test builds one from a
-   fixture. The Stage 98 README names the lint exclusion as an obligation of the
-   change that first creates the directory.
-3. The Stage 98 README carries a Retention Catalog table whose rows name path,
-   class, the class's named value, and the source Git object once, and a
-   registered check requires one valid row for every record created after
-   acceptance.
-4. The Tombstone and Migration templates and `archive.py` no longer require a
-   recovery commit, path mapping, or recovery section for records created after
-   acceptance, and every existing sealed record still passes.
-5. A `retired/` body created after acceptance passes without a Tombstone when
-   its Retention Catalog row names the withdrawal reason.
-6. `ADR-0035` is `accepted` and supersedes `ADR-0033`, which moves unchanged to
-   `docs/98.archive/superseded/` with reciprocal metadata and its inbound links
-   repointed to `ADR-0035`, in one result tree.
-7. The transition paragraph is removed from the policy, and `REQ-0026`, `AD-0030`,
-   and the Stage 98 README no longer describe any lagging check, while the policy
-   still states that no profile is registered as Git-history-only.
-8. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0 on the
-   final path set, with the command and exit code recorded.
-9. An independent exact-diff review reports no finding outside the current
-   authorization, and every accepted finding is corrected before completion.
+1. With the switch at `transition`, the corpus produces the same findings from
+   every registered check as before the package, and a test for each new rule
+   proves it inert in that state.
+2. With the switch at `adopted` in a fixture, `links.py` admits links from outside
+   Stage 98 to the index, `completed/`, and `resolved/`, rejects `superseded/`,
+   `retired/`, `tombstones/`, and `migrations/`, keeps the incident and postmortem
+   exception, and skips a `resolved/` body's outbound links, each proven by a test.
+3. `resolved` is registered as Behavior Contract 8 states, the three sites that
+   named the older dispositions literally read the constant, and a test builds a
+   `resolved/` subtree from a fixture.
+4. The Retention Catalog check validates the header, one row per unit, the class
+   match, the class value, and each `Source` rule, and a test covers each failure,
+   including an orphaned commit and a path that differs from the origin.
+5. The new Tombstone and Migration shapes parse and validate without a recovery
+   commit, path mapping, or recovery section. The sealed shapes pass with their
+   existing invariants, a change that adds a sealed-shape record is rejected, a
+   test covers each case, and every tracked Tombstone and Migration still passes.
+6. Every `retired/` record has exactly one withdrawal record,
+   `_recorded_retirements` accepts a catalog row, and a retired package with
+   neither fails, each proven by a test.
+7. A change that adds a preserved record without its catalog row is rejected,
+   proven by a test.
+8. In one result tree: the switch is `adopted`; the `tombstone` and `migration`
+   `required_sections` hold the new shapes and `sealed_section_shapes` the old;
+   the templates carry the new shapes; `ADR-0035` is `accepted` and restates
+   `ADR-0033`'s surviving rules; and `ADR-0033` is preserved under
+   `docs/98.archive/superseded/` with its body unchanged, its status and
+   `superseded_by` set, its Retention Catalog row added, and its inbound links
+   repointed to `ADR-0035`.
+9. In the same result tree: the policy's Transition list keeps only its sixth
+   item, as a standing statement; `REQ-0026` amends in place, with a version
+   bump, REQ-0026-FR-0002, REQ-0026-FR-0003, REQ-0026-FR-0008, REQ-0026-FR-0012,
+   REQ-0026-NFR-0007, the transition Constraint, and the Acceptance Criteria on
+   Tombstone removal, the recovery commit, and the namespace; and `AD-0030` and the
+   Stage 98 README no longer describe a lagging check or a mandatory pairing.
+10. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0 on the
+    final path set, with the command and exit code recorded.
+11. An independent exact-diff review reports no finding outside the current
+    authorization, and every accepted finding is corrected before completion.
 
 ## Traceability
 
 | Governing document | Relation |
 | --- | --- |
-| [REQ-0026 Document Retention and Retirement](../../01.requirements/0026-document-retention-and-retirement.md) | Owns the retention requirements this package enforces |
+| [REQ-0026 Document Retention and Retirement](../../01.requirements/0026-document-retention-and-retirement.md) | Owns the retention requirements this package enforces, including REQ-0026-NFR-0006, which rules out a fixed cutoff |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Owns the validator structure this package changes |
 | [ADR-0035 Stage 98 Retention Classes and Route Dispositions](../../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md) | The decision this package accepts |
-| [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Superseded by `ADR-0035` on acceptance, with its full-package unit restated |
+| [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Superseded by `ADR-0035` on acceptance, with its surviving rules restated |
 
 ## Open Questions
 
-None is open. The operator answered the four questions on 2026-09-15:
+None is open. The operator answered four questions on 2026-09-15:
 
 - The Retention Envelope lives in a Retention Catalog table in the Stage 98
-  README rather than a Registry sidecar, so it is found through the index a
-  frozen record is already reached by.
-- A withdrawn body's reason is named in the same row, as the value its class
-  must name.
+  README rather than a Registry sidecar.
+- A withdrawn body's reason is named in the same row.
 - No profile is registered as Git-history-only in this package.
-- Acceptance supersedes `ADR-0033` and restates its full-package unit.
+- Acceptance supersedes `ADR-0033` and restates its surviving rules.
+
+The approval review then found the Spec underspecified, and the author settled
+the rest inside those answers, as the Task records: the Registry switch, shape
+and change keying, the catalog columns and row unit, the `Source` validation, and
+a `Retired Path` that stays a repository path.
 
 ## Operational Impact
 
-None at runtime. Document authors gain the `resolved/` class and lose the ledger
-fields for new route records; existing records and frozen bodies are unchanged.
+None at runtime. Document authors gain the `resolved/` class and the Retention
+Catalog, and new route records drop their ledger fields. Existing records and
+frozen bodies are unchanged.
