@@ -372,6 +372,25 @@ No all-files or full-profile run was made, because neither was authorized, and
 both are NOT_RUN. No hosted CI ran. This entry's final rows were written after
 the second gate run, so that run does not cover these rows.
 
+The operator then directed local commits without push. The first attempt to
+commit the wording correction alone failed its pre-commit changed profile:
+pre-commit sets aside unstaged tracked edits but keeps untracked files, so the
+suite saw the three new documents without their identity allocations and index
+rows, and `test_current_requirement_packages_satisfy_repository_contracts`
+reported five violations. An isolated worktree reproduced exactly that, and the
+same state with the allocations applied passed, so the documents and their
+allocations were committed first. That commit's message was twice rejected by
+the commit-msg hook, first for a header over 75 characters and then for a
+second body paragraph, which `.cz.toml` admits only as a footer. Each later
+commit passed its pre-commit changed profile.
+
+Diagnosing the second rejection, the author ran
+`pre-commit run commitizen --hook-stage commit-msg` directly against a message
+file. `.agents/governance/task-checklists.md` forbids running `pre-commit run`
+directly, so this was a rule violation. It checked one message file, changed no
+repository file, and set aside and restored the unstaged edits; it is not
+evidence for any commit, and later messages were checked with `cz check` alone.
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -455,6 +474,9 @@ run to be recorded; both are in the Assessment entry above.
 | `96897db14` | W3 activation and the link boundary behind the switch |
 | `a012dcae6` | W6 `resolved` registered behind the switch |
 | `e233d2a19` | W4 Retention Catalog check and the row a change adds |
+| `29a1f71f5` | Assessment: RES-0096, `ADR-0036` proposed, SPEC-0178 drafted, and their allocations and index rows |
+| `edfaf3315` | Assessment: the transition wording of the policy and the Stage 98 index |
+| `0ba528e50` | Assessment: the W4b amendment and this Task's assessment and review entries |
 
 ## Rulings
 
@@ -470,4 +492,4 @@ run to be recorded; both are in the Assessment entry above.
 | W8 | One integration after W7 |
 | SPEC-0178 and `ADR-0036` | Draft and proposed; activation requires this package completed and its own approval |
 | An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | No approved owner |
-| The assessment's own integration | Local edits only; staging, commit, and push await the operator |
+| The assessment's own integration | Committed locally at the operator's direction; push awaits the operator |
