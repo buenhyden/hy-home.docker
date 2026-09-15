@@ -8,8 +8,12 @@ from scripts.lib.document_governance import archive as archive_authority
 from scripts.lib.document_governance.registry import PRESERVED_DISPOSITIONS
 
 
-def run(root: pathlib.Path) -> int:
-    """Validate only the archive recovery rows owned by the recovery mode."""
+def run(root: pathlib.Path, base: str | None = None) -> int:
+    """Validate only the archive recovery rows owned by the recovery mode.
+
+    ``base`` is the lifecycle comparison commit. The Retention Catalog rules
+    use it to find the preserved records a change adds.
+    """
 
     try:
         inventory = archive_authority.load_archive(root / "docs/98.archive")
@@ -42,7 +46,10 @@ def run(root: pathlib.Path) -> int:
     occupancy = archive_authority.validate_active_stage_occupancy(root)
     for detail in occupancy:
         print(f"active-stage-occupancy: {detail}")
-    violations = len(findings) + len(boundary) + len(occupancy)
+    retention = archive_authority.validate_retention(root, base)
+    for finding in retention:
+        print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
+    violations = len(findings) + len(boundary) + len(occupancy) + len(retention)
     preserved = sum(
         1
         for disposition in PRESERVED_DISPOSITIONS

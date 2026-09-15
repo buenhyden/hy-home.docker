@@ -1190,5 +1190,182 @@ class ArchiveMinimizationTests(unittest.TestCase):
         )
 
 
+def _fixture_git(root: pathlib.Path, *args: str) -> str:
+    return subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "-c",
+            "core.hooksPath=/dev/null",
+            *args,
+        ],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+class RetentionCatalogTests(unittest.TestCase):
+    """The Retention Catalog names each preserved unit's class value and source."""
+
+    def setUp(self) -> None:
+        self.archive = archive_api()
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = pathlib.Path(temp.name)
+        _fixture_git(self.root, "init", "-q")
+        self._write_model("adopted")
+        self._write("docs/03.specs/0001-example/spec.md", "# Example\n")
+        self._write("docs/01.requirements/0002-withdrawn.md", "# Withdrawn\n")
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "source")
+        self.source = _fixture_git(self.root, "rev-parse", "HEAD")
+        for origin, preserved in (
+            (
+                "docs/03.specs/0001-example",
+                "docs/98.archive/completed/03.specs/0001-example",
+            ),
+            (
+                "docs/01.requirements/0002-withdrawn.md",
+                "docs/98.archive/retired/01.requirements/0002-withdrawn.md",
+            ),
+        ):
+            (self.root / preserved).parent.mkdir(parents=True, exist_ok=True)
+            _fixture_git(self.root, "mv", origin, preserved)
+        self.readme(self.rows())
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "preserve")
+        self.base = _fixture_git(self.root, "rev-parse", "HEAD")
+
+    def _write(self, relative: str, text: str) -> None:
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    def _write_model(self, model: str) -> None:
+        self._write(
+            "docs/99.templates/registry.json",
+            f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+        )
+
+    def rows(self, **overrides: str) -> list[str]:
+        values = {
+            "package_record": "completed/03.specs/0001-example/",
+            "package_class": "completed",
+            "package_names": "SPEC-0001",
+            "package_source": f"{self.source}:docs/03.specs/0001-example",
+            "document_record": "retired/01.requirements/0002-withdrawn.md",
+            "document_class": "retired",
+            "document_names": "The requirement was withdrawn without a successor.",
+            "document_source": f"{self.source}:docs/01.requirements/0002-withdrawn.md",
+        }
+        values.update(overrides)
+        return [
+            f"| `{values['package_record']}` | {values['package_class']} | "
+            f"{values['package_names']} | `{values['package_source']}` |",
+            f"| `{values['document_record']}` | {values['document_class']} | "
+            f"{values['document_names']} | `{values['document_source']}` |",
+        ]
+
+    def readme(
+        self, rows: list[str], header: str = "| Record | Class | Names | Source |"
+    ) -> None:
+        table = "\n".join([header, "| --- | --- | --- | --- |", *rows])
+        self._write(
+            "docs/98.archive/README.md",
+            f"# Archive\n\n## Retention Catalog\n\n{table}\n\n"
+            "## Related Documents\n\n- Index\n",
+        )
+
+    def codes(self) -> set[str]:
+        return {
+            finding.code
+            for finding in self.archive.validate_retention_catalog(self.root)
+        }
+
+    def test_a_complete_catalog_passes(self) -> None:
+        self.assertEqual(set(), self.codes())
+
+    def test_the_section_and_header_are_required(self) -> None:
+        self.readme(self.rows(), header="| Record | Class | Source |")
+        self.assertIn("catalog-header-invalid", self.codes())
+        self._write("docs/98.archive/README.md", "# Archive\n")
+        self.assertIn("catalog-missing", self.codes())
+
+    def test_one_row_per_unit(self) -> None:
+        self.readme([*self.rows(), self.rows()[0]])
+        self.assertIn("catalog-record-duplicate", self.codes())
+        self.readme(self.rows(package_record="completed/03.specs/0001-example/spec.md"))
+        self.assertIn("catalog-unit-invalid", self.codes())
+        self.readme(self.rows(document_record="retired/01.requirements/0009-absent.md"))
+        self.assertIn("catalog-record-missing", self.codes())
+
+    def test_class_must_match_the_record(self) -> None:
+        self.readme(self.rows(package_class="superseded"))
+        self.assertIn("catalog-class-mismatch", self.codes())
+
+    def test_names_carry_the_value_the_class_must_name(self) -> None:
+        self.readme(self.rows(package_names="the promoted work"))
+        self.assertIn("catalog-names-invalid", self.codes())
+        self.readme(self.rows(document_names=" "))
+        self.assertIn("catalog-names-invalid", self.codes())
+
+    def test_source_must_be_one_commit_and_the_origin_path(self) -> None:
+        self.readme(self.rows(package_source="docs/03.specs/0001-example"))
+        self.assertIn("catalog-source-invalid", self.codes())
+        self.readme(self.rows(package_source=f"{self.source}:docs/03.specs/0002-other"))
+        self.assertIn("catalog-source-path-mismatch", self.codes())
+
+    def test_source_commit_must_be_an_ancestor_of_head(self) -> None:
+        orphan = _fixture_git(
+            self.root, "commit-tree", f"{self.source}^{{tree}}", "-m", "orphan"
+        )
+        self.readme(self.rows(package_source=f"{orphan}:docs/03.specs/0001-example"))
+        self.assertIn("catalog-source-commit-orphaned", self.codes())
+
+    def test_source_object_must_exist_with_the_unit_type(self) -> None:
+        self.readme(
+            self.rows(
+                document_source=f"{self.base}:docs/01.requirements/0002-withdrawn.md"
+            )
+        )
+        self.assertIn("catalog-source-object-invalid", self.codes())
+
+    def test_an_added_preserved_record_needs_its_row(self) -> None:
+        self._write(
+            "docs/98.archive/completed/03.specs/0001-example/tasks/tsk-0001-x.md",
+            "# Task\n",
+        )
+        self._write("docs/98.archive/completed/03.specs/0005-new/spec.md", "# New\n")
+        self._write(
+            "docs/98.archive/superseded/02.architecture/decisions/0004-old.md",
+            "# Old\n",
+        )
+        findings = self.archive.validate_catalog_coverage(self.root, self.base)
+        self.assertEqual(
+            {
+                ("catalog-row-missing", "docs/98.archive/completed/03.specs/0005-new/"),
+                (
+                    "catalog-row-missing",
+                    "docs/98.archive/superseded/02.architecture/decisions/0004-old.md",
+                ),
+            },
+            {(finding.code, finding.path) for finding in findings},
+        )
+
+    def test_retention_rules_are_inert_at_transition(self) -> None:
+        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retired/05.operations/0006-gone.md", "# Gone\n")
+        self.assertTrue(self.archive.validate_retention(self.root, self.base))
+        self._write_model("transition")
+        self.assertEqual((), self.archive.validate_retention(self.root, self.base))
+
+
 if __name__ == "__main__":
     unittest.main()

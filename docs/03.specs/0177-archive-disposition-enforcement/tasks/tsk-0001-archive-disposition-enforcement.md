@@ -268,6 +268,44 @@ Tombstone on every retention class other than `retired`, which now includes
 | `python3 scripts/validation/check-document-corpus-lifecycle.py` before W6, on a stash, and after | Both `violations=0` and `migrations=3 tombstones=140 preserved=200 decisions=286 recovery_rows=374 violations=0` |
 | `python3 scripts/validation/check-document-links.py --mode all` before and after | Both `PASS` |
 
+After the W6 commit `a012dcae6`, on a clean tree,
+`python3 scripts/validation/run-ci-gate.py --profile changed` exited
+`GATE_EXIT=0` with no FAIL line other than the `AOE-CATALOG` negative markers.
+
+### W4: The Retention Catalog check and the row a change must add (2026-09-15, local-executed)
+
+Ten tests came first and failed first, each on a missing function. They build
+a Git fixture with a source commit and a preserving commit, so every `Source`
+rule runs against real objects.
+
+`archive.validate_retention_catalog(root)` reads the table under
+`## Retention Catalog` in the Stage 98 index and reports, by code, a missing
+section, a wrong header or separator, a malformed row, a duplicate `Record`, a
+`Record` that is not a package directory or a standalone document, a `Record`
+the tree does not hold, a `Class` that differs from the `Record`'s first
+segment, `Names` that are empty or, outside `retired`, carry no artifact
+identifier, and a `Source` that is not one commit and path. For the source it
+also checks that the path is `preserved_origin_path` of the `Record`, that
+`git merge-base --is-ancestor` accepts the commit against `HEAD`, and that
+`git cat-file -t` names a tree for a package and a blob for a document.
+`archive.validate_catalog_coverage(root, base)` lists `docs/98.archive` at the
+base with `git ls-tree` and reports each preserved unit a change adds without
+its row. A new file inside a package that already has a row needs no second
+row.
+
+`archive.validate_retention(root, base)` returns nothing unless the model is
+`adopted`, and `lifecycle/recovery.run` now takes the base and reports its
+findings as violations. `check-document-corpus-lifecycle.py` resolves the base
+with `resolve_lifecycle_base` only when the model is `adopted`, so the
+transition route resolves nothing it did not resolve before. The lifecycle
+equivalence test stubbed `run_recovery` with one parameter, and its stub now
+accepts the base.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest tests.lib.document_governance.test_archive tests.validation.lifecycle.test_equivalence tests.lib.document_governance.metadata.test_reference` | exit 0, 69 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` after W4 | exit 0, `violations=0`, and the same recovery counts as before W6 |
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -279,6 +317,9 @@ pair as its unit lands.
 | 2 | W3 | PASS: `test_adopted_model_admits_resolved_and_rejects_other_dispositions`, `test_adopted_model_keeps_the_incident_and_postmortem_exception`, and `test_resolved_body_outbound_links_are_skipped_only_when_adopted` | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 1 | W6 | PASS: the corpus lifecycle and link runs report the same output before and after W6, and `test_resolved_subtree_is_admitted_only_when_the_model_is_adopted` proves the loader unchanged at `transition` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 3 | W6 | PASS: `test_resolved_is_a_registered_retention_class`, `test_resolved_subtree_is_admitted_only_when_the_model_is_adopted`, `test_resolved_record_must_not_carry_a_sealed_tombstone`, and `test_no_module_names_the_preserved_dispositions_literally` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 1 | W4 | PASS: the corpus lifecycle run reports the same output after W4, and `test_retention_rules_are_inert_at_transition` proves the catalog rules inert at `transition` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 4 | W4 | PASS: `RetentionCatalogTests` covers the header, one row per unit, the class match, the class value, and each `Source` rule, including an orphaned commit and a path that differs from the origin | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 7 | W4 | PASS: `test_an_added_preserved_record_needs_its_row` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 
 ## Review Evidence
 

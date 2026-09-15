@@ -46,7 +46,9 @@ class LifecycleRouteEquivalenceTests(unittest.TestCase):
             mock.patch.object(
                 lifecycle,
                 "run_recovery",
-                side_effect=lambda root: print(f"{RECOVERY_FINDING.code}: stub") or 1,
+                side_effect=lambda root, base=None: (
+                    print(f"{RECOVERY_FINDING.code}: stub") or 1
+                ),
             ),
             contextlib.redirect_stdout(output),
         ):

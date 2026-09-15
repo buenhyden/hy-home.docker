@@ -19,14 +19,17 @@ import yaml
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 from scripts.lib.document_governance.git_provenance import (
     HistoricalDocument,
+    _run_git,
     read_archived_metadata_batch,
     recovery_commit_is_valid,
     verify_recovery_blobs_batch,
 )
 from scripts.lib.document_governance.registry import (
+    ARCHIVE_MODEL_ADOPTED,
     PRESERVED_DISPOSITIONS,
     admitted_preserved_dispositions,
     archive_disposition_model,
+    preserved_origin_path,
 )
 
 FROZEN_MIGRATION_SHA256 = (
@@ -1031,6 +1034,199 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
                 f"{origin}: {disposition} record must not carry a tombstone"
             )
     return tuple(findings)
+
+
+_ARCHIVE_PREFIX = "docs/98.archive/"
+_ARCHIVE_INDEX = "docs/98.archive/README.md"
+_CATALOG_SECTION = re.compile(r"(?ms)^## Retention Catalog[ \t]*\n(.*?)(?=^## |\Z)")
+_CATALOG_HEADER = ("Record", "Class", "Names", "Source")
+_CATALOG_SEPARATOR = re.compile(r"(?:\|:?-{3,}:?){4}\|")
+_CATALOG_PACKAGE = re.compile(r"[a-z]+/03\.specs/[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*/")
+_CATALOG_PACKAGE_MEMBER = re.compile(rf"(?P<unit>{_CATALOG_PACKAGE.pattern}).+")
+_ARTIFACT_IDENTIFIER = re.compile(r"\b[A-Z]{2,5}-[0-9]{4}\b")
+
+
+@dataclasses.dataclass(frozen=True, order=True)
+class RetentionCatalogRow:
+    """One Retention Envelope, as the four cells of its catalog row."""
+
+    record: str
+    disposition: str
+    names: str
+    source: str
+
+
+def retention_unit(record: str) -> str:
+    """Return the catalog unit of an archive-relative path: its package or itself."""
+
+    match = _CATALOG_PACKAGE_MEMBER.fullmatch(record)
+    return match.group("unit") if match is not None else record
+
+
+def _catalog_cells(line: str) -> tuple[str, ...]:
+    return tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+
+
+def _catalog_rows(
+    text: str,
+) -> tuple[tuple[RetentionCatalogRow, ...], list[ArchiveFinding]]:
+    section = _CATALOG_SECTION.search(text)
+    if section is None:
+        return (), [ArchiveFinding("catalog-missing", _ARCHIVE_INDEX)]
+    lines = [
+        line.strip()
+        for line in section.group(1).splitlines()
+        if line.strip().startswith("|")
+    ]
+    if (
+        len(lines) < 2
+        or _catalog_cells(lines[0]) != _CATALOG_HEADER
+        or _CATALOG_SEPARATOR.fullmatch(re.sub(r"\s", "", lines[1])) is None
+    ):
+        return (), [ArchiveFinding("catalog-header-invalid", _ARCHIVE_INDEX)]
+    rows: list[RetentionCatalogRow] = []
+    findings: list[ArchiveFinding] = []
+    for line in lines[2:]:
+        cells = _catalog_cells(line)
+        if len(cells) != len(_CATALOG_HEADER):
+            findings.append(ArchiveFinding("catalog-row-malformed", _ARCHIVE_INDEX))
+            continue
+        rows.append(RetentionCatalogRow(*cells))
+    return tuple(rows), findings
+
+
+def _code_span(value: str) -> str | None:
+    match = re.fullmatch(r"`([^`]+)`", value)
+    return match.group(1) if match is not None else None
+
+
+def _catalog_index_text(root: pathlib.Path) -> str | None:
+    try:
+        return _decode_document(root / _ARCHIVE_INDEX)
+    except ValueError:
+        return None
+
+
+def _catalog_source_findings(
+    root: pathlib.Path, path: str, cell: str, is_package: bool
+) -> list[ArchiveFinding]:
+    """Check the one source Git object a Retention Envelope may name."""
+
+    commit, separator, origin = (_code_span(cell) or "").partition(":")
+    if (
+        not separator
+        or not recovery_commit_is_valid(commit)
+        or _safe_path(origin) is None
+    ):
+        return [ArchiveFinding("catalog-source-invalid", path)]
+    findings: list[ArchiveFinding] = []
+    if origin != preserved_origin_path(path.rstrip("/")):
+        findings.append(ArchiveFinding("catalog-source-path-mismatch", path))
+    # A rebase or squash can orphan the commit a row names; the row then points
+    # at an object the published history no longer carries.
+    if _run_git(root, ["merge-base", "--is-ancestor", commit, "HEAD"]).returncode:
+        findings.append(ArchiveFinding("catalog-source-commit-orphaned", path))
+    kind = _run_git(root, ["cat-file", "-t", f"{commit}:{origin}"])
+    expected = b"tree" if is_package else b"blob"
+    if kind.returncode or kind.stdout.strip() != expected:
+        findings.append(ArchiveFinding("catalog-source-object-invalid", path))
+    return findings
+
+
+def validate_retention_catalog(root: pathlib.Path) -> tuple[ArchiveFinding, ...]:
+    """Validate every Retention Catalog row in the Stage 98 index."""
+
+    root = pathlib.Path(root)
+    text = _catalog_index_text(root)
+    if text is None:
+        return (ArchiveFinding("catalog-missing", _ARCHIVE_INDEX),)
+    rows, findings = _catalog_rows(text)
+    seen: set[str] = set()
+    for row in rows:
+        record = _code_span(row.record)
+        if record is None or _safe_path(record.rstrip("/")) is None:
+            findings.append(ArchiveFinding("catalog-record-invalid", _ARCHIVE_INDEX))
+            continue
+        path = f"{_ARCHIVE_PREFIX}{record}"
+        if record in seen:
+            findings.append(ArchiveFinding("catalog-record-duplicate", path))
+            continue
+        seen.add(record)
+        disposition = record.partition("/")[0]
+        if disposition not in PRESERVED_DISPOSITIONS:
+            findings.append(ArchiveFinding("catalog-record-invalid", path))
+            continue
+        is_package = record.endswith("/")
+        if row.disposition != disposition:
+            findings.append(ArchiveFinding("catalog-class-mismatch", path))
+        if retention_unit(record) != record or (
+            is_package and _CATALOG_PACKAGE.fullmatch(record) is None
+        ):
+            findings.append(ArchiveFinding("catalog-unit-invalid", path))
+        target = root / path
+        if not (target.is_dir() if is_package else target.is_file()):
+            findings.append(ArchiveFinding("catalog-record-missing", path))
+        # A withdrawal reason names no artifact; every other class names at
+        # least the identifier it promoted to, was superseded by, or hands to.
+        if not row.names or (
+            disposition != "retired" and _ARTIFACT_IDENTIFIER.search(row.names) is None
+        ):
+            findings.append(ArchiveFinding("catalog-names-invalid", path))
+        findings.extend(_catalog_source_findings(root, path, row.source, is_package))
+    return tuple(sorted(set(findings)))
+
+
+def retention_catalog_records(root: pathlib.Path) -> frozenset[str]:
+    """Return the archive-relative units the Retention Catalog has a row for."""
+
+    text = _catalog_index_text(pathlib.Path(root))
+    rows, _ = _catalog_rows(text) if text is not None else ((), [])
+    return frozenset(
+        record for row in rows if (record := _code_span(row.record)) is not None
+    )
+
+
+def validate_catalog_coverage(
+    root: pathlib.Path, base: str
+) -> tuple[ArchiveFinding, ...]:
+    """Require a catalog row for every preserved unit a change adds over its base."""
+
+    root = pathlib.Path(root)
+    listed = _run_git(
+        root, ["ls-tree", "-r", "-z", "--name-only", base, "--", "docs/98.archive"]
+    )
+    if listed.returncode:
+        return (ArchiveFinding("catalog-base-unreadable", _ARCHIVE_INDEX),)
+    at_base = set(listed.stdout.decode("utf-8", "replace").split("\0"))
+    recorded = retention_catalog_records(root)
+    findings: list[ArchiveFinding] = []
+    for disposition in PRESERVED_DISPOSITIONS:
+        subtree = root / _ARCHIVE_PREFIX / disposition
+        if not subtree.is_dir():
+            continue
+        for record in sorted(subtree.rglob("*.md")):
+            relative = record.relative_to(root).as_posix()
+            if relative in at_base:
+                continue
+            unit = retention_unit(relative.removeprefix(_ARCHIVE_PREFIX))
+            if unit not in recorded:
+                findings.append(
+                    ArchiveFinding("catalog-row-missing", f"{_ARCHIVE_PREFIX}{unit}")
+                )
+    return tuple(sorted(set(findings)))
+
+
+def validate_retention(
+    root: pathlib.Path, base: str | None = None
+) -> tuple[ArchiveFinding, ...]:
+    """Run the Retention Catalog rules, which apply only once the model is adopted."""
+
+    if archive_disposition_model(root) != ARCHIVE_MODEL_ADOPTED:
+        return ()
+    findings = list(validate_retention_catalog(root))
+    if base is not None:
+        findings.extend(validate_catalog_coverage(root, base))
+    return tuple(sorted(set(findings)))
 
 
 def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:

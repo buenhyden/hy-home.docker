@@ -48,6 +48,13 @@ from scripts.lib.document_governance.lifecycle.public import (  # noqa: E402
 from scripts.lib.document_governance.lifecycle.recovery import (  # noqa: E402
     run as run_recovery,
 )
+from scripts.lib.document_governance.registry import (  # noqa: E402
+    ARCHIVE_MODEL_ADOPTED,
+    archive_disposition_model,
+)
+from scripts.lib.document_governance.spec_packages import (  # noqa: E402
+    resolve_lifecycle_base,
+)
 
 
 def _is_safety_finding(finding: Finding) -> bool:
@@ -127,7 +134,14 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
         findings.extend(_historical_promoted_findings(root))
         _print_findings(findings)
         print(f"document corpus lifecycle: violations={len(findings)}")
-        recovery_code = run_recovery(root)
+        # The catalog rules need the comparison base only once they apply, so
+        # the transition route resolves nothing it did not resolve before.
+        recovery_base = (
+            resolve_lifecycle_base(root, args.base_ref)
+            if archive_disposition_model(root) == ARCHIVE_MODEL_ADOPTED
+            else None
+        )
+        recovery_code = run_recovery(root, recovery_base)
         if any(_is_safety_finding(item) for item in findings):
             return 3
         return 1 if findings or recovery_code else 0
