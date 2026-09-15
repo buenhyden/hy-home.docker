@@ -20,17 +20,13 @@ created: "{{CREATED}}"
 
 {{PURPOSE}}
 
-## Authority Change
+## Moved Scope
 
-{{AUTHORITY_CHANGE}}
+{{MOVED_SCOPE}}
 
-## Path Mapping
+## Current Owner
 
-{{PATH_MAPPING}}
-
-## Recovery
-
-{{RECOVERY}}
+{{CURRENT_OWNER}}
 
 ## Approval
 

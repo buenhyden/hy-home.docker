@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.5.2"
+version: "2.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 ---
 
 # Documentation Protocol
@@ -295,39 +295,20 @@ declaration, and `resolved/`, as historical evidence, through its
 corrective-work owner. It cites the successor instead of a `superseded/` body
 and the current route instead of a `retired/` body, a tombstone, or a
 migration. A frozen record it must still name is named by identifier and
-reached through the index. Until ADR-0035 is accepted and SPEC-0177 moves the
-link validator, only `completed/` is an admitted link target, and citations that
-predate acceptance stay as enumerated consumers, which SPEC-0177's Task lists.
-Only an `operation/incident` record and its `operation/postmortem` may cite an
-archive path directly, because the evidence such an account rests on is often
-the archived record itself.
+reached through the index. Only an `operation/incident` record and its
+`operation/postmortem` may cite an archive path directly, because the evidence
+such an account rests on is often the archived record itself.
 
-#### Transition
+#### Git-history-only dispositions
 
-The registered contracts predate this model in six places. SPEC-0177 owns
-moving the first five. It registers no Git-history-only profile, so the sixth
-stays until a later decision registers one.
+No profile is registered as Git-history-only. Until one is, every current
+disposition keeps a frozen body, and the requirement and accepted decision
+that forbid leaving a preserved body in Git alone apply unchanged.
 
-1. The link validator admits only the index and `completed/`. The adopted
-   boundary is implemented behind the Registry switch
-   `common.archive_disposition_model` and does not apply at `transition`.
-2. The Registry holds an `archive-record-resolved` profile, and the Stage 98
-   loader admits a `resolved/` subtree only when the switch is `adopted`, so at
-   `transition` a `resolved/` directory still fails to load.
-3. The Tombstone template and the corpus check require a `Recovery Commit`
-   section, pair every `retired/` body with one Tombstone, and reject a
-   Tombstone for a `completed/` or `superseded/` record.
-4. The Migration template requires `Path Mapping` and `Recovery` sections.
-5. The Retention Catalog check is implemented behind the switch and does not
-   apply at `transition`, and the index holds no catalog yet, so a Tombstone
-   still carries the withdrawal reason.
-6. No profile is registered as Git-history-only. Until one is, every current
-   disposition keeps a frozen body, and the requirement and accepted decision
-   that forbid leaving a preserved body in Git alone apply unchanged.
-
-Until SPEC-0177 completes, a new record satisfies the registered
-template and check, and a sealed Tombstone or Migration keeps the form it was
-written in rather than being rewritten to this model.
+A new record satisfies the registered template and check. A sealed Tombstone or
+Migration keeps the form it was written in rather than being rewritten to this
+model, so the two shapes coexist and a change that adds a record uses the
+current one.
 
 ### Retention by status
 
@@ -368,34 +349,36 @@ Retire a package or a standalone document only when all of these hold.
    written to its canonical agent governance, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.
 4. Preserve the original body in the matching Stage 98 disposition route.
-   While the transition lasts, withdrawal also records one Tombstone paired
-   with `retired/`; completion and supersession never do.
+   Withdrawal also records exactly one withdrawal record for the preserved unit:
+   a sealed Tombstone paired with `retired/`, or a Retention Catalog row.
+   Completion and supersession are never recorded as a withdrawal.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
 investigate, not permission to delete.
 
 Record the authoring obligations and consumer cutover in the current Task's
-promotion receipt. During the transition, a withdrawal's Tombstone `Reason`
-also records the disposition rationale. Verification must compare preserved bytes with their
+promotion receipt. A withdrawal's Retention Catalog row carries the withdrawal
+reason, and a sealed Tombstone that already carries it in `Reason` keeps it.
+Verification must compare preserved bytes with their
 recorded source without rewriting the frozen body to manufacture a later status.
 
 Age may trigger a disposition review. It never triggers a deletion.
 
 ### Tombstone scope
 
-One Tombstone records one retired route, never one per member. Under the model
-above it names the retired route, its successor or absence, and the reason, and
-holds no body. The registered template and corpus check still require a recovery
-commit and pair the Tombstone with a `retired/` body. That is one of the lagging
-contracts the transition names, and a sealed Tombstone keeps the form it was
-written in.
+One Tombstone records one retired route, never one per member. It names the
+retired route, its successor or absence, and the reason, holds no body, and
+carries no recovery commit. Because it records a route for an outside consumer
+rather than a withdrawal, it may name the route of a record in any retention
+class. A sealed Tombstone keeps the form it was written in, including its
+recovery commit and its pairing with a `retired/` body, and that pairing is the
+withdrawal record of the unit it pairs with.
 
 A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
 namespace of the document it retires, and the change that writes a stage's
-first Tombstone creates that namespace. During the transition a missing
-namespace is a namespace to create, never a reason to remove a document without
-its Tombstone.
+first Tombstone creates that namespace. A missing namespace is a namespace to
+create, never a reason to remove a document without a withdrawal record.
 
 ### Divergent branch package handoff
 

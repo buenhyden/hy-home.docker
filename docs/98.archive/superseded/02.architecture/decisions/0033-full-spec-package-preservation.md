@@ -2,7 +2,7 @@
 title: "Spec Package 전체 본문 보존"
 version: "1.0.1"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-15"
 layer: "architecture"
@@ -11,6 +11,7 @@ parent_ids:
 - "AD-0030"
 supersedes:
 - "ADR-0031"
+superseded_by: "ADR-0035"
 created: "2026-09-06"
 ---
 

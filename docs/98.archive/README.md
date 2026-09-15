@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.0.3"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "archive"
 ---
 
@@ -73,34 +73,37 @@ class는 Promotion 선언을 통한 `completed/`와, 교정 작업 owner를 통�
 Tombstone, Migration 대신 현재 route를 인용합니다. 여전히 이름을 불러야 하는
 frozen 기록은 식별자로 부르고 이 index를 통해 찾습니다.
 
-ADR-0035가 수락되고 SPEC-0177이 link validator를 옮기기 전까지는 `completed/`만
-허용되는 링크 대상이며, 수락 이전의 인용은 열거된 consumer로 남습니다. archive
-경로를 직접 인용할 수 있는 것은 `operation/incident` 기록과 그
+archive 경로를 직접 인용할 수 있는 것은 `operation/incident` 기록과 그
 `operation/postmortem`뿐입니다. 그런 기록이 근거로 삼는 증거는 보존된 기록 자체인
 경우가 많기 때문입니다.
 
 현재 강제는 `check-document-links.py`의 `active-archive-link`가 담당합니다.
 Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
 
-### 전환 중인 계약
+### Git-history-only 처분
 
-등록된 계약은 여섯 곳에서 이 모델보다 앞서 있습니다. SPEC-0177은 앞의 다섯을
-옮기고 Git-history-only profile은 등록하지 않으므로, 여섯째는 이후 결정이 그
-profile을 등록할 때까지 유지됩니다. ADR-0035가 수락되면 새 기록의 Retention
-Envelope는 이 README의 Retention Catalog 표가 담습니다.
+Git-history-only로 등록된 profile은 없습니다. 그런 profile이 등록되기 전까지 모든
+처분은 frozen 본문을 유지하며, 보존해야 할 본문을 Git-only 상태로 남기는 것은
+보존의 대안이 되지 않습니다.
 
-| 영역 | 현재 강제 | 모델 |
-| --- | --- | --- |
-| 링크 경계 | archive 밖에서 index와 `completed/`만 허용. `resolved/`를 허용하는 코드는 Registry 스위치 뒤에 있으며 `transition`에서 적용되지 않음 | `resolved/`도 허용 |
-| `resolved/` 적재 | Registry에 `archive-record-resolved` profile이 있고 loader 지원도 스위치 뒤에 있으나, `transition`에서는 loader가 `resolved/` 하위 트리를 거부하므로 만들면 적재 실패 | 첫 기록과 함께 만드는 retention class |
-| Tombstone | `Recovery Commit` 섹션 필수, `retired/` 보존본마다 짝 요구, `completed/`·`superseded/` 기록에는 Tombstone 거부 | recovery commit 없음, 짝 요구 없음 |
-| Migration | `Path Mapping`과 `Recovery` 섹션 필수 | 이동한 범위와 현재 owner만 |
-| Retention Envelope | Retention Catalog 검사 코드는 스위치 뒤에 있으나 `transition`에서 적용되지 않고 catalog 표도 아직 없음, 철회 사유는 Tombstone이 담음 | source Git object를 한 번 이름으로 가짐 |
-| Git-history-only 처분 | 등록된 profile 없음, 모든 처분이 frozen 본문 유지 | profile이 정할 때 호환 사본 없이 허용 |
+새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과 Migration은
+기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지 않습니다.
 
-전환 동안 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과
-Migration은 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지
-않습니다.
+## Retention Catalog
+
+보존 단위 하나가 한 행입니다. 단위는 Spec package 디렉터리, Incident bundle
+디렉터리, 또는 단독 문서입니다. `Record`는 `docs/98.archive/` 아래 단위 경로이며
+package와 bundle은 `/`로 끝납니다. `Class`는 처분 디렉터리이고, `Names`는 그
+class가 이름으로 가져야 하는 값이며, `Source`는 이 모델이 허용하는 유일한 source
+Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질 수 없으므로 source가
+존재하던 base commit을 적습니다.
+
+| Record | Class | Names | Source |
+| --- | --- | --- | --- |
+| `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
+
+이 표가 비어 있는 동안 보존된 기록은 자신이 보존될 당시의 계약이 요구한 철회
+기록을 유지합니다. 소급 적재는 하지 않습니다.
 
 ## Structure
 
@@ -148,9 +151,11 @@ Migration은 기록 당시 형태를 역사로 유지하며, 새 계약에 맞�
    `migrations/0003-workspace-governance-simplification.md`.
 3. **처분에는 별도 승인이 필요합니다.** 완료, 대체, 철회, 종료 어느 것도 다른
    작업의 부수효과로 일어나지 않습니다.
-4. 전환 중에 철회를 기록하는 변경은 Tombstone 하나와 `retired/` 보존본 하나를
-   함께 만듭니다. corpus check는 Tombstone의 `Retired Path`와 보존본의 원래
-   경로가 일치하는지로 짝을 확인합니다.
+4. 철회를 기록하는 변경은 `retired/` 보존본 하나와 그 단위의 철회 기록 하나를
+   함께 만듭니다. 새 철회의 기록은 Retention Catalog 행이며, 봉인된 Tombstone과
+   짝을 이루는 기존 보존본은 그 짝을 철회 기록으로 유지합니다. corpus check는
+   Tombstone의 `Retired Path`와 보존본의 원래 경로가 일치하는지로 그 짝을
+   확인합니다.
 5. 과거의 대규모 이동은 해당 Migration의 source/target mapping으로 찾습니다.
    Migration은 인용 대상이 아니므로 이 index에서 식별자로 찾습니다.
 6. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,

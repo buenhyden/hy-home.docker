@@ -1,10 +1,10 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "specs"
 artifact_id: "SPEC-0177-TSK-0001"
 parent_ids:
@@ -457,6 +457,66 @@ after the push finished. The worktree and its branch were removed unchanged.
 | `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `failures=0` |
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `9def7aba1`, `selected=5 violations=0` |
 
+### W7: The model adopted in one result tree (2026-09-16, local-executed)
+
+`common.archive_disposition_model` is `adopted`. The `tombstone` profile's
+`required_sections` hold `Retired Path`, `Successor`, `Reason`, `Traceability`
+and its `sealed_section_shapes` the old `Retired Path`, `Replacement`, `Reason`,
+`Recovery Commit`, `Traceability`. The `migration` profile's hold `Purpose`,
+`Moved Scope`, `Current Owner`, `Approval`, `Traceability` and the old six-section
+shape. Both templates carry the new shapes, so `Path Mapping`, `Recovery`, and
+`Recovery Commit` leave the form a change may author while every sealed record
+keeps them.
+
+`ADR-0035` is `accepted` at `1.0.0` and names `ADR-0033` in `supersedes`.
+`ADR-0033` moved to `docs/98.archive/superseded/02.architecture/decisions/`
+with its body unchanged and two frontmatter lines changed: `status` to
+`superseded`, and a `superseded_by` of `ADR-0035`. That is the preservation width
+the `ADR-0031` precedent set in `f71449eff`, which changed the same two fields and
+left `version` and `updated` frozen. Its Retention Catalog row names `ADR-0035`
+and the source object
+`677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md`,
+the base commit its source existed at, because a moving change cannot name its own
+commit. The corpus check accepted that row, so the W4b and W5 rules were proven
+against a real preservation rather than a fixture.
+
+The Stage 98 index carries the `## Retention Catalog` section. The `common/readme`
+profile lists `Retention Catalog` as an optional section, because the catalog
+check matches a second-level heading and a subsection cannot satisfy it. The
+section is therefore admitted for the twelve READMEs that profile covers, and only
+the Stage 98 index is read by the check.
+
+Every surface criterion 9 names stopped describing a lagging contract. The policy's
+`Transition` list became a `Git-history-only dispositions` statement holding only
+its sixth item; `REQ-0026` amended REQ-0026-FR-0002, REQ-0026-FR-0003,
+REQ-0026-FR-0008, REQ-0026-FR-0012, REQ-0026-NFR-0007, its first two Constraints,
+its transition Constraint, and three Acceptance Criteria, replacing `Tombstone`
+with `withdrawal record` wherever the requirement named a form rather than a role;
+the policy rewrote Retirement preconditions item 4, its promotion-receipt
+paragraph, and its Tombstone scope section; and `AD-0030`, the Stage 98 README,
+`docs/README.md`, `.agents/knowledge/repository-map.md`,
+`.agents/skills/incident-response/SKILL.md`, and
+`docs/02.architecture/decisions/README.md` no longer condition a rule on SPEC-0177
+or on `ADR-0035` being proposed. Seven inbound links to `ADR-0033` became
+identifier mentions, and no active-stage link to that path remains.
+
+`test_the_changed_check_rejects_only_an_added_sealed_shape_record` failed after the
+swap. Its fixture registered the route shape as the sealed shape and built its body
+from that shape, which raised the deficit only while `required_sections` still held
+the old shape. W7 made the route shape the required one, so the body satisfied
+`required_sections` directly and the sealed branch was never reached. The fixture
+now pins both lists explicitly and builds its body from the sealed shape, so it no
+longer depends on which shape the repository Registry requires. No behavior
+changed: the test asserts the same rule through a premise adoption removed.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest` over `test_archive`, `test_spec_packages`, `test_registry`, `test_taxonomy`, `test_links`, `metadata.test_heading`, `metadata.test_reference`, `test_references`, `test_architecture`, `test_requirements`, and `lifecycle.test_promoted` | exit 0, 373 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `migrations=3 tombstones=140 preserved=201 decisions=286 recovery_rows=374 violations=0` |
+| `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=889 links=6683 failures=0` |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `677a6e513`, `selected=13 violations=0` |
+| `ruff check` and `ruff format --check` on the edited test | exit 0 |
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -477,6 +537,9 @@ pair as its unit lands.
 | 5 | W5 | PASS: the route shape parses without a recovery commit and `test_a_route_shape_tombstone_keeps_its_contract` rejects a wrong identity, an empty reason, a bare successor, and a missing index link; the sealed shape still loads; `test_the_changed_check_rejects_only_an_added_sealed_shape_record` runs `_introduced_body_findings` against a Registry with a registered shape and rejects only the record absent from its base; and the Migration shapes pass the same unit test. NOT_RUN: `check-document-metadata.py` over the real corpus with a registered shape, which W7 first makes possible | [test_heading.py](../../../../tests/lib/document_governance/metadata/test_heading.py) |
 | 6 | W5 | PASS: `test_a_catalog_row_alone_records_a_withdrawal`, `test_a_sealed_tombstone_and_a_row_are_two_withdrawal_records`, and `test_a_catalog_row_records_a_retirement_once_adopted`; a retired package with neither record still fails `test_whole_package_retirement_requires_a_tombstone` | [test_spec_packages.py](../../../../tests/lib/document_governance/test_spec_packages.py) |
 | 7 | W4b | PASS: `test_an_added_non_markdown_member_needs_its_row` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 5 | W7 | PASS: with both shapes registered, `check-document-metadata.py --mode check-changed` exits 0 over the changed set and the corpus check reads all 140 tracked Tombstones and 3 Migrations with `violations=0`, so every sealed record still passes. This resolves the NOT_RUN recorded at W5 | [registry.json](../../../99.templates/registry.json) |
+| 8 | W7 | PASS: the switch is `adopted`; the `tombstone` and `migration` `required_sections` hold the new shapes and `sealed_section_shapes` the old; both templates carry the new shapes; `ADR-0035` is `accepted` and restates `ADR-0033`'s surviving rules; `ADR-0033` is preserved under `superseded/` with its body unchanged, `status` and `superseded_by` set, its catalog row added, and its seven inbound links repointed | [98.archive README](../../../98.archive/README.md) |
+| 9 | W7 | PASS: the policy's Transition list keeps only its sixth item as a standing statement, `REQ-0026` amends in place at `1.5.0`, the policy rewrites Retirement preconditions item 4, its Tombstone scope section, and its transition sentence, and `AD-0030`, the Stage 98 README, `.agents/knowledge/repository-map.md`, `.agents/skills/incident-response/SKILL.md`, `docs/02.architecture/decisions/README.md`, and `docs/README.md` describe no lagging check, mandatory pairing, or rule conditioned on SPEC-0177 or `ADR-0035` | [documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
 
 ## Review Evidence
 
@@ -586,6 +649,9 @@ Pyright type warnings on annotations only; no registered gate runs Pyright.
 | `29a1f71f5` | Assessment: RES-0096, `ADR-0036` proposed, SPEC-0178 drafted, and their allocations and index rows |
 | `edfaf3315` | Assessment: the transition wording of the policy and the Stage 98 index |
 | `0ba528e50` | Assessment: the W4b amendment and this Task's assessment and review entries |
+| `9def7aba1` | The assessment commits recorded in this ledger |
+| `24f7bb507` | SPEC-0178 at `review` with RES-0096 item A11, and its Plan and Task drafted |
+| `677a6e513` | W5 and W4b: route shapes, one withdrawal record, and the catalog units |
 
 ## Rulings
 
@@ -596,7 +662,6 @@ Pyright type warnings on annotations only; no registered gate runs Pyright.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W7 | One integration after W5 and W4b |
 | W8 | One integration after W7 |
 | SPEC-0178 and `ADR-0036` | SPEC-0178 in review; its activation requires this package completed |
 | An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | Assigned to SPEC-0178 Behavior Contract 10 by the operator on 2026-09-16 |

@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 ---
 
 # docs
@@ -135,11 +135,10 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
 - Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
-- Stage 98에서 직접 링크할 수 있는 것은 index와 `completed/` 보존본이며,
-  SPEC-0177이 link validator를 옮기면 `resolved/`가 더해집니다. `superseded/`
-  대신 후속을, `retired/`, Tombstone, Migration 대신 현재 route를 인용하고,
-  이름을 불러야 하는 frozen 기록은 식별자로 부른 뒤 Stage 98 README에서
-  찾습니다.
+- Stage 98에서 직접 링크할 수 있는 것은 index와 `completed/`, `resolved/`
+  보존본입니다. `superseded/` 대신 후속을, `retired/`, Tombstone, Migration 대신
+  현재 route를 인용하고, 이름을 불러야 하는 frozen 기록은 식별자로 부른 뒤
+  Stage 98 README에서 찾습니다.
 
 ## Template Usage
 
@@ -164,8 +163,8 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 이전 infra/secrets/docs refresh의 Spec은 아래 보존 package에 있습니다. 이
 package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본문은 archive에
-없습니다. [ADR-0033](02.architecture/decisions/0033-full-spec-package-preservation.md)
-수락 이후 처분되는 package는 Spec, Plan, 모든 Task를 함께 보존합니다.
+없습니다. ADR-0033 수락 이후 처분되는 package는 Spec, Plan, 모든 Task를 함께
+보존합니다.
 현재 구조와 운영 안내는 [infra README](../infra/README.md)와
 [Operations](05.operations/README.md)가 소유하며 완료 package를 새 작업 기록으로
 재사용하지 않습니다.

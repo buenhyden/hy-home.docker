@@ -1,10 +1,10 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "specs"
 artifact_id: "SPEC-0177"
 parent_ids:
@@ -283,7 +283,7 @@ because the catalog lives in the index the loader already admits.
 | [REQ-0026 Document Retention and Retirement](../../01.requirements/0026-document-retention-and-retirement.md) | Owns the retention requirements this package enforces, including REQ-0026-NFR-0006, which rules out a fixed cutoff |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Owns the validator structure this package changes |
 | [ADR-0035 Stage 98 Retention Classes and Route Dispositions](../../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md) | The decision this package accepts |
-| [ADR-0033 Full Spec Package Preservation](../../02.architecture/decisions/0033-full-spec-package-preservation.md) | Superseded by `ADR-0035` on acceptance, with its surviving rules restated |
+| ADR-0033 Full Spec Package Preservation | Superseded by `ADR-0035` at W7 and preserved under `superseded/`, with its surviving rules restated |
 | [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md) | The dated assessment that found the catalog unit, `Names`, and coverage gaps W4b closes |
 
 ## Open Questions

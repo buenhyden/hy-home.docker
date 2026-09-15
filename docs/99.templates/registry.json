@@ -23,7 +23,7 @@
       "retired",
       "sealed"
     ],
-    "archive_disposition_model": "transition",
+    "archive_disposition_model": "adopted",
     "archive_source_prefixes": [
       "docs/",
       "archive/",
@@ -1237,9 +1237,8 @@
       ],
       "required_sections": [
         "Purpose",
-        "Authority Change",
-        "Path Mapping",
-        "Recovery",
+        "Moved Scope",
+        "Current Owner",
         "Approval",
         "Traceability"
       ],
@@ -1247,7 +1246,16 @@
         "Execution Evidence",
         "Related Documents"
       ],
-      "sealed_section_shapes": [],
+      "sealed_section_shapes": [
+        [
+          "Purpose",
+          "Authority Change",
+          "Path Mapping",
+          "Recovery",
+          "Approval",
+          "Traceability"
+        ]
+      ],
       "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1297,15 +1305,22 @@
       ],
       "required_sections": [
         "Retired Path",
-        "Replacement",
+        "Successor",
         "Reason",
-        "Recovery Commit",
         "Traceability"
       ],
       "optional_sections": [
         "Related Documents"
       ],
-      "sealed_section_shapes": [],
+      "sealed_section_shapes": [
+        [
+          "Retired Path",
+          "Replacement",
+          "Reason",
+          "Recovery Commit",
+          "Traceability"
+        ]
+      ],
       "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": []
@@ -1555,7 +1570,8 @@
         "Related Documents"
       ],
       "optional_sections": [
-        "Audience"
+        "Audience",
+        "Retention Catalog"
       ],
       "lifecycle_id": "living",
       "traceability": {},

@@ -744,7 +744,8 @@ class SealedSectionShapeTests(unittest.TestCase):
         )
         for profile in registry_source["profiles"]:
             if profile["id"] == "tombstone":
-                profile["sealed_section_shapes"] = [list(self._NEW_SHAPE)]
+                profile["required_sections"] = list(self._NEW_SHAPE)
+                profile["sealed_section_shapes"] = [list(self._SEALED_SHAPE)]
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "registry.json"
             path.write_text(json.dumps(registry_source), encoding="utf-8")
@@ -755,7 +756,7 @@ class SealedSectionShapeTests(unittest.TestCase):
             "tombstone",
             frontmatter_present=True,
         )
-        body = body_with_headings(*(f"## {name}" for name in self._NEW_SHAPE))
+        body = body_with_headings(*(f"## {name}" for name in self._SEALED_SHAPE))
 
         def codes(base_record: object, base_text: str | None) -> list[str]:
             return [

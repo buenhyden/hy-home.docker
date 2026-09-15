@@ -20,17 +20,13 @@ created: "{{CREATED}}"
 
 {{RETIRED_PATH}}
 
-## Replacement
+## Successor
 
-{{REPLACEMENT_OR_NONE}}
+{{SUCCESSOR_OR_NONE}}
 
 ## Reason
 
 {{REASON}}
-
-## Recovery Commit
-
-{{RECOVERY_COMMIT}}
 
 ## Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "보존 대기 package, route 기록 인용, frozen 동일성"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "architecture"
 artifact_id: "ADR-0036"
 parent_ids:
@@ -124,7 +124,7 @@ SPEC-0173과 SPEC-0176의 완료 commit은 이동과 같은 commit에서 `versio
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [ADR-0035 Stage 98 보존 class와 route 처분](0035-stage-98-retention-classes-and-route-dispositions.md)
-- [ADR-0033 Spec Package 전체 본문 보존](0033-full-spec-package-preservation.md)
+- ADR-0033 Spec Package 전체 본문 보존 (superseded)
 - [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
 - [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
