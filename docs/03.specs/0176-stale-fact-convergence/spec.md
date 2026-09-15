@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Specification"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0176"
 parent_ids:
@@ -110,7 +110,9 @@ the correction is recorded beside it.
   - `AGENTS.md`, whose step 4 enumerates a subset of the canonical categories and
     so reproduces the routing gap the two knowledge corrections close.
   - `docs/03.specs/0173-governance-qa-surface-convergence/spec.md` and `plan.md`,
-    for baseline position and one behavior-contract sentence.
+    for baseline position and one behavior-contract sentence. Both are
+    preserved under `docs/98.archive/completed/03.specs/` since SPEC-0173
+    completed on 2026-09-15.
   - `docs/98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md`,
     `plan.md`, and `tasks/tsk-0001-knowledge-and-prompt-surface.md`, which reach
     their terminal statuses and move to `docs/98.archive/completed/`.
@@ -129,7 +131,8 @@ the correction is recorded beside it.
     `docs/98.archive/superseded/02.architecture/descriptions/`. Correcting a
     superseded record would rewrite a frozen archive body.
   - The generated LLM Wiki outputs under `docs/90.references/data/`, regenerated
-    by the registered generator and never hand-edited.
+    by the registered generator and never hand-edited. They were retired with
+    their generator on 2026-09-10, so none remains.
 - Out of scope and explicitly unchanged: the root `include:` list itself, any
   Compose service, profile, image, or network value, every gate node, suite, and
   contract entry, the Provider Registry, every role and skill identity, and the frozen bodies
@@ -141,28 +144,36 @@ the correction is recorded beside it.
   SPEC-0173, only two stale sentences and the link targets of the ADR-0031 move
   are edited; no status, acceptance criterion, or Task evidence of that package
   changes.
-- Two validators gained one bounded check each, under scope extensions the Task
-  records: `check-document-links.py --mode commands` in W18, and the Compose
-  include and profile-vocabulary comparison in `check-operations-catalog.py` in
-  W19. Each runs under the leaf that already invoked its validator.
-- SPEC-0173 remains active and blocked. Its Rulings forbid a new policy, Spec,
+- Three validator changes were made under scope extensions the Task records:
+  `check-document-links.py --mode commands` in W18, the Compose include and
+  profile-vocabulary comparison in `check-operations-catalog.py` in W19, and in
+  W20 the identity recovery check in `identity_history.py`, which now accepts a
+  recovery decision held by a Task preserved as completed. Each runs under the
+  leaf that already invoked its validator.
+- SPEC-0173 was active and blocked when this package opened. Its Rulings forbid a new policy, Spec,
   Plan, or Task inside that package, so this work takes its own package. This
   package corrects two stale sentences in SPEC-0173's own documents, repoints the
   links its Task carries to the moved ADR-0031 body, and closes the
-  retention-owner promotion SPEC-0173 declared as an open dependency. It does not
-  complete SPEC-0173, add a member to it, or change any recorded result in its
-  Task.
+  retention-owner promotion SPEC-0173 declared as an open dependency. Until W20
+  it did not complete SPEC-0173, add a member to it, or change a recorded result
+  in its Task. W20 reconciled SPEC-0173 and took it to completion under the
+  operator's 2026-09-14 request, and SPEC-0173's own Task 0006 records that
+  work as W40.
 - Authorization: local edits, local commits on this branch, and local
-  integration into `main`. Push, pull request, remote reference change,
-  deployment, live service action, secret values, and global installation remain
-  unauthorized. Pushing to `main` is additionally blocked by a registered hook
-  and is not attempted by any other route.
+  integration into `main`. Deployment, live service action, secret values, and
+  global installation remain unauthorized. The operator extended this to push on
+  2026-09-14 and to push, integration and branch cleanup for W20, as the Task
+  records.
 
 ## Behavior Contract
 
-1. No tracked current-authority document describes a Compose file under `infra/`
-   as commented out of, optional in, or absent from the root `include:` list
-   while that file appears in it uncommented.
+1. The fact every Compose include-state sentence depends on is held by a
+   registered check: every tracked Compose file under `infra/` appears in the
+   root `include:` list, and the POL-0078 profile tables match the declared
+   profiles. Current-authority documents state that model rather than describing
+   a Compose file as commented out, optional, absent, or awaiting activation.
+   Residue that a review finds is corrected when it is found, and no text
+   predicate is claimed complete. Amended in W20 to match criterion 1.
 2. Documents that need to express conditional activation say that the root file
    includes every Compose file unconditionally and that the selected profile
    decides which services resolve, which is the model
@@ -237,8 +248,8 @@ siblings stay is what the retention guard rejects.
 ## Interfaces and Data
 
 No executable interface changes. The public validation entrypoints keep their
-arguments and exit contract; the two validators named in Boundaries report more
-findings, not different ones. The provider projection interface, the registered
+arguments and exit contract; the validator changes named in Boundaries change
+which inputs are reported or accepted, not how the validators are called. The provider projection interface, the registered
 generators, and the Stage 99 contracts are inputs to this package and are not
 modified by it.
 
@@ -332,15 +343,14 @@ fields already owned by the Stage 99 registry: `status`, `updated`, `version`,
 
 ## Open Questions
 
-- SPEC-0173's aggregate remains blocked on the actual PostgreSQL operating and
-  image leaf. This package closes its retention-owner dependency and does not
-  change that blocker.
+- None is blocking. SPEC-0173, the dependency this section used to name,
+  completed on 2026-09-15.
 
 ## Operational Impact
 
 No runtime, service, image, network, profile, secret, permission, model, or hook
-behavior changes. Two validators report more findings, as Boundaries states, and
-no gate node, suite, or argument changes. Every other edit is to a document or a
-comment. The one
-structural change is the move of four bodies inside `docs/`: SPEC-0175's three
-members to `completed/` and `ADR-0031` to `superseded/`.
+behavior changes. The validator changes in Boundaries alter what is reported or
+accepted, and no gate node, suite, or argument changes. Every other edit is to a
+document or a comment. The structural changes are body moves inside `docs/`:
+SPEC-0175's three members to `completed/`, `ADR-0031` to `superseded/`, and in
+W20 SPEC-0173's eight members to `completed/`.

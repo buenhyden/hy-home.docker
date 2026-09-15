@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Execution"
-version: "0.19.0"
+version: "0.19.1"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0176-TSK-0001"
 parent_ids:
@@ -37,10 +37,12 @@ package; no second progress ledger is created.
 - Governing owners: REQ-0024, REQ-0025, REQ-0026, AD-0027, AD-0030, ADR-0033,
   SPEC-0176, SPEC-0176-PLAN-0001.
 - Authorization: local investigation, local edits, local commits on this branch,
-  and local integration into `main`. Push, pull request, remote reference change,
-  deployment, live service action, secret values, and global installation remain
-  unauthorized. Pushing to `main` is additionally blocked by a registered hook
-  and is not attempted by any other route.
+  and local integration into `main`. Deployment, live service action, secret
+  values, and global installation remain unauthorized. The operator extended
+  this twice, as W19 and W20 record: push on 2026-09-14, and then push, local
+  integration and branch cleanup for W20. The local push hook did not block a
+  direct push to `main`. GitHub reported each such push as bypassing the
+  pull-request and required-check rules, and the Task records that as observed.
 - Evidence classes used throughout, kept non-substitutable: `local-executed`,
   `configured`, `repository-enforced`, `official-source`, `local-parser`,
   `unverified-runtime`, `unverified-entitlement`, `unverified-remote`.
@@ -911,13 +913,28 @@ markdownlint-cli2 (four edited documents)                   0 error(s)
 ruff check / ruff format --check (three Python files)       clean
 ```
 
+### W20: A repository-wide audit, round six, and the first lifecycle step (2026-09-15, local-executed)
+
+The operator asked on 2026-09-14 for the documents under `docs/` to be checked for stale facts and for statements that contradict the implementation. Every Spec, Plan and Task was to be checked for unfinished work and for conflicts with later requests. Nothing unfinished was to be implemented; work already done was to be recognised, and work that later implementation overtook was to be superseded or dropped. The request also authorized fixing separate defects, commit, integration, push and branch cleanup.
+
+Seven read-only audits covered Stage 01, 02, 05, 90 and 99 and the indexes. One more reviewed SPEC-0173, and round six reviewed this package. Their findings were re-measured before any edit. One class was closed mechanically rather than by reading. Every documented `repo:tag` was compared with the tags the Compose files and Dockerfiles pin, which found forty stale tags, including service READMEs the audits had scoped out. Three dependabot updates then merged to `main` during the work and moved twenty-one of the tags that had just been aligned. They also left `infra/tech-stack.versions.json` behind, so the required drift leaf failed every commit on top of `main` until `14d9ff6dc` carried the registry and its documents together. Copying a tag into prose is what makes each bump stale a document; the comparison is recorded as repeatable, not as a one-time sweep.
+
+The audits also found claims the implementation does not carry. A registry policy required a delete setting nothing sets. A k6 volume contract had been copied from Locust. A hardening guide named a Dockerfile user the image does not use. An address table listed an Atlantis service no Compose file defines. `scripts/README.md` described seven retired scripts as current entrypoints. The documentation index still routed LLM navigation to a retired index. Each was corrected at its owner.
+
+SPEC-0173 was taken to completion rather than implemented further; its Task 0006 W40 holds the reasoning. Preserving it exposed a validator defect that no earlier completion had reached. RES-0085-m0001 records an identity recovery whose decision lives in SPEC-0173 Task 0001, and the recovery check accepted only a Task under Stage 03. The retention policy therefore made every valid disposition of that record fail. The check now also accepts a Task preserved as completed and still rejects superseded and retired ones (`c36bda522`). The commit hook first reported the preserved package as `package-retirement-unrecorded`. The actual cause was two receipt cells that opened with a qualifier instead of the PASS marker; the completion check swallowed that error and reported a missing tombstone instead.
+
+Round six and its dispositions are recorded under Review Evidence. This entry takes one lifecycle step: the Spec moves from `review` to `approved`. The Plan and the Task stay where they are, because an active Plan or an in-progress Task requires an active Spec.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W12, W14, W19 | PASS against the criterion as amended in W19, and not against its earlier wording, which was never met and is not claimed. `check-operations-catalog.py` holds the include list and the POL-0078 tables to the tracked Compose files. It exits 0 on the current tree and reports three findings for three injected drifts. The history that forced the amendment follows. Before W19, this row read NOT MET. Recorded PASS three times and falsified three times. The first two predicates searched English against a Korean corpus; the third searched a vocabulary list and missed `not included in the current root compose stack by default`; the fourth searched claim shape and still missed `infra/09-tooling/k6/README.md:71`, whose sibling `locust/README.md:70` had already been corrected in the same sweep. A fifth shape has no include vocabulary at all: `REQ-0012:45` encoded the retired model as a four-name service list while six services carry `admin`. Corrected in W14 round four; the criterion is recorded as NOT MET rather than PASS because this Task's own Ruling forbids promoting a check to PASS on the strength of a predicate that has now been wrong four times, and no predicate here has ever been shown complete | [spec.md criterion 1](../spec.md) |
+| 1 | W12 | PASS: supporting evidence under the amended criterion; the bilingual predicate closed the language gap its English-only predecessors left, and it is not claimed complete | [spec.md criterion 1](../spec.md) |
+| 1 | W14 | PASS: supporting evidence under the amended criterion; the claim-shape sweep corrected the residue rounds three and four found, and round six showed it moved the blind spot rather than closing it | [spec.md criterion 1](../spec.md) |
+| 1 | W19 | PASS: as amended in W19, `check-operations-catalog.py` holds the root include list and the POL-0078 tables to the tracked Compose files, exits 0 on the current tree and reports each injected drift; the root `include:` comment and POL-0078 state the model | [Operations catalog check](../../../../scripts/validation/check-operations-catalog.py) |
 | 2 | W4 | PASS after review correction: `infra/README.md` and the repository root `README.md` both state the measured 41 files, 40 directories and 41 include entries; the root README had carried 48 / 17 and was missed by the first pass | [root README](../../../../README.md) |
-| 3 | W4, W15 | PASS only after round five. The system scope sentence was corrected in W4, but a second SPEC-0171 deferral clause survived 97 lines below it in the same file (`POL-0078:140-142`), and the scope sentence itself said `24개` where the tables define 28. Both corrected in W15 | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 3 | W4 | PASS: the system scope sentence counts only files that exist | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 3 | W15 | PASS: round five removed a second SPEC-0171 deferral clause 97 lines below the first and corrected `24개` to the 28 profiles the tables define | [POL-0078](../../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
 | 4 | W4 | PASS: the include comment describes the six former sibling files as merged and the package as completed | [root docker-compose.yml](../../../../docker-compose.yml) |
 | 5 | W5 | PASS: ADR-0033 accepted with supersedes ADR-0031; ADR-0031 superseded with superseded_by ADR-0033 | [ADR-0033](../../../02.architecture/decisions/0033-full-spec-package-preservation.md) |
 | 6 | W5 | PASS: blob 904677b0303d277bea44904af68ba86758a10425 to 5bc18f381d1505e108d6fb28a994c2801c58ad83; diff shows only status and superseded_by | preserved ADR-0031 |
@@ -928,11 +945,13 @@ ruff check / ruff format --check (three Python files)       clean
 | 11 | W7 | PASS: `git rev-parse --verify` resolves neither the local nor the remote branch; both packages now state the three Git commands | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
 | 12 | W7 | PASS: contract 9 names the underscore-prefixed modules; `git ls-files tests/fixtures` returns zero paths and no acceptance criterion changed | [SPEC-0173 spec](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) |
 | 13 | W8 | PASS: all three members are `completed` under the archive path and `ls docs/03.specs/` shows only 0173, 0176 and README.md | [preserved SPEC-0175](../../../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) |
-| 14 | W8 | PASS: the index row names the archive paths and describes the package as preserved; SPEC-0176 is listed as the draft package | [Stage 03 index](../../README.md) |
+| 14 | W8 | PASS: the index row describes SPEC-0175 as preserved with its archive paths and lists SPEC-0176 as the package in flight | [Stage 03 index](../../README.md) |
 | 15 | W9 | PASS: both rows state that the bodies are not preserved and name Git history as the recovery path | [Documentation index](../../../README.md) |
-| 16 | W10 | PASS after review correction: AUD-0023 was hand-edited and is now produced by `check-document-metadata.py --mode report`, which places the moved ADR-0031 row in the archive block as `archive-record-superseded`; LLM Wiki and provider hook parity fresh | frontmatter semantic inventory |
+| 16 | W10 | PASS: the generated outputs this package touched are fresh by the generators that remain, and `provider_surface_renderer.py --check` reports PASS providers=2 drift=0; the AUD-0023 report, the LLM Wiki and the hook parity matrix this row first cited were retired with their generators on 2026-09-10 and are no longer outputs | [Provider renderer](../../../../scripts/operations/provider_surface_renderer.py) |
 | 17 | W11 | PASS: `run-ci-gate.py --profile changed` GATE_EXIT=0 read from the gate process; 13 unittest suites OK, zero FAILED lines, zero violations across every check | [this Task](tsk-0001-stale-fact-convergence.md) |
-| 18 | W11, W12 | PASS across two review rounds. Round one: two reviewers over `git diff e37b2dbcd..3725e08c7`; one approved with follow-up, one blocked with twelve findings, eleven accepted and corrected, one routed to another author. Round two, which round one's own Deferred Item required: one reviewer over the corrections themselves, disposition `block` with five findings. Two were blocking and both held on re-measurement; findings 4 and 5 were corrected, finding 3 is recorded as a Deferred Item at its measured scale | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W11 | PASS: round one, two reviewers over `git diff e37b2dbcd..3725e08c7`; eleven of twelve accepted findings were corrected and one was routed to another author | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W12 | PASS: round two reviewed the corrections themselves; both blocking findings held on re-measurement and were corrected, and finding 3 is recorded at its measured scale | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
+| 18 | W15 | PASS: rounds three through five reviewed the W13 and W14 corrections, and every accepted finding was corrected in W14 and W15 | [Review Evidence](tsk-0001-stale-fact-convergence.md) |
 
 ### Predicate Triage for criterion 1 (2026-09-07, local-executed)
 
@@ -1034,6 +1053,36 @@ Finding 1 is the reason this round existed. Round one's reviewers judged
 recorded that gap as a Deferred Item. The gap contained a false PASS on the
 package's first criterion.
 
+### Independent review round six (2026-09-15, local-executed)
+
+One reviewer, not the author, reviewed every commit from `e43380153` through
+`f60c097cc` that touches this package. Disposition `block`. Unlike round two,
+this reviewer had a shell. It measured the Compose facts, ran the operations
+catalog check and its tests, exercised the new check with eleven probe inputs,
+and ran two bilingual residue searches with blame. It read the W14-W19 prose
+without re-measuring it.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | blocker | Retired include-model wording survives as a precondition ("root include 활성 상태에서"), as an adjective ("root optional context", "optional leaf") and as the root-active versus optional contrast, including in subjects the Spec names | Accepted. Corrected in `904c844c2`. Each sentence now names the profile that selects the service. Sentences saying `root include active` are true and were left |
+| 2 | high | Criterion 1 was amended while Behavior Contract 1 still stated the universal negative | Accepted. Contract 1 amended in W20 in the terms criterion 1 uses |
+| 3 | medium | Receipt rows 1, 14, 16 and 18 were stale, and several joined work units in one cell | Accepted. Rows 1, 3, 14, 16 and 18 rewritten with one work unit per row; row 16 restated against the generators that remain |
+| 4 | medium | The Commit Ledger missed seven commits and kept a `pending` row | Accepted. Every commit through `c36bda522` added, and the `pending` row replaced by `41e83d25e` |
+| 5 | medium | Authorization text, the Plan's thirty-nine, its baseline and its terminal-status sentence were stale, and the Plan stopped at W11 | Accepted. Spec and Task record the operator's extensions; the Plan says seventy-four, lists W12-W20 and states the three-step walk |
+| 6 | medium | The review and lifecycle Deferred Items described states that had moved | Accepted. Both restated; the SPEC-0173 row removed after that package completed |
+| 7 | medium | The check kept the first of two rows for one profile and never compared the second | Accepted. Reported as drift in `018d437b3`, with a test |
+| 8 | low | `!reset` and `!override` tags and an empty Compose file aborted the whole leaf | Accepted. Read as valid input in `018d437b3`, with a test |
+| 9 | low | Mapping-form and `./` include entries, names with `_`, non-integer count cells and services without profiles were misread or unchecked | Accepted and fixed in `018d437b3`, except `infra/**/compose.yaml`, which POL-0078's scope does not name |
+| 10 | low | The k6 README still described a Locust engine, and several READMEs say `root include active` | Accepted for the k6 README, corrected in `904c844c2`. `root include active` is true and is kept |
+
+On the question this round was asked, the reviewer found that the W14
+claim-shape sweep moved the blind spot rather than generalising: it searched
+for sentences denying an include, and the survivors asserted a precondition or
+used an adjective instead. It judged the criterion 1 mechanics sound and the
+amendment goalpost-shaped only while Behavior Contract 1 kept the old wording,
+which finding 2 closes. The corrections this round produced are themselves
+unreviewed, and the Deferred Items carry that.
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -1058,7 +1107,21 @@ package's first criterion.
 | `5f912285d` | W15 round-five corrections |
 | `14554a768` | W16 Stage 02 sibling index wording |
 | `8a6c951b7` | W16 root README snapshot numbers |
-| pending | This Task record, the guard record, and the full PostgreSQL rehearsal evidence |
+| `41e83d25e` | W15 Task record, the guard record, and the full PostgreSQL rehearsal evidence |
+| `be696fe52` | W16 and W17 Task record |
+| `0d1b0dee4` | W17 Deferred Item corrections |
+| `d8214fc09` | W18 fenced command path check and the seven surfaces it found |
+| `1bfa67525` | W18 commit grammar body constraint |
+| `578e85850` | W19 Compose include and profile check |
+| `4968c730d` | W19 skill-owned script links |
+| `f60c097cc` | W19 criterion 1 amendment and Task record |
+| `018d437b3` | W20 profile check cases the sixth review found |
+| `904c844c2` | W20 operations image tags, implementation claims and include-state residue |
+| `a0dc93610` | W20 documentation and research index routes to retired packages |
+| `d337e057b` | W20 architecture facts |
+| `14d9ff6dc` | W20 tech-stack registry and document tags after the merged image bumps |
+| `658114fff` | W20 SPEC-0173 reconciliation at HEAD |
+| `c36bda522` | W20 SPEC-0173 completion and the preserved-Task recovery fix |
 
 ## Rulings
 
@@ -1096,9 +1159,8 @@ prefers the note removed, the instruction it annotates is intact.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| Re-review of the W14 corrections | W13 was reviewed and blocked; W14 answers that review and is itself unreviewed. Four rounds now show the same shape, and the honest reading is that a reviewer finding nothing would be weak evidence rather than strong. The W14 sweep changed method — claim shape instead of vocabulary — so the next round should test whether that generalises or merely moved the blind spot again |
-| This package's own lifecycle walk | The blocking condition is gone. `git show origin/main:` reports `status: "draft"` for this package's Spec, Plan and Task, so the push this row waited for has happened and the base carries all three at their initial status. The `spec`, `plan` and `task` lifecycles each admit exactly one edge from `draft`, so the walk is mechanical rather than a choice: `review`, `approved` and `ready`. Taken on this branch |
-| SPEC-0173 completion | One blocker removed, the rest intact. The operator authorized single-instance runtime Docker operations on 2026-09-07 and `leaf.postgres-logical-upgrade-config` then exited 0 with `status=check-passed`, leaving container, image, handoff and `/tmp` counts unchanged. That leaf is no longer blocked. The actual operating evidence still is: `RUN_MODE=check` returns before `start_source_and_wait`, so no upgrade was rehearsed. Its own `tsk-0006:198` still forbids reaching a terminal status while any check is BLOCKED, so a status edit remains not a route |
+| Review of the round-six corrections | Round six reviewed `e43380153` through `f60c097cc` and blocked with ten findings, and W20 corrects every one. Criterion 18 requires an independent review of corrections before completion, and the round that found them cannot also judge them, so the completing integration owns that review |
+| This package's own lifecycle walk | Two steps remain after W20 takes the Spec from `review` to `approved`. The next integration takes the Spec to `active`, the Plan to `active` and the Task to `in-progress`, because an active Plan or an in-progress Task requires an active Spec. The integration after that completes all three and preserves them together |
 | Whether `ADR-0007` and `ADR-0022` should carry notes at all | The notes record a realization change on decisions that remain in force, which the retention rule permits because it forbids silence rather than change. A decision owner may prefer the annotation removed or promoted into a superseding decision; the instructions they annotate are intact either way |
 
 ## Related Documents

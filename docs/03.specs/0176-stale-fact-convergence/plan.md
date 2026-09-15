@@ -1,10 +1,10 @@
 ---
 title: "Stale Fact Convergence Implementation Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-15"
 layer: "specs"
 artifact_id: "SPEC-0176-PLAN-0001"
 parent_ids:
@@ -31,8 +31,9 @@ document.
 ## Dependencies
 
 - Audit baseline: local `main` at `e37b2dbcd`, six commits ahead of
-  `origin/main` at `d890b862e`, which is also the merge base this branch
-  measures transitions against.
+  `origin/main` at `d890b862e`. That was the merge base when the package
+  opened. Each later integration moves the base, and the Task records the base
+  each transition was measured against.
 - Position is read from Git, not from a branch name. The three commands are in
   the Spec's Boundaries section and in the Task's Inputs.
 - SPEC-0173 declared the retention-owner promotion as its open dependency and
@@ -54,7 +55,7 @@ document.
    directories, and root `include:` entries, and read the `profiles:` value of
    every service named in a document this package corrects. Record the commands
    and results before editing any prose.
-3. W3: Converge the thirty-nine service and operations documents that describe a
+3. W3: Converge the seventy-four service and operations documents that describe a
    Compose file as a commented, optional, or standalone root include onto the
    profile model POL-0078 owns.
 4. W4: Correct the four Compose documents that carry their own wording: the
@@ -83,6 +84,18 @@ document.
 11. W11: Run the changed profile and the applicable document checks on the final
     path set, then obtain an independent exact-diff review and correct only
     findings inside the current authorization.
+12. W12: Close the bilingual predicate gap and restore the `_workspace` tracking
+    contract that the second review round found.
+13. W13: Work the deferred items under the explicit scope extension the Task
+    records.
+14. W14: Answer the third review round with the claim-shape sweep.
+15. W15: Answer review rounds four and five and fix the directory-identity guard.
+16. W16: Re-baseline against a later HEAD and close the partial Stage 02 sweep.
+17. W17: Correct the Deferred Items whose inputs had moved.
+18. W18: Register the fenced command path check.
+19. W19: Register the Compose include and profile check and amend criterion 1.
+20. W20: Answer review round six, reconcile the receipts and take the first
+    lifecycle step.
 
 ## Risk and Rollback
 
@@ -109,9 +122,13 @@ and work-unit pair. Criterion 17 requires the changed profile to exit 0 on the
 final path set; a focused check that passes on a subset does not satisfy it.
 Criterion 18 requires an independent exact-diff review of the whole package.
 
-This package's own three documents cannot reach terminal status here. They are
-created at their initial statuses and their walk depends on `origin/main`
-carrying them, which no authorization in this package grants.
+This package's own three documents walk their lifecycle across integrations,
+because each document admits one transition per base and an active Plan or an
+in-progress Task requires an active Spec. The walk is Spec `review` to
+`approved` first. Next the Spec becomes `active`, together with an `active`
+Plan and an `in-progress` Task. Last, all three reach `completed` and move to
+the archive in one result tree. Each step waits for the remote to carry the
+one before it.
 
 ## Rulings
 
