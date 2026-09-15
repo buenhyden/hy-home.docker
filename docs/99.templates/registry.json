@@ -1247,6 +1247,7 @@
         "Execution Evidence",
         "Related Documents"
       ],
+      "sealed_section_shapes": [],
       "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1304,6 +1305,7 @@
       "optional_sections": [
         "Related Documents"
       ],
+      "sealed_section_shapes": [],
       "lifecycle_id": "sealed-record",
       "traceability": {
         "allowed_parent_profiles": []

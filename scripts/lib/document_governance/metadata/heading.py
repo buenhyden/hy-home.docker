@@ -724,8 +724,15 @@ def _registered_section_findings(
     record: Record,
     text: str,
     profile: Mapping[str, object],
+    changed_boundary: bool = False,
 ) -> list[Finding]:
-    """Return the section-contract findings a Registry profile declares."""
+    """Return the section-contract findings a Registry profile declares.
+
+    A document in one of the profile's `sealed_section_shapes` keeps the shape
+    it was written in. At the changed boundary that shape is a deficit, and the
+    changed check subtracts the base record's deficits, so it remains only for
+    a record the change adds.
+    """
 
     findings: list[Finding] = []
     h1, h2 = extract_markdown_headings(text)
@@ -747,7 +754,22 @@ def _registered_section_findings(
         for heading in profile.get("optional_sections", ())
         if isinstance(heading, str)
     }
-    for heading in sorted(required - set(h2)):
+    missing = required - set(h2)
+    if missing:
+        for shape in profile.get("sealed_section_shapes", ()):
+            sealed = {f"## {heading}" for heading in shape if isinstance(heading, str)}
+            if sealed and sealed <= set(h2) <= sealed | optional:
+                required, missing = sealed, set()
+                if changed_boundary:
+                    findings.append(
+                        _finding(
+                            record,
+                            "body-sealed-shape",
+                            f"profile {record.artifact_type} adds a record in a sealed section shape",
+                        )
+                    )
+                break
+    for heading in sorted(missing):
         findings.append(
             _finding(
                 record,
@@ -810,7 +832,9 @@ def validate_body_contract(
         registered_profile = classify_registered_path(record.path.as_posix(), registry)
         profile = registry.profiles.get(record.artifact_type)
         if registered_profile == record.artifact_type and isinstance(profile, Mapping):
-            section_findings.extend(_registered_section_findings(record, text, profile))
+            section_findings.extend(
+                _registered_section_findings(record, text, profile, changed_boundary)
+            )
             # A profile that also registers a template used to be exempt here
             # and checked only through its template role, which runs on changed
             # paths alone. That left the declared sections of every SDLC target

@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -391,6 +391,72 @@ directly, so this was a rule violation. It checked one message file, changed no
 repository file, and set aside and restored the unstaged edits; it is not
 evidence for any commit, and later messages were checked with `cz check` alone.
 
+### W5 and W4b: New route shapes, one withdrawal record, and the catalog units ADR-0035 names (2026-09-16, local-executed)
+
+On 2026-09-16 the operator approved taking SPEC-0177 and SPEC-0178 forward and
+chose a direct push to `main` for each integration. The assessment's four
+commits were pushed first: `git push origin main` moved `origin/main` from
+`e233d2a19` to `9def7aba1`, its pre-push `run-ci-gate.py --profile full` printed
+`Public validation suites (full)...Passed`, and GitHub reported two bypassed
+rules on `main`, that changes go through a pull request and that the status
+check `validation-changed` is expected. Each later push in this package is the
+same rule bypass.
+
+That push also fixed the integration boundary. The lifecycle checks judge a
+transition against the merge base with `@{upstream}`, and a new document must
+start at its initial status, so a document can take its next transition only
+after the previous one reaches `origin/main`.
+
+The tests came first and failed first: 14 new tests ran against the unchanged
+code with 10 failures and 7 errors across their subtests, each on missing
+behavior. One of them, that a sealed-shape Tombstone still loads when adopted,
+passed from the start as the guard it is meant to be. The first full run after
+the implementation then failed `test_no_census_literal_pins_archive_content`,
+because that new test asserted a fixture count with
+`assertEqual(1, len(inventory.tombstones))`. The guard was taken as correct, and
+the test now compares the loaded retired paths instead.
+
+W4b. `retention_unit` finds a unit directory through `path_matches_pattern` and
+the Registry `spec` and `incident` path patterns, so an Incident bundle is one
+tree row and the Stage 03 pattern is no longer restated in the check.
+`_names_are_valid` applies the per-class forms of Behavior Contract 7, with
+identifiers recognized by `registry.artifact_identifier_regex` over every
+profile's `artifact_id_pattern`, and coverage now reads every regular file.
+
+W5. `_parse_tombstone_text` admits the route shape only when the model is
+adopted, and a route-shape record carries no recovery reference, so the two
+consumers that list recovery references and preservation decisions skip it.
+`validate_preservation_boundary` pairs only sealed-shape Tombstones once
+adopted and reports a retired body that has both a sealed Tombstone and a
+catalog row. `_recorded_retirements` adds the catalog-row retirements once
+adopted and no longer counts a route-shape Tombstone as a withdrawal. The
+`tombstone` and `migration` profiles declare an empty `sealed_section_shapes`,
+which the profile schema now admits.
+
+The Spec's Technical Approach said `check-document-metadata.py --mode
+check-changed` would pass its base into `_registered_section_findings`. The
+implementation needs no new argument there. That function now takes the
+`changed_boundary` flag `validate_body_contract` already carries and reports
+`body-sealed-shape` only at the changed boundary, and `_introduced_body_findings`
+already subtracts the base record's deficits from the current record's, so the
+deficit cancels for a record the base holds and remains for one the change
+adds. With both shape lists still empty, the rule is inert, and a change that
+adds a sealed-shape record cannot be observed through the CLI until W7 registers
+a sealed shape.
+
+An attempt to write the tests in an isolated worktree under the session
+scratchpad was refused by the PreToolUse hook, whose payload module rejects an
+edit target outside the project root, so the work used the main working tree
+after the push finished. The worktree and its branch were removed unchanged.
+
+| Check | Result |
+| --- | --- |
+| The 14 new tests before the implementation | 10 failures and 7 errors across subtests; 1 regression guard passed |
+| `python3 -m unittest` over `test_archive`, `test_links`, `test_registry`, `test_spec_packages`, `metadata.test_heading`, `metadata.test_reference`, `metadata.test_profile`, `test_taxonomy`, and `tests.validation.lifecycle.test_equivalence` | exit 0, 336 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `migrations=3 tombstones=140 preserved=200 decisions=286 recovery_rows=374 violations=0`, the output before W5 |
+| `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `failures=0` |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `9def7aba1`, `selected=5 violations=0` |
+
 ## Verification Evidence
 
 No acceptance criterion is complete. Rows record each criterion and work-unit
@@ -405,6 +471,12 @@ pair as its unit lands.
 | 1 | W4 | PASS: the corpus lifecycle run reports the same output after W4, and `test_retention_rules_are_inert_at_transition` proves the catalog rules inert at `transition` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 4 | W4 | PASS: `RetentionCatalogTests` covers the header, one row per unit, the class match, the class value, and each `Source` rule, including an orphaned commit and a path that differs from the origin | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 7 | W4 | PASS: `test_an_added_preserved_record_needs_its_row` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 1 | W4b | PASS: the corpus lifecycle run reports the output it reported before W5, and every catalog rule still runs only inside `validate_retention`, which returns nothing at `transition` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 1 | W5 | PASS: the same corpus output; `test_a_new_shape_tombstone_loads_only_when_adopted`, `test_a_catalog_row_alone_records_a_withdrawal`, and `test_a_new_shape_tombstone_pairs_with_no_body` assert the `transition` behavior; both `sealed_section_shapes` lists are empty | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 4 | W4b | PASS: `test_an_incident_bundle_is_one_tree_row`, `test_completed_names_accept_an_owner_path_or_no_durable_contract`, and `test_resolved_names_carry_the_incident_and_its_corrective_owner` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 5 | W5 | PASS: the route shape parses without a recovery commit and `test_a_route_shape_tombstone_keeps_its_contract` rejects a wrong identity, an empty reason, a bare successor, and a missing index link; the sealed shape still loads; `test_the_changed_check_rejects_only_an_added_sealed_shape_record` runs `_introduced_body_findings` against a Registry with a registered shape and rejects only the record absent from its base; and the Migration shapes pass the same unit test. NOT_RUN: `check-document-metadata.py` over the real corpus with a registered shape, which W7 first makes possible | [test_heading.py](../../../../tests/lib/document_governance/metadata/test_heading.py) |
+| 6 | W5 | PASS: `test_a_catalog_row_alone_records_a_withdrawal`, `test_a_sealed_tombstone_and_a_row_are_two_withdrawal_records`, and `test_a_catalog_row_records_a_retirement_once_adopted`; a retired package with neither record still fails `test_whole_package_retirement_requires_a_tombstone` | [test_spec_packages.py](../../../../tests/lib/document_governance/test_spec_packages.py) |
+| 7 | W4b | PASS: `test_an_added_non_markdown_member_needs_its_row` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 
 ## Review Evidence
 
@@ -461,6 +533,43 @@ every code claim it checked and raised no high finding.
 The reviewer also asked for the metadata count to be explained and for the gate
 run to be recorded; both are in the Assessment entry above.
 
+### Independent review of W5 and W4b (2026-09-16, local-executed)
+
+One reviewer in the read-only `code-reviewer` role, not the author, read the
+working-tree files against Behavior Contracts 1 to 9 and the Plan's W4b and W5.
+It had no shell, so it read no diff and ran no test, and one of its findings
+described the Task before this W5 entry was written. It raised no high finding
+and, by static reading, confirmed that no new rule runs at `transition`: the
+catalog work sits behind `validate_retention` and the `adopted` guards, the
+loader passes `adopted=False`, and both shape lists are empty.
+
+| # | Severity | Finding | Disposition |
+| --- | --- | --- | --- |
+| 1 | medium | Behavior Contract 4 held only by reasoning; nothing ran the base subtraction with a registered shape | Accepted. `test_the_changed_check_rejects_only_an_added_sealed_shape_record` runs `_introduced_body_findings` against a Registry copy with a registered shape; the deviation from the Technical Approach is recorded in the W5 entry |
+| 2 | medium | No test tied the sealed-shape rule's inertness to the switch | Accepted. `test_sealed_shapes_are_registered_only_once_the_model_is_adopted` requires the lists to be non-empty exactly when the model is `adopted` |
+| 3 | medium | No case for the new Migration shape and no rejection case for a route-shape Tombstone | Accepted. Both added |
+| 4 | medium | The Task had no W5 or W4b entry | Not a defect of the tree reviewed at the end; the entry was written while the review ran |
+| 5 | medium | `Names` admitted any existing path, including a directory or a preserved body | Accepted. An owner path must be a regular, non-symlink file outside `docs/98.archive/` that a Registry profile classifies |
+| 6 | low | The catalog contract reads the repository Registry rather than the Registry under the checked root | Accepted as documented. Unit shapes, identifier shapes, and owner classification are the code-time contract, and `_catalog_registry` says so |
+| 7 | low | A three-digit legacy package is never a unit, so a row for one fails | Recorded as a limit. No such row is in scope, and no preserved legacy package takes a new row |
+| 8 | low | A unit directory recorded without its trailing `/` reported a missing record instead of an invalid unit | Accepted |
+| 9 | low | A resolved unit could name its own Incident or Postmortem as its corrective owner | Accepted. Incident and Postmortem identifiers are removed before the owner is judged |
+| 10 | low | The identifier pattern was checked for breadth | Not a defect. Every token renders as four digits or an inherited identity |
+| 11 | low | The boundary and the loader told the shapes apart differently | Accepted. Both use `_tombstone_headings` |
+| 12 | low | At `adopted`, "has no tombstone" named the wrong requirement | Accepted. The message names a withdrawal record once adopted |
+| 13 | low | `TombstoneRecord` ordering would compare a `None` recovery | Accepted. The field takes no part in comparison |
+| 14 | low | The SPEC-0178 Plan mapped criterion 5 without W7 | Accepted |
+| 15 | low | The SPEC-0178 index row sits after SPEC-0177 and RES-0096 item A15 is stale | Not changed. The SPEC-0176 row already followed SPEC-0177 at base, and RES-0096 is a dated observation |
+
+Findings 5, 8, 9, and 12 each got a test that failed first. The tests for
+findings 1 to 3 cover code already written and passed on their first run, so
+they are regression tests rather than red-first tests. After the corrections,
+`python3 -m unittest` over the same nine modules exited 0 with 340 tests, the
+corpus lifecycle run printed the same recovery counts with `violations=0`, the
+link run printed `failures=0`, and `check-document-metadata.py --mode
+check-changed` printed `selected=6 violations=0`. Two new test lines draw
+Pyright type warnings on annotations only; no registered gate runs Pyright.
+
 ## Commit Ledger
 
 | Commit | Scope |
@@ -487,9 +596,7 @@ run to be recorded; both are in the Assessment entry above.
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W5 and W4b | Land together in the next integration, with the switch at `transition` |
 | W7 | One integration after W5 and W4b |
 | W8 | One integration after W7 |
-| SPEC-0178 and `ADR-0036` | Draft and proposed; activation requires this package completed and its own approval |
-| An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | No approved owner |
-| The assessment's own integration | Committed locally at the operator's direction; push awaits the operator |
+| SPEC-0178 and `ADR-0036` | SPEC-0178 in review; its activation requires this package completed |
+| An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | Assigned to SPEC-0178 Behavior Contract 10 by the operator on 2026-09-16 |

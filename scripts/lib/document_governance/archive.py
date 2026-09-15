@@ -5,6 +5,7 @@ from __future__ import annotations
 import collections
 import copy
 import dataclasses
+import functools
 import hashlib
 import os
 import pathlib
@@ -27,8 +28,13 @@ from scripts.lib.document_governance.git_provenance import (
 from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
     PRESERVED_DISPOSITIONS,
+    DocumentRegistry,
     admitted_preserved_dispositions,
     archive_disposition_model,
+    artifact_identifier_regex,
+    classify_path,
+    load_registry,
+    path_matches_pattern,
     preserved_origin_path,
 )
 
@@ -273,8 +279,10 @@ class TombstoneRecord:
     retired_path: pathlib.PurePosixPath
     replacement: pathlib.PurePosixPath | None
     reason: str
-    recovery: RecoveryReference
-    is_minimal: bool
+    # A route-shape Tombstone names no recovery commit, so the field can be
+    # None and takes no part in ordering.
+    recovery: RecoveryReference | None = dataclasses.field(compare=False)
+    is_minimal: bool = dataclasses.field(compare=False)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -867,12 +875,92 @@ def _code_value(value: str) -> str:
     return match.group(1)
 
 
-def _parse_tombstone_text(
+_SEALED_TOMBSTONE_SECTIONS = (
+    "Retired Path",
+    "Replacement",
+    "Reason",
+    "Recovery Commit",
+    "Traceability",
+)
+# The route shape names a route for an outside consumer: no recovery commit and
+# no body to pair with. It is admitted only once the model is adopted.
+_ROUTE_TOMBSTONE_SECTIONS = ("Retired Path", "Successor", "Reason", "Traceability")
+
+
+def _tombstone_headings(text: str) -> tuple[str, ...]:
+    """Return a Tombstone's second-level headings, which decide its shape."""
+
+    return tuple(re.findall(r"(?m)^## ([^\n]+)$", text))
+
+
+def _tombstone_envelope_is_valid(
+    metadata: Mapping[str, Any],
+    text: str,
+    retired: pathlib.PurePosixPath | None,
+    filename: str,
+    traceability: str,
+) -> bool:
+    """Check the frontmatter, identity, and traceability both shapes share."""
+
+    number_match = _TOMBSTONE_NAME.fullmatch(filename)
+    number = number_match.group("number") if number_match else ""
+    return bool(
+        retired is not None
+        and set(metadata) == _TOMBSTONE_FIELDS
+        and metadata.get("type") == "archive/tombstone"
+        and metadata.get("status") == "sealed"
+        and metadata.get("artifact_id")
+        == tombstone_identity(retired.as_posix(), number)
+        and isinstance(metadata.get("parent_ids"), list)
+        and (
+            "../../README.md" in traceability
+            or "../../migrations/" in traceability
+            or "98.archive/README.md" in traceability
+            or "98.archive/migrations/" in traceability
+        )
+        and not re.search(
+            r"(?i)archived_blob|snapshot(?:_path|_count)|line[-_ ]sha", text
+        )
+    )
+
+
+def _parse_route_tombstone(
+    metadata: Mapping[str, Any],
+    body: str,
     text: str,
     relative: pathlib.PurePosixPath,
     filename: str,
 ) -> TombstoneRecord:
+    retired = _safe_path(_code_value(_section(body, "Retired Path")))
+    successor_text = _section(body, "Successor")
+    successor = (
+        None if successor_text == "none" else _safe_path(_code_value(successor_text))
+    )
+    reason = _section(body, "Reason")
+    traceability = _section(body, "Traceability")
+    if (
+        retired is None
+        or not _tombstone_envelope_is_valid(
+            metadata, text, retired, filename, traceability
+        )
+        or not (successor_text == "none" or successor is not None)
+        or not reason
+    ):
+        raise ValueError(f"tombstone does not satisfy the route contract: {relative}")
+    return TombstoneRecord(relative, retired, successor, reason, None, True)
+
+
+def _parse_tombstone_text(
+    text: str,
+    relative: pathlib.PurePosixPath,
+    filename: str,
+    *,
+    adopted: bool = False,
+) -> TombstoneRecord:
     metadata, body = _frontmatter(text)
+    headings = _tombstone_headings(body)
+    if adopted and headings == _ROUTE_TOMBSTONE_SECTIONS:
+        return _parse_route_tombstone(metadata, body, text, relative, filename)
     retired = _safe_path(_code_value(_section(body, "Retired Path")))
     replacement_text = _section(body, "Replacement")
     replacement = (
@@ -883,31 +971,12 @@ def _parse_tombstone_text(
     reason = _section(body, "Reason")
     commit = _code_value(_section(body, "Recovery Commit"))
     traceability = _section(body, "Traceability")
-    headings = tuple(re.findall(r"(?m)^## ([^\n]+)$", body))
-    number_match = _TOMBSTONE_NAME.fullmatch(filename)
-    number = number_match.group("number") if number_match else ""
     minimal = bool(
-        set(metadata) == _TOMBSTONE_FIELDS
-        and metadata.get("type") == "archive/tombstone"
-        and metadata.get("status") == "sealed"
-        and metadata.get("artifact_id")
-        == tombstone_identity(retired.as_posix() if retired is not None else "", number)
-        and isinstance(metadata.get("parent_ids"), list)
-        and headings
-        == ("Retired Path", "Replacement", "Reason", "Recovery Commit", "Traceability")
-        and retired is not None
+        _tombstone_envelope_is_valid(metadata, text, retired, filename, traceability)
+        and headings == _SEALED_TOMBSTONE_SECTIONS
         and (replacement_text == "none" or replacement is not None)
         and bool(reason)
         and recovery_commit_is_valid(commit)
-        and (
-            "../../README.md" in traceability
-            or "../../migrations/" in traceability
-            or "98.archive/README.md" in traceability
-            or "98.archive/migrations/" in traceability
-        )
-        and not re.search(
-            r"(?i)archived_blob|snapshot(?:_path|_count)|line[-_ ]sha", text
-        )
     )
     if retired is None or not recovery_commit_is_valid(commit):
         raise ValueError(f"invalid tombstone recovery identity: {relative}")
@@ -988,11 +1057,17 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
     from scripts.lib.document_governance.registry import preserved_origin_path
 
     archive_root = pathlib.Path(archive_root)
+    adopted = (
+        archive_disposition_model(archive_root.parent.parent) == ARCHIVE_MODEL_ADOPTED
+    )
     findings: list[str] = []
 
     expected: dict[str, str] = {}
     for tombstone in sorted((archive_root / "tombstones").rglob("*.md")):
         text = tombstone.read_text(encoding="utf-8")
+        if adopted and _tombstone_headings(text) == _ROUTE_TOMBSTONE_SECTIONS:
+            # A route-shape Tombstone names a route and pairs with no body.
+            continue
         retired = _section(text, "Retired Path").strip().strip("`")
         if not retired:
             findings.append(f"{tombstone.as_posix()}: tombstone names no retired path")
@@ -1002,34 +1077,50 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
             continue
         expected[retired] = tombstone.as_posix()
 
-    preserved: dict[str, set[str]] = {
-        disposition: set() for disposition in PRESERVED_DISPOSITIONS
+    # Each preserved origin path maps to its archive-relative record path.
+    preserved: dict[str, dict[str, str]] = {
+        disposition: {} for disposition in PRESERVED_DISPOSITIONS
     }
     for disposition in preserved:
         subtree = archive_root / disposition
         if not subtree.is_dir():
             continue
         for record in sorted(subtree.rglob("*.md")):
+            relative = f"{disposition}/{record.relative_to(subtree).as_posix()}"
             origin = preserved_origin_path(
                 record.as_posix()[record.as_posix().index("docs/98.archive/") :]
                 if "docs/98.archive/" in record.as_posix()
-                else f"docs/98.archive/{disposition}/"
-                + record.relative_to(subtree).as_posix()
+                else f"docs/98.archive/{relative}"
             )
             if origin is not None:
-                preserved[disposition].add(origin)
+                preserved[disposition][origin] = relative
 
+    # Once adopted, a Retention Catalog row is the other withdrawal record, and
+    # a retired body carries exactly one of the two.
+    catalogued = (
+        retention_catalog_records(archive_root.parent.parent)
+        if adopted
+        else frozenset()
+    )
+    retired_records = preserved["retired"]
     for retired, tombstone in sorted(expected.items()):
-        if retired not in preserved["retired"]:
+        if retired not in retired_records:
             findings.append(
                 f"{tombstone}: tombstone has no preserved record: {retired}"
             )
-    for origin in sorted(preserved["retired"] - set(expected)):
-        findings.append(f"{origin}: retired record has no tombstone")
+        elif adopted and retention_unit(retired_records[retired]) in catalogued:
+            findings.append(
+                f"{retired}: retired record has more than one withdrawal record"
+            )
+    for origin in sorted(set(retired_records) - set(expected)):
+        if adopted and retention_unit(retired_records[origin]) in catalogued:
+            continue
+        missing = "withdrawal record" if adopted else "tombstone"
+        findings.append(f"{origin}: retired record has no {missing}")
     for disposition in PRESERVED_DISPOSITIONS:
         if disposition == "retired":
             continue
-        for origin in sorted(preserved[disposition] & set(expected)):
+        for origin in sorted(set(preserved[disposition]) & set(expected)):
             findings.append(
                 f"{origin}: {disposition} record must not carry a tombstone"
             )
@@ -1041,9 +1132,12 @@ _ARCHIVE_INDEX = "docs/98.archive/README.md"
 _CATALOG_SECTION = re.compile(r"(?ms)^## Retention Catalog[ \t]*\n(.*?)(?=^## |\Z)")
 _CATALOG_HEADER = ("Record", "Class", "Names", "Source")
 _CATALOG_SEPARATOR = re.compile(r"(?:\|:?-{3,}:?){4}\|")
-_CATALOG_PACKAGE = re.compile(r"[a-z]+/03\.specs/[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*/")
-_CATALOG_PACKAGE_MEMBER = re.compile(rf"(?P<unit>{_CATALOG_PACKAGE.pattern}).+")
-_ARTIFACT_IDENTIFIER = re.compile(r"\b[A-Z]{2,5}-[0-9]{4}\b")
+# A catalog unit is a directory the Registry registers as one whole package: a
+# Spec package or an Incident bundle. Every other preserved file is its own unit.
+_CATALOG_UNIT_PROFILES = ("spec", "incident")
+_NO_DURABLE_CONTRACT = "no durable contract"
+_NO_CORRECTIVE_ACTION = re.compile(r"no corrective action:\s*\S")
+_CODE_SPAN = re.compile(r"`([^`]+)`")
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -1056,11 +1150,107 @@ class RetentionCatalogRow:
     source: str
 
 
+@functools.lru_cache(maxsize=1)
+def _catalog_registry() -> DocumentRegistry:
+    # Unit shapes, identifier shapes, and owner classification are the
+    # repository Registry's code-time contract, not a value a checked root
+    # supplies, so a fixture root that carries only the switch still reads them.
+    return load_registry()
+
+
+@functools.lru_cache(maxsize=1)
+def _catalog_contract() -> tuple[
+    tuple[str, ...], re.Pattern[str], re.Pattern[str], re.Pattern[str]
+]:
+    """Read unit path patterns and identifier patterns from the Registry once."""
+
+    registry = _catalog_registry()
+    units = tuple(
+        str(registry.profiles[profile]["path_pattern"])
+        for profile in _CATALOG_UNIT_PROFILES
+    )
+    identifiers = artifact_identifier_regex(
+        tuple(
+            pattern
+            for profile in registry.profiles.values()
+            if isinstance(pattern := profile.get("artifact_id_pattern"), str)
+        )
+    )
+    incident = artifact_identifier_regex(
+        (str(registry.profiles["incident"]["artifact_id_pattern"]),)
+    )
+    # An Incident and its Postmortem are the record, never its corrective owner.
+    incident_records = artifact_identifier_regex(
+        tuple(
+            str(registry.profiles[profile]["artifact_id_pattern"])
+            for profile in ("incident", "postmortem")
+        )
+    )
+    return units, identifiers, incident, incident_records
+
+
+def _is_unit_directory(origin: str) -> bool:
+    units, _, _, _ = _catalog_contract()
+    return any(
+        path_matches_pattern(f"{origin}/{pathlib.PurePosixPath(unit).name}", unit)
+        for unit in units
+    )
+
+
 def retention_unit(record: str) -> str:
     """Return the catalog unit of an archive-relative path: its package or itself."""
 
-    match = _CATALOG_PACKAGE_MEMBER.fullmatch(record)
-    return match.group("unit") if match is not None else record
+    disposition, _, rest = record.partition("/")
+    parts = rest.split("/")
+    for depth in range(1, len(parts)):
+        directory = "/".join(parts[:depth])
+        if _is_unit_directory(f"docs/{directory}"):
+            return f"{disposition}/{directory}/"
+    return record
+
+
+def _names_owner_path(root: pathlib.Path, names: str) -> bool:
+    """Whether `names` cites a current document a Registry profile classifies."""
+
+    for span in _CODE_SPAN.findall(names):
+        path = _safe_path(span)
+        if path is None or path.as_posix().startswith(_ARCHIVE_PREFIX):
+            continue
+        target = root / path
+        if (
+            target.is_file()
+            and not target.is_symlink()
+            and classify_path(path, _catalog_registry()) is not None
+        ):
+            return True
+    return False
+
+
+def _names_are_valid(root: pathlib.Path, disposition: str, names: str) -> bool:
+    """Whether `Names` holds what its class must name, with no invented identifier."""
+
+    _, identifiers, incident, incident_records = _catalog_contract()
+    if not names.strip():
+        return False
+    if disposition == "retired":
+        return True
+    if disposition == "superseded":
+        return identifiers.search(names) is not None
+    if disposition == "completed":
+        return (
+            names.strip() == _NO_DURABLE_CONTRACT
+            or identifiers.search(names) is not None
+            or _names_owner_path(root, names)
+        )
+    match = incident.search(names)
+    if match is None:
+        return False
+    owner = incident_records.sub(" ", names)
+    return (
+        identifiers.search(owner) is not None
+        or _names_owner_path(root, owner)
+        or _NO_CORRECTIVE_ACTION.search(owner) is not None
+    )
 
 
 def _catalog_cells(line: str) -> tuple[str, ...]:
@@ -1159,18 +1349,15 @@ def validate_retention_catalog(root: pathlib.Path) -> tuple[ArchiveFinding, ...]
         is_package = record.endswith("/")
         if row.disposition != disposition:
             findings.append(ArchiveFinding("catalog-class-mismatch", path))
-        if retention_unit(record) != record or (
-            is_package and _CATALOG_PACKAGE.fullmatch(record) is None
+        # A unit directory is recorded with its trailing `/`, and nothing else is.
+        if retention_unit(record) != record or is_package != _is_unit_directory(
+            f"docs/{record.partition('/')[2].rstrip('/')}"
         ):
             findings.append(ArchiveFinding("catalog-unit-invalid", path))
         target = root / path
         if not (target.is_dir() if is_package else target.is_file()):
             findings.append(ArchiveFinding("catalog-record-missing", path))
-        # A withdrawal reason names no artifact; every other class names at
-        # least the identifier it promoted to, was superseded by, or hands to.
-        if not row.names or (
-            disposition != "retired" and _ARTIFACT_IDENTIFIER.search(row.names) is None
-        ):
+        if not _names_are_valid(root, disposition, row.names):
             findings.append(ArchiveFinding("catalog-names-invalid", path))
         findings.extend(_catalog_source_findings(root, path, row.source, is_package))
     return tuple(sorted(set(findings)))
@@ -1184,6 +1371,25 @@ def retention_catalog_records(root: pathlib.Path) -> frozenset[str]:
     return frozenset(
         record for row in rows if (record := _code_span(row.record)) is not None
     )
+
+
+def retention_catalog_retirements(
+    root: pathlib.Path,
+) -> frozenset[pathlib.PurePosixPath]:
+    """Return the origin path of each `retired/` file a catalog row covers."""
+
+    root = pathlib.Path(root)
+    records = retention_catalog_records(root)
+    archive = root / _ARCHIVE_PREFIX
+    origins: set[pathlib.PurePosixPath] = set()
+    for path in sorted((archive / "retired").rglob("*")):
+        relative = path.relative_to(archive).as_posix()
+        if not path.is_file() or retention_unit(relative) not in records:
+            continue
+        origin = preserved_origin_path(f"{_ARCHIVE_PREFIX}{relative}")
+        if origin is not None:
+            origins.add(pathlib.PurePosixPath(origin))
+    return frozenset(origins)
 
 
 def validate_catalog_coverage(
@@ -1204,9 +1410,9 @@ def validate_catalog_coverage(
         subtree = root / _ARCHIVE_PREFIX / disposition
         if not subtree.is_dir():
             continue
-        for record in sorted(subtree.rglob("*.md")):
+        for record in sorted(subtree.rglob("*")):
             relative = record.relative_to(root).as_posix()
-            if relative in at_base:
+            if not record.is_file() or relative in at_base:
                 continue
             unit = retention_unit(relative.removeprefix(_ARCHIVE_PREFIX))
             if unit not in recorded:
@@ -1347,7 +1553,12 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
                     )
                     try:
                         tombstones.append(
-                            _parse_tombstone_text(text, relative, filename)
+                            _parse_tombstone_text(
+                                text,
+                                relative,
+                                filename,
+                                adopted=model == ARCHIVE_MODEL_ADOPTED,
+                            )
                         )
                     except ArchiveContractError:
                         raise
@@ -1395,7 +1606,9 @@ def load_task10_recovery_references(
     recoveries = _legacy_change_recoveries(root, sources)
     references = [recoveries[source] for source in sources]
     archive = load_archive(root / "docs/98.archive")
-    references.extend(item.recovery for item in archive.tombstones)
+    references.extend(
+        item.recovery for item in archive.tombstones if item.recovery is not None
+    )
     return tuple(references)
 
 
@@ -1429,6 +1642,9 @@ def load_task10_preservation_decisions(
         for packet, recoveries in sorted(grouped.items())
     ]
     for tombstone in load_archive(root / "docs/98.archive").tombstones:
+        if tombstone.recovery is None:
+            # A route-shape Tombstone records a route, not a preservation decision.
+            continue
         decisions.append(
             PreservationDecision(
                 "minimal-tombstone",

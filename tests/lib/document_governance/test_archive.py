@@ -1366,6 +1366,268 @@ class RetentionCatalogTests(unittest.TestCase):
         self._write_model("transition")
         self.assertEqual((), self.archive.validate_retention(self.root, self.base))
 
+    _BUNDLE = "docs/05.operations/incidents/2026/inc-0001-outage"
+    _BUNDLE_RECORD = "resolved/05.operations/incidents/2026/inc-0001-outage"
+
+    def _preserve_bundle(self) -> str:
+        """Commit an Incident bundle as a source, then move it into `resolved/`."""
+
+        self._write(f"{self._BUNDLE}/incident.md", "# Incident\n")
+        self._write(f"{self._BUNDLE}/postmortem.md", "# Postmortem\n")
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "incident")
+        source = _fixture_git(self.root, "rev-parse", "HEAD")
+        preserved = f"docs/98.archive/{self._BUNDLE_RECORD}"
+        (self.root / preserved).parent.mkdir(parents=True, exist_ok=True)
+        _fixture_git(self.root, "mv", self._BUNDLE, preserved)
+        return source
+
+    def bundle_row(
+        self,
+        source: str,
+        *,
+        member: str = "",
+        names: str = "inc-2026-0001; no corrective action: the fault was upstream",
+    ) -> str:
+        record = (
+            f"{self._BUNDLE_RECORD}/{member}" if member else f"{self._BUNDLE_RECORD}/"
+        )
+        origin = f"{self._BUNDLE}/{member}" if member else self._BUNDLE
+        return f"| `{record}` | resolved | {names} | `{source}:{origin}` |"
+
+    def test_an_incident_bundle_is_one_tree_row(self) -> None:
+        source = self._preserve_bundle()
+        self.readme([*self.rows(), self.bundle_row(source)])
+        self.assertEqual(set(), self.codes())
+        self.readme(
+            [
+                *self.rows(),
+                self.bundle_row(source, member="incident.md"),
+                self.bundle_row(source, member="postmortem.md"),
+            ]
+        )
+        self.assertIn("catalog-unit-invalid", self.codes())
+
+    def test_completed_names_accept_an_owner_path_or_no_durable_contract(self) -> None:
+        self._write(".agents/governance/documentation-protocol.md", "# Policy\n")
+        for names, valid in (
+            ("`.agents/governance/documentation-protocol.md`", True),
+            ("no durable contract", True),
+            ("`.agents/governance/absent.md`", False),
+            ("`docs`", False),
+            ("`docs/98.archive/README.md`", False),
+            ("no contract", False),
+        ):
+            with self.subTest(names=names):
+                self.readme(self.rows(package_names=names))
+                self.assertEqual(not valid, "catalog-names-invalid" in self.codes())
+
+    def test_resolved_names_carry_the_incident_and_its_corrective_owner(self) -> None:
+        source = self._preserve_bundle()
+        for names, valid in (
+            ("inc-2026-0001; no corrective action: the fault was upstream", True),
+            ("inc-2026-0001; SPEC-0001", True),
+            ("inc-2026-0001; no corrective action:", False),
+            ("inc-2026-0001", False),
+            ("inc-2026-0001; inc-2026-0001-PM", False),
+            ("SPEC-0001; no corrective action: the fault was upstream", False),
+        ):
+            with self.subTest(names=names):
+                self.readme([*self.rows(), self.bundle_row(source, names=names)])
+                self.assertEqual(not valid, "catalog-names-invalid" in self.codes())
+
+    def test_an_added_non_markdown_member_needs_its_row(self) -> None:
+        self._write(
+            "docs/98.archive/completed/03.specs/0001-example/contract.yaml", "a: 1\n"
+        )
+        self._write(
+            "docs/98.archive/retired/90.references/data/0007-set/data.yaml", "a: 1\n"
+        )
+        findings = self.archive.validate_catalog_coverage(self.root, self.base)
+        self.assertEqual(
+            {
+                (
+                    "catalog-row-missing",
+                    "docs/98.archive/retired/90.references/data/0007-set/data.yaml",
+                )
+            },
+            {(finding.code, finding.path) for finding in findings},
+        )
+
+    def test_a_package_record_without_its_trailing_slash_is_not_a_unit(self) -> None:
+        self.readme(self.rows(package_record="completed/03.specs/0001-example"))
+        self.assertIn("catalog-unit-invalid", self.codes())
+
+
+_RETIRED_REQUIREMENT = "docs/01.requirements/0001-example.md"
+_TOMBSTONE_FRONTMATTER = """---
+title: "Withdrawn requirement"
+version: "0.1.0"
+type: "archive/tombstone"
+status: "sealed"
+owner: "@example"
+updated: "2026-09-16"
+layer: "archive"
+artifact_id: "tomb-REQ-0001"
+parent_ids: []
+created: "2026-09-16"
+---
+
+# Withdrawn requirement
+"""
+_NEW_SHAPE_TOMBSTONE = (
+    _TOMBSTONE_FRONTMATTER
+    + f"""
+## Retired Path
+
+`{_RETIRED_REQUIREMENT}`
+
+## Successor
+
+none
+
+## Reason
+
+An outside consumer followed this path, and the requirement was withdrawn.
+
+## Traceability
+
+- [Archive index](../../README.md)
+"""
+)
+_SEALED_SHAPE_TOMBSTONE = (
+    _TOMBSTONE_FRONTMATTER
+    + f"""
+## Retired Path
+
+`{_RETIRED_REQUIREMENT}`
+
+## Replacement
+
+none
+
+## Reason
+
+The requirement was withdrawn.
+
+## Recovery Commit
+
+`0123456789abcdef0123456789abcdef01234567`
+
+## Traceability
+
+- [Archive index](../../README.md)
+"""
+)
+
+
+class WithdrawalRecordTests(unittest.TestCase):
+    """Once adopted, a retired body has exactly one withdrawal record."""
+
+    _RETIRED_BODY = "docs/98.archive/retired/01.requirements/0001-example.md"
+    _TOMBSTONE = "docs/98.archive/tombstones/01.requirements/0001-example.md"
+
+    def setUp(self) -> None:
+        self.archive = archive_api()
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = pathlib.Path(temp.name)
+        self.archive_root = self.root / "docs/98.archive"
+        (self.archive_root / "migrations").mkdir(parents=True)
+        (self.archive_root / "tombstones/01.requirements").mkdir(parents=True)
+        self.index()
+        self.model("adopted")
+
+    def write(self, relative: str, text: str) -> None:
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    def model(self, model: str) -> None:
+        self.write(
+            "docs/99.templates/registry.json",
+            f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+        )
+
+    def index(self, *records: str) -> None:
+        rows = "".join(
+            f"| `{record}` | retired | Withdrawn. | `x:docs/{record}` |\n"
+            for record in records
+        )
+        self.write(
+            "docs/98.archive/README.md",
+            "# Archive\n\n## Retention Catalog\n\n"
+            "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n" + rows,
+        )
+
+    def boundary(self) -> tuple[str, ...]:
+        return self.archive.validate_preservation_boundary(self.archive_root)
+
+    def test_a_new_shape_tombstone_loads_only_when_adopted(self) -> None:
+        self.write(self._TOMBSTONE, _NEW_SHAPE_TOMBSTONE)
+        inventory = self.archive.load_archive(self.archive_root)
+        self.assertEqual([None], [item.recovery for item in inventory.tombstones])
+        self.model("transition")
+        with self.assertRaises(ValueError):
+            self.archive.load_archive(self.archive_root)
+
+    def test_a_route_shape_tombstone_keeps_its_contract(self) -> None:
+        for label, old, new in (
+            (
+                "identity",
+                'artifact_id: "tomb-REQ-0001"',
+                'artifact_id: "tomb-REQ-0002"',
+            ),
+            (
+                "reason",
+                "An outside consumer followed this path, and the requirement was withdrawn.",
+                "",
+            ),
+            (
+                "successor",
+                "## Successor\n\nnone",
+                "## Successor\n\ndocs/01.requirements/0002-next.md",
+            ),
+            ("traceability", "- [Archive index](../../README.md)", "- The owner"),
+        ):
+            with self.subTest(label=label):
+                self.write(self._TOMBSTONE, _NEW_SHAPE_TOMBSTONE.replace(old, new))
+                with self.assertRaises(ValueError):
+                    self.archive.load_archive(self.archive_root)
+
+    def test_a_sealed_shape_tombstone_still_loads_when_adopted(self) -> None:
+        self.write(self._TOMBSTONE, _SEALED_SHAPE_TOMBSTONE)
+        inventory = self.archive.load_archive(self.archive_root)
+        self.assertEqual(
+            [pathlib.PurePosixPath(_RETIRED_REQUIREMENT)],
+            [item.retired_path for item in inventory.tombstones],
+        )
+        self.assertIsNotNone(inventory.tombstones[0].recovery)
+
+    def test_a_catalog_row_alone_records_a_withdrawal(self) -> None:
+        self.write(self._RETIRED_BODY, "# Example\n")
+        self.assertIn("has no withdrawal record", " ".join(self.boundary()))
+        self.index("retired/01.requirements/0001-example.md")
+        self.assertEqual((), self.boundary())
+        self.model("transition")
+        self.assertEqual(1, len(self.boundary()))
+
+    def test_a_sealed_tombstone_and_a_row_are_two_withdrawal_records(self) -> None:
+        self.write(self._RETIRED_BODY, "# Example\n")
+        self.write(self._TOMBSTONE, _SEALED_SHAPE_TOMBSTONE)
+        self.assertEqual((), self.boundary())
+        self.index("retired/01.requirements/0001-example.md")
+        self.assertIn("more than one withdrawal record", " ".join(self.boundary()))
+
+    def test_a_new_shape_tombstone_pairs_with_no_body(self) -> None:
+        self.write(
+            "docs/98.archive/completed/01.requirements/0001-example.md", "# Example\n"
+        )
+        self.write(self._TOMBSTONE, _NEW_SHAPE_TOMBSTONE)
+        self.assertEqual((), self.boundary())
+        self.model("transition")
+        self.assertTrue(self.boundary())
+
 
 if __name__ == "__main__":
     unittest.main()

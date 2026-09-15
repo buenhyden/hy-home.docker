@@ -958,6 +958,38 @@ class SpecPackageTests(unittest.TestCase):
                 ),
             )
 
+    def test_a_catalog_row_records_a_retirement_once_adopted(self) -> None:
+        """After adoption a Retention Catalog row, not a Tombstone, records it."""
+
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            archive = root / "docs/98.archive"
+            for name in ("migrations", "tombstones", "retired/03.specs/0001-example"):
+                (archive / name).mkdir(parents=True)
+            (archive / "retired/03.specs/0001-example/spec.md").write_text(
+                "# Example\n", encoding="utf-8"
+            )
+            (archive / "README.md").write_text(
+                "# Archive\n\n## Retention Catalog\n\n"
+                "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n"
+                "| `retired/03.specs/0001-example/` | retired | Withdrawn. | "
+                "`x:docs/03.specs/0001-example` |\n",
+                encoding="utf-8",
+            )
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            expected = pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")
+            for model, recorded in (("transition", False), ("adopted", True)):
+                with self.subTest(model=model):
+                    registry.write_text(
+                        json.dumps({"common": {"archive_disposition_model": model}}),
+                        encoding="utf-8",
+                    )
+                    self.assertEqual(
+                        recorded, expected in spec_packages._recorded_retirements(root)
+                    )
+
     def test_preserved_package_is_not_a_retirement(self) -> None:
         """Completion and withdrawal are different events with different records.
 

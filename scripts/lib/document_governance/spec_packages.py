@@ -2062,17 +2062,37 @@ def validate_repository_spec_package_lifecycle(
 
 
 def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:
-    """Stage 98 Tombstones are the tracked record of an approved retirement."""
+    """Stage 98 withdrawal records are the tracked record of an approved retirement.
 
-    from scripts.lib.document_governance.archive import load_archive
+    A sealed Tombstone records a withdrawal. Once the archive disposition model
+    is adopted, a Retention Catalog row for a `retired/` unit records one too,
+    and a route-shape Tombstone, which names only a route, records none.
+    """
 
+    from scripts.lib.document_governance.archive import (
+        load_archive,
+        retention_catalog_retirements,
+    )
+    from scripts.lib.document_governance.registry import (
+        ARCHIVE_MODEL_ADOPTED,
+        archive_disposition_model,
+    )
+
+    root = pathlib.Path(root)
     try:
-        inventory = load_archive(pathlib.Path(root) / "docs/98.archive")
+        inventory = load_archive(root / "docs/98.archive")
     except (OSError, ValueError):
         # Stage 98 has its own gate. An unreadable archive grants no exemption:
         # every removal is judged as unrecorded until the archive is valid.
         return frozenset()
-    return frozenset(record.retired_path for record in inventory.tombstones)
+    recorded = frozenset(
+        record.retired_path
+        for record in inventory.tombstones
+        if record.recovery is not None
+    )
+    if archive_disposition_model(root) != ARCHIVE_MODEL_ADOPTED:
+        return recorded
+    return recorded | retention_catalog_retirements(root)
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

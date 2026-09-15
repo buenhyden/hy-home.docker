@@ -2117,6 +2117,17 @@ def path_matches_pattern(
     return _path_regex(pattern).fullmatch(normalized) is not None
 
 
+def artifact_identifier_regex(patterns: tuple[str, ...]) -> re.Pattern[str]:
+    """Return one pattern that finds an identifier any given artifact pattern issues."""
+
+    bodies = sorted(
+        {_path_regex(pattern).pattern[1:-1] for pattern in patterns},
+        key=len,
+        reverse=True,
+    )
+    return re.compile(rf"(?<![A-Za-z0-9-])(?:{'|'.join(bodies)})(?![A-Za-z0-9-])")
+
+
 def classify_path(
     path: str | pathlib.PurePosixPath,
     registry: DocumentRegistry | None = None,

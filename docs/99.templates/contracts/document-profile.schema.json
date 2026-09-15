@@ -265,6 +265,12 @@
         "free_form_sections": {
           "type": "boolean"
         },
+        "sealed_section_shapes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stringList"
+          }
+        },
         "lifecycle_id": {
           "type": [
             "string",
