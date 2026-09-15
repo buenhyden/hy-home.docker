@@ -1,6 +1,6 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -17,7 +17,7 @@ updated: "2026-09-06"
 | 03 | `specs` | implementable change contract and execution | Spec Package | focused tests, Task, review |
 | 05 | `operations` | operational knowledge and incidents | Operations catalog | safe procedure and observed result |
 | 90 | `references` | non-normative evidence | Research, Audit, or Data | provenance and observation date |
-| 98 | `archive` | frozen preserved bodies and recovery navigation | preserved records, Migration, or Tombstone | source-byte and Git recovery evidence |
+| 98 | `archive` | retention classes for frozen bodies and route dispositions for outside routes | preserved records, Migration, or Tombstone | source-byte evidence; Git history recovers frozen content |
 | 99 | — | document contracts | registry, schemas, templates | registry/schema tests |
 
 A `layer` value is the stage directory name without its numeric prefix.

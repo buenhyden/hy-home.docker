@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-09-15"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -26,11 +26,13 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 
 - Bounded incident evidence and current runbook.
 - Affected services, timestamps, impact, authority, and escalation contacts.
-- Preserved evidence when reconstruction needs it. Outside Stage 98 only
-  `docs/98.archive/completed/` may be cited, and an incident or postmortem record
-  is the one profile the archive boundary excepts, because reconstructing what
-  happened is exactly when a preserved body is the correct citation. The archive
-  boundary (`docs/98.archive/README.md`) owns that rule and its limits.
+- Preserved evidence when reconstruction needs it. An incident or postmortem
+  record is the one profile that may cite any archive path directly, because the
+  evidence such an account rests on is often the archived record itself. Other
+  documents cite only the Stage 98 index and `completed/`, and `resolved/` once
+  SPEC-0177 moves the link validator. The
+  [documentation protocol](../../governance/documentation-protocol.md#links-into-stage-98)
+  owns that rule.
 
 ## Procedure
 

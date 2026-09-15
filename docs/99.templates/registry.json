@@ -3824,8 +3824,8 @@
         "REQ-0026.FR": {
           "prefix": "REQ-0026-FR-",
           "width": 4,
-          "high_water": 12,
-          "next_number": 13,
+          "high_water": 15,
+          "next_number": 16,
           "current_issued": [
             1,
             2,
@@ -3836,7 +3836,10 @@
             9,
             10,
             11,
-            12
+            12,
+            13,
+            14,
+            15
           ],
           "reserved_history": [
             6,
@@ -3888,15 +3891,15 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 34,
-      "next_number": 35,
+      "high_water": 35,
+      "next_number": 36,
       "child_spaces": {}
     },
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 176,
-      "next_number": 177,
+      "high_water": 177,
+      "next_number": 178,
       "child_spaces": {}
     },
     "operations-subject": {

@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.2.0"
+version: "0.2.1"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-15"
 created: "2026-09-06"
 observed_at: "2026-09-07"
 review_cycle: "on-surface-change"
@@ -41,7 +41,7 @@ anything outside this repository.
 | `docs/03.specs/**` | the active Spec Package; its Task owns execution evidence | bounded change contract | metadata, corpus lifecycle, spec package tests |
 | `docs/05.operations/**` | the operations catalog subject | operator procedure and incidents | operations catalog check |
 | `docs/90.references/**` | Research, Audit, or Data package | non-normative dated evidence | metadata, reference protection tests |
-| `docs/98.archive/**` | preserved frozen bodies plus Migration and Tombstone | frozen bodies are never edited | corpus lifecycle, archive recovery |
+| `docs/98.archive/**` | retention classes holding frozen bodies, and Tombstone and Migration route records | frozen bodies are never edited; only the index, `completed/` and `resolved/` are citable | corpus lifecycle, archive recovery, archive link boundary |
 | `docs/99.templates/registry.json` | the Stage 99 registry | document shape, path, identity, lifecycle | registry and metadata suites |
 | `.github/workflow-contract.yml` | executable composition and public suite membership | workflow contract plus security review | `check-github-workflow-contract.py` |
 | `.github/workflows/**` | the workflow files | least privilege, pinned actions, no secrets in `run` | actionlint, workflow contract |
@@ -94,7 +94,9 @@ contract's `public_gate` section, `scripts/manifest.yaml`, and the stage index
 documents. The Entry Order was re-read from `bootstrap.md` at `f71449eff` on
 2026-09-07, because the version transcribed here predated the two canonical
 categories this map's own ownership table lists and so routed to neither. The knowledge graph under `graphify-out/` was not used as evidence
-because its build commit differs from HEAD.
+because its build commit differs from HEAD. The `docs/98.archive/**` row was
+re-read from the documentation protocol's Stage 98 dispositions section on
+2026-09-15, in the change that added that section.
 
 ## Refresh Triggers
 

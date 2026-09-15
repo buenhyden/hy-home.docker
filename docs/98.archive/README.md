@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "1.2.1"
+version: "2.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-15"
 layer: "archive"
 ---
 
@@ -12,82 +12,114 @@ layer: "archive"
 
 ## Overview
 
-Stage 98은 활성 스테이지를 떠난 문서를 보관합니다. 완료된 것, 대체된 것,
-철회된 것은 모두 보존되며 삭제되지 않습니다. 보존과 삭제의 차이는 조회
-가능성입니다: 보존된 기록은 파일로 존재하므로 읽고 검증할 수 있고, Git
-history는 그 파일이 삭제 당시 문서와 동일함을 증명하는 근거로만 쓰입니다.
+Stage 98은 활성 스테이지가 더 이상 담지 않는 것을 여섯 처분으로 보존합니다.
+각 처분은 자기 디렉터리를 가지며, 그 디렉터리는 해당 처분을 처음 쓰는 변경이
+만듭니다. 기록이 아직 없는 처분에는 디렉터리가 없습니다. 처분은 두 종류로
+나뉘고, 종류가 디렉터리에 담기는 것과 현재 문서가 그것을 인용할 수 있는지를
+정합니다.
 
-이 README는 현재 archive 탐색과 작업 안내를 소유하며 보존 정책은
-[.agents](../../.agents/governance/documentation-protocol.md#document-retention-and-retirement),
-경로·profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가 소유합니다.
-보존 기록은 현재 규칙이나 구현 지침을 소유하지 않습니다. 여기 있는 어떤
-문서도 `.agents/`, `docs/01.requirements/`,
-`docs/02.architecture/`, `docs/03.specs/`, `docs/05.operations/`의 현재 규칙을
-덮어쓰지 않습니다.
+이 README는 archive 탐색과 작업 안내만 소유합니다. 보존 정책은
+[.agents](../../.agents/governance/documentation-protocol.md#stage-98-dispositions)가,
+경로와 profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가,
+선택의 근거는 [ADR-0035](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)가
+소유합니다. 여기 보존된 어떤 기록도 `.agents/`와 Stage 01·02·03·05의 현재
+규칙을 덮어쓰지 않습니다.
 
 ## Scope
 
-Stage 98에는 두 종류가 있고, 이 둘을 섞지 않는 것이 이 스테이지의 유일한
-구조 규칙입니다.
+**Retention class**는 한때 현재였던 전체 본문을 당시 profile 그대로 보존합니다.
+더 이상 현재가 아닌 governed 문서는 Stage 01, 02, 03, 05, 90, 99를 떠나 자신에게
+일어난 일에 맞는 class에 보존됩니다. 보존은 profile을 따릅니다. frozen 본문은
+불변이고, Git-history-only 처분은 호환 사본 없이 복구 가능한 출처를 유지합니다.
+처분에는 별도 승인이 필요합니다.
 
-**결정의 기록** — 무슨 일이 왜 일어났는지를 담고, 본문은 담지 않습니다.
-
-| 폴더 | 기록하는 사건 | 담는 것 | 담지 않는 것 |
+| Class | 담는 것 | 이름으로 가져야 하는 것 | 활성 스테이지에서 인용 |
 | --- | --- | --- | --- |
-| `migrations/` | 승인된 대규모 경로·권한 이동 | source/target 매핑, `MIG-####` | 이동된 문서의 본문 |
-| `tombstones/` | 문서의 **철회** | 철회 사유, 대체 대상 또는 `none`, 검증 커밋, `tomb-<id>` | 본문, blob digest, line-number SHA, snapshot |
+| `completed/` | 끝나서 반영된 작업 | 그것이 승격한 대상 | 가능 |
+| `superseded/` | 새 현재 권위가 대체한 내용 | 그것을 대체한 문서 | 불가, 후속을 인용 |
+| `retired/` | 후속 없이 철회된 규칙이나 범위 | 철회 사유 | 불가 |
+| `resolved/` | 종료된 Incident bundle과 게시된 Postmortem | 종료 근거와 현재 교정 작업 owner | 역사적 증거로 가능 |
 
-**보존된 본문** — 문서가 무엇이라 말했는지를 담고, 처분 사유는 담지 않습니다.
+**Route disposition**은 본문을 담지 않습니다. 저장소 밖 consumer를 위한 route를
+이름으로 가지므로, 현재 문서는 그 기록이 아니라 현재 route를 인용합니다.
 
-| 폴더 | 보존 사유 | 짝이 되는 결정 기록 |
-| --- | --- | --- |
-| `completed/` | 변경 패키지가 완료됨 | 없음 — 완료는 철회가 아니며 보존된 Task가 완료 근거를 기록 |
-| `superseded/` | 더 새로운 문서로 대체됨 | 없음 — current successor 또는 승인된 branch-handoff Task receipt가 대체 관계를 기록하며, receipt는 completed target Task에서 동결됨 |
-| `retired/` | 철회됨 | `tombstones/`의 해당 Tombstone |
+| Family | 담는 것 | 이름으로 가져야 하는 것 | 활성 스테이지에서 인용 |
+| --- | --- | --- | --- |
+| `tombstones/` | 없음 | 은퇴한 route, 그 후속 또는 부재, 사유 | 불가 |
+| `migrations/` | 없음 | 이동한 범위와 현재 owner, `MIG-####` | 불가 |
 
-철회만 Tombstone을 따로 요구합니다. 완료와 대체를 철회로 기록하지 않습니다.
-보존 후 처분은 경로로 구분하며, 원문 frontmatter를 나중 상태에 맞춰 고치지
-않습니다. 원래 상태와 검증 근거는 보존된 본문 및 Git history에서 확인합니다.
+인용 가능성은 이름에서 도출되며 따로 규정되지 않습니다. retention class는 자기
+본문이 여전히 독자를 현재 권위로 이끌 때만 인용할 수 있습니다. `completed`는
+Promotion 선언을 통해, `resolved`는 교정 작업 owner를 통해 그렇게 합니다.
+`superseded` 본문은 자신을 대체한 문서를 이름으로 가지므로 인용은 그 후속에
+둡니다. 대체된 규칙을 인용하는 것이 그 규칙이 되살아나는 방식이기 때문입니다.
+`retired`는 가리키는 대상이 없으므로 인용하면 독자가 철회된 규칙에 머뭅니다.
+
+어느 family의 Stage 98 기록도 두 번째 복구 원장을 담지 않습니다. redirect, path
+ledger, 자체 설계한 본문 digest, branch SHA, recovery commit이 그것입니다.
+catalog의 Retention Envelope가 source Git object를 한 번 이름으로 가지며, frozen
+내용의 복구는 일반 Git history가 담당합니다.
 
 `README.md`는 이 스테이지에서 유일하게 현재 유효한 문서이며 보존 기록이
 아닙니다.
 
 ### 외부 참조 경계
 
-Stage 98 바깥의 문서는 `completed/` 하위만 링크할 수 있습니다. 나머지
-(`retired/`, `superseded/`, `migrations/`, `tombstones/`)는 보존된 증거이지
-인용 가능한 현재 출처가 아니며, 바깥에서 링크하면 대체된 기록이 현재 상태로
-읽힐 여지를 만듭니다. 필요한 의미는 현재 소유자에게 이전되어 있어야 하고,
-보존된 본문은 Git history와 이 스테이지 안에서 확인합니다.
+`docs/` 안의 문서 간 링크는 기존 계약을 유지하며, 프로그램이 여는 machine
+reference는 링크가 아닙니다. 문서는 이 index와, 자기 본문이 여전히 독자를 현재
+권위로 이끄는 retention class를 넘어 `docs/98.archive/`로 링크하지 않습니다. 그
+class는 Promotion 선언을 통한 `completed/`와, 교정 작업 owner를 통해 역사적
+증거가 되는 `resolved/`입니다. `superseded/` 본문 대신 후속을, `retired/` 본문,
+Tombstone, Migration 대신 현재 route를 인용합니다. 여전히 이름을 불러야 하는
+frozen 기록은 식별자로 부르고 이 index를 통해 찾습니다.
 
-예외는 `operation/incident`와 `operation/postmortem` 프로파일뿐입니다. 무슨
-일이 있었는지를 재구성하는 기록에서는 보존된 본문이 바로 그 시점의 올바른
-인용 대상입니다.
+ADR-0035가 수락되고 SPEC-0177이 link validator를 옮기기 전까지는 `completed/`만
+허용되는 링크 대상이며, 수락 이전의 인용은 열거된 consumer로 남습니다. archive
+경로를 직접 인용할 수 있는 것은 `operation/incident` 기록과 그
+`operation/postmortem`뿐입니다. 그런 기록이 근거로 삼는 증거는 보존된 기록 자체인
+경우가 많기 때문입니다.
 
-이 경계는 `check-document-links.py`의 `active-archive-link`가 강제합니다.
+현재 강제는 `check-document-links.py`의 `active-archive-link`가 담당합니다.
 Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
+
+### 전환 중인 계약
+
+등록된 check는 네 곳에서 이 모델보다 앞선 계약을 강제하며, SPEC-0177이 그
+이전을 소유합니다.
+
+| 영역 | 현재 강제 | 모델 |
+| --- | --- | --- |
+| 링크 경계 | archive 밖에서 index와 `completed/`만 허용 | `resolved/`도 허용 |
+| Tombstone | `Recovery Commit` 섹션 필수, `retired/` 보존본마다 짝 요구 | recovery commit 없음, 짝 요구 없음 |
+| Migration | `Path Mapping`과 `Recovery` 섹션 필수 | 이동한 범위와 현재 owner만 |
+| Retention Envelope | 정의되지 않음 | source Git object를 한 번 이름으로 가짐 |
+
+전환 동안 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과
+Migration은 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지
+않습니다.
 
 ## Structure
 
 ```text
 98.archive/
 ├── README.md
-├── migrations/
-│   └── 0001-<slug>.md
-├── tombstones/
-│   └── <original-stage>/
-│       └── 0001-<slug>.md
 ├── completed/
 │   └── <original-stage>/<원래 경로 그대로>
 ├── superseded/
 │   └── <original-stage>/<원래 경로 그대로>
-└── retired/
-    └── <original-stage>/<원래 경로 그대로>
+├── retired/
+│   └── <original-stage>/<원래 경로 그대로>
+├── tombstones/
+│   └── <original-stage>/
+│       └── 0001-<slug>.md
+└── migrations/
+    └── 0001-<slug>.md
 ```
 
-보존 기록의 경로는 원래 경로에서 선행 루트만 바꾼 것이며, 그 매핑은
-`preserved_origin_path()`가 소유합니다. `docs/` 재편 이전에 철회된 문서는
-당시 루트(`archive/`)를 경로에 그대로 유지합니다.
+`resolved/`는 첫 종료 Incident를 보존하는 변경이 만들기 전까지 존재하지
+않습니다. 보존 기록의 경로는 원래 경로에서 선행 루트만 바꾼 것이며, 그 매핑은
+`preserved_origin_path()`가 소유합니다. `docs/` 재편 이전에 철회된 문서는 당시
+루트(`archive/`)를 경로에 그대로 유지합니다.
 
 ## Audience
 
@@ -96,29 +128,28 @@ Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
 
 ## How to Work in This Area
 
-1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 삭제 당시 값 그대로이며
-   처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는 사실과
-   해당 Tombstone이 결정하며, frontmatter가 결정하지 않습니다.
-2. **보존 기록은 수정하지 않습니다.** 삭제 또는 이동 당시 본문과
-   byte-identical해야 하고, 현재 계약에 맞추기 위한 편집은 보존하려던 대상을
-   훼손합니다. 그래서 이 기록들은 frontmatter가 관리되지 않는 보존 프로파일로
-   등록됩니다. 현재 envelope나 새 metadata를 본문에 덧붙이지 않습니다.
-   자동 포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로
-   동작하므로 `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에
-   두어야 하며, 그러지 않으면 all-files 실행이 보존 본문을 조용히 다시
-   씁니다. 저작 기록인 `migrations/`와 `tombstones/`는 계속 lint 대상입니다.
-   다만 Registry가 frozen legacy status로 등록한 다음 세 migration은
-   보존된 예외이며 lint에서 제외합니다:
-   `migrations/0001-sdlc-taxonomy-convergence.md`,
+1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 이동 당시 값 그대로이며
+   처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는
+   사실이 결정하며, frontmatter가 결정하지 않습니다.
+2. **보존 기록은 수정하지 않습니다.** 이동 당시 본문과 byte-identical해야 하고,
+   현재 계약에 맞추기 위한 편집은 보존하려던 대상을 훼손합니다. 그래서 이
+   기록들은 frontmatter가 관리되지 않는 보존 프로파일로 등록됩니다. 자동
+   포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로 동작하므로
+   `completed/`, `superseded/`, `retired/` 세 하위 트리를 ignore에 두어야 하며,
+   `resolved/`도 그것을 만드는 변경이 ignore에 추가합니다. 저작 기록인
+   `migrations/`와 `tombstones/`는 계속 lint 대상입니다. 다만 Registry가 frozen
+   legacy status로 등록한 다음 세 migration은 보존된 예외이며 lint에서
+   제외합니다: `migrations/0001-sdlc-taxonomy-convergence.md`,
    `migrations/0002-operations-catalog-convergence.md`,
    `migrations/0003-workspace-governance-simplification.md`.
-3. **철회는 두 기록이 짝을 이룹니다.** Tombstone 하나와 보존본 하나가 서로를
-   가리키며, 한쪽만으로는 근거가 되지 않습니다. 짝은 Tombstone의
-   `Retired Path`와 보존본의 원래 경로가 일치하는지로 확인합니다.
-4. 대규모 이동은 해당
-   [Migration](migrations/0003-workspace-governance-simplification.md)의
-   source/target mapping으로 찾습니다.
-5. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,
+3. **처분에는 별도 승인이 필요합니다.** 완료, 대체, 철회, 종료 어느 것도 다른
+   작업의 부수효과로 일어나지 않습니다.
+4. 전환 중에 철회를 기록하는 변경은 Tombstone 하나와 `retired/` 보존본 하나를
+   함께 만듭니다. corpus check는 Tombstone의 `Retired Path`와 보존본의 원래
+   경로가 일치하는지로 짝을 확인합니다.
+5. 과거의 대규모 이동은 해당 Migration의 source/target mapping으로 찾습니다.
+   Migration은 인용 대상이 아니므로 이 index에서 식별자로 찾습니다.
+6. `python3 scripts/validation/check-document-corpus-lifecycle.py`로 migration,
    tombstone, frozen preserved body, decision link, recovery blob을 한 번에
    검증합니다. 이 CLI는 별도 `--mode`를 제공하지 않습니다.
 
@@ -127,18 +158,9 @@ Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
 > 83건은 `type` 없이 남아 있었습니다. 이는 당시 원문을 보존한 결과이며
 > 현재 인벤토리 수나 작성 기준이 아닙니다.
 
-현재 보존 방식과 archive route는 Registry와 accepted ADR-0031을 따릅니다.
-새 처분 방식이나 `resolved/` 경로가 필요하면 별도 계약 변경으로 검토하며
-기존 frozen 본문을 일괄 이관하지 않습니다. 교정은 successor나 적절한 현재
-기록에 남기고 보존 원문을 수정하지 않습니다.
-
-활성 문서는 `completed/`와 `superseded/` 보존본을 역사적 증거로 직접 링크할
-수 있습니다. 이때 같은 문맥에서 현재 권위를 소유하는 `.agents/`와 Stage 01·02·05
-문서를 함께 연결해야 합니다. `retired/` 보존본, Tombstone, Migration은 현재
-권위의 의존성이 아니며 이 README 또는 관련 Migration을 통해 탐색합니다.
-
 ## Related Documents
 
 - [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)

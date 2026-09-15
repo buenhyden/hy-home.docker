@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.0.10"
+version: "1.0.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -73,6 +73,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0173 | [Governance and QA Surface Convergence](../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/plan.md) and six Tasks, whose [Task 0006](../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0006-generated-evidence-and-final-verification.md) carries the receipt; criteria 23 and 27 record the W34 retirement of their subject and criterion 29 is amended to the delivered auth pilot |
 | SPEC-0174 | Governance and QA Convergence | superseded by SPEC-0173; cancelled Plan and Task preserved with the full packet |
 | SPEC-0175 | [Governance Knowledge and Prompt Surface](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/plan.md) and [Task](../98.archive/completed/03.specs/0175-governance-knowledge-and-prompt-surface/tasks/tsk-0001-knowledge-and-prompt-surface.md) |
+| SPEC-0177 | [Archive Disposition Enforcement](0177-archive-disposition-enforcement/spec.md) | draft package that moves the link validator, the Tombstone and Migration contracts, and the Retention Envelope onto the Stage 98 model the policy states, and accepts ADR-0035. Carries a draft [Plan](0177-archive-disposition-enforcement/plan.md) and a draft [Task](0177-archive-disposition-enforcement/tasks/tsk-0001-archive-disposition-enforcement.md) |
 | SPEC-0176 | [Stale Fact Convergence](0176-stale-fact-convergence/spec.md) | active package whose four fact clusters are converged on the tracked implementation: the retired Compose enablement wording, the preservation-owner chain, the dead-branch position in the in-flight packages, and the index and routing errors. Its Task W20 records the repository-wide audit and SPEC-0173's completion, and W21 answers review round seven; the completing integration still owes a review of those corrections and the changed-profile run. Carries an active [Plan](0176-stale-fact-convergence/plan.md) and an in-progress [Task](0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md) |
 
 ## How to Work in This Area

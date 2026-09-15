@@ -1,10 +1,10 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-15"
 layer: "requirements"
 artifact_id: "REQ-0026"
 parent_ids: []
@@ -76,6 +76,21 @@ created: "2026-09-01"
   Tombstone이 담고, 완료와 대체의 처분은 각각 `status`와 `superseded_by`가
   자기 서술합니다. 현재 계약에 맞추기 위한 편집은 보존 대상을 훼손하므로
   보존 기록은 frontmatter와 section 계약의 적용 대상이 아닙니다.
+- **REQ-0026-FR-0013**: Stage 98은 여섯 처분을 두 종류로 가집니다. 본문을
+  보존하는 retention class는 `completed/`, `superseded/`, `retired/`,
+  `resolved/`이고, 본문 없이 저장소 밖 consumer의 route를 기록하는 route
+  disposition은 `tombstones/`와 `migrations/`입니다. 각 처분은 자신이 이름으로
+  가져야 하는 대상을 가지며, 디렉터리는 그 처분을 처음 쓰는 변경이 만듭니다.
+  처분에는 별도 승인이 필요합니다.
+- **REQ-0026-FR-0014**: 활성 문서가 archive 경로를 인용할 수 있는지는 처분이
+  이름으로 가지는 대상에서 도출됩니다. index, `completed/`, `resolved/`만 인용할
+  수 있고, `superseded/` 대신 후속을, `retired/`, Tombstone, Migration 대신 현재
+  route를 인용합니다. archive 경로를 직접 인용할 수 있는 것은
+  `operation/incident`와 그 `operation/postmortem`뿐입니다.
+- **REQ-0026-FR-0015**: 어떤 Stage 98 기록도 redirect, path ledger, 자체 설계한
+  본문 digest, branch SHA, recovery commit 같은 두 번째 복구 원장을 담지
+  않습니다. source Git object는 Retention Envelope가 한 번 이름으로 가지며,
+  frozen 내용의 복구는 Git history가 담당합니다.
 
 ## Non-functional Requirements
 
@@ -98,6 +113,11 @@ created: "2026-09-01"
 - 변경의 비교 base는 그 변경의 분기 지점이므로, base에서 terminal이 아닌
   status는 그 문서를 은퇴시키는 동일한 변경이 terminal로 관측할 수 없습니다.
   따라서 terminal-status 의무는 base 대비 강제가 아니라 Tombstone에 기록됩니다.
+- REQ-0026-FR-0013부터 REQ-0026-FR-0015는 ADR-0035가 `proposed`인 동안 전환 중입니다. 등록된
+  check가 강제하는 REQ-0026-FR-0002의 Tombstone 짝과 recovery commit, 그리고 아래
+  Acceptance Criteria의 recovery commit 조항은 SPEC-0177이 check를 옮기고 이
+  요구사항을 다시 개정할 때까지 유지됩니다. 이미 봉인된 Tombstone과 Migration은
+  기록 당시 형태를 유지하며 새 계약에 맞추어 다시 쓰지 않습니다.
 
 ## Acceptance Criteria
 
@@ -112,6 +132,9 @@ created: "2026-09-01"
   적용되어 active Stage 03에 terminal 중간 상태가 남지 않습니다.
 - Tombstone이 존재하는 모든 stage namespace는 그 stage에서 실제로 은퇴가
   일어났음을 뜻하며, 은퇴가 일어난 stage에 namespace가 없는 경우는 없습니다.
+- archive 밖 문서에서 `superseded/`, `retired/`, `tombstones/`, `migrations/`로
+  가는 링크는 `operation/incident`와 `operation/postmortem`이 아니면 등록된
+  check에서 실패합니다.
 
 ## Traceability
 
@@ -119,6 +142,7 @@ created: "2026-09-01"
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0033 Spec Package 전체 본문 보존](../02.architecture/decisions/0033-full-spec-package-preservation.md)
 - ADR-0031 보존 기록으로서의 아카이브 (superseded)
+- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md) (proposed)
 
 ## Related Documents
 

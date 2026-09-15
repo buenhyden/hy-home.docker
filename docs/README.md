@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 ---
 
 # docs
@@ -60,7 +60,7 @@ docs/
 │   ├── catalog/<domain>/####-<subject>/
 │   └── incidents/<year>/inc-####-<slug>/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
-├── 98.archive/                 # frozen preserved bodies plus migration/tombstone disposition records
+├── 98.archive/                 # retention classes for frozen bodies plus route dispositions
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # This file
 ```
@@ -119,7 +119,7 @@ docs/
 | `05.operations/catalog/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | frozen 원문 보존; 현재 README와 migration/tombstone의 기록 계약은 분리 |
+| `98.archive/` | retention class의 frozen 원문과 route disposition 기록; 인용 가능성은 처분이 이름으로 가지는 대상에서 도출 |
 | `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract

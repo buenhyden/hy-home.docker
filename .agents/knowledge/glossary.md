@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.2.0"
+version: "0.3.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
@@ -35,7 +35,9 @@ Registry.
 | Lifecycle | The named status set and permitted transitions for a profile; `living` and `spec` differ | `docs/99.templates/registry.json` |
 | Identity space | The monotonic allocator for an artifact prefix; an issued number is never reused | [documentation protocol](../governance/documentation-protocol.md) |
 | Preservation | Moving a terminal document's frozen body to Stage 98 unchanged; Git proves the source | [documentation protocol](../governance/documentation-protocol.md) |
-| Tombstone | One disposition record for one retired package or document, under a `tomb-` prefix | [documentation protocol](../governance/documentation-protocol.md) |
+| Retention class | A Stage 98 directory holding whole frozen bodies: `completed/`, `superseded/`, `retired/`, `resolved/` | [documentation protocol](../governance/documentation-protocol.md) |
+| Route disposition | A Stage 98 record holding no body that names a route for an outside consumer: `tombstones/`, `migrations/` | [documentation protocol](../governance/documentation-protocol.md) |
+| Tombstone | A route disposition naming one retired route, its successor or absence, and the reason, under a `tomb-` prefix | [documentation protocol](../governance/documentation-protocol.md) |
 | Supersession | Replacing an accepted decision through a reciprocal lineage, not by rewriting it | [documentation protocol](../governance/documentation-protocol.md) |
 | Promotion receipt | The Task section connecting each acceptance criterion to its durable Stage 01, 02, or 05 owner | [SDLC](../governance/sdlc.md) |
 
@@ -104,6 +106,10 @@ that document rather than against this table.
 
 Revalidated the QA/CI/CD and completion vocabulary against current owners on
 2026-09-08; this table remains navigation rather than a second policy.
+
+The Retention class, Route disposition, and Tombstone rows were re-read from the
+documentation protocol's Stage 98 dispositions section on 2026-09-15, in the
+change that added that section.
 
 ## Refresh Triggers
 

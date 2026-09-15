@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-15"
 layer: "architecture"
 ---
 
@@ -41,6 +41,7 @@ docs/02.architecture/decisions/
 ├── 0032-canonical-agent-governance-home.md
 ├── 0033-full-spec-package-preservation.md
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
+├── 0035-stage-98-retention-classes-and-route-dispositions.md
 └── README.md
 ```
 
@@ -66,6 +67,10 @@ docs/02.architecture/decisions/
 - [`ADR-0034`](./0034-canonical-knowledge-and-prompt-surfaces.md):
   `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는
   accepted decision.
+- [`ADR-0035`](./0035-stage-98-retention-classes-and-route-dispositions.md):
+  Stage 98을 네 retention class와 두 route disposition으로 나누고 인용
+  가능성을 처분의 이름에서 도출하는 proposed decision. SPEC-0177이 수락을
+  소유한다.
 
 ## How to Work in This Area
 

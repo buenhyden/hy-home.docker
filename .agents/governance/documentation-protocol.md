@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.4.0"
+version: "2.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-15"
 ---
 
 # Documentation Protocol
@@ -23,8 +23,8 @@ authoring behavior and `scripts/` owns executable validation.
   and executable interface contracts.
 - Stage 05 owns operator guidance, policies, runbooks, and incidents.
 - Stage 90 owns non-normative research, audits, and reference data.
-- Stage 98 owns frozen preserved bodies plus minimal migration and tombstone
-  records; Git proves the preserved source and supplies recovery history.
+- Stage 98 owns four retention classes that hold frozen bodies and two route
+  dispositions that hold none; Git history recovers frozen content.
 - Stage 99 owns profiles, schemas, and copyable templates.
 
 Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
@@ -47,7 +47,8 @@ such as `docs/99.templates/registry.json` stay readable as code text; what the
 rule removes is the clickable route. `leaf.docs-traceability` owns enforcement
 through the `entrypoint` mode of `check-document-links.py`, which reads every
 tracked Markdown document plus `llms.txt`. Links between documents inside
-`docs/` keep their existing rules.
+`docs/` keep their existing rules, and
+[Links into Stage 98](#links-into-stage-98) adds the rule for archive paths.
 
 ## Authoring Rules
 
@@ -240,13 +241,86 @@ retention criteria. A document is retained while it owns current behavior,
 structure, decision, or procedure. It is retired when its status is terminal
 and its still-current meaning has moved to a canonical owner.
 
+### Stage 98 dispositions
+
+Stage 98 retains what the active stages no longer carry, in six dispositions.
+Each disposition owns a directory that is created by the change that first uses
+it, so a disposition with no record yet has no directory. The families are two
+kinds, and the kind decides what a directory holds and whether a current
+document may cite it.
+
+A **retention class** holds a whole body that was once current, under the
+profile that governed it then. A governed document that is no longer current
+leaves Stages 01, 02, 03, 05, 90, and 99 and is kept in the class that matches
+what happened to it. Retention follows the profile: frozen bodies remain
+immutable, while Git-history-only disposition retains recoverable provenance
+without a compatibility copy. Disposition requires its own authorization.
+
+| Class | Holds | Must name | Citable from an active stage |
+| --- | --- | --- | --- |
+| `completed/` | Work that finished and landed | What it promoted | yes |
+| `superseded/` | Content a newer current authority replaced | The document that replaced it | no; cite its successor |
+| `retired/` | A rule or scope withdrawn with no successor | Why it was withdrawn | no |
+| `resolved/` | A closed Incident bundle and published Postmortem | Closure evidence and the current corrective-work owner | yes, as historical evidence |
+
+A **route disposition** holds no body. It names a route for a consumer outside
+this repository, so a current document cites the current route and never the
+record that names it.
+
+| Family | Holds | Must name | Citable from an active stage |
+| --- | --- | --- | --- |
+| `tombstones/` | Nothing | The retired route, its successor or absence, and the reason | no |
+| `migrations/` | Nothing | The moved scope and its current owner, as `MIG-####` | no |
+
+Citability follows from the naming rather than being stipulated beside it. A
+retention class may be cited exactly when its own body still leads a reader to
+current authority: `completed` through its Promotion declaration and `resolved`
+through its corrective-work owner. A `superseded` body names its replacement,
+so the citation belongs on that successor, because citing a replaced rule is
+how it returns. `retired` carries no pointer, so citing it would strand a
+reader on a withdrawn rule.
+
+What no Stage 98 record carries, in any family, is a second recovery ledger: no
+redirect, path ledger, self-designed body digest, branch SHA, or recovery
+commit. The catalog's Retention Envelope names the source Git object once;
+normal Git history remains the recovery mechanism for frozen content.
+
+#### Links into Stage 98
+
+Links between documents inside `docs/` keep their existing contracts, and a
+machine reference a program opens is not a link. A document never links into
+`docs/98.archive/` beyond its index and the retention classes whose own body
+still leads a reader to current authority: `completed/`, through its promotion
+declaration, and `resolved/`, as historical evidence, through its
+corrective-work owner. It cites the successor instead of a `superseded/` body
+and the current route instead of a `retired/` body, a tombstone, or a
+migration. A frozen record it must still name is named by identifier and
+reached through the index. Until ADR-0035 is accepted and SPEC-0177 moves the
+link validator, only `completed/` is an admitted link target, and citations that
+predate acceptance stay as enumerated consumers, which SPEC-0177's Task lists.
+Only an `operation/incident` record and its `operation/postmortem` may cite an
+archive path directly, because the evidence such an account rests on is often
+the archived record itself.
+
+#### Transition
+
+The registered checks predate this model in five places, and SPEC-0177 owns
+moving them. The link validator admits only the index and `completed/`. The
+Tombstone template and the corpus check require a `Recovery Commit` section and
+pair every `retired/` body with one Tombstone. The Migration template requires
+`Path Mapping` and `Recovery` sections. No Retention Envelope is defined yet. No
+profile is registered as Git-history-only, so every current disposition keeps a
+frozen body. Until SPEC-0177 completes, a new record satisfies the registered
+template and check, and a sealed Tombstone or Migration keeps the form it was
+written in rather than being rewritten to this model.
+
 ### Retention by status
 
 The Registry owns each profile's entry state, transition edges, and terminal
 states. Apply that lifecycle before disposition; do not infer permission from
 age or a folder count. Completed packages and superseded documents move to their
-registered frozen archive routes. Withdrawal uses `retired/` with a Tombstone.
-Do not record completion or supersession as a withdrawal.
+registered frozen archive routes, and withdrawn ones move to `retired/`. Do not
+record completion or supersession as a withdrawal.
 
 Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
 An all-files run requires its explicit approval and Git-visible, non-ignored
@@ -279,27 +353,28 @@ Retire a package or a standalone document only when all of these hold.
    written to its canonical agent governance, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.
 4. Preserve the original body in the matching Stage 98 disposition route.
-   Withdrawal additionally requires one Tombstone paired with `retired/`;
-   completion and supersession do not require a Tombstone.
+   While the transition lasts, withdrawal also records one Tombstone paired
+   with `retired/`; completion and supersession never do.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
 investigate, not permission to delete.
 
 Record the authoring obligations and consumer cutover in the current Task's
-promotion receipt. For withdrawal, the Tombstone's `Reason` also records the
-disposition rationale. Verification must compare preserved bytes with their
+promotion receipt. During the transition, a withdrawal's Tombstone `Reason`
+also records the disposition rationale. Verification must compare preserved bytes with their
 recorded source without rewriting the frozen body to manufacture a later status.
 
 Age may trigger a disposition review. It never triggers a deletion.
 
 ### Tombstone scope
 
-One Tombstone records one retired package or one retired standalone document,
-never one per member. It carries the retired path, the replacement or `none`,
-the reason, and the recovery commit. The matching Stage 98 preserved copy stores
-the frozen body; Git proves its source and provides recovery history. The
-Tombstone is the tracked disposition record that keeps the content findable.
+One Tombstone records one retired route, never one per member. Under the model
+above it names the retired route, its successor or absence, and the reason, and
+holds no body. The registered template and corpus check still require a recovery
+commit and pair the Tombstone with a `retired/` body. That is one of the lagging
+contracts the transition names, and a sealed Tombstone keeps the form it was
+written in.
 
 A Tombstone lives under `docs/98.archive/tombstones/<stage>/`, mirroring the
 namespace of the document it retires. Every stage that can retire a document has

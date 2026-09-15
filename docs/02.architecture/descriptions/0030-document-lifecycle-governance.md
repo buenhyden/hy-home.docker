@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.3.4"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -49,8 +49,15 @@ orchestration.
 - `scripts/validation/check-document-metadata.py`와
   `scripts/validation/check-document-links.py`는 이 판정을 gate profile로
   노출하는 등록된 entrypoint입니다.
-- `docs/98.archive/`는 두 종류를 담습니다. `migrations/`와 `tombstones/`는
-  결정의 기록이고, `completed/`, `superseded/`, `retired/`는 보존된 본문입니다.
+- `scripts/lib/document_governance/links.py`는 archive 밖 문서가 Stage 98로
+  거는 링크를 index와 `completed/`로 제한하고, `operation/incident`와
+  `operation/postmortem`만 예외로 둡니다. ADR-0035가 정한 `resolved/` 인용은
+  SPEC-0177이 이 경계를 옮길 때 허용됩니다.
+- `docs/98.archive/`는 두 종류를 담습니다. `completed/`, `superseded/`,
+  `retired/`, `resolved/`는 본문을 보존하는 retention class이고,
+  `tombstones/`와 `migrations/`는 본문 없이 route를 기록하는 route
+  disposition입니다. 처분 디렉터리는 그 처분을 처음 쓰는 변경이 만들므로
+  `resolved/`는 아직 없습니다.
   `docs/98.archive/tombstones/<stage>/`는 철회 기록의 저장 구조입니다.
   namespace는 은퇴한 문서의 stage를 그대로 반영하므로, 어떤 stage에서 은퇴가
   일어났는지는 디렉터리 목록만으로 읽힙니다. namespace의 부재는 "그 stage는
@@ -125,12 +132,17 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
   capability마다 Stage 02 owner 하나를 요구하므로 이는 알려진 위반입니다.
   hardening 서술의 조항 다수가 다른 문서에 없어 단순 은퇴로는 해소되지
   않으며, 두 서술의 병합 또는 명시적 계층 선언이 필요합니다.
+- 등록된 check가 ADR-0035의 Stage 98 모델보다 앞선 계약을 강제합니다.
+  Tombstone의 recovery commit과 `retired/` 짝 요구, Migration의 path mapping과
+  recovery 섹션, 정의되지 않은 Retention Envelope, `resolved/` 인용 미허용이
+  그것입니다. 정책은 이를 전환으로 명시하고 SPEC-0177이 이전을 소유합니다.
 
 ## Traceability
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [ADR-0033 Spec Package 전체 본문 보존](../decisions/0033-full-spec-package-preservation.md)
 - ADR-0031 보존 기록으로서의 아카이브 (superseded)
+- [ADR-0035 Stage 98 보존 class와 route 처분](../decisions/0035-stage-98-retention-classes-and-route-dispositions.md) (proposed)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)
 
 ## Related Documents
