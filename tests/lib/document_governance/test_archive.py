@@ -613,20 +613,35 @@ class ArchiveMinimizationTests(unittest.TestCase):
                         self.archive.load_archive(archive_root)
 
     def test_resolved_record_must_not_carry_a_sealed_tombstone(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory) / "98.archive"
-            (root / "tombstones").mkdir(parents=True)
-            (root / "tombstones/0001-outage.md").write_text(
-                "## Retired Path\n\n`docs/05.operations/incidents/0001-outage.md`\n",
-                encoding="utf-8",
-            )
-            record = root / "resolved/05.operations/incidents/0001-outage.md"
-            record.parent.mkdir(parents=True)
-            record.write_text("# Outage\n", encoding="utf-8")
-            self.assertIn(
-                "resolved record must not carry a tombstone",
-                " ".join(self.archive.validate_preservation_boundary(root)),
-            )
+        """The rule reads the switch, so `resolved` joins it only at adoption."""
+
+        for model, reported in (("transition", False), ("adopted", True)):
+            with self.subTest(model=model), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(
+                    f'{{"common": {{"archive_disposition_model": "{model}"}}}}\n',
+                    encoding="utf-8",
+                )
+                archive_root = root / "docs/98.archive"
+                (archive_root / "tombstones").mkdir(parents=True)
+                (archive_root / "tombstones/0001-outage.md").write_text(
+                    "## Retired Path\n\n`docs/05.operations/incidents/0001-outage.md`\n",
+                    encoding="utf-8",
+                )
+                record = (
+                    archive_root / "resolved/05.operations/incidents/0001-outage.md"
+                )
+                record.parent.mkdir(parents=True)
+                record.write_text("# Outage\n", encoding="utf-8")
+                findings = " ".join(
+                    self.archive.validate_preservation_boundary(archive_root)
+                )
+                self.assertEqual(
+                    reported,
+                    "resolved record must not carry a tombstone" in findings,
+                )
 
     def test_no_module_names_the_preserved_dispositions_literally(self) -> None:
         """Every site reads `PRESERVED_DISPOSITIONS`, so a new class reaches all."""

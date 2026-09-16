@@ -1057,9 +1057,8 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
     from scripts.lib.document_governance.registry import preserved_origin_path
 
     archive_root = pathlib.Path(archive_root)
-    adopted = (
-        archive_disposition_model(archive_root.parent.parent) == ARCHIVE_MODEL_ADOPTED
-    )
+    model = archive_disposition_model(archive_root.parent.parent)
+    adopted = model == ARCHIVE_MODEL_ADOPTED
     findings: list[str] = []
 
     expected: dict[str, str] = {}
@@ -1117,7 +1116,9 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
             continue
         missing = "withdrawal record" if adopted else "tombstone"
         findings.append(f"{origin}: retired record has no {missing}")
-    for disposition in PRESERVED_DISPOSITIONS:
+    # The rule reads the switch, so a retention class the model does not admit
+    # yet cannot produce a finding before adoption.
+    for disposition in admitted_preserved_dispositions(model):
         if disposition == "retired":
             continue
         for origin in sorted(set(preserved[disposition]) & set(expected)):

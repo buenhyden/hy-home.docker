@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.2.2"
+version: "1.2.3"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -47,6 +47,10 @@ subset, which the policy named explicitly.
     `load_task10_recovery_references`.
   - `scripts/lib/document_governance/registry.py`: `PRESERVED_DISPOSITIONS` and
     `preserved_origin_path`, and the loading of the new profile fields.
+  - `scripts/lib/document_governance/architecture.py`, the fourth site that named
+    the older dispositions literally, which the W6 search found.
+  - `docs/99.templates/contracts/document-profile.schema.json`, without which
+    every Registry load fails once a new common key or profile field exists.
   - `scripts/lib/document_governance/spec_packages.py`: `_recorded_retirements`,
     which treats a Tombstone as the only record of a retirement.
   - `scripts/lib/document_governance/lifecycle/recovery.py`, whose `run` takes no
@@ -63,7 +67,9 @@ subset, which the policy named explicitly.
   - `docs/99.templates/templates/archive/tombstone.template.md` and
     `migration.template.md`.
   - The Retention Catalog section of the Stage 98 README.
-  - The tests under `tests/lib/document_governance/` that cover each of these.
+  - The tests under `tests/lib/document_governance/` that cover each of these,
+    and the `tests/validation/lifecycle/` stub that follows the `recovery.run`
+    signature.
   - The acceptance of `ADR-0035`, which supersedes `ADR-0033`, and the clauses of
     the policy, `REQ-0026`, `AD-0030`, and the Stage 98 README that state the
     transition or the Tombstone pairing.
@@ -234,9 +240,9 @@ because the catalog lives in the index the loader already admits.
    Stage 98 to the index, `completed/`, and `resolved/`, rejects `superseded/`,
    `retired/`, `tombstones/`, and `migrations/`, keeps the incident and postmortem
    exception, and skips a `resolved/` body's outbound links, each proven by a test.
-3. `resolved` is registered as Behavior Contract 8 states, the three sites that
-   named the older dispositions literally read the constant, and a test builds a
-   `resolved/` subtree from a fixture.
+3. `resolved` is registered as Behavior Contract 8 states, every site that named
+   the older dispositions literally reads the constant instead, and a test builds
+   a `resolved/` subtree from a fixture.
 4. The Retention Catalog check validates the header, one row per unit, the class
    match, the class value, and each `Source` rule, and a test covers each failure,
    including an orphaned commit and a path that differs from the origin. Tests

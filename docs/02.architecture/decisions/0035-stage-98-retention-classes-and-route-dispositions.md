@@ -1,6 +1,6 @@
 ---
 title: "Stage 98 보존 class와 route 처분"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -150,14 +150,13 @@ Tombstone 짝 요구뿐입니다.
 ## Compliance
 
 규칙 서술은 canonical 정책과 Stage 98 README가 소유하고, 이 결정은 그 선택의
-근거를 소유합니다. 수락 전 강제 범위는 현재 link validator와 corpus lifecycle
-check가 검사하는 범위이며, 이 proposed 문서 자체는 그 check의 PASS를 뜻하지
-않습니다. 수락 변경은 SPEC-0177의 Task에 link validator, Tombstone 계약,
-Retention Envelope 검사의 실제 실행 결과를 기록해야 합니다.
+근거를 소유합니다. 이 결정 문서 자체는 어떤 check의 PASS도 뜻하지 않습니다.
+수락 변경은 SPEC-0177의 Task에 link validator, Tombstone 계약, Retention
+Envelope 검사의 실제 실행 결과를 기록해야 했으며, 그 Task가 기록하고 있습니다.
 
 ## Follow-up
 
-SPEC-0177이 validator와 template을 이전하고, Retention Envelope의 형태를
-정하고, 이 결정을 `accepted`로 전환합니다. 새 규칙은 Registry의
-`common.archive_disposition_model` 스위치 뒤에서 먼저 병합되고, 그 스위치를
-`adopted`로 바꾸는 결과 tree가 이 결정을 수락하고 ADR-0033을 supersede합니다.
+SPEC-0177이 validator와 template을 이전하고 Retention Envelope의 형태를 정한 뒤,
+W7에서 이 결정을 `accepted`로 전환했습니다. 새 규칙은 Registry의
+`common.archive_disposition_model` 스위치 뒤에서 먼저 병합되었고, 그 스위치를
+`adopted`로 바꾼 결과 tree가 이 결정을 수락하고 ADR-0033을 supersede했습니다.

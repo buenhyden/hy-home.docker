@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -40,9 +40,9 @@ orchestration.
 - `scripts/lib/document_governance/spec_packages.py`는 현재 tree와 비교 base의
   bounded Git snapshot에서 Stage 03 package를 적재하고 제거의 합법성을
   판단합니다.
-- `scripts/lib/document_governance/archive.py`는 Stage 98을 적재하고, Tombstone
-  disposition과 `completed/`, `superseded/`, `retired/` frozen path를 분리해
-  노출하며 recovery blob과 원래 경로의 일치를 검증합니다.
+- `scripts/lib/document_governance/archive.py`는 Stage 98을 적재하고, route
+  disposition과 `completed/`, `superseded/`, `retired/`, `resolved/` frozen
+  path를 분리해 노출하며 보존본의 철회 기록과 원래 경로의 일치를 검증합니다.
 - `scripts/lib/document_governance/references.py`는 현재 tree에서 Stage 90
   package 집합을 도출하고, 보호 대상 package 자신이 담고 있는 보존 선언을
   강제합니다.
@@ -77,10 +77,12 @@ status로 판단하고, 통째로 사라진 package는 Stage 98을 근거로 판
 `validate_spec_package_lifecycle`은 Stage 98에서 분리해 읽은 Tombstone
 retired-path와 frozen preserved-path 집합을 받습니다. completed Spec 경로가
 preserved-path에 있으면 completion으로 판정하고, 그렇지 않은 package 이탈은
-retirement로 판정합니다. 대응하는 Tombstone이 없는 retirement는
-`package-retirement-unrecorded`를 산출합니다. Tombstone은 철회를, completed
-Spec은 영구 outcome을, 함께 보존된 Plan과 Task 본문은 그 outcome에 이른 실행
-맥락을 각각 증명하며 어느 한 기록이 다른 기록을 대신하지 않습니다.
+retirement로 판정합니다. 철회 기록이 없는 retirement는
+`package-retirement-unrecorded`를 산출합니다. 철회 기록은 그 보존본과 짝을
+이루는 봉인 Tombstone이거나 Stage 98 index의 Retention Catalog 행이며, 단위마다
+정확히 하나입니다. 철회 기록은 철회를, completed Spec은 영구 outcome을, 함께
+보존된 Plan과 Task 본문은 그 outcome에 이른 실행 맥락을 각각 증명하며 어느 한
+기록이 다른 기록을 대신하지 않습니다.
 
 완료 순서는 outcome과 current consumer를 먼저 Spec 또는 다른 현재 정본으로
 write back한 뒤, Spec·Plan·모든 Task의 terminal 전환과 archive 이동을 한 결과

@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -102,8 +102,8 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 | --- | --- | --- | --- |
 | `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
 
-이 표가 비어 있는 동안 보존된 기록은 자신이 보존될 당시의 계약이 요구한 철회
-기록을 유지합니다. 소급 적재는 하지 않습니다.
+이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
+유지합니다. 소급 적재는 하지 않습니다.
 
 ## Structure
 
