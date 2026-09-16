@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -138,10 +138,48 @@ from `draft` to `approved`, and this Task from `draft` to `ready`, which the
 registered lifecycles make the only forward edge from each current status. No
 check this package adds is live until W3.
 
+### W3: Stage 03 occupancy judged per package (2026-09-16, local-executed)
+
+`validate_active_stage_occupancy` read every tracked Markdown file under the five
+active stage prefixes and reported any terminal status, one document at a time.
+Behavior Contracts 1 to 3 make Stage 03 a package judgment and leave the other
+four stages per document, so the check now groups Stage 03 paths by package and
+keeps the old loop for everything else.
+
+Package membership is read from the Registry `spec`, `plan`, and `task` path
+patterns through `path_matches_pattern`, not from a second path shape written in
+the check, so a pattern change cannot split the two silently. `_catalog_registry`
+already exists for exactly this: it reads the repository Registry rather than one
+the checked root supplies, which is what lets a fixture root carry only the
+switch.
+
+A package whose Spec is terminal keeps no member in an active stage, which is
+Behavior Contract 2's closing sentence. Otherwise a terminal Spec or Plan is a
+finding, a `completed` Task is admitted because a finished Task says so with its
+own status while the package still moves whole, and every other terminal Task
+status stays a finding.
+
+The test was written first and failed first at the admitted case, reporting
+`docs/03.specs/0001-example/tasks/tsk-0001-example.md: completed document remains
+in an active stage`, which is the report this unit removes.
+
+| Check | Result |
+| --- | --- |
+| The new test before the implementation | FAIL at the admitted case, an empty tuple against one finding |
+| `python3 -m unittest` over `test_archive` and `test_spec_packages` | exit 0, 91 tests, including the Stage 02 per-document guard |
+| `validate_active_stage_occupancy` on the repository | `()` |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, counts unchanged |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
+| `ruff check` and `ruff format --check` on both edited files | exit 0 |
+
 ## Verification Evidence
 
-No acceptance criterion is complete. Rows are added as work units land. W1 and
-W2 carry no acceptance criterion and are evidenced by their Work Log entries.
+Rows are added as work units land. W1 and W2 carry no acceptance criterion and
+are evidenced by their Work Log entries.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W3 | PASS: `test_stage_03_occupancy_is_judged_per_package` was written first and failed first, and now admits a `completed` Task in an unfinished package while rejecting a `cancelled` Task, a terminal Spec, and a terminal Plan; the Stage 02 per-document case stays covered by `test_active_stages_hold_no_terminal_document` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 
 ## Review Evidence
 

@@ -682,6 +682,46 @@ class ArchiveMinimizationTests(unittest.TestCase):
             self.assertEqual(1, len(findings))
             self.assertIn("remains in an active stage", findings[0])
 
+    def test_stage_03_occupancy_is_judged_per_package(self) -> None:
+        """A finished Task is admitted while its package is unfinished.
+
+        Stages 01, 02, 05 and 90 keep the per-document rule, which
+        `test_active_stages_hold_no_terminal_document` guards.
+        """
+
+        def occupancy(
+            spec_status: str, task_status: str, plan_status: str = "active"
+        ) -> tuple[str, ...]:
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+                package = root / "docs/03.specs/0001-example"
+                (package / "tasks").mkdir(parents=True)
+                (package / "spec.md").write_text(
+                    f"---\nstatus: {spec_status}\n---\n\n# Spec\n", encoding="utf-8"
+                )
+                (package / "plan.md").write_text(
+                    f"---\nstatus: {plan_status}\n---\n\n# Plan\n", encoding="utf-8"
+                )
+                (package / "tasks/tsk-0001-example.md").write_text(
+                    f"---\nstatus: {task_status}\n---\n\n# Task\n", encoding="utf-8"
+                )
+                subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+                return self.archive.validate_active_stage_occupancy(root)
+
+        with self.subTest("a completed Task in an unfinished package is admitted"):
+            self.assertEqual((), occupancy("active", "completed"))
+        with self.subTest("a cancelled Task stays a finding"):
+            findings = occupancy("active", "cancelled")
+            self.assertEqual(1, len(findings))
+            self.assertIn("tsk-0001-example.md", findings[0])
+        with self.subTest("a terminal Spec is a finding"):
+            findings = occupancy("completed", "completed")
+            self.assertTrue(any("spec.md" in finding for finding in findings))
+        with self.subTest("a terminal Plan is a finding"):
+            findings = occupancy("active", "in-progress", plan_status="completed")
+            self.assertTrue(any("plan.md" in finding for finding in findings))
+
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
         # A disposition subtree exists only once something is preserved into

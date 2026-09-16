@@ -1009,6 +1009,22 @@ ACTIVE_STAGE_PREFIXES = (
 TERMINAL_DOCUMENT_STATUSES = frozenset(
     {"completed", "cancelled", "superseded", "retired"}
 )
+_STAGE_03_PREFIX = "docs/03.specs/"
+_STAGE_03_MEMBER_PROFILES = ("spec", "plan", "task")
+
+
+def _stage_03_package(relative: str) -> str | None:
+    """Return the Stage 03 package a tracked path belongs to, read from Stage 99.
+
+    Membership is the Registry's contract. Deriving it from a second path shape
+    written here would split silently the day a pattern changes.
+    """
+
+    profiles = _catalog_registry().profiles
+    for profile_id in _STAGE_03_MEMBER_PROFILES:
+        if path_matches_pattern(relative, profiles[profile_id].get("path_pattern")):
+            return "/".join(relative.split("/")[:3])
+    return None
 
 
 def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
@@ -1031,6 +1047,8 @@ def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
         check=False,
     ).stdout.split()
     findings: list[str] = []
+    members: dict[str, list[tuple[str, str]]] = {}
+    spec_status: dict[str, str] = {}
     for relative in tracked:
         if not relative.endswith(".md") or not relative.startswith(
             ACTIVE_STAGE_PREFIXES
@@ -1040,7 +1058,42 @@ def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
             status = read_frontmatter_values(root / relative).get("status")
         except Exception:
             continue
-        if isinstance(status, str) and status in TERMINAL_DOCUMENT_STATUSES:
+        if not isinstance(status, str):
+            continue
+        package = (
+            _stage_03_package(relative)
+            if relative.startswith(_STAGE_03_PREFIX)
+            else None
+        )
+        if package is None:
+            if status in TERMINAL_DOCUMENT_STATUSES:
+                findings.append(
+                    f"{relative}: {status} document remains in an active stage"
+                )
+            continue
+        members.setdefault(package, []).append((relative, status))
+        if relative == f"{package}/spec.md":
+            spec_status[package] = status
+    for package, package_members in sorted(members.items()):
+        # A package is the unit of occupancy. Its Spec's status says whether the
+        # package is still current, so a terminal Spec leaves nothing behind
+        # while an unfinished one may hold a Task that is already finished.
+        if spec_status.get(package) in TERMINAL_DOCUMENT_STATUSES:
+            findings.extend(
+                f"{relative}: package with a terminal Spec keeps no member in an"
+                " active stage"
+                for relative, _ in sorted(package_members)
+            )
+            continue
+        for relative, status in sorted(package_members):
+            if status not in TERMINAL_DOCUMENT_STATUSES:
+                continue
+            if status == "completed" and not relative.endswith(
+                ("/spec.md", "/plan.md")
+            ):
+                # A finished Task says so with its own status. The package still
+                # moves whole, with its Spec's terminal transition.
+                continue
             findings.append(f"{relative}: {status} document remains in an active stage")
     return tuple(findings)
 
