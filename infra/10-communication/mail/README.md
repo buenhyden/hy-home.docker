@@ -101,7 +101,7 @@ mail/
 | Config values | env keys: `STALWART_ADMIN_USER`; profiles: `communication` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
 | Networks | `infra_net` static IPs `172.19.0.228` (Stalwart), `172.19.0.229` (MailHog) |
-| Volumes | `stalwart-data:/opt/stalwart:rw`, `../../../secrets/certs:/opt/stalwart/certs:ro`, `stalwart-data` |
+| Volumes | `stalwart-data:/opt/stalwart:rw`, `${DEFAULT_CERT_DIR}:/opt/stalwart/certs:ro`, `stalwart-data` |
 | Ports | `${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}`, `${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}`, `${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}`, `${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}`, `${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.stalwart-ui.rule`, `traefik.http.routers.stalwart-ui.entrypoints`, `traefik.http.routers.stalwart-ui.tls`, `traefik.http.routers.stalwart-ui.middlewares`, `traefik.http.services.stalwart-ui.loadbalancer.server.port`, `traefik.http.routers.mailhog.rule`, plus 4 more |
 | Secret refs | names: `stalwart_password`; mounts: `/run/secrets/stalwart_password` |

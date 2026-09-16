@@ -60,7 +60,7 @@ nginx/
 | Config values | profiles: `nginx` |
 | Compose linkage | the root [docker-compose.yml](../../../docker-compose.yml) includes this file unconditionally and the `nginx` profile selects the service; validating the file on its own still requires an explicit context for `infra_net` and backend dependencies |
 | Networks | `infra_net` |
-| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `../../../secrets/certs:/etc/nginx/certs:ro` |
+| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `${DEFAULT_CERT_DIR}:/etc/nginx/certs:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | Not declared |
 | Secret refs | Not declared |

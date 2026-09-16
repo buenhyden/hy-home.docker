@@ -9,6 +9,7 @@ entryPoints:
   web:
     address: ":80"
     http:
+      aliasHeadersStrategy: delete
       redirections:
         entryPoint:
           to: websecure
@@ -17,9 +18,12 @@ entryPoints:
   websecure:
     address: ":443"
     http:
+      aliasHeadersStrategy: delete
       tls: true
   metrics:
     address: ":8082"
+    http:
+      aliasHeadersStrategy: delete
 
 # 2. Providers 설정
 providers:
