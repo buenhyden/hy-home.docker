@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"
@@ -54,22 +54,112 @@ no check, so the sentence now bars activation instead.
 The Spec moves from `draft` to `review`, and this Plan and Task are added as
 drafts.
 
+### W2: The approval review and the amendments it forced (2026-09-16, local-executed)
+
+The review ran against the three package documents and the repository state
+SPEC-0177 W7 had just produced. It returned BLOCK with three high, six medium,
+and two low findings. Ten were accepted and one was rejected on evidence.
+
+The three high findings shared one shape: the package stated an obligation whose
+owner or whose authorized surface it had not declared.
+
+- Criterion 6 requires `ADR-0035`'s inbound links repointed when it moves to
+  `superseded/`, but the in-scope list named none of the documents that hold
+  them. `grep` over the active tree finds eight such links, six of them outside
+  Stage 98, so W7 would have failed its own changed gate. The scope list and
+  Plan W7 now name every active document that links `ADR-0035` by path or labels
+  its status, with the current enumeration marked as the state the rule found
+  rather than an expected set, which keeps REQ-0026-NFR-0006.
+- Behavior Contract 10 requires `resolved_at` at `resolved`, but `ADR-0036` had
+  four Decisions and none of them concerned incident closure, so a
+  machine-enforced rule would have had a Stage 03 Spec as its only authority
+  against REQ-0026-FR-0005. `ADR-0036` gains Decision 5 and a matching
+  Consequence, and the scope list and Plan W7 name a new `REQ-0026` functional
+  requirement as the Stage 01 owner, amended in the acceptance tree.
+- The completion-ordering rule, that a completing change writes its final
+  evidence in the commit before the move, existed only inside this Spec. After
+  preservation it would be readable only from a frozen body, against the
+  `REQ-0026` Acceptance Criterion that preservation rules are readable from
+  `.agents/` without loading a Spec Package. The scope list and Plan W7 now name
+  the policy's Retention by status section and
+  `.agents/governance/task-checklists.md`.
+
+The accepted medium and low findings were corrected in place: the undefined
+"integration report" is replaced by the completing commit's own pre-commit
+changed gate, which is an artifact rather than an assertion; the Plan's
+recording rule is bounded to the commit that holds every content change; W1 and
+W2 are stated to carry no acceptance criterion; criterion 6 names `git grep -n`
+over `docs/` and `.agents/` excluding the retention classes; the Stage 98 README
+byte-identity sentence joins the scope; the Plan's Dependencies state each
+document's status path across the four integrations, which the registered `task`
+lifecycle makes exactly `draft`, `ready`, `in-progress`, `completed`; and the
+stale tense in this Spec's Traceability row and in SPEC-0177's Overview is
+corrected. The `(proposed)` label for `ADR-0035` in `REQ-0026` Traceability was a
+SPEC-0177 W7 residue and was corrected there.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| 1 Inbound links outside the declared scope | high | Accepted. Scope list and Plan W7 extended |
+| 2 Behavior Contract 10 has no Stage 01 or 02 owner | high | Accepted. `ADR-0036` Decision 5 added; a `REQ-0026` requirement named in scope |
+| 3 Completion-ordering rule has no canonical owner | high | Accepted. Policy and task checklist named in scope |
+| 4 "Integration report" is not a defined artifact | medium | Accepted. Replaced by the completing commit's changed gate |
+| 5 Plan recording rule contradicts the frozen-Task design | medium | Accepted. Bounded to the pre-move commit |
+| 6 Criterion 6's completeness test is judgment | medium | Accepted. Named as a `git grep -n` run recorded in this Task |
+| 7 A byte-identity statement sits outside scope | medium | Accepted. Added to scope |
+| 8 The integration budget omits the Task's three-hop lifecycle | medium | Accepted. Status paths stated in the Plan |
+| 9 Criterion 5 binds the package to an impossible comparison | medium | Rejected on evidence. Behavior Contract 7 already admits an added `superseded_by`, and criterion 3 already requires that case to pass. `git cat-file -p 677a6e513:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` against the preserved copy differs in exactly two ways: the `status` value, which the registered field list carries, and an added `superseded_by`. The row passes as designed. The advisory to run the comparison against the real row before activation is kept as a W5 obligation |
+| 10 Stale tense about SPEC-0177 and `ADR-0035` | low | Accepted. Corrected here and in SPEC-0177 |
+| 11 W1 and W2 appear in no criterion row | medium | Accepted. Stated in the Plan's Verification |
+
+A second review read the amendment surface, as SPEC-0177 did when its own
+approval review needed a second round. It returned no high finding, five medium
+and five low, and named three as required before approval.
+
+| Finding | Severity | Disposition |
+| --- | --- | --- |
+| 1 Criterion 7 rests on an inference rather than an artifact | medium | Accepted. The completing tree's evidence is the hosted CI Quality Gates run on the integration commit, `validation-changed` for a pull request and `validation-full` for a direct push. A local hook result cannot be proven from a commit, which `.claude/provider.md` already states of hook trust |
+| 2 The scope rule would rewrite a dated Stage 90 observation | medium | Accepted. The rule binds a statement of current authority, and a dated observation states what was true at its observed commit |
+| 3 Criterion 8 was unbounded while criterion 7 was bounded | medium | Accepted. Criterion 8 names the content tree and what bounds the remaining delta |
+| 4 This Spec's link to SPEC-0177 breaks when that package is preserved | medium | Accepted with a different owner. The breakage happens in SPEC-0177's own completion, so its Task carries the repointing as a W8 consumer cutover and this Spec's Traceability row says so |
+| 5 The decisions index summary of `ADR-0036` omitted Decision 5 | medium | Accepted |
+| 6 "No edge that skips a state" is false of the cancel and supersede edges | low | Accepted. The Plan says no forward edge |
+| 7 The new `ADR-0036` Consequence claimed an effect on the preservation move | low | Accepted. It states the status effect only and puts the move rule outside its scope |
+| 8 SPEC-0177's Overview still read as a current claim about `ADR-0035` | low | Accepted |
+| 9 The scope list presupposed a policy statement that does not exist | low | Accepted. It names a new statement and a new checklist item |
+| 10 Two Technical Approach sentences assert opposite Task states | low | Accepted. The first is conditional on Behavior Contract 2 |
+
+The review had no shell and asked whether `REQ-0026` and SPEC-0177's Spec
+carried version bumps for their corrections. `REQ-0026` did not: `1.5.0` was
+already committed at SPEC-0177 W7, so removing the stale label needed `1.5.1`,
+which it now carries. SPEC-0177's Spec did, at `1.2.2`.
+
+With no high finding open, the Spec moves from `review` to `approved`, this Plan
+from `draft` to `approved`, and this Task from `draft` to `ready`, which the
+registered lifecycles make the only forward edge from each current status. No
+check this package adds is live until W3.
+
 ## Verification Evidence
 
-No acceptance criterion is complete. Rows are added as work units land.
+No acceptance criterion is complete. Rows are added as work units land. W1 and
+W2 carry no acceptance criterion and are evidenced by their Work Log entries.
 
 ## Review Evidence
 
-The approval review runs in W2, before the Spec moves to `approved`.
+### Independent approval review (2026-09-16, local-executed)
+
+Recorded in the W2 Work Log entry above, with every finding, its severity, and
+its disposition. The one rejected finding carries the command that disproves it.
 
 ## Commit Ledger
 
-The ledger starts with the W1 integration.
+| Commit | Scope |
+| --- | --- |
+| `24f7bb507` | W1: this package put to review with RES-0096 item A11, and this Plan and Task drafted |
 
 ## Deferred Items
 
 | Item | Blocking input or reason |
 | --- | --- |
-| W2 | The next integration, after the approval review |
 | W3 to W7 | SPEC-0177 completed and preserved |
 | W8 | One integration after W3 to W7 |
+| The source comparison run against the one existing Retention Catalog row | W5, which is where `common.frozen_transition_fields` and the comparison land. Review finding 9 asked for it before activation; the row is shown by hand to differ only in the `status` value and an added `superseded_by`, both admitted, so it is an obligation rather than a block |

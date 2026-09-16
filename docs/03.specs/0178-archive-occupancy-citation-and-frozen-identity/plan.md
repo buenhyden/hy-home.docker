@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Implementation Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"
@@ -30,6 +30,13 @@ in the result tree that makes every one of those checks live.
   the upstream base. The package therefore takes four integrations: review
   with W1; approval with W2; activation and acceptance with W3 to W7; and
   completion with W8.
+- The registered lifecycles admit no forward edge that skips a state, so each document
+  has exactly one status path across those four integrations. The Spec moves
+  `draft`, `review`, `approved`, `active`, `completed`; the Plan moves `draft`,
+  `approved`, `active`, `completed`; and the Task moves `draft`, `ready`,
+  `in-progress`, `completed`. The Task therefore reaches `ready` at W2 and
+  `in-progress` at W3 to W7, and no integration may set it to `in-progress`
+  from `draft`.
 
 ## Execution Sequence
 
@@ -56,8 +63,14 @@ in the result tree that makes every one of those checks live.
    `tests/lib/document_governance/test_registry.py`.
 7. W7: In the result tree that lands W3 to W6: accept `ADR-0036` with its
    `supersedes` naming `ADR-0035` and the surviving rules restated; preserve
-   `ADR-0035` under `docs/98.archive/superseded/` with its catalog row; and
-   amend every text surface the Spec names.
+   `ADR-0035` under `docs/98.archive/superseded/` with its catalog row; repoint
+   every active document that links `ADR-0035` by path or labels its status, so
+   that no active-stage link to that path remains; and amend every text surface
+   the Spec names, which includes the new `REQ-0026` requirement owning incident
+   closure evidence, the pre-move evidence-commit statement in the policy under
+   Retention by status with its matching item in
+   `.agents/governance/task-checklists.md`, and the byte-identity sentence in
+   the Stage 98 README How to Work in This Area list.
 8. W8: Run the changed profile, obtain an independent exact-diff review, and
    complete and preserve the package with its own catalog row.
 
@@ -84,8 +97,10 @@ in the result tree that makes every one of those checks live.
 ## Verification
 
 The Task records every command, exit code, review finding, and PASS, FAIL,
-BLOCKED, NOT_RUN, or N/A state. Completion requires a receipt row for every
-acceptance criterion and work-unit pair.
+BLOCKED, NOT_RUN, or N/A state up to the commit that holds every content change,
+which is the last tree the Task can still be written in. Completion requires a
+receipt row for every acceptance criterion and work-unit pair. W1 and W2 carry
+no acceptance criterion and are evidenced by their Work Log entries alone.
 
 ## Rulings
 

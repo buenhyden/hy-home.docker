@@ -1,6 +1,6 @@
 ---
 title: "보존 대기 package, route 기록 인용, frozen 동일성"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -105,11 +105,23 @@ SPEC-0173과 SPEC-0176의 완료 commit은 이동과 같은 commit에서 `versio
    consumer cutover만 담습니다.
 4. 이 결정은 catalog 행이 없는 기존 보존본에 소급하지 않으며, 그 기록의 원본 동일성은
    검증 한계로 남깁니다. 필요한 Git 객체가 없으면 통과가 아니라 실패로 보고합니다.
+5. 종료된 Incident는 종료 시점을 자기 frontmatter로 말합니다. status가 `resolved`인
+   `operation/incident`는 비어 있지 않은 `resolved_at`을 가집니다. `resolved/`
+   retention class가 이름으로 가져야 하는 것이 종료 근거이므로, 그 근거가 문서 밖
+   서술에만 있으면 보존본이 자기 처분을 자기 서술하지 못합니다. Registry는 이미
+   `postmortem`의 `published`에 `reviewed_at`을 요구하는 status-conditional 계약을
+   가지므로 이 규칙은 등록 항목 하나로 강제되고 새 check를 만들지 않습니다. 이
+   규칙의 Stage 01 owner는 `REQ-0026`의 새 functional requirement이며, SPEC-0178이
+   수락과 같은 결과 tree에서 그것을 개정합니다.
 
 ## Consequences
 
 - 끝난 Task가 자기 status로 완료를 말하므로, 정책의 `in-progress` 우회 문단과
   REQ-0026-FR-0009가 개정됩니다.
+- 종료 시점이 없는 Incident는 `resolved`가 될 수 없습니다. `resolved/`로의 이동을
+  수행하는 규칙은 이 결정의 범위가 아닙니다. REQ-0026은 이 의무를 소유하는
+  functional requirement를 얻으며, 그 requirement 없이는 이 결정의 규칙 서술이
+  Stage 01 owner를 갖지 못합니다.
 - Task 하나의 취소는 여전히 처분 판단을 요구합니다.
 - 현재 추적되는 incident와 postmortem 문서가 없으므로, 좁혀진 예외가 거부하는 현재
   링크는 없습니다. REQ-0026-FR-0014와 그 Acceptance Criteria가 개정됩니다.

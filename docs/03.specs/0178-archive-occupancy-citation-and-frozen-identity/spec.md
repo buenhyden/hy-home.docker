@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Specification"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"
@@ -55,12 +55,25 @@ recording when it closed.
   - The tests under `tests/lib/document_governance/` that cover each of these.
   - The acceptance of `ADR-0036`, its supersession of `ADR-0035`, and the
     in-place amendment of REQ-0026-FR-0009, REQ-0026-FR-0012,
-    REQ-0026-FR-0014, the first `REQ-0026` Constraint, and the Acceptance
+    REQ-0026-FR-0014, a new `REQ-0026` functional requirement that owns incident
+    closure evidence, the first `REQ-0026` Constraint, and the Acceptance
     Criterion on archive links; the `AD-0030` statement of the link exception;
-    the policy paragraph on a finished Task of an
-    unfinished package, its Links into Stage 98 section, and its retirement
-    verification sentence; the Stage 98 README boundary section; and
-    `.agents/skills/incident-response/SKILL.md`.
+    the policy paragraph on a finished Task of an unfinished package, its Links
+    into Stage 98 section, its retirement verification sentence, and its
+    a new statement under Retention by status that a completing change writes
+    its evidence in the commit before the move, with a new matching item in
+    `.agents/governance/task-checklists.md`; the Stage 98 README boundary
+    section and the byte-identity sentence in its How to Work in This Area list;
+    `.agents/skills/incident-response/SKILL.md`; and every active document that
+    links `ADR-0035` by path or states its status as current authority. A dated
+    observation in a Stage 90 record states what was true at its observed
+    commit and is not repointed. The documents holding such a link or label
+    when this Spec was written were `AD-0030` and `REQ-0026` Traceability,
+    `docs/02.architecture/README.md`,
+    `docs/02.architecture/decisions/README.md`, the Stage 98 README Overview and
+    Related Documents, RES-0096 Traceability, and `ADR-0036` Traceability. The
+    rule is the scope; that list is the state the rule found and is not an
+    expected set.
 - Out of scope: any edit to a frozen body or sealed record; a catalog row or
   identity comparison for a record preserved before the Retention Catalog
   existed; `TERMINAL_DOCUMENT_STATUSES` for `resolved` and `published`; and a
@@ -119,7 +132,8 @@ the registered fields free to change. It stores no digest: both sides are Git
 objects the tree and its history already hold, which keeps REQ-0026-NFR-0006.
 
 A completing change therefore writes its final evidence in a commit before the
-move, while the Task still reads `in-progress`, and the completing commit
+move, while the Task reads `in-progress` or, under Behavior Contract 2, already
+`completed`, and the completing commit
 changes only lifecycle fields, the move, the Stage 03 index row, the Retention
 Catalog row, and consumers. The occupancy rule of Behavior Contract 2 lets that
 earlier commit set the Task to `completed` instead.
@@ -127,8 +141,9 @@ earlier commit set the Task to `completed` instead.
 The gate result a Task records is the run on the tree of that earlier commit,
 which holds every content change. The completing tree differs from it only in
 what Behavior Contract 7 admits, the move, the two index rows, and consumers.
-The pre-commit changed profile gates that tree, and its result is reported in
-the integration report rather than written into the frozen Task.
+The pre-commit changed profile gates that tree locally, and the hosted CI
+Quality Gates run on the integration commit is the evidence that survives,
+because nothing is written into the frozen Task after the move.
 
 Behavior Contract 10 uses the Registry's existing status-conditional
 frontmatter contract, which the `postmortem` profile already applies to
@@ -180,15 +195,22 @@ declared in the schema as a required array of unique strings. New finding codes:
 6. In one result tree: `ADR-0036` is `accepted` with `supersedes` naming
    `ADR-0035` and the surviving rules of `ADR-0035` restated; `ADR-0035` is
    preserved under `docs/98.archive/superseded/` with `superseded_by` set, its
-   catalog row added, and its inbound links repointed; every text surface
-   named in scope states the new rules; and a search of active documents finds
-   no remaining statement of the replaced occupancy, citation, or byte-identity
-   rules.
+   catalog row added, and its inbound links repointed, so that no active-stage
+   link to that path remains; every text surface named in scope states the new
+   rules; and `git grep -n` over `docs/` and `.agents/`, excluding the retention
+   classes under `docs/98.archive/`, finds no remaining statement of the
+   replaced occupancy, citation, or byte-identity rules, with its patterns and
+   its output recorded in the Task.
 7. `python3 scripts/validation/run-ci-gate.py --profile changed` exits 0 on the
-   tree holding every content change, recorded in the Task, and on the
-   completing tree, reported in the integration report.
-8. An independent exact-diff review reports no finding outside the recorded
-   authorization, and every accepted finding is corrected before completion.
+   tree holding every content change, with its exit code recorded in the Task
+   before the move. For the completing tree the evidence is the hosted CI
+   Quality Gates run on the integration commit, `validation-changed` for a pull
+   request and `validation-full` for a direct push to `main`, because a local
+   hook result cannot be proven from the commit alone.
+8. An independent exact-diff review of the tree holding every content change
+   reports no finding outside the recorded authorization, and every accepted
+   finding is corrected before completion. The completing commit's remaining
+   delta is bounded by Behavior Contracts 6 and 7.
 9. A test proves Behavior Contract 10: a `resolved` Incident with a valid
    `resolved_at` passes; one with the key absent, null, or empty fails; and an
    Incident at `mitigated` passes without it.
@@ -200,7 +222,7 @@ declared in the schema as a required array of unique strings. New finding codes:
 | [REQ-0026 Document Retention and Retirement](../../01.requirements/0026-document-retention-and-retirement.md) | Owns the requirements this package amends in place |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Owns the validator structure this package changes |
 | [ADR-0036 Archive Occupancy, Route Citation, and Frozen Identity](../../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md) | The decision this package accepts |
-| [SPEC-0177 Archive Disposition Enforcement](../0177-archive-disposition-enforcement/spec.md) | Must complete first; it accepts `ADR-0035`, which this package supersedes |
+| [SPEC-0177 Archive Disposition Enforcement](../0177-archive-disposition-enforcement/spec.md) | Must complete first; it accepted `ADR-0035`, which `ADR-0036` supersedes. Its own completion repoints this link to its `completed/` path |
 | [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md) | The dated evidence for each divergence |
 
 ## Open Questions

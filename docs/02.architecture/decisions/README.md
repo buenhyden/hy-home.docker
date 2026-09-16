@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.4"
+version: "1.3.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -73,8 +73,9 @@ docs/02.architecture/decisions/
   그 규칙 가운데 유지되는 것을 다시 적었다.
 - [`ADR-0036`](./0036-archive-occupancy-citation-and-frozen-identity.md):
   활성 package 안의 completed Task 허용, route 기록 인용 금지, 보존본과
-  catalog `Source`의 기계 비교를 제안하는 proposed decision. 수락 시 ADR-0035를
-  supersede하며, SPEC-0177 완료 뒤 SPEC-0178이 수락을 소유한다.
+  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점 요구를 제안하는
+  proposed decision. 수락 시 ADR-0035를 supersede하며, SPEC-0177 완료 뒤
+  SPEC-0178이 수락을 소유한다.
 
 ## How to Work in This Area
 
