@@ -9,7 +9,6 @@ volumes:
       o: bind
       device: ${DEFAULT_COMMUNICATION_DIR}/stalwart/data
 
-
 services:
   stalwart:
     profiles:
@@ -28,7 +27,7 @@ services:
       - '${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}'
     volumes:
       - stalwart-data:/opt/stalwart:rw
-      - ../../../secrets/certs:/opt/stalwart/certs:ro
+      - ${DEFAULT_CERT_DIR}:/opt/stalwart/certs:ro
     networks:
       infra_net:
         ipv4_address: 172.19.0.228
@@ -37,12 +36,9 @@ services:
     environment:
       - STALWART_ADMIN_USER=admin
     command: >
-      sh -c "
-      export STALWART_ADMIN_PASSWORD=$$(cat /run/secrets/stalwart_password) &&
-      exec /usr/local/bin/stalwart-mail
-      "
+      sh -c " export STALWART_ADMIN_PASSWORD=$$(cat /run/secrets/stalwart_password) && exec /usr/local/bin/stalwart-mail "
     healthcheck:
-      test: ['CMD-SHELL', 'nc -z localhost ${SMTP_PORT:-25} || exit 1']
+      test: [ 'CMD-SHELL', 'nc -z localhost ${SMTP_PORT:-25} || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -71,7 +67,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.229
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:8025/']
+      test: [ 'CMD', 'wget', '-qO-', 'http://localhost:8025/' ]
       interval: 30s
       timeout: 10s
       retries: 3

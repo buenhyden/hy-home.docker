@@ -50,7 +50,7 @@ services:
       - opensearch_security_cookie
     volumes:
       - opensearch-data:/usr/share/opensearch/data:rw
-      - ../../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - ${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
       - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
       - ./opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
@@ -63,11 +63,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.70
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
-        ]
+      test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -97,7 +93,7 @@ services:
     expose:
       - '${KIBANA_PORT:-5601}'
     volumes:
-      - ../../../../secrets/certs:/usr/share/opensearch-dashboards/config/certs:ro
+      - ${DEFAULT_CERT_DIR}:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
       - opensearch-dashboards-data:/usr/share/opensearch-dashboards/data
     environment:
@@ -173,10 +169,7 @@ services:
       - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/key.pem
       - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/rootCA.pem
     command: >
-      bash -c "
-      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
-      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
-      "
+      bash -c " export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && exec /usr/share/opensearch/opensearch-docker-entrypoint.sh "
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -191,7 +184,7 @@ services:
     volumes:
       # 데이터 영속화 볼륨
       - opensearch-data1:/usr/share/opensearch/data
-      - ../../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - ${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     secrets:
       - opensearch_admin_password
@@ -216,11 +209,7 @@ services:
     networks:
       - infra_net
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
-        ]
+      test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -254,10 +243,7 @@ services:
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
     command: >
-      bash -c "
-      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
-      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
-      "
+      bash -c " export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && exec /usr/share/opensearch/opensearch-docker-entrypoint.sh "
     ulimits:
       memlock:
         soft: -1
@@ -277,11 +263,7 @@ services:
     networks:
       - infra_net
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
-        ]
+      test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -315,10 +297,7 @@ services:
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
     command: >
-      bash -c "
-      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
-      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
-      "
+      bash -c " export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && exec /usr/share/opensearch/opensearch-docker-entrypoint.sh "
     ulimits:
       memlock:
         soft: -1
@@ -338,11 +317,7 @@ services:
     networks:
       - infra_net
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
-        ]
+      test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
       timeout: 10s
       retries: 10

@@ -29,7 +29,7 @@ config:
           config:
             subject_key: preferred_username
             roles_key: groups
-            openid_connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
+            openid_connect_url: "https://keycloak.home.arpa/realms/hy-home.realm/.well-known/openid-configuration"
             # OpenSearch Security OIDC/JWKS fetch uses a dedicated HTTP client.
             # If Keycloak uses mkcert/self-signed CA, configure trust here to avoid PKIX failures.
             openid_connect_idp:

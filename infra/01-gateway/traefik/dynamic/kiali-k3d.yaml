@@ -25,7 +25,7 @@ http:
 
   routers:
     kiali-k3d:
-      rule: 'Host(`kiali.127.0.0.1.nip.io`)'
+      rule: 'Host(`kiali.home.arpa`)'
       entryPoints:
         - websecure
       service: kiali-k3d

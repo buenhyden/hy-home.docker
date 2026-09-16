@@ -25,7 +25,7 @@ http:
 
   routers:
     rollouts-k3d:
-      rule: 'Host(`rollouts.127.0.0.1.nip.io`)'
+      rule: 'Host(`rollouts.home.arpa`)'
       entryPoints:
         - websecure
       service: rollouts-k3d
