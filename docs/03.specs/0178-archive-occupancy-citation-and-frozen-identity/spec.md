@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Specification"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"

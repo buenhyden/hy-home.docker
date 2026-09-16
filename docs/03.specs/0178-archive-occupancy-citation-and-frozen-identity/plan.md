@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Implementation Plan"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"
@@ -40,28 +40,33 @@ in the result tree that makes every one of those checks live.
 
 ## Execution Sequence
 
-1. W1: Add RES-0096 item A11 to the Spec, settle its Open Question, and put the
-   Spec to review with this Plan and its Task as drafts.
-2. W2: Obtain an independent approval review, settle its findings, and approve
-   the Spec and this Plan.
-3. W3: Judge Stage 03 occupancy per package and admit a `completed` Task in an
+Two steps precede the sequence and carry no acceptance criterion, so they are
+recorded here rather than numbered as work units: W1, which added RES-0096 item
+A11 to the Spec, settled its Open Question, and put the Spec to review with this
+Plan and its Task as drafts; and W2, which obtained two independent approval
+reviews, settled their findings, and approved the Spec and this Plan. The
+registered completion contract requires a receipt for every numbered work unit,
+and neither produces acceptance evidence. The Task's Work Log keeps both under
+those names and the Commit Ledger keeps their commits.
+
+1. W3: Judge Stage 03 occupancy per package and admit a `completed` Task in an
    unfinished package. Files: `scripts/lib/document_governance/archive.py`,
    `tests/lib/document_governance/test_archive.py`.
-4. W4: Reject every source's link to a route record before the incident and
+2. W4: Reject every source's link to a route record before the incident and
    postmortem exception applies. Files:
    `scripts/lib/document_governance/links.py`,
    `tests/lib/document_governance/test_links.py`.
-5. W5: Declare `common.frozen_transition_fields` and compare each catalog unit
+3. W5: Declare `common.frozen_transition_fields` and compare each catalog unit
    with its `Source` object by members, modes, body bytes, and registered
    frontmatter fields. Files: `docs/99.templates/registry.json`,
    `docs/99.templates/contracts/document-profile.schema.json`,
    `scripts/lib/document_governance/archive.py`,
    `tests/lib/document_governance/test_archive.py`,
    `tests/lib/document_governance/test_registry.py`.
-6. W6: Require `resolved_at` on a `resolved` Incident. Files:
+4. W6: Require `resolved_at` on a `resolved` Incident. Files:
    `docs/99.templates/registry.json`,
    `tests/lib/document_governance/test_registry.py`.
-7. W7: In the result tree that lands W3 to W6: accept `ADR-0036` with its
+5. W7: In the result tree that lands W3 to W6: accept `ADR-0036` with its
    `supersedes` naming `ADR-0035` and the surviving rules restated; preserve
    `ADR-0035` under `docs/98.archive/superseded/` with its catalog row; repoint
    every active document that links `ADR-0035` by path or labels its status, so
@@ -71,7 +76,7 @@ in the result tree that makes every one of those checks live.
    Retention by status with its matching item in
    `.agents/governance/task-checklists.md`, and the byte-identity sentence in
    the Stage 98 README How to Work in This Area list.
-8. W8: Run the changed profile, obtain an independent exact-diff review, and
+6. W8: Run the changed profile, obtain an independent exact-diff review, and
    complete and preserve the package with its own catalog row.
 
 | Acceptance criterion | Work unit |
