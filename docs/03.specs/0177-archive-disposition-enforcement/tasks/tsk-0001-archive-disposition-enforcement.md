@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.7.0"
+version: "0.7.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -516,6 +516,7 @@ changed: the test asserts the same rule through a premise adoption removed.
 | `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=889 links=6683 failures=0` |
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `677a6e513`, `selected=13 violations=0` |
 | `ruff check` and `ruff format --check` on the edited test | exit 0 |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | exit 0 on the W7 result tree. This is not the receipt for criterion 10, which asks for the same command on the final path set that W8 produces |
 
 ## Verification Evidence
 
@@ -652,6 +653,7 @@ Pyright type warnings on annotations only; no registered gate runs Pyright.
 | `9def7aba1` | The assessment commits recorded in this ledger |
 | `24f7bb507` | SPEC-0178 at `review` with RES-0096 item A11, and its Plan and Task drafted |
 | `677a6e513` | W5 and W4b: route shapes, one withdrawal record, and the catalog units |
+| `d491c0910` | W7: the model adopted in one result tree |
 
 ## Rulings
 
