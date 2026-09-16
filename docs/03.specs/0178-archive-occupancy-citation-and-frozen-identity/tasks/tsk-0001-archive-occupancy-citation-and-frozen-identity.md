@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -172,6 +172,56 @@ in an active stage`, which is the report this unit removes.
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
 | `ruff check` and `ruff format --check` on both edited files | exit 0 |
 
+### W4: Route records closed to every source (2026-09-16, local-executed)
+
+The archive boundary exempted `operation/incident` and `operation/postmortem`
+from `active-archive-link` for every path under `docs/98.archive/`, route records
+included. That exception exists to reach preserved evidence, and a route record
+holds no body, so it has nothing to reach. The boundary now rejects a
+route-record target before the profile exception applies, which is Behavior
+Contract 4 and the whole behavioral change of this unit.
+
+The test was written first and failed first at four subtests, the two exempt
+profiles against each of the two route dispositions, each reporting an empty
+finding set where the rule requires `active-archive-link`.
+
+Criterion 2 asks for the full grid and the suite did not hold it: the six
+dispositions were covered for an ordinary source, and the exempt profiles only
+against `retired`. A matrix test now runs each of the four source kinds against
+each of the six dispositions and the index, so Behavior Contracts 4 and 5 are
+proven as stated rather than in the corner the older tests happened to cover.
+
+| Check | Result |
+| --- | --- |
+| The new route-record test before the implementation | FAIL at four subtests, incident and postmortem against `tombstones/` and `migrations/` |
+| `python3 -m unittest` over `test_links` | exit 0, 59 tests |
+| `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=889 links=6688 failures=0` |
+| `ruff check` and `ruff format --check` on the edited files | exit 0 |
+
+### W6: A closure date on a resolved Incident (2026-09-16, local-executed)
+
+The `incident` profile carried `resolved_at` as optional frontmatter and no
+status-conditional rule, so a record could reach `resolved` without saying when
+it closed. `resolved/` is the retention class that names its closure evidence, so
+the profile now requires `resolved_at` at `resolved` through
+`required_frontmatter_by_status`, which the `postmortem` profile already uses for
+`reviewed_at` at `published`. That is one Registry entry and no new check, as the
+Spec's Technical Approach states.
+
+The test was written first and failed first at three subtests: the key absent,
+null, and empty. The empty case reported `empty-optional-frontmatter` alone,
+which is the existing rule for an empty optional value, and the registered
+requirement now adds `status-frontmatter-required` beside it rather than
+replacing it.
+
+| Check | Result |
+| --- | --- |
+| The new test before the implementation | FAIL at three subtests, the key absent, null, and empty |
+| `python3 -m unittest` over `test_registry` | exit 0, 91 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, counts unchanged |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
+| Tracked Incident records | none, so the rule rejects nothing in the corpus today |
+
 ## Verification Evidence
 
 Rows are added as work units land. W1 and W2 carry no acceptance criterion and
@@ -180,6 +230,8 @@ are evidenced by their Work Log entries.
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W3 | PASS: `test_stage_03_occupancy_is_judged_per_package` was written first and failed first, and now admits a `completed` Task in an unfinished package while rejecting a `cancelled` Task, a terminal Spec, and a terminal Plan; the Stage 02 per-document case stays covered by `test_active_stages_hold_no_terminal_document` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 2 | W4 | PASS: `test_route_records_are_closed_to_every_source` was written first and failed first at the two exempt profiles against both route dispositions, and `test_every_source_profile_against_every_disposition_and_the_index` runs each of the four source kinds against each of the six dispositions and the index | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
+| 9 | W6 | PASS: `test_resolved_incident_requires_a_closure_date` was written first and failed first, and now accepts `mitigated` without the key, rejects `resolved` with the key absent, null, or empty, and accepts `resolved` with a date-time value | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 
 ## Review Evidence
 

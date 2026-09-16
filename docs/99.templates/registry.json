@@ -818,6 +818,11 @@
       "optional_frontmatter": [
         "resolved_at"
       ],
+      "required_frontmatter_by_status": {
+        "resolved": [
+          "resolved_at"
+        ]
+      },
       "required_sections": [
         "Summary",
         "Impact",

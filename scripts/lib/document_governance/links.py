@@ -52,6 +52,13 @@ _ADOPTED_CITABLE_ARCHIVE_PREFIXES = (
     "docs/98.archive/resolved/",
 )
 _ARCHIVE_CITING_PROFILES = ("operation/incident", "operation/postmortem")
+# A route disposition holds no body. The incident and postmortem exception
+# exists to reach preserved evidence, so it has nothing to reach here and the
+# boundary closes these two paths to every source.
+_ROUTE_RECORD_PREFIXES = (
+    "docs/98.archive/tombstones/",
+    "docs/98.archive/migrations/",
+)
 _ROOT_PREFIXES = (
     ".agents/",
     "docs/",
@@ -618,7 +625,10 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             and target_text.startswith("docs/98.archive/")
             and target_text != "docs/98.archive/README.md"
             and not target_text.startswith(citable_prefixes)
-            and _document_profile(nodes, link.source) not in _ARCHIVE_CITING_PROFILES
+            and (
+                target_text.startswith(_ROUTE_RECORD_PREFIXES)
+                or _document_profile(nodes, link.source) not in _ARCHIVE_CITING_PROFILES
+            )
         ):
             findings.append(_finding(link, "active-archive-link", link.raw_target))
         target_path, target_error = _regular_target(graph, link.target)

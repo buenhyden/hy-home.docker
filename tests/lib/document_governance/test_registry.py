@@ -535,6 +535,37 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertNotIn("reviewed_at", profile["required_frontmatter"])
         self.assertIn("reviewed_at", profile["optional_frontmatter"])
 
+    def test_resolved_incident_requires_a_closure_date(self) -> None:
+        """A `resolved/` record names its closure, so the Incident carries the date."""
+
+        profile = load_registry().profiles["incident"]
+        self.assertEqual(
+            (),
+            registry_module.validate_profile_values({"status": "mitigated"}, profile),
+        )
+        for values in (
+            {"status": "resolved"},
+            {"status": "resolved", "resolved_at": None},
+            {"status": "resolved", "resolved_at": ""},
+        ):
+            with self.subTest(values=values):
+                self.assertIn(
+                    "status-frontmatter-required",
+                    {
+                        item.code
+                        for item in registry_module.validate_profile_values(
+                            values, profile
+                        )
+                    },
+                )
+        self.assertEqual(
+            (),
+            registry_module.validate_profile_values(
+                {"status": "resolved", "resolved_at": "2026-09-16T09:00:00+09:00"},
+                profile,
+            ),
+        )
+
     def test_required_markdown_profiles_share_the_canonical_common_six(self) -> None:
         registry = load_registry()
         common_six = ["title", "version", "type", "status", "owner", "updated"]

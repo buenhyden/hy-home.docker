@@ -945,6 +945,87 @@ class DocumentGraphTests(unittest.TestCase):
                 codes = self._archive_boundary_codes("adopted", "retired", profile)
                 self.assertEqual(not allowed, "active-archive-link" in codes, profile)
 
+    def test_route_records_are_closed_to_every_source(self) -> None:
+        """A route record names a route for an outside consumer, so nothing cites it.
+
+        The incident and postmortem exception exists for preserved bodies, which
+        are evidence. A Tombstone or Migration holds no body, so the exception
+        has nothing to reach and the rule applies before it.
+        """
+
+        for folder in ("tombstones", "migrations"):
+            for profile in (
+                "operation/incident",
+                "operation/postmortem",
+                "operation/runbook",
+                None,
+            ):
+                with self.subTest(folder=folder, profile=profile):
+                    self.assertIn(
+                        "active-archive-link",
+                        self._archive_boundary_codes("adopted", folder, profile),
+                    )
+
+    def test_every_source_profile_against_every_disposition_and_the_index(self) -> None:
+        """Behavior Contracts 4 and 5 as a matrix, which is what criterion 2 asks.
+
+        The incident and postmortem exception reaches a preserved body in any
+        retention class. Every other source keeps the adopted boundary, and no
+        source reaches a route record.
+        """
+
+        retention = ("completed", "resolved", "superseded", "retired")
+        route = ("tombstones", "migrations")
+        for profile in (
+            "operation/incident",
+            "operation/postmortem",
+            "operation/runbook",
+            None,
+        ):
+            exempt = profile in ("operation/incident", "operation/postmortem")
+            for folder in retention + route:
+                citable = folder in retention and (
+                    exempt or folder in ("completed", "resolved")
+                )
+                with self.subTest(profile=profile, folder=folder):
+                    codes = self._archive_boundary_codes("adopted", folder, profile)
+                    self.assertEqual(
+                        not citable, "active-archive-link" in codes, (profile, folder)
+                    )
+            with self.subTest(profile=profile, folder="index"):
+                self.assertNotIn(
+                    "active-archive-link", self._archive_index_codes(profile)
+                )
+
+    def _archive_index_codes(self, profile: str | None) -> set[str]:
+        """Link one outside document at the Stage 98 index, which is always citable."""
+
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(
+                '{"common": {"archive_disposition_model": "adopted"}}\n',
+                encoding="utf-8",
+            )
+            source = root / "docs/05.operations/incidents/0001-outage.md"
+            target = root / "docs/98.archive/README.md"
+            source.parent.mkdir(parents=True)
+            target.parent.mkdir(parents=True)
+            front = f'---\ntype: "{profile}"\n---\n\n' if profile else ""
+            source.write_text(
+                f"{front}# Source\n\n[index](../../98.archive/README.md)\n",
+                encoding="utf-8",
+            )
+            target.write_text("# Archive\n", encoding="utf-8")
+            graph = build_document_graph([source, target], repo_root=root)
+            return {finding.code for finding in check_alignment(graph)}
+
     def test_transition_model_keeps_resolved_outside_the_boundary(self) -> None:
         """The switch at `transition` leaves the boundary exactly as it was."""
 
