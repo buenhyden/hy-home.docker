@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Consistency Assessment"
-version: "0.1.2"
+version: "0.1.3"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -158,7 +158,7 @@ read-only on 2026-09-15.
 - ADR-0035 Stage 98 Retention Classes and Route Dispositions (superseded)
 - [ADR-0036 Archive Occupancy, Route Citation, and Frozen Identity](../../../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
 - [SPEC-0177 Archive Disposition Enforcement](../../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md)
-- [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../../03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
+- [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
 
 ## Limitations
 

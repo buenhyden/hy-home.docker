@@ -1,8 +1,8 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Implementation Plan"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"

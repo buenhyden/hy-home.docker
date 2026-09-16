@@ -1,6 +1,6 @@
 ---
 title: "보존 대기 package, route 기록 인용, frozen 동일성"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -170,7 +170,7 @@ Retention Catalog `Source`와의 기계 비교로 정의됩니다.
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0035 Stage 98 보존 class와 route 처분 (superseded)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
-- [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
+- [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
 - [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 
