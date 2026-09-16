@@ -1347,6 +1347,110 @@ class RetentionCatalogTests(unittest.TestCase):
     def test_a_complete_catalog_passes(self) -> None:
         self.assertEqual(set(), self.codes())
 
+    _LATER = '---\nstatus: active\nversion: "1.0.0"\n---\n\n# Later\n'
+
+    def _preserve_after_base(self, body: str | None = None):
+        """Preserve one more document as a change over the base, with its row.
+
+        The comparison covers the rows a change adds, so a fixture that mutates
+        a row already present at the base would prove nothing.
+        """
+
+        origin = "docs/01.requirements/0003-later.md"
+        preserved = "docs/98.archive/retired/01.requirements/0003-later.md"
+        self._write(origin, self._LATER if body is None else body)
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "later source")
+        later = _fixture_git(self.root, "rev-parse", "HEAD")
+        (self.root / preserved).parent.mkdir(parents=True, exist_ok=True)
+        _fixture_git(self.root, "mv", origin, preserved)
+        self.readme(
+            [
+                *self.rows(),
+                f"| `retired/01.requirements/0003-later.md` | retired | "
+                f"It was withdrawn without a successor. | `{later}:{origin}` |",
+            ]
+        )
+        return self.root / preserved
+
+    def identity_codes(self) -> set[str]:
+        return {
+            finding.code
+            for finding in self.archive.validate_catalog_identity(self.root, self.base)
+        }
+
+    def test_a_unit_added_over_the_base_matches_its_source(self) -> None:
+        self._preserve_after_base()
+        self.assertEqual(set(), self.identity_codes())
+
+    def test_a_lifecycle_field_difference_passes(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.write_text(
+            '---\nstatus: retired\nversion: "1.1.0"\nsuperseded_by: "REQ-0009"\n'
+            "---\n\n# Later\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(set(), self.identity_codes())
+
+    def test_a_removed_frontmatter_key_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.write_text("---\nstatus: active\n---\n\n# Later\n", encoding="utf-8")
+        self.assertIn("catalog-source-frontmatter-differs", self.identity_codes())
+
+    def test_a_body_difference_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.write_text(
+            self._LATER.replace("# Later\n", "# Later\n\nAdded after the move.\n"),
+            encoding="utf-8",
+        )
+        self.assertEqual({"catalog-source-body-differs"}, self.identity_codes())
+
+    def test_a_line_ending_difference_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.write_bytes(self._LATER.replace("# Later\n", "# Later\r\n").encode())
+        self.assertEqual({"catalog-source-body-differs"}, self.identity_codes())
+
+    def test_an_unregistered_frontmatter_key_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.write_text(
+            self._LATER.replace("---\n\n", "owner: '@someone'\n---\n\n"),
+            encoding="utf-8",
+        )
+        self.assertEqual({"catalog-source-frontmatter-differs"}, self.identity_codes())
+
+    def test_a_mode_difference_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.chmod(0o755)
+        _fixture_git(self.root, "add", "-A")
+        self.assertIn("catalog-source-mode-differs", self.identity_codes())
+
+    def test_a_member_set_difference_is_reported(self) -> None:
+        preserved = self._preserve_after_base()
+        preserved.unlink()
+        self.assertIn("catalog-source-members-differ", self.identity_codes())
+
+    def test_the_registered_check_runs_the_comparison(self) -> None:
+        """A rule the registered check never calls is support code, not a rule."""
+
+        preserved = self._preserve_after_base()
+        preserved.write_text(
+            self._LATER.replace("# Later\n", "# Later\n\nAdded.\n"), encoding="utf-8"
+        )
+        self.assertIn(
+            "catalog-source-body-differs",
+            {
+                finding.code
+                for finding in self.archive.validate_retention(self.root, self.base)
+            },
+        )
+
+    def test_a_row_present_at_the_base_is_not_compared(self) -> None:
+        """Behavior Contract 9: the comparison is not retroactive."""
+
+        body = self.root / "docs/98.archive/retired/01.requirements/0002-withdrawn.md"
+        body.write_text("# Withdrawn\n\nAdded after preservation.\n", encoding="utf-8")
+        self.assertEqual(set(), self.identity_codes())
+
     def test_the_section_and_header_are_required(self) -> None:
         self.readme(self.rows(), header="| Record | Class | Source |")
         self.assertIn("catalog-header-invalid", self.codes())

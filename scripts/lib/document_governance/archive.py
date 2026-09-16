@@ -1476,6 +1476,143 @@ def validate_catalog_coverage(
     return tuple(sorted(set(findings)))
 
 
+def _frontmatter_segments(raw: bytes) -> tuple[list[tuple[str, bytes]] | None, bytes]:
+    """Split a document into ordered frontmatter segments and its body bytes.
+
+    A segment is a top-level `key:` line with the continuation lines that belong
+    to it, so a list value changing under an unregistered key is still a
+    difference rather than a line the comparison never sees.
+    """
+
+    if not raw.startswith(b"---\n"):
+        return None, raw
+    end = raw.find(b"\n---\n", 3)
+    if end == -1:
+        return None, raw
+    segments: list[tuple[str, bytes]] = []
+    for line in raw[4:end].split(b"\n"):
+        starts_key = line[:1] not in (b" ", b"\t", b"-", b"") and b":" in line
+        if starts_key:
+            segments.append((line.split(b":", 1)[0].decode("utf-8", "replace"), line))
+            continue
+        if segments:
+            key, text = segments[-1]
+            segments[-1] = (key, text + b"\n" + line)
+    return segments, raw[end + 5 :]
+
+
+def _identity_findings(source: bytes, preserved: bytes) -> list[str]:
+    """Return the codes by which one member differs from its `Source` blob."""
+
+    free = frozenset(
+        str(field)
+        for field in _catalog_registry().common.get("frozen_transition_fields", ())
+    )
+    source_segments, source_body = _frontmatter_segments(source)
+    preserved_segments, preserved_body = _frontmatter_segments(preserved)
+    codes: list[str] = []
+    if source_body != preserved_body:
+        codes.append("catalog-source-body-differs")
+    if source_segments is None or preserved_segments is None:
+        if source_segments is not preserved_segments and source != preserved:
+            codes.append("catalog-source-frontmatter-differs")
+        return codes
+    source_keys = [key for key, _ in source_segments]
+    preserved_keys = [key for key, _ in preserved_segments]
+    # `superseded_by` is the one key a supersession adds. Every other addition,
+    # removal, or reordering is a difference, and only a registered field's value
+    # may change.
+    added = [key for key in preserved_keys if key not in source_keys]
+    if added not in ([], ["superseded_by"]) or [
+        key for key in source_keys if key not in preserved_keys
+    ]:
+        codes.append("catalog-source-frontmatter-differs")
+        return codes
+    if [key for key in preserved_keys if key in source_keys] != source_keys:
+        codes.append("catalog-source-frontmatter-differs")
+        return codes
+    for key, text in preserved_segments:
+        if key in free:
+            continue
+        original = next((body for name, body in source_segments if name == key), None)
+        if original != text:
+            codes.append("catalog-source-frontmatter-differs")
+            break
+    return codes
+
+
+def validate_catalog_identity(
+    root: pathlib.Path, base: str
+) -> tuple[ArchiveFinding, ...]:
+    """Compare each Retention Catalog row a change adds with its `Source` object.
+
+    A row present at the base was written before this rule existed, so it stays a
+    verification limit rather than a claim, which `ADR-0036` Decision 4 states for
+    a preserved record without a row.
+    """
+
+    root = pathlib.Path(root)
+    text = _catalog_index_text(root)
+    if text is None:
+        return ()
+    rows, _ = _catalog_rows(text)
+    at_base = _run_git(root, ["show", f"{base}:{_ARCHIVE_INDEX}"])
+    base_records: frozenset[str] = frozenset()
+    if not at_base.returncode:
+        base_rows, _ = _catalog_rows(at_base.stdout.decode("utf-8", "replace"))
+        base_records = frozenset(
+            record
+            for row in base_rows
+            if (record := _code_span(row.record)) is not None
+        )
+    findings: list[ArchiveFinding] = []
+    for row in rows:
+        record = _code_span(row.record)
+        if record is None or record in base_records:
+            continue
+        path = f"{_ARCHIVE_PREFIX}{record}"
+        commit, separator, origin = (_code_span(row.source) or "").partition(":")
+        if not separator:
+            continue
+        listed = _run_git(root, ["ls-tree", "-r", "-z", commit, "--", origin])
+        if listed.returncode:
+            continue
+        source: dict[str, tuple[str, str]] = {}
+        for entry in listed.stdout.decode("utf-8", "replace").split("\0"):
+            if not entry:
+                continue
+            meta, _, member = entry.partition("\t")
+            mode, _, rest = meta.partition(" ")
+            source[member[len(origin) :].lstrip("/")] = (mode, rest.split(" ")[1])
+        unit = root / path.rstrip("/")
+        preserved: dict[str, pathlib.Path] = (
+            {
+                member.relative_to(unit).as_posix(): member
+                for member in sorted(unit.rglob("*"))
+                if member.is_file()
+            }
+            if unit.is_dir()
+            else ({"": unit} if unit.is_file() else {})
+        )
+        if set(source) != set(preserved):
+            findings.append(ArchiveFinding("catalog-source-members-differ", path))
+            continue
+        for member, (mode, blob) in sorted(source.items()):
+            target = preserved[member]
+            expected = "100755" if os.access(target, os.X_OK) else "100644"
+            if mode != expected:
+                findings.append(ArchiveFinding("catalog-source-mode-differs", path))
+            blob_bytes = _run_git(root, ["cat-file", "blob", blob])
+            if blob_bytes.returncode:
+                findings.append(ArchiveFinding("catalog-source-object-invalid", path))
+                continue
+            findings.extend(
+                ArchiveFinding(code, path)
+                for code in _identity_findings(blob_bytes.stdout, target.read_bytes())
+            )
+    return tuple(sorted(set(findings)))
+
+
 def validate_retention(
     root: pathlib.Path, base: str | None = None
 ) -> tuple[ArchiveFinding, ...]:
@@ -1486,6 +1623,7 @@ def validate_retention(
     findings = list(validate_retention_catalog(root))
     if base is not None:
         findings.extend(validate_catalog_coverage(root, base))
+        findings.extend(validate_catalog_identity(root, base))
     return tuple(sorted(set(findings)))
 
 

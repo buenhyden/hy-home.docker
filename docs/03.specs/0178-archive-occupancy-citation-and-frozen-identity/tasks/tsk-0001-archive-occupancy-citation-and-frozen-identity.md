@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -251,6 +251,35 @@ Modes table names the premise that failed. The SPEC-0177 row's difference is
 recorded above rather than repaired, because a frozen body is never edited and no
 commit holds those bytes at the origin path.
 
+`validate_catalog_identity(root, base)` compares each row the change adds. It
+reads the row set at the base from `git show <base>:docs/98.archive/README.md`,
+skips a record already there, lists the `Source` members with `git ls-tree -r`,
+and compares each member's Git mode, its bytes after the frontmatter, and its
+frontmatter segments. A segment is a top-level `key:` line with the continuation
+lines that belong to it, so a list value changing under an unregistered key is a
+difference rather than a line the comparison never sees. Only the keys
+`common.frozen_transition_fields` names may differ in value, and only
+`superseded_by` may be added.
+
+The current side is read from the filesystem rather than from `HEAD`, because the
+change that moves a unit has not committed it yet when the check runs.
+
+One defect was found by self-review after the tests were green:
+`validate_retention` called `validate_retention_catalog` and
+`validate_catalog_coverage` but not the new function, so the rule existed while
+no registered check invoked it. The tests passed because they called the function
+directly. The hook was added and
+`test_the_registered_check_runs_the_comparison` now proves the wiring, which is
+the guard whose absence let the omission through.
+
+| Check | Result |
+| --- | --- |
+| The seven new comparison tests before the implementation | ERROR, `module ... has no attribute 'validate_catalog_identity'`, with the 15 existing catalog tests still passing |
+| `python3 -m unittest` over `test_archive` | exit 0, 65 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, counts unchanged, which is Behavior Contract 9 holding: both existing rows sit at the base and are not compared |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
+| `ruff check` and `ruff format --check` on both edited files | exit 0 |
+
 ## Verification Evidence
 
 Rows are added as work units land. W1 and W2 carry no acceptance criterion and
@@ -261,6 +290,7 @@ are evidenced by their Work Log entries.
 | 1 | W3 | PASS: `test_stage_03_occupancy_is_judged_per_package` was written first and failed first, and now admits a `completed` Task in an unfinished package while rejecting a `cancelled` Task, a terminal Spec, and a terminal Plan; the Stage 02 per-document case stays covered by `test_active_stages_hold_no_terminal_document` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 2 | W4 | PASS: `test_route_records_are_closed_to_every_source` was written first and failed first at the two exempt profiles against both route dispositions, and `test_every_source_profile_against_every_disposition_and_the_index` runs each of the four source kinds against each of the six dispositions and the index | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 9 | W6 | PASS: `test_resolved_incident_requires_a_closure_date` was written first and failed first, and now accepts `mitigated` without the key, rejects `resolved` with the key absent, null, or empty, and accepts `resolved` with a date-time value | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
+| 3 | W5 | PASS: the Git-fixture tests prove Behavior Contracts 6 to 8 against a unit added over the base. A lifecycle-field difference with an added `superseded_by` passes; an added body line and a changed line ending each report `catalog-source-body-differs`; an added and a removed frontmatter key each report `catalog-source-frontmatter-differs`; a mode change reports `catalog-source-mode-differs`; a member-set difference reports `catalog-source-members-differ`; and a missing object stays `catalog-source-object-invalid` through `test_source_object_must_exist_with_the_unit_type` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 4 | W5 | PASS: `test_frozen_transition_fields_are_a_declared_contract` was written first and failed first with a `KeyError`, and the Registry now declares `status`, `version`, `updated` and `superseded_by` while the schema lists the key in `common.required`, so a Registry without it does not load | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 
 ## Review Evidence
