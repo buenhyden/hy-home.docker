@@ -2,7 +2,7 @@
 title: "Stage 98 보존 class와 route 처분"
 version: "1.0.2"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "architecture"
@@ -11,6 +11,7 @@ parent_ids:
 - "AD-0030"
 supersedes:
 - "ADR-0033"
+superseded_by: "ADR-0036"
 created: "2026-09-15"
 ---
 

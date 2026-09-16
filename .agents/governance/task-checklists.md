@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-16"
 ---
 
 # Task Checklists
@@ -35,6 +35,9 @@ updated: "2026-09-06"
 - [ ] Regenerate registered projections and prove byte-for-byte freshness.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
+- [ ] Write a completing change's final evidence in the commit before the move,
+      so the completing commit changes only lifecycle fields, the move, the two
+      index rows, and consumers.
 - [ ] Create logical Conventional Commits only after review approval.
 
 ## Related Documents

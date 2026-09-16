@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -280,6 +280,63 @@ the guard whose absence let the omission through.
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
 | `ruff check` and `ruff format --check` on both edited files | exit 0 |
 
+### W7: `ADR-0036` accepted and the surfaces it changes (2026-09-16, local-executed)
+
+`ADR-0036` is `accepted` at `1.0.0`, names `ADR-0035` in `supersedes`, and restates
+the rules of `ADR-0035` that survive, which is every rule except the three this
+decision changes: occupancy becomes a package judgment, the route-record citation
+ban reaches `operation/incident` and `operation/postmortem`, and frozen identity
+becomes a machine comparison with the catalog `Source`. `ADR-0035` moved to
+`docs/98.archive/superseded/02.architecture/decisions/` with `status` changed and
+`superseded_by` added, and its Retention Catalog row names `ADR-0036` and the
+source object `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0`, the last commit where
+its origin path existed. That row is the first the comparison W5 added actually
+checks, because it is the first row absent from the base.
+
+Seven text surfaces state the new rules: `REQ-0026` with a new
+REQ-0026-FR-0016 for incident closure evidence and amendments to
+REQ-0026-FR-0009, REQ-0026-FR-0012, REQ-0026-FR-0014, its first Constraint and
+its archive-links Acceptance Criterion; the policy's Links into Stage 98, its
+occupancy paragraph, its retirement verification sentence, and a new statement
+that a completing change writes its evidence in the commit before the move, with
+a matching item in `.agents/governance/task-checklists.md`; `AD-0030`'s link
+exception; the Stage 98 README boundary section and its byte-identity sentence;
+`.agents/skills/incident-response/SKILL.md`; and the Stage 02 decisions index.
+Six inbound links to `ADR-0035` became identifier mentions or moved to
+`ADR-0036`.
+
+The metadata gate rejected the first attempt with
+`configuration-error: requirement identity exceeds allocation high-water:
+REQ-0026-FR-0016`, because the clause was written before the identity was
+allocated. The `REQ-0026.FR` space now carries `high_water` 16, `next_number` 17,
+and 16 in `current_issued`, which is the number `next_number` already pointed at.
+
+A background unit run started before that allocation reported 18 failures and 68
+errors naming `identity-allocation-history-incomplete`. It had read the tree
+between the two edits the allocation needs, when `high_water` was 16 while
+`current_issued` still ended at 15. The settled tree passes; a background check
+must not overlap an edit to the state it reads.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest` over nine governance modules, `test_identity_history` included | exit 0, 352 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, `preserved=205`, one more than before this unit |
+| `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=888 links=6685 failures=0` |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 2 before the allocation, then exit 0, `selected=14 violations=0` |
+
+The criterion 6 sweep ran `git grep -n` over `docs` and `.agents`, excluding the
+three retention classes, for the replaced occupancy rule
+(`until the package migrates`, `cannot be marked .completed. where it stands`),
+the unqualified citation exception (`may cite an archive path directly`,
+`archive 경로를 직접 인용할 수 있는 것은`) and `byte-identical`. Occupancy returned
+nothing. Citation returned one line, the sentence this unit kept and qualified in
+the next clause. `byte-identical` returned eight lines, judged one by one: the
+`REQ-0026` first Constraint was a genuine remaining statement and now defers to
+REQ-0026-FR-0012; `ADR-0036` names it twice while describing the rule it
+replaces; the SPEC-0178 Overview does the same; RES-0096 carries it as dated
+evidence that is not rewritten; one Stage 90 research pack uses the word in an
+unrelated domain; and one sealed Migration is never edited.
+
 ## Verification Evidence
 
 Rows are added as work units land. W1 and W2 carry no acceptance criterion and
@@ -291,6 +348,12 @@ are evidenced by their Work Log entries.
 | 2 | W4 | PASS: `test_route_records_are_closed_to_every_source` was written first and failed first at the two exempt profiles against both route dispositions, and `test_every_source_profile_against_every_disposition_and_the_index` runs each of the four source kinds against each of the six dispositions and the index | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 9 | W6 | PASS: `test_resolved_incident_requires_a_closure_date` was written first and failed first, and now accepts `mitigated` without the key, rejects `resolved` with the key absent, null, or empty, and accepts `resolved` with a date-time value | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 | 3 | W5 | PASS: the Git-fixture tests prove Behavior Contracts 6 to 8 against a unit added over the base. A lifecycle-field difference with an added `superseded_by` passes; an added body line and a changed line ending each report `catalog-source-body-differs`; an added and a removed frontmatter key each report `catalog-source-frontmatter-differs`; a mode change reports `catalog-source-mode-differs`; a member-set difference reports `catalog-source-members-differ`; and a missing object stays `catalog-source-object-invalid` through `test_source_object_must_exist_with_the_unit_type` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 5 | W3 | PASS: the corpus lifecycle run reports `violations=0` with unchanged counts after occupancy became a package judgment, and `validate_active_stage_occupancy` returns `()` on the repository | [check-document-corpus-lifecycle.py](../../../../scripts/validation/check-document-corpus-lifecycle.py) |
+| 5 | W4 | PASS: the link run reports `failures=0` after the boundary closed route records to every source profile | [check-document-links.py](../../../../scripts/validation/check-document-links.py) |
+| 5 | W5 | PASS: the corpus run reports `violations=0` with the comparison live, and both rows written before it stay outside it under Behavior Contract 9, each measured by hand in the W5 entry | [check-document-corpus-lifecycle.py](../../../../scripts/validation/check-document-corpus-lifecycle.py) |
+| 5 | W6 | PASS: the corpus and metadata runs report `violations=0`; no tracked Incident record exists, so the new requirement rejects nothing today | [check-document-metadata.py](../../../../scripts/validation/check-document-metadata.py) |
+| 5 | W7 | PASS: the corpus run reports `violations=0` with `preserved=205`, and the `ADR-0035` row is the first row the comparison actually checks, differing from its `Source` only in `status` and an added `superseded_by` | [98.archive README](../../../98.archive/README.md) |
+| 6 | W7 | PASS: in one result tree `ADR-0036` is `accepted` with `supersedes` naming `ADR-0035` and its surviving rules restated, `ADR-0035` is preserved under `superseded/` with its catalog row and six inbound links repointed, seven text surfaces state the new rules, and the `git grep -n` sweep left no statement of the replaced rules, with its patterns and its eight judged hits recorded above | [documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
 | 4 | W5 | PASS: `test_frozen_transition_fields_are_a_declared_contract` was written first and failed first with a `KeyError`, and the Registry now declares `status`, `version`, `updated` and `superseded_by` while the schema lists the key in `common.required`, so a Registry without it does not load | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 
 ## Review Evidence

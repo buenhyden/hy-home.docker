@@ -1,14 +1,16 @@
 ---
 title: "보존 대기 package, route 기록 인용, frozen 동일성"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "architecture"
 artifact_id: "ADR-0036"
 parent_ids:
 - "AD-0030"
+supersedes:
+- "ADR-0035"
 created: "2026-09-15"
 ---
 
@@ -131,11 +133,42 @@ SPEC-0173과 SPEC-0176의 완료 commit은 이동과 같은 commit에서 `versio
 - 이 결정은 ADR-0035를 대체하게 되므로, 수락 시점에 ADR-0035와 그것이 다시 적은
   ADR-0033 규칙 가운데 유지되는 것을 다시 적어야 합니다.
 
+이 결정은 수락과 함께 ADR-0035를 대체하므로, ADR-0035가 소유하던 규칙 가운데
+계속 유효한 것을 다음과 같이 다시 적습니다. 바뀌는 것은 세 가지뿐입니다. 활성
+Stage 03의 occupancy가 문서 단위에서 package 단위가 되고, route 기록 인용 금지가
+`operation/incident`와 `operation/postmortem`에도 적용되며, 보존본의 원본 동일성이
+Retention Catalog `Source`와의 기계 비교로 정의됩니다.
+
+- Stage 98은 여섯 처분을 가지며, 각 처분의 디렉터리는 그 처분을 처음 쓰는
+  변경이 만듭니다. 기록이 아직 없는 처분에는 디렉터리가 없습니다.
+- retention class는 한때 현재였던 전체 본문을 당시 profile 그대로 보존합니다.
+  `completed/`는 완료되어 반영된 작업과 그것이 승격한 대상을, `superseded/`는 새
+  현재 권위가 대체한 내용과 그 대체 문서를, `retired/`는 후속 없이 철회된 규칙과
+  철회 사유를, `resolved/`는 종료된 Incident bundle과 게시된 Postmortem, 종료
+  근거와 현재 교정 작업 owner를 이름으로 가집니다.
+- route disposition은 본문을 담지 않습니다. `tombstones/`는 은퇴 route와 그 후속
+  또는 부재와 사유를, `migrations/`는 이동한 범위와 현재 owner를 `MIG-####`로
+  가집니다.
+- 인용 가능성은 처분이 이름으로 가지는 대상에서 도출됩니다. `completed/`는
+  Promotion 선언을 통해, `resolved/`는 교정 작업 owner를 통해 인용할 수 있고,
+  `superseded/`는 후속을, `retired/`는 현재 route를 대신 인용합니다. frozen 기록을
+  이름으로 가리켜야 할 때는 식별자로 부르고 Stage 98 index를 통해 찾습니다.
+- 어떤 Stage 98 기록도 두 번째 복구 원장을 운반하지 않습니다. redirect, path
+  ledger, 자체 설계한 본문 digest, branch SHA, recovery commit을 담지 않으며,
+  catalog의 Retention Envelope가 source Git object를 한 번 이름으로 가집니다.
+- 이미 봉인된 Tombstone과 Migration은 기록 당시 형태를 역사로 유지하며 새 계약에
+  맞추어 다시 쓰지 않습니다. Git-history-only로 등록된 profile은 없으므로 모든
+  처분이 frozen 본문을 유지합니다.
+- 현재 의미를 갖는 obligation, decision, structure, procedure는 terminal 전환 전에
+  canonical 거버넌스 또는 Stage 01, 02, 05 owner로 옮기고, inbound consumer를 같은
+  논리 변경에서 전환합니다. terminal 전환과 처분은 하나의 결과 tree에서 이루어지며,
+  Stage 03 package의 Spec, Plan, 모든 Task 본문이 함께 이동합니다.
+
 ## Traceability
 
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
-- [ADR-0035 Stage 98 보존 class와 route 처분](0035-stage-98-retention-classes-and-route-dispositions.md)
+- ADR-0035 Stage 98 보존 class와 route 처분 (superseded)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
 - [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
 - [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md)
@@ -144,14 +177,15 @@ SPEC-0173과 SPEC-0176의 완료 commit은 이동과 같은 commit에서 `versio
 ## Compliance
 
 규칙 서술은 canonical 정책과 REQ-0026이 소유하고, 이 결정은 선택의 근거를 소유합니다.
-이 proposed 문서는 어떤 check의 동작도 바꾸지 않으며 PASS를 뜻하지 않습니다. 수락
-변경은 SPEC-0178의 Task에 occupancy, link, catalog 검사의 실제 실행 결과를 기록해야
-합니다.
+이 문서 자체는 어떤 check의 PASS도 뜻하지 않습니다. 수락 변경은 SPEC-0178의 Task에
+occupancy, link, catalog 검사의 실제 실행 결과를 기록해야 하며, 그 Task가 기록하고
+있습니다.
 
 ## Follow-up
 
-SPEC-0178이 검사를 옮기고 이 결정을 `accepted`로 전환합니다. SPEC-0178은 SPEC-0177이
-ADR-0035를 수락하고 완료된 뒤에만 활성화합니다. 이 결정은 수락과 함께 ADR-0035를
+SPEC-0178이 검사를 옮기고 W7에서 이 결정을 `accepted`로 전환했습니다. SPEC-0177이
+ADR-0035를 수락하고 완료·보존된 뒤에 활성화했으며, 이 결정은 수락과 함께 ADR-0035를
 supersede합니다. supersession 검사는 effective 상태가 아닌 후속 문서의 `supersedes`를
-거부하므로, 그 frontmatter와 ADR-0035의 `superseded_by`는 수락 결과 tree에서 함께
-추가하고, 그때 ADR-0035 본문을 기준으로 유지되는 규칙을 이 결정에 다시 적습니다.
+거부하므로, 그 frontmatter와 ADR-0035의 `superseded_by`는 같은 결과 tree에서 함께
+추가했고, ADR-0035 본문을 기준으로 유지되는 규칙은 위 Decision 절 끝에 다시
+적었습니다.

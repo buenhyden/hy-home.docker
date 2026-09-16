@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "2.6.0"
+version: "2.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -297,7 +297,9 @@ and the current route instead of a `retired/` body, a tombstone, or a
 migration. A frozen record it must still name is named by identifier and
 reached through the index. Only an `operation/incident` record and its
 `operation/postmortem` may cite an archive path directly, because the evidence
-such an account rests on is often the archived record itself.
+such an account rests on is often the archived record itself. A route record
+holds no body, so that exception has nothing to reach there and `tombstones/`
+and `migrations/` stay closed to every source profile.
 
 #### Git-history-only dispositions
 
@@ -323,17 +325,19 @@ An all-files run requires its explicit approval and Git-visible, non-ignored
 Task-owned state, and uses only the controlled wrapper. It binds its evidence to
 a Task under `docs/03.specs/`, and completion preserves
 that Task under `docs/98.archive/completed/`, where it is a frozen record that
-must not take new evidence.
+must not take new evidence. A completing change therefore writes its final
+evidence in the commit before the move, so the completing commit changes only
+lifecycle fields, the move, the Stage 03 index row, the Retention Catalog row,
+and consumers.
 
-Preservation is what a terminal status means, and the corpus check applies it to
-each document rather than to the package as a whole. A single Task of an
-unfinished package therefore cannot be marked `completed` where it stands: the
-lifecycle edge is legal and the metadata check admits it, but the corpus check
-then reports the document as terminal inside an active stage, and satisfying it
-would move one Task out while its siblings remain. A finished Task of an
-unfinished package holds `in-progress` until the package migrates together, and
-a reader establishes that it is finished from its evidence and ledger sections
-rather than from its status field.
+Preservation is what a terminal status means, and the corpus check applies it
+per package in Stage 03 and per document in every other active stage. A finished
+Task of an unfinished package may therefore read `completed` where it stands: the
+Spec's status says whether the package is still current, and an admitted
+`completed` Task grants no disposition, because the package still moves whole
+with its Spec's terminal transition. A terminal Spec or Plan in Stage 03 stays a
+finding, a `cancelled` Task stays a finding, and a package whose Spec is terminal
+keeps no member in an active stage.
 
 An active stage may hold no package at all. Stage 03 is empty exactly when no
 change is in flight, which is a state to reach rather than avoid. A registered
@@ -360,8 +364,12 @@ investigate, not permission to delete.
 Record the authoring obligations and consumer cutover in the current Task's
 promotion receipt. A withdrawal's Retention Catalog row carries the withdrawal
 reason, and a sealed Tombstone that already carries it in `Reason` keeps it.
-Verification must compare preserved bytes with their
-recorded source without rewriting the frozen body to manufacture a later status.
+Verification compares a preserved unit with the `Source` object its Retention
+Catalog row names: the member set, each member's Git file mode, and the bytes
+after the frontmatter, with only the registered lifecycle fields free to differ
+in value and only `superseded_by` free to be added. A row written before that
+comparison existed stays a verification limit rather than a claim, and no frozen
+body is rewritten to manufacture a later status.
 
 Age may trigger a disposition review. It never triggers a deletion.
 

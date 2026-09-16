@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.5"
+version: "1.3.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -40,7 +40,6 @@ docs/02.architecture/decisions/
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0032-canonical-agent-governance-home.md
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
-├── 0035-stage-98-retention-classes-and-route-dispositions.md
 ├── 0036-archive-occupancy-citation-and-frozen-identity.md
 └── README.md
 ```
@@ -67,15 +66,14 @@ docs/02.architecture/decisions/
 - [`ADR-0034`](./0034-canonical-knowledge-and-prompt-surfaces.md):
   `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는
   accepted decision.
-- [`ADR-0035`](./0035-stage-98-retention-classes-and-route-dispositions.md):
+- `ADR-0035`:
   Stage 98을 네 retention class와 두 route disposition으로 나누고 인용
-  가능성을 처분의 이름에서 도출하는 accepted decision. ADR-0033을 supersede하며,
-  그 규칙 가운데 유지되는 것을 다시 적었다.
+  가능성을 처분의 이름에서 도출한 decision. ADR-0033을 supersede했고, ADR-0036이
+  이것을 supersede하며 유지되는 규칙을 다시 적었다.
 - [`ADR-0036`](./0036-archive-occupancy-citation-and-frozen-identity.md):
   활성 package 안의 completed Task 허용, route 기록 인용 금지, 보존본과
-  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점 요구를 제안하는
-  proposed decision. 수락 시 ADR-0035를 supersede하며, SPEC-0177 완료 뒤
-  SPEC-0178이 수락을 소유한다.
+  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점을 요구하는 accepted
+  decision. ADR-0035를 supersede하며, 그 규칙 가운데 유지되는 것을 다시 적었다.
 
 ## How to Work in This Area
 

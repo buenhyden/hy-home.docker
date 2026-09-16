@@ -1,6 +1,6 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -56,7 +56,11 @@ created: "2026-09-01"
   만듭니다. namespace가 없다는 사실이 은퇴를 막거나 철회 기록 없는 제거를
   정당화하지 않습니다.
 - **REQ-0026-FR-0009**: 활성 스테이지에는 terminal status 문서가 남지
-  않습니다. `completed`, `superseded`, `retired` 문서는 처분에 대응하는
+  않습니다. 판정 단위는 Stage 03에서 package이고 다른 활성 스테이지에서는
+  문서입니다. Spec이 terminal이 아닌 package 안의 `completed` Task는 허용되며 그
+  Task는 처분을 승인하지 않습니다. package는 여전히 Spec의 terminal 전환과 함께
+  전체가 이동하고, terminal Spec 또는 Plan과 `cancelled` Task는 결함으로 남습니다.
+  `completed`, `superseded`, `retired` 문서는 처분에 대응하는
   `docs/98.archive/` 하위 트리로 보존 이동합니다. 보존은 이동이므로 status
   표시와 이동을 한 변경 안에서 함께 수행합니다. 두 단계로 나누는 규칙은
   member를 삭제하던 이전 모델의 제약이었고, 실행 증거 삭제 check는 문서가
@@ -72,8 +76,11 @@ created: "2026-09-01"
   양방향 추적성을 유지합니다. 이 의무는 문서 거버넌스에 속하므로 개별 도메인
   요구사항이 각자 다시 선언하지 않습니다.
 
-- **REQ-0026-FR-0012**: 보존 기록은 수정하지 않습니다. 이동 또는 삭제 당시
-  본문과 byte-identical해야 합니다. 철회의 처분과 사유는 `retired/` 경로와 그
+- **REQ-0026-FR-0012**: 보존 기록은 수정하지 않습니다. Retention Catalog 행이 있는
+  단위는 그 행의 `Source` 객체와 구성원 경로, Git 파일 mode, frontmatter 이후 본문
+  바이트가 같아야 하며, frontmatter는 등록된 lifecycle 필드만 값이 달라지고
+  `superseded_by`만 추가될 수 있습니다. 그 비교가 생기기 전에 쓰인 행은 주장이 아니라
+  검증 한계로 남습니다. 철회의 처분과 사유는 `retired/` 경로와 그
   단위의 철회 기록이 담고, 완료와 대체의 처분은 각각 `status`와
   `superseded_by`가 자기 서술합니다. 현재 계약에 맞추기 위한 편집은 보존 대상을 훼손하므로
   보존 기록은 frontmatter와 section 계약의 적용 대상이 아닙니다.
@@ -86,12 +93,17 @@ created: "2026-09-01"
 - **REQ-0026-FR-0014**: 활성 문서가 archive 경로를 인용할 수 있는지는 처분이
   이름으로 가지는 대상에서 도출됩니다. index, `completed/`, `resolved/`만 인용할
   수 있고, `superseded/` 대신 후속을, `retired/`, Tombstone, Migration 대신 현재
-  route를 인용합니다. archive 경로를 직접 인용할 수 있는 것은
-  `operation/incident`와 그 `operation/postmortem`뿐입니다.
+  route를 인용합니다. 보존본을 직접 인용할 수 있는 것은 `operation/incident`와 그
+  `operation/postmortem`뿐이며, route 기록은 본문을 담지 않아 그 예외가 닿을 대상이
+  없으므로 출발 profile과 무관하게 인용할 수 없습니다.
 - **REQ-0026-FR-0015**: 어떤 Stage 98 기록도 redirect, path ledger, 자체 설계한
   본문 digest, branch SHA, recovery commit 같은 두 번째 복구 원장을 담지
   않습니다. source Git object는 Retention Envelope가 한 번 이름으로 가지며,
   frozen 내용의 복구는 Git history가 담당합니다.
+- **REQ-0026-FR-0016**: 종료된 Incident는 종료 시점을 자기 frontmatter로
+  말합니다. status가 `resolved`인 `operation/incident`는 비어 있지 않은
+  `resolved_at`을 가집니다. `resolved/`가 이름으로 가져야 하는 것이 종료 근거이므로,
+  그 근거가 문서 밖 서술에만 있으면 보존본이 자기 처분을 자기 서술하지 못합니다.
 
 ## Non-functional Requirements
 
@@ -105,7 +117,8 @@ created: "2026-09-01"
 ## Constraints
 
 - Stage 98의 처분별 하위 트리는 은퇴·완료·대체 당시 보존 대상으로 선택된
-  본문을 byte-identical frozen copy로 보존합니다. 완료 package의 보존 대상은
+  본문을 frozen copy로 보존하며, 그 동일성은 REQ-0026-FR-0012가 정의합니다.
+  완료 package의 보존 대상은
   outcome을 write back한 Spec, 그 Plan, 그리고 모든 Task입니다. Retention
   Catalog가 한 번 이름으로 가지는 source Git object는 보존본의 원본 동일성을
   증명하며 redirect 권위를 만들지 않고, 보존해야 할 본문을 Git-only 상태로
@@ -135,9 +148,10 @@ created: "2026-09-01"
 - Tombstone이 존재하는 모든 stage namespace는 그 stage에서 실제로 route 은퇴가
   일어났음을 뜻합니다. 철회를 Retention Catalog 행이 기록한 은퇴는 Tombstone
   namespace를 만들지 않습니다.
-- archive 밖 문서에서 `superseded/`, `retired/`, `tombstones/`, `migrations/`로
-  가는 링크는 `operation/incident`와 `operation/postmortem`이 아니면 등록된
-  check에서 실패합니다.
+- archive 밖 문서에서 `superseded/`와 `retired/`로 가는 링크는
+  `operation/incident`와 `operation/postmortem`이 아니면 등록된 check에서
+  실패하고, `tombstones/`와 `migrations/`로 가는 링크는 그 둘을 포함한 모든 출발
+  profile에서 실패합니다.
 
 ## Traceability
 
@@ -145,7 +159,8 @@ created: "2026-09-01"
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
 - ADR-0031 보존 기록으로서의 아카이브 (superseded)
-- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)
+- ADR-0035 Stage 98 보존 class와 route 처분 (superseded)
+- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
 
 ## Related Documents
 

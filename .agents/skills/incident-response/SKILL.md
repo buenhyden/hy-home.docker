@@ -3,7 +3,7 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.2.2"
+  version: "1.2.3"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -29,7 +29,9 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 - Preserved evidence when reconstruction needs it. Incident and postmortem
   records are the only profiles that may cite any archive path directly, because the
   evidence such an account rests on is often the archived record itself. Other
-  documents cite only the Stage 98 index, `completed/`, and `resolved/`. The
+  documents cite only the Stage 98 index, `completed/`, and `resolved/`. A route
+  record holds no body, so `tombstones/` and `migrations/` are closed to an
+  incident and a postmortem as well. The
   [documentation protocol](../../governance/documentation-protocol.md#links-into-stage-98)
   owns that rule.
 

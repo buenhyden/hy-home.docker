@@ -1,6 +1,6 @@
 ---
 title: "98.archive"
-version: "2.1.2"
+version: "2.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ Stage 98은 활성 스테이지가 더 이상 담지 않는 것을 여섯 처분
 이 README는 archive 탐색과 작업 안내만 소유합니다. 보존 정책은
 [.agents](../../.agents/governance/documentation-protocol.md#stage-98-dispositions)가,
 경로와 profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가,
-선택의 근거는 [ADR-0035](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)가
+선택의 근거는 [ADR-0036](../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)이
 소유합니다. 여기 보존된 어떤 기록도 `.agents/`와 Stage 01·02·03·05의 현재
 규칙을 덮어쓰지 않습니다.
 
@@ -73,9 +73,11 @@ class는 Promotion 선언을 통한 `completed/`와, 교정 작업 owner를 통�
 Tombstone, Migration 대신 현재 route를 인용합니다. 여전히 이름을 불러야 하는
 frozen 기록은 식별자로 부르고 이 index를 통해 찾습니다.
 
-archive 경로를 직접 인용할 수 있는 것은 `operation/incident` 기록과 그
+보존본을 직접 인용할 수 있는 것은 `operation/incident` 기록과 그
 `operation/postmortem`뿐입니다. 그런 기록이 근거로 삼는 증거는 보존된 기록 자체인
-경우가 많기 때문입니다.
+경우가 많기 때문입니다. 다만 route 기록은 본문을 담지 않아 그 예외가 닿을 대상이
+없으므로, `tombstones/`와 `migrations/`는 출발 profile과 무관하게 인용할 수
+없습니다.
 
 현재 강제는 `check-document-links.py`의 `active-archive-link`가 담당합니다.
 Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
@@ -102,6 +104,7 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 | --- | --- | --- | --- |
 | `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
 | `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
+| `superseded/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` | superseded | ADR-0036 | `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0:docs/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` |
 
 이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
 유지합니다. 소급 적재는 하지 않습니다.
@@ -139,7 +142,10 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 이동 당시 값 그대로이며
    처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는
    사실이 결정하며, frontmatter가 결정하지 않습니다.
-2. **보존 기록은 수정하지 않습니다.** 이동 당시 본문과 byte-identical해야 하고,
+2. **보존 기록은 수정하지 않습니다.** catalog 행이 있는 단위는 그 행의 `Source`
+   객체와 구성원 경로, Git 파일 mode, frontmatter 이후 본문 바이트가 같아야 하며,
+   frontmatter는 Registry의 `common.frozen_transition_fields`가 나열한 필드만 값이
+   달라지고 `superseded_by`만 추가될 수 있습니다.
    현재 계약에 맞추기 위한 편집은 보존하려던 대상을 훼손합니다. 그래서 이
    기록들은 frontmatter가 관리되지 않는 보존 프로파일로 등록됩니다. 자동
    포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로 동작하므로
@@ -173,4 +179,5 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 - [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)
+- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
+- ADR-0035 Stage 98 보존 class와 route 처분 (superseded)

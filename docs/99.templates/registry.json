@@ -3871,8 +3871,8 @@
         "REQ-0026.FR": {
           "prefix": "REQ-0026-FR-",
           "width": 4,
-          "high_water": 15,
-          "next_number": 16,
+          "high_water": 16,
+          "next_number": 17,
           "current_issued": [
             1,
             2,
@@ -3886,7 +3886,8 @@
             12,
             13,
             14,
-            15
+            15,
+            16
           ],
           "reserved_history": [
             6,

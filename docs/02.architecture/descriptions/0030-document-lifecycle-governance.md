@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -51,7 +51,9 @@ orchestration.
   노출하는 등록된 entrypoint입니다.
 - `scripts/lib/document_governance/links.py`는 archive 밖 문서가 Stage 98로
   거는 링크를 index와 `completed/`, `resolved/`로 제한하고,
-  `operation/incident`와 `operation/postmortem`만 예외로 둡니다.
+  `operation/incident`와 `operation/postmortem`만 예외로 둡니다. route 기록은
+  본문을 담지 않아 그 예외가 닿을 대상이 없으므로, `tombstones/`와 `migrations/`는
+  출발 profile과 무관하게 거부합니다.
 - `docs/98.archive/`는 두 종류를 담습니다. `completed/`, `superseded/`,
   `retired/`, `resolved/`는 본문을 보존하는 retention class이고,
   `tombstones/`와 `migrations/`는 본문 없이 route를 기록하는 route
@@ -142,7 +144,8 @@ link validator와 metadata validator는 결과 tree 위에서 독립적으로 �
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
 - ADR-0031 보존 기록으로서의 아카이브 (superseded)
-- [ADR-0035 Stage 98 보존 class와 route 처분](../decisions/0035-stage-98-retention-classes-and-route-dispositions.md)
+- ADR-0035 Stage 98 보존 class와 route 처분 (superseded)
+- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md)
 
 ## Related Documents
