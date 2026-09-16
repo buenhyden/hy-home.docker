@@ -29,6 +29,12 @@
       "archive/",
       ".agents/"
     ],
+    "frozen_transition_fields": [
+      "status",
+      "version",
+      "updated",
+      "superseded_by"
+    ],
     "frontmatter_order": [
       "title",
       "version",

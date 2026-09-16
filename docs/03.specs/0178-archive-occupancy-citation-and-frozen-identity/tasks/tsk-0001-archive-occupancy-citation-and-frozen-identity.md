@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -261,6 +261,7 @@ are evidenced by their Work Log entries.
 | 1 | W3 | PASS: `test_stage_03_occupancy_is_judged_per_package` was written first and failed first, and now admits a `completed` Task in an unfinished package while rejecting a `cancelled` Task, a terminal Spec, and a terminal Plan; the Stage 02 per-document case stays covered by `test_active_stages_hold_no_terminal_document` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 2 | W4 | PASS: `test_route_records_are_closed_to_every_source` was written first and failed first at the two exempt profiles against both route dispositions, and `test_every_source_profile_against_every_disposition_and_the_index` runs each of the four source kinds against each of the six dispositions and the index | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 9 | W6 | PASS: `test_resolved_incident_requires_a_closure_date` was written first and failed first, and now accepts `mitigated` without the key, rejects `resolved` with the key absent, null, or empty, and accepts `resolved` with a date-time value | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
+| 4 | W5 | PASS: `test_frozen_transition_fields_are_a_declared_contract` was written first and failed first with a `KeyError`, and the Registry now declares `status`, `version`, `updated` and `superseded_by` while the schema lists the key in `common.required`, so a Registry without it does not load | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 
 ## Review Evidence
 

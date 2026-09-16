@@ -566,6 +566,25 @@ class DocumentRegistryTests(unittest.TestCase):
             ),
         )
 
+    def test_frozen_transition_fields_are_a_declared_contract(self) -> None:
+        """The comparison reads the free fields from Stage 99, never from itself."""
+
+        registry = load_registry()
+        self.assertEqual(
+            ["status", "version", "updated", "superseded_by"],
+            list(registry.common["frozen_transition_fields"]),
+        )
+        schema = json.loads(
+            registry_module.DEFAULT_PROFILE_SCHEMA.read_text(encoding="utf-8")
+        )
+        self.assertIn(
+            "frozen_transition_fields",
+            schema["properties"]["common"]["required"],
+        )
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        del raw["common"]["frozen_transition_fields"]
+        self.assertNotEqual((), tuple(validate_registry(raw)))
+
     def test_required_markdown_profiles_share_the_canonical_common_six(self) -> None:
         registry = load_registry()
         common_six = ["title", "version", "type", "status", "owner", "updated"]

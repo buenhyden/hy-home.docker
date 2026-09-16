@@ -27,6 +27,7 @@
         "archive_disposition_model": { "enum": ["transition", "adopted"] },
         "archive_source_prefixes": { "$ref": "#/$defs/stringList" },
         "frontmatter_order": { "$ref": "#/$defs/stringList" },
+        "frozen_transition_fields": { "$ref": "#/$defs/stringList" },
         "generated_outputs": { "$ref": "#/$defs/stringMap" },
         "globally_forbidden": { "$ref": "#/$defs/stringList" },
         "inventory_excludes": { "$ref": "#/$defs/stringList" },
@@ -80,6 +81,7 @@
       },
       "required": [
         "archive_disposition_model",
+        "frozen_transition_fields",
         "template_initial_version",
         "spec_completion_evidence"
       ]
