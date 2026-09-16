@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -222,7 +222,7 @@ declared in the schema as a required array of unique strings. New finding codes:
 | [REQ-0026 Document Retention and Retirement](../../01.requirements/0026-document-retention-and-retirement.md) | Owns the requirements this package amends in place |
 | [AD-0030 Document Lifecycle Governance](../../02.architecture/descriptions/0030-document-lifecycle-governance.md) | Owns the validator structure this package changes |
 | [ADR-0036 Archive Occupancy, Route Citation, and Frozen Identity](../../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md) | The decision this package accepts |
-| [SPEC-0177 Archive Disposition Enforcement](../0177-archive-disposition-enforcement/spec.md) | Must complete first; it accepted `ADR-0035`, which `ADR-0036` supersedes. Its own completion repoints this link to its `completed/` path |
+| [SPEC-0177 Archive Disposition Enforcement](../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md) | Completed and preserved; it accepted `ADR-0035`, which `ADR-0036` supersedes |
 | [RES-0096 Archive Disposition Consistency Assessment](../../90.references/research/0096-archive-disposition-consistency/README.md) | The dated evidence for each divergence |
 
 ## Open Questions

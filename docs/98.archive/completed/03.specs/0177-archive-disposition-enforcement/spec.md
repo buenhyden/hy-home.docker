@@ -1,8 +1,8 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.2.3"
+version: "1.3.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-16"
 layer: "specs"

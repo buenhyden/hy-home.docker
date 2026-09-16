@@ -161,5 +161,6 @@ its disposition. The one rejected finding carries the command that disproves it.
 | Item | Blocking input or reason |
 | --- | --- |
 | W3 to W7 | SPEC-0177 completed and preserved |
+| This Plan lists W1 and W2 as numbered work units | The registered completion contract requires a receipt row for every work unit in the Execution Sequence, and neither carries an acceptance criterion. SPEC-0177 hit this at its own completion and moved both out of the numbered sequence. Amend before W8 |
 | W8 | One integration after W3 to W7 |
 | The source comparison run against the one existing Retention Catalog row | W5, which is where `common.frozen_transition_fields` and the comparison land. Review finding 9 asked for it before activation; the row is shown by hand to differ only in the `status` value and an added `superseded_by`, both admitted, so it is an obligation rather than a block |

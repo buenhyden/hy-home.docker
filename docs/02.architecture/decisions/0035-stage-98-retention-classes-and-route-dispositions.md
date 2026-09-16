@@ -1,6 +1,6 @@
 ---
 title: "Stage 98 보존 class와 route 처분"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -144,7 +144,7 @@ Tombstone 짝 요구뿐입니다.
 - [AD-0030 문서 Lifecycle 거버넌스](../descriptions/0030-document-lifecycle-governance.md)
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
-- [SPEC-0177 Archive Disposition Enforcement](../../03.specs/0177-archive-disposition-enforcement/spec.md)
+- [SPEC-0177 Archive Disposition Enforcement](../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md)
 - [문서 보존 및 은퇴 정책](../../../.agents/governance/documentation-protocol.md#stage-98-dispositions)
 
 ## Compliance
