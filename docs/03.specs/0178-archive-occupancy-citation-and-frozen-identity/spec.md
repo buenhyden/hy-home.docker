@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Specification"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -106,7 +106,12 @@ recording when it closed.
    or reordered key is a finding. A member without frontmatter must match byte
    for byte.
 8. A missing `Source` object is a finding, never a pass.
-9. A preserved record with no catalog row is not compared.
+9. A preserved record with no catalog row is not compared, and neither is a row
+   written before this package activates. The comparison is not retroactive.
+   `ADR-0036` Decision 4 already states that principle for a preserved record
+   without a row, so an earlier row's original identity stays a verification
+   limit rather than a claim this package proves, and the Task records each such
+   row with the difference measured by hand.
 10. An `operation/incident` whose status is `resolved` carries a nonempty
     `resolved_at`. A missing key, a null, or an empty string is a
     `status-frontmatter-required` finding, and the value keeps the `date-time`
@@ -174,6 +179,7 @@ declared in the schema as a required array of unique strings. New finding codes:
 | A shallow clone lacks the `Source` object | Behavior Contract 8 reports it; hosted CI checks out full history |
 | A historical body is rewritten to satisfy the comparison | Behavior Contract 9 compares only records with a catalog row, and frozen records are never edited |
 | An Incident is closed without a closure date | Behavior Contract 10 requires `resolved_at` at `resolved` |
+| A completion check finds a defect only once the Spec reads `completed` | `_validate_completion_evidence` returns early before that, so its findings reach the completing tree and correcting them there is a body change. The Technical Approach's premise, that a completing commit changes only lifecycle fields, the move, the two index rows and consumers, does not hold for such a completion; Behavior Contract 9 keeps the row outside the comparison and the Task records the instance that revealed it |
 
 ## Acceptance Contract
 
@@ -190,8 +196,10 @@ declared in the schema as a required array of unique strings. New finding codes:
    each fail with their code; an added `superseded_by` passes.
 4. The Registry and schema declare `common.frozen_transition_fields`, and a
    Registry load fails without it.
-5. Every tracked record, and every row the Retention Catalog holds when this
-   package activates, passes the registered checks.
+5. Every tracked record passes the registered checks, and so does every Retention
+   Catalog row this package adds. A row written before the comparison existed is
+   outside it under Behavior Contract 9, and the Task records that row with its
+   measured difference rather than leaving the limit unstated.
 6. In one result tree: `ADR-0036` is `accepted` with `supersedes` naming
    `ADR-0035` and the surviving rules of `ADR-0035` restated; `ADR-0035` is
    preserved under `docs/98.archive/superseded/` with `superseded_by` set, its

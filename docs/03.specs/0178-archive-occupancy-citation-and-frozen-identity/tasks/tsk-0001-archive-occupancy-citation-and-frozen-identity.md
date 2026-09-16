@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -221,6 +221,35 @@ replacing it.
 | `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, counts unchanged |
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, merge base `f5651fba8`, `violations=0` |
 | Tracked Incident records | none, so the rule rejects nothing in the corpus today |
+
+### W5: The comparison, and the row that revealed its premise (2026-09-16, local-executed)
+
+Before writing the comparison, the two rows the Retention Catalog already holds
+were compared by hand against their `Source` objects with `git cat-file -p` and
+`diff -u`.
+
+| Row | Difference from its `Source` | Verdict |
+| --- | --- | --- |
+| `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | `status` changed and `superseded_by` added, and nothing else | passes Behavior Contract 7 as written |
+| `completed/03.specs/0177-archive-disposition-enforcement/` | `spec.md` differs in `version` and `status` only; `plan.md` differs in three lifecycle fields and about 42 body lines; the Task differs in two lifecycle fields and about 27 body lines | fails the comparison |
+
+The body lines that fail are the record of the defects SPEC-0177's own completion
+check forced it to fix: the `W4b` token the contract never admitted, the W1 and
+W2 units that carried no receipt, and three receipt cells whose shape broke the
+contract. That check returns early unless the Spec already reads `completed`, so
+its findings can only arrive in the completing tree, and correcting them there is
+a body change. The Technical Approach's premise, that a completing commit changes
+only lifecycle fields, the move, the two index rows and consumers, therefore
+cannot hold for a completion the check itself corrects.
+
+The operator chose non-retroactive scope on 2026-09-16. The comparison covers the
+rows this package adds, and a row written before it existed stays a verification
+limit rather than a claim. `ADR-0036` Decision 4 already states that principle
+for a preserved record without a row, so Behavior Contract 9 extends it rather
+than creating an exception, criterion 5 names the bound, and the Spec's Failure
+Modes table names the premise that failed. The SPEC-0177 row's difference is
+recorded above rather than repaired, because a frozen body is never edited and no
+commit holds those bytes at the origin path.
 
 ## Verification Evidence
 
