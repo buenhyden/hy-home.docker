@@ -1,6 +1,6 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -145,7 +145,7 @@ created: "2026-09-01"
 - [문서 lifecycle 거버넌스 아키텍처](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - ADR-0033 Spec Package 전체 본문 보존 (superseded)
 - ADR-0031 보존 기록으로서의 아카이브 (superseded)
-- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md) (proposed)
+- [ADR-0035 Stage 98 보존 class와 route 처분](../02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md)
 
 ## Related Documents
 

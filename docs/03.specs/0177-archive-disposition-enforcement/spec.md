@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Specification"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -26,11 +26,11 @@ repository. Whether an active document may cite a disposition follows from what
 the disposition names, and no Stage 98 record carries a second recovery ledger.
 
 The canonical policy, the Stage 98 README, `REQ-0026`, and `AD-0030` state that
-model, and `ADR-0035` records the choice as `proposed`. The executable contracts
-predate it in six places. This package moves five of them and registers no
-Git-history-only profile, so the sixth stays. Until the package adopts the
-model, the registered checks keep enforcing their current subset, which the
-policy names explicitly.
+model, and `ADR-0035`, `proposed` when this package opened, was accepted at W7.
+The executable contracts predated it in six places. This package moves five of them and
+registers no Git-history-only profile, so the sixth stays. Until the package
+adopted the model at W7, the registered checks kept enforcing their current
+subset, which the policy named explicitly.
 
 ## Boundaries and Inputs
 

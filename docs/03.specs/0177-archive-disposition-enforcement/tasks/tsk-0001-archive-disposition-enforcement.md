@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Enforcement Execution"
-version: "0.7.2"
+version: "0.7.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -665,5 +665,6 @@ Pyright type warnings on annotations only; no registered gate runs Pyright.
 | Item | Blocking input or reason |
 | --- | --- |
 | W8 | One integration after W7 |
+| The SPEC-0178 Traceability link to this package's `spec.md` | W8, as part of its consumer cutover. Preservation moves this Spec under `docs/98.archive/completed/`, so that link dangles unless the completing change repoints it. The second SPEC-0178 approval review found it on 2026-09-16 |
 | SPEC-0178 and `ADR-0036` | SPEC-0178 in review; its activation requires this package completed |
 | An Incident's `resolved_at` has no status-conditional requirement (RES-0096 item A11) | Assigned to SPEC-0178 Behavior Contract 10 by the operator on 2026-09-16 |
