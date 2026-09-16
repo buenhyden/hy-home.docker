@@ -1,6 +1,6 @@
 ---
 title: "문서 Lifecycle 거버넌스 아키텍처"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -88,8 +88,10 @@ retirement로 판정합니다. 철회 기록이 없는 retirement는
 
 완료 순서는 outcome과 current consumer를 먼저 Spec 또는 다른 현재 정본으로
 write back한 뒤, Spec·Plan·모든 Task의 terminal 전환과 archive 이동을 한 결과
-tree에 적용하는 것입니다. 이 순서 때문에 active Stage 03에는 terminal 중간
-상태가 생기지 않습니다.
+tree에 적용하는 것입니다. active Stage 03의 점유는 문서 단위가 아니라 package
+단위로 판정합니다. package의 Spec이 terminal이면 그 package의 어떤 구성원도
+active stage에 남지 못합니다. Spec이 아직 terminal이 아니면 terminal Plan은
+위반이고, completed Task는 허용되며, 그 밖의 terminal Task 상태는 위반입니다.
 
 link validator와 metadata validator는 결과 tree 위에서 독립적으로 실행됩니다.
 따라서 은퇴한 경로를 여전히 가리키는 잔존 문서는 lifecycle 술어를 거치지 않고

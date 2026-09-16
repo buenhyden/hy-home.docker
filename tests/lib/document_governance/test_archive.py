@@ -1418,6 +1418,27 @@ class RetentionCatalogTests(unittest.TestCase):
         )
         self.assertEqual({"catalog-source-frontmatter-differs"}, self.identity_codes())
 
+    def test_a_reordered_frontmatter_is_reported(self) -> None:
+        """A registered field may differ in value, never in position."""
+
+        preserved = self._preserve_after_base()
+        preserved.write_text(
+            '---\nversion: "1.0.0"\nstatus: active\n---\n\n# Later\n',
+            encoding="utf-8",
+        )
+        self.assertEqual({"catalog-source-frontmatter-differs"}, self.identity_codes())
+
+    def test_a_value_change_under_an_unregistered_key_is_reported(self) -> None:
+        """Only a registered field may differ in value at all."""
+
+        body = '---\nstatus: active\nversion: "1.0.0"\ntitle: "Later"\n---\n\n# Later\n'
+        preserved = self._preserve_after_base(body)
+        preserved.write_text(
+            body.replace('title: "Later"', 'title: "Renamed"'),
+            encoding="utf-8",
+        )
+        self.assertEqual({"catalog-source-frontmatter-differs"}, self.identity_codes())
+
     def test_a_mode_difference_is_reported(self) -> None:
         preserved = self._preserve_after_base()
         preserved.chmod(0o755)

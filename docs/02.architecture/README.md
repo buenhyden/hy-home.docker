@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-16"
 layer: "architecture"
 ---
 
@@ -42,7 +42,7 @@ docs/02.architecture/
 ├── decisions/
 │   ├── 0001-traefik-nginx-hybrid.md
 │   ├── ...
-│   └── 0035-stage-98-retention-classes-and-route-dispositions.md
+│   └── 0036-archive-occupancy-citation-and-frozen-identity.md
 └── README.md
 ```
 

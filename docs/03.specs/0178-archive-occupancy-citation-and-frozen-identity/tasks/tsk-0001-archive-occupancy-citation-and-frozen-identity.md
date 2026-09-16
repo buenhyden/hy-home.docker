@@ -1,6 +1,6 @@
 ---
 title: "Archive Occupancy, Route Citation, and Frozen Identity Execution"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -329,13 +329,76 @@ three retention classes, for the replaced occupancy rule
 (`until the package migrates`, `cannot be marked .completed. where it stands`),
 the unqualified citation exception (`may cite an archive path directly`,
 `archive 경로를 직접 인용할 수 있는 것은`) and `byte-identical`. Occupancy returned
-nothing. Citation returned one line, the sentence this unit kept and qualified in
-the next clause. `byte-identical` returned eight lines, judged one by one: the
+nothing, but both of its patterns were English while the rule is also stated in
+Korean, so that result measured the patterns rather than the corpus; the W8 entry
+records the two surfaces it missed and their correction. Citation returned one
+line, the sentence this unit kept and qualified in the next clause. `byte-identical` returned eight lines, judged one by one: the
 `REQ-0026` first Constraint was a genuine remaining statement and now defers to
 REQ-0026-FR-0012; `ADR-0036` names it twice while describing the rule it
 replaces; the SPEC-0178 Overview does the same; RES-0096 carries it as dated
 evidence that is not rewritten; one Stage 90 research pack uses the word in an
 unrelated domain; and one sealed Migration is never edited.
+
+### W8: completion gate, independent review, corrected sweep (2026-09-16, local-executed)
+
+The changed profile ran as the pre-commit gate of the W7 commit `b3807ab67`,
+where `.pre-commit-config.yaml` binds `public-validation-changed` to
+`python3 scripts/validation/run-ci-gate.py --profile changed`; that run reports
+`Public validation suites (changed) ... Passed`. A later standalone run of the
+same command on the clean tree also exited 0, and it is recorded here as vacuous
+rather than as evidence: for a local caller `collect_changed_paths` reads only
+uncommitted work, so a clean tree yields no changed path. Reproduced through
+`select_public_suites`: the clean tree selects one suite, `repository-integrity`,
+and no document gate, while the W7 path set selects five suites and the three
+document gates `local.document-corpus-lifecycle`, `leaf.repo-document-metadata`
+and `leaf.document-lifecycle-regressions`. Only the commit-time run is evidence
+for criterion 7. The other six commits were created through the same hook path,
+which blocks a commit on failure, but their logs were not captured in this
+session, so that is an inference and not an observation.
+
+An independent exact-diff review of `f5651fba8..b3807ab67` returned five items.
+Accepted and corrected here: `AD-0030:91` still stated the replaced per-document
+occupancy rule in Korean; `docs/02.architecture/README.md:45` still listed the
+moved `ADR-0035` inside a `text` fence, where the link checker cannot see it; and
+Behavior Contract 7 was tested on two of its four cases, with no test for a key
+reordering or for a value change under an unregistered key. Recorded and
+deferred: the mode comparison reads the filesystem execute bit rather than the
+Git mode, which cannot fire while `core.fileMode=true` and no archive member is
+executable or a symlink; and non-retroactivity is expressed as absence from the
+base's index rather than as a fixed cut-off, so a base older than `f5651fba8`
+would surface the SPEC-0177 difference, which matches the intent of Behavior
+Contract 9 but not its absolute phrasing.
+
+That occupancy finding showed the W7 sweep had measured its own patterns: both
+were English while the rule is also stated in Korean. A bilingual re-sweep over
+`docs` and `.agents`, excluding the four retention classes and the two route
+dispositions, found one further survivor, `REQ-0026:147`, now corrected. The
+re-sweep returns two occupancy hits and nine byte-identity hits, each of them
+either this package naming the rule it replaces or dated Stage 90 evidence that
+is not rewritten.
+
+The two new Contract 7 tests were added to behavior that was already correct, so
+passing proved nothing by itself. Each guard was neutralized in turn and its test
+re-run: with the reorder comparison replaced by `if False` the reorder test exits
+1, and with `if key in free` replaced by `if True` the unregistered-value test
+exits 1. The module was restored and compared afterwards, `restored_identical:
+True`.
+
+While this unit ran, a concurrent session staged twenty-one infrastructure
+changes into the shared worktree at 16:03:59, a domain and certificate migration
+already applied on another server. They are not this Task's changes and this Task
+does not commit them. Because the changed profile collects uncommitted work, the
+missing `DEFAULT_CERT_DIR` broke its Compose validation; on the owner's
+instruction that variable was applied to the local `.env`, which `.gitignore:56`
+excludes, so no tracked file changed.
+
+| Check | Result |
+| --- | --- |
+| `python3 -m unittest` over four governance modules | exit 0, 243 tests |
+| `python3 scripts/validation/check-document-corpus-lifecycle.py` | exit 0, `violations=0`, `preserved=205` |
+| `python3 scripts/validation/check-document-links.py --mode all` | exit 0, `documents=888 links=6691 failures=0` |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed` | exit 0, `selected=15 violations=0` |
+| `ruff check` and `ruff format --check` on the changed test module | exit 0, already formatted |
 
 ## Verification Evidence
 
@@ -347,13 +410,15 @@ are evidenced by their Work Log entries.
 | 1 | W3 | PASS: `test_stage_03_occupancy_is_judged_per_package` was written first and failed first, and now admits a `completed` Task in an unfinished package while rejecting a `cancelled` Task, a terminal Spec, and a terminal Plan; the Stage 02 per-document case stays covered by `test_active_stages_hold_no_terminal_document` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 2 | W4 | PASS: `test_route_records_are_closed_to_every_source` was written first and failed first at the two exempt profiles against both route dispositions, and `test_every_source_profile_against_every_disposition_and_the_index` runs each of the four source kinds against each of the six dispositions and the index | [test_links.py](../../../../tests/lib/document_governance/test_links.py) |
 | 9 | W6 | PASS: `test_resolved_incident_requires_a_closure_date` was written first and failed first, and now accepts `mitigated` without the key, rejects `resolved` with the key absent, null, or empty, and accepts `resolved` with a date-time value | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
-| 3 | W5 | PASS: the Git-fixture tests prove Behavior Contracts 6 to 8 against a unit added over the base. A lifecycle-field difference with an added `superseded_by` passes; an added body line and a changed line ending each report `catalog-source-body-differs`; an added and a removed frontmatter key each report `catalog-source-frontmatter-differs`; a mode change reports `catalog-source-mode-differs`; a member-set difference reports `catalog-source-members-differ`; and a missing object stays `catalog-source-object-invalid` through `test_source_object_must_exist_with_the_unit_type` | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
+| 3 | W5 | PASS: the Git-fixture tests prove Behavior Contracts 6 to 8 against a unit added over the base. A lifecycle-field difference with an added `superseded_by` passes; an added body line and a changed line ending each report `catalog-source-body-differs`; an added and a removed frontmatter key each report `catalog-source-frontmatter-differs`; a mode change reports `catalog-source-mode-differs`; a member-set difference reports `catalog-source-members-differ`; and a missing object stays `catalog-source-object-invalid` through `test_source_object_must_exist_with_the_unit_type`; a key reordering and a value change under an unregistered key each report `catalog-source-frontmatter-differs`, and each of those two guards was proved by neutralizing it and watching only its own test fail | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 5 | W3 | PASS: the corpus lifecycle run reports `violations=0` with unchanged counts after occupancy became a package judgment, and `validate_active_stage_occupancy` returns `()` on the repository | [check-document-corpus-lifecycle.py](../../../../scripts/validation/check-document-corpus-lifecycle.py) |
 | 5 | W4 | PASS: the link run reports `failures=0` after the boundary closed route records to every source profile | [check-document-links.py](../../../../scripts/validation/check-document-links.py) |
 | 5 | W5 | PASS: the corpus run reports `violations=0` with the comparison live, and both rows written before it stay outside it under Behavior Contract 9, each measured by hand in the W5 entry | [check-document-corpus-lifecycle.py](../../../../scripts/validation/check-document-corpus-lifecycle.py) |
 | 5 | W6 | PASS: the corpus and metadata runs report `violations=0`; no tracked Incident record exists, so the new requirement rejects nothing today | [check-document-metadata.py](../../../../scripts/validation/check-document-metadata.py) |
 | 5 | W7 | PASS: the corpus run reports `violations=0` with `preserved=205`, and the `ADR-0035` row is the first row the comparison actually checks, differing from its `Source` only in `status` and an added `superseded_by` | [98.archive README](../../../98.archive/README.md) |
-| 6 | W7 | PASS: in one result tree `ADR-0036` is `accepted` with `supersedes` naming `ADR-0035` and its surviving rules restated, `ADR-0035` is preserved under `superseded/` with its catalog row and six inbound links repointed, seven text surfaces state the new rules, and the `git grep -n` sweep left no statement of the replaced rules, with its patterns and its eight judged hits recorded above | [documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 6 | W7 | PASS: in one result tree `ADR-0036` is `accepted` with `supersedes` naming `ADR-0035` and its surviving rules restated, `ADR-0035` is preserved under `superseded/` with its catalog row and six inbound links repointed, seven text surfaces state the new rules, and a bilingual re-sweep at W8, run after the English-only sweep missed `AD-0030:91` and `REQ-0026:147`, leaves the replaced occupancy and byte-identity rules stated on no surface except where this package describes what it replaces | [documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 7 | W8 | PASS: the changed profile ran as the pre-commit gate of `b3807ab67`, the commit holding every content change, and reported `Public validation suites (changed) ... Passed`, with the W8 entry recording both why a later standalone run on the clean tree is not evidence and that the hosted run on the integration commit is the evidence for the completing tree | [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) |
+| 8 | W8 | PASS: an independent exact-diff review of `f5651fba8..b3807ab67` reported five items, three accepted and corrected at W8 together with one further surface the corrected sweep found, and two recorded as deferred limits with their reasons; none fell outside the recorded authorization | [test_archive.py](../../../../tests/lib/document_governance/test_archive.py) |
 | 4 | W5 | PASS: `test_frozen_transition_fields_are_a_declared_contract` was written first and failed first with a `KeyError`, and the Registry now declares `status`, `version`, `updated` and `superseded_by` while the schema lists the key in `common.required`, so a Registry without it does not load | [test_registry.py](../../../../tests/lib/document_governance/test_registry.py) |
 
 ## Review Evidence

@@ -1,6 +1,6 @@
 ---
 title: "문서 보존 및 은퇴 요구사항"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -143,8 +143,10 @@ created: "2026-09-01"
 - 보존 규칙은 Spec Package를 적재하지 않고 `.agents/`에서 읽을 수 있습니다.
 - ADR-0033 수락 이후 `completed`로 처분된 Spec Package는 Spec, Plan, 모든
   Task 본문을 같은 보존 경로에 함께 보유합니다.
-- terminal 전환, archive 이동, current consumer cutover가 하나의 결과 tree에
-  적용되어 active Stage 03에 terminal 중간 상태가 남지 않습니다.
+- terminal 전환, archive 이동, current consumer cutover는 하나의 결과 tree에
+  적용됩니다. active Stage 03의 점유는 REQ-0026-FR-0009에 따라 package 단위로
+  판정되므로, Spec이 terminal이면 어떤 구성원도 남지 않고 그 전까지 남을 수
+  있는 terminal 구성원은 `completed` Task뿐입니다.
 - Tombstone이 존재하는 모든 stage namespace는 그 stage에서 실제로 route 은퇴가
   일어났음을 뜻합니다. 철회를 Retention Catalog 행이 기록한 은퇴는 Tombstone
   namespace를 만들지 않습니다.
