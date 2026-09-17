@@ -1,11 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: ai
 
-# networks:
-#   openclaw_default:
-#     external: true
-#     name: openclaw_default
-
 volumes:
   comfyui-models:
     driver: local
@@ -37,29 +32,59 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/comfyui/user
+   comfyui-hf-cache:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/cache/huggingface
+
+  comfyui-torch-cache:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/cache/torch
 
 services:
   comfyui:
     profiles:
       - 'ai'
       - dev
-    image: yanwk/comfyui-boot:cu124-slim
+    image: yanwk/comfyui-boot:cu126-slim
     container_name: comfyui
+    hostname: comfyui
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMFYUI_REF: ${COMFYUI_REF:-v0.36.0}
+        PUID: ${COMFYUI_UID:-1000}
+        PGID: ${COMFYUI_GID:-1000}
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
     restart: unless-stopped
     gpus: all
     environment:
       TZ: ${DEFAULT_TIMEZONE}
       CLI_ARGS: ${COMFYUI_ARGS}
+      HF_HOME: /home/comfyui/.cache/huggingface
+      TORCH_HOME: /home/comfyui/.cache/torch
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+
     networks:
       # openclaw_default:
       infra_net:
-        ipv4_address: 172.19.0.203    
+        ipv4_address: 172.19.0.203
     volumes:
       - comfyui-models:/opt/comfyui/models:rw
       - comfyui-custom-nodes:/opt/comfyui/custom_nodes:rw
       - comfyui-output:/opt/comfyui/output:rw
       - comfyui-input:/opt/comfyui/input:rw
       - comfyui-user:/opt/comfyui/user:rw
+      - comfyui-hf-cache:/home/comfyui/.cache/huggingface:rw
+      - comfyui-torch-cache:/home/comfyui/.cache/torch:rw
     labels:
       <<: *tier-label
       traefik.enable: 'true'
