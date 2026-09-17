@@ -24,7 +24,7 @@ http:
 
   routers:
     adminer-k3d:
-      rule: 'Host(`adminer.home.arpa`)'
+      rule: 'Host(`adminer.hy.home.arpa`)'
       entryPoints:
         - websecure
       service: adminer-k3d

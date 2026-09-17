@@ -30,13 +30,13 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      # 1) 정적/부가 요청 전용 라우터
-      traefik.http.routers.redisinsight-static.rule: Host(`redisinsight.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`))
+      # 1) 정적/부가 요청 전용 라우터      
+      traefik.http.routers.redisinsight-static.rule: Host(`redisinsight.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`) || PathPrefix(`/assets/`))
       traefik.http.routers.redisinsight-static.entrypoints: websecure
       traefik.http.routers.redisinsight-static.tls: true
       traefik.http.routers.redisinsight-static.priority: 200
       traefik.http.routers.redisinsight-static.service: redisinsight-svc
-      traefik.http.routers.redisinsight-static.middlewares: req-rate-limit@file
+      traefik.http.routers.redisinsight-static.middlewares: ""
       # 2) 일반 앱 라우터
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure

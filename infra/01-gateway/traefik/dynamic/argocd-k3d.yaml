@@ -13,7 +13,7 @@ http:
 
   routers:
     argocd-k3d:
-      rule: "Host(`argocd.home.arpa`)"
+      rule: "Host(`argocd.hy.home.arpa`)"
       entryPoints:
         - websecure
       service: argocd-k3d

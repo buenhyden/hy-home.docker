@@ -15,11 +15,11 @@ path.data: /usr/share/opensearch-dashboards/data
 # ==============================================================================
 opensearch_security.auth.type: ["basicauth", "openid"]
 opensearch_security.auth.multiple_auth_enabled: true
-opensearch_security.openid.connect_url: "https://keycloak.home.arpa/realms/hy-home.realm/.well-known/openid-configuration"
+opensearch_security.openid.connect_url: "https://keycloak.hy.home.arpa/realms/hy-home.realm/.well-known/openid-configuration"
 opensearch_security.openid.client_id: "realm-home-client"
 opensearch_security.openid.client_secret: "${OPENSEARCH_CLIENT_SECRET}"
 opensearch_security.openid.scope: "openid profile email offline_access groups"
-opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.home.arpa"
+opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.hy.home.arpa"
 opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
 # 프록시(Traefik) 헤더 기반으로 redirect URL 계산
 opensearch_security.openid.trust_dynamic_headers: true

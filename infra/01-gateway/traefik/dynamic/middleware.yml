@@ -79,11 +79,15 @@ http:
 
     gateway-standard-chain:
       chain:
-        middlewares:
-          - req-rate-limit
+        middlewares:          
           - req-retry
           - req-circuit-breaker
-    
+    api-rate-limit:
+      rateLimit:
+        average: 100
+        period: 1s
+        burst: 50
+        
     openclaw-secure-headers:
       headers:
         stsSeconds: 31536000

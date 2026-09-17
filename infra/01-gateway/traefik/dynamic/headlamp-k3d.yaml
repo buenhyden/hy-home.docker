@@ -25,7 +25,7 @@ http:
 
   routers:
     headlamp-k3d:
-      rule: 'Host(`headlamp.home.arpa`)'
+      rule: 'Host(`headlamp.hy.home.arpa`)'
       entryPoints:
         - websecure
       service: headlamp-k3d
