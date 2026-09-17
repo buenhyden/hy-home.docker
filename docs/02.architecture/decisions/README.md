@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.6"
+version: "1.3.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-17"
 layer: "architecture"
 ---
 
@@ -41,6 +41,7 @@ docs/02.architecture/decisions/
 ├── 0032-canonical-agent-governance-home.md
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
 ├── 0036-archive-occupancy-citation-and-frozen-identity.md
+├── 0037-package-disposition-wait-and-task-cancellation.md
 └── README.md
 ```
 
@@ -74,6 +75,10 @@ docs/02.architecture/decisions/
   활성 package 안의 completed Task 허용, route 기록 인용 금지, 보존본과
   catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점을 요구하는 accepted
   decision. ADR-0035를 supersede하며, 그 규칙 가운데 유지되는 것을 다시 적었다.
+- [`ADR-0037`](./0037-package-disposition-wait-and-task-cancellation.md):
+  모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
+  cancelled Task 허용을 제안하는 proposed decision. 수락 시 ADR-0036을
+  supersede하며, SPEC-0179가 수락을 소유한다.
 
 ## How to Work in This Area
 
