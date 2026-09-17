@@ -245,6 +245,7 @@ include:
   # 08-ai
   - infra/08-ai/ollama/docker-compose.yml
   - infra/08-ai/open-webui/docker-compose.yml
+  - infra/08-ai/comfyui/docker-compose.yml
   # 09-tooling
   - infra/09-tooling/k6/docker-compose.yml
   - infra/09-tooling/locust/docker-compose.yml

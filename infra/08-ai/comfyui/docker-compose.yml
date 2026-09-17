@@ -1,0 +1,81 @@
+x-tier-label: &tier-label
+  hy-home.tier: ai
+
+# networks:
+#   openclaw_default:
+#     external: true
+#     name: openclaw_default
+
+volumes:
+  comfyui-models:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/models
+  comfyui-custom-nodes:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/custom_nodes
+  comfyui-output:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/output
+  comfyui-input:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/input
+  comfyui-user:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/comfyui/user
+
+services:
+  comfyui:
+    profiles:
+      - 'ai'
+      - dev
+    image: yanwk/comfyui-boot:cu124-slim
+    container_name: comfyui
+    restart: unless-stopped
+    gpus: all
+    environment:
+      TZ: ${DEFAULT_TIMEZONE}
+      CLI_ARGS: ${COMFYUI_ARGS}
+    networks:
+      # openclaw_default:
+      infra_net:
+        ipv4_address: 172.19.0.203    
+    volumes:
+      - comfyui-models:/opt/comfyui/models:rw
+      - comfyui-custom-nodes:/opt/comfyui/custom_nodes:rw
+      - comfyui-output:/opt/comfyui/output:rw
+      - comfyui-input:/opt/comfyui/input:rw
+      - comfyui-user:/opt/comfyui/user:rw
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.comfyui.rule: Host(`comfyui.${DEFAULT_URL}`)
+      traefik.http.routers.comfyui.entrypoints: websecure
+      traefik.http.routers.comfyui.tls: 'true'
+      traefik.http.services.comfyui.loadbalancer.server.port: ${COMFYUI_PORT}
+      traefik.http.routers.comfyui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+    ports:
+      - "${COMFYUI_PORT}:${COMFYUI_HOST_PORT}"
+    shm_size: "2gb"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- http://127.0.0.1:${COMFYUI_PORT}/system_stats >/dev/null 2>&1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
