@@ -22,7 +22,7 @@ services:
     volumes:
       - redisinsight-data:/data:rw
     healthcheck:
-      test: ['CMD-SHELL', 'test -d /data']
+      test: [ 'CMD-SHELL', 'test -d /data' ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -36,7 +36,7 @@ services:
       traefik.http.routers.redisinsight-static.tls: true
       traefik.http.routers.redisinsight-static.priority: 200
       traefik.http.routers.redisinsight-static.service: redisinsight-svc
-      traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
+      traefik.http.routers.redisinsight-static.middlewares: req-rate-limit@file
       # 2) 일반 앱 라우터
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure

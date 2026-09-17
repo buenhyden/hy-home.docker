@@ -27,6 +27,7 @@ http:
           - "X-Auth-Request-Email"
           - "Authorization"
           - "X-Auth-Request-Access-Token"
+          - "X-Auth-Request-Preferred-Username"
           - "X-Auth-Request-Id-Token"
 
     sso-errors:
@@ -35,6 +36,13 @@ http:
           - "401-403"
         service: oauth2-proxy-svc
         query: "/oauth2/sign_in?rd={url}"
+
+    sso-protected-chain:
+      chain:
+        middlewares:
+          - gateway-standard-chain
+          - sso-errors
+          - sso-auth
 
     # 2. 대시보드용 Basic Auth (Docker Secret 기반)
     dashboard-auth:
@@ -75,7 +83,7 @@ http:
           - req-rate-limit
           - req-retry
           - req-circuit-breaker
-
+    
     openclaw-secure-headers:
       headers:
         stsSeconds: 31536000
