@@ -32,7 +32,7 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/comfyui/user
-   comfyui-hf-cache:
+  comfyui-hf-cache:
     driver: local
     driver_opts:
       o: bind
@@ -51,19 +51,20 @@ services:
     profiles:
       - 'ai'
       - dev
-    image: yanwk/comfyui-boot:cu126-slim
-    container_name: comfyui
-    hostname: comfyui
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        COMFYUI_REF: ${COMFYUI_REF:-v0.36.0}
-        PUID: ${COMFYUI_UID:-1000}
-        PGID: ${COMFYUI_GID:-1000}
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     COMFYUI_REF: ${COMFYUI_REF:-v0.36.0}
+    #     PUID: ${COMFYUI_UID:-1000}
+    #     PGID: ${COMFYUI_GID:-1000}
+    # image: hy-home/comfyui:${COMFYUI_IMAGE_TAG:-v0.36.0-cu126}
+    image: yanwk/comfyui-boot:cu126-slim
+    container_name: comfyui
+    hostname: comfyui
     restart: unless-stopped
     gpus: all
     environment:
