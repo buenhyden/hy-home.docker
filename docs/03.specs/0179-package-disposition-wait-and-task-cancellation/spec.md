@@ -1,6 +1,6 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -46,11 +46,10 @@ and status vocabulary migration are later packages and are not decided here.
   is `accepted`. Both held on `main@2edac5bd6`.
 - In scope:
   - `scripts/lib/document_governance/archive.py`:
-    `validate_active_stage_occupancy` and the removal of
-    `TERMINAL_DOCUMENT_STATUSES`.
-  - `scripts/lib/document_governance/spec_packages.py`: one cancellation
-    judgment called from package validation, and the removal of
-    `_TERMINAL_STATUSES` in favor of the Registry lifecycle.
+    `validate_active_stage_occupancy`, whose Stage 03 branch reads the `spec`,
+    `plan`, and `task` lifecycle terminal statuses from the Registry.
+  - `scripts/lib/document_governance/spec_packages.py`: one pure cancellation
+    judgment that both package validation and the occupancy check call.
   - The `task` profile in `docs/99.templates/registry.json`: `cancellation` as
     optional frontmatter and as `required_frontmatter_by_status` for
     `cancelled`, with its value shape in
@@ -73,12 +72,21 @@ and status vocabulary migration are later packages and are not decided here.
   `Source` comparison or `common.frozen_transition_fields`; a disposition wait
   for a package whose Spec is `cancelled` or `superseded`; splitting the
   Stage 03 index into current work and history; renaming any lifecycle status;
-  and moving any existing package.
+  moving any existing package; and the per-document terminal set that
+  `TERMINAL_DOCUMENT_STATUSES` in `archive.py` and `_TERMINAL_STATUSES` in
+  `spec_packages.py` hold. Those sets mean "a status that leads to a Stage 98
+  disposition", which no Registry field states today: the union of the
+  Registry lifecycle terminal statuses also holds `rejected`, `resolved`,
+  `published`, `sealed`, and the template lifecycle's `draft`, and
+  `_TERMINAL_STATUSES` holds `retired`, which no Stage 03 lifecycle lists.
+  Replacing either set changes judgments outside this package, so it belongs
+  to the later status vocabulary change.
 
 ## Behavior Contract
 
 1. Stage 03 occupancy stays a package judgment, and the terminal statuses it
-   uses are read from the Registry lifecycle of each member's profile.
+   uses for a Spec, a Plan, and a Task are read from the Registry `spec`,
+   `plan`, and `task` lifecycles.
 2. A package whose Spec is `completed` passes occupancy when its Plan, if
    present, is `completed` and every Task is `completed` or is a `cancelled`
    Task with a valid `cancellation`. In such a package a Plan that is not
@@ -112,21 +120,25 @@ and status vocabulary migration are later packages and are not decided here.
 ## Technical Approach
 
 `validate_active_stage_occupancy` already groups Stage 03 members by package
-and reads the Spec status once. It gains the profile of each member from the
-Registry path patterns it uses today, looks up that profile's lifecycle terminal
-statuses through the loaded `DocumentRegistry`, and replaces the fixed branch
-that rejects a terminal Spec with the table in Behavior Contracts 2 to 4. The
-cancellation validity it needs comes from the package validator, not a second
-reading of the Task, so the rule lives in one function.
+and reads the Spec status once. It gains an optional `registry` argument that
+defaults to the repository Registry, classifies a member as Spec, Plan, or Task
+by the package-relative path it already uses, reads the terminal statuses of the
+matching lifecycle from `DocumentRegistry.lifecycle_terminal_statuses`, and
+replaces the fixed branch that rejects a terminal Spec with the table in
+Behavior Contracts 2 to 4.
 
-`spec_packages.py` gains one function, `_validate_task_cancellation`, called
-from `_load_package` after the Tasks and the Spec are parsed. It reads the
-criterion numbers with the same Acceptance Contract section reader that
-`_validate_completion_evidence` uses, factored so both call it rather than
-copying the pattern. It raises `SpecPackageError` with a message naming the
-Task path and the failing field, which the corpus lifecycle CLI already
-reports. The occupancy check consumes that result through the existing
-`load_spec_packages` entry point.
+`spec_packages.py` gains one public pure function,
+`task_cancellation_findings(task_id, cancellation, criteria, task_statuses)`,
+which takes the Task identity, the `cancellation` value, the criterion numbers
+of the Spec's Acceptance Contract, and a mapping of every Task identity in the
+package to its status, and returns a tuple of finding strings. Package
+validation calls it from `_load_package` and raises `SpecPackageError` on the
+first finding. The occupancy check calls the same function with the values it
+reads from frontmatter and the Spec body, so the rule lives in one function and
+the occupancy fixtures need no complete package. The criterion numbers come from
+one section reader, `acceptance_criterion_numbers(spec_body, heading)`, factored
+out of `_validate_completion_evidence` so both call it rather than copying the
+pattern.
 
 The presence rule in Behavior Contract 6 uses the Registry's existing
 `required_frontmatter_by_status` contract, which `incident` applies to
@@ -134,9 +146,9 @@ The presence rule in Behavior Contract 6 uses the Registry's existing
 object in the frontmatter schema so that the metadata check rejects a scalar
 before the package check reads it.
 
-`archive.py` and `spec_packages.py` drop their local terminal status constants.
-Where a status is not bound to a profile, the check uses the union of the
-Registry lifecycle terminal statuses, derived once when the Registry loads.
+The per-document branch for Stages 01, 02, 05, and 90 keeps
+`TERMINAL_DOCUMENT_STATUSES` unchanged, for the reason Boundaries and Inputs
+gives.
 
 Every behavior lands in the result tree that accepts `ADR-0037`. No Registry
 switch is added.
@@ -174,7 +186,8 @@ nonterminal member of a completed package.
 | Two cancelled Tasks reassign to each other | Neither target may be `cancelled`, so the cycle has no valid edge |
 | A template or status alias produces an approval | Behavior Contract 10 keeps `cancellation` out of every template |
 | A cancelled Spec package waits indefinitely without a withdrawal record | Behavior Contract 3 keeps it a finding |
-| A terminal status is added to a lifecycle and a check misses it | Behavior Contract 1 reads the Registry, and a test changes a fixture Registry to prove it |
+| A terminal status is added to a Stage 03 lifecycle and occupancy misses it | Behavior Contract 1 reads the Registry, and a test changes a fixture Registry to prove it |
+| A Registry-wide terminal union is used for standalone documents and rejects resolved Incidents or rejected ADRs | The per-document set is out of scope and unchanged |
 | A waiting package is read as disposition approval | `ADR-0037` Decision 2 and the Stage 03 README row rule state it is not |
 
 ## Acceptance Contract
@@ -198,10 +211,9 @@ nonterminal member of a completed package.
    a criterion is a `withdrawn` entry fails completion.
 5. A test proves Behavior Contract 9: a waiting completed package with a
    malformed completion receipt reports the receipt finding from Stage 03.
-6. A test proves Behavior Contract 1 by changing a fixture Registry's Task
-   terminal statuses and observing the occupancy result change, and a search of
-   `scripts/lib/document_governance/` finds no remaining hardcoded terminal
-   status set.
+6. A test proves Behavior Contract 1 by passing a Registry whose `task`
+   lifecycle lists different terminal statuses and observing the Stage 03
+   occupancy result change, while the Stage 02 per-document result does not.
 7. Rendering the Task template with `status: "cancelled"` fails the metadata
    check until `cancellation` is supplied, proving Behavior Contract 10.
 8. REQ-0026-FR-0009, the Retention by status section, the completion item in
@@ -227,12 +239,10 @@ nonterminal member of a completed package.
 
 ## Open Questions
 
-1. Should the `superseded/` preservation of `ADR-0036` happen in this package's
-   accepting tree, as SPEC-0178 did for `ADR-0035`, or wait for a separate
-   disposition approval now that a waiting state exists for packages? The
-   waiting state in this Spec covers Stage 03 packages only, so a standalone
-   decision keeps the existing per-document rule unless the operator decides
-   otherwise.
+None. On 2026-09-17 the operator settled the one question this Spec raised:
+`ADR-0036` is preserved under `superseded/` in the result tree that accepts
+`ADR-0037`, as SPEC-0178 did for `ADR-0035`, because the waiting state covers
+Stage 03 packages only and a standalone decision keeps the per-document rule.
 
 ## Operational Impact
 

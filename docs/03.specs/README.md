@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.0.21"
+version: "1.0.22"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -76,7 +76,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 | SPEC-0177 | [Archive Disposition Enforcement](../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0177-archive-disposition-enforcement/plan.md) and [Task](../98.archive/completed/03.specs/0177-archive-disposition-enforcement/tasks/tsk-0001-archive-disposition-enforcement.md); it moved the link validator, the Tombstone and Migration contracts, and the Retention Envelope onto the Stage 98 model, adopted the Registry switch, and accepted ADR-0035, superseding ADR-0033. Its Retention Catalog row names ADR-0035 |
 | SPEC-0178 | [Archive Occupancy, Route Citation, and Frozen Identity](../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/plan.md) and [Task](../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/tasks/tsk-0001-archive-occupancy-citation-and-frozen-identity.md); it made Stage 03 occupancy a package judgment that admits a `completed` Task, closed route records to every citing profile, replaced byte-identity with a comparison against each catalog `Source`, and required a closure date on a resolved Incident, accepting ADR-0036 and superseding ADR-0035. Its Retention Catalog row names ADR-0036 |
 | SPEC-0176 | [Stale Fact Convergence](../98.archive/completed/03.specs/0176-stale-fact-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0176-stale-fact-convergence/plan.md) and [Task](../98.archive/completed/03.specs/0176-stale-fact-convergence/tasks/tsk-0001-stale-fact-convergence.md); its criteria 1, 8, 12 and 14 were amended to the properties they check, and its Task records nine review rounds |
-| SPEC-0179 | [Package Disposition Wait and Task Cancellation](0179-package-disposition-wait-and-task-cancellation/spec.md) | draft package proposing ADR-0037: a completed package whose every member is terminal waits for disposition in Stage 03, and a cancelled Task is admitted with a structured `cancellation`. It carries no Plan or Task until approved |
+| SPEC-0179 | [Package Disposition Wait and Task Cancellation](0179-package-disposition-wait-and-task-cancellation/spec.md) | draft package proposing ADR-0037: a completed package whose every member is terminal waits for disposition in Stage 03, and a cancelled Task is admitted with a structured `cancellation`. Carries a draft [Plan](0179-package-disposition-wait-and-task-cancellation/plan.md) and a draft [Task](0179-package-disposition-wait-and-task-cancellation/tasks/tsk-0001-package-disposition-wait-and-task-cancellation.md) |
 
 ## How to Work in This Area
 

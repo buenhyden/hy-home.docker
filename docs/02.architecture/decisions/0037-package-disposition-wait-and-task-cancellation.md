@@ -42,10 +42,13 @@ Registry `common.frozen_transition_fields`가 허용하는 lifecycle 필드 변�
 `completed`가 되기 전에는 실행되지 않으므로, 완료 영수증의 결함은 이동하는 그
 commit에서야 드러납니다(SPEC-0178 Failure Modes 마지막 행).
 
-마지막으로, terminal status 집합이 Registry `lifecycles.<id>.terminal_statuses`에서
-읽히지 않고 `archive.py`의 `TERMINAL_DOCUMENT_STATUSES`와 `spec_packages.py`의
-`_TERMINAL_STATUSES`에 각각 하드코딩되어 있습니다. 완료 검증은 이미 Registry 값을
-읽으므로 같은 의미를 세 곳이 따로 가집니다.
+마지막으로, Stage 03 occupancy가 쓰는 terminal status 집합은 Registry
+`lifecycles.<id>.terminal_statuses`에서 읽히지 않고 `archive.py`의
+`TERMINAL_DOCUMENT_STATUSES`에 하드코딩되어 있습니다. 완료 검증은 이미 Registry의
+`task` lifecycle 값을 읽습니다. 다만 이 상수와 `spec_packages.py`의
+`_TERMINAL_STATUSES`는 "Stage 98 처분으로 이어지는 status"라는 다른 의미도 함께
+가지며, Registry 전체 lifecycle terminal의 합집합(`rejected`, `resolved`,
+`published`, `sealed`, template의 `draft` 포함)과 같지 않습니다.
 
 ## Decision Drivers
 
@@ -57,7 +60,7 @@ commit에서야 드러납니다(SPEC-0178 Failure Modes 마지막 행).
   있어야 하며, 수용 기준이 어느 Task에도 도착하지 않는 경로가 없어야 합니다.
 - 처분 대기를 표현하려고 실제 작업 상태가 아닌 lifecycle 값을 만들지 않습니다
   (ADR-0036 Occupancy 2번 방안의 기각 사유 유지).
-- 허용 status 집합은 Registry 한 곳에서 읽습니다.
+- Stage 03 구성원의 terminal 여부는 그 profile의 Registry lifecycle에서 읽습니다.
 - 이미 frozen 상태인 기록은 소급해 수정하지 않습니다.
 
 ## Options Considered
@@ -109,8 +112,9 @@ commit에서야 드러납니다(SPEC-0178 Failure Modes 마지막 행).
    아닌 Task의 식별자입니다. `withdrawn`은 사유이며 완료 영수증의 criterion 커버리지
    의무를 면제하지 않습니다. 수용 기준 자체를 철회하려면 Spec을 개정합니다.
    template은 `cancellation`을 seed하지 않습니다.
-5. occupancy와 package 검증은 terminal status 집합을 Registry
-   `lifecycles.<id>.terminal_statuses`에서 읽고, 코드 안의 별도 상수를 두지 않습니다.
+5. Stage 03 occupancy는 Spec, Plan, Task의 terminal status를 Registry `spec`,
+   `plan`, `task` lifecycle에서 읽습니다. 단독 문서의 처분 대상 status 집합은 이
+   결정이 바꾸지 않으며, 그 의미를 Registry에 선언하는 일은 후속 결정이 소유합니다.
 6. 완료 대기가 허용되므로 완료 영수증 검증은 이동 전 활성 Stage 03에서 실행됩니다.
    완료 전환과 이동은 서로 다른 통합 상태가 될 수 있고, 각 상태가 이 결정의 판정을
    만족해야 합니다. 이 결정은 보존본과 `Source`의 비교 규칙
