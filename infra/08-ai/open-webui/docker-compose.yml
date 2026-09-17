@@ -9,7 +9,6 @@ volumes:
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/open-webui
 
-
 services:
   open-webui:
     profiles:
@@ -23,7 +22,9 @@ services:
       - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434}
       - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT:-6333}
       - RAG_EMBEDDING_ENGINE=ollama
-      - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
+      - RAG_EMBEDDING_MODEL=qwen3-embedding:4b
+      - WEBUI_AUTH_TRUSTED_EMAIL_HEADER=X-Auth-Request-Email
+      - WEBUI_AUTH_TRUSTED_NAME_HEADER=X-Auth-Request-User
     volumes:
       - open-webui:/app/backend/data:rw
     networks:
@@ -36,12 +37,12 @@ services:
       traefik.http.routers.open-webui.entrypoints: websecure
       traefik.http.routers.open-webui.tls: 'true'
       traefik.http.services.open-webui.loadbalancer.server.port: ${OLLAMA_WEBUI_PORT:-8080}
-      traefik.http.routers.open-webui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.routers.open-webui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth-open-webui@file
     depends_on:
       ollama:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health || exit 1']
+      test: [ 'CMD-SHELL', 'curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5
