@@ -31,6 +31,13 @@ Record the execution of SPEC-0179, from its review to its completion.
   authorized. On 2026-09-17 the operator chose to approve each integration
   separately: before each one the agent names the commits and the route, a
   pull request or a direct push, and waits for that approval.
+- Integration 1 (2026-09-17): the operator approved a direct push of this
+  package's commits to `main` and asked that it be recorded as a rule bypass.
+  `.agents/governance/github-governance.md` requires agents to treat `main` as
+  protected with no direct push, so this push is recorded as an
+  operator-authorized bypass of that rule, not as the policy route. Before the
+  push, `git fetch origin main` showed `origin/main` at `2edac5bd6` with no
+  commit ahead of the local branch, so the push is a fast-forward.
 - Position is read from Git: `git rev-parse HEAD` and
   `git log --oneline origin/main..HEAD`.
 
@@ -79,3 +86,6 @@ No review has run.
 ## Commit Ledger
 
 - `4429ced1e` docs(architecture): Propose ADR-0037 and draft SPEC-0179
+- `055d94b78` docs(specs): Narrow the SPEC-0179 Registry scope and draft its plan
+- The commit that records integration 1 in this Task is identified by
+  `git log` rather than here, because a commit cannot name its own hash.
