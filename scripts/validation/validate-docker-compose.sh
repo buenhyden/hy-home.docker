@@ -93,8 +93,6 @@ is_optional_secret() {
     ./secrets/db/mongodb/mongo_express_basicauth_password.txt | \
     ./secrets/db/neo4j/neo4j_password.txt | \
     ./secrets/db/valkey/airflow_password.txt | \
-    ./secrets/messaging/rabbitmq_user.txt | \
-    ./secrets/messaging/rabbitmq_password.txt | \
     ./secrets/tools/syncthing_password.txt)
     return 0
     ;;

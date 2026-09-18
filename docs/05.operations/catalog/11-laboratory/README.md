@@ -14,8 +14,8 @@ layer: "operations"
 
 ## Overview
 
-This domain co-locates the current Dashboard, Dozzle, Open Notebook,
-optimization-hardening, Portainer, and RedisInsight roles under stable
+This domain co-locates the current Dozzle, Open Notebook,
+optimization-hardening and RedisInsight roles under stable
 four-digit subject identities. Role membership follows the current tree.
 
 ## Audience
@@ -33,11 +33,9 @@ four-digit subject identities. Role membership follows the current tree.
 
 | Subject | Available documents |
 | --- | --- |
-| [Dashboard](0071-homer-dashboard/guide.md) | [Guide](0071-homer-dashboard/guide.md), [Policy](0071-homer-dashboard/policy.md), [Runbook](0071-homer-dashboard/runbook.md) |
 | [Dozzle](0072-dozzle/guide.md) | [Guide](0072-dozzle/guide.md), [Policy](0072-dozzle/policy.md), [Runbook](0072-dozzle/runbook.md) |
 | [Open Notebook](0073-open-notebook/guide.md) | [Guide](0073-open-notebook/guide.md), [Policy](0073-open-notebook/policy.md), [Runbook](0073-open-notebook/runbook.md) |
 | [Optimization hardening](0074-optimization-hardening/guide.md) | [Guide](0074-optimization-hardening/guide.md), [Policy](0074-optimization-hardening/policy.md), [Runbook](0074-optimization-hardening/runbook.md) |
-| [Portainer](0075-portainer/guide.md) | [Guide](0075-portainer/guide.md), [Policy](0075-portainer/policy.md), [Runbook](0075-portainer/runbook.md) |
 | [RedisInsight](0076-redisinsight/guide.md) | [Guide](0076-redisinsight/guide.md), [Policy](0076-redisinsight/policy.md), [Runbook](0076-redisinsight/runbook.md) |
 
 ## How to Work in This Area

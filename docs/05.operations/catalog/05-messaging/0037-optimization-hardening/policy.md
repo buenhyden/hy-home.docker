@@ -21,7 +21,6 @@ created: "2026-05-10"
 ## Policy Scope
 
 - `infra/05-messaging/kafka/docker-compose.yml`
-- `infra/05-messaging/rabbitmq/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 05-messaging`
 
 - **Systems**: Kafka/Kafbat/Schema Registry/Kafka Connect/Kafka REST/RabbitMQ

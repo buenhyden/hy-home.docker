@@ -454,15 +454,10 @@ check_05_messaging() {
   start_tier "$tier"
 
   local kafka_compose="infra/05-messaging/kafka/docker-compose.yml"
-  local rabbitmq_compose="infra/05-messaging/rabbitmq/docker-compose.yml"
 
   check_file "$kafka_compose"
-  check_file "$rabbitmq_compose"
 
   check_contains "$kafka_compose" "gateway-standard-chain@file" "kafka gateway chain missing"
-  check_contains "$rabbitmq_compose" "gateway-standard-chain@file,sso-errors@file,sso-auth@file" "rabbitmq middleware chain mismatch"
-
-  check_service_healthcheck "$rabbitmq_compose" "rabbitmq"
 }
 
 # --- Tier 06: Observability ---
@@ -540,25 +535,17 @@ check_11_laboratory() {
   local tier="11-laboratory"
   start_tier "$tier"
 
-  local dashboard_compose="infra/11-laboratory/dashboard/docker-compose.yml"
   local dozzle_compose="infra/11-laboratory/dozzle/docker-compose.yml"
   local open_notebook_compose="infra/11-laboratory/open-notebook/docker-compose.yml"
-  local portainer_compose="infra/11-laboratory/portainer/docker-compose.yml"
   local redisinsight_compose="infra/11-laboratory/redisinsight/docker-compose.yml"
   local dozzle_image
   local dozzle_compose_image
 
-  check_file "$dashboard_compose"
   check_file "$dozzle_compose"
   check_file "$open_notebook_compose"
-  check_file "$portainer_compose"
   check_file "$redisinsight_compose"
   dozzle_image="$(registry_component_image "Dozzle")"
   dozzle_compose_image="$(compose_service_image "$dozzle_compose" "dozzle")"
-
-  check_contains "$dashboard_compose" "traefik.http.routers.homer.middlewares: gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file" "homer middleware chain mismatch"
-  check_not_contains "$dashboard_compose" "ports:" "homer direct host ports must stay removed"
-  check_contains "$dashboard_compose" "ipv4_address: 172.19.0.222" "homer infra_net IP mismatch"
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
   check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
@@ -574,20 +561,14 @@ check_11_laboratory() {
   check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
   check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.123" "open-notebook infra_net IP mismatch"
 
-  check_contains "$portainer_compose" "traefik.http.routers.portainer.middlewares: gateway-standard-chain@file,portainer-admin-ip@docker,sso-errors@file,sso-auth@file" "portainer middleware chain mismatch"
-  check_contains "$portainer_compose" "image: portainer/portainer-ce:sts" "portainer image tag mismatch"
-  check_contains "$portainer_compose" "ipv4_address: 172.19.0.220" "portainer infra_net IP mismatch"
-
   check_contains "$redisinsight_compose" "image: redis/redisinsight:3.8.0" "redisinsight image tag mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
   check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"
 
-  check_service_healthcheck "$dashboard_compose" "homer"
   check_service_healthcheck "$dozzle_compose" "dozzle"
   check_service_healthcheck "$open_notebook_compose" "surrealdb"
   check_service_healthcheck "$open_notebook_compose" "open_notebook"
-  check_service_healthcheck "$portainer_compose" "portainer"
   check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }
 

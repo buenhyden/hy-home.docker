@@ -121,13 +121,13 @@ not evaluated.
 | Identity & Access      | `KEYCLOAK_*`, `OAUTH2_*`, `GRAFANA_PROXY_CLIENT_ID`, `KAFBAT_OAUTH_CLIENT_ID`                     |
 | PostgreSQL / Patroni   | `POSTGRES_*`, `HAPROXY_*`, `PATRONI_*`, `SUPABASE_*` (32개)                                       |
 | NoSQL & Cache          | `VALKEY_*`, `REDIS_*`, `MONGODB_*`, `COUCHDB_*`, `CASSANDRA_*`, `INFLUXDB_*`, `NEO4J_*`, `ETCD_*` |
-| Message Brokers        | `KAFKA_*`, `RABBITMQ_*`                                                                           |
+| Message Brokers        | `KAFKA_*`                                                                           |
 | Object Storage         | `MINIO_*`, `SEAWEEDFS_*`                                                                          |
 | Observability          | `PROMETHEUS_*`, `GRAFANA_*`, `LOKI_*`, `TEMPO_*`, `ALLOY_*`, `PYROSCOPE_*`                        |
 | Search & Analytics     | `ES_*`, `OPENSEARCH_*`                                                                            |
 | Automation & AI        | `AIRFLOW_*`, `N8N_*`, `TERRAKUBE_*`, `LOCUST_*`, `OLLAMA_*`, `QDRANT_*`                           |
 | Security & Tooling     | `VAULT_*`, `SONARQUBE_*`, `STALWART_*`, `SYNCTHING_*`, `REGISTRY_*`                               |
-| Management             | `REDIS_INSIGHT_*`, `PORTAINER_*`, `HOMER_*`, `DOZZLE_*`, `OPEN_NOTEBOOK_*`, `SURREALDB_*`         |
+| Management             | `REDIS_INSIGHT_*`, `DOZZLE_*`, `OPEN_NOTEBOOK_*`, `SURREALDB_*`         |
 | Lab                    | `LAB_ALLOWED_CIDRS`                                                                               |
 
 ### 점검 주기

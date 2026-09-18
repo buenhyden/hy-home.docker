@@ -24,7 +24,7 @@ created: "2026-05-10"
 - `.env.example` (`LAB_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 11-laboratory`
 
-- **Systems**: dashboard, dozzle, portainer, redisinsight, open-notebook, surrealdb
+- **Systems**: dozzle, redisinsight, open-notebook, surrealdb
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like management plane
 
@@ -54,9 +54,6 @@ created: "2026-05-10"
 - **dozzle 승인 조건**:
   - 로그 열람 범위 제한 규칙(프로덕션 로그 차단 포함) 문서화
   - 로그 접근 감시/감사 방식 정의
-- **portainer 승인 조건**:
-  - 관리자 계정/세션 정책 강화 기준 문서화
-  - 엔드포인트 등록 승인 절차(권한 분리) 명문화
 - **redisinsight 승인 조건**:
   - 최소권한 접근정책 문서화
   - 운영 캐시 직접 수정 금지 + 감사로그 절차 정의

@@ -48,13 +48,13 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | Production |
 | **03** | **Security** | [Vault](./03-security/vault) | Production |
 | **04** | **Data** | [mng-db](./04-data/operational/mng-db), [MinIO](./04-data/lake-and-object/minio), [Qdrant](./04-data/specialized/qdrant) | Production |
-| **05** | **Messaging** | [Kafka](./05-messaging/kafka), [RabbitMQ](./05-messaging/rabbitmq) | Production / Optional |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Production |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | Production |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | Production |
 | **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui) | Production |
 | **09** | **Tooling** | [SonarQube](./09-tooling/sonarqube), [Terrakube](./09-tooling/terrakube) | Dev/Ops |
 | **10** | **Communication** | [Stalwart / MailHog](./10-communication/mail) | Optional |
-| **11** | **Laboratory** | [Portainer](./11-laboratory/portainer), [Homer](./11-laboratory/dashboard) | Admin |
+| **11** | **Laboratory** | [Dozzle](./11-laboratory/dozzle), [RedisInsight](./11-laboratory/redisinsight), [Open Notebook](./11-laboratory/open-notebook) | Admin |
 
 ## Compose Inventory Snapshot
 
@@ -96,8 +96,7 @@ profile을 하나도 선택하지 않으면 어떤 서비스도 resolve되지 �
 - `profiles: [ "data" ]`: 범용 데이터 저장소 (Qdrant 등)
 - `profiles: [ "mng" ]`: 시스템 관리용 DB 계층 (mng-db)
 - `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
-- `profiles: [ "messaging" ]`: 메시징 브로커 (Kafka, RabbitMQ)
-- `profiles: [ "messaging-option" ]`: RabbitMQ 단독/호환 profile alias
+- `profiles: [ "messaging" ]`: Kafka 메시징 브로커
 - `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
 - `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
 - `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB

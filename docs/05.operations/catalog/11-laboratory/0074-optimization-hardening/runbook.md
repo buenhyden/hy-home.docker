@@ -26,7 +26,7 @@ created: "2026-05-17"
 ## When to Use
 
 - `infrastructure-hardening` CI가 실패할 때
-- dashboard/dozzle/portainer/redisinsight/open-notebook 접근 경계가 비정상일 때
+- dozzle/redisinsight/open-notebook 접근 경계가 비정상일 때
 - dashboard direct 접근 경로가 재노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
 

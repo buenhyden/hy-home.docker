@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` ecosystem. It supports high-throughput event streaming via Kafka and lightweight task queuing via RabbitMQ. Streaming SQL is currently owned by `infra/04-data/analytics/ksql`, not by this tier.
+The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` ecosystem through Kafka event streaming. Streaming SQL is currently owned by `infra/04-data/analytics/ksql`, not by this tier.
 
 ## Audience
 
@@ -31,7 +31,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 - Apache Kafka Cluster (KRaft mode)
 - Confluent Schema Registry & Kafka Connect
-- RabbitMQ AMQP Broker
 - Messaging UI & Management consoles
 
 ### Out of Scope
@@ -45,7 +44,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 ```text
 05-messaging/
 ├── kafka/              # Kafka cluster, Connect, Registry, UI
-├── rabbitmq/           # RabbitMQ broker configuration
 └── README.md           # This file
 ```
 
@@ -54,14 +52,12 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. Read the Kafka Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`) for cluster ops.
-2. Follow the RabbitMQ Guide (`docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md`) for queues.
-3. Check the Operations Policy (`docs/05.operations/catalog/05-messaging/README.md`) for topic, secret, and queue controls.
-4. Consult the Messaging Runbook (`docs/05.operations/catalog/05-messaging/README.md`) for recovery.
+2. Check the Operations Policy (`docs/05.operations/catalog/05-messaging/README.md`) for topic and secret controls.
+3. Consult the Messaging Runbook (`docs/05.operations/catalog/05-messaging/README.md`) for recovery.
 
 5. Always use the `Schema Registry` for any new topic schemas.
 6. Use `replication-factor: 3` only when the `messaging-cluster` profile is selected; `messaging`/`dev` alone runs the single `kafka-1` broker.
 7. Check consumer lag metrics before scaling producer throughput.
-8. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.
 
 ## Tech Stack
 
@@ -71,7 +67,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 | Mode       | KRaft (Zookeeper-less)         | `messaging`/`dev` runs the single `kafka-1` broker; adding `messaging-cluster` brings up `kafka-2` and `kafka-3` |
 | Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.3.1` |
 | Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.3.0`      |
-| AMQP       | RabbitMQ                       | `rabbitmq:4.3.5-management-alpine` |
 
 ## Service Matrix
 
@@ -80,7 +75,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 | `kafka-1` | Kafka/TCP | `messaging`, `dev` | 9092, 19092 |
 | `kafka-2/3` | Kafka/TCP | `messaging-cluster` profile in the same compose file | 9094/9096, 19092 |
 | `schema-registry`| HTTP | `messaging` | 8081 |
-| `rabbitmq` | AMQP/HTTP | `messaging`, `messaging-option` | 5672, 15672 (UI) |
 | `kafbat-ui` | HTTP | `messaging` | 8080 |
 
 ## Configuration

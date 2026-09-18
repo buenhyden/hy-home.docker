@@ -24,7 +24,7 @@ created: "2026-03-28"
 Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 권한이 큰 UI를 다루므로 "보안 경계 우선" 설계가 필요하다.
 
 - Dashboard: homer
-- Container/Log Admin UI: portainer, dozzle
+- Container/Log Admin UI: dozzle
 - Data Admin UI: redisinsight
 - Local notebook lab: open-notebook, surrealdb
 
@@ -68,9 +68,9 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
 - **Ingress path**:
-  - Operator -> Traefik(websecure) -> homer/dozzle/portainer/redisinsight/open-notebook
+  - Operator -> Traefik(websecure) -> dozzle/redisinsight/open-notebook
 - **Control path**:
-  - dozzle/portainer -> Docker socket
+  - dozzle -> Docker socket
   - redisinsight -> valkey/redis endpoints
   - open-notebook -> surrealdb
 
@@ -96,7 +96,6 @@ This hardening Architecture Description does not introduce production data owner
 
 - **dashboard**: SSO+allowlist 유지, 실험성 서비스 자동 만료 정책(태그 기반 정리) 적용
 - **dozzle**: 로그 열람 범위 제한(운영 로그 접근 차단 규칙), 권한 최소화 지속 점검
-- **portainer**: 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 문서화
 - **redisinsight**: 접근권한 최소화, 운영 캐시 직접 변경 금지와 감사로그 정책 강화
 - **open-notebook**: secret-file credential 주입 유지, notebook data retention/expiration policy, direct API/DB host-port exposure review before production promotion
 

@@ -80,7 +80,6 @@ created: "2026-05-17"
 
 - [ ] 롤백 대상 파일
   - `infra/05-messaging/kafka/docker-compose.yml`
-  - `infra/05-messaging/rabbitmq/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행

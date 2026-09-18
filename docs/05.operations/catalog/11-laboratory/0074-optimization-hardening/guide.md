@@ -62,7 +62,7 @@ created: "2026-05-17"
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 로드맵 반영
-   - dashboard 만료 정책, dozzle 로그 제한, portainer 승인 정책, redisinsight 감사 정책, open-notebook data retention/direct-port review를 tasks/operations에 반영한다.
+   - dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review를 tasks/operations에 반영한다.
 
 ### Common Pitfalls
 

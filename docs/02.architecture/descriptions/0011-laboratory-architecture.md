@@ -27,7 +27,7 @@ created: "2026-03-26"
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
 
-- **Owns**: Dashboard (Homer), Container UI (Portainer), Data UI (RedisInsight), Log UI (Dozzle), Open Notebook and local SurrealDB laboratory datastore.
+- **Owns**: Data UI (RedisInsight), Log UI (Dozzle), Open Notebook and local SurrealDB laboratory datastore.
 - **Consumes**: Docker Engine API, Redis/Valkey network endpoints, Traefik gateway and SSO middleware.
 - **Does Not Own**: Business application UIs, hardware-level hypervisors.
 - **Non-goals**: Replacing CLI-based troubleshooting for advanced operators.
@@ -56,8 +56,6 @@ graph TD
     end
 
     subgraph "11-laboratory (Management)"
-        Dash[Homer Dashboard]
-        Port[Portainer]
         RI[RedisInsight]
         Doz[Dozzle]
         ON[Open Notebook]
@@ -71,13 +69,10 @@ graph TD
     end
 
     User --> TF
-    TF -- "gateway+allowlist+SSO" --> Dash
-    TF -- "gateway+allowlist+SSO" --> Port
     TF -- "gateway+allowlist+SSO" --> RI
     TF -- "gateway+allowlist+SSO" --> Doz
     TF -- "gateway+allowlist+SSO" --> ON
 
-    Port -.-> DockerPool
     Doz -.-> DockerPool
     RI -.-> RedisPool
     ON -.-> SDB
@@ -95,7 +90,7 @@ graph TD
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose.
-- **Deployment Model**: the root file includes every laboratory Compose file unconditionally and the selected profile decides what resolves. Dozzle, RedisInsight, Open Notebook, and SurrealDB are selected by `admin` and `dev`; Homer Dashboard and Portainer are selected by `admin` alone and are checked by the hardening script.
+- **Deployment Model**: the root file includes every laboratory Compose file unconditionally and the selected profile decides what resolves. Dozzle, RedisInsight, Open Notebook, and SurrealDB are selected by `admin` and `dev`.
 
 ## Traceability
 

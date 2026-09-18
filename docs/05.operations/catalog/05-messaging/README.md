@@ -10,7 +10,7 @@ layer: "operations"
 
 # Operations — 05 Messaging
 
-> Messaging operations documents grouped by stable Kafka, hardening, and RabbitMQ subjects.
+> Messaging operations documents grouped by stable Kafka and hardening subjects.
 
 ## Overview
 
@@ -32,7 +32,6 @@ current four-digit subject directory without changing operational behavior.
 | --- | --- |
 | [Kafka](0036-kafka/guide.md) | [Guide](0036-kafka/guide.md), [Policy](0036-kafka/policy.md), [Runbook](0036-kafka/runbook.md) |
 | [Optimization hardening](0037-optimization-hardening/guide.md) | [Guide](0037-optimization-hardening/guide.md), [Policy](0037-optimization-hardening/policy.md), [Runbook](0037-optimization-hardening/runbook.md) |
-| [RabbitMQ](0038-rabbitmq/guide.md) | [Guide](0038-rabbitmq/guide.md), [Policy](0038-rabbitmq/policy.md), [Runbook](0038-rabbitmq/runbook.md) |
 
 ksqlDB remains a data analytics subject; use the
 [ksqlDB guide](../04-data/0018-ksqldb/guide.md).

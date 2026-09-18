@@ -18,7 +18,7 @@ created: "2026-03-26"
 
 ### Problem Statement
 
-인프라 서비스 접근점, 컨테이너 상태, 데이터 저장소 디버깅 도구, 로컬 노트북형 실험 도구가 분산되면 운영자는 상태 확인과 장애 대응에 불필요한 시간을 쓰게 된다. `11-laboratory`는 Homer, Portainer, RedisInsight, Dozzle, Open Notebook 같은 관리/실험 표면을 SSO로 보호하면서 한곳에서 탐색 가능하게 해야 한다.
+인프라 서비스 접근점, 컨테이너 상태, 데이터 저장소 디버깅 도구, 로컬 노트북형 실험 도구가 분산되면 운영자는 상태 확인과 장애 대응에 불필요한 시간을 쓰게 된다. `11-laboratory`는 RedisInsight, Dozzle, Open Notebook 같은 관리/실험 표면을 SSO로 보호하면서 한곳에서 탐색 가능하게 해야 한다.
 
 ## Stakeholders and User Needs
 
@@ -32,8 +32,7 @@ created: "2026-03-26"
 
 ### Key Use Cases
 
-- **통합 대시보드 접근**: `admin` profile이 선택하는 Homer dashboard를 통해 curated 인프라 서비스 링크에 접근한다.
-- **컨테이너 관리**: Portainer GUI를 사용하여 터미널 없이 컨테이너 로그 확인 및 재시작을 수행한다.
+- **컨테이너 로그 확인**: Dozzle을 통해 승인된 컨테이너 로그를 확인한다.
 - **데이터 시각화**: RedisInsight를 통해 Redis 클러스터의 키 분 분포 및 성능을 분석한다.
 - **노트북형 실험**: Open Notebook을 통해 로컬 지식 작업과 SurrealDB-backed 실험을 수행한다.
 
@@ -41,8 +40,7 @@ created: "2026-03-26"
 
 - **REQ-0012-FR-0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
 - **REQ-0012-FR-0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
-- **REQ-0012-FR-0003**: Portainer를 통해 각 서비스의 CPU/Memory 사용량을 실시간으로 확인 가능해야 한다.
-- **REQ-0012-FR-0004**: `admin` profile이 선택하는 Laboratory 서비스 6종(Homer, Portainer, Dozzle, RedisInsight, Open Notebook, SurrealDB)은 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **REQ-0012-FR-0003**: `admin` profile이 선택하는 Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
 
 ## Non-functional Requirements
 
@@ -55,11 +53,11 @@ No separately numbered solution-independent external interface requirement was i
 ## Acceptance Criteria
 
 - **REQ-0012-FR-0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
-- **REQ-0012-FR-0002**: Portainer, RedisInsight, Dozzle, Homer, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
+- **REQ-0012-FR-0002**: RedisInsight, Dozzle, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
 
 ## Constraints
 
-- **In Scope**: Portainer, RedisInsight, Homer Dashboard, Dozzle, Open Notebook/SurrealDB 구성 및 연동.
+- **In Scope**: RedisInsight, Dozzle, Open Notebook/SurrealDB 구성 및 연동.
 - **Out of Scope**: 개별 비즈니스 애플리케이션의 관리 UI.
 - **Non-goals**: 하드웨어 수준의 모니터링(06-observability 담당).
 
@@ -70,7 +68,7 @@ N/A
 ## Risks
 
 - **Dependency**: `02-auth` (Keycloak) availability for SSO.
-- **Risk**: Exposing Docker Socket to Portainer/Dozzle; mitigated by mandatory SSO.
+- **Risk**: Exposing Docker Socket to Dozzle; mitigated by read-only mount and mandatory SSO.
 
 ## Traceability
 

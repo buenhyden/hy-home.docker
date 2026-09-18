@@ -81,7 +81,6 @@ updates:
       - "/infra/04-data/specialized/neo4j"
       - "/infra/04-data/specialized/qdrant"
       - "/infra/05-messaging/kafka"
-      - "/infra/05-messaging/rabbitmq"
       - "/infra/06-observability"
       - "/infra/07-workflow/airflow"
       - "/infra/07-workflow/n8n"
@@ -95,10 +94,8 @@ updates:
       - "/infra/09-tooling/terraform"
       - "/infra/09-tooling/terrakube"
       - "/infra/10-communication/mail"
-      - "/infra/11-laboratory/dashboard"
       - "/infra/11-laboratory/dozzle"
       - "/infra/11-laboratory/open-notebook"
-      - "/infra/11-laboratory/portainer"
       - "/infra/11-laboratory/redisinsight"
     schedule:
       interval: "weekly"

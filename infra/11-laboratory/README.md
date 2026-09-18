@@ -12,7 +12,7 @@ created: "2026-03-26"
 
 ## Overview
 
-`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 루트 compose는 이 계층의 다섯 compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. Dozzle, RedisInsight, Open Notebook, SurrealDB는 `admin`과 `dev` profile에서, Homer Dashboard와 Portainer는 `admin` profile에서만 선택된다.
+`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 루트 compose는 이 계층의 네 compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. Dozzle, RedisInsight, Open Notebook, SurrealDB는 `admin`과 `dev` profile에서 선택된다.
 
 ## Architecture
 
@@ -26,8 +26,6 @@ graph TD
     end
 
     subgraph "11-laboratory"
-        Dash[Homer Dashboard]
-        Port[Portainer]
         RI[RedisInsight]
         Doz[Dozzle]
         ON[Open Notebook]
@@ -40,20 +38,15 @@ graph TD
     end
 
     User --> TF
-    TF -- "gateway+allowlist+SSO" --> Dash
-    TF -- "gateway+allowlist+SSO" --> Port
     TF -- "gateway+allowlist+SSO" --> RI
     TF -- "gateway+allowlist+SSO" --> Doz
     TF -- "gateway+allowlist+SSO" --> ON
 
-    Port -.-> DockerPool
     Doz -.-> DockerPool
     RI -.-> RedisPool
     ON -.-> SDB
 ```
 
-- **Homer**: 인프라 전용 서비스 진입점 대시보드.
-- **Portainer**: 시각적 컨테이너 오케스트레이션 및 상태 관리.
 - **RedisInsight**: 데이터 저장소(Valkey/Redis)의 데이터 탐색 및 성능 분석.
 - **Dozzle**: 실시간 컨테이너 로그 스트리밍 및 모니터링.
 - **Open Notebook**: 로컬 지식 작업과 SurrealDB-backed 실험성 노트북 환경.
@@ -83,8 +76,6 @@ Runtime start/stop은 `admin` profile 선택과 운영자 승인 범위를 확�
 
 ### Key Ports
 
-- **Dashboard**: `homer.${DEFAULT_URL}` -> Homer internal `${HOMER_PORT:-8080}` (`admin` profile)
-- **Container UI**: `portainer.${DEFAULT_URL}` -> Portainer internal `${PORTAINER_PORT:-9443}` (`admin` profile)
 - **Logs UI**: `dozzle.${DEFAULT_URL}` -> Dozzle internal `${DOZZLE_PORT:-8080}` (`admin` profile)
 - **Data UI**: `redisinsight.${DEFAULT_URL}` -> RedisInsight internal `${REDIS_INSIGHT_PORT:-5540}` (`admin` profile)
 - **Notebook UI**: `open-notebook.${DEFAULT_URL}` -> Open Notebook web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` (`admin` profile)
@@ -137,7 +128,6 @@ infra/11-laboratory/
 ├── dashboard/  # 하위 구성 영역
 ├── dozzle/  # 하위 구성 영역
 ├── open-notebook/  # 하위 구성 영역
-├── portainer/  # 하위 구성 영역
 ├── redisinsight/  # 하위 구성 영역
 └── README.md  # This file
 ```

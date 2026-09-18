@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.2.0"
+version: "0.4.0"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -65,6 +65,37 @@ member only when the question and evidence model are materially different.
    backup, client compatibility, and recovery evidence are required.
 
 ## Findings
+
+### 2026-09-18 Local Runtime Reconciliation
+
+Docker Engine `29.8.1`, Docker Compose `v5.5.1`, and the root
+`docker compose config --quiet` check succeeded. The local container listing
+showed `influxdb`, `comfyui`, `neo4j`, and `qdrant` running and healthy. They
+are not removal candidates based on this observation. `schema-registry` also
+runs as part of the Kafka stack and must not be treated as an independent
+unused service.
+
+Homer, RabbitMQ, and Portainer were not present in the local container listing.
+After approval, their Compose leaves, root includes, active environment/secret
+registry entries, routes, tier references, hardening checks, and active Stage 05
+service documents were removed. Historical archive and migration records remain
+unchanged. No running data service was stopped or migrated.
+
+| Candidate | Runtime observation | Current disposition | Required next evidence |
+| --- | --- | --- | --- |
+| Homer | Not present | Removed after approval | Historical references remain only in archive evidence. |
+| RabbitMQ | Not present | Removed after approval | No active AMQP consumer was found; historical references remain only in archive evidence. |
+| Portainer | Not present | Removed after approval | Docker-socket management UI and its active route/operations contract were removed. |
+| InfluxDB | Running healthy | Keep optional; no deletion | Confirm retention and dashboard consumers before any data migration or volume disposition. |
+| ComfyUI | Running healthy | Keep optional | Review third-party image and GPU workload ownership; do not infer redundancy with Ollama. |
+| Neo4j | Running healthy | Keep optional | Confirm graph datasets and dashboards before removal. |
+| Qdrant | Running healthy | Keep optional | Confirm vector collections and RAG consumers before removal. |
+| Open Notebook, Supabase, PostgreSQL cluster, Terrakube, Syncthing, Registry, SonarQube, k6, Locust | Not observed in the current container listing | Keep as optional profiles | Check application consumers, persistent data, secrets, routes, and Stage 05 ownership individually. |
+
+No Compose service or Stage 05 document is deleted by this observation. A
+future approved cleanup must retire the service definition, root include,
+profile vocabulary, env/secret declarations, routes, infra README entry,
+service README, and Stage 05 guide/policy/runbook as one traceable change.
 
 | Service group | Role relationship | Official source evidence | Disposition |
 | --- | --- | --- | --- |

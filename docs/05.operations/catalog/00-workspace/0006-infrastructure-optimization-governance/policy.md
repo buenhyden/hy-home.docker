@@ -140,8 +140,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 - [kafka](../../../../../infra/05-messaging/kafka/README.md): 토픽 거버넌스(파티션/보존/compaction) 표준화, DLQ/재처리 파이프라인 공식화
   ([OPER](../../05-messaging/0036-kafka/guide.md), [RUN](../../05-messaging/0036-kafka/runbook.md))
-- [rabbitmq](../../../../../infra/05-messaging/rabbitmq/README.md): quorum queue 채택 범위 정의, dead-letter 정책과 소비자 재시도 표준화
-  ([OPER](../../05-messaging/0038-rabbitmq/guide.md), [RUN](../../05-messaging/0038-rabbitmq/runbook.md))
 
 #### 06-observability
 
@@ -200,12 +198,8 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 #### 11-laboratory
 
-- [dashboard](../../../../../infra/11-laboratory/dashboard/README.md): 실험성 대시보드 접근정책(SSO/IP allowlist) 적용, 만료 정책(자동 종료) 추가
-  ([OPER](../../11-laboratory/0071-homer-dashboard/guide.md), [RUN](../../11-laboratory/0071-homer-dashboard/runbook.md))
 - [dozzle](../../../../../infra/11-laboratory/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
   ([OPER](../../11-laboratory/0072-dozzle/guide.md), [RUN](../../11-laboratory/0072-dozzle/runbook.md))
-- [portainer](../../../../../infra/11-laboratory/portainer/README.md): 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 명문화
-  ([OPER](../../11-laboratory/0075-portainer/guide.md), [RUN](../../11-laboratory/0075-portainer/runbook.md))
 - [redisinsight](../../../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
   ([OPER](../../11-laboratory/0076-redisinsight/guide.md), [RUN](../../11-laboratory/0076-redisinsight/runbook.md))
 
