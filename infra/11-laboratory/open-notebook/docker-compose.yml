@@ -19,7 +19,6 @@ services:
   surrealdb:
     profiles:
       - admin
-      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
@@ -49,7 +48,6 @@ services:
   open_notebook:
     profiles:
       - admin
-      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
