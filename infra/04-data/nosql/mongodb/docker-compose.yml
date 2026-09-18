@@ -11,7 +11,6 @@ services:
   mongo-key-generator:
     profiles:
       - 'data'
-      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -36,7 +35,6 @@ services:
   mongodb-rep1:
     profiles:
       - 'data'
-      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -53,10 +51,9 @@ services:
       - mongo-key:/data/configdb:ro
     secrets:
       - mongodb_root_password
-    command:
-      ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
     healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      test: [ 'CMD', 'mongosh', '--eval', "db.adminCommand('ping')" ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -73,7 +70,6 @@ services:
   mongodb-rep2:
     profiles:
       - 'data'
-      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -90,10 +86,9 @@ services:
       - mongo-key:/data/configdb:ro
     secrets:
       - mongodb_root_password
-    command:
-      ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
     healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      test: [ 'CMD', 'mongosh', '--eval', "db.adminCommand('ping')" ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -121,8 +116,7 @@ services:
     volumes:
       - mongodb3-data:/data/db:rw
       - mongo-key:/data/configdb:ro
-    command:
-      ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
     networks:
       infra_net:
         ipv4_address: 172.19.0.172
@@ -135,7 +129,6 @@ services:
   mongo-init:
     profiles:
       - 'data'
-      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -209,7 +202,6 @@ services:
   mongodb-exporter:
     profiles:
       - 'data'
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -220,10 +212,9 @@ services:
       - /tmp
     expose:
       - ${MONGO_EXPORTER_PORT:-9216}
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint: [ '/bin/sh', '-c' ]
     command: >
-      export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n') &&
-      exec mongodb_exporter --mongodb.uri="mongodb://${MONGODB_ROOT_USERNAME}:$${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
+      export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n') && exec mongodb_exporter --mongodb.uri="mongodb://${MONGODB_ROOT_USERNAME}:$${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
     depends_on:
       mongo-init:
         condition: service_completed_successfully

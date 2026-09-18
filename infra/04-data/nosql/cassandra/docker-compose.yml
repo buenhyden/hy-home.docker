@@ -19,7 +19,6 @@ services:
   cassandra-exporter:
     profiles:
       - 'data'
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -47,7 +46,6 @@ services:
   cassandra-node1:
     profiles:
       - 'data'
-      - 'obs'
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -73,7 +71,7 @@ services:
     secrets:
       - cassandra_password
     healthcheck:
-      test: ['CMD-SHELL', "nodetool status | grep -E '^UN' || exit 1"]
+      test: [ 'CMD-SHELL', "nodetool status | grep -E '^UN' || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
