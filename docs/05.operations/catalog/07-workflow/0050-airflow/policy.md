@@ -34,6 +34,12 @@ created: "2026-05-17"
   - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
   - 민감 정보는 반드시 Secret Backend(Docker Secrets/Vault) 및 Airflow Connections를 통해 관리함.
   - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
+  - 인증 manager는 Keycloak auth manager를 사용하고, client secret은
+    `airflow_keycloak_client_secret` Docker Secret으로만 주입함.
+  - Airflow 이미지는 `infra/07-workflow/airflow/Dockerfile`에서 고정된 Airflow/
+    Python constraints와 Keycloak provider 버전으로 재현 가능하게 빌드함.
+  - API server의 temporary CA bundle과 `--proxy-headers` 실행을 유지하고,
+    `FORWARDED_ALLOW_IPS`는 신뢰된 Traefik 주소로 제한함.
   - 운영 승격 전 `AIRFLOW__CORE__LOAD_EXAMPLES` 상태를 별도 변경/evidence로 검토함.
 - **Allowed**:
   - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
