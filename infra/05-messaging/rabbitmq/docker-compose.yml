@@ -18,7 +18,7 @@ secrets:
 services:
   rabbitmq:
     profiles:
-      - 'messaging'
+      # - 'messaging'
       - 'messaging-option'
     extends:
       file: ../../common-optimizations.yml
@@ -42,7 +42,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.200
     healthcheck:
-      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'check_running']
+      test: [ 'CMD', 'rabbitmq-diagnostics', '-q', 'check_running' ]
       interval: 15s
       timeout: 30s
       retries: 5
