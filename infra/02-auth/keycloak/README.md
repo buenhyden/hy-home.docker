@@ -75,8 +75,18 @@ keycloak/
 3. After compose or config reference changes, run the validation commands listed below.
 4. 서비스 의존성은 `9000/health/ready` 엔드포인트가 `UP` 상태가 된 뒤 진행한다.
 
-5. **Realm Provisioning**: 모든 신규 서비스 연동 시 `hy-home-core` 제품군에 속한 경우 `hy-home` 렐름을 공유하여 SSO를 달성하시오.
+5. **Realm Provisioning**: 모든 신규 서비스 연동 시 `hy-home-core` 제품군에 속한 경우 `hy-home.realm` 렐름을 공유하여 SSO를 달성하시오.
 6. **Secret Injection**: `KC_DB_PASSWORD_FILE` 및 `KC_BOOTSTRAP_ADMIN_PASSWORD`는 반드시 `/run/secrets` 경로의 시크릿 파일을 참조해야 함.
+
+## Application Client Matrix
+
+| App | Client ID | Pattern |
+| --- | --- | --- |
+| OAuth2 Proxy | `home-proxy-client` | ForwardAuth |
+| Kafbat UI | `home-kafbat` | Native OIDC |
+| Airflow | `home-airflow` | Native Keycloak Auth Manager |
+
+- Airflow Authorization Services role/bootstrap는 GDE-0079로 handoff.
 
 ## Service Type
 

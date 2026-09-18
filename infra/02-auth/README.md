@@ -60,7 +60,7 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 5. Always read this README to understand the relationship between Keycloak and OAuth2 Proxy.
 6. Refer to `docs/03.specs/002-auth` (if exists) for detailed protocol flows.
 7. Do not modify secrets directly; use `scripts/operations/gen-secrets.sh` if available.
-8. Ensure all new services are integrated using the standard ForwardAuth pattern via Traefik labels.
+8. Classify each new service as Gateway ForwardAuth or Application-native OIDC. Do not layer OAuth2 Proxy ForwardAuth in front of an approved Native OIDC application.
 
 ## Tech Stack
 
@@ -110,3 +110,4 @@ docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/
 - [04-data](../04-data/README.md) - Provides persistence and caching layers.
 - docs/05.operations/catalog/02-auth (`docs/05.operations/catalog/02-auth/README.md`) - Conceptual and setup guides.
 - [Documentation index](../../docs/README.md)
+- [Application Authentication Integration Guide](../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)

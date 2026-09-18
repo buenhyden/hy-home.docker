@@ -88,6 +88,12 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 - **Broker**: each service directory holds one compose file that the root includes unconditionally. The `dedicated-valkey` profile starts dedicated `airflow-valkey` and `n8n-valkey`; without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` resolve to the shared `mng-valkey`.
 - **Persistence**: DAGs and workflows are stored in persistent volumes linked to `${DEFAULT_WORKFLOW_DIR}`.
 
+| Service | Authentication |
+| --- | --- |
+| `airflow-apiserver` | Native Keycloak Auth Manager |
+| `flower` | OAuth2 Proxy ForwardAuth |
+| `n8n` | OAuth2 Proxy ForwardAuth |
+
 ## Testing
 
 ```bash

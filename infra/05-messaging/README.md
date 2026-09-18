@@ -77,6 +77,16 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 | `schema-registry`| HTTP | `messaging` | 8081 |
 | `kafbat-ui` | HTTP | `messaging` | 8080 |
 
+### Kafbat Authentication
+
+Kafbat UI uses application-native OAuth2/OIDC with Keycloak.
+Its Traefik route uses `gateway-standard-chain@file` only; OAuth2 Proxy ForwardAuth is not layered in front.
+
+- client: `home-kafbat`
+- roles field: `groups`
+- `/admins` -> admin
+- `/users` -> readonly
+
 ## Configuration
 
 - **Data Path**: All broker data MUST be stored in `${DEFAULT_MESSAGE_BROKER_DIR}`.

@@ -458,6 +458,8 @@ check_05_messaging() {
   check_file "$kafka_compose"
 
   check_contains "$kafka_compose" "gateway-standard-chain@file" "kafka gateway chain missing"
+  check_contains "$kafka_compose" "KAFBAT_OAUTH_CLIENT_ID" "kafbat native oauth client id missing"
+  check_contains "$kafka_compose" "traefik.http.routers.kafka-ui.middlewares: gateway-standard-chain@file" "kafbat native oidc gateway chain mismatch"
 }
 
 # --- Tier 06: Observability ---
