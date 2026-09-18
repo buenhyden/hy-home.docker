@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.3.1",
@@ -27,9 +27,9 @@
     "@storybook/addon-vitest": "^10.6.0",
     "@storybook/nextjs-vite": "^10.5.10",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.5.0",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/node": "^26.5.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@vitest/browser": "^5.0.0",
     "@vitest/browser-playwright": "^5.0.0",
     "@vitest/coverage-v8": "^5.0.0",
@@ -40,7 +40,7 @@
     "storybook": "^10.4.6",
     "tailwindcss": "^4.3.2",
     "typescript": "7.0.2",
-    "vite": "^8.2.2",
+    "vite": "^8.3.0",
     "vitest": "^5.0.0"
   },
   "overrides": {
