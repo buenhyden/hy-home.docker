@@ -53,6 +53,8 @@ secrets:
     file: ./secrets/auth/grafana_client_secret.txt
   pg_haproxy_stats_password:
     file: ./secrets/auth/pg_haproxy_stats_password.txt
+  airflow_keycloak_client_secret:
+    file: ./secrets/auth/airflow_client_secret.txt
 
   # ── Security ───────────────────────────────────────
   vault_token:
@@ -135,8 +137,6 @@ secrets:
   # ── Workflow: Airflow ───────────────────────────────────
   airflow_fernet_key:
     file: ./secrets/automation/airflow_fernet_key.txt
-  airflow_www_password:
-    file: ./secrets/automation/airflow_www_password.txt
   airflow_api_jwt_secret:
     file: ./secrets/automation/airflow_api_jwt_secret.txt
 
@@ -238,7 +238,6 @@ include:
   - infra/04-data/specialized/qdrant/docker-compose.yml
   # 05-messaging
   - infra/05-messaging/kafka/docker-compose.yml
-  - infra/05-messaging/rabbitmq/docker-compose.yml
   # 06-observability
   - infra/06-observability/docker-compose.yml
   # 07-workflow
@@ -259,8 +258,6 @@ include:
   # 10-communication
   - infra/10-communication/mail/docker-compose.yml
   # 11-laboratory
-  - infra/11-laboratory/dashboard/docker-compose.yml
   - infra/11-laboratory/dozzle/docker-compose.yml
   - infra/11-laboratory/open-notebook/docker-compose.yml
-  - infra/11-laboratory/portainer/docker-compose.yml
   - infra/11-laboratory/redisinsight/docker-compose.yml

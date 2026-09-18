@@ -3,9 +3,9 @@ x-tier-label: &tier-label
 
 x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-  AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-  # AIRFLOW__CORE__AUTH_MANAGER: >-
-  #   airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager
+  # AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  AIRFLOW__CORE__AUTH_MANAGER: >-
+    airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
     /usr/bin/env bash -c "printf '%s' \"postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
@@ -32,14 +32,13 @@ x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
     - dev
-  # build:
-  #   context: ../../..
-  #   dockerfile: infra/07-workflow/airflow/Dockerfile
-  #   args:
-  #     AIRFLOW_VERSION: '3.3.1'
-  #     PYTHON_VERSION: '3.13'
-  # image: hy-home/airflow:3.3.1-keycloak
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.1}
+  build:
+    context: ../../..
+    dockerfile: infra/07-workflow/airflow/Dockerfile
+    args:
+      AIRFLOW_VERSION: '3.3.1'
+      PYTHON_VERSION: '3.13'
+  image: hy-home/airflow:3.3.1-keycloak
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -50,11 +49,11 @@ x-airflow-common: &airflow-common
   user: '${AIRFLOW_UID:-50000}:0'
   secrets:
     - airflow_db_password
-    - airflow_fernet_key
-    - airflow_www_password
+    - airflow_fernet_key    
     - mng_valkey_password
     - airflow_valkey_password
     - airflow_api_jwt_secret
+    - airflow_keycloak_client_secret
 
 volumes:
   airflow-dags:
@@ -96,7 +95,39 @@ services:
     <<: *airflow-common
     container_name: airflow-apiserver
     read_only: false
-    command: api-server
+    environment:
+      <<: *airflow-common-env
+
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID: ${AIRFLOW_KEYCLOAK_CLIENT_ID:-home-airflow}
+
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD: >-
+        cat /run/secrets/airflow_keycloak_client_secret
+
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM: ${KEYCLOAK_REALM:-hy-home.realm}
+
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL: ${KEYCLOAK_URL}
+
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE: '10'
+      AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES: '3'
+
+      # Traefik은 172.19.0.2로 고정되어 있음
+      FORWARDED_ALLOW_IPS: '172.19.0.2'
+
+      # 아래 command에서 생성
+      REQUESTS_CA_BUNDLE: /tmp/hy-home-ca-bundle.pem
+      SSL_CERT_FILE: /tmp/hy-home-ca-bundle.pem
+    command:
+      - bash
+      - -ec
+      - |
+        CERTIFI_BUNDLE="$$(python -c 'import certifi; print(certifi.where())')"
+
+        cat \
+          "$${CERTIFI_BUNDLE}" \
+          /etc/ssl/certs/hy-home-rootCA.pem \
+          > /tmp/hy-home-ca-bundle.pem
+
+        exec airflow api-server --proxy-headers
     networks:
       infra_net:
         ipv4_address: 172.19.0.90
@@ -119,7 +150,7 @@ services:
       traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
       traefik.http.routers.airflow.entrypoints: websecure
       traefik.http.routers.airflow.tls: 'true'
-      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth-airflow@file
+      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file
       traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
   airflow-scheduler:
     extends:
@@ -308,10 +339,7 @@ services:
     # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
-      _AIRFLOW_DB_MIGRATE: 'true'
-      _AIRFLOW_WWW_USER_CREATE: 'true'
-      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
+      _AIRFLOW_DB_MIGRATE: 'true'      
       # init 시 package/version mutation 방지
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: '0:0'
