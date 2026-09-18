@@ -15,6 +15,7 @@ created: "2025-11-29"
 ## Overview
 
 OAuth2 Proxy provides a generic authentication layer for services that do not have built-in OIDC support. It interacts with Keycloak to verify user sessions and manages session state using Valkey. It is integrated into the Traefik ecosystem as a ForwardAuth provider.
+
 OAuth2 Proxy는 ForwardAuth 대상 서비스 보호용.
 Airflow/Kafbat은 예외가 아니라 “approved Native OIDC pattern”.
 
