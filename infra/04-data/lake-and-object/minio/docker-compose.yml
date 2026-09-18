@@ -19,7 +19,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}"
     secrets:
@@ -33,7 +33,7 @@ services:
     volumes:
       - minio-data:/data:rw
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${MINIO_PORT:-9000}/minio/health/live']
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:${MINIO_PORT:-9000}/minio/health/live' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -65,7 +65,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio-create-buckets
     entrypoint:
       - '/bin/sh'
