@@ -2,14 +2,14 @@
 title: "Research Package Consolidation Migration"
 version: "1.0.0"
 type: "archive/migration"
-layer: "archive"
 status: "sealed"
 owner: "@buenhyden"
+updated: "2026-09-18"
+layer: "archive"
 artifact_id: "MIG-0004"
 parent_ids:
 - "ADR-0036"
 created: "2026-09-18"
-updated: "2026-09-18"
 ---
 
 # Research Package Consolidation Migration
@@ -26,8 +26,6 @@ integration of the related Stage 90 packages under `RES-0002`.
 routed from the hub. `RES-0081` is no longer active and is preserved as
 superseded history; its predecessor `RES-0080` was already preserved as
 superseded history.
-
-## Archive Ledger
 
 ```yaml
 schema_version: 3

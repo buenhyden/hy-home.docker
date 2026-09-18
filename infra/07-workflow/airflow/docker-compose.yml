@@ -23,6 +23,8 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT:-9125}'
   AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
   _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+  AIRFLOW__API_AUTH__JWT_SECRET_CMD: cat /run/secrets/airflow_api_jwt_secret
+  AIRFLOW__API_AUTH__JWT_ISSUER: airflow
 
 x-airflow-common: &airflow-common
   profiles:
