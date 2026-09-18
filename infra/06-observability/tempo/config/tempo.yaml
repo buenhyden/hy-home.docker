@@ -1,7 +1,12 @@
 server:
-  # Tempo 자체 HTTP 포트 (query, metrics 등)
+  # Tempo HTTP API / query endpoint
   http_listen_port: 3200
 
+  # Tempo gRPC server; OTLP gRPC port와는 별도
+  grpc_listen_port: 9095
+
+
+# ---------- OTLP trace 수신 ----------
 distributor:
   receivers:
     otlp:
@@ -11,56 +16,63 @@ distributor:
         http:
           endpoint: 0.0.0.0:4318
 
-ingester:
-  # dev 용: block 자주 자르기
-  max_block_duration: 5m
-  trace_idle_period: 10s
 
-compactor:
-  compaction:
-    compaction_window: 1h
-    max_block_bytes: 100_000_000
-    block_retention: 24h # 하루치 데이터 보관
-    compacted_block_retention: 1h
-
-# ---------- 메트릭 생성기 설정 (Tempo → Prometheus remote_write) ----------
+# ---------- Tempo → Prometheus metrics generation ----------
 metrics_generator:
-  ring:
-    kvstore:
-      store: inmemory # 단일 노드 구성이므로 인메모리 사용 (Empty ring 오류 해결)
+  registry:
+    external_labels:
+      source: tempo
+      cluster: hy-home
+
   processor:
     span_metrics:
       dimensions:
         - service.name
         - http.status_code
+
     service_graphs:
       max_items: 2000
-    local_blocks: {}
+
   storage:
-    # metrics_generator용 WAL 경로
+    # metrics-generator WAL directory
     path: /var/tempo/generator/wal
+
     remote_write:
       - url: http://prometheus:9090/api/v1/write
         send_exemplars: true
-  traces_storage:
-    path: /var/tempo/generator/traces
 
-# ---------- Trace 저장소: MinIO(S3) backend ----------
+
+# ---------- Trace 저장소: S3-compatible backend ----------
 storage:
   trace:
     backend: s3
-    # WAL 은 여전히 로컬 디스크 사용 (쓰기 버퍼)
+
+    # Ingest/write-ahead log. 반드시 persistent volume에 mount
     wal:
       path: /var/tempo/wal
 
-    # S3 backend 설정 (MinIO)
+    # Local temporary block/cache directory
+    local:
+      path: /var/tempo/blocks
+
+    # MinIO / RustFS / SeaweedFS S3 API
     s3:
-      bucket: tempo-bucket # MinIO에 미리 만들어둔 bucket 이름
-      endpoint: minio:9000 # Docker 네트워크 상의 MinIO 엔드포인트
+      bucket: tempo-bucket
+      endpoint: minio:9000
       access_key: ${MINIO_APP_USERNAME}
       secret_key: ${MINIO_APP_USER_PASSWORD}
-      insecure: true # http 사용이므로 true
 
-# ---------- 공통 오버라이드 ----------
+      # Docker 내부에서 MinIO를 HTTP로 연결할 때만 true
+      insecure: true
+
+      # self-hosted S3 endpoint에서는 path-style을 권장
+      forcepathstyle: true
+
+
+# ---------- 기본 tenant override ----------
 overrides:
-  metrics_generator_processors: [service-graphs, span-metrics, local-blocks]
+  defaults:
+    metrics_generator:
+      processors:
+        - service-graphs
+        - span-metrics
