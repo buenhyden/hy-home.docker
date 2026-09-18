@@ -4,6 +4,8 @@ x-tier-label: &tier-label
 x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__EXECUTOR: CeleryExecutor
   AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  # AIRFLOW__CORE__AUTH_MANAGER: >-
+  #   airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
     /usr/bin/env bash -c "printf '%s' \"postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
@@ -30,6 +32,13 @@ x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
     - dev
+  # build:
+  #   context: ../../..
+  #   dockerfile: infra/07-workflow/airflow/Dockerfile
+  #   args:
+  #     AIRFLOW_VERSION: '3.3.1'
+  #     PYTHON_VERSION: '3.13'
+  # image: hy-home/airflow:3.3.1-keycloak
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.3.1}
   environment: *airflow-common-env
   volumes:
@@ -37,6 +46,7 @@ x-airflow-common: &airflow-common
     - airflow-plugins:/opt/airflow/plugins
     - airflow-logs:/opt/airflow/logs
     - airflow-config:/opt/airflow/config
+    - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
   user: '${AIRFLOW_UID:-50000}:0'
   secrets:
     - airflow_db_password
