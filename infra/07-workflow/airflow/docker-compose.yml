@@ -16,7 +16,7 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
   AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
   AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
-  AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'true'  
+  AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'true'
   AIRFLOW__API__BASE_URL: 'https://airflow.${DEFAULT_URL}'
   AIRFLOW__METRICS__STATSD_ON: 'true'
   AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
@@ -106,7 +106,7 @@ services:
       traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
       traefik.http.routers.airflow.entrypoints: websecure
       traefik.http.routers.airflow.tls: 'true'
-      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth-airflow@file
       traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
   airflow-scheduler:
     extends:

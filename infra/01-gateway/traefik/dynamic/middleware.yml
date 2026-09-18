@@ -51,7 +51,14 @@ http:
         authResponseHeaders:
           - "X-Auth-Request-User"
           - "X-Auth-Request-Email"
-
+    sso-auth-airflow:
+      forwardAuth:
+        address: "http://oauth2-proxy:4180/oauth2/auth"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "X-Auth-Request-User"
+          - "X-Auth-Request-Email"
+          - "X-Auth-Request-Preferred-Username"
     # 2. 대시보드용 Basic Auth (Docker Secret 기반)
     dashboard-auth:
       basicAuth:
