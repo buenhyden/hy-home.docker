@@ -137,6 +137,8 @@ secrets:
     file: ./secrets/automation/airflow_fernet_key.txt
   airflow_www_password:
     file: ./secrets/automation/airflow_www_password.txt
+  airflow_api_jwt_secret:
+    file: ./secrets/automation/airflow_api_jwt_secret.txt
 
   # ── Workflow: n8n ───────────────────────────────────────
   n8n_encryption_key:
