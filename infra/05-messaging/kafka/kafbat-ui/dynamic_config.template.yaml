@@ -1,4 +1,3 @@
-# Overriding default config to remove issuer-uri
 # The configuration is primarily handled via environment variables in docker-compose.yml
 logging:
   level:
@@ -7,27 +6,100 @@ logging:
 
 dynamic.config.enabled: true
 
-# auth:
-#   type: OAUTH2
-#   oauth2:
-#     client:
-#       keycloak:
-#         # Intentionally empty to allow Env Vars to take precedence
-#         # and to override any default issuer-uri pointing to kafka-auth
-#         clientId: "PLACEHOLDER_CLIENT_ID"
-#         clientSecret: "PLACEHOLDER_CLIENT_SECRET"
-#         scope: openid,roles,groups
-#         issuer-uri: https://keycloak.hy.home.arpa/realms/hy-home.realm
-#         user-name-attribute: preferred_username
-#         client-name: keycloak
-#         provider: keycloak
-#         custom-params:
-#           type: oauth
-#           roles-field: groups
-
-        # redirect-uri: https://kafbat-ui.hy.home.arpa/login/oauth2/code/keycloak
-        # authorization-grant-type: authorization_code
+auth:
+  type: OAUTH2
+  oauth2:
+    client:
+      keycloak:
+        # Intentionally empty to allow Env Vars to take precedence
+        # and to override any default issuer-uri pointing to kafka-auth
+        clientId: "PLACEHOLDER_CLIENT_ID"
+        clientSecret: "PLACEHOLDER_CLIENT_SECRET"
+        scope: openid,profile,email,offline_access,groups
+        client-name: keycloak
+        provider: keycloak
+        redirect-uri: https://kafbat-ui.hy.home.arpa/login/oauth2/code/keycloak
+        authorization-grant-type: authorization_code
+        issuer-uri: https://keycloak.hy.home.arpa/realms/hy-home.realm
+        user-name-attribute: preferred_username        
+        custom-params:
+          type: oauth
+          roles-field: groups        
+        
         # authorization-uri: https://keycloak.hy.home.arpa/realms/hy-home.realm/protocol/openid-connect/auth
         # token-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/token
         # jwk-set-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/certs
         # user-info-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/userinfo
+
+rbac:
+  roles:
+    - name: "admins"
+      clusters:
+        - hy-kafka-cluster
+      subjects:
+        - provider: oauth
+          type: role
+          value: "/admins"
+
+      permissions:
+        - resource: applicationconfig
+          actions: all
+
+        - resource: clusterconfig
+          actions: all
+
+        - resource: topic
+          value: ".*"
+          actions: all
+
+        - resource: consumer
+          value: ".*"
+          actions: all
+
+        - resource: schema
+          value: ".*"
+          actions: all
+
+        - resource: connect
+          value: ".*"
+          actions: all
+
+        - resource: ksql
+          actions: all
+
+        - resource: acl
+          actions: all
+
+        - resource: audit
+          actions: all
+    - name: "readonly"
+      clusters:
+        - hy-kafka-cluster
+      subjects:
+        - provider: oauth
+          type: role
+          value: "/users"
+      permissions:
+        - resource: clusterconfig
+          actions: [ "view" ]
+
+        - resource: topic
+          value: ".*"
+          actions:
+            - VIEW
+            - MESSAGES_READ
+
+        - resource: consumer
+          value: ".*"
+          actions: [ view ]
+
+        - resource: schema
+          value: ".*"
+          actions: [ view ]
+
+        - resource: connect
+          value: ".*"
+          actions: [ view ]
+
+        - resource: acl
+          actions: [ view ]
