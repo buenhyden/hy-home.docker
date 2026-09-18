@@ -1,99 +1,106 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-18"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
 - "REQ-0006"
 created: "2026-03-26"
 ---
+
 # Messaging Architecture Description
 
 ## Context and Stakeholders
 
-이 문서는 메시징 계층(`05-messaging`)의 참조 아키텍처와 품질 속성을 정의한다. 고가용성 Apache Kafka (KRaft mode) 클러스터와 경량 RabbitMQ 브로커가 결합된 폴리글랏 메시징 구조를 다룬다.
-
-### Stakeholders and Concerns
-
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
-
-`hy-home.docker`의 메시징 계층은 시스템의 이벤트 중심 아키텍처(EDA)를 뒷받침한다. Kafka는 대용량 스트리밍 및 이벤트 로그 저장을 담당하며, RabbitMQ는 저지연 작업 큐잉 및 마이크로서비스 간의 단발성 비동기 통신을 담당한다.
+이 문서는 메시징 계층(`05-messaging`)의 참조 아키텍처와 품질 속성을 정의한다.
+Kafka KRaft 기반 broker, Schema Registry, Kafka Connect, Kafka REST Proxy,
+Kafbat UI, Kafka Exporter와 RabbitMQ를 다룬다.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
-
 - **Owns**:
-  - Kafka Broker Cluster & Metadata (KRaft)
-  - Schema Registry & Connect
-  - RabbitMQ Server
+  - Kafka/RabbitMQ messaging runtime
+  - schema/connector management surface
+  - Kafbat UI Kafka administration surface
 - **Consumes**:
-  - `infra_net` 네트워크 리소스
-  - `${DEFAULT_MESSAGE_BROKER_DIR}` 영구 저장소
+  - `01-gateway` routing/TLS
+  - `02-auth` Keycloak identity
+  - `06-observability` metrics/logging
 - **Does Not Own**:
-  - 서비스별 비즈니스 토픽 네이밍 규약 (Spec 담당)
-  - 메트릭 시각화 (06-observability 담당)
-  - ksqlDB stream processing engine (`04-data/analytics/ksql` 담당)
-- **Non-goals**:
-  - 메시징 계층에서 대용량 BLOB 데이터 직접 저장.
+  - Keycloak identity lifecycle
+  - OAuth2 Proxy session lifecycle
+  - application workflow orchestration
 
 ## Quality Attributes
 
-### Quality Scenarios
-
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
-
-- **Performance**: Kafka compose 파일은 하나이며 루트가 무조건 include한다. `messaging` 또는 `dev` profile은 `kafka-1` 단일 broker 개발 모델을 제공하고, 여기에 `messaging-cluster` profile을 더하면 `kafka-2`와 `kafka-3`이 합류해 3 broker 병렬 쓰기 모델이 된다.
-- **Security**: 내부망 기반 격리 통신, Traefik 관리 경로 보호, Docker Secrets 기반 Kafbat/RabbitMQ secret 주입을 사용한다.
-- **Reliability**: KRaft 쿼럼 기반 고가용성 메타데이터 서비스.
-- **Scalability**: 브로커 및 파티션 추가를 통한 수평 확장 지원.
-- **Observability**: Kafka broker JMX exporter agent, Kafka Exporter, RabbitMQ healthcheck 및 Prometheus 기반 지표 모니터링.
-- **Operability**: Kafbat UI 및 RabbitMQ Management 플러그인 제공.
+- **Reliability**: KRaft metadata quorum과 broker health.
+- **Scalability**: broker/partition 수평 확장.
+- **Observability**: Kafka JMX exporter, Kafka Exporter, RabbitMQ metrics.
+- **Operability**: Kafbat UI 및 RabbitMQ Management 제공.
+  Kafbat UI는 Keycloak application-native OIDC를 사용하고 RabbitMQ 관리 UI는
+  승인된 gateway ForwardAuth 정책을 따른다.
 
 ## Components
 
-### Viewpoints and Views
+### Kafka
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+- `kafka-1`: `messaging`/`dev` profile 기본 broker
+- `kafka-2`, `kafka-3`: `messaging-cluster` profile 추가 broker
+- `schema-registry`
+- `kafka-connect`
+- `kafka-rest-proxy`
+- `kafka-exporter`
+- `kafka-init`
 
-메시징 계층은 Kafka REST Proxy를 통해 RESTful 접근도 지원하며, Schema Registry를 통해 Avro/JSON 기반의 데이터 정합성 보장을 가능하게 한다. ksqlDB는 현재 `04-data/analytics/ksql`의 downstream analytics component로 운영한다.
+### Kafbat UI
 
-### AI Agent Architecture
+Kafbat UI는 `home-kafbat` Keycloak client를 사용하는 Native OAuth2/OIDC
+관리 UI다.
 
-- **Model/Provider Strategy**: N/A (인프라 계층 특성).
-- **Tooling Boundary**: Topic Manager Tool, Queue Monitor Tool.
-- **Memory & Context Strategy**: 최근 메시지 오프셋 저장 및 추적.
-- **Guardrail Boundary**: 대기열 소비율 임계치 기반 알림 호출.
+Traefik은 TLS와 `gateway-standard-chain@file`만 제공하며 OAuth2 Proxy
+ForwardAuth를 Kafbat UI 앞에 중복 적용하지 않는다.
+
+Kafbat RBAC는 Keycloak `groups` claim을 사용한다.
+
+- `/admins` -> admin
+- `/users` -> readonly
+
+RBAC `clusters` 값은 runtime `KAFKA_CLUSTERS_0_NAME`과 일치해야 한다.
+
+### RabbitMQ
+
+RabbitMQ Management UI는 현재 승인된 ForwardAuth 경계를 따른다.
 
 ## Data Flow
 
-### Data and Control Flows
+- producer/consumer -> Kafka broker
+- Schema Registry -> Kafka `_schemas`
+- Kafka Connect -> Kafka + external systems
+- Browser -> Traefik -> Kafbat UI -> Keycloak OIDC
+- Browser -> Traefik -> OAuth2 Proxy -> RabbitMQ Management (ForwardAuth pattern)
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
-
-- **Key Entities / Flows**:
-  - `infra-events`: 시스템 통합 이벤트 스트림.
-  - `application-logs`: 애플리케이션 로그 스트림.
-  - RabbitMQ `default` VHost 기반 작업 큐.
-- **Storage Strategy**: Local SSD 바인딩 기반 고성능 디바이스 사용.
-- **Data Boundaries**: 메시징 계층은 current compose가 선언한 토픽과 broker storage 경계를 제공한다. 전역 Kafka retention 값은 현재 compose에 고정 선언되어 있지 않으며, 장기 분석/보관은 `04-data` 계층 책임이다.
+Kafbat의 local TLS trust는 JDK default `cacerts` 복사본에 mkcert root를 추가하는
+방식으로 유지한다. public root CA trust를 제거하지 않는다.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Containers / Linux Host.
-- **Deployment Model**: 루트는 `infra/05-messaging/kafka/docker-compose.yml`을 무조건 include한다. `messaging`/`dev` profile은 `kafka-1` 단일 broker와 RabbitMQ 1 node를 렌더링하고, `messaging-cluster` profile을 더하면 같은 파일의 `kafka-2`/`kafka-3`이 합류한다. 이 파일만 단독으로 렌더링하려면 root network/secret context가 필요하다.
-- **Operational Evidence**: `docker-compose.yml` 기반의 스테이트풀 서비스 관리.
+`infra/05-messaging/kafka/docker-compose.yml`은 profile 기반으로 broker 수를 선택한다.
 
-## Traceability
-
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+Kafbat:
+- image: `kafbat/kafka-ui:v1.5.0`
+- route: `gateway-standard-chain@file`
+- client ID: `home-kafbat`
+- issuer: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/0006-messaging.md](../../01.requirements/0006-messaging.md)
-- **Spec**: [../../03.specs/006-messaging/spec.md](0005-messaging-architecture.md)
-- **ADR**: [../decisions/0005-kafka-vs-rabbitmq-selection.md](../decisions/0005-kafka-vs-rabbitmq-selection.md)
+- **PRD**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
+- **ADR**: [Kafka vs RabbitMQ](../decisions/0005-kafka-vs-rabbitmq-selection.md)
+- **ADR**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- **Spec**: [Messaging Spec](../../03.specs/006-messaging/spec.md)
+- **Operations**: [Kafka Guide](../../05.operations/catalog/05-messaging/0036-kafka/guide.md)
+- **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)

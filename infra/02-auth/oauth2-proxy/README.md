@@ -1,164 +1,129 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-18"
 created: "2025-11-29"
 ---
 
 # OAuth2 Proxy
 
-> OIDC ForwardAuth gateway for protecting backend services within the `hy-home.docker` ecosystem.
+> OIDC ForwardAuth gateway for services that do not use approved application-native OIDC.
 
 ## Overview
 
-OAuth2 Proxy provides a generic authentication layer for services that do not have built-in OIDC support. It interacts with Keycloak to verify user sessions and manages session state using Valkey. It is integrated into the Traefik ecosystem as a ForwardAuth provider.
+OAuth2 Proxy provides gateway authentication for services without suitable
+built-in OIDC support. It uses Keycloak for OIDC and Valkey for session state.
 
-OAuth2 Proxy는 ForwardAuth 대상 서비스 보호용.
-Airflow/Kafbat은 예외가 아니라 “approved Native OIDC pattern”.
+OAuth2 Proxy is **not** a mandatory hop for every protected subdomain.
+Airflow and Kafbat UI use application-native OIDC and are not protected by
+OAuth2 Proxy ForwardAuth.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Developers (Integrating new backends with SSO)
-- Operators (Session troubleshooting & secret rotation)
-- AI Agents (Label configuration & label-based middleware setup)
+- Developers
+- Operators
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- OAuth2 Proxy configuration (`oauth2-proxy.cfg`)
-- ForwardAuth workflow integration with Traefik
-- Valkey session storage connectivity and persistence
-- Custom Docker build based on Alpine for security and stability
+- OAuth2 Proxy config
+- Traefik ForwardAuth
+- Valkey session
+- secret injection
+- cookie/issuer/redirect contract
 
 ### Out of Scope
 
-- User identity management (handled by Keycloak)
-- SSL Certificate issuance (handled by Traefik/Cert-manager)
-- Granular application-level RBAC (handled by backends)
+- Keycloak identity management
+- Native OIDC application RBAC
+- TLS certificate issuance
 
 ## Structure
 
 ```text
 oauth2-proxy/
-├── config/             # Proxy configuration (oauth2-proxy.cfg)
-├── Dockerfile          # Custom Alpine-based build
-├── dev.Dockerfile      # Build used when sessions come from mng-valkey
-├── docker-entrypoint.sh # Secret/Env injection script
-├── docker-entrypoint.dev.sh # Secret and env injection script
-├── docker-compose.yml  # Container orchestration
-└── README.md           # This file
+├── config/
+├── Dockerfile
+├── dev.Dockerfile
+├── docker-entrypoint.sh
+├── docker-entrypoint.dev.sh
+├── docker-compose.yml
+└── README.md
 ```
+
+## Authentication Applicability
+
+ForwardAuth 대상:
+- Flower
+- n8n
+- 자체 OIDC가 없는 서비스
+
+Native OIDC 대상:
+- Airflow
+- Kafbat UI
+
+Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OAuth2 Proxy service leaf in `02-auth`; unconditional root include, profile-selected, via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `Dockerfile`, `dev.Dockerfile`, `docker-entrypoint.sh`, `docker-entrypoint.dev.sh`, `config/oauth2-proxy.cfg` |
-| Config values | env keys: `SSL_CERT_FILE`, `OAUTH2_PROXY_SESSION_STORE_TYPE`, `OAUTH2_PROXY_REDIS_CONNECTION_URL`, `OAUTH2_PROXY_CLIENT_ID`, `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`; profiles: `core`, `auth`, `dev` |
-| Compose linkage | one file, two session backends by profile: `oauth2-proxy` (`core`, `auth`, `dev`) points at `${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}`, and the `dedicated-valkey` profile adds `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` |
-| Networks | `infra_net` |
-| Volumes | `./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro`, `../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro`, `oauth2-proxy-valkey-data`, `oauth2-proxy-valkey-data:/data` |
-| Ports | `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.oauth2-proxy.rule`, `traefik.docker.network`, `traefik.http.routers.oauth2-proxy.entrypoints`, `traefik.http.routers.oauth2-proxy.service`, `traefik.http.routers.oauth2-proxy.tls`, `traefik.http.routers.oauth2-proxy.middlewares`, plus 1 more |
-| Secret refs | names: `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`, `oauth2_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/oauth2_proxy_client_secret`, `/run/secrets/oauth2_proxy_cookie_secret`, `/run/secrets/oauth2_valkey_password` |
-| Healthcheck | Compose healthcheck declared for `oauth2-proxy`, `oauth2-proxy`, `oauth2-proxy-valkey`; not declared for `oauth2-proxy-valkey-exporter` |
-| Operations | Guide (`docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md`), Policy (`docs/05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md`), Runbook (`docs/05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Service | `oauth2-proxy` |
+| Session | shared `mng-valkey` by default |
+| Dedicated session | `oauth2-proxy-valkey` under `dedicated-valkey` |
+| Health | `/ping` |
+| OIDC client | `home-proxy-client` |
+| Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
-
-1. Read the Auth Guides (`docs/05.operations/catalog/02-auth/README.md`) for OIDC/ForwardAuth configuration.
-2. Refer to the OAuth2 Proxy Guide (`docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md`) for detailed configuration steps.
-3. Check `config/oauth2-proxy.cfg` for runtime provider and cookie settings.
-4. Use the Auth Runbook (`docs/05.operations/catalog/02-auth/README.md`) for cookie secret rotation procedures.
-
-5. 이 README를 먼저 읽고 Traefik 레이블 설정을 확인한다.
-6. 새로운 서비스 추가 시 `forwardauth` 미들웨어를 `auth.${DEFAULT_URL}` 경로로 설정한다.
-7. `OAUTH2_PROXY_COOKIE_SECRET` 변경 시 모든 세션이 초기화됨을 인지한다.
-8. `config/oauth2-proxy.cfg`의 `redirect_url`과 Keycloak 클라이언트 설정을 동기화한다.
+1. Auth Operations와 integration guide를 먼저 확인.
+2. new service onboarding 시 ForwardAuth vs Native OIDC를 먼저 분류.
+3. ForwardAuth 대상에만 OAuth2 Proxy middleware 적용.
+4. cookie/client/session secret 변경 영향 확인.
+5. `Authorization` header forwarding은 upstream JWT scheme과 충돌 여부 검증.
+6. callback URL을 재사용하지 않는다.
 
 ## Tech Stack
 
-| Category | Technology         | Notes                    |
-| -------- | ------------------ | ------------------------ |
-| Proxy    | OAuth2 Proxy (Go)  | `quay.io/oauth2-proxy/oauth2-proxy:v7.15.4` copied into Alpine |
-| Session  | Valkey             | Redis-compatible storage |
-| Protocol | OIDC / ForwardAuth | Keycloak & Traefik       |
-| Runtime  | Alpine Linux       | Minimal footprint        |
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Proxy | OAuth2 Proxy | ForwardAuth |
+| Session | Valkey | Redis-compatible |
+| Protocol | OIDC | Keycloak |
+| Gateway | Traefik | ForwardAuth caller |
 
-## Configuration
-
-### Environment Variables
-
-| Variable                     | Required | Description                            |
-| ---------------------------- | -------: | -------------------------------------- |
-| `OAUTH2_PROXY_CLIENT_ID`     |      Yes | OIDC Client ID from Keycloak           |
-| `OAUTH2_PROXY_COOKIE_SECRET` |      Yes | Cookie encryption key (32-byte string) |
-| `OAUTH2_PROXY_CLIENT_SECRET` |      Yes | Client secret from Keycloak            |
-
-### Secrets Injection
-
-Secrets are injected via `docker-entrypoint.sh` from `/run/secrets/`:
+## Secrets
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
-- `mng_valkey_password` when sessions use the shared `mng-valkey`
-- `oauth2_valkey_password` under the `dedicated-valkey` profile
+- shared/dedicated Valkey secret
 
 ## Testing
 
-### Healthcheck Configuration
-
-The service uses `wget` to perform a health check against the `/ping` endpoint:
-
-```yaml
-healthcheck:
-  test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:4180/ping >/dev/null 2>&1 || exit 1']
-  interval: 30s
-  timeout: 10s
-  retries: 3
-```
-
-### Manual Verification
-
 ```bash
-# Validate the root auth profile and 02-auth hardening contract
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 02-auth
-
-# Runtime-only checks after the auth profile is already running
-docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping
-docker compose --profile auth logs oauth2-proxy --tail=200 | grep "OIDC"
+docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:4180/ping
 ```
-
-## Validation
-
-- Run `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh 02-auth` before marking documentation ready.
-- Verify OIDC ForwardAuth forwarding by checking `docker compose --profile auth logs oauth2-proxy --tail=200 | grep "OIDC"` after config changes.
-- Confirm cookie and session connectivity by verifying the `/ping` runtime endpoint from the root compose context.
 
 ## Troubleshooting
 
-- Start with `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` to confirm root-context network, volume, secret, and label references render correctly.
-- Check container logs and the linked runbook before changing configuration or secret references.
-- For OIDC errors: verify `OAUTH2_PROXY_CLIENT_ID` matches the Keycloak client and `redirect_url` is synchronized.
-- For session errors: confirm `mng_valkey_password` is injected when sessions use the shared `mng-valkey`, or `oauth2_valkey_password` when the `dedicated-valkey` profile is selected.
-- For ForwardAuth failures: check Traefik middleware labels reference `auth.${DEFAULT_URL}` and the upstream config is correct.
+- issuer/redirect/cookie domain
+- Valkey connectivity
+- ForwardAuth middleware route
+- Native OIDC app에 중복 적용 여부
+- upstream `Authorization` collision
 
 ## Related Documents
 
-- [Keycloak](../keycloak/README.md) - The Identity Provider.
-- [01-gateway](../../01-gateway/README.md) - Traefik route configuration.
-- docs/05.operations/catalog/02-auth/oauth2-proxy.md (`docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md`) - Session policies.
+- [Keycloak](../keycloak/README.md)
+- [Gateway](../../01-gateway/README.md)
+- [OAuth2 Proxy Guide](../../../docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
+- [Application Authentication Integration Guide](../../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
 - [Documentation index](../../../docs/README.md)

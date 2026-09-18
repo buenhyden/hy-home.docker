@@ -51,42 +51,57 @@ Browser -> Traefik -> Application -> Keycloak
 - Kafbat UI
 
 Airflow와 Kafbat UI router에는 `gateway-standard-chain@file`만 적용하고
-`OAuth2 Proxy ForwardAuth`를 중복 적용하지 않는다.
+OAuth2 Proxy `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 
 ## Rationale
 
-- Keycloak 중앙 IAM은 유지한다.
+- Keycloak 중앙 IAM을 유지한다.
 - Airflow의 Keycloak Authorization Services를 그대로 사용한다.
 - Kafbat의 native OAuth2/RBAC를 그대로 사용한다.
-- Proxy가 주입한 `Authorization`과 애플리케이션 자체 token의 충돌을 방지한다.
-- 자체 인증이 없는 서비스에는 기존 ForwardAuth의 단순성을 유지한다.
+- Proxy가 주입한 `Authorization`과 application 자체 token 충돌을 방지한다.
+- 자체 인증이 없는 서비스에는 ForwardAuth의 단순성을 유지한다.
 
 ## Options Considered
 
 ### ForwardAuth-only
 
-장점: gateway 정책 단순화.
+장점:
+- gateway 정책이 단순하다.
 
-단점: native OIDC 앱에서 double-auth/token collision/application RBAC 중복.
+단점:
+- Native OIDC 앱에서 double-auth 발생
+- application-level RBAC와 gateway auth 책임 중복
+- Airflow에서 실제 Bearer/JWT 충돌이 관찰됨
 
 ### Native OIDC-only
 
-장점: application-level authorization 활용.
+장점:
+- 각 application authorization model을 직접 사용할 수 있다.
 
-단점: OIDC 기능이 없는 서비스에 적용 불가, client 관리 비용 증가.
+단점:
+- OIDC가 없는 서비스에는 적용할 수 없다.
+- 서비스별 Keycloak client 관리 비용이 증가한다.
 
 ## Consequences
 
-- 서비스 onboarding 시 authentication pattern 분류가 필요하다.
-- Keycloak client 수는 늘어난다.
-- 대신 각 서비스의 authentication/authorization 책임이 명확해진다.
+### Positive
+
+- authentication/authorization ownership이 명확해진다.
+- Airflow/Kafbat application RBAC를 유지한다.
+- OAuth2 Proxy header injection과 application JWT 충돌을 피한다.
+
+### Negative
+
+- 서비스 onboarding 시 auth pattern을 명시적으로 선택해야 한다.
+- Keycloak client 수가 증가한다.
 
 ## Guardrails
 
-- Native OIDC 서비스 앞에 ForwardAuth를 기본적으로 중복 적용하지 않는다.
-- client secret은 Docker Secret으로만 주입한다.
-- local CA는 system/JDK public root trust를 보존한 상태로 추가한다.
-- gateway `Authorization` forwarding은 upstream token scheme과 충돌 여부를 검증한다.
+- Native OIDC 서비스에 ForwardAuth를 기본적으로 중복 적용하지 않는다.
+- OIDC client secret은 Docker Secret으로 주입한다.
+- local mkcert CA는 system/JDK public root trust를 보존한 상태로 추가한다.
+- gateway `Authorization` forwarding은 upstream token scheme과 충돌하지 않음을 검증한다.
+- 신규 Native OIDC 서비스는 architecture/operations 문서에 명시한다.
 
 ## Traceability
 

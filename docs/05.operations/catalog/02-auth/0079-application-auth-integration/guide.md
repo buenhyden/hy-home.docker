@@ -16,82 +16,88 @@ created: "2026-09-18"
 
 ## Usage
 
-### 목적
+### Overview
 
 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고
-서비스별 authorization 모델을 유지하는 방법을 설명한다.
+서비스별 authorization model을 유지하는 방법을 설명한다.
 
-### 1. 인증 패턴 선택
+### Usage Type
 
-#### ForwardAuth
+`system-guide | how-to | integration-reference`
+
+### Target Audience
+
+- Infra/DevOps Engineers
+- Operators
+- Platform Developers
+- AI Agents
+
+### Purpose
+
+- ForwardAuth와 Native OIDC의 책임 경계를 명확히 한다.
+- Keycloak application client 설정을 일관되게 유지한다.
+- Kafbat/Airflow native RBAC를 gateway auth와 충돌시키지 않는다.
+
+### Authentication Pattern
+
+#### Gateway ForwardAuth
 
 ```text
-Browser
-  -> Traefik
-  -> OAuth2 Proxy /oauth2/auth
-  -> Keycloak
-  -> OAuth2 Proxy session
-  -> Upstream
+Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 ```
 
-적합:
+대상:
 - 자체 OIDC가 없는 서비스
-- gateway-level user presence 확인만 필요한 서비스
+- gateway-level authentication이 적절한 서비스
+- 현재 Flower/n8n 등
 
-현재 예:
-- Flower
-- n8n
-- 기타 `sso-auth@file` 사용 서비스
-
-#### Native OIDC
+#### Application-native OIDC
 
 ```text
-Browser
-  -> Traefik TLS/router
-  -> Application
-  -> Keycloak OIDC
-  -> Application session/RBAC
+Browser -> Traefik -> Application -> Keycloak
 ```
 
-현재:
-- Kafbat UI
+대상:
 - Apache Airflow
+- Kafbat UI
 
 Native OIDC 서비스에는 `sso-auth@file`을 중복 적용하지 않는다.
 
-### 2. Keycloak Client Matrix
+### Keycloak Client Matrix
 
 | Application | Client ID | Flow | Authorization Services |
 | --- | --- | --- | --- |
-| OAuth2 Proxy | `home-proxy-client` | ForwardAuth OIDC client | No |
+| OAuth2 Proxy | `home-proxy-client` | Gateway ForwardAuth OIDC | No |
 | Kafbat UI | `home-kafbat` | Native Authorization Code | No |
 | Airflow | `home-airflow` | Native Keycloak Auth Manager | Yes |
 
-공통 realm:
-`hy-home.realm`
+Realm: `hy-home.realm`
 
-Public issuer:
-`https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
+Issuer:
 
-### 3. OAuth2 Proxy
+```text
+https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+```
+
+### OAuth2 Proxy
 
 현재 역할:
-- ForwardAuth
-- Valkey session
+- ForwardAuth provider
 - Keycloak OIDC client
+- Valkey-backed browser session
 
-중요:
+운영 원칙:
 - Native OIDC 앱에는 적용하지 않는다.
-- `Authorization`을 upstream에 전달할 때 upstream의 자체 JWT/Bearer scheme과 충돌하는지 확인한다.
-- cookie domain은 `.${DEFAULT_URL}` 경계로 유지한다.
-- callback URL은 일회성 authorization flow 결과이므로 수동 재사용하지 않는다.
+- `Authorization` forwarding은 upstream 자체 JWT/Bearer scheme과 충돌 여부를 확인한다.
+- cookie domain은 `.${DEFAULT_URL}` 경계를 유지한다.
+- callback URL과 authorization code를 재사용하지 않는다.
 
-### 4. Kafbat UI
+### Kafbat UI
 
-현재 compose/config:
+현재 구현:
 - `kafbat/kafka-ui:v1.5.0`
 - `auth.type: OAUTH2`
-- Keycloak direct issuer
+- direct Keycloak issuer
 - `roles-field: groups`
 - gateway-only Traefik route
 
@@ -99,53 +105,49 @@ Keycloak client:
 - Client ID: `home-kafbat`
 - Client Authentication: ON
 - Standard Flow: ON
-- Redirect:
-  `https://kafbat-ui.${DEFAULT_URL}/login/oauth2/code/keycloak`
-- Web Origin:
-  `https://kafbat-ui.${DEFAULT_URL}`
+- Redirect: `https://kafbat-ui.${DEFAULT_URL}/login/oauth2/code/keycloak`
+- Web Origin: `https://kafbat-ui.${DEFAULT_URL}`
 
-Group mapping:
-- `/admins` -> Kafbat admin role
-- `/users` -> Kafbat readonly role
+RBAC:
+- `/admins` -> admin
+- `/users` -> readonly
 
-Kafbat v1.5.0 RBAC는 role의 `clusters` 값을 configured cluster name과 비교한다.
-`hy-kafka-cluster` 같은 값은 실제 `KAFKA_CLUSTERS_0_NAME`과 일치해야 한다.
+`rbac.roles[*].clusters`는 `KAFKA_CLUSTERS_0_NAME`과 일치해야 한다.
 
-#### Local CA
-
-기본 JDK truststore를 복사하고 mkcert root만 추가한다.
+#### Local CA Trust
 
 ```text
-default cacerts
+JDK default cacerts
   -> copy
-  -> import rootCA.pem
+  -> import mkcert rootCA.pem
   -> use copied truststore
 ```
 
-local CA만 담긴 truststore로 기본 public CA roots를 대체하지 않는다.
+local root CA만 담긴 새 truststore로 JDK public CA roots를 대체하지 않는다.
 
-### 5. Airflow
+### Airflow
 
-현재:
+현재 구현:
 - Airflow 3.3.1
-- `apache-airflow-providers-keycloak==0.9.0`
+- Keycloak provider 0.9.0
 - `KeycloakAuthManager`
 - `home-airflow`
-- gateway-only Traefik route
 - fixed Airflow API JWT secret
-- certifi + local mkcert CA bundle
+- certifi + local root CA bundle
+- `--proxy-headers`
+- gateway-only Airflow router
 
 #### Token model
 
-Keycloak token:
-- login
-- Keycloak Authorization Services 평가
+Keycloak tokens:
+- OIDC login
+- Authorization Services evaluation
 
 Airflow internal JWT:
-- Airflow session/API Core
+- Airflow browser/API session
 - `AIRFLOW__API_AUTH__JWT_SECRET`으로 서명
 
-둘은 서로 대체하지 않는다.
+두 token은 서로 대체하지 않는다.
 
 #### Keycloak prerequisites
 
@@ -159,15 +161,12 @@ Admin
 SuperAdmin
 ```
 
-Client settings:
+Client:
 - Client Authentication ON
 - Authorization ON
 - Standard Flow ON
-- Service Accounts Roles ON
-- Redirect:
-  `https://airflow.${DEFAULT_URL}/*`
-- Web Origin:
-  `https://airflow.${DEFAULT_URL}`
+- Redirect: `https://airflow.${DEFAULT_URL}/*`
+- Web Origin: `https://airflow.${DEFAULT_URL}`
 
 #### Authorization bootstrap
 
@@ -175,103 +174,68 @@ Client settings:
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
 ```
 
-생성:
-- scopes: GET, POST, PUT, DELETE, MENU, LIST
-- resources: Dag, Asset, Pool, View, ...
+생성 대상:
+- scopes: `GET`, `POST`, `PUT`, `DELETE`, `MENU`, `LIST`
+- resources: `Dag`, `Asset`, `Pool`, `View`, ...
 - role policies
 - permissions
 
-provider 0.9.0 upgrade 후 기존 non-team permission repair:
+0.9.0 upgrade 후 기존 non-team permission repair:
 
 ```bash
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
 ```
 
-0.9.0 upgrade는 기존 Keycloak permissions를 자동 수정하지 않는다.
+provider update만으로 기존 Keycloak permissions는 자동 갱신되지 않는다.
 
-### 6. Airflow 장애 패턴
+### Airflow 장애 패턴
 
-#### `PermissionError: /opt/airflow/config/airflow.cfg`
+#### Config PermissionError
 
-init/root owner와 runtime UID 불일치.
+`airflow-init` root-created file과 runtime UID mismatch를 확인한다.
 
-#### DB initialization/migration error
-
-실행 version과 migration version을 맞추고:
+#### DB migration
 
 ```bash
-airflow db migrate
-airflow db check
+docker compose exec airflow-apiserver airflow db migrate
+docker compose exec airflow-apiserver airflow db check
 ```
 
-#### `JWT token is not valid: The specified alg value is not allowed`
+#### JWT algorithm/format error
 
-OAuth2 Proxy가 전달한 Keycloak Bearer token을 Airflow가 자체 JWT로 해석한 경우.
+OAuth2 Proxy Bearer token이 Airflow application JWT 경계로 유입된 경우를 의심한다.
+Airflow router는 gateway-only + Native Keycloak Auth Manager를 사용한다.
 
-해결:
-- Native OIDC 구조 사용
-- Airflow router에서 ForwardAuth 제거
+#### `invalid_scope`
 
-#### `invalid_scope [GET|LIST]`
+Keycloak Authorization Services bootstrap 미완료.
 
-Keycloak Authorization bootstrap 미완료.
+#### role 404
 
-#### `create-all` role 404
+`Viewer`, `User`, `Op`, `Admin`, `SuperAdmin` realm role을 먼저 생성한다.
 
-`Viewer/User/Op/Admin/SuperAdmin` role 미생성.
+#### provider 0.8.2 Admin 403
 
-#### 0.8.2 Admin 403
-
-global Admin permission의 alternative role policies가 `UNANIMOUS`로 평가될 수 있음.
-0.9.0으로 upgrade 후 `create-permissions` 재실행.
+`Admin` permission에 alternative role policies가 `UNANIMOUS`로 묶일 수 있다.
+0.9.0으로 upgrade하고 `create-permissions`를 다시 실행한다.
 
 #### `/auth/login_callback` 403
 
-`_oauth_state` query/cookie mismatch.
+query `state`와 `_oauth_state` cookie mismatch.
 old callback URL을 재사용하지 않고 `/auth/login`에서 새 flow를 시작한다.
 
 #### 일부 resource만 403
 
-예:
+`/ui/auth/me` 등은 200인데 Pool/DAG/Asset만 403이면 authentication이 아니라
+Keycloak resource authorization 문제다.
 
-```text
-/ui/auth/me -> 200
-/api/v2/plugins -> 200
-/api/v2/pools -> 403
-/ui/dags -> 403
-/api/v2/assets/events -> 403
-```
-
-authentication이 아니라 Keycloak resource authorization 문제다.
-permission overlap, permission decision strategy, Resource Server evaluation을 확인한다.
-
-### 7. 권한/그룹 검증
-
-사용자 effective realm roles에서 `Admin` 확인:
+### Common Checks
 
 ```bash
-kcadm.sh get   "users/$USER_ID/role-mappings/realm/composite"   -r hy-home.realm
-```
-
-Airflow permission 확인:
-- Admin associated policies
-- ReadOnly associated policies
-- associated scopes
-- Resource Server decision strategy
-
-## Common Checks
-
-```bash
-# Auth
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
-
-# Messaging
 HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
-
-# Workflow
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
-# Hardening
 bash scripts/hardening/check-all-hardening.sh 02-auth
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/hardening/check-all-hardening.sh 07-workflow
@@ -285,31 +249,22 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
-Kafbat:
-- `/actuator/health`
-- Keycloak login
-- `/admins`/`/users` RBAC
-- cluster name exact match
-- local + public CA trust
-
 ## Runbook Handoff
-
-장애 복구 실행 절차는 해당 서비스 runbook을 따른다.
 
 - [Keycloak Runbook](../0014-keycloak/runbook.md)
 - [OAuth2 Proxy Runbook](../0015-oauth2-proxy/runbook.md)
-- [Kafka/Kafbat Runbook](../../../05-messaging/0036-kafka/runbook.md)
-- [Airflow Runbook](../../../07-workflow/0050-airflow/runbook.md)
+- [Kafka/Kafbat Runbook](../../05-messaging/0036-kafka/runbook.md)
+- [Airflow Runbook](../../07-workflow/0050-airflow/runbook.md)
 
 ## Traceability
 
-- Parent policy: [POL-0079](policy.md)
-- Architecture decision: [ADR-0038](../../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- Auth architecture: [AD-0002](../../../../02.architecture/descriptions/0002-auth-architecture.md)
+- Parent: [POL-0079](policy.md)
+- Decision: [ADR-0038](../../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- Architecture: [AD-0002](../../../../02.architecture/descriptions/0002-auth-architecture.md)
 
 ## Related Documents
 
 - [Keycloak Guide](../0014-keycloak/guide.md)
 - [OAuth2 Proxy Guide](../0015-oauth2-proxy/guide.md)
-- [Kafka/Kafbat Guide](../../../05-messaging/0036-kafka/guide.md)
-- [Airflow Guide](../../../07-workflow/0050-airflow/guide.md)
+- [Kafka/Kafbat Guide](../../05-messaging/0036-kafka/guide.md)
+- [Airflow Guide](../../07-workflow/0050-airflow/guide.md)

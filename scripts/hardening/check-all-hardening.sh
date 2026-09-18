@@ -30,8 +30,6 @@ _verified_repository_root() {
   printf '%s\n' "$candidate"
 }
 
-# Source the library. The typed gate runner supplies a verified descriptor
-# root; direct execution retains the script-relative fallback.
 REPO_ROOT="$(_verified_repository_root)"
 SCRIPT_DIR="${REPO_ROOT}/scripts/hardening"
 LIB_PATH="${SCRIPT_DIR}/../lib/hardening-lib.sh"
@@ -338,17 +336,11 @@ check_02_auth() {
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
   check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
-  # Derived rather than written out, the way the Dozzle check already is. The
-  # literal that stood here pinned 9.1.1-alpine and went stale the moment a
-  # Dependabot bump moved the Compose declaration, which failed this CI-only
-  # baseline on a tag nobody had reviewed as wrong.
   valkey_image="$(registry_component_image "Valkey")"
   oauth_valkey_compose_image="$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey")"
   if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
     fail "oauth2-proxy valkey image tag mismatch"
   fi
-  # No registry component owns this exporter, so this literal is the pin rather
-  # than a second copy of one. It has to be moved with the Compose declaration.
   check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.91.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
@@ -483,7 +475,7 @@ check_07_workflow() {
 
   check_file "$airflow_compose"
   check_file "$n8n_compose"
-  
+
   check_contains "$airflow_compose" "airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager" "airflow keycloak auth manager missing"
   check_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file" "airflow native oidc gateway chain mismatch"
   check_not_contains "$airflow_compose" "traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "airflow double-auth middleware must not be enabled"
@@ -576,44 +568,21 @@ check_11_laboratory() {
   check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }
 
-# Main Execution
 run_tier() {
   local tier="$1"
 
   case "$tier" in
-  01-gateway | gateway)
-    check_01_gateway
-    ;;
-  02-auth | auth)
-    check_02_auth
-    ;;
-  03-security | security)
-    check_03_security
-    ;;
-  04-data | data)
-    check_04_data
-    ;;
-  05-messaging | messaging)
-    check_05_messaging
-    ;;
-  06-observability | observability | obs)
-    check_06_observability
-    ;;
-  07-workflow | workflow)
-    check_07_workflow
-    ;;
-  08-ai | ai)
-    check_08_ai
-    ;;
-  09-tooling | tooling)
-    check_09_tooling
-    ;;
-  10-communication | communication | comm)
-    check_10_communication
-    ;;
-  11-laboratory | laboratory | lab)
-    check_11_laboratory
-    ;;
+  01-gateway | gateway) check_01_gateway ;;
+  02-auth | auth) check_02_auth ;;
+  03-security | security) check_03_security ;;
+  04-data | data) check_04_data ;;
+  05-messaging | messaging) check_05_messaging ;;
+  06-observability | observability | obs) check_06_observability ;;
+  07-workflow | workflow) check_07_workflow ;;
+  08-ai | ai) check_08_ai ;;
+  09-tooling | tooling) check_09_tooling ;;
+  10-communication | communication | comm) check_10_communication ;;
+  11-laboratory | laboratory | lab) check_11_laboratory ;;
   -h | --help)
     usage
     exit 0

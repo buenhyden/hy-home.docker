@@ -1,113 +1,139 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-18"
 created: "2025-11-12"
 ---
 
 # Auth Tier (02-auth)
 
-> Identity and Access Management (IAM) & Authentication ForwardAuth Gateway.
+> Identity and Access Management, Gateway ForwardAuth, and application-native OIDC integration.
 
 ## Overview
 
-The `02-auth` tier provides the security foundation for the `hy-home.docker` ecosystem. It centralizes user identity, single sign-on (SSO), and access control through Keycloak and OAuth2 Proxy. This tier is responsible for issuing OIDC tokens and protecting internal services via ForwardAuth verification.
+The `02-auth` tier provides the security foundation for the `hy-home.docker`
+ecosystem. Keycloak is the central Identity Provider. OAuth2 Proxy provides
+Gateway ForwardAuth for services without suitable built-in OIDC, while approved
+applications such as Airflow and Kafbat UI authenticate directly against
+Keycloak using application-native OIDC.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Developers (Service Integration)
-- Operators (User Management & Security)
-- AI Agents (Provisioning & Auditing)
+- Developers
+- Operators
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- Keycloak: IAM Provider (OIDC/SAML)
-- OAuth2 Proxy: SSO ForwardAuth Gateway
-- Authentication flow configuration and service discovery labels
-- Dependency management for PostgreSQL (Identity DB) and Valkey (Session Cache)
+- Keycloak: IAM Provider
+- OAuth2 Proxy: ForwardAuth Gateway
+- ForwardAuth vs Native OIDC selection
+- OIDC client integration
+- PostgreSQL identity persistence
+- Valkey session storage for OAuth2 Proxy
 
 ### Out of Scope
 
-- SSL/TLS termination (handled by `01-gateway`)
-- Network-level firewall rules
-- Individual application-level RBAC (managed within Keycloak or Apps)
+- TLS termination (`01-gateway`)
+- network firewall
+- application business logic
+- application-internal RBAC implementation details
 
 ## Structure
 
 ```text
 02-auth/
-├── keycloak/           # IAM Provider configuration
-├── oauth2-proxy/       # ForwardAuth Gateway configuration
-└── README.md           # This file
+├── keycloak/
+├── oauth2-proxy/
+└── README.md
 ```
+
+## Authentication Patterns
+
+### Gateway ForwardAuth
+
+```text
+Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
+```
+
+현재 예:
+- Flower
+- n8n
+- 자체 OIDC가 없는 내부 UI
+
+### Application-native OIDC
+
+```text
+Browser -> Traefik -> Application -> Keycloak
+```
+
+현재:
+- Airflow
+- Kafbat UI
+
+Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
-
-1. Read the Auth Guides (`docs/05.operations/catalog/02-auth/README.md`) for bootstrap and integration steps.
-2. Review the `docker-compose.yml` in subdirectories for specific service configurations.
-3. Follow the Operations Policy (`docs/05.operations/catalog/02-auth/README.md`) for user and realm management.
-4. Use the Auth Runbook (`docs/05.operations/catalog/02-auth/README.md`) for maintenance and recovery tasks.
-
-5. Always read this README to understand the relationship between Keycloak and OAuth2 Proxy.
-6. Refer to `docs/03.specs/002-auth` (if exists) for detailed protocol flows.
-7. Do not modify secrets directly; use `scripts/operations/gen-secrets.sh` if available.
-8. Classify each new service as Gateway ForwardAuth or Application-native OIDC. Do not layer OAuth2 Proxy ForwardAuth in front of an approved Native OIDC application.
+1. [Auth Operations](../../docs/05.operations/catalog/02-auth/README.md)를 먼저 확인한다.
+2. Keycloak/OAuth2 Proxy compose/config를 변경하기 전에 guide/policy/runbook을 확인한다.
+3. 신규 서비스를 `Gateway ForwardAuth` 또는 `Application-native OIDC`로 분류한다.
+4. 승인된 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 중복 적용하지 않는다.
+5. secret은 `scripts/operations/gen-secrets.sh`와 Docker Secret 경계를 사용한다.
+6. root profile validation/hardening을 실행한다.
 
 ## Tech Stack
 
-| Category   | Technology                     | Notes                     |
-| ---------- | ------------------------------ | ------------------------- |
-| IAM        | Keycloak (Quarkus)             | OIDC/SAML Provider        |
-| Proxy      | OAuth2 Proxy                   | ForwardAuth Implementation |
-| Database   | PostgreSQL                     | Identity Persistence      |
-| Cache      | Valkey                         | Session Store             |
-| Discovery  | Traefik labels                 | Dynamic Service Routing   |
+| Category | Technology | Notes |
+| --- | --- | --- |
+| IAM | Keycloak | Central OIDC/SAML IdP |
+| ForwardAuth | OAuth2 Proxy | Gateway authentication |
+| Native OIDC | Airflow, Kafbat UI | Direct Keycloak clients |
+| Database | PostgreSQL | Identity persistence |
+| Session | Valkey | OAuth2 Proxy session |
+| Gateway | Traefik | TLS/routing/middleware |
 
 ## Configuration
 
-### Environment Variables
-
 | Variable | Required | Description |
-| --------- | -------: | ----------- |
-| `DEFAULT_URL` | Yes | Root domain for services (e.g., `hy.home.arpa`) |
-| `KEYCLOAK_ADMIN_USER` | Yes | Initial admin username for Keycloak |
-| `OAUTH2_PROXY_CLIENT_ID` | Yes | Client ID registered in Keycloak for the proxy |
+| --- | ---: | --- |
+| `DEFAULT_URL` | Yes | root domain |
+| `KEYCLOAK_REALM` | Yes | `hy-home.realm` |
+| `KEYCLOAK_URL` | Yes | public Keycloak URL |
+| `OAUTH2_PROXY_CLIENT_ID` | Yes | ForwardAuth client |
+| `KAFBAT_OAUTH_CLIENT_ID` | Yes | Kafbat Native OIDC client |
+| `AIRFLOW_KEYCLOAK_CLIENT_ID` | Yes | Airflow Native OIDC client |
 
 ## Testing
 
-Static validation is the primary local/CI boundary. Runtime checks require the
-root compose context so shared networks, secrets, and included dependencies are
-available.
-
 ```bash
-# Validate the root auth profile and 02-auth hardening contract
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 02-auth
+```
 
-# Runtime-only checks after the auth profile is already running
-docker compose --profile auth exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'
-docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping
+Runtime:
+
+```bash
+docker compose --profile auth exec keycloak sh -c   'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'
+docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:4180/ping
 ```
 
 ## Change Impact
 
-- Changes in Keycloak realms or clients will affect all SSO-integrated services.
-- OAuth2 Proxy configuration updates may require a redirect URI update in Keycloak.
-- Secret rotations (Cookie Secret, Client Secret) must be synchronized across both services.
+- Keycloak realm/client 변경은 여러 application에 영향.
+- OAuth2 Proxy 변경은 ForwardAuth target에 영향.
+- Native OIDC client 변경은 해당 application login/RBAC에 영향.
+- secret rotation은 session/client 재로그인을 요구할 수 있다.
 
 ## Related Documents
 
-- [01-gateway](../01-gateway/README.md) - Handles ingress and ForwardAuth routing.
-- [04-data](../04-data/README.md) - Provides persistence and caching layers.
-- docs/05.operations/catalog/02-auth (`docs/05.operations/catalog/02-auth/README.md`) - Conceptual and setup guides.
-- [Documentation index](../../docs/README.md)
+- [Gateway](../01-gateway/README.md)
+- [Data](../04-data/README.md)
+- [Auth Operations](../../docs/05.operations/catalog/02-auth/README.md)
 - [Application Authentication Integration Guide](../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- [Documentation index](../../docs/README.md)

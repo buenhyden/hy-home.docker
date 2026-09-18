@@ -1,142 +1,148 @@
 ---
-title: "Kafka Event Streaming (05-messaging)"
-version: "1.3.1"
+title: "Kafka Messaging"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-18"
 created: "2025-11-12"
 ---
 
-# Kafka Event Streaming (05-messaging)
+# Kafka Messaging
 
-> Kafka KRaft event streaming for hy-home.docker.
+> Kafka KRaft messaging stack with Schema Registry, Connect, REST Proxy, Kafbat UI, and exporter.
 
 ## Overview
 
-The platform's primary event streaming backbone. Root `docker-compose.yml` includes this leaf's `docker-compose.yml`, which holds both topologies: the `messaging` and `dev` profiles render a single-broker development stack, and `messaging-cluster` adds `kafka-2` and `kafka-3`. Validating that file on its own requires root network and secret context.
+`05-messaging/kafka`는 profile 기반 Kafka broker topology와 관련 관리 서비스를 제공한다.
+
+Kafbat UI는 Keycloak application-native OAuth2/OIDC를 사용한다.
+Traefik router에는 `gateway-standard-chain@file`만 적용하며 OAuth2 Proxy
+ForwardAuth를 중복 적용하지 않는다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- **Data Engineers**: 데이터 파이프라인 및 커넥터 구성.
-- **Backend Developers**: 이벤트 기반 아키텍처 및 메시지 생산/소비.
-- **Operators**: 클러스터 상태 모니터링 및 브로커 관리.
-- **AI Agents**: 실시간 이벤트 분석 및 자동화된 토픽 관리.
+- Messaging Operators
+- Developers
+- Data Engineers
+- AI Agents
 
 ## Scope
 
-### In Scope
-
-- **Root dev Kafka Broker**: KRaft 기반 단일 broker 개발 구성(`docker-compose.yml`의 `messaging`/`dev` profile).
-- **Full Kafka Broker Cluster**: KRaft 기반 3 broker compose(`docker-compose.yml`).
-- **Confluent Schema Registry**: Avro/JSON 스키마 버전 관리.
-- **Kafka Connect**: 외부 시스템 연동용 커넥터 실행 엔진.
-- **Kafbat UI**: 웹 기반 관리 대시보드.
-- **Observability**: JMX 및 Prometheus Exporter를 통한 지표 수집.
-
-### Out of Scope
-
-- 개별 마이크로서비스의 Consumer/Producer 로직.
-- 커스텀 Kafka Connector 개발 (Java SDK 영역).
-- 외부 클라우드 관리형 Kafka (MSK/Confluent Cloud) 연동.
+- Kafka broker(s)
+- Schema Registry
+- Kafka Connect
+- Kafka REST Proxy
+- Kafbat UI
+- Kafka Exporter
+- topic initialization
 
 ## Structure
 
 ```text
 kafka/
-├── jmx-exporter/       # JMX to Prometheus metrics config
-├── kafbat-ui/          # UI configuration
-├── docker-compose.yml  # Kafka ecosystem orchestration
-└── README.md          # This file
+├── docker-compose.yml
+├── jmx-exporter/
+├── kafbat-ui/
+│   └── dynamic_config.template.yaml
+└── README.md
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Kafka Event Streaming service leaf in `05-messaging`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`, the only Compose file in this directory |
-| Config files | `docker-compose.yml` |
-| Config values | root dev env keys include `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1`, `KAFKA_PROCESS_ROLES`, `KAFKA_CONTROLLER_QUORUM_VOTERS`; selecting `messaging-cluster` adds broker IDs 2-3 and allows replication factor 3 for internal topics; `kafka-1` profiles: `messaging`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.yml`; that single file holds every broker, and `messaging-cluster` selects `kafka-2` and `kafka-3` |
-| Networks | `infra_net` |
-| Volumes | `kafka-1-data:/var/lib/kafka/data:rw`, `./jmx-exporter:/usr/share/jmx_exporter:ro`, `kafka-connect-data:/var/lib/kafka-connect:rw`, `./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro`, `kafka-1-data`, `kafka-connect-data`, `kafka-2-data:/var/lib/kafka/data:rw`, `kafka-3-data:/var/lib/kafka/data:rw`, plus 2 more |
-| Ports | `${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${SCHEMA_REGISTRY_PORT:-8081}`, `${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}`, plus 2 more |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.schema-registry.rule`, `traefik.http.routers.schema-registry.entrypoints`, `traefik.http.routers.schema-registry.tls`, `traefik.http.routers.schema-registry.middlewares`, `traefik.http.services.schema-registry.loadbalancer.server.port`, `traefik.http.routers.kafka-connect.rule`, plus 14 more |
-| Secret refs | names: `kafbat_client_secret`; mounts: `/run/secrets/kafbat_client_secret` |
-| Healthcheck | Compose healthcheck declared for Kafka broker(s), `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, and `kafka-exporter`; `kafka-init` is a job and has no healthcheck |
-| Operations | Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`), Policy (`docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`), Runbook (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Single broker | `messaging`/`dev` -> `kafka-1` |
+| Cluster | `messaging-cluster` adds `kafka-2`, `kafka-3` |
+| Kafbat | `kafbat/kafka-ui:v1.5.0` |
+| Kafbat auth | Keycloak Native OAuth2/OIDC |
+| Kafbat secret | `kafbat_client_secret` |
+| Kafbat health | `/actuator/health` |
+
+## Kafbat Authentication
+
+Client:
+- `home-kafbat`
+
+Issuer:
+```text
+https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+```
+
+Redirect:
+```text
+https://kafbat-ui.${DEFAULT_URL}/login/oauth2/code/keycloak
+```
+
+Roles field:
+```text
+groups
+```
+
+RBAC:
+- `/admins` -> admin
+- `/users` -> readonly
+
+`rbac.roles[*].clusters`는 runtime `KAFKA_CLUSTERS_0_NAME`과 일치해야 한다.
+
+## TLS Trust
+
+Kafbat container는 JDK default `cacerts`를 `/tmp`로 복사하고 local
+`rootCA.pem`을 import한다. 이 방식으로 public CA roots를 보존한다.
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
-
-1. **Bootstrap**: Kafka KRaft Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`)를 읽고 클러스터 초기 구성 방식을 파악한다.
-2. **Configuration**: `docker-compose.yml` 한 파일에서 Broker ID와 포트 매핑을 확인한다. 단일 broker는 `messaging`/`dev` profile, 3 broker cluster는 `messaging-cluster` profile이 선택한다.
-3. **Execution**: 변경 사항 적용 후 repository root에서 root profile 검증을 먼저 수행한다.
-4. **Validation**: Messaging Runbook (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`)의 점검 절차를 수행한다.
-5. 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 확인한다.
-
-6. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
-7. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/006-messaging/spec.md`를 함께 갱신한다.
+1. Kafka operations guide/runbook 확인.
+2. root profile validation.
+3. topic은 `kafka-init` contract 기준.
+4. Kafbat auth 변경은 integration guide와 Keycloak client를 함께 확인.
+5. Kafbat route에 `sso-auth@file`을 추가하지 않는다.
 
 ## Tech Stack
 
-| Category   | Technology                     | Notes                     |
-| ---------- | ------------------------------ | ------------------------- |
-| Engine     | Confluent CP-Kafka             | 8.3.0                     |
-| Mode       | KRaft                          | Integrated Metadata log   |
-| Registry   | CP-Schema-Registry             | 8.3.0                     |
-| UI         | Kafbat (Kafka UI)              | Web-based management      |
-| Exporter   | Kafka Exporter                 | `danielqsj/kafka-exporter:v1.10.0` |
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Node 1 | Node 2 | Node 3 | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `KAFKA_EXTERNAL_PORT` | 9092 | 9094 | 9096 | 외부 클라이언트 접속 포트 |
-| `KAFKA_NODE_ID` | 1 | 2 | 3 | 클러스터 내 고유 노드 ID |
-| `CLUSTER_ID` | `${KAFKA_CLUSTER_ID}` | | | 클러스터 식별 UUID |
+| Category | Technology |
+| --- | --- |
+| Kafka | Confluent CP-Kafka 8.3.x |
+| Mode | KRaft |
+| Registry | CP Schema Registry |
+| Connect | CP Kafka Connect |
+| UI | Kafbat UI |
+| Exporter | Kafka Exporter |
 
 ## Testing
 
 ```bash
-# internal topic 목록 확인
+HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 05-messaging
 docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
-
-# schema registry 연결성 확인
-docker inspect --format '{{json .State.Health}}' schema-registry
 ```
+
+Kafbat:
+- `/actuator/health`
+- login
+- `/admins` admin
+- `/users` readonly
 
 ## Change Impact
 
-- **브로커 설정 변경**: 순차적 재시작(Rolling Restart)이 필요하며, 가용성 보장을 위해 쿼럼 상태를 확인해야 한다.
-- **토픽 정책 변경**: `replication.factor` 축소는 데이터 가용성을 낮추며, `retention` 변경은 디스크 용량에 즉각 영향을 준다.
-
-## Validation
-
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify topic creation by running `kafka-topics.sh --list` and confirming expected topics exist with correct partition and replication settings.
-- Confirm producer/consumer connectivity by checking `docker logs kafka-1 --tail 100` after config changes.
-- Verify broker registration by confirming the broker ID appears in the controller metadata logs.
+- broker topology 변경은 topic replication/ISR에 영향.
+- Kafbat client/claim 변경은 UI access/RBAC에 영향.
+- truststore 변경은 Keycloak 및 public HTTPS 연결에 영향.
 
 ## Troubleshooting
 
-- Start with `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` to confirm root-included messaging render.
-- Service-local `docker compose -f infra/05-messaging/kafka/docker-compose.yml --profile messaging config` needs root `infra_net` and secret context or a validation overlay.
-- Check Kafka logs and broker health before changing listener, storage, or KRaft settings.
+- broker health/listeners
+- Schema Registry/Connect health
+- Kafbat OAuth2 logs
+- Kafbat cluster name exact match
+- Keycloak group claim
+- gateway-only route
 
 ## Related Documents
 
-- **PRD**: 05-messaging (`docs/01.requirements/0006-messaging.md`)
-- **ARD**: Messaging Architecture (`docs/02.architecture/descriptions/0005-messaging-architecture.md`)
-- **Guide**: Kafka Guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`)
-- **Policy**: Messaging Ops (`docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`)
-- **Runbook**: Messaging Recovery (`docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`)
-- [Documentation index](../../../docs/README.md)
+- **PRD**: `docs/01.requirements/0006-messaging.md`
+- **Architecture**: `docs/02.architecture/descriptions/0005-messaging-architecture.md`
+- **Guide**: `docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`
+- **Policy**: `docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`
+- **Runbook**: `docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`
+- **Auth Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`

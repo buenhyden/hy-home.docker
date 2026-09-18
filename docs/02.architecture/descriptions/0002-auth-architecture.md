@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-18"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -13,15 +13,18 @@ supersedes:
 - "AD-0014"
 created: "2026-03-26"
 ---
+
 # 02-Auth Architecture Description
 
-> This document defines the technical architecture for Identity and Access Management (IAM) and Authentication ForwardAuth Gateway.
-
----
+> This document defines the technical architecture for Identity and Access Management (IAM), Gateway ForwardAuth, and application-native OIDC.
 
 ## Context and Stakeholders
 
-`02-auth` 아키텍처는 사용자 식별 및 액세스 제어를 위한 두 가지 핵심 계층으로 구성된다. 중앙 IAM 역할을 수행하는 `Keycloak`과 트래픽 가로채기를 통해 SSO를 강제하는 `OAuth2 Proxy`가 긴밀하게 연동된다. 이 구조는 `Traefik`의 ForwardAuth 메커니즘을 활용하여 모든 백엔드 서비스에 대한 통일된 인증 게이트웨이를 제공한다.
+`02-auth` 아키텍처는 중앙 IAM 역할을 수행하는 `Keycloak`과 gateway 인증 계층인
+`OAuth2 Proxy`를 중심으로 구성한다. 모든 애플리케이션이 동일한 ingress auth
+패턴을 강제받는 것은 아니다. 자체 OIDC와 application-level RBAC를 제공하는
+서비스는 Keycloak에 직접 연결하고, 자체 OIDC가 없거나 gateway authentication이
+적합한 서비스는 OAuth2 Proxy ForwardAuth를 사용한다.
 
 ### Status
 
@@ -31,113 +34,155 @@ created: "2026-03-26"
 
 ### Principles
 
-- **Zero-Trust Enforcement**: All requests must be explicitly authenticated.
-- **Protocol Standardization**: Use OIDC (OpenID Connect) for all internal integrations.
-- **Stateless Verification**: Leverage JWT (JSON Web Tokens) where applicable, backed by server-side sessions.
-- **High Availability**: Identity data and sessions must be resilient to container failures.
-
-### Stakeholders and Concerns
-
-요구사항 소유자, 구현자와 운영자는 인증 경계, 시크릿 파일 주입, 최소 권한
-실행과 장애 시 fail-closed 동작을 공유 관심사로 다룬다. 이 Description은
-구조와 품질 기대를 설명하며, 실행 절차와 검증 결과는 각각 Operations 문서와
-해당 작업의 Task가 소유한다.
+- **Central Identity**: 사용자 identity source는 Keycloak을 기준으로 한다.
+- **Protocol Standardization**: OIDC를 기본 인증 프로토콜로 사용한다.
+- **Selective Enforcement**: ForwardAuth와 Native OIDC를 서비스 특성에 따라 선택한다.
+- **No Double Auth by Default**: Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
+- **Fail Closed**: 인증/권한 검증 실패 시 보호 자원 접근을 허용하지 않는다.
+- **Secret Boundary**: client secret, cookie secret, JWT secret은 파일 기반 Secret으로 주입한다.
 
 ## Components
 
-The auth system sits between the `01-gateway` and other internal services. It validates user presence before traffic enters any protected container.
+The auth system provides one central identity source with two ingress authentication patterns.
 
-### System Architecture Diagram (Mermaid)
+### System Architecture Diagram
 
 ```mermaid
 graph TD
     Client["User Browser"]
     Gateway["01-Gateway (Traefik)"]
-    OAuth2Proxy["OAuth2 Proxy (SSO Gateway)"]
+    OAuth2Proxy["OAuth2 Proxy (ForwardAuth)"]
     Keycloak["Keycloak (IAM Provider)"]
+    ForwardApp["ForwardAuth-protected Service"]
+    Airflow["Airflow (Native Keycloak Auth Manager)"]
+    Kafbat["Kafbat UI (Native OAuth2/OIDC)"]
     PostgreSQL["PostgreSQL (Identity DB)"]
-    Valkey["Valkey (Session Cache)"]
+    Valkey["Valkey (OAuth2 Proxy Session Cache)"]
 
     Client -->|HTTPS| Gateway
-    Gateway -->|ForwardAuth Check| OAuth2Proxy
-    OAuth2Proxy -->|OIDC Flow| Keycloak
-    Keycloak <--> PostgreSQL
+
+    Gateway -->|ForwardAuth| OAuth2Proxy
+    OAuth2Proxy -->|OIDC| Keycloak
+    OAuth2Proxy --> ForwardApp
     OAuth2Proxy <--> Valkey
-    OAuth2Proxy -->|Inject Headers| Gateway
-    Gateway -->|Authorized Request| InternalService["Internal Service"]
+
+    Gateway --> Airflow
+    Airflow -->|OIDC + Authorization Services| Keycloak
+
+    Gateway --> Kafbat
+    Kafbat -->|OIDC| Keycloak
+
+    Keycloak <--> PostgreSQL
 ```
 
-Keycloak은 `04-data`의 `mng-pg` PostgreSQL 서비스에 identity 상태를 저장한다. OAuth2 Proxy의
-기본 session 저장소는 공유 `mng-valkey`다. `dedicated-valkey` profile은
-`oauth2-proxy-valkey`와 exporter를 추가로 선택하며, Proxy의 실제 접속 대상은
-`OAUTH2_PROXY_VALKEY_HOST` 설정으로 결정된다. Profile 선택만으로 기본 접속
-대상이 자동 전환된다고 가정하지 않는다. 환경별 연결과 시크릿 주입 경로의
-절차는 [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)가 소유한다.
+### Pattern 1: Gateway ForwardAuth
 
-### AI Agent Architecture
+적용 예:
+- Flower
+- n8n
+- 자체 OIDC가 없는 관리 UI
 
-Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
+흐름:
+
+```text
+Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> OAuth2 Proxy Session -> Service
+```
+
+### Pattern 2: Application-native OIDC
+
+현재 승인:
+- Apache Airflow
+- Kafbat UI
+
+흐름:
+
+```text
+Browser -> Traefik -> Application -> Keycloak
+```
+
+Traefik은 TLS와 routing/gateway middleware만 담당한다. application이 직접 OIDC
+flow와 application authorization을 수행한다.
+
+### State and Persistence
+
+- Keycloak identity metadata: `mng-pg`
+- OAuth2 Proxy session: 기본 `mng-valkey`
+- `dedicated-valkey` profile: `oauth2-proxy-valkey`를 추가
+- Native OIDC application session/RBAC: 각 application이 소유
 
 ## Traceability
 
-- **IAM Engine**: Keycloak (Quarkus distribution) for robust OIDC/SAML support.
-- **SSO Gateway**: OAuth2 Proxy for standardized ForwardAuth implementation.
-- **Session Manager**: Valkey as a high-performance Redis-compatible session store.
-- **Storage**: PostgreSQL for identity persistence (Realms, Users, Clients).
+- **IAM Engine**: Keycloak
+- **Gateway SSO**: OAuth2 Proxy
+- **Native OIDC**: Airflow, Kafbat UI
+- **Session Manager**: Valkey for OAuth2 Proxy
+- **Storage**: PostgreSQL for Keycloak realm/user/client state
 
 ## Data Flow
 
-브라우저 요청은 Traefik의 HTTPS ingress를 거쳐 OAuth2 Proxy의 ForwardAuth
-검사를 받는다. Proxy는 Keycloak의 OIDC issuer/callback과 연동하고,
-`/oauth2/auth` 경량 검증 경로 및 Valkey의 cookie/session 상태를 사용한다.
-Keycloak realm/user/session metadata의 지속성은 PostgreSQL이 담당한다.
+브라우저 요청은 Traefik HTTPS ingress로 진입한 뒤 서비스의 auth pattern에 따라
+분기한다.
 
-Client, cookie 및 DB 시크릿은 `/run/secrets` 파일 주입 경계를 사용한다.
-평문 시크릿을 Compose나 문서에 넣지 않는다. 세부 claims, realm 구성과 세션의
-만료·갱신·도메인 설정은 [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)와
-[Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)를 따른다.
+ForwardAuth 대상 서비스는 OAuth2 Proxy `/oauth2/auth` 검사를 거쳐 Keycloak
+OIDC와 Valkey session을 사용한다.
+
+Native OIDC 대상인 Airflow와 Kafbat UI는 OAuth2 Proxy를 거치지 않고
+애플리케이션이 Keycloak과 직접 OIDC flow를 수행한다. Airflow는 추가로
+Keycloak Authorization Services를 사용해 resource authorization을 평가한다.
+
+Keycloak realm/user/session metadata는 PostgreSQL에 저장한다.
+
+Client/cookie/DB/JWT secret은 `/run/secrets` 경계에서만 읽는다.
 
 ## System Boundaries
 
-- **Owns**: 인증 토큰 발급·검증 경로, ForwardAuth 진입점 및 인증 세션 정책의 구조.
-- **Consumes**: `01-gateway`의 HTTPS ingress·routing과 `04-data`의 PostgreSQL·Valkey.
-- **Does Not Own**: 애플리케이션별 RBAC 세부 구현, 비인증 비즈니스 로직, 시크릿 값,
-  운영 절차 또는 특정 실행의 검증 증거.
-- **Non-goals**: 인증 프로토콜 변경, 신규 인증 스택·시크릿 백엔드 도입 및 fail-open 기본 정책.
+- **Owns**:
+  - Keycloak-based identity boundary
+  - ForwardAuth vs Native OIDC 선택 기준
+  - OAuth2 Proxy session boundary
+  - OIDC issuer/redirect trust relationship
+- **Consumes**:
+  - `01-gateway` HTTPS ingress/routing
+  - `04-data` PostgreSQL/Valkey
+- **Does Not Own**:
+  - 애플리케이션별 세부 RBAC 구현
+  - 비인증 비즈니스 로직
+  - secret 값 자체
+  - 개별 실행의 evidence
+- **Native OIDC Boundary**:
+  - Airflow와 Kafbat UI application-level RBAC는 각 application과 Operations 문서가 소유한다.
+  - OAuth2 Proxy가 해당 RBAC를 대체하지 않는다.
+- **Non-goals**:
+  - 신규 identity provider 도입
+  - fail-open 기본 정책
+  - 모든 서비스의 인증 구현을 하나의 middleware로 강제
 
 ## Quality Attributes
 
-- **Performance**: 기본 `/oauth2/auth` 경량 검증 경로로 인증 오버헤드를 제한한다.
-- **Security**: 파일 시크릿 주입과 Proxy non-root 실행을 유지한다. 인증이 불가능하면
-  보호 서비스 접근을 허용하지 않는 fail-closed가 기본이다.
-- **Reliability**: 상태 저장소, healthcheck와 정적 검증을 연결한다. 제한적 degraded-mode는
-  [Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)의 별도 운영 승인과
-  [runbook](../../05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md)의 종료·원복 조건을 따른다.
-- **Scalability**: 환경별 도메인과 세션 설정을 명시적으로 구성하며 세션의 복원력을 유지한다.
-- **Observability**: 컨테이너 로그, health 상태와 agent audit header를 증거원으로 사용한다.
-  로그 보존과 실제 증거 수집은 운영 문서 및 해당 Task의 책임이다.
-- **Operability**: CI 정적 검사와 운영 문서의 검증 절차를 연결한다. 정적 PASS는
-  실제 로그인, 장애 복구 또는 운영 배포 성공을 증명하지 않는다.
+- **Performance**: ForwardAuth 대상은 `/oauth2/auth` 경량 검증을 사용한다.
+- **Security**: Native OIDC 앱에 불필요한 `Authorization` header injection을 피한다.
+- **Reliability**: Keycloak/Valkey/PostgreSQL health 상태와 application login flow를 분리 검증한다.
+- **Operability**: auth pattern을 service onboarding 문서에 명시한다.
+- **Observability**: Keycloak/OAuth2 Proxy/application 로그에서 실패 지점을 분리할 수 있어야 한다.
 
 ## Deployment View
 
-Docker Compose에서 Keycloak은 상태 저장 특성을 고려한 `template-infra-high`를
-유지하고 DB/Admin 시크릿을 파일로 주입한다. OAuth2 Proxy는 custom Alpine
-image와 non-root 사용자, `template-infra-readonly-med`를 사용한다. 실행 경로와
-계정 차이는 [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)가 설명한다.
-이 선택과 fail-closed 근거는 [ADR-0017](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)에 보존된다.
+Keycloak은 `infra/02-auth/keycloak/docker-compose.yml`, OAuth2 Proxy는
+`infra/02-auth/oauth2-proxy/docker-compose.yml`에서 운영한다.
 
-Profile 정적 검증과 hardening 검사는 적용 가능한 CI 실행 계약 및
-[Keycloak policy](../../05.operations/catalog/02-auth/0014-keycloak/policy.md),
-[Proxy policy](../../05.operations/catalog/02-auth/0015-oauth2-proxy/policy.md)의 검증 경로를 따른다.
-인증 계층의 단계적 반영과 장애 원복은 승인된 운영 절차의 책임이며,
-이 문서의 정비가 운영 실행이나 새로운 배포 계획을 승인하지 않는다.
+Airflow는 `infra/07-workflow/airflow/docker-compose.yml`에서
+`KeycloakAuthManager`를 사용하며 router는 `gateway-standard-chain@file`만 적용한다.
+
+Kafbat UI는 `infra/05-messaging/kafka/docker-compose.yml`과
+`kafbat-ui/dynamic_config.template.yaml`에서 native OAuth2를 구성하며 router는
+`gateway-standard-chain@file`만 적용한다.
 
 ## Related Documents
 
 - **Requirement Package**: [REQ-0002 Auth requirements](../../01.requirements/0002-auth.md)
 - **Decision**: [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
 - **Decision**: [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
-- **Operations**: [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md),
-  [Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md) and
-  [Proxy recovery runbook](../../05.operations/catalog/02-auth/0015-oauth2-proxy/runbook.md)
+- **Decision**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- **Operations**: [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)
+- **Operations**: [OAuth2 Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
+- **Operations**: [Application authentication integration](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)

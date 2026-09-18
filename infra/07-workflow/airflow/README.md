@@ -1,148 +1,167 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-18"
 created: "2025-11-12"
 ---
 
 # Airflow (07-workflow)
 
-> Apache Airflow를 이용한 복잡한 데이터 파이프라인 및 작업의 프로그래밍 방식 워크플로 오케스트레이션.
+> Apache Airflow 3.3.1 + CeleryExecutor + Native Keycloak Auth Manager.
 
 ## Overview
 
-Apache Airflow는 `hy-home.docker` 플랫폼의 핵심 워크플로 엔진입니다. Python 기반의 DAG(Directed Acyclic Graph)를 사용하여 복잡한 작업 간의 의존성을 정의하고 예약 실행합니다. `CeleryExecutor`를 통한 분산 확장이 가능합니다. Compose 파일은 하나이며 브로커는 profile이 가릅니다. Airflow 서비스(`workflow`, `dev`)는 `${AIRFLOW_VALKEY_HOST:-mng-valkey}`를 가리키고, `dedicated-valkey` profile이 `airflow-valkey`와 `airflow-valkey-exporter`를 추가합니다.
+Airflow는 `hy-home.docker`의 code-first workflow orchestration engine이다.
+Compose 파일 하나에서 core services와 optional dedicated Valkey를 구성한다.
+
+UI/API authentication은 OAuth2 Proxy ForwardAuth가 아니라
+`KeycloakAuthManager`를 통해 Keycloak에 직접 연결한다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- **Data Engineers**: 파이프라인(DAG) 개발 및 관리
-- **SREs**: 클러스터 가용성 및 성능 최적화
-- **AI Agents**: 자동화된 작업 스케줄링 및 모니터링
+- Data Engineers
+- SREs
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- Airflow 코어 서비스 (`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`)
-- Celery 분산 실행 환경 및 Valkey 브로커 구성
-- 메타데이터 DB(PostgreSQL) 연결 및 초기화 (`airflow-init`)
-- 모니터링 구성 (`flower`, `statsd-exporter`)
+- apiserver
+- scheduler
+- dag-processor
+- worker
+- triggerer
+- Flower
+- StatsD
+- DB/broker/auth wiring
 
 ### Out of Scope
 
-- 개별 비즈니스 로직 DAG (다른 저장소 또는 `dags/` 하위 폴더에서 관리)
-- 외부 데이터 소스 인프라 (04-data 등 시스템 레이어에서 관리)
+- individual DAG business logic
+- external source infra
 
 ## Structure
 
 ```text
 airflow/
-├── config/             # Airflow 설정 및 StatsD 매핑 파일
-├── docker-compose.yml  # 분산 Airflow 서비스 구성
-└── README.md           # 이 파일
+├── Dockerfile
+├── docker-compose.yml
+├── config/
+└── README.md
 ```
-
-## Service Readiness
 
 ## Current Implementation Notes
 
-- The Airflow image is built locally from `Dockerfile` as
-	`hy-home/airflow:3.3.1-keycloak`. The image installs the Airflow Keycloak
-	provider and compatible dependencies under the Airflow 3.3.1 / Python 3.13
-	constraints.
-- Airflow uses
-	`airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`.
-	The API server receives the Keycloak client ID, realm, server URL, and client
-	secret through environment/Secret references; the client secret value is not
-	stored in Compose.
-- The API server builds a temporary CA bundle from the image CA bundle and the
-	mounted `${DEFAULT_CERT_DIR}/rootCA.pem` before starting with
-	`--proxy-headers`. `FORWARDED_ALLOW_IPS` is restricted to the Traefik address
-	`172.19.0.2`.
-- JWT signing, Fernet encryption, PostgreSQL access, and Valkey access use
-	Docker Secret files. The default broker is `mng-valkey`; selecting
-	`dedicated-valkey` switches the broker to `airflow-valkey`.
-- The Airflow UI route uses the standard gateway middleware chain. Authentication
-	is delegated to the Keycloak auth manager rather than the legacy FAB manager.
+- base: `apache/airflow:3.3.1`
+- image: `hy-home/airflow:3.3.1-keycloak`
+- Python: 3.13
+- provider: `apache-airflow-providers-keycloak==0.9.0`
+- auth manager:
+  `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`
+- client: `home-airflow`
+- realm: `hy-home.realm`
+- client secret: Docker Secret
+- Airflow internal JWT secret: Docker Secret
+- API base URL: `https://airflow.${DEFAULT_URL}`
+- local CA: certifi + mounted mkcert root
+- API server: `--proxy-headers`
+- trusted proxy: `172.19.0.2`
+- Airflow route:
+  `traefik.http.routers.airflow.middlewares: gateway-standard-chain@file`
+- OAuth2 Proxy ForwardAuth: **not applied to Airflow**
+
+### Token Boundary
+
+Keycloak token:
+- OIDC login
+- Authorization Services
+
+Airflow internal JWT:
+- application session/API
+- `airflow_api_jwt_secret`
+
+두 token은 별개다.
+
+## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; that single file is the only Compose file in this directory |
-| Config files | `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
-| Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__API_AUTH__JWT_SECRET_CMD`, plus 20 more; profiles: `workflow`, `dev` |
-| Compose linkage | unconditional root include, profile-selected (`workflow`, `dev`), via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml` |
-| Networks | `infra_net` |
-| Volumes | `airflow-dags:/opt/airflow/dags`, `airflow-plugins:/opt/airflow/plugins`, `airflow-logs:/opt/airflow/logs`, `airflow-config:/opt/airflow/config`, `./config/statsd_mapping.yml:/tmp/mappings.yml:ro`, `airflow-dags`, `airflow-logs`, `airflow-config`, plus 3 more |
-| Ports | `${STATSD_PROMETHEUS_PORT:-9102}`, `${STATSD_AIRFLOW_PORT:-9125}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.airflow.rule`, `traefik.http.routers.airflow.entrypoints`, `traefik.http.routers.airflow.tls`, `traefik.http.routers.airflow.middlewares`, `traefik.http.services.airflow.loadbalancer.server.port`, `traefik.http.routers.flower.rule`, plus 4 more |
-| Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `mng_valkey_password`, `airflow_valkey_password`, `airflow_api_jwt_secret`, `airflow_keycloak_client_secret`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password`, `/run/secrets/airflow_api_jwt_secret`, `/run/secrets/airflow_keycloak_client_secret` |
-| Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, and `flower`; init/exporter services are validated through compose and hardening checks |
-| Operations | Guide (`docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`), Policy (`docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`), Runbook (`docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, then inspect service logs and linked runbook evidence. |
+| API | `airflow-apiserver` |
+| Auth | Keycloak Auth Manager |
+| DB | `mng-pg` |
+| Broker | `mng-valkey` or `airflow-valkey` |
+| Secret | DB/Fernet/JWT/Keycloak client |
+| Health | `/api/v2/monitor/health` |
+
+## Keycloak Bootstrap
+
+Required realm roles:
+
+```text
+Viewer
+User
+Op
+Admin
+SuperAdmin
+```
+
+```bash
+docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
+```
+
+After provider 0.9.0 upgrade on an existing non-team setup:
+
+```bash
+docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
+```
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
-
-1. 진입 가이드 (`docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`)를 읽고 시스템 전반을 이해합니다.
-2. DAG 개발 가이드 (`docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/guide.md`)를 참조하여 파이프라인을 작성합니다.
-3. 운영 정책 (`docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`)에 따라 리소스 할당 및 보안 설정을 확인합니다.
-4. 장애 발생 시 장애 조치 런북 (`docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`)을 따릅니다.
-
-5. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
-6. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
-7. **Traceability**: 모든 변경 사항은 관련 Architecture Description (`docs/02.architecture/descriptions/0007-workflow-architecture.md`)과 연결되어야 합니다.
+1. Airflow guide/policy/runbook 확인.
+2. DAG lifecycle guide 확인.
+3. auth route는 gateway-only 유지.
+4. secret 원문을 로그/문서에 기록하지 않는다.
+5. provider upgrade 시 Keycloak permission migration 검토.
+6. failure는 endpoint matrix로 authentication vs authorization을 구분.
 
 ## Tech Stack
 
-| Category | Technology | Version | Notes |
-| :--- | :--- | :--- | :--- |
-| Engine | Apache Airflow | v3.3.1 | Python 기반 |
-| Executor | CeleryExecutor | Distributed | 분산 워커 노드 확장 |
-| Broker | Valkey (Redis-compatible) | 9.1.2; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` by default, `airflow-valkey` under the `dedicated-valkey` profile | 태스크 큐 및 메시지 브로커 |
-| DB | PostgreSQL | Management PostgreSQL | 메타데이터 및 상태 저장 |
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Required | Description |
-| :--- | :--- | :--- |
-| `AIRFLOW_UID` | Yes | Airflow 컨테이너 실행 사용자 ID (기본: 50000) |
-| `AIRFLOW_IMAGE_NAME` | No | 사용할 Airflow 베이스 이미지 |
-| `AIRFLOW_DB_USER` | Yes | 메타데이터 DB 접속 사용자 |
+| Category | Technology | Version |
+| --- | --- | --- |
+| Airflow | Apache Airflow | 3.3.1 |
+| Keycloak Provider | apache-airflow-providers-keycloak | 0.9.0 |
+| Executor | CeleryExecutor | distributed |
+| Broker | Valkey | shared/dedicated |
+| DB | PostgreSQL | management DB |
 
 ## Available Scripts
 
-| Command | Description |
-| :--- | :--- |
-| `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` | root workflow compose 정적 검증 |
-| `docker compose exec airflow-apiserver airflow dags list` | 실행 중인 Airflow DAG 목록 확인 |
-| `docker compose exec airflow-apiserver airflow db check` | 실행 중인 Airflow DB 연결 확인 |
-
-## Validation
-
-- Run `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking Airflow documentation ready.
+```bash
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 07-workflow
+docker compose exec airflow-apiserver airflow db check
+docker compose exec airflow-apiserver airflow dags list
+```
 
 ## Troubleshooting
 
-- Start with the root workflow validation command because this leaf depends on root `infra_net`, Docker Secrets, and root include context.
-- Check container logs and the linked runbook before changing configuration or secret references.
-- For DAG errors: check the Airflow UI task logs and verify DAG file syntax with `airflow dags list`.
-- For scheduler errors: confirm the scheduler container is running and check `docker logs --tail=200 airflow-scheduler`.
-- For worker errors: verify the executor configuration and confirm the message broker is reachable.
+- config PermissionError -> shared volume owner/runtime UID
+- DB migration -> same image `airflow db migrate`
+- JWT alg/format -> ForwardAuth token collision 확인
+- `invalid_scope` -> Keycloak Authorization bootstrap
+- role 404 -> required realm roles
+- callback 403 -> `_oauth_state`
+- Pool/DAG/Asset only 403 -> resource authorization
 
 ## Related Documents
 
-- **ARD**: 07-workflow Architecture (`docs/02.architecture/descriptions/0007-workflow-architecture.md`)
-- **Guide**: Airflow usage guide (`docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`)
-- **Policy**: Airflow operations policy (`docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`)
-- **Runbook**: Airflow recovery runbook (`docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`)
-- [Documentation index](../../../docs/README.md)
+- **Architecture**: `docs/02.architecture/descriptions/0007-workflow-architecture.md`
+- **Guide**: `docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`
+- **Policy**: `docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`
+- **Runbook**: `docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`
+- **Auth Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`
+- **Incident**: `docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md`

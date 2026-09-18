@@ -1,118 +1,106 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-18"
 created: "2025-11-12"
 ---
 
 # Workflow Tier (07-workflow)
 
-> Automation workflows, ETL pipelines, and task orchestration.
+> Airflow code-first orchestration and n8n low-code automation.
 
 ## Overview
 
-The `07-workflow` tier provides the infrastructure for automating repetitive tasks and orchestrating complex data pipelines. It balances power and ease-of-use by offering Apache Airflow for code-first DAG orchestration and n8n for rapid, low-code automation and third-party integrations.
+`07-workflow`는 Airflow와 n8n을 운영한다. broker는 shared `mng-valkey` 또는
+`dedicated-valkey` profile의 dedicated instance를 사용한다.
+
+Authentication은 서비스별로 다르다.
+
+- Airflow: Native Keycloak Auth Manager
+- Flower: OAuth2 Proxy ForwardAuth
+- n8n: OAuth2 Proxy ForwardAuth
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Data Engineers (ETL & Pipelines)
-- Backend Developers (Task automation)
-- AI Agents (Process orchestration)
+- Data Engineers
+- Backend Developers
+- Operators
+- AI Agents
 
 ## Scope
 
-### In Scope
-
-- Apache Airflow (CeleryExecutor)
-- n8n Automation platform
-- Valkey broker wiring for Airflow/n8n queue mode
-- Workflow Database (Shared Management Postgres)
-
-### Out of Scope
-
-- Business logic within individual DAGs
-- External CI/CD workflows (handled via GitHub Actions)
-- Real-time stream processing (handled by `05-messaging`)
+- Airflow
+- n8n
+- workflow broker
+- workflow DB
+- public UI auth boundary
 
 ## Structure
 
 ```text
 07-workflow/
-├── airflow/            # Programmatic workflow orchestration
-├── n8n/                # Low-code automation and integrations
-└── README.md           # This file
+├── airflow/
+├── n8n/
+└── README.md
 ```
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
-
-1. Read the Airflow DAG basics guide (`docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/guide.md`).
-2. Follow the n8n usage guide (`docs/05.operations/catalog/07-workflow/0053-n8n/guide.md`).
-3. Check the Operations Policy (`docs/05.operations/catalog/07-workflow/README.md`) for scaling.
-4. Consult the Workflow Runbook (`docs/05.operations/catalog/07-workflow/README.md`) for failure recovery.
-
-5. Always use `CeleryExecutor` for production-grade Airflow deployments.
-6. New n8n nodes should be vetted for security before enabling in the primary instance.
-7. Monitor `worker lag` in Flower to identify bottlenecks in the task queue.
+1. Airflow/N8n operations docs 확인.
+2. Airflow auth 변경은 Native OIDC contract 확인.
+3. Flower/n8n auth 변경은 ForwardAuth contract 확인.
+4. broker profile과 host/secret pair를 함께 검토.
+5. hardening/compose validation 실행.
 
 ## Tech Stack
 
-| Category   | Technology                     | Notes                     |
-| ---------- | ------------------------------ | ------------------------- |
-| Orchestration | Apache Airflow              | v3.3.1 (CeleryExecutor)   |
-| Automation  | n8n                          | v2.29.5-local             |
-| Broker      | Valkey                       | the `dedicated-valkey` profile starts `airflow-valkey` and `n8n-valkey`; without it the host defaults resolve to the shared `mng-valkey` |
-| Database    | PostgreSQL                   | Management PostgreSQL (`mng-pg`) |
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Orchestration | Airflow 3.3.1 | CeleryExecutor |
+| Automation | n8n | queue mode |
+| Broker | Valkey | shared/dedicated |
+| Database | PostgreSQL | `mng-pg` |
 
 ## Service Matrix
 
-| Service | Protocol | Profile | Port |
-| :--- | :--- | :--- | :--- |
-| `airflow-apiserver` | HTTP | `workflow` | 8080 |
-| `airflow-scheduler` | internal | `workflow` | 8974 health endpoint |
-| `airflow-worker` | internal | `workflow` | Celery worker |
-| `n8n` | HTTP | `workflow` | 5678 |
-| `n8n-worker` | internal | `workflow` | 5679 broker health |
-| `n8n-task-runner` | internal | `workflow` | 5680 |
-| `flower` | HTTP | `workflow` | 5555 (Celery monitoring) |
+| Service | Protocol | Profile | Authentication |
+| --- | --- | --- | --- |
+| `airflow-apiserver` | HTTP | `workflow` | Native Keycloak Auth Manager |
+| `airflow-scheduler` | internal | `workflow` | internal |
+| `airflow-worker` | internal | `workflow` | internal |
+| `flower` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
+| `n8n` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
+| `n8n-worker` | internal | `workflow` | internal |
+| `n8n-task-runner` | internal | `workflow` | internal |
 
 ## Configuration
 
-- **Database**: Airflow and n8n use the `mng-db` instance in `04-data`.
-- **Broker**: each service directory holds one compose file that the root includes unconditionally. The `dedicated-valkey` profile starts dedicated `airflow-valkey` and `n8n-valkey`; without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` resolve to the shared `mng-valkey`.
-- **Persistence**: DAGs and workflows are stored in persistent volumes linked to `${DEFAULT_WORKFLOW_DIR}`.
-
-| Service | Authentication |
-| --- | --- |
-| `airflow-apiserver` | Native Keycloak Auth Manager |
-| `flower` | OAuth2 Proxy ForwardAuth |
-| `n8n` | OAuth2 Proxy ForwardAuth |
+- Airflow/n8n DB: `mng-pg`
+- default broker: `mng-valkey`
+- `dedicated-valkey`: dedicated Airflow/n8n Valkey
+- Airflow UI auth: Keycloak direct
+- Flower/n8n UI auth: ForwardAuth
 
 ## Testing
 
 ```bash
-# Verify workflow root compose
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
-
-# Verify workflow hardening baseline
 bash scripts/hardening/check-all-hardening.sh 07-workflow
 ```
 
 ## Change Impact
 
-- Updating Airflow versions may require database migrations.
-- Changing the Valkey broker configuration affects Airflow Celery workers and n8n queue workers.
-- Deleting an n8n workflow is irreversible if not version-controlled externally.
+- Airflow version/provider -> DB/Auth migration 가능
+- broker -> workers 영향
+- auth middleware -> login/access 영향
 
 ## Related Documents
 
-- [04-data](../04-data/README.md) - Metadata storage.
-- [06-observability](../06-observability/README.md) - Monitoring task performance.
-- [01-gateway](../01-gateway/README.md) - Routing to Web UIs.
+- [Data](../04-data/README.md)
+- [Observability](../06-observability/README.md)
+- [Gateway](../01-gateway/README.md)
+- [Auth Integration](../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
 - [Documentation index](../../docs/README.md)
