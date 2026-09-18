@@ -49,17 +49,38 @@ airflow/
 
 ## Service Readiness
 
+## Current Implementation Notes
+
+- The Airflow image is built locally from `Dockerfile` as
+	`hy-home/airflow:3.3.1-keycloak`. The image installs the Airflow Keycloak
+	provider and compatible dependencies under the Airflow 3.3.1 / Python 3.13
+	constraints.
+- Airflow uses
+	`airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`.
+	The API server receives the Keycloak client ID, realm, server URL, and client
+	secret through environment/Secret references; the client secret value is not
+	stored in Compose.
+- The API server builds a temporary CA bundle from the image CA bundle and the
+	mounted `${DEFAULT_CERT_DIR}/rootCA.pem` before starting with
+	`--proxy-headers`. `FORWARDED_ALLOW_IPS` is restricted to the Traefik address
+	`172.19.0.2`.
+- JWT signing, Fernet encryption, PostgreSQL access, and Valkey access use
+	Docker Secret files. The default broker is `mng-valkey`; selecting
+	`dedicated-valkey` switches the broker to `airflow-valkey`.
+- The Airflow UI route uses the standard gateway middleware chain. Authentication
+	is delegated to the Keycloak auth manager rather than the legacy FAB manager.
+
 | Field | Evidence |
 | --- | --- |
 | Purpose | Airflow (07-workflow) service leaf; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml`; that single file is the only Compose file in this directory |
 | Config files | `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
-| Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__CORE__FERNET_KEY_CMD`, `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`, `AIRFLOW__CORE__LOAD_EXAMPLES`, plus 15 more; profiles: `workflow`, `dev` |
+| Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM`, `AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__API_AUTH__JWT_SECRET_CMD`, plus 20 more; profiles: `workflow`, `dev` |
 | Compose linkage | unconditional root include, profile-selected (`workflow`, `dev`), via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `airflow-dags:/opt/airflow/dags`, `airflow-plugins:/opt/airflow/plugins`, `airflow-logs:/opt/airflow/logs`, `airflow-config:/opt/airflow/config`, `./config/statsd_mapping.yml:/tmp/mappings.yml:ro`, `airflow-dags`, `airflow-logs`, `airflow-config`, plus 3 more |
 | Ports | `${STATSD_PROMETHEUS_PORT:-9102}`, `${STATSD_AIRFLOW_PORT:-9125}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.airflow.rule`, `traefik.http.routers.airflow.entrypoints`, `traefik.http.routers.airflow.tls`, `traefik.http.routers.airflow.middlewares`, `traefik.http.services.airflow.loadbalancer.server.port`, `traefik.http.routers.flower.rule`, plus 4 more |
-| Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `airflow_www_password`, `mng_valkey_password`, `airflow_valkey_password`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/airflow_www_password`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password` |
+| Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `mng_valkey_password`, `airflow_valkey_password`, `airflow_api_jwt_secret`, `airflow_keycloak_client_secret`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password`, `/run/secrets/airflow_api_jwt_secret`, `/run/secrets/airflow_keycloak_client_secret` |
 | Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, and `flower`; init/exporter services are validated through compose and hardening checks |
 | Operations | Guide (`docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`), Policy (`docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`), Runbook (`docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -84,7 +105,7 @@ airflow/
 | :--- | :--- | :--- | :--- |
 | Engine | Apache Airflow | v3.3.1 | Python 기반 |
 | Executor | CeleryExecutor | Distributed | 분산 워커 노드 확장 |
-| Broker | Valkey (Redis-compatible) | 9.1.0; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` by default, `airflow-valkey` under the `dedicated-valkey` profile | 태스크 큐 및 메시지 브로커 |
+| Broker | Valkey (Redis-compatible) | 9.1.2; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` by default, `airflow-valkey` under the `dedicated-valkey` profile | 태스크 큐 및 메시지 브로커 |
 | DB | PostgreSQL | Management PostgreSQL | 메타데이터 및 상태 저장 |
 
 ## Configuration

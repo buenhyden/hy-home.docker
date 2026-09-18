@@ -1,6 +1,6 @@
-FROM grafana/loki:3.7.7 AS upstream
+FROM grafana/loki:3.7.8 AS upstream
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 RUN apk add --no-cache busybox wget ca-certificates \
     && addgroup -S -g 10001 observability \

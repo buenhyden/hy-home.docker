@@ -1,6 +1,6 @@
 FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src
 
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 
 COPY --from=src /bin/oauth2-proxy /bin/oauth2-proxy
 COPY --chmod=0555 docker-entrypoint.dev.sh /docker-entrypoint.sh

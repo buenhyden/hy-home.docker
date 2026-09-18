@@ -33,6 +33,7 @@ created: "2026-05-17"
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
 - 워커(Worker) 프로세스가 비정상 종료되거나 리소스 부족으로 경고가 발생할 때.
+- Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
 
 ## Procedure
 
@@ -43,6 +44,20 @@ created: "2026-05-17"
 - [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
 
 ### Steps
+
+#### 시나리오 0: Keycloak 인증 또는 TLS 실패
+
+1. `airflow-apiserver` 로그에서 auth manager, `401`, `403`, certificate 오류를
+   확인한다. Secret 값 자체는 출력하지 않는다.
+2. `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `AIRFLOW_KEYCLOAK_CLIENT_ID`가 현재
+   환경의 Keycloak client 설정과 일치하는지 값 노출 없이 확인한다.
+3. `/run/secrets/airflow_keycloak_client_secret`와
+   `/run/secrets/airflow_api_jwt_secret`가 컨테이너에 연결되어 있는지 경로만
+   확인한다.
+4. `${DEFAULT_CERT_DIR}/rootCA.pem` bind mount가 존재하고 API server가 임시
+   CA bundle을 생성했는지 로그와 파일 존재 여부로 확인한다.
+5. 이미지가 최신 Dockerfile 변경을 포함해야 하면 승인된 Compose build를
+   수행하고, 이후 `airflow db check`와 UI 로그인 검증을 다시 실행한다.
 
 #### 시나리오 1: 태스크 지연 (Task stuck in Queued)
 
