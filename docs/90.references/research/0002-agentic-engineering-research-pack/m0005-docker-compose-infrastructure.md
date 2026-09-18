@@ -58,6 +58,14 @@ Runtime truth remains in approved observations of the tracked Compose owners;
 policy and procedures remain in canonical agent governance and Stage 05, and implementation gaps
 require a separate Stage 03/04 chain.
 
+## Research Ownership
+
+This member is the canonical owner for Compose topology, include/profile
+semantics, static infrastructure inventory, hardening, image provenance, and
+validation evidence. It does not own the decision that a local service is
+functionally redundant or should be removed. That service-role and license
+question is consolidated in [RES-0002-m0021](m0021-local-docker-service-consolidation.md).
+
 ## Scope
 
 ### In scope

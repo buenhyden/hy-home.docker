@@ -1,6 +1,6 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.0.2"
+version: "2.1.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -30,6 +30,12 @@ of them are actually configured, executed, or remotely verified?
 Detailed platform analysis belongs to
 [RES-0084-m0001](m0001-platform-mechanics.md). This README owns the package
 question, evidence boundary, result summary, and navigation only.
+
+This package is the specialized GitHub Actions evidence owner under the
+cross-package routing of [RES-0002](../0002-agentic-engineering-research-pack/README.md).
+It is not a competing workspace baseline or generic automation inventory:
+current cross-category conclusions route through RES-0002, while detailed
+workflow, Hosted, and remote-control-plane evidence remains here.
 
 ## Scope
 

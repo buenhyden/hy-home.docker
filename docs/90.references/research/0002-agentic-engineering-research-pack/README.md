@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.2.2"
+version: "2.3.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -45,6 +45,23 @@ The detailed questions are:
 This package can identify gaps and route recommendations. It cannot approve
 policy, implementation, provider entitlement, deployment, release, or residual
 risk on behalf of their current owners.
+
+This package is the canonical hub for current topical research and cross-package
+routing. The related Stage 90 packages are intentionally retained as separate
+evidence owners:
+
+- [RES-0084](../0084-github-actions-platform/README.md) owns detailed GitHub
+   Actions platform mechanics and dated Hosted/remote evidence.
+- [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
+   preserves the dated baseline scope and identity-recovery carrier; current
+   baseline interpretation belongs to [m0020](m0020-workspace-baseline.md).
+- [RES-0096](../0096-archive-disposition-consistency/README.md) owns the
+   archive-domain consistency assessment and its SPEC-0177/SPEC-0178 evidence.
+
+The integration is by ownership and routing, not by copying, flattening, or
+deleting dated evidence. New current findings should update the owning member
+under this package; specialized, historical, and archive-domain findings stay
+with their existing packages.
 
 ## Scope
 
@@ -168,6 +185,7 @@ Requirement-to-Task chain rather than through this package.
 | Spec-driven SDLC | [m0018](m0018-spec-driven-sdlc.md) | How does intent flow into verified work? | Current package form is enforced; intended-use acceptance remains owner-bound | Repository-enforced | High |
 | Verification and validation | [m0019](m0019-verification-validation.md) | Does evidence prove conformance and intended use? | Conformance gates exist; deployment acceptance is absent | Local-executed, Repository-enforced | High |
 | Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
+| Local Docker service consolidation | [m0021](m0021-local-docker-service-consolidation.md) | Which local services are open source, overlapping, or safe removal candidates? | Current Compose/runtime inventory and official project sources compared; removal decisions remain user- and data-dependent | Local-executed, External-source-reviewed | High |
 
 ### Complete Requested Category Routing
 
@@ -416,6 +434,7 @@ this declaration atomically.
 - `m0018-spec-driven-sdlc.md`
 - `m0019-verification-validation.md`
 - `m0020-workspace-baseline.md`
+- `m0021-local-docker-service-consolidation.md`
 
 Historical continuity is retained: the canonical pack was rebuilt under
 SPEC-0158 in August 2026, all members received source refresh and deepening,

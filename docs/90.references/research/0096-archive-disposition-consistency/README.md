@@ -1,6 +1,6 @@
 ---
 title: "Archive Disposition Consistency Assessment"
-version: "0.1.3"
+version: "0.1.4"
 type: "reference/research-pack"
 status: "draft"
 owner: "@buenhyden"
@@ -21,6 +21,11 @@ the active documents that describe them agree, and where do they diverge, at
 `main@e233d2a19a3a266e3535184a95c55222f9793c8e`? For each divergence, which
 current owner resolves it, and does the resolution change meaning or only
 describe the current state more accurately?
+
+This package is linked from [RES-0002](../0002-agentic-engineering-research-pack/README.md)
+as a separate archive-domain evidence owner. Its question, dated findings, and
+SPEC-0177/SPEC-0178 route are not merged into topical or infrastructure
+research. Only current cross-package routing is consolidated.
 
 ## Scope
 

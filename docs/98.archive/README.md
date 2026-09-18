@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.3.0"
+version: "2.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-18"
 layer: "archive"
 ---
 
@@ -106,6 +106,7 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 | `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
 | `superseded/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` | superseded | ADR-0036 | `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0:docs/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` |
 | `completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/` | completed | ADR-0036 | `3c5db48cbae8edfccfa1b0a56ad9421e6b1ccafd:docs/03.specs/0178-archive-occupancy-citation-and-frozen-identity` |
+| `superseded/90.references/research/0081-roadmap/README.md` | superseded | RES-0002 | `bb43abb5e0894f45d1179a60770d489a0da41e7c:docs/90.references/research/0081-roadmap/README.md` |
 
 이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
 유지합니다. 소급 적재는 하지 않습니다.

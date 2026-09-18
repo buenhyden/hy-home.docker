@@ -42,6 +42,14 @@ repository-local baseline owner for RES-0002; RES-0085 preserves the binding
 become policy, runtime truth, remote-enforcement proof, or execution evidence
 merely because another document cites it.
 
+## Research Ownership
+
+This member owns reproducible repository counts, evidence classes, and current
+baseline routing. It does not repeat the service-by-service functional overlap
+or open-source/license disposition. Those findings belong to
+[RES-0002-m0021](m0021-local-docker-service-consolidation.md), while Compose
+topology and validation remain in [RES-0002-m0005](m0005-docker-compose-infrastructure.md).
+
 ## Purpose
 
 Provide REQ-31 with one reproducible, current baseline for every research-pack

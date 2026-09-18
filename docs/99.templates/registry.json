@@ -3988,8 +3988,8 @@
     "migration": {
       "prefix": "MIG-",
       "width": 4,
-      "high_water": 3,
-      "next_number": 4,
+      "high_water": 4,
+      "next_number": 5,
       "child_spaces": {}
     },
     "tombstone": {

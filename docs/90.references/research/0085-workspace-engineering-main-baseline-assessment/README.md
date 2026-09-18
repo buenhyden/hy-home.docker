@@ -1,6 +1,6 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.3.2"
+version: "0.3.3"
 type: "reference/research-pack"
 status: "review"
 owner: "@buenhyden"
@@ -31,6 +31,13 @@ ownership is consolidated into RES-0002-m0020?
 This package no longer owns mutable current-state conclusions. It preserves the
 dated assessment envelope and the recovered request identity while the
 publication lifecycle proceeds through review.
+
+This package is a preserved dated evidence carrier under
+[RES-0002](../0002-agentic-engineering-research-pack/README.md). It does not
+compete with the current baseline owner [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
+or with the specialized GitHub Actions evidence in
+[RES-0084](../0084-github-actions-platform/README.md). Its identity-recovery
+tuple and observation boundary remain intact.
 
 ## Scope
 

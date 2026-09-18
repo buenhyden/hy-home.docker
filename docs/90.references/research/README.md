@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
-version: "1.3.3"
+version: "1.4.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-18"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -24,12 +24,28 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 | Stable ID | Package | Status |
 | :--- | :--- | :--- |
 | RES-0001 | Agentic Engineering Research Pack | retired; its body is preserved under `docs/98.archive/retired/` and recorded by a tombstone |
-| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack | active |
-| RES-0080 | Reference: CS, CE & SE Self-Learning Roadmap (v1) | superseded |
-| [RES-0081](./0081-roadmap/README.md) | Reference: CS, CE & SE Self-Learning Roadmap (v2) | active |
-| [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics | active |
-| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment | review — dated evidence; any later transition requires separate approval |
-| [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment | draft — dated evidence for SPEC-0177 and SPEC-0178 |
+| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical topical/current research hub | active |
+| [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics; specialized evidence under RES-0002 routing | active |
+| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment; preserved dated evidence for RES-0002 | review — dated evidence; any later transition requires separate approval |
+| [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment; separate archive-domain evidence linked from RES-0002 | draft — dated evidence for SPEC-0177 and SPEC-0178 |
+
+### Consolidated Package Routing
+
+`RES-0002` is the canonical hub for current topical research and cross-category
+routing. The three related packages remain separate because their evidence
+models are materially different:
+
+| Package | Canonical role | Integration rule |
+| --- | --- | --- |
+| RES-0084 | GitHub Actions platform mechanics and dated Hosted/remote evidence | Link from RES-0002; do not copy its claim-by-claim workflow evidence. |
+| RES-0085 | Dated baseline scope and identity-recovery carrier | Preserve as historical evidence; current baseline conclusions route to RES-0002-m0020. |
+| RES-0096 | Archive disposition consistency assessment | Keep separate from infrastructure and provider research; link only where lifecycle evidence is relevant. |
+
+This is logical integration, not deletion or content flattening. Package
+identity, observation date, lifecycle, and recovery provenance remain intact.
+The former RES-0080/RES-0081 learning-roadmap line is no longer an active
+research package; RES-0081 is preserved as superseded history with RES-0002 as
+the current routing successor.
 
 ### Workspace Engineering Request Route
 

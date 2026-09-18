@@ -2,7 +2,7 @@
 title: "Reference: CS, CE & SE Self-Learning Roadmap (v2)"
 version: "1.0.0"
 type: "reference/research-pack"
-status: "published"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-04"
 layer: "references"
@@ -10,6 +10,7 @@ artifact_id: "RES-0081"
 parent_ids: []
 supersedes:
 - "RES-0080"
+superseded_by: "RES-0002"
 created: "2026-08-23"
 observed_at: "2026-08-23"
 ---
