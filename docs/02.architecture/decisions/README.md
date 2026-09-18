@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.7"
+version: "1.3.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-17"
+updated: "2026-09-18"
 layer: "architecture"
 ---
 
@@ -42,6 +42,7 @@ docs/02.architecture/decisions/
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
 ├── 0036-archive-occupancy-citation-and-frozen-identity.md
 ├── 0037-package-disposition-wait-and-task-cancellation.md
+├── 0038-selective-native-oidc-for-native-auth-apps.md
 └── README.md
 ```
 
@@ -79,6 +80,10 @@ docs/02.architecture/decisions/
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
   cancelled Task 허용을 제안하는 proposed decision. 수락 시 ADR-0036을
   supersede하며, SPEC-0179가 수락을 소유한다.
+- [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
+  Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
+  OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
+  proposed decision.
 
 ## How to Work in This Area
 
