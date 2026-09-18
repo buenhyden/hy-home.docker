@@ -10,7 +10,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
-    image: hashicorp/terraform:1.16.2
+    image: hashicorp/terraform:1.16.3
     container_name: terraform
     restart: 'no'
     read_only: false

@@ -160,7 +160,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.135.2
+    image: supabase/realtime:v2.137.2
     restart: unless-stopped
     depends_on:
       db:
@@ -195,7 +195,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.77.0
+    image: supabase/storage-api:v1.79.2
     restart: unless-stopped
     read_only: false
     volumes:
@@ -361,7 +361,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:17.6.1.171
+    image: supabase/postgres:17.6.1.173
     restart: unless-stopped
     read_only: false
     volumes:

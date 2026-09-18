@@ -235,7 +235,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.2.1
+    image: grafana/grafana:13.2.2
     container_name: infra-grafana
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
@@ -414,7 +414,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-    image: prom/alertmanager:v0.34.0
+    image: prom/alertmanager:v0.34.1
     container_name: infra-alertmanager
     tmpfs:
       - /tmp
