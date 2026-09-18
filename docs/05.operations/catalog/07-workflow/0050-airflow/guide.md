@@ -47,10 +47,25 @@ created: "2026-05-10"
 ### Prerequisites
 
 - **Docker/Compose**: 로컬 실행 환경
-- **Secrets**: `airflow_www_password` 등 서비스 접근 권한
+- **Secrets**: `airflow_keycloak_client_secret`, `airflow_api_jwt_secret` 등 서비스 접근 권한
 - **Network**: `infra_net` 외부 통신 가능 상태
 
 ### Step-by-step Instructions
+
+#### 0. 현재 구현 변경사항
+
+- Airflow는 `apache-airflow:3.3.1` 기반의 로컬 이미지
+	`hy-home/airflow:3.3.1-keycloak`로 빌드된다. Dockerfile은 Airflow 3.3.1과
+	Python 3.13 constraints를 사용해 Keycloak provider를 추가한다.
+- 인증 manager는
+	`airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`다.
+	`AIRFLOW_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_URL`은 환경 설정으로,
+	client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
+- API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
+	임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
+	Forwarded header 신뢰 범위는 Traefik 주소 `172.19.0.2`로 제한한다.
+- 기본 Celery broker는 `mng-valkey`이며 `dedicated-valkey` profile을 선택하면
+	`airflow-valkey`와 exporter가 별도로 실행된다.
 
 #### 1. 시스템 아키텍처 이해
 
@@ -60,6 +75,10 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
 - **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. compose 파일은 `infra/07-workflow/airflow/docker-compose.yml` 하나이며, `dedicated-valkey` profile을 선택하면 `airflow-valkey`가 기동하고 선택하지 않으면 `${AIRFLOW_VALKEY_HOST:-mng-valkey}` 기본값이 공유 `mng-valkey`로 해석된다.
 - **API Server**: UI 및 외부 통합을 위한 `airflow-apiserver` 엔드포인트
+
+로그인 흐름은 `airflow.${DEFAULT_URL}`에서 Traefik HTTPS route를 거쳐
+Keycloak auth manager가 처리한다. Keycloak client secret이나 JWT secret을
+로그, Compose 출력, DAG 코드에 기록하지 않는다.
 
 #### 2. UI 접근 및 모니터링
 
