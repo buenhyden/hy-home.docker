@@ -29,7 +29,7 @@ volumes:
 
 services:
   kafka-1:
-    image: confluentinc/cp-kafka:8.3.1
+    image: confluentinc/cp-kafka:8.3.2
     profiles:
       - messaging
       - dev
@@ -91,7 +91,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: confluentinc/cp-schema-registry:8.3.1
+    image: confluentinc/cp-schema-registry:8.3.2
     container_name: schema-registry
     read_only: true
     tmpfs:
@@ -148,7 +148,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
-    image: confluentinc/cp-kafka-connect:8.3.1
+    image: confluentinc/cp-kafka-connect:8.3.2
     container_name: kafka-connect
     read_only: true
     tmpfs:
@@ -244,7 +244,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: confluentinc/cp-kafka-rest:8.3.1
+    image: confluentinc/cp-kafka-rest:8.3.2
     container_name: kafka-rest-proxy
     read_only: true
     tmpfs:
@@ -439,7 +439,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: confluentinc/cp-kafka:8.3.1
+    image: confluentinc/cp-kafka:8.3.2
     container_name: kafka-init
     read_only: true
     tmpfs:
@@ -469,7 +469,7 @@ services:
   kafka-2:
     profiles:
       - messaging-cluster
-    image: confluentinc/cp-kafka:8.3.1
+    image: confluentinc/cp-kafka:8.3.2
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -517,7 +517,7 @@ services:
   kafka-3:
     profiles:
       - messaging-cluster
-    image: confluentinc/cp-kafka:8.3.1
+    image: confluentinc/cp-kafka:8.3.2
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
