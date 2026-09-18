@@ -76,7 +76,7 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
    set -a
    . ./.env
    set +a
-   domain="${DEFAULT_URL:-127.0.0.1.nip.io}"
+   domain="${DEFAULT_URL:-hy.home.arpa}"
    cert_dir="secrets/certs"
    mkdir -p "$cert_dir"
    mkcert -install

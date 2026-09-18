@@ -98,7 +98,7 @@ ollama/
 | :--- | :---: | :--- | :--- |
 | `DEFAULT_AI_MODEL_DIR` | Yes | - | 모델 영구 저장 경로 |
 | `OLLAMA_PORT` | No | 11434 | API 포트 |
-| `OLLAMA_EXPORTER_PORT` | No | 11435 in `.env.example` | exporter 지표 수집 포트; compose fallback is `8000` when unset |
+| `OLLAMA_EXPORTER_PORT` | No | 8000 in `.env.example` | exporter 지표 수집 포트; compose fallback is `8000` when unset |
 
 ## Testing
 

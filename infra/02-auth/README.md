@@ -78,7 +78,7 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 
 | Variable | Required | Description |
 | --------- | -------: | ----------- |
-| `DEFAULT_URL` | Yes | Root domain for services (e.g., `127.0.0.1.nip.io`) |
+| `DEFAULT_URL` | Yes | Root domain for services (e.g., `hy.home.arpa`) |
 | `KEYCLOAK_ADMIN_USER` | Yes | Initial admin username for Keycloak |
 | `OAUTH2_PROXY_CLIENT_ID` | Yes | Client ID registered in Keycloak for the proxy |
 
