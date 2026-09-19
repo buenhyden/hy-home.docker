@@ -451,6 +451,7 @@ services:
       dockerfile: Dockerfile
     image: hy/gatus:local
     container_name: gatus
+    user: '${GATUS_UID:-1000}:${GATUS_GID:-1000}'
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
       GATUS_LOG_LEVEL: INFO
