@@ -108,6 +108,7 @@ services:
   seaweedfs-s3:
     profiles:
       - seaweedfs
+      - storage
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -139,7 +140,7 @@ services:
 
   seaweedfs-mount:
     profiles:
-      - seaweedfs
+      - seaweedfs-mount
     extends:
       file: ../../../common-optimizations.yml
       service: template-host-observer-med

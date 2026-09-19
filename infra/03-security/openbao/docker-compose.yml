@@ -24,10 +24,8 @@ volumes:
 services:
   openbao:
     profiles:
-      - core
-      - security
-      - dev
-      - local
+      - secrets-openbao
+      - secrets-migration-openbao
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -69,10 +67,8 @@ services:
 
   openbao-agent:
     profiles:
-      - core
-      - security
-      - dev
-      - local
+      - secrets-openbao
+      - secrets-migration-openbao
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

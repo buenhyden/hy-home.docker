@@ -24,7 +24,8 @@ volumes:
 services:
   vault:
     profiles:
-      - vault-legacy
+      - secrets-vault
+      - secrets-migration
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -76,7 +77,8 @@ services:
 
   vault-agent:
     profiles:
-      - vault-legacy
+      - secrets-vault
+      - secrets-migration
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
