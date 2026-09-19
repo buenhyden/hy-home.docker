@@ -45,6 +45,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_OBSERVABILITY_DIR}/alloy
+  gatus-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_OBSERVABILITY_DIR}/gatus
 
 services:
   prometheus:
@@ -344,6 +350,46 @@ services:
       k3d-hyhome:
         ipv4_address: 172.18.0.14
 
+  node-exporter:
+    profiles:
+      - obs
+      - obs-core
+      - local
+      - obs-host
+    extends:
+      file: ../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: quay.io/prometheus/node-exporter:v1.12.1
+    container_name: node-exporter
+    pid: host
+    command:
+      - '--path.rootfs=/host/root'
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--web.listen-address=:9100'
+      - '--no-collector.timex'
+      - '--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($$|/)'
+
+    volumes:
+      - '/:/host/root:ro,rslave'
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+    expose:
+      - '9100'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'wget -qO- http://127.0.0.1:9100/metrics >/dev/null 2>&1 || exit 1'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.19
+    labels:
+      <<: *tier-label
+
   cadvisor:
     profiles:
       - obs
@@ -392,6 +438,60 @@ services:
       infra_net:
         ipv4_address: 172.19.0.25
 
+  gatus:
+    profiles:
+      - obs
+      - availability
+      - local
+
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-low
+
+    build:
+      context: ./gatus
+      dockerfile: Dockerfile
+
+    image: hy/gatus:5.36.0
+    container_name: gatus
+
+    environment:
+      GATUS_CONFIG_PATH: /config/config.yaml
+      GATUS_LOG_LEVEL: INFO
+      PORT: '8080'
+
+    volumes:
+      - ./gatus/config/config.yaml:/config/config.yaml:ro
+      - gatus-data:/data:rw
+
+    expose:
+      - '8080'
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'wget -qO- http://127.0.0.1:8080/health >/dev/null 2>&1 || exit 1'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+    labels:
+      <<: *tier-label
+
+      traefik.enable: 'true'
+
+      traefik.http.routers.gatus.rule: Host(`status.${DEFAULT_URL}`)
+      traefik.http.routers.gatus.entrypoints: websecure
+      traefik.http.routers.gatus.tls: 'true'
+
+      traefik.http.routers.gatus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+
+      traefik.http.services.gatus.loadbalancer.server.port: 8080
+
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.231
   pyroscope:
     profiles:
       - obs
