@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-03-19"
 ---
 
@@ -46,11 +46,13 @@ pyroscope/
 
 ## Tech Stack
 
-| Category | Technology | Version | Role |
+Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
+| Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
-| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | v2.1.0 | Continuous Profiling Engine |
-| Collector | [Grafana Alloy](../alloy/README.md) | v1.19.2 | Profile Scraping & Remapping |
-| Visualization | [Grafana](../grafana/README.md) | v13.1.0 | Unified Dashboards |
+| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | Declared in Compose | Continuous Profiling Engine |
+| Collector | [Grafana Alloy](../alloy/README.md) | Declared in Compose | Profile Scraping & Remapping |
+| Visualization | [Grafana](../grafana/README.md) | Declared in Compose | Unified Dashboards |
 
 ## Available Scripts
 

@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -113,6 +113,8 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

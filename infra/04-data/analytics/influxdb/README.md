@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-21"
 ---
 
@@ -53,14 +53,14 @@ influxdb/
 | --- | --- |
 | Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profile: `data`; database key: `INFLUXDB_DB_NAME` |
+| Config values | profile: `data`; database name is an explicit write-request input, not a root environment key |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) |
 | Networks | `infra_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw` |
 | Ports | No host port declared; Traefik service port `${INFLUXDB_PORT:-8181}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.influxdb.rule`, `traefik.http.routers.influxdb.entrypoints`, `traefik.http.routers.influxdb.tls`, `traefik.http.routers.influxdb.middlewares`, `traefik.http.services.influxdb.loadbalancer.server.port` |
 | Secret refs | Root Compose declares `influxdb_api_token` and `influxdb_password` as repository metadata, but root declarations and metadata are not leaf server wiring; this leaf mounts neither secret and does not provision a server token |
-| Write API | `POST http://influxdb:8181/api/v3/write_lp?db=${INFLUXDB_DB_NAME}` requires an authorized operator/named token; token creation/provisioning and authenticated write acceptance require separate runtime approval and remain unverified |
+| Write API | `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>` requires an authorized operator/named token; token creation/provisioning and authenticated write acceptance require separate runtime approval and remain unverified |
 | Healthcheck | Probes `http://127.0.0.1:8181/` and accepts `200`, `204`, or `401` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0017-influxdb/guide.md`), Policy (`docs/05.operations/catalog/04-data/0017-influxdb/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0017-influxdb/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -100,3 +100,5 @@ influxdb/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

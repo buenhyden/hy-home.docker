@@ -18,41 +18,27 @@ import tempfile
 import time
 from collections.abc import Mapping
 
+if __package__ in {None, ""}:
+    _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[2]
+    if str(_BOOTSTRAP_ROOT) not in sys.path:
+        sys.path.insert(0, str(_BOOTSTRAP_ROOT))
+
 from scripts.lib.gate import ci_gate_adapters
-
-try:
-    from scripts.lib.gate.ci_gate_contract import (
-        PUBLIC_SUITE_NAMES,
-        GateContractError,
-        GateRegistry,
-        PublicGateContract,
-        PublicValidatorRoute,
-        expand_public_gate_ids,
-        load_contract_document,
-        parse_gate_registry,
-        parse_public_gate_contract,
-        public_root_gate_ids,
-        select_public_suites,
-        validate_gate_registry,
-        validate_public_execution_argv,
-    )
-except ModuleNotFoundError:  # Direct sibling-script execution.
-    from ci_gate_contract import (  # type: ignore[no-redef]
-        PUBLIC_SUITE_NAMES,
-        GateContractError,
-        GateRegistry,
-        PublicGateContract,
-        PublicValidatorRoute,
-        expand_public_gate_ids,
-        load_contract_document,
-        parse_gate_registry,
-        parse_public_gate_contract,
-        public_root_gate_ids,
-        select_public_suites,
-        validate_gate_registry,
-        validate_public_execution_argv,
-    )
-
+from scripts.lib.gate.ci_gate_contract import (
+    PUBLIC_SUITE_NAMES,
+    GateContractError,
+    GateRegistry,
+    PublicGateContract,
+    PublicValidatorRoute,
+    expand_public_gate_ids,
+    load_contract_document,
+    parse_gate_registry,
+    parse_public_gate_contract,
+    public_root_gate_ids,
+    select_public_suites,
+    validate_gate_registry,
+    validate_public_execution_argv,
+)
 
 _GIT_TIMEOUT_SECONDS = 5
 _SHEBANGS = {

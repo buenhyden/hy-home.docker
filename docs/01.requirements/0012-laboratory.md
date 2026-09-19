@@ -40,7 +40,7 @@ created: "2026-03-26"
 
 - **REQ-0012-FR-0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
 - **REQ-0012-FR-0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
-- **REQ-0012-FR-0003**: `admin` profile이 선택하는 Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **REQ-0012-FR-0004**: `admin` profile이 선택하는 Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
 
 ## Non-functional Requirements
 

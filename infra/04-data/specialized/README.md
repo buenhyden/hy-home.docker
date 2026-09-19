@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2026-05-15"
 ---
 
@@ -60,3 +60,5 @@ specialized/
 - Operations Policies (`docs/05.operations/catalog/04-data/README.md`)
 - Operations Runbooks (`docs/05.operations/catalog/04-data/README.md`)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

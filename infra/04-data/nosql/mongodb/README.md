@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -63,7 +63,7 @@ mongodb/
 | --- | --- |
 | Purpose | MongoDB Replica Set service leaf in `04-data`; unconditional root include, profile-selected; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD_FILE`, `ME_CONFIG_MONGODB_ENABLE_ADMIN`, `ME_CONFIG_MONGODB_AUTH_DATABASE`, `ME_CONFIG_MONGODB_ADMINUSERNAME`, `ME_CONFIG_MONGODB_ADMINPASSWORD_FILE`, `ME_CONFIG_MONGODB_SERVER`, `ME_CONFIG_MONGODB_REPLICA_SET`, plus 2 more; profiles: `data`, `obs` |
+| Config values | env keys: `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD_FILE`, `ME_CONFIG_MONGODB_ENABLE_ADMIN`, `ME_CONFIG_MONGODB_AUTH_DATABASE`, `ME_CONFIG_MONGODB_ADMINUSERNAME`, `ME_CONFIG_MONGODB_ADMINPASSWORD_FILE`, `ME_CONFIG_MONGODB_SERVER`, `ME_CONFIG_MONGODB_REPLICA_SET`, plus 2 more; profiles: `mongodb`, `obs` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `mongo-key:/data/configdb:rw`, `mongodb1-data:/data/db:rw`, `mongo-key:/data/configdb:ro`, `mongodb2-data:/data/db:rw`, `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` |
@@ -73,11 +73,11 @@ mongodb/
 | Healthcheck | Compose healthcheck declared for `mongodb-rep1`, `mongodb-rep2`; not declared for `mongo-key-generator`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0027-mongodb/guide.md`), Policy (`docs/05.operations/catalog/04-data/0027-mongodb/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0027-mongodb/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config`로 렌더링한다. `mongo-key-generator`가 먼저 실행되어야 한다.
+1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose --profile mongodb config --quiet`로 렌더링한다. `mongo-key-generator`가 먼저 실행되어야 한다.
 2. **Initialization**: 첫 기동 시 `mongo-init` 작업이 자동으로 레플리카 셋을 구성한다.
 3. **Management**: `https://mongo-express.${DEFAULT_URL}`을 통해 데이터 조회 및 관리를 수행한다.
 4. **Security**: `mongo-key` named volume의 `mongodb.key` 파일은 보안상 매우 중요하므로 공유/수정 시 주의한다.
@@ -86,7 +86,7 @@ mongodb/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config` | MongoDB 선택 스택 렌더링 |
+| `docker compose --profile mongodb config --quiet` | MongoDB 선택 스택 렌더링 |
 | `docker compose logs -f mongo-init` | 레플리카 셋 초기화 로그 확인 |
 | `docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().ok"'` | Secret mount 기반 레플리카 셋 상태 확인 |
 
@@ -108,7 +108,7 @@ mongodb/
 
 ## Troubleshooting
 
-- Start with `docker compose config` from this service directory to verify replica set, Mongo Express, exporter, network, and secret references render.
+- Start with `docker compose config --quiet` from this service directory to verify replica set, Mongo Express, exporter, network, and secret references render.
 - If replica initialization fails, inspect `docker compose logs mongo-init` and confirm `docker exec -it mongodb-rep1 mongosh --eval "rs.status()"` reports the expected member state before changing keyfile or replica set settings.
 
 ## Related Documents
@@ -120,3 +120,5 @@ mongodb/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

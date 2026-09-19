@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: hy/tempo:3.0.2-custom|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Tempo config의 ingestion, retention, storage, metrics generator boundary를 확인한다.
@@ -97,6 +97,8 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0049`), [Runbook](runbook.md) (`RUN-0049`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

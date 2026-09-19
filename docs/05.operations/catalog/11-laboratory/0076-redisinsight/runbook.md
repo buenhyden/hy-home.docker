@@ -14,6 +14,8 @@ created: "2026-05-17"
 
 # RedisInsight Recovery Runbook
 
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
+
 ## Overview
 
 > Scope: RedisInsight route hardening, root-active admin profile evidence, and non-destructive connection diagnosis.

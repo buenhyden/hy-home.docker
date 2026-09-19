@@ -96,3 +96,5 @@ secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interf
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
 - [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
+
+- [AD-0031 Home and Development Host](0031-home-development-host.md)

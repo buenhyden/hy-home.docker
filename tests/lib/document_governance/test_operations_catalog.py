@@ -779,10 +779,11 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             "infra/b/docker-compose.cluster.yaml",
         ),
         services_b: str = "  z:\n    profiles: [beta]\n",
+        header: str = "| Profile | Category | Purpose | 서비스 |",
         rows: tuple[str, ...] = (
-            "| `alpha` | a | 2 |",
-            "| `dev` | a | 1 |",
-            "| `beta` | b | 1 |",
+            "| `alpha` | domain | a | 2 |",
+            "| `dev` | domain | a | 1 |",
+            "| `beta` | domain | b | 1 |",
         ),
     ) -> pathlib.Path:
         directory = tempfile.TemporaryDirectory()
@@ -799,8 +800,8 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             "infra/b/docker-compose.cluster.yaml": "services:\n" + services_b,
             self.POLICY: "\n".join(
                 (
-                    "| Profile | 선택 대상 | 서비스 |",
-                    "| --- | --- | ---: |",
+                    header,
+                    "| --- | --- | --- | ---: |",
                     *rows,
                     "",
                     "| 쌍 | 충돌 | 근거 |",
@@ -827,6 +828,36 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_current_repository_tables_and_include_list_match_compose(self) -> None:
         self.assertEqual((), validate_compose_profile_vocabulary(ROOT))
 
+    def test_semantic_table_has_no_manual_counts(self) -> None:
+        root = self._repo(
+            header="| Profile | Category | Purpose |",
+            rows=(
+                "| `alpha` | domain | alpha services |",
+                "| `dev` | baseline | development selection |",
+                "| `beta` | capability | beta services |",
+            ),
+        )
+        self.assertEqual([], self._findings(root))
+
+    def test_semantic_columns_are_required(self) -> None:
+        for row, message in (
+            ("| `alpha` | invalid | alpha services |", "no valid category"),
+            ("| `alpha` | domain | |", "no purpose"),
+            ("| `alpha` | domain,baseline | alpha services |", "no valid category"),
+        ):
+            with self.subTest(row=row):
+                root = self._repo(
+                    header="| Profile | Category | Purpose |",
+                    rows=(
+                        row,
+                        "| `dev` | baseline | development |",
+                        "| `beta` | capability | beta services |",
+                    ),
+                )
+                self.assertTrue(
+                    any(message in finding[2] for finding in self._findings(root))
+                )
+
     def test_matching_fixture_has_no_findings(self) -> None:
         self.assertEqual([], self._findings(self._repo()))
 
@@ -846,10 +877,10 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_row_that_no_service_declares_is_rejected(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | a | 2 |",
-                "| `dev` | a | 1 |",
-                "| `beta` | b | 1 |",
-                "| `retired` | none | 3 |",
+                "| `alpha` | domain | a | 2 |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta` | domain | b | 1 |",
+                "| `retired` | domain | none | 3 |",
             )
         )
         self.assertEqual(
@@ -865,7 +896,11 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
 
     def test_service_count_that_differs_from_compose_is_rejected(self) -> None:
         root = self._repo(
-            rows=("| `alpha` | a | 3 |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+            rows=(
+                "| `alpha` | domain | a | 3 |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta` | domain | b | 1 |",
+            )
         )
         self.assertEqual(
             [
@@ -927,10 +962,10 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_duplicate_row_is_rejected_even_when_the_first_row_matches(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | a | 2 |",
-                "| `dev` | a | 1 |",
-                "| `beta` | b | 1 |",
-                "| `alpha` | again | 9 |",
+                "| `alpha` | domain | a | 2 |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta` | domain | b | 1 |",
+                "| `alpha` | domain | again | 9 |",
             )
         )
         self.assertEqual(
@@ -946,7 +981,11 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
 
     def test_row_without_an_integer_count_is_rejected(self) -> None:
         root = self._repo(
-            rows=("| `alpha` | a | two |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+            rows=(
+                "| `alpha` | domain | a | two |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta` | domain | b | 1 |",
+            )
         )
         self.assertEqual(
             [
@@ -962,7 +1001,11 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_non_ascii_digit_count_is_rejected_rather_than_aborting(self) -> None:
         # "²".isdigit() is true and int("²") raises, which aborted the leaf.
         root = self._repo(
-            rows=("| `alpha` | a | ² |", "| `dev` | a | 1 |", "| `beta` | b | 1 |")
+            rows=(
+                "| `alpha` | domain | a | ² |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta` | domain | b | 1 |",
+            )
         )
         self.assertEqual(
             [
@@ -1002,9 +1045,9 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         root = self._repo(
             services_b="  z:\n    profiles: [beta_two]\n",
             rows=(
-                "| `alpha` | a | 2 |",
-                "| `dev` | a | 1 |",
-                "| `beta_two` | b | 1 |",
+                "| `alpha` | domain | a | 2 |",
+                "| `dev` | domain | a | 1 |",
+                "| `beta_two` | domain | b | 1 |",
             ),
         )
         self.assertEqual([], self._findings(root))

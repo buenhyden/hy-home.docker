@@ -91,3 +91,5 @@ created: "2026-03-26"
 - **Spec**: [011-communication/spec.md](0010-communication-architecture.md)
 - **Plan**: 2026-03-26-10-communication-standardization.md
 - **ADR**: [0010-communication-services.md](../decisions/0010-communication-services.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

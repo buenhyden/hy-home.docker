@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -67,6 +67,8 @@ Dozzle을 통해 인프라 내 컨테이너 로그를 효율적으로 확인하�
 - Subject peers: [Policy](policy.md) (`POL-0072`), [Runbook](runbook.md) (`RUN-0072`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

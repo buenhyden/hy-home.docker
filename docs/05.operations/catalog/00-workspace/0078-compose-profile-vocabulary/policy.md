@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -15,137 +15,136 @@ created: "2026-09-04"
 
 ## Overview
 
-이 문서는 `infra/` 하위 Compose 파일이 선언하는 profile 이름 28개의 canonical
-정의를 소유한다. Compose profile은 이 workspace에서 stack 구성원을 선택하는
-유일한 runtime 메커니즘이므로, 이름 하나하나가 무엇을 선택하는지 여기에서
-확정한다.
-
-`include:`는 파일을 무조건 병합하고 profile이 선택을 담당한다. 따라서 어떤
-서비스가 뜨는지는 파일 목록이 아니라 선택한 profile 이름이 결정한다.
+추적된 Compose profile의 이름·분류·목적을 소유한다. `include`는 파일을 병합하고
+profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 보안 격리를 제공하지
+않는다. 서비스 수는 구현에서 계산하며 본문에 고정하지 않는다.
 
 ## Policy Scope
 
-- 대상: `infra/**/docker-compose*.yml`과 `infra/**/docker-compose*.yaml`이
-  선언하는 모든 `profiles:` 값
-- 목적: 선언된 이름과 등록된 정의를 1:1로 유지하고, 동시 선택이 불가능한
-  이름 쌍을 명시
-- 비대상: profile이 선택한 뒤의 서비스 설정 내용, 이미지 버전, secret 값,
-  network 주소 체계
-
-- **Systems**: `infra/` 하위 Compose 파일 41개 전체. root가 이를 모두 include한다
-- **Agents**: Infra/DevOps/Operations 역할의 에이전트
-- **Environments**: Local, Dev, Stage, Production-like
+- **Systems**: root가 include하는 추적된 `infra/**/docker-compose*.yml` 및 `.yaml`.
+- **Agents**: Infra/DevOps/Operations 기여자와 검토자.
+- **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업.
 
 ## Definitions
 
-아래 세 표의 서비스 수는 root가 include하는 41개 파일 기준이며,
-`docker compose config --services`가 해당 profile 하나만 선택했을 때 내놓는
-수와 일치한다. SPEC-0171이 남겨 두었던 6개 sibling 파일은 그 package가
-완료되면서 짝을 이루던 파일로 병합되었으므로 별도로 세지 않는다.
+각 이름은 정확히 한 행, 한 category와 비어 있지 않은 purpose를 가진다.
+`baseline`은 공통 출발점, `domain`은 기능 영역, `capability`는 선택 기능,
+`role`은 사용 역할, `topology`는 배치 대안, `lifecycle`은 전환 단계,
+`automation`은 부수 효과를 검토해야 하는 작업 선택이다. 서비스 명단은 현재
+선언을 설명하며 실제 선택은 Compose에서 재확인한다.
 
-profile 이름은 세 종류로 나뉜다.
-
-- **Domain selector**: `infra/NN-<domain>` 한 영역을 통째로 선택한다.
-- **Topology selector**: 같은 영역의 서로 다른 구성 형태를 고른다.
-- **Role selector**: 한 영역 안에서 서비스의 역할을 고른다. 같은 제품을 다른
-  용도로 두 번 띄우는 경우가 이에 해당한다.
-
-### Domain selector
-
-| Profile | 선택 대상 | 서비스 |
-| --- | --- | ---: |
-| `auth` | `02-auth` | 2 |
-| `security` | `03-security` | 2 |
-| `data` | `04-data` | 58 |
-| `messaging` | `05-messaging` | 8 |
-| `obs` | `06-observability`와 `04-data`의 exporter | 18 |
-| `workflow` | `07-workflow` | 12 |
-| `ai` | `08-ai`와 `04-data`의 vector store | 4 |
-| `tooling` | `09-tooling` | 9 |
-| `communication` | `10-communication` | 2 |
-| `admin` | `11-laboratory`의 관리 UI | 6 |
-
-`01-gateway`는 전용 domain selector가 없다. 기본 gateway인 traefik은 `core`가,
-대체 gateway인 nginx는 `nginx`가 선택한다.
-
-### Topology selector
-
-| Profile | 선택 대상 | 서비스 |
-| --- | --- | ---: |
-| `core` | 최소 도달 가능 stack: gateway, auth, security | 5 |
-| `dev` | 개발용 구성 변형 | 47 |
-| `nginx` | traefik 대신 nginx를 gateway로 사용 | 2 |
-| `messaging-option` | messaging 선택 구성 요소 | 1 |
-| `ksql` | analytics 선택 구성 요소 | 3 |
-| `storage-cluster` | 단일 노드 minio 대신 4노드 minio 클러스터 | 4 |
-| `dedicated-valkey` | oauth2-proxy, n8n, airflow가 공유 `mng-valkey` 대신 각자의 broker를 사용 | 6 |
-| `data-cluster` | 단일 노드 opensearch 대신 3노드 클러스터 | 4 |
-| `messaging-cluster` | 단일 broker kafka에 broker 2대를 더한 3-broker 구성 | 2 |
-
-### Role selector
-
-| Profile | 선택 대상 | 서비스 |
-| --- | --- | ---: |
-| `service` | 애플리케이션용 데이터 인스턴스 | 19 |
-| `mng` | 관리용 데이터 인스턴스 | 5 |
-| `storage` | object/lake 역할 | 2 |
-| `graph` | graph 데이터 역할 | 1 |
-| `iac` | IaC 도구 역할 | 4 |
-| `registry` | 컨테이너 registry 역할 | 1 |
-| `sast` | 정적 분석 역할 | 1 |
-| `sync` | 파일 동기화 역할 | 1 |
-| `testing` | 부하 시험 역할 | 2 |
+| Profile | Category | Purpose | Selected services | Default? | Additional side effect | Lifecycle |
+| --- | --- | --- | --- | --- | --- | --- |
+| `admin` | domain | 데이터·로그·노트북 관리 UI | `surrealdb`, `dozzle`, `open_notebook`, `redisinsight` | No | normal service startup | current |
+| `admin-data` | role | Valkey 데이터 탐색 UI | `redisinsight` | No | normal service startup | current |
+| `admin-logs` | role | 컨테이너 로그 UI | `dozzle` | No | normal service startup | current |
+| `ai` | domain | HOME 언어·이미지 AI와 vector 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui`, `comfyui` | No | normal service startup | current |
+| `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
+| `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
+| `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
+| `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
+| `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
+| `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
+| `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |
+| `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
+| `couchdb` | topology | CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
+| `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
+| `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
+| `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `prometheus`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init | current |
+| `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
+| `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
+| `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
+| `ksql` | capability | Kafka 기반 스트림 SQL과 데이터 생성 작업 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | load or synthetic data generation | current |
+| `legacy-vault` | lifecycle | 기존 Vault 마이그레이션 전용; HOME 제외 | `vault`, `vault-agent` | No | normal service startup | MIGRATE |
+| `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
+| `logs` | capability | 로그 수집·조회와 object 저장소 | `minio`, `minio-create-buckets`, `loki`, `alloy`, `grafana` | No | initialization: minio-create-buckets | current |
+| `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
+| `mail-server` | capability | 실제 메일 송수신; 별도 DNS·운영 준비 필요 | `stalwart` | No | normal service startup | current |
+| `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
+| `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui` | No | normal service startup | current |
+| `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
+| `messaging-cluster` | topology | Kafka 다중 broker; 단일 호스트 장애 격리 아님 | `kafka-1`, `kafka-exporter`, `kafka-init`, `kafka-2`, `kafka-3` | No | initialization: kafka-init | current |
+| `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect` | No | normal service startup | current |
+| `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy` | No | normal service startup | current |
+| `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry` | No | normal service startup | current |
+| `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter` | No | initialization: mng-pg-init | current |
+| `mongodb` | topology | MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` | No | initialization: mongo-key-generator, mongo-init | current |
+| `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `minio` | No | normal service startup | current |
+| `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
+| `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `minio`, `minio-create-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: minio-create-buckets | current |
+| `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana` | No | normal service startup | current |
+| `obs-host` | capability | 호스트·컨테이너 자원 측정 | `node-exporter`, `cadvisor` | No | normal service startup | current |
+| `ollama` | capability | 로컬 모델 추론과 exporter | `ollama`, `ollama-exporter` | No | normal service startup | current |
+| `opensearch` | topology | 단일 OpenSearch와 dashboards | `opensearch`, `opensearch-dashboards` | No | normal service startup | current |
+| `opensearch-cluster` | topology | OpenSearch 다중 노드 대안 | `opensearch-dashboards`, `opensearch-node1`, `opensearch-node2`, `opensearch-node3` | No | normal service startup | current |
+| `postgres-ha` | topology | Patroni·etcd PostgreSQL 실험 구성 | `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, `pg-1`, `pg-2`, `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter` | No | initialization: pg-cluster-init | current |
+| `profiling` | capability | 연속 프로파일 수집·조회 | `alloy`, `grafana`, `pyroscope` | No | normal service startup | current |
+| `qdrant` | capability | vector 검색 저장소 | `qdrant` | No | normal service startup | current |
+| `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |
+| `sast` | role | 소스 정적 분석 | `sonarqube` | No | normal service startup | current |
+| `seaweedfs` | capability | 분산 파일·S3 호환 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3` | No | normal service startup | current |
+| `seaweedfs-mount` | capability | FUSE host mount와 필수 서버; host 부작용 있음 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-mount` | No | host FUSE mount | current |
+| `secrets` | role | OpenBao secret 관리·Agent | `openbao`, `openbao-agent` | No | normal service startup | current |
+| `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
+| `starrocks` | capability | 분석용 warehouse | `starrocks-fe`, `starrocks-be` | No | normal service startup | current |
+| `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `minio`, `minio-create-buckets` | No | initialization: minio-create-buckets | current |
+| `storage-cluster` | topology | 다중 MinIO 대안; endpoint·data 전환 필요 | `minio1`, `minio2`, `minio3`, `minio4` | No | normal service startup | current |
+| `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3` | No | normal service startup | current |
+| `supabase` | capability | 자체 호스팅 앱 backend 전체 구성 | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | normal service startup | current |
+| `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
+| `testing` | automation | 명시적 부하 생성; 대상·제한 확인 후 실행 | `k6`, `locust-master` | No | load or synthetic data generation | current |
+| `tooling` | domain | 개발 도구 묶음; IaC 작업 부작용 검토 필요 | `locust-master`, `locust-worker`, `registry`, `sonarqube`, `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution; load or synthetic data generation | current |
+| `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `minio`, `minio-create-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: minio-create-buckets | current |
+| `valkey-cluster` | topology | Valkey sharding 실험 구성 | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` | No | initialization: valkey-cluster-init | current |
+| `workflow` | domain | HOME Airflow·n8n·worker·runner | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`, `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` | No | initialization: airflow-init | current |
+| `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
+| `workflow-n8n` | capability | n8n 자동화와 worker·task runner | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` | No | normal service startup | current |
 
 ## Controls
 
-- **Required**:
-  - `infra/` 하위 모든 서비스는 `profiles:`를 최소 하나 선언한다. 선언이 없는
-    서비스는 profile을 고르지 않아도 기동되어 "선택으로만 기동한다"는 전제를
-    깨뜨린다.
-  - 새 profile 이름을 도입하면 같은 논리 변경에서 이 문서에 행을 추가한다.
-  - 상호 배타 쌍을 새로 만들면 아래 표에 근거와 함께 기록한다.
-  - `depends_on` 대상은 출발 서비스의 모든 profile을 함께 선언한다. 이 규칙이
-    깨지면 해당 profile은 `depends on undefined service`로 렌더링 자체가
-    실패한다. 규칙은 전이적이므로 의존 그래프의 폐포까지 닫아야 한다.
-  - 선택 여부가 갈리는 topology selector를 향한 `depends_on`은 `required: false`를
-    붙인다. 대상이 선택되면 `condition`은 그대로 적용되고, 선택되지 않으면
-    렌더링이 실패하는 대신 건너뛴다.
-- **Allowed**:
-  - 한 서비스가 여러 profile을 선언하는 것. 예로 `locust-master`는 `tooling`과
-    `testing`을 함께 선언한다.
-  - domain selector와 topology selector의 동시 선택.
-- **Disallowed**:
-  - 등록되지 않은 이름 선언.
-  - 아래 상호 배타 쌍의 동시 선택.
-  - 한 profile이 선택하는 두 서비스가 같은 host port를 공개하는 구성.
+`Default? = No`는 profile을 명시하지 않으면 자동 선택되지 않는다는 뜻이다.
+일반 서비스 기동도 데이터 쓰기를 유발할 수 있다. 추가 부수 효과 열은 초기화·작업·
+host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
+`Lifecycle = current`는 추적된 현행 selector라는 뜻이며 HOME 기본 기동·필수성·운영 준비 완료를 뜻하지 않는다. `MIGRATE`는 승인된 전환 작업에만 사용한다.
 
-### 상호 배타 쌍
+- **Required**: 모든 서비스는 명시적 profile을 가져야 한다. 새 이름은 같은 변경에서
+  표에 추가하고 마지막 소비자가 은퇴하면 표에서 제거한다. 이름 중복·누락·유령 행을
+  허용하지 않는다. 필수 `depends_on` 폐포가 선택 안에서 닫혀야 한다.
+- **Allowed**: 한 서비스가 여러 profile에 속할 수 있다. 선택형 대안 종속성은
+  `required: false`를 쓸 수 있지만 앱의 실제 endpoint 설정과 일치해야 한다.
+- **Disallowed**: 검증되지 않은 broad profile을 HOME 기동 명령으로 사용하거나,
+  부수 효과가 있는 update/IaC/load-test 작업을 상시 기동하는 것.
 
-| 쌍 | 충돌 | 근거 |
-| --- | --- | --- |
-| `nginx` ↔ `core`, `nginx` ↔ `dev` | host port 80, 443 | nginx와 traefik은 같은 역할의 대체재이며 동시에 gateway가 될 수 없다 |
-| `dedicated-valkey` + HOST/SECRET 변수 | 없음 | profile은 broker를 띄울 뿐이고 앱이 어디를 바라보는지는 환경변수가 정한다. Compose가 둘을 묶어주지 못하므로 함께 설정해야 하며, profile만 켜면 쓰이지 않는 broker가 하나 더 뜬다 |
-| `messaging-cluster` (단독) | 없음 | `messaging`과 함께 선택해야 한다. 단독으로 고르면 kafka-2와 kafka-3만 뜨고 kafka-1이 없어 quorum이 성립하지 않는다 |
-| `data-cluster` ↔ `data` | host port 9600 | 두 opensearch 토폴로지는 대체재다. `data-cluster`의 node1이 performance analyzer 포트를 공개하며, 두 배포를 동시에 띄울 이유가 없다. dashboards는 양쪽 모두에 속하고 `OPENSEARCH_HOSTS`가 어디를 보는지 정한다 |
-| `storage-cluster` ↔ `storage` | host port 충돌 없음 | 두 minio 토폴로지는 대체재다. 두 파일이 서비스 이름을 공유하지 않아 host port는 부딪히지 않지만, 동시에 띄우면 같은 network에 독립된 object store가 둘 생긴다 |
+### HOME activation
 
-`testing`은 `k6`와 `locust-master`를 함께 선택한다. 두 서비스가 원래 공유하던
-`LOCUST_HOST_PORT` 18089 충돌은 사라졌다. `k6`는 실제 k6 engine으로 전환되면서
-UI를 갖지 않게 되어 host port를 전혀 공개하지 않는다. 대신 `k6`는 시나리오를
-한 번 실행하고 종료하는 작업이므로 `tooling`을 선언하지 않는다. 도메인 전체를
-선택하는 것이 부하 시험을 발사해서는 안 되기 때문이다.
+`core mng ai workflow obs-core obs-host availability logs alerting storage`는 HOME
+후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
+broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으로 HOME 앱이 충족되지는
+않는다. 새 HOME profile은 추가하지 않는다. OpenBao bootstrap/unseal/Agent 인증,
+DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이다. config 성공은
+무인 재기동이나 live readiness를 증명하지 않는다.
+
+### Companion, exclusion and side effects
+
+| Selection | Constraint |
+| --- | --- |
+| nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
+| dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
+| messaging-cluster | 현재 선언이 kafka-1도 포함; quorum·지속성 검증은 별도이며 물리 HA가 아님 |
+| opensearch with opensearch-cluster | 대체 토폴로지; 기본 port 충돌을 피하고 dashboards endpoint를 일치시킴 |
+| storage-cluster with storage/logs | 서로 다른 object store; endpoint·data migration 없이 교체 불가 |
+| seaweedfs-mount | master·volume·filer 폐포 포함; FUSE host mount 권한과 해제 계획 확인 |
+| legacy-vault with HOME | 정상 HOME에서 제외; 보존된 상태의 migration 승인 후에만 사용 |
+| dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
+| testing or ksql | 부하·샘플 데이터 생성 가능; 대상과 실행량을 명시 |
+| iac or tooling | OpenTofu/Terrakube가 포함됨; 명령·대상·credential·apply 승인 확인 |
+| supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
 
 ## Exceptions
 
-- `00-workspace`와 `12-infra-net`은 운영 catalog domain이지만 `infra/` 대응
-  디렉터리가 없으므로 domain selector를 갖지 않는다. 결함이 아니다.
-- `infra/` 하위에 있던 6개 sibling 쌍은 SPEC-0171이 완료되면서 짝을 이루던
-  파일로 병합되었다. 같은 서비스 이름을 선언하는 쌍은 더 이상 없고, 유예된
-  topology selector도 없다. 위 표의 topology 이름이 전부다.
-- 이미 함께 include된 두 파일 사이의 host port 충돌은 이 정책 이전부터
-  존재하는 결함으로, 발견 시 기록하고 별도 변경으로 처리한다. 현재 미해결
-  항목은 [k6 사용 가이드](../../09-tooling/0061-k6/guide.md)가
-  소유자와 함께 기록한다.
+profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러 노드는 물리
+고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
+않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
 
 ## Verification
 
@@ -154,31 +153,27 @@ bash scripts/validation/validate-docker-compose.sh
 python3 scripts/validation/check-operations-catalog.py
 ```
 
-첫 명령은 선언된 모든 profile을 렌더링하고, 한 profile이 선택하는 두 서비스가
-같은 host port를 공개하면 실패한다.
-
-이 문서의 세 표를 합친 이름 집합은 추적된 Compose 파일이 선언하는 `profiles:`
-값의 집합과 같아야 하고, 각 행의 서비스 수는 그 profile을 선언한 서비스 수와
-같아야 한다. 권위는 `infra/**` 아래 Compose 파일 자체다. 두 번째 명령이 표의
-행만 읽어 이 비교를 수행하고, root `include:` 목록이 `infra/` 하위 추적 Compose
-파일 전체와 일치하는지도 함께 확인한다. 은퇴한 coverage snapshot은 이 비교의
-입력이 아니다.
+첫 명령은 실제 profile 렌더링과 port 중복을 검사한다. 두 번째는 추적된 Compose
+이름과 표의 정확한 집합 일치, category/purpose, 중복 행, root include 도달성 및
+명시적 서비스 profile을 검사한다. 숫자 Services 열을 추가한다면 실제 선언 수와
+일치해야 한다. 은퇴한 snapshot은 검증 입력이 아니다. 함께 선택할 조합도 별도로
+렌더링하고 필수 종속성·부수 효과·runtime readiness를 확인한다.
 
 ## Review Cadence
 
-- **Owner**: Infra/DevOps Engineer
-- **Cadence**: `infra/` 하위 Compose 파일의 `profiles:` 변경 시
-- **Trigger**: 새 서비스 추가, profile 이름 신설, host port 재배정
+- **Owner**: Infra/DevOps Engineer.
+- **Cadence**: profile 또는 서비스 선언을 변경할 때.
+- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
 
 ## Traceability
 
-- **Subject**: [00-workspace](../README.md)
-- **Authority**: [SPEC-0156](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
-- **Sibling pairs resolved by**: [SPEC-0171](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
-- **Verification**: `scripts/validation/check-operations-catalog.py`
+- [Workspace catalog](../README.md)
+- [Convergence specification](../../../../03.specs/0180-home-dev-convergence/spec.md)
+- [Runtime version projection](../../../../../infra/tech-stack.versions.json)
+- [Original enablement decision](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
+- [Sibling resolution](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
 
 ## Related Documents
 
 - [Infrastructure optimization governance](../0006-infrastructure-optimization-governance/policy.md)
 - [Developer environment](../0002-developer-environment/guide.md)
-- [Environment constraints](../../../../../.agents/governance/environment-constraints.md)

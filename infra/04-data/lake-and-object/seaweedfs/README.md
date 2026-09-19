@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2025-12-06"
 ---
 
@@ -15,7 +15,7 @@ created: "2025-12-06"
 
 ## Overview
 
-SeaweedFS provides a distributed file and object storage surface for `hy-home.docker`. The current compose path is `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`, using image `chrislusf/seaweedfs:4.47` and the `data` profile.
+SeaweedFS provides a distributed file and object storage surface for `hy-home.docker`. The current compose path is `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`, with server selection through `seaweedfs` or `storage-seaweedfs`. The separate `seaweedfs-mount` profile selects the privileged mount plus master, volume and filer dependencies; it does not select S3.
 
 ## Audience
 
@@ -58,7 +58,7 @@ seaweedfs/
 | --- | --- |
 | Purpose | SeaweedFS service leaf in `04-data`; services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount` |
 | Config files | `docker-compose.yml`, `config/security.toml.example` |
-| Config values | profile: `data`; image: `chrislusf/seaweedfs:4.47` |
+| Config values | server profiles: `seaweedfs`, `storage-seaweedfs`; mount profile: `seaweedfs-mount`; image: [Compose declaration](docker-compose.yml) |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
 | Networks | `infra_net`; static IPs `172.19.0.140` through `172.19.0.144` |
 | Volumes | `seaweedfs-master-data:/data:rw`, `seaweedfs-volume-data:/data:rw` |
@@ -69,7 +69,7 @@ seaweedfs/
 | Privilege boundary | `seaweedfs-mount` runs `privileged: true` with `SYS_ADMIN` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md`), Policy (`docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose --profile seaweedfs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -94,8 +94,8 @@ seaweedfs/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Validate this service with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`.
-- Verify status with `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount`.
+- Validate this service with `docker compose --profile seaweedfs config --quiet`.
+- Verify status with `docker compose --profile seaweedfs --profile seaweedfs-mount ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount`.
 
 ## Troubleshooting
 
@@ -113,3 +113,5 @@ seaweedfs/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

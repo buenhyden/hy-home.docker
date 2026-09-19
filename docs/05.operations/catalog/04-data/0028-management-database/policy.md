@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -70,6 +70,10 @@ Review on any change to `mng-db` compose services, networks, profiles, ports, se
 - Subject peers: [Guide](guide.md) (`GDE-0028`), [Runbook](runbook.md) (`RUN-0028`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://www.postgresql.org/docs/current/backup.html)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

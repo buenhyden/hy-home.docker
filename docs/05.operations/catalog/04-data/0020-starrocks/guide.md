@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0020"
 parent_ids:
@@ -39,7 +39,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- `infra/04-data/analytics/warehouses/docker-compose.yml`
+- `infra/04-data/analytics/starrocks/docker-compose.yml`
 - MySQL client
 - `infra_net` access
 
@@ -48,7 +48,7 @@ created: "2026-05-10"
 1. Compose contract 위치를 확인한다.
 
    ```bash
-   test -f infra/04-data/analytics/warehouses/docker-compose.yml
+   test -f infra/04-data/analytics/starrocks/docker-compose.yml
    ```
 
 2. FE 상태를 확인한다.
@@ -71,7 +71,7 @@ created: "2026-05-10"
 
 ## Common Checks
 
-- `test -f infra/04-data/analytics/warehouses/docker-compose.yml`
+- `test -f infra/04-data/analytics/starrocks/docker-compose.yml`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
@@ -87,7 +87,11 @@ created: "2026-05-10"
 
 ## Related Documents
 
+- [Official upstream operational documentation](https://docs.starrocks.io/docs/administration/management/Backup_and_restore/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
-- [Infra README](../../../../../infra/04-data/analytics/warehouses/README.md)
+- [Infra README](../../../../../infra/04-data/analytics/starrocks/README.md)

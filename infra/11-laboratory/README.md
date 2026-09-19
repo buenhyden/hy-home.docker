@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2026-03-26"
 ---
 
@@ -146,3 +146,5 @@ infra/11-laboratory/
 - Laboratory guides (`docs/05.operations/catalog/11-laboratory/README.md`)
 - Laboratory policies (`docs/05.operations/catalog/11-laboratory/README.md`)
 - Laboratory runbooks (`docs/05.operations/catalog/11-laboratory/README.md`)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.

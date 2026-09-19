@@ -1,10 +1,10 @@
 ---
 title: "Tooling Services Selection and Configuration"
-version: "1.0.0"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "architecture"
 artifact_id: "ADR-0009"
 parent_ids:
@@ -15,34 +15,33 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
+이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 2026-09-19의 정정은 제거된 Syncthing 의무와 현재 OpenTofu 실행 소유자를 반영하며 원래 결정은 Git 이력에 보존된다.
 
-`09-tooling` 계층은 개발 및 운영 효율성을 극대화하기 위한 보조 도구들을 포함한다. 인프라 자동화(IaC), 코드 품질 분석, 성능 테스트, 데이터 동기화 등 다양한 요구사항을 충족하기 위해 검증된 오픈소스 솔루션들을 선정하고 통합해야 한다.
+`09-tooling` 계층은 개발 및 운영 효율성을 극대화하기 위한 보조 도구들을 포함한다. 인프라 자동화(IaC), 코드 품질 분석, 성능 테스트, 내부 이미지 보관 등 다양한 요구사항을 충족하기 위해 검증된 오픈소스 솔루션들을 선정하고 통합해야 한다.
 
 ## Decision
 
 다음과 같은 서비스 스택을 `09-tooling`의 표준 도구로 선정한다.
 
-1. **IaC Automation**: **Terrakube**
-   - 이유: Terraform Cloud의 오픈소스 대안으로, 팀 단위의 상태 관리 및 자동화된 실행 환경(Plan/Apply)을 제공한다.
+1. **IaC Automation**: **OpenTofu / Terrakube**
+   - 이유: 현재 CLI helper는 OpenTofu이며 Terrakube는 workspace 상태와 실행을 관리한다. Terraform workspace의 기존 state/provider 계약은 migration handoff에서 검토한다.
 2. **Code Quality**: **SonarQube**
    - 이유: 다중 언어 지원 및 정밀한 정적 분석 기능을 통해 프로젝트의 전반적인 코드 품질과 보안 취약점을 중앙에서 관리한다.
 3. **Performance Testing**: **Locust**
    - 이유: Python 기반의 시나리오 정의가 가능하여 확장이 용이하며, 분산 아키텍처를 통해 대규모 부하를 생성할 수 있다.
-4. **OCI Registry**: **Docker Registry (v2)**
+4. **OCI Registry**: **OCI Distribution Registry**
    - 이유: 내부 서비스 배포를 위한 경량화된 사설 이미지 저장소를 제공한다.
-5. **Data Synchronization**: **Syncthing**
-   - 이유: 중앙 서버 없이 장치 간 P2P 파일 동기화를 지원하여, 분산된 개발 환경 간의 리소스 공유를 최적화한다.
+5. **Withdrawn selection**: Syncthing runtime과 해당 파일 동기화 의무는 제거되었다. 이 항목은 과거 선택의 철회 기록이며 현재 서비스나 다른 기능으로 대체한 요구사항이 아니다.
 
 ### Rationale
 
-- **통합성**: 모든 서비스는 Keycloak SSO와 연동되어 단일 계정으로 접근 가능하다.
-- **지속성**: Terraform 상태 정보 및 분석 데이터는 `04-data` 계층(MinIO, PostgreSQL)에 저장되어 데이터 유실을 방지한다.
+- **통합성**: SonarQube/Terrakube 관리 UI는 선언된 gateway+SSO 경계를 사용한다. CLI 작업, 부하 생성기와 registry 프로토콜에 동일한 브라우저 SSO 경계가 있다고 가정하지 않는다.
+- **지속성**: IaC 상태 정보 및 분석 데이터는 선언된 backend에 보관한다. 단일 호스트 persistence는 독립 백업이 아니며 데이터 유실 방지나 복구 성공은 검증된 백업/복구 증거 없이는 보장하지 않는다.
 - **표준화**: 각 서비스는 Docker Compose 및 사전에 정의된 환경 변수를 통해 일관된 방식으로 배포된다.
 
 ### Decision Record
 
-Accepted (2026-03-26)
+Accepted (2026-03-26). Amended on 2026-09-19 to withdraw Syncthing and align the CLI helper with OpenTofu; no runtime deployment or recovery success is asserted.
 
 ## Consequences
 
@@ -76,5 +75,6 @@ The decision context above records the applicable drivers and evidence.
 
 - [Tooling PRD](../../01.requirements/0010-tooling.md)
 - [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
-- [Tooling spec](../descriptions/0009-tooling-architecture.md)
-- Tooling standardization plan
+- [Current convergence Spec](../../03.specs/0180-home-dev-convergence/spec.md)
+- [OpenTofu operations](../../05.operations/catalog/09-tooling/0082-opentofu/guide.md)
+- [Terraform migration handoff](../../05.operations/catalog/09-tooling/0068-terraform/guide.md)

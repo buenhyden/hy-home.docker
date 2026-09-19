@@ -98,3 +98,5 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 - **PRD**: [../../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Spec**: [../../03.specs/007-observability/spec.md](0006-observability-architecture.md)
 - **ADR**: [../decisions/0006-lgtm-stack-selection.md](../decisions/0006-lgtm-stack-selection.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

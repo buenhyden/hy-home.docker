@@ -54,9 +54,9 @@ secrets/
 ├── data/                 # OpenSearch, Supabase, AI 도구 관련 secret
 ├── db/                   # PostgreSQL, Valkey, NoSQL 등 DB secret
 ├── observability/        # Grafana와 monitoring stack secret
-├── security/             # Vault 등 보안 계층 secret
+├── security/             # OpenBao와 legacy Vault의 별도 보안 계층 secret
 ├── storage/              # MinIO 등 object storage secret
-├── tools/                # SonarQube, Syncthing 등 도구 secret
+├── tools/                # SonarQube 등 선택 도구 secret
 ├── SENSITIVE_ENV_VARS.md.example  # registry 예시
 └── README.md             # This file
 ```
@@ -81,9 +81,9 @@ secrets/
 | Data | `data/` | OpenSearch, Supabase, AI service secret |
 | DB | `db/` | PostgreSQL, Valkey, Cassandra, CouchDB, MongoDB 등 DB secret |
 | Observability | `observability/` | Grafana and monitoring credentials |
-| Security | `security/` | Vault and security-layer secret |
+| Security | `security/` | OpenBao and separate legacy Vault secret |
 | Storage | `storage/` | MinIO and object storage credentials |
-| Tools | `tools/` | SonarQube, Syncthing, utility service secret |
+| Tools | `tools/` | SonarQube and optional utility service secret |
 
 추가 tracked directory identifier:
 
@@ -95,31 +95,48 @@ secrets/
 
 | Classification | Current Evidence | Handling Rule |
 | --- | --- | --- |
-| `compose-declared` | 루트 `docker-compose.yml`의 `secrets:` 선언 69개, 누락 파일 0개 | Docker Secret mount 계약으로 관리 |
+| `compose-declared` | 루트 `docker-compose.yml`의 현재 `secrets:` 선언; 파일 존재 검사는 별도 실행 증거 | Docker Secret mount 계약으로 관리 |
 | `bind-mounted-cert` | `certs/cert.pem`, `certs/key.pem`, `certs/rootCA.pem`, `certs/rootCA-key.pem` | canonical certificate path는 `secrets/certs/`; 값/원문은 문서화하지 않음 |
-| `registry/local-only` | `security/unseal_keys.txt`, `auth/traefik_admin_password.txt`, `tools/terrakube_minio_secret_key.txt` | root Compose secret 선언과 별개로 registry 또는 운영 절차에서 분류 |
+| `registry/local-only` | `security/unseal_keys.txt`, `auth/traefik_admin_password.txt`, `tools/terrakube_minio_secret_key.txt`, retired Agent Office and metadata-only SonarQube/Supabase/InfluxDB credentials | root Compose secret 선언과 별개로 registry 또는 운영 절차에서 분류 |
 | `private-registry` | `SENSITIVE_ENV_VARS.md` | 개인 gitignored registry로 취급하고 내용은 열람하지 않음 |
 | `example-registry` | `SENSITIVE_ENV_VARS.md.example` | 새 환경과 문서 검토용 예시 mapping |
 
 `infra/secrets/certs/` 같은 비표준 local-only 경로가 보이더라도 문서 진입점이나 인증서 절차의 기준으로 사용하지 않습니다. 인증서 기준 경로는 항상 `secrets/certs/`입니다.
 
+Root declarations without a service grant are retired from Compose. Their private
+files and registry rows remain preserved; metadata presence does not claim an active
+consumer or permission to rotate/delete a credential.
+
 ## Secret Management System
 
 ### Registry
 
-- `SENSITIVE_ENV_VARS.md`가 존재하는 환경에서는 secret mapping의 source of truth로 사용합니다.
+- 공개 ID·환경 키·경로·자동화 메타데이터의 원본은 `SENSITIVE_ENV_VARS.md.example`과 실제 Compose 소비자입니다.
+- `SENSITIVE_ENV_VARS.md`는 개인 값과 로컬 전용 행을 보존하는 gitignored 투영이며 공개 계약을 대체하지 않습니다.
 - 새 환경이나 문서 검토에서는 `SENSITIVE_ENV_VARS.md.example`을 사용합니다.
 - registry는 파일 경로, 대응 `.env` 변수, 자동화 상태, 갱신 이력을 추적해야 합니다.
 
 ### Automation
 
 ```bash
-# Generate or sync missing secrets using the approved script
-./scripts/operations/gen-secrets.sh
+# 공개 메타데이터만 조사한다. 비밀 값·private registry·.env를 읽지 않는다.
+bash scripts/operations/gen-secrets.sh --dry-run
 
-# For local TLS certificates, follow docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md.
-# Do not paste generated key material into docs, logs, commits, or PRs.
+# 아래 두 모드는 private 값을 프로세스 내부에서 보존하지만 출력하지 않는다.
+# check는 쓰지 않으며 drift=1, unsafe/ambiguous input=2를 반환한다.
+bash scripts/operations/gen-secrets.sh --sync-metadata-check
+bash scripts/operations/gen-secrets.sh --sync-metadata
 ```
+
+메타데이터 정렬은 기존 Value/date cell, 알 수 없는 개인 행, 기존 `.env` assignment와
+주석을 보존한다. 빠진 공개 키와 placeholder 행만 추가하며 secret 파일 생성·읽기·
+변경, htpasswd 생성, 회전은 수행하지 않는다. 경로 이탈·symlink·중복 ID/키·해석할 수
+없는 행을 거부하고 원자적 파일 교체를 사용한다. 동시 수동 편집은 중단하고 다시
+검사한다. 개인 값을 shell `source`로 실행하거나 전체 내용을 출력하지 않는다.
+
+옵션 없는 실행은 별도 생성/갱신 기능이며 비밀 파일과 htpasswd를 쓸 수 있다.
+메타데이터 감사 용도로 실행하지 않는다. `--check`는 이 생성 기능의 도구까지 검사하므로
+`htpasswd`가 없는 호스트에서는 실패할 수 있다. 메타데이터 모드는 이를 요구하지 않는다.
 
 특정 secret을 교체해야 할 때는 값을 문서에 쓰지 말고, 승인된 운영 절차에 따라 secure input 또는 스크립트 기반 생성 방식으로 처리합니다. 교체 후에는 해당 서비스의 runbook에 따라 재시작과 검증을 수행합니다.
 

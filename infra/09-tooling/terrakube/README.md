@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -15,7 +15,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using Terrakube 2.31.2 images, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses MinIO-compatible S3 storage for Terraform state.
+`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using the Terrakube images declared in Compose, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses MinIO-compatible S3 storage for Terraform state.
 
 This README is the service-level entrypoint. It summarizes the Compose surface and links to the canonical guide, operations policy, and runbook.
 
@@ -81,9 +81,9 @@ terrakube/
 
 | Component | Image / Source | Role |
 | --- | --- | --- |
-| `terrakube-api` | `azbuilder/api-server:2.33.1` | API server and metadata orchestration |
-| `terrakube-ui` | `azbuilder/terrakube-ui:2.33.1` | Web management UI |
-| `terrakube-executor` | `azbuilder/executor:2.33.1` | Terraform job execution |
+| `terrakube-api` | [declared runtime image](../../tech-stack.versions.json) | API server and metadata orchestration |
+| `terrakube-ui` | [declared runtime image](../../tech-stack.versions.json) | Web management UI |
+| `terrakube-executor` | [declared runtime image](../../tech-stack.versions.json) | Terraform job execution |
 | Metadata | Management PostgreSQL | Terrakube database |
 | State storage | MinIO S3-compatible bucket `tfstate` | Terraform state and output storage |
 | Identity | Keycloak / DEX validation | SSO integration |
@@ -117,3 +117,5 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 - Terrakube recovery runbook (`docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md`)
 - [Root infra README](../../README.md)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

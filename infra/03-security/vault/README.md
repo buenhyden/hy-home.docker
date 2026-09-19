@@ -1,136 +1,73 @@
 ---
-title: "Vault Secret Management"
-version: "1.0.2"
+title: "Vault Legacy Migration"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2026-01-15"
 ---
 
-# Vault Secret Management
-
-> Identity-based secrets management and encryption-as-a-service for `hy-home.docker`.
+# Vault Legacy Migration
 
 ## Overview
 
-HashiCorp Vault는 `hy-home.docker` 플랫폼의 중앙 비밀 관리 엔진이다. 모든 인프라 계층(Gateway, Auth, Data, App)에서 사용하는 API 키, 데이터베이스 자격 증명, 인증서 등을 안전하게 보관하고 수명 주기(Lifecycle)를 관리한다. 현재 구현은 단일 노드 Raft 통합 스토리지와 Vault Agent 서비스로 구성되며, 향후 HA 확장을 위한 전환 절차는 정책/런북에서 관리한다.
+Vault는 **MIGRATE** 대상이며 `legacy-vault` profile에서만 선택된다. HOME canonical 비밀 관리 서비스는 [OpenBao](../openbao/README.md)다. 이 leaf는 기존 데이터와 소비자 전환을 위한 선언을 보존한다. 데이터 이전·복원·unseal·자격 증명 회전은 아직 검증하거나 수행한 것으로 간주하지 않는다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- **SRE / DevOps**: 클러스터 구성, 백업(Snapshot), 버전 업그레이드 담당
-- **Security Engineers**: ACL 정책 설계 및 인증 방식(Keycloak OIDC, AppRole) 관리
-- **AI Agents**: 자동화된 봉인 해제(Unseal) 감지 및 비밀 렌더링 검증 수행
+Security owner, 기존 Vault 소비자 담당자와 인프라 운영자.
 
 ## Scope
 
-### In Scope
-
-- **Server Configuration**: `vault.hcl`을 통한 Raft 스토리지 및 리스너 설정
-- **Agent Configuration**: `vault-agent.hcl`을 통한 자동 인증(Auto-auth) 및 템플릿 처리
-- **Healthcheck Protocol**: `wget` 기반의 정밀 상태 점검 로직
-- **Connectivity**: Traefik L7 라우팅 및 내부망(`infra_net`) 통신 구성
-
-### Out of Scope
-
-- 하위 네트워크(VLAN/Subnet) 방화벽 및 커널 보안 설정
-- 개별 애플리케이션의 비즈니스 로직 및 비밀 데이터의 내용물 생성
-- HSM(Hardware Security Module) 연동 (SW 기반 봉인 관리 사용)
+`vault`, `vault-agent`의 legacy 설정, 상태 조회와 전환 문서를 연결한다. 신규 서비스의 Vault bootstrap이나 자동 데이터 migration은 범위 밖이다.
 
 ## Structure
 
-```text
-vault/
-├── config/             # Vault & Agent configuration files
-│   ├── templates/      # Secret rendering templates (.ctmpl)
-│   ├── vault.hcl       # Server configuration (Raft, Listener)
-│   └── vault-agent.hcl # Agent configuration (AppRole, Templating)
-├── docker-compose.yml  # Container orchestration & Healthcheck
-└── README.md           # This file
-```
+- [docker-compose.yml](docker-compose.yml): profile, 저장소, healthcheck, ingress.
+- `config/vault.hcl`: 서버 설정.
+- `config/vault-agent.hcl`, `config/templates/`: 인증 및 렌더 선언.
+
+## How to Work in This Area
+
+[전환 가이드 — 문서 인덱스](../../../docs/README.md) (`GDE-0016`), [정책 — 문서 인덱스](../../../docs/README.md) (`POL-0016`), [런북 — 문서 인덱스](../../../docs/README.md) (`RUN-0016`)을 따른다. 기존 소비자의 endpoint·인증·템플릿 계약과 데이터 복구 가능성을 먼저 확인한다. 현재 이미지에 대한 OpenBao 저장소 호환성을 추정하지 않는다.
 
 ## Tech Stack
 
-| Category    | Technology      | Notes                  |
-| ----------- | --------------- | ---------------------- |
-| Platform    | Vault (Go)      | `hashicorp/vault:2.1.0` |
-| Persistence | Raft            | Single-node integrated storage |
-| Sidecar     | Vault Agent     | Auto-auth & Templating |
-| Runtime     | Official container image | Root compose profile service |
+현재 pin은 [Vault Compose](docker-compose.yml)와 [curated projection](../../tech-stack.versions.json)을 참조한다. 대상 서비스의 선언은 [OpenBao Compose](../openbao/docker-compose.yml)다.
 
-## Implementation Details
+## Configuration
 
-### Healthcheck Protocol
-
-Vault의 헬스체크는 봉인(Sealed) 상태나 초기화되지 않은 상태에서도 클러스터 준비도를 판단할 수 있도록 파라미터를 조정함:
-
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", 'wget -q -O- "http://127.0.0.1:8200/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1']
-```
-
-### Configuration Highlights
-
-- **Storage**: Raft 스토리지를 `/vault/data`에 마운트하여 데이터 지속성 보장.
-- **Listener**: 내부/infra_net에서는 `tls_disable = 1`로 설정하여 성능을 높이고, 외부 접근은 Traefik이 TLS를 종료함.
-
-## Testing
-
-```bash
-# Validate the root security profile and 03-security hardening contract
-HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
-bash scripts/hardening/check-all-hardening.sh 03-security
-
-# Runtime-only checks after the security profile is already running
-docker compose --profile security exec vault vault operator raft list-peers
-docker compose --profile security exec vault vault status
-docker compose --profile security exec vault-agent ls -la /vault/out
-```
-
-## Validation
-
-- Run `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh 03-security` before marking documentation ready.
-- Verify Vault seal status in runtime sessions with `docker compose --profile security exec vault vault status` and confirm the seal state is `false`.
-- Confirm secret paths are accessible by checking `docker compose --profile security logs vault --tail=200 | grep -i 'error\|warn'` after policy changes.
-- Verify token authentication by confirming dependent services can retrieve their secrets on startup.
-
-## Troubleshooting
-
-- Start with `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` to confirm root-context Vault mounts, ports, and network placement.
-- Check `vault` status and logs, then follow the linked security runbook for sealed or initialization failures.
-
-## Related Documents
-
-- **System Guide**: vault.md (`docs/05.operations/catalog/03-security/0016-vault/guide.md`)
-- **Ops Policy**: vault.md (`docs/05.operations/catalog/03-security/0016-vault/policy.md`)
-- **Runbook**: vault.md (`docs/05.operations/catalog/03-security/0016-vault/runbook.md`)
-- [Documentation index](../../../docs/README.md)
+`vault-data:/vault/data`, `vault-agent-data:/vault/agent`, `vault-agent-out:/vault/out`은 `${DEFAULT_SECURITY_DIR}/vault` 아래 별도 저장소다. OpenBao 데이터 경로와 공유하지 않는다. Vault healthcheck는 sealed/uninitialized 상태도 허용하므로 인증된 소비자의 사용 가능 여부를 별도로 확인한다.
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Vault Secret Management service leaf in `03-security`; services: `vault`, `vault-agent`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/03-security/vault/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `config`, `config/templates/app_env.ctmpl`, `config/templates/grafana_admin_password.ctmpl`, `config/templates/grafana_client_secret.ctmpl`, `config/templates/grafana_db_password.ctmpl`, `config/templates/keycloak_admin_password.ctmpl`, `config/templates/keycloak_admin_username.ctmpl`, `config/templates/keycloak_db_password.ctmpl`, `config/templates/oauth2_proxy_client_secret.ctmpl`, plus 3 more |
-| Config values | env keys: `VAULT_ADDR`, `VAULT_API_ADDR`, `VAULT_CLUSTER_ADDR`, `SKIP_SETCAP`, `SKIP_CHOWN`; profiles: `core`, `security`, `dev` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/03-security/vault/docker-compose.yml` |
-| Networks | `k3d-hyhome`, `infra_net` |
-| Volumes | `vault-data:/vault/data`, `./config/vault.hcl:/vault/config/vault.hcl:ro`, `./config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro`, `./config/templates:/vault/config/templates:ro`, `vault-agent-data:/vault/agent`, `vault-agent-out:/vault/out`, `vault-data`, `vault-agent-data`, plus 1 more |
-| Ports | `${VAULT_PORT:-8200}`, `${VAULT_CLUSTER_PORT:-8201}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.vault.rule`, `traefik.http.routers.vault.entrypoints`, `traefik.http.routers.vault.tls`, `traefik.http.routers.vault.middlewares`, `traefik.http.services.vault.loadbalancer.server.port` |
-| Secret refs | Not declared |
-| Healthcheck | Compose healthcheck declared for `vault`, `vault-agent` |
-| Operations | Guide (`docs/05.operations/catalog/03-security/0016-vault/guide.md`), Policy (`docs/05.operations/catalog/03-security/0016-vault/policy.md`), Runbook (`docs/05.operations/catalog/03-security/0016-vault/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with root profile validation, then inspect service logs and linked operations/runbook evidence. |
+| Services / profile | `vault`, `vault-agent` / `legacy-vault` |
+| Runtime authority | [Compose](docker-compose.yml), [root include](../../../docker-compose.yml) |
+| Network / route | `infra_net`, 서버의 `k3d-hyhome`; `vault.${DEFAULT_URL}` |
+| Data | 기존 Vault 데이터·백업·복원 성공 여부 미검증 |
+| Health | 서버 API 생존 상태와 Agent 프로세스 상태; unseal·렌더·소비자 검증 별도 |
+| Migration | HOME의 OpenBao 전환 준비, 실제 데이터 이전 완료 아님 |
 
-## How to Work in This Area
+## Testing
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+저장소 루트에서 실행한다.
 
-1. **Sealed Status Check**: 모든 API 작업 전 `vault status`를 통해 `Sealed: false`임을 확인한다.
-2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.
-3. **AppRole ID Access**: 자동화 작업 시 `/vault/agent/role_id` 및 `secret_id` 파일을 통해 토큰을 획득한다.
+```bash
+docker compose --env-file .env.example --profile legacy-vault config --services
+bash scripts/hardening/check-all-hardening.sh 03-security
+```
+
+이미 실행 중인 legacy 인스턴스 점검이 허용된 경우 `docker compose --profile legacy-vault exec vault vault status`를 사용한다. 종료 코드 0은 unsealed, 2는 sealed, 1은 오류다.
+
+## Troubleshooting
+
+seal 또는 Agent 장애는 런북으로 인계한다. 비밀 출력 파일이나 토큰을 로그에 복사하지 않으며, 임의 재초기화·SecretID 재발급·볼륨 삭제를 복구 기본값으로 사용하지 않는다.
+
+## Related Documents
+
+- [Security tier](../README.md).
+- [Vault status 공식 문서](https://developer.hashicorp.com/vault/docs/commands/status).
+- [OpenBao migration 제약](https://openbao.org/docs/next/guides/migration/): development 문서의 지원 조건을 적용 릴리스와 대조한다.

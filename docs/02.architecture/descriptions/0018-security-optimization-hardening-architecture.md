@@ -67,3 +67,5 @@ ADR 없이는 current topology로 간주하지 않는다.
 - [SPEC-0003](0003-security-architecture.md)
 - [Vault policy](../../05.operations/catalog/03-security/0016-vault/policy.md)
 - [Vault runbook](../../05.operations/catalog/03-security/0016-vault/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

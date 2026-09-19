@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -13,6 +13,8 @@ created: "2026-05-17"
 ---
 
 # Prometheus Operations Policy
+
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
 
 ## Overview
 
@@ -26,7 +28,7 @@ runbook.
 This policy applies to the current `infra/06-observability/prometheus` compose,
 config, and alert-rule surfaces.
 
-- **Systems**: compose service `prometheus`, container `infra-prometheus`, image `prom/prometheus:v3.14.0`, config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
+- **Systems**: compose service `prometheus`, container `infra-prometheus`, image [Compose image declaration](../../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -34,7 +36,7 @@ config, and alert-rule surfaces.
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
-    `prom/prometheus:v3.14.0`, tmpfs `/tmp` and `/etc/prometheus:size=10M`,
+    [Compose image declaration](../../../../../infra/06-observability/docker-compose.yml), tmpfs `/tmp` and `/etc/prometheus:size=10M`,
     read-only config/rules mounts, persistent `prometheus-data` volume을
     유지한다.
   - Runtime command는 `--config.file=/etc/prometheus/prometheus.yml`,
@@ -91,7 +93,7 @@ config, and alert-rule surfaces.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:v3.14.0|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
 - Prometheus config:
   `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/vault_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:
@@ -110,6 +112,7 @@ config, and alert-rule surfaces.
 
 ## Related Documents
 
+- [Runtime image declarations](../../../../../infra/06-observability/docker-compose.yml)
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)

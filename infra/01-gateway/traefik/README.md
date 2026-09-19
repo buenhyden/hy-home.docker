@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -149,3 +149,5 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 - Traefik Runbook (`docs/05.operations/catalog/01-gateway/0013-traefik/runbook.md`)
 - [Traefik Dashboard](https://dashboard.${DEFAULT_URL:-localhost}) (Internal)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

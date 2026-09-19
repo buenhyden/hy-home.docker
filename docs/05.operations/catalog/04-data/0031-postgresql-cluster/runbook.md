@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -45,7 +45,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
+   docker compose --profile postgres-ha config --quiet
    ```
 
 2. 전체 서비스 상태를 확인한다.
@@ -81,7 +81,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 7. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 해당 서비스만 재기동한다. 예시는 `pg-router` 기준이며, 대상 서비스명은 현재 `docker compose ps` 결과에서 확인한 declared service로 제한한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service up -d pg-router
+   docker compose --profile postgres-ha up -d pg-router
    ```
 
 ### Verification Steps
@@ -133,6 +133,8 @@ Escalate to the owning operator when no leader can be identified, etcd quorum sy
 - Subject peers: [Guide](guide.md) (`GDE-0031`), [Policy](policy.md) (`POL-0031`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

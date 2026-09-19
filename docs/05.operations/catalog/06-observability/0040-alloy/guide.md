@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/alloy:v1.19.2|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Pipeline component boundary를 확인한다.
@@ -105,6 +105,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
+- [Runtime image declarations](../../../../../infra/06-observability/docker-compose.yml)
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)

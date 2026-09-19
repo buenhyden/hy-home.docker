@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -63,7 +63,7 @@ couchdb/
 | --- | --- |
 | Purpose | CouchDB Cluster service leaf in `04-data`; unconditional root include, profile-selected; services: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `COUCHDB_USER`, `NODENAME`; profiles: `data` |
+| Config values | env keys: `COUCHDB_USER`, `NODENAME`; profiles: `couchdb` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `couchdb1-data:/opt/couchdb/data:rw`, `couchdb2-data:/opt/couchdb/data:rw`, `couchdb3-data:/opt/couchdb/data:rw`, `couchdb1-data`, `couchdb2-data`, `couchdb3-data` |
@@ -73,11 +73,11 @@ couchdb/
 | Healthcheck | Compose healthcheck declared for `couchdb-1`, `couchdb-2`, `couchdb-3`; not declared for `couchdb-cluster-init` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0026-couchdb/guide.md`), Policy (`docs/05.operations/catalog/04-data/0026-couchdb/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0026-couchdb/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config`로 렌더링한다.
+1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose --profile couchdb config --quiet`로 렌더링한다.
 2. **Bootstrapping**: 초기 실행 시 `couchdb-cluster-init` 컨테이너가 노드 조인 및 기본 DB 생성을 자동 수행한다.
 3. **Verification**: `https://couchdb.${DEFAULT_URL}/_up` 경로를 통해 클러스터 상태를 확인한다.
 4. **Consistency**: 정족수 유지를 위해 항상 홀수 개의 노드(최소 3개)를 유지해야 한다.
@@ -86,7 +86,7 @@ couchdb/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config` | CouchDB 선택 스택 렌더링 |
+| `docker compose --profile couchdb config --quiet` | CouchDB 선택 스택 렌더링 |
 | `docker compose logs -f couchdb-cluster-init` | 클러스터 초기화 로그 확인 |
 | `docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'` | Secret mount 기반 클러스터 멤버십 확인 |
 
@@ -109,7 +109,7 @@ couchdb/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm CouchDB network, volume, and secret references render.
+- Start with `docker compose config --quiet` to confirm CouchDB network, volume, and secret references render.
 - Check CouchDB logs and the linked runbook before changing clustering, cookie, or admin-secret settings.
 
 ## Related Documents
@@ -121,3 +121,5 @@ couchdb/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

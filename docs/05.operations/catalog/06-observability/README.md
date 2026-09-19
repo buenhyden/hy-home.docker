@@ -33,6 +33,7 @@ retention roles under their current four-digit subject directories.
 | --- | --- |
 | [Alertmanager](0039-alertmanager/guide.md) | [Guide](0039-alertmanager/guide.md), [Policy](0039-alertmanager/policy.md), [Runbook](0039-alertmanager/runbook.md) |
 | [Alloy](0040-alloy/guide.md) | [Guide](0040-alloy/guide.md), [Policy](0040-alloy/policy.md), [Runbook](0040-alloy/runbook.md) |
+| [Gatus](0087-gatus/guide.md) | [Guide](0087-gatus/guide.md), [Policy](0087-gatus/policy.md), [Runbook](0087-gatus/runbook.md) |
 | [Grafana](0041-grafana/guide.md) | [Guide](0041-grafana/guide.md), [Policy](0041-grafana/policy.md), [Runbook](0041-grafana/runbook.md) |
 | [LGTM stack](0042-lgtm-stack/guide.md) | [Guide](0042-lgtm-stack/guide.md) |
 | [Loki](0043-loki/guide.md) | [Guide](0043-loki/guide.md), [Policy](0043-loki/policy.md), [Runbook](0043-loki/runbook.md) |

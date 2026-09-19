@@ -66,10 +66,12 @@ services:
     container_name: comfyui
     hostname: comfyui
     restart: unless-stopped
+    mem_limit: 4g
+    cpus: "2.00"
     gpus: all
     environment:
       TZ: ${DEFAULT_TIMEZONE}
-      CLI_ARGS: ${COMFYUI_ARGS}
+      CLI_ARGS: ${COMFYUI_ARGS:---listen 0.0.0.0 --port ${COMFYUI_PORT:-8188}}
       HF_HOME: /home/comfyui/.cache/huggingface
       TORCH_HOME: /home/comfyui/.cache/torch
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
@@ -92,15 +94,15 @@ services:
       traefik.http.routers.comfyui.rule: Host(`comfyui.${DEFAULT_URL}`)
       traefik.http.routers.comfyui.entrypoints: websecure
       traefik.http.routers.comfyui.tls: 'true'
-      traefik.http.services.comfyui.loadbalancer.server.port: ${COMFYUI_PORT}
+      traefik.http.services.comfyui.loadbalancer.server.port: ${COMFYUI_PORT:-8188}
       traefik.http.routers.comfyui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     ports:
-      - "${COMFYUI_PORT}:${COMFYUI_HOST_PORT}"
+      - "127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}"
     shm_size: "2gb"
     healthcheck:
       test:
         - CMD-SHELL
-        - wget -qO- http://127.0.0.1:${COMFYUI_PORT}/system_stats >/dev/null 2>&1
+        - wget -qO- http://127.0.0.1:${COMFYUI_PORT:-8188}/system_stats >/dev/null 2>&1
       interval: 30s
       timeout: 10s
       retries: 5

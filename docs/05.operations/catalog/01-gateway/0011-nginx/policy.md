@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -73,6 +73,10 @@ created: "2026-05-17"
 - Subject peers: [Guide](guide.md) (`GDE-0011`), [Runbook](runbook.md) (`RUN-0011`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://nginx.org/en/docs/beginners_guide.html)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

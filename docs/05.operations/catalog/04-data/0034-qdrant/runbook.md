@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -45,7 +45,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile data --profile ai config qdrant
+   docker compose --profile qdrant config --quiet qdrant
    ```
 
 2. 서비스 상태를 확인한다.
@@ -75,21 +75,21 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose --profile data --profile ai up -d qdrant
+   docker compose --profile qdrant up -d qdrant
    ```
 
 ### Verification Steps
 
 - `docker compose ps qdrant`에서 `qdrant`가 running 또는 healthy 상태인지 확인한다.
 - `/readyz`가 200 response evidence를 제공하는지 확인한다.
-- `docker compose --profile data --profile ai config qdrant`에서 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`가 유지되는지 확인한다.
+- `docker compose --profile qdrant config --quiet qdrant`에서 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`가 유지되는지 확인한다.
 
 ### Observability and Evidence Sources
 
 - **Logs**: `docker compose logs --tail=120 qdrant`
 - **Health**: `/readyz` and compose healthcheck
 - **Route**: Traefik HTTP labels on `qdrant` and TCP labels on `qdrant-grpc`
-- **Config**: `docker compose --profile data --profile ai config qdrant`
+- **Config**: `docker compose --profile qdrant config --quiet qdrant`
 
 ### Safe Rollback or Recovery Procedure
 
@@ -125,6 +125,8 @@ Escalate to the owning operator when `/readyz` fails after restart, logs show st
 - Subject peers: [Guide](guide.md) (`GDE-0034`), [Policy](policy.md) (`POL-0034`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

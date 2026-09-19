@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -105,7 +105,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
     ([OPER](../../04-data/0018-ksqldb/guide.md), [RUN](../../04-data/0018-ksqldb/runbook.md))
   - [opensearch](../../../../../infra/04-data/analytics/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../../04-data/0019-opensearch/guide.md), [RUN](../../04-data/0019-opensearch/runbook.md))
-  - [warehouses](../../../../../infra/04-data/analytics/warehouses/README.md): 배치 윈도우/리소스 큐 정책, 메타스토어 백업 주기 명시
+  - [warehouses](../../../../../infra/04-data/analytics/starrocks/README.md): 배치 윈도우/리소스 큐 정책, 메타스토어 백업 주기 명시
     ([OPER](../../04-data/0020-starrocks/guide.md), [RUN](../../04-data/0020-starrocks/runbook.md))
 - Cache & KV
   - [valkey-cluster](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
@@ -176,8 +176,8 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 #### 09-tooling
 
-- [terraform](../../../../../infra/09-tooling/terraform/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
-  ([OPER](../../09-tooling/0068-terraform/guide.md), [RUN](../../09-tooling/0068-terraform/runbook.md))
+- [opentofu](../../../../../infra/09-tooling/opentofu/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
+  ([OPER](../../09-tooling/0082-opentofu/guide.md), [RUN](../../09-tooling/0082-opentofu/runbook.md)); 기존 Terraform workspace는 [migration handoff](../../09-tooling/0068-terraform/guide.md)를 따른다.
 - [terrakube](../../../../../infra/09-tooling/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
   ([OPER](../../09-tooling/0069-terrakube/guide.md), [RUN](../../09-tooling/0069-terrakube/runbook.md))
 - [registry](../../../../../infra/09-tooling/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
@@ -188,12 +188,11 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   ([OPER](../../09-tooling/0061-k6/guide.md), [RUN](../../09-tooling/0061-k6/runbook.md))
 - [locust](../../../../../infra/09-tooling/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
   ([OPER](../../09-tooling/0062-locust/guide.md), [RUN](../../09-tooling/0062-locust/runbook.md))
-- [syncthing](../../../../../infra/09-tooling/syncthing/README.md): 동기화 폴더 ACL/암호화 기준 강화, 충돌 파일 처리 정책 명문화
-  ([OPER](../../09-tooling/0067-syncthing/guide.md), [RUN](../../09-tooling/0067-syncthing/runbook.md))
+- Syncthing runtime은 저장소에서 제거되었으며 현재 서비스 확장/하드닝 대상이 아니다. 기존 파일과 외부 동기화 상태는 제거된 Compose 서비스를 재기동하지 않고 소유자와 확인한다.
 
 #### 10-communication
 
-- [mail](../../../../../infra/10-communication/mail/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
+- [mail](../../../../../infra/10-communication/stalwart/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
   ([OPER](../../10-communication/0070-mail/guide.md), [RUN](../../10-communication/0070-mail/runbook.md))
 
 #### 11-laboratory
@@ -243,7 +242,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   - Compose 파일 기준: **43/43 (100%)**
 - 미적용 서비스(서비스 기준): **없음 (0건)**
 - 보조 Compose 적용 상태(서비스 수 미산입):
-  - opensearch cluster 노드는 [opensearch compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)의 `data-cluster` profile로 통합됨: **적용 완료**
+  - opensearch cluster 노드는 [opensearch compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)의 `opensearch-cluster` profile로 통합됨: **적용 완료**
 - 의도된 템플릿 예외:
   - SSoT: [infra/common-optimizations.exceptions.json](../../../../../infra/common-optimizations.exceptions.json)
   - 운영 정책: [common-optimizations-template-exceptions.md](../0001-common-optimizations-template-exceptions/policy.md)
@@ -273,5 +272,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)

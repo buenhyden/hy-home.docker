@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -85,6 +85,10 @@ created: "2026-05-17"
 - Subject peers: [Policy](policy.md) (`POL-0044`), [Runbook](runbook.md) (`RUN-0044`)
 
 ## Related Documents
+
+- [Official cAdvisor deployment and host access](https://github.com/google/cadvisor)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

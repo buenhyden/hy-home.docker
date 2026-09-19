@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -54,7 +54,7 @@ kafka/
 | --- | --- |
 | Single broker | `messaging`/`dev` -> `kafka-1` |
 | Cluster | `messaging-cluster` adds `kafka-2`, `kafka-3` |
-| Kafbat | `kafbat/kafka-ui:v1.5.0` |
+| Kafbat | [declared runtime image](../../tech-stack.versions.json) |
 | Kafbat auth | Keycloak Native OAuth2/OIDC |
 | Kafbat secret | `kafbat_client_secret` |
 | Kafbat health | `/actuator/health` |
@@ -62,24 +62,29 @@ kafka/
 ## Kafbat Authentication
 
 Client:
+
 - `home-kafbat`
 
 Issuer:
+
 ```text
 https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
 ```
 
 Redirect:
+
 ```text
 https://kafbat-ui.${DEFAULT_URL}/login/oauth2/code/keycloak
 ```
 
 Roles field:
+
 ```text
 groups
 ```
 
 RBAC:
+
 - `/admins` -> admin
 - `/users` -> readonly
 
@@ -118,6 +123,7 @@ docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
 ```
 
 Kafbat:
+
 - `/actuator/health`
 - login
 - `/admins` admin
@@ -146,3 +152,5 @@ Kafbat:
 - **Policy**: `docs/05.operations/catalog/05-messaging/0036-kafka/policy.md`
 - **Runbook**: `docs/05.operations/catalog/05-messaging/0036-kafka/runbook.md`
 - **Auth Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

@@ -2261,8 +2261,11 @@ def _normalized_target_path(path_text: str) -> pathlib.Path | None:
     if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
         return None
     normalized = pure.as_posix()
-    if normalized not in TARGET_MARKDOWN_FILES and not normalized.startswith(
-        TARGET_MARKDOWN_PREFIXES
+    runtime_readme = normalized.startswith("infra/") and pure.name == "README.md"
+    if (
+        not runtime_readme
+        and normalized not in TARGET_MARKDOWN_FILES
+        and not normalized.startswith(TARGET_MARKDOWN_PREFIXES)
     ):
         return None
     return pathlib.Path(normalized)

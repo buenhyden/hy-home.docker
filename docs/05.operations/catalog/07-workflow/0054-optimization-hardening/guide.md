@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-17"
    - 선택하지 않은 경우 shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
-   - compose가 custom image(`hyhome/n8n:2.29.5-local`)를 사용하도록 확인한다.
+   - compose가 custom image([hyhome/n8n image declaration](../../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.
    - Dockerfile non-root runtime(`USER 1000`)와 entrypoint secret guard를 확인한다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
@@ -93,6 +93,8 @@ created: "2026-05-17"
 - Subject peers: [Policy](policy.md) (`POL-0054`), [Runbook](runbook.md) (`RUN-0054`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

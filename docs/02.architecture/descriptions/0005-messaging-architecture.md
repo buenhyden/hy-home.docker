@@ -91,16 +91,29 @@ Kafbat의 local TLS trust는 JDK default `cacerts` 복사본에 mkcert root를 �
 `infra/05-messaging/kafka/docker-compose.yml`은 profile 기반으로 broker 수를 선택한다.
 
 Kafbat:
-- image: `kafbat/kafka-ui:v1.5.0`
+
+- image: [Kafbat declaration](../../../infra/05-messaging/kafka/docker-compose.yml)
 - route: `gateway-standard-chain@file`
 - client ID: `home-kafbat`
 - issuer: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
 
-## Related Documents
+## Traceability
 
 - **PRD**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **ADR**: [Kafka vs RabbitMQ](../decisions/0005-kafka-vs-rabbitmq-selection.md)
 - **ADR**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- **Spec**: [Messaging Spec](../../03.specs/006-messaging/spec.md)
+- **Spec**: [Current Spec Package index](../../03.specs/README.md)
 - **Operations**: [Kafka Guide](../../05.operations/catalog/05-messaging/0036-kafka/guide.md)
 - **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+
+## Risks
+
+A multi-broker topology on the same host does not isolate host power or storage
+failure. Native OIDC readiness also requires provisioned application roles;
+a healthy container alone does not prove authorization.
+
+## Evolution
+
+Keep messaging optional until a durable event consumer is identified. Validate
+partition data, client compatibility and recovery before topology or image changes.
+Runtime image declarations remain in Compose and the [version projection](../../../infra/tech-stack.versions.json).

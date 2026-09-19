@@ -1,10 +1,10 @@
 ---
 title: "Tooling Hardening and HA Expansion Strategy"
-version: "1.0.1"
+version: "2.0.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "architecture"
 artifact_id: "ADR-0024"
 parent_ids:
@@ -22,17 +22,16 @@ Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보�
 ## Decision
 
 - 즉시 하드닝을 시행한다.
-  - SonarQube/Terrakube/Syncthing 라우터를 `gateway-standard-chain + sso-errors + sso-auth`로 정렬한다.
+  - SonarQube/Terrakube 라우터를 `gateway-standard-chain + sso-errors + sso-auth`로 정렬한다.
   - tooling compose에 `infra_net` external 경계 선언을 명시한다.
   - locust-worker healthcheck를 추가하고, k6 volume 참조 drift를 정렬한다.
   - `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 도입한다.
 - 카탈로그 확장은 단계적으로 시행한다.
-  - terraform 승인/백업/drift 자동 탐지
+  - OpenTofu 승인/백업/drift 자동 탐지
   - terrakube 권한/감사로그 강화
   - registry 서명/스캔 차단 정책
   - sonarqube 품질게이트 재정의
   - k6/locust 테스트 표준화
-  - syncthing ACL/암호화/충돌 정책 강화
 
 ## Consequences
 

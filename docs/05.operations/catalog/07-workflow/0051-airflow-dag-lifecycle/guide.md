@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -95,6 +95,8 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 - Subject peers: [Policy](policy.md) (`POL-0052`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Airflow system guide](../0050-airflow/guide.md)

@@ -1,10 +1,10 @@
 ---
 title: "Ollama Operations Policy"
-version: "1.0.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -33,6 +33,7 @@ Ollama 추론 엔진 운영 전반:
 ## Controls
 
 - **Required**:
+  - 호스트 직접 API 포트는 loopback에만 바인딩한다. 컨테이너 소비자는 서비스 DNS를, 원격 소비자는 인증된 gateway 경로를 사용한다.
   - 모델 변경 전 승인된 local/dev rehearsal에서 성능 및 안정성 검증을 수행해야 한다.
   - 운영 모델은 검증된 태그/소스만 사용해야 한다.
   - VRAM/메모리 사용량을 exporter 및 대시보드로 상시 관측해야 한다.
@@ -41,6 +42,7 @@ Ollama 추론 엔진 운영 전반:
   - 승인된 경량/양자화 모델 배포.
   - `keep_alive` 정책 기반 모델 언로드 최적화.
 - **Disallowed**:
+  - 인증 없는 Ollama API를 LAN/공용 인터페이스에 직접 게시하는 구성.
   - 승인 없는 대형 모델 상시 로드.
   - 출처 불명/무검증 모델 운영 반영.
   - 운영 시간대 무단 리소스 상향.
@@ -74,6 +76,10 @@ Ollama 추론 엔진 운영 전반:
 - Subject peers: [Guide](guide.md) (`GDE-0056`), [Runbook](runbook.md) (`RUN-0056`)
 
 ## Related Documents
+
+- [Ollama API authentication](https://docs.ollama.com/api/authentication): local API의 무인증 동작과 cloud API 인증을 구분한다.
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

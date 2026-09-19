@@ -24,13 +24,21 @@ services:
     volumes:
       - mailpit-data:/data
     ports:
-      - ${MAILPIT_UI_PORT}:${MAILPIT_UI_HOST_PORT}
-      - ${MAILPIT_SMTP_PORT}:${MAILPIT_SMTP_HOST_PORT}
+      - "127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}:${MAILPIT_UI_PORT:-8025}"
+      - "127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:${MAILPIT_SMTP_PORT:-1025}"
     environment:
+      MP_UI_BIND_ADDR: "0.0.0.0:${MAILPIT_UI_PORT:-8025}"
+      MP_SMTP_BIND_ADDR: "0.0.0.0:${MAILPIT_SMTP_PORT:-1025}"
       MP_MAX_MESSAGES: 5000
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    healthcheck:
+      test: [ "CMD", "/mailpit", "readyz" ]
+      interval: 15s
+      start_period: 10s
+      timeout: 5s
+      retries: 3
     networks:
       infra_net:
         ipv4_address: 172.19.0.230

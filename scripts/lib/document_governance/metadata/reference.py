@@ -33,6 +33,7 @@ from scripts.lib.document_governance.metadata.heading import (
     _introduced_body_findings,
     _machine_template_findings,
     _native_migration_compaction_witness,
+    _runtime_version_findings,
     extract_markdown_headings,
     validate_body_contract,
 )
@@ -83,6 +84,10 @@ from scripts.lib.document_governance.metadata.profile import (
     build_manifest,
     build_registry_profiles,
     registered_generated_owner,
+)
+from scripts.lib.document_governance.operations_catalog import (
+    OperationsAuthorityError,
+    read_bounded_regular,
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
@@ -1141,7 +1146,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "Requirement allocation transition requires a trusted base commit"
                     )
                 trusted_requirement_baseline = (
-                    load_trusted_requirement_allocation_baseline(revision, root=root)
+                    load_trusted_requirement_allocation_baseline(
+                        revision, root=root, allow_pinned_recovery=True
+                    )
                 )
             registry = load_registry(
                 args.profiles,
@@ -1188,6 +1195,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     ) as error:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
+    profiles = {**profiles, "_runtime_root": root}
     if args.mode == "check-contracts" and args.profiles.suffix.lower() == ".json":
         assert registry is not None
         contract_findings: list[Finding] = []
@@ -1515,6 +1523,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         for record in records
     }
+    if args.mode != "check-changed":
+        # Active/report checks also enforce runtime authority. Changed mode uses
+        # the same helper through the existing introduced-body comparison.
+        for record in records:
+            try:
+                text = read_bounded_regular(
+                    root,
+                    record.path,
+                    max_bytes=4 * 1024 * 1024,
+                ).decode("utf-8")
+            except (OSError, UnicodeError, OperationsAuthorityError):
+                continue  # Existing record parsing owns unreadable-file errors.
+            path_text = record.path.as_posix()
+            findings_by_path[path_text] = [
+                *findings_by_path[path_text],
+                *_runtime_version_findings(record, text, root),
+            ]
     records_by_path = {record.path.as_posix(): record for record in records}
     changed_body_findings: dict[str, list[Finding]] = {}
     link_only_changes: set[str] = set()

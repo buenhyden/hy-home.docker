@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0032"
 parent_ids: []
@@ -75,6 +75,8 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 - Subject peers: none — `04-data/0032-postgresql-logical-upgrade-restore-rehearsal` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - Spec 125
 - Infrastructure Plan

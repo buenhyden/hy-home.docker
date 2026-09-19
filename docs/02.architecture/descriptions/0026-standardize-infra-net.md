@@ -105,3 +105,5 @@ tracked Compose configuration.
 - [IP address management guide](../../05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md)
 - [IP address management policy](../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md)
 - [IP address management runbook](../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

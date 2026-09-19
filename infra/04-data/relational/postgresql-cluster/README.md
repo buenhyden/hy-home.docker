@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
@@ -67,8 +67,8 @@ postgresql-cluster/
 | Field | Evidence |
 | --- | --- |
 | Purpose | postgresql-cluster service leaf in `04-data`; services: `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, plus 5 more; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/relational/postgresql-cluster/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `config`, `config/haproxy.cfg.tpl` |
-| Config values | env keys: `POSTGRES_ROUTER_HOSTNAME`, `POSTGRES_WRITE_PORT`, `POSTGRES_READ_PORT`, `POSTGRES_USER`, `POSTGRES_DB`, `PATRONI_EXPORTER_USERNAME`, `SERVICE_POSTGRES_USERNAME`, `SERVICE_POSTGRES_DB`, plus 10 more; profiles: `data`, `service` |
+| Config files | `docker-compose.yml`, `config --quiet`, `config/haproxy.cfg.tpl` |
+| Config values | env keys: `POSTGRES_WRITE_PORT`, `POSTGRES_READ_PORT`, `POSTGRES_USER`, `POSTGRES_DB`, `PATRONI_EXPORTER_USERNAME`, `SERVICE_POSTGRES_USERNAME`, `SERVICE_POSTGRES_DB`, plus 10 more; profiles: `postgres-ha` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/relational/postgresql-cluster/docker-compose.yml` |
 | Networks | `infra_net`, `k3d-hyhome` |
 | Volumes | `etcd1-data:/etcd-data:rw`, `etcd2-data:/etcd-data:rw`, `etcd3-data:/etcd-data:rw`, `./config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro`, `./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro`, `pg0-data:/home/postgres/pgdata:rw`, `./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro`, `pg1-data:/home/postgres/pgdata:rw`, plus 7 more |
@@ -78,12 +78,12 @@ postgresql-cluster/
 | Healthcheck | Compose healthcheck declared for `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-0`, plus 5 more; not declared for `pg-cluster-init` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md`), Policy (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 1. 클러스터 아키텍처 및 연결 방법은 Technical Guide (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md`)를 먼저 확인합니다.
-2. 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config`로 렌더링합니다.
+2. 루트 compose include 상태를 확인하고 `docker compose --profile postgres-ha config --quiet`로 렌더링합니다.
 3. 운영 변경 사항은 반드시 Operations Policy (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/policy.md`) 준수 여부를 확인합니다.
 4. 장애 대응 절차는 Recovery Runbook (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md`)를 참조합니다.
 
@@ -91,7 +91,7 @@ postgresql-cluster/
 
 | Command                               | Description               |
 | ------------------------------------- | ------------------------- |
-| `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` | 선택 클러스터 렌더링 |
+| `docker compose --profile postgres-ha config --quiet` | 선택 클러스터 렌더링 |
 | `docker exec pg-0 patronictl -c /home/postgres/postgres.yml list` | 클러스터 상태 및 역할 확인 |
 | `docker compose logs --tail=120 pg-router pg-cluster-init pg-0 pg-1 pg-2` | 핵심 로그 확인 |
 
@@ -115,7 +115,7 @@ postgresql-cluster/
 
 ## Troubleshooting
 
-- Start with `docker compose config` from this service directory to verify Patroni, etcd, HAProxy, exporter, network, volume, and secret references render.
+- Start with `docker compose config --quiet` from this service directory to verify Patroni, etcd, HAProxy, exporter, network, volume, and secret references render.
 - If leader election or routing fails, inspect `docker compose logs pg-router` and the Patroni node logs, then check `patronictl list` before changing DCS or HAProxy settings.
 
 ## Related Documents
@@ -128,3 +128,5 @@ postgresql-cluster/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

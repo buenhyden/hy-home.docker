@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0055"
 parent_ids: []
@@ -48,10 +48,11 @@ created: "2026-03-25"
    nvidia-smi
    ```
 
-2. NVIDIA Container Toolkit 경로를 검증한다.
+2. 호스트 driver와 호환되는 승인된 CUDA 진단 image를 `GPU_DIAGNOSTIC_IMAGE`로 지정한 뒤 NVIDIA Container Toolkit 경로를 검증한다. Image tag 또는 digest는 운영자가 사용하는 driver 호환성 기준에서 선택한다.
 
    ```bash
-   docker run --rm --runtime=nvidia --gpus all nvidia/cuda:12.0.0-base-ubuntu22.04 nvidia-smi
+   : "${GPU_DIAGNOSTIC_IMAGE:?Set an approved CUDA diagnostic image compatible with the host driver}"
+   docker run --rm --runtime=nvidia --gpus all "$GPU_DIAGNOSTIC_IMAGE" nvidia-smi
    ```
 
 3. Ollama 컨테이너 내부 GPU 인식을 확인한다.
@@ -129,6 +130,8 @@ Stop and escalate to the owning operator when host `nvidia-smi` fails, NVIDIA Co
 - Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Ollama usage guide](../0056-ollama/guide.md)

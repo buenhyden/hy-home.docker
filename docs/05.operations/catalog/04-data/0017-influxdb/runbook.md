@@ -68,7 +68,7 @@ created: "2026-05-17"
 
 - [ ] compose file exists and docs implementation alignment passes.
 - [ ] primary v3 endpoint returns `200`, `204`, or `401` as accepted by compose healthcheck.
-- [ ] write endpoint/schema contract is `POST /api/v3/write_lp?db=${INFLUXDB_DB_NAME}`; source-only validation cannot prove authorization and no write is sent during a readiness check.
+- [ ] write endpoint/schema contract is `POST /api/v3/write_lp?db=<operator-selected-database>`; source-only validation cannot prove authorization and no write is sent during a readiness check.
 - [ ] final evidence records compose file, container state, and whether escalation was needed.
 
 ### Observability and Evidence Sources

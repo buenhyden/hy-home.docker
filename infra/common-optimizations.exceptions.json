@@ -1,6 +1,6 @@
 {
   "policy_id": "OPS-TPL-EXCEPTIONS-001",
-  "effective_date": "2026-03-28",
+  "effective_date": "2026-09-19",
   "template_source": "infra/common-optimizations.yml",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
@@ -47,6 +47,14 @@
       {
         "service": "valkey-cluster-init",
         "reason": "One-shot init job"
+      },
+      {
+        "service": "mng-pg-init",
+        "reason": "One-shot psql initialization; completion must exit 0 and dependent services require successful completion.",
+        "owner": "@buenhyden",
+        "risk": "An exited job has no daemon health endpoint; readiness relies on its exit status.",
+        "exit_condition": "Remove if converted into a long-running service.",
+        "review_cadence": "monthly"
       }
     ],
     "secrets_exceptions": [
@@ -69,6 +77,22 @@
       {
         "service": "vault-agent",
         "reason": "Vault Agent consumes Vault runtime state and mounted config, not Docker secrets"
+      },
+      {
+        "service": "openbao",
+        "reason": "Secret control plane uses owner-held initialization/unseal material and persistent Raft state, not a Docker Secret.",
+        "owner": "@buenhyden",
+        "risk": "Sealed health is not application secret readiness.",
+        "exit_condition": "Review when bootstrap or auto-unseal mechanism changes.",
+        "review_cadence": "monthly"
+      },
+      {
+        "service": "openbao-agent",
+        "reason": "AppRole identity and token sink use dedicated protected bind mounts.",
+        "owner": "@buenhyden",
+        "risk": "Mounted bootstrap credentials and rendered output require restrictive filesystem permissions.",
+        "exit_condition": "Remove when bootstrap credentials are delivered through Compose Secret grants.",
+        "review_cadence": "monthly"
       }
     ]
   },
@@ -77,7 +101,10 @@
     "file_exceptions": []
   },
   "security_baseline": {
-    "required_controls": ["no-new-privileges:true", "cap_drop:ALL"],
+    "required_controls": [
+      "no-new-privileges:true",
+      "cap_drop:ALL"
+    ],
     "no_new_privileges_exceptions": [],
     "cap_drop_all_exceptions": [
       {

@@ -1,10 +1,10 @@
 ---
-title: "Mail Usage Guide"
-version: "1.0.0"
+title: "Stalwart Mail Usage Guide"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0070"
 parent_ids:
@@ -12,82 +12,41 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# Mail Usage Guide
+# Stalwart Mail Usage Guide
 
 ## Usage
 
 ### Overview
 
-이 문서는 `10-communication` 메일 구현을 사용하는 방법을 설명한다. 현재 구현은 루트가 무조건 include하는 `infra/10-communication/mail/docker-compose.yml`에 있으며, Stalwart 운영 메일 서버와 MailHog 개발 SMTP 트랩을 제공한다. 두 서비스 모두 `communication` profile에서만 resolve된다.
-
-### Usage Type
-
-`system-guide`
-
-### Target Audience
-
-- Developer
-- Operator
-- AI Agent
-
-### Purpose
-
-이 가이드는 사용자가 현재 compose 경계를 이해하고, 개발 메일은 MailHog로 안전하게 캡처하며, Stalwart 운영 승격 전에 필요한 검증 항목을 확인할 수 있도록 돕는다.
+`0070-mail`은 선택형 실제 메일 서버 Stalwart를 소유한다. `mail-server` profile로만 선택하며 HOME 또는 DEV의 기본 SMTP 목적지가 아니다. 개발용 캡처는 별도 [Mailpit subject 0084](../0084-mailpit/guide.md)가 소유한다.
 
 ### Prerequisites
 
-- root `docker-compose.yml`이 mail compose 파일을 include하는지 확인하고, `communication` profile 선택 여부로 기동을 판단한다.
-- `DEFAULT_COMMUNICATION_DIR`, `DEFAULT_URL`, Docker Secret `stalwart_password`, `secrets/certs` 경계가 운영 환경에 준비되어 있어야 한다.
-- Stalwart 직접 바인딩 포트 `25`, `465`, `587`, `993`, `4190`은 운영 승격 전에 호스트/방화벽/DNS 정책과 함께 검증한다.
-- MailHog Web UI는 포트 `8025`에서 캡처된 메일을 표시하며, 상태를 남기지 않는 개발용 서비스다.
+저장소 루트에서 실행한다. 실제 송수신을 시작하기 전에 도메인 DNS(MX/SPF/DKIM/DMARC), TLS 인증서, host 포트, `stalwart_password` 참조, 데이터 백업·복구 계획을 확인한다. 개인 메일함·비밀·인증서 원문은 검증 자료로 읽지 않는다.
 
 ### Step-by-step Instructions
 
-#### 1. Compose 경계 확인
+1. 루트 include와 profile 선택을 정적으로 확인한다.
 
-1. [root docker-compose.yml](../../../../../docker-compose.yml)의 `include:` 목록에 `infra/10-communication/mail/docker-compose.yml`이 있는지 확인하고, `communication` profile을 선택했는지 기록한다.
-2. static 검증은 서비스 로컬 standalone compose가 아니라 root network/secret/template context를 보존하는 검증으로 수행한다.
-3. 하드닝 기준을 확인한다: `bash scripts/hardening/check-all-hardening.sh 10-communication`.
+   ```bash
+   docker compose --env-file .env.example --profile mail-server config --services
+   bash scripts/hardening/check-all-hardening.sh 10-communication
+   ```
 
-#### 2. Stalwart 운영 서버 사용
-
-1. 운영 승격 전에 DNS(MX/SPF/DKIM/DMARC), 인증서, host port 개방, secret evidence를 확보한다.
-2. 관리자 UI는 `https://mail.${DEFAULT_URL}` route를 사용하며 Traefik SSO 미들웨어 체인으로 보호된다.
-3. 클라이언트는 운영 승인 후 `mail.${DEFAULT_URL}`의 `465` 또는 `587` SMTP Submission과 `993` IMAPS를 사용한다.
-
-#### 3. MailHog 개발 워크플로우
-
-1. 안전한 테스트를 위해 애플리케이션의 SMTP 설정을 다음과 같이 구성합니다:
-   - **Host**: `mailhog`
-   - **Port**: `1025`
-   - **Encryption**: None
-2. 하위 앱에서 발송된 모든 메일은 외부로 나가지 않고 `https://mailhog.${DEFAULT_URL}` 웹 UI에서 확인할 수 있습니다.
-3. **참고**: MailHog는 데이터를 메모리에 저장하므로 컨테이너 재시작 시 큐가 초기화됩니다.
-
-### Client Configuration (Stalwart)
-
-| Setting | Value |
-| :--- | :--- |
-| **IMAP Server** | `mail.${DEFAULT_URL}` |
-| **IMAP Port** | `993` (SSL/TLS) |
-| **SMTP Server** | `mail.${DEFAULT_URL}` |
-| **SMTP Port** | `465` (SSL/TLS) or `587` (STARTTLS) |
-
-### Common Pitfalls
-
-- **ISP 포트 차단**: 많은 웹 호스팅/ISP는 포트 25(SMTP)를 기본적으로 차단합니다. 발송 실패 시 릴레이 서비스를 검토하거나 ISP에 해제를 요청하십시오.
-- **인증서 만료**: `secrets/certs` 내의 인증서가 만료되면 SMTP/IMAP 연결이 실패할 수 있습니다.
-- **standalone compose 검증**: `infra/10-communication/mail/docker-compose.yml`은 root `infra_net`과 secret context에 의존하므로 서비스 로컬 `docker compose config`를 readiness evidence로 사용하지 않는다.
+2. [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml)의 host-port 변수와 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` 영속 경로를 확인한다. 관리 UI는 `https://mail.${DEFAULT_URL}`이며 Traefik SSO 체인을 사용한다.
+3. 운영 전환을 승인받은 환경에서 SMTP Submission 또는 SMTPS와 IMAPS의 TLS·인증을 검증한다. Compose는 SMTP, Submission, SMTPS, IMAPS, ManageSieve 포트를 호스트에 게시하므로 관리 UI SSO가 메일 프로토콜 인증을 대신하지 않는다.
+4. 실행 중인 서비스 상태 점검은 `docker compose --profile mail-server ps stalwart`로 시작한다. SMTP TCP healthcheck만으로 외부 배달, DNS 또는 TLS 성공을 주장하지 않는다.
+5. 애플리케이션 개발 테스트는 [Mailpit 가이드](../0084-mailpit/guide.md)의 내부 `mailpit` SMTP 또는 loopback 바인딩을 사용한다. Stalwart를 개발 트랩으로 사용하지 않는다.
 
 ## Common Checks
 
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
-- 기대 결과: `10-communication` 하드닝 기준과 문서 stale guard가 실패 없이 통과한다.
+- 루트 profile 구성과 communication 하드닝 검증 통과.
+- 실제 운영 readiness는 DNS, TLS, 인증, 승인된 송수신 시험, 복원 검증을 별도로 기록.
+- 이미지 버전은 Compose를 참조하며 문서에 현재 pin을 복제하지 않는다.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+UI·SMTP·IMAP 연결 실패나 배달 문제가 발생하면 [Stalwart 런북](runbook.md)을 따른다. 개발 캡처 실패는 [Mailpit 런북](../0084-mailpit/runbook.md)으로 인계한다.
 
 ## Traceability
 
@@ -97,6 +56,8 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
+- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml): 서비스·profile·포트·데이터 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [Mailpit 개발 트랩 가이드](../0084-mailpit/guide.md), [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md).
+- [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
+- [Mailpit 공식 기능 문서](https://mailpit.axllent.org/docs/).

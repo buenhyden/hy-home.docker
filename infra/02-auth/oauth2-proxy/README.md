@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-29"
 ---
 
@@ -59,11 +59,13 @@ oauth2-proxy/
 ## Authentication Applicability
 
 ForwardAuth 대상:
+
 - Flower
 - n8n
 - 자체 OIDC가 없는 서비스
 
 Native OIDC 대상:
+
 - Airflow
 - Kafbat UI
 
@@ -124,6 +126,10 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 - [Keycloak](../keycloak/README.md)
 - [Gateway](../../01-gateway/README.md)
-- [OAuth2 Proxy Guide](../../../docs/05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
-- [Application Authentication Integration Guide](../../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- [OAuth2 Proxy Guide](../../../docs/README.md)
+- [Application Authentication Integration Guide](../../../docs/README.md)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+
+Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).

@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-10"
 
 ### Overview
 
-SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. 현재 구현은 `data` profile에서 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`를 실행하며, all services use `infra_net` and image `chrislusf/seaweedfs:4.47`.
+SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. `seaweedfs` profile은 master, volume, filer, S3 서버를 선택한다. `seaweedfs-mount` profile은 privileged mount와 master·volume·filer 의존성을 선택하며 S3는 포함하지 않는다. 전체 표면을 확인할 때는 두 profile을 함께 선택한다. 모든 서비스는 `infra_net`을 사용하며 이미지 선언은 해당 Compose 파일이 소유한다.
 
 ### Usage Type
 
@@ -51,10 +51,16 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 1. 현재 compose service set을 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config --services
+   docker compose --env-file .env.example --profile seaweedfs config --services
    ```
 
-   Expected services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`.
+   Expected services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`. Mount selection is separate:
+
+   ```bash
+   docker compose --env-file .env.example --profile seaweedfs-mount config --services
+   ```
+
+   Expected mount selection: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-mount`.
 
 2. 접근 경로를 확인한다.
 
@@ -66,7 +72,7 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 3. 일반 상태를 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
+   docker compose --profile seaweedfs --profile seaweedfs-mount ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
    ```
 
 4. Mount service boundary를 확인한다.
@@ -84,8 +90,8 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps`
+- `docker compose --profile seaweedfs config --quiet`
+- `docker compose --profile seaweedfs ps`
 - Search paired guide/policy/runbook and infra README for stale image versions, single-container log commands, unmounted config claims, or destructive recovery commands.
 - Expected result: compose renders, documented services match the compose file, and mount privilege is explicitly acknowledged.
 
@@ -101,6 +107,8 @@ SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선
 - Subject peers: [Policy](policy.md) (`POL-0024`), [Runbook](runbook.md) (`RUN-0024`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

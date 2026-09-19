@@ -81,3 +81,5 @@ file, database state는 task-scoped transient resource다. 실행 전 exact targ
 - `tests/validation/test_postgres_logical_upgrade_rehearsal.py`
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

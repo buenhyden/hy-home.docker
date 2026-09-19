@@ -731,7 +731,15 @@ class ArchiveMinimizationTests(unittest.TestCase):
         allowed = required | set(self.archive.PRESERVED_DISPOSITIONS)
         self.assertLessEqual(required, set(inventory.root_entries))
         self.assertLessEqual(set(inventory.root_entries), allowed)
-        self.assertEqual(3, len(inventory.migrations))
+        self.assertEqual(
+            (
+                "0001-sdlc-taxonomy-convergence.md",
+                "0002-operations-catalog-convergence.md",
+                "0003-workspace-governance-simplification.md",
+                "0004-research-package-consolidation.md",
+            ),
+            tuple(path.name for path in inventory.migrations),
+        )
         tombstone_files = [
             path
             for path in (ROOT / "docs/98.archive/tombstones").rglob("*.md")

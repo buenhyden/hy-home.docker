@@ -39,7 +39,7 @@ created: "2026-05-10"
 ### Prerequisites
 
 - `infra/04-data/analytics/influxdb/docker-compose.yml`
-- Environment key `INFLUXDB_DB_NAME`; root declarations for `influxdb_api_token` and `influxdb_password` are metadata, not leaf server wiring or provisioning
+- Request input: operator-selected database name; preserved registry entries for `influxdb_api_token` and `influxdb_password` are local metadata, not leaf server wiring or provisioning
 - `infra_net` access for service-to-service checks
 
 ### Step-by-step Instructions
@@ -60,7 +60,7 @@ created: "2026-05-10"
 
 3. Line Protocol write contract를 확인한다.
 
-   `POST http://influxdb:8181/api/v3/write_lp?db=${INFLUXDB_DB_NAME}`는 authorized operator/named token을 요구한다. Token creation/provisioning과 authenticated write acceptance는 separate runtime approval이 필요하며 아직 검증되지 않았다.
+   `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>`는 authorized operator/named token을 요구한다. Token creation/provisioning과 authenticated write acceptance는 separate runtime approval이 필요하며 아직 검증되지 않았다.
 
 ### Common Pitfalls
 
@@ -71,7 +71,7 @@ created: "2026-05-10"
 ## Common Checks
 
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
-- `/api/v3/write_lp`, `INFLUXDB_DB_NAME`, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
+- `/api/v3/write_lp`, operator-selected database name, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
 - `python3 scripts/validation/check-document-links.py --mode alignment`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 

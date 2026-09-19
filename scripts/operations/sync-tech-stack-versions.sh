@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sync the curated tech-stack version registry to declared Docker Compose image tags.
+# Sync the curated tech-stack registry to Docker Compose image tags/digests.
 #
 # infra/tech-stack.versions.json is, by its own declaration, downstream of the
 # Docker Compose image declarations ("source_of_truth": "Docker Compose image
@@ -13,9 +13,15 @@
 #   --check      Report drift and exit 1 if the registry is out of sync; no write.
 #   --dry-run    Print planned component/image changes only; no write.
 #
-# The image-extraction rules mirror the "Tech-stack version drift" gate in
-# the public validation suites so a synced registry passes the changed/full gate.
+# This is the public tech-stack drift gate. It reads service image declarations
+# with a safe YAML loader; it does not render environment files or follow builds.
+# Dockerfile FROM/ARG and inline builds need a separate registry source contract.
 set -euo pipefail
+
+if (( $# > 1 )); then
+  echo "Usage: $0 [--check | --dry-run]" >&2
+  exit 2
+fi
 
 MODE="write"
 case "${1:-}" in
@@ -60,136 +66,218 @@ cd "$REPO_ROOT"
 SYNC_MODE="$MODE" python3 - <<'PY'
 from __future__ import annotations
 
+import json
 import os
 import pathlib
 import re
+import stat
 import sys
+import tempfile
 
-mode = os.environ.get("SYNC_MODE", "write")
-registry_path = pathlib.Path("infra/tech-stack.versions.json")
+import yaml
 
-if not registry_path.is_file():
-    print(f"FAIL: missing tech-stack version registry: {registry_path}", file=sys.stderr)
-    sys.exit(1)
 
-raw = registry_path.read_text()
+class ContractError(ValueError):
+    pass
 
-import json
 
-try:
+class ComposeLoader(yaml.SafeLoader):
+    def construct_mapping(self, node, deep=False):
+        # Reject duplicate authored keys, but allow an explicit key to override
+        # an inherited YAML merge (the normal Compose anchor convention).
+        keys = set()
+        for key_node, _ in node.value:
+            if key_node.tag == "tag:yaml.org,2002:merge":
+                continue
+            key = self.construct_object(key_node, deep=deep)
+            if not isinstance(key, str) or key in keys:
+                raise ContractError("duplicate or non-string compose mapping key")
+            keys.add(key)
+        return super().construct_mapping(node, deep=deep)
+
+
+def override_value(loader, node):
+    if isinstance(node, yaml.ScalarNode):
+        return loader.construct_scalar(node)
+    if isinstance(node, yaml.SequenceNode):
+        return loader.construct_sequence(node)
+    return loader.construct_mapping(node)
+
+
+ComposeLoader.add_constructor("!override", override_value)
+ComposeLoader.add_constructor("!reset", lambda loader, node: None)
+DEFAULT = re.compile(r"\$\{[A-Za-z_][A-Za-z0-9_]*(?::-|-)([^{}]+)\}")
+IMAGE = re.compile(
+    r"(?P<repo>[a-z0-9][a-z0-9._/-]*(?::[0-9]+/[a-z0-9._/-]+)?)"
+    r"(?::(?P<tag>[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}))?"
+    r"(?:@sha256:(?P<digest>[a-fA-F0-9]{64}))?"
+)
+JSON_STRING = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def image_repository(image):
+    match = IMAGE.fullmatch(image) if isinstance(image, str) else None
+    if not match or not (match["tag"] or match["digest"]):
+        raise ContractError("invalid or unpinned image declaration")
+    return match["repo"]
+
+
+def declared_images(relative):
+    if not isinstance(relative, str):
+        raise ContractError("invalid compose path")
+    path = pathlib.Path(relative)
+    if path.is_absolute() or ".." in path.parts or path.is_symlink():
+        raise ContractError("invalid compose path")
+    if not path.is_file() or not path.resolve().is_relative_to(pathlib.Path.cwd()):
+        raise ContractError("missing or invalid compose file")
+    try:
+        document = yaml.load(path.read_text(encoding="utf-8"), Loader=ComposeLoader)
+        services = document.get("services") if isinstance(document, dict) else None
+        if not isinstance(services, dict):
+            raise ContractError("invalid compose services mapping")
+        images = set()
+        for service in services.values():
+            if service is None:  # !reset removes a service/field.
+                continue
+            if not isinstance(service, dict):
+                raise ContractError("invalid compose service mapping")
+            image = service.get("image")
+            if image is None:
+                continue  # Build-only services have no runtime image declaration.
+            if not isinstance(image, str):
+                raise ContractError("invalid compose image scalar")
+            # Resolve only checked-in defaults, never process environment values.
+            image = DEFAULT.sub(lambda match: match[1], image)
+            image_repository(image)
+            images.add(image)
+        return images
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError, RecursionError) as exc:
+        raise ContractError(f"invalid compose declaration: {relative}") from exc
+
+
+def read_registry(path):
+    if path.is_symlink() or not path.is_file():
+        raise ContractError("missing or invalid tech-stack version registry")
+    raw = path.read_bytes().decode("utf-8")
     registry = json.loads(raw)
-except Exception as exc:  # noqa: BLE001
-    print(f"FAIL: invalid JSON in {registry_path}: {exc}", file=sys.stderr)
-    sys.exit(1)
-
-entries = registry.get("entries")
-if not isinstance(entries, list) or not entries:
-    print(f"FAIL: {registry_path} must define a non-empty entries list", file=sys.stderr)
-    sys.exit(1)
-
-image_line_re = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
-default_image_re = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
-
-
-def declared_images(path: pathlib.Path) -> set[str]:
-    text = path.read_text(errors="ignore")
-    images: set[str] = set()
-    for match in image_line_re.finditer(text):
-        raw_image = match.group(1)
-        images.add(raw_image)
-        default_match = default_image_re.search(raw_image)
-        if default_match:
-            images.add(default_match.group(1))
-    return images
+    entries = registry.get("entries") if isinstance(registry, dict) else None
+    if not isinstance(entries, list) or not entries:
+        raise ContractError("registry must define a non-empty entries list")
+    for entry in entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("component"), str):
+            raise ContractError("invalid registry entry")
+        for field in ("images", "compose_files"):
+            values = entry.get(field)
+            if not isinstance(values, list) or not values or not all(
+                isinstance(value, str) and value for value in values
+            ):
+                raise ContractError(f"invalid registry {field}")
+    return raw, registry
 
 
-def split_repo_tag(image: str) -> tuple[str, str] | None:
-    # Split on the last colon that is not part of a registry host:port segment.
-    last_segment = image.rsplit("/", 1)[-1]
-    if ":" not in last_segment:
-        return None
-    repo, tag = image.rsplit(":", 1)
-    return repo, tag
+def plan_changes(entries):
+    planned = []
+    for entry in entries:
+        discovered = set()
+        for relative in entry["compose_files"]:
+            discovered.update(declared_images(relative))
+        by_repository = {}
+        for image in discovered:
+            by_repository.setdefault(image_repository(image), set()).add(image)
+        for image in entry["images"]:
+            repository = image_repository(image)
+            candidates = by_repository.get(repository, set())
+            if not candidates:
+                raise ContractError(
+                    f"{entry['component']}: registry image repo not declared in compose: {repository}"
+                )
+            if len(candidates) != 1:
+                raise ContractError(
+                    f"{entry['component']}: ambiguous compose declarations for {repository}"
+                )
+            candidate = next(iter(candidates))
+            if candidate != image:
+                planned.append((entry["component"], image, candidate))
+    return planned
 
 
-planned: list[tuple[str, str, str]] = []  # (component, old_image, new_image)
-warnings: list[str] = []
+def updated_registry(raw, registry, planned):
+    replacements = {}
+    for _, old, new in planned:
+        if old in replacements and replacements[old] != new:
+            raise ContractError("ambiguous registry replacement")
+        replacements[old] = new
+    # JSON token substitution preserves whitespace and untouched escapes. The
+    # semantic comparison below forbids changes outside the curated image lists.
+    updated = JSON_STRING.sub(
+        lambda match: json.dumps(replacements[json.loads(match[0])])
+        if json.loads(match[0]) in replacements else match[0], raw
+    )
+    expected = {
+        **registry,
+        "entries": [
+            {**entry, "images": [replacements.get(image, image) for image in entry["images"]]}
+            for entry in registry["entries"]
+        ],
+    }
+    if json.loads(updated) != expected:
+        raise ContractError("replacement would change non-image registry metadata")
+    return updated
 
-for entry in entries:
-    component = entry.get("component", "<unknown>")
-    images = entry.get("images")
-    compose_files = entry.get("compose_files")
-    if not isinstance(images, list) or not isinstance(compose_files, list):
-        continue
 
-    discovered: set[str] = set()
-    for compose_file in compose_files:
-        compose_path = pathlib.Path(compose_file)
-        if compose_path.is_file():
-            discovered.update(declared_images(compose_path))
+def atomic_write(path, raw, updated):
+    temporary = None
+    original = path.stat()
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", newline="", dir=path.parent,
+            prefix=f".{path.name}.", delete=False,
+        ) as stream:
+            temporary = pathlib.Path(stream.name)
+            os.fchmod(stream.fileno(), stat.S_IMODE(original.st_mode))
+            stream.write(updated)
+            stream.flush()
+            os.fsync(stream.fileno())
+        current = path.stat()
+        if path.is_symlink() or (
+            current.st_dev, current.st_ino, current.st_size, current.st_mtime_ns
+        ) != (
+            original.st_dev, original.st_ino, original.st_size, original.st_mtime_ns
+        ) or path.read_bytes().decode("utf-8") != raw:
+            raise ContractError("registry changed during synchronization")
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
-    repo_to_tags: dict[str, set[str]] = {}
-    for image in discovered:
-        parsed = split_repo_tag(image)
-        if parsed:
-            repo_to_tags.setdefault(parsed[0], set()).add(parsed[1])
 
-    for image in images:
-        parsed = split_repo_tag(image)
-        if not parsed:
-            continue
-        repo, tag = parsed
-        candidate_tags = repo_to_tags.get(repo)
-        if not candidate_tags:
-            warnings.append(f"{component}: registry image repo not declared in compose: {image}")
-            continue
-        if tag in candidate_tags:
-            continue
-        if len(candidate_tags) > 1:
-            warnings.append(
-                f"{component}: ambiguous compose tags for {repo}: {sorted(candidate_tags)}; left unchanged"
-            )
-            continue
-        new_tag = next(iter(candidate_tags))
-        planned.append((component, image, f"{repo}:{new_tag}"))
+def main():
+    mode = os.environ["SYNC_MODE"]
+    path = pathlib.Path("infra/tech-stack.versions.json")
+    raw, registry = read_registry(path)
+    planned = plan_changes(registry["entries"])
+    updated = updated_registry(raw, registry, planned)
+    if not planned:
+        print("tech-stack registry is in sync with declared compose images. changes=0")
+        return 0
+    for component, old, new in planned:
+        print(f"{component}: {old} -> {new}")
+    print(f"changes={len(planned)}")
+    if mode == "check":
+        print("FAIL: tech-stack registry is out of sync; run scripts/operations/sync-tech-stack-versions.sh", file=sys.stderr)
+        return 1
+    if mode == "write":
+        atomic_write(path, raw, updated)
+        print(f"wrote {path}")
+    return 0
 
-for warning in warnings:
-    print(f"WARN: {warning}", file=sys.stderr)
 
-if not planned:
-    print("tech-stack registry is in sync with declared compose image tags. changes=0")
-    sys.exit(0)
-
-for component, old_image, new_image in planned:
-    print(f"{component}: {old_image} -> {new_image}")
-print(f"changes={len(planned)}")
-
-if mode == "check":
-    print("FAIL: tech-stack registry is out of sync; run scripts/operations/sync-tech-stack-versions.sh", file=sys.stderr)
-    sys.exit(1)
-
-if mode == "dry-run":
-    sys.exit(0)
-
-# write mode: literal, formatting-preserving substitution of each curated image.
-updated = raw
-for _component, old_image, new_image in planned:
-    needle = f'"{old_image}"'
-    replacement = f'"{new_image}"'
-    if updated.count(needle) != 1:
-        print(
-            f"FAIL: expected exactly one occurrence of {needle} for safe replacement", file=sys.stderr
-        )
-        sys.exit(1)
-    updated = updated.replace(needle, replacement)
-
-# Re-validate the result parses as JSON before writing.
 try:
-    json.loads(updated)
-except Exception as exc:  # noqa: BLE001
-    print(f"FAIL: post-sync JSON is invalid: {exc}", file=sys.stderr)
+    sys.exit(main())
+except ContractError as exc:
+    print(f"FAIL: {exc}", file=sys.stderr)
     sys.exit(1)
-
-registry_path.write_text(updated)
-print(f"wrote {registry_path}")
+except (OSError, UnicodeError, json.JSONDecodeError):
+    print("FAIL: unable to read or atomically update tech-stack registry", file=sys.stderr)
+    sys.exit(1)
 PY

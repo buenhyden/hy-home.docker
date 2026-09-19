@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -22,14 +22,14 @@ created: "2026-05-17"
 
 이 정책은 `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스, 해당 서비스에 메트릭을 push하는 작업, Pushgateway의 stale metric cleanup, 그리고 Prometheus scrape 연동 계약에 적용된다.
 
-- **Systems**: `pushgateway` service/container, image `prom/pushgateway:v1.11.3`, port `9091`, `/-/ready` healthcheck, `pushgateway.${DEFAULT_URL}` protected Traefik route, Prometheus scrape integration contract
+- **Systems**: `pushgateway` service/container, image [prom/pushgateway image declaration](../../../../../infra/06-observability/docker-compose.yml), port `9091`, `/-/ready` healthcheck, `pushgateway.${DEFAULT_URL}` protected Traefik route, Prometheus scrape integration contract
 - **Agents**: Operators, CI/CD jobs, batch scripts, AI agents changing observability documentation
 - **Environments**: `obs` Docker Compose profile in the local/homelab observability tier
 
 ## Controls
 
 - **Required**:
-  - Compose 서비스는 `profiles: [obs]`, `template-infra-readonly-low`, image `prom/pushgateway:v1.11.3`, expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
+  - Compose 서비스는 `profiles: [obs]`, `template-infra-readonly-low`, image [prom/pushgateway image declaration](../../../../../infra/06-observability/docker-compose.yml), expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
   - Pushgateway는 Prometheus가 직접 scrape할 수 없는 단기 실행 작업, 배치 작업, CI/CD 작업에만 사용한다.
   - 모든 push path에는 안정적인 `job` label을 포함해야 한다.
   - `instance` label은 안정적인 worker, node, or bounded execution identity를 구분할 때만 사용한다. 고유 request ID, user ID, unbounded build ID는 cleanup evidence가 없는 한 label로 쓰지 않는다.
@@ -51,7 +51,7 @@ created: "2026-05-17"
 
 ## Verification
 
-- **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:v1.11.3|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
+- **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
 - **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
 - **Stale Metric Check**: scrape job이 존재하는 환경에서는 `push_time_seconds` 기준으로 1시간 이상 갱신되지 않은 `job` group을 식별한다.
 - **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
@@ -67,6 +67,8 @@ Quarterly, and on material change to image version, Docker profile, route middle
 - Subject peers: [Guide](guide.md) (`GDE-0046`), [Runbook](runbook.md) (`RUN-0046`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

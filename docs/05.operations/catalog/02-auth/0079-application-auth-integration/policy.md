@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -72,6 +72,7 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 ```
 
 추가 검증:
+
 - Airflow/Kafbat router = gateway-only
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
@@ -94,6 +95,8 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - Architecture: [AD-0002](../../../../02.architecture/descriptions/0002-auth-architecture.md)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Keycloak Guide](../0014-keycloak/guide.md)
 - [OAuth2 Proxy Guide](../0015-oauth2-proxy/guide.md)

@@ -32,6 +32,14 @@
 
   "semanticCommits": "enabled",
 
+  "separateMajorMinor": true,
+  "vulnerabilityAlerts": {
+    "schedule": ["at any time"],
+    "minimumReleaseAge": "0 days",
+    "groupName": null,
+    "automerge": false
+  },
+
   "postUpgradeTasks": {
     "commands": [
       "bash scripts/operations/sync-tech-stack-versions.sh"
@@ -89,7 +97,8 @@
     },
 
     {
-      "description": "Group GitHub Actions",
+      "description": "Group GitHub Actions patch and minor updates",
+      "matchUpdateTypes": ["patch", "minor"],
       "matchManagers": [
         "github-actions"
       ],

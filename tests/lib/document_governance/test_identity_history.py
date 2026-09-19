@@ -28,6 +28,26 @@ LEGACY_REQUIREMENT = pathlib.PurePosixPath("docs/01.requirements/prd-0042-preser
 
 
 class IdentityHistoryTests(unittest.TestCase):
+    def test_incident_year_does_not_consume_allocation_numbers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self._git(root, "init", "-q")
+            self._git(root, "config", "user.name", "Registry Test")
+            self._git(root, "config", "user.email", "registry@example.invalid")
+            fixtures = (
+                ("legacy/incident.md", "inc-0001"),
+                ("2026/inc-0002-example/incident.md", "inc-2026-0002"),
+                ("2026/inc-0002-example/postmortem.md", "inc-2026-0002-PM"),
+            )
+            for relative, artifact in fixtures:
+                path = root / "docs/05.operations/incidents" / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"---\nartifact_id: {artifact}\n---\n")
+            self._git(root, "add", ".")
+            self._git(root, "commit", "-qm", "incident fixtures")
+            issued = collect_issued_identities(root)
+            self.assertEqual(frozenset({1, 2}), issued.numbers["incident"])
+
     def test_current_classifier_rejects_legacy_requirement_path(self) -> None:
         profiles = build_registry_profiles(load_registry())
         self.assertEqual(

@@ -346,6 +346,7 @@
         "tests.lib.document_governance.test_requirements",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",
+        "tests.lib.document_governance.test_requirement_allocation_recovery",
         "-v"
       ],
       "cwd": ".",
@@ -744,6 +745,7 @@
         "tests.validation.test_script_manifest",
         "tests.validation.test_tech_stack_version_contract",
         "tests.validation.test_validator_entrypoints",
+        "tests.validation.test_secret_metadata_sync",
         "-v"
       ],
       "cwd": ".",
@@ -1051,91 +1053,170 @@
         "gate_id": "leaf.infrastructure-hardening",
         "entrypoint": "scripts/hardening/check-all-hardening.sh",
         "argv": [],
-        "contexts": ["pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "agent-governance",
         "gate_id": "leaf.local-agent-governance-contract",
         "entrypoint": "scripts/validation/check-agent-governance-contract.py",
-        "argv": ["--mode", "repository", "--section", "all"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "argv": [
+          "--mode",
+          "repository",
+          "--section",
+          "all"
+        ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "document-lifecycle",
         "gate_id": "leaf.local-document-corpus-lifecycle",
         "entrypoint": "scripts/validation/check-document-corpus-lifecycle.py",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "document-graph",
         "gate_id": "leaf.docs-traceability",
         "entrypoint": "scripts/validation/check-document-links.py",
-        "argv": ["--mode", "all"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "argv": [
+          "--mode",
+          "all"
+        ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "document-contract",
         "gate_id": "leaf.repo-document-metadata",
         "entrypoint": "scripts/validation/check-document-metadata.py",
-        "argv": ["--mode", "check-changed"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "argv": [
+          "--mode",
+          "check-changed"
+        ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.workflow-contract",
         "entrypoint": "scripts/validation/check-github-workflow-contract.py",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "operations",
         "gate_id": "leaf.operations-catalog",
         "entrypoint": "scripts/validation/check-operations-catalog.py",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "operations",
         "gate_id": "leaf.postgres-logical-upgrade-config",
         "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
-        "argv": ["--check-config-only"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "argv": [
+          "--check-config-only"
+        ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.quickwin-baseline",
         "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.local-script-manifest",
         "entrypoint": "scripts/validation/check-script-manifest.py",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "public.validator.scripts.validation.check-storybook-contract.sh",
         "entrypoint": "scripts/validation/check-storybook-contract.sh",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.supply-chain-deterministic-policy",
         "entrypoint": "scripts/validation/check-supply-chain-policy.py",
-        "argv": ["--check"],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "argv": [
+          "--check"
+        ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       },
       {
         "suite": "repository-integrity",
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
         "argv": [],
-        "contexts": ["local", "pull_request", "push", "workflow_dispatch"]
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
       }
     ],
     "changed_path_rules": [
@@ -1310,20 +1391,20 @@
       "security_disposition": "approved-node24"
     },
     "astral-sh/setup-uv": {
-      "sha": "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
+      "sha": "bec219d24cd3e171d82865faccec33120bb574f4",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/astral-sh/setup-uv/20cfd1bf945f4377ade1205e4dbc17946fc9a30d/action.yml",
-      "retrieved_at": "2026-09-02",
+      "manifest_url": "https://raw.githubusercontent.com/astral-sh/setup-uv/bec219d24cd3e171d82865faccec33120bb574f4/action.yml",
+      "retrieved_at": "2026-09-19",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },
     "github/codeql-action/upload-sarif": {
-      "sha": "cdf488f595d80d6e07e03d4674febd5ab45fa938",
+      "sha": "b96794f015dfd88f77b49b1c93e0fa7110f94c63",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/cdf488f595d80d6e07e03d4674febd5ab45fa938/upload-sarif/action.yml",
-      "retrieved_at": "2026-09-02",
+      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/b96794f015dfd88f77b49b1c93e0fa7110f94c63/upload-sarif/action.yml",
+      "retrieved_at": "2026-09-19",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],

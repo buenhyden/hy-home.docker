@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -25,7 +25,7 @@ created: "2026-05-17"
 ## Policy Scope
 
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
-- **Configs**: `infra/04-data/operational/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
+- **Configs**: `infra/04-data/operational/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config --quiet
 - **Networks**: `infra_net`
 - **Ports**: Kong `8000`/`8443`, analytics `4000`, Postgres `5432`, pooler `6543` as declared through compose host-port variables
 - **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or Supabase runtime boundaries
@@ -39,7 +39,7 @@ created: "2026-05-17"
   - Runtime mounts under `${DEFAULT_DATA_DIR}/supabase/...` must be treated as implementation state and kept in sync with infra README and operations docs.
   - JWT, anon, service-role, dashboard, SMTP, database, vault, and crypto key values must never be written into documentation or evidence.
 - **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config`.
+  - Metadata-only compose validation with `docker compose ... config --quiet`.
   - Read-only service health/log checks that do not expose secret values.
   - Approved JWT or dashboard credential rotation when backed by task/incident evidence and corresponding runbook steps.
   - Kong host-port access using the declared `SUPABASE_KONG_HTTP_HOST_PORT` and `SUPABASE_KONG_HTTPS_HOST_PORT` variables.
@@ -55,7 +55,7 @@ Exceptions require explicit owner or user approval and must record scope, comman
 
 ## Verification
 
-- Run `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config` after changing compose-facing documentation.
+- Run `docker compose --profile supabase config --quiet` after changing compose-facing documentation.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for direct Studio host-port assumptions, old Compose CLI spelling, template copyright remnants, and secret material before committing.
@@ -72,6 +72,8 @@ Review on any change to Supabase compose services, ports, profiles, networks, se
 - Subject peers: [Guide](guide.md) (`GDE-0029`), [Runbook](runbook.md) (`RUN-0029`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 `qdrant/qdrant:v1.19.1-unprivileged`, 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
+이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 [qdrant/qdrant image declaration](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml), 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
 
 ## Policy Scope
 
@@ -44,7 +44,7 @@ N/A - no currently approved exceptions.
 ## Verification
 
 - Compare this policy with [Qdrant guide](guide.md), [Qdrant runbook](runbook.md), and [infra README](../../../../../infra/04-data/specialized/qdrant/README.md) after compose changes.
-- Run `docker compose --profile data --profile ai config qdrant` before approving service-name, image, route, secret, healthcheck, or volume documentation updates.
+- Run `docker compose --profile qdrant config --quiet qdrant` before approving service-name, image, route, secret, healthcheck, or volume documentation updates.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
@@ -58,6 +58,8 @@ N/A - no currently approved exceptions.
 - Subject peers: [Guide](guide.md) (`GDE-0034`), [Runbook](runbook.md) (`RUN-0034`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

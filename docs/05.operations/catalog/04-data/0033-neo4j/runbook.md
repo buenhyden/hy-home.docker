@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0033"
 parent_ids:
@@ -45,7 +45,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile data --profile graph config neo4j
+   docker compose --profile graph config --quiet neo4j
    ```
 
 2. 서비스 상태를 확인한다.
@@ -69,7 +69,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose --profile data --profile graph up -d neo4j
+   docker compose --profile graph up -d neo4j
    ```
 
 6. Browser route는 HTTP status만 확인한다.
@@ -89,7 +89,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 - **Logs**: `docker compose logs --tail=120 neo4j`
 - **Health**: compose healthcheck and container-local `cypher-shell RETURN 1`
 - **Route**: Traefik labels on `neo4j`
-- **Config**: `docker compose --profile data --profile graph config neo4j`
+- **Config**: `docker compose --profile graph config --quiet neo4j`
 
 ### Safe Rollback or Recovery Procedure
 
@@ -125,6 +125,8 @@ Escalate to the owning operator when `cypher-shell RETURN 1` fails after restart
 - Subject peers: [Guide](guide.md) (`GDE-0033`), [Policy](policy.md) (`POL-0033`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

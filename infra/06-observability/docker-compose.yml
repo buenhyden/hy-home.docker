@@ -490,13 +490,14 @@ services:
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
       - -config.expand-env=true
+      - -server.http-listen-port=${PYROSCOPE_PORT:-4040}
     volumes:
       - ./pyroscope/config/pyroscope.yaml:/etc/pyroscope/pyroscope.yaml:ro
       - pyroscope-data:/var/lib/pyroscope:rw
     ports:
       - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1' ]
+      test: [ 'CMD', '/usr/bin/profilecli', 'ready', '--url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}' ]
       interval: 30s
       timeout: 15s
       retries: 5

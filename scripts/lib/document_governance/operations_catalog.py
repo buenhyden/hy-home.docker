@@ -329,7 +329,17 @@ def _open_anchored_regular(
     directory_descriptor: int | None = None
     descriptor: int | None = None
     try:
-        directory_descriptor = os.open(root, directory_flags)
+        held_root = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", root.as_posix())
+        if held_root is None:
+            directory_descriptor = os.open(root, directory_flags)
+        else:
+            # The gate owns this already-open root. Duplicate its descriptor;
+            # never resolve the proc link or relax no-follow for child paths.
+            directory_descriptor = os.dup(int(held_root[1]))
+            if not stat.S_ISDIR(os.fstat(directory_descriptor).st_mode):
+                raise OperationsAuthorityError(
+                    "root-invalid", "held root is not a directory"
+                )
         for part in relative.parts[:-1]:
             component = os.stat(
                 part, dir_fd=directory_descriptor, follow_symlinks=False
@@ -798,28 +808,62 @@ def validate_compose_profile_vocabulary(
                 )
             declared.update(profiles)
 
-    rows: dict[str, tuple[int, int]] = {}
+    rows: dict[str, tuple[int | None, int]] = {}
     policy_text = _read_text(root, PROFILE_VOCABULARY_POLICY)
+    header: list[str] = []
+    categories = {
+        "baseline",
+        "domain",
+        "capability",
+        "role",
+        "topology",
+        "lifecycle",
+        "automation",
+    }
     for line_number, line in enumerate(policy_text.splitlines(), 1):
-        match = _PROFILE_ROW.fullmatch(line.strip())
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            header = []
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if cells and cells[0].lower() == "profile":
+            header = [cell.lower() for cell in cells]
+            continue
+        match = _PROFILE_ROW.fullmatch(stripped)
         if match is None:
             continue
         name, location = match["name"], f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
-        count = match["rest"].rsplit("|", 1)[-1].strip()
         if name in rows:
-            message = (
-                f"profile {name} has more than one row; "
-                f"the first is line {rows[name][1]}"
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    location,
+                    f"profile {name} has more than one row; the first is line {rows[name][1]}",
+                )
             )
-        elif not (count.isascii() and count.isdigit()):
-            # Registered with no count, so the name is not also reported as
-            # having no row.
-            rows[name] = (-1, line_number)
-            message = f"profile {name} row has no integer service count"
-        else:
-            rows[name] = (int(count), line_number)
             continue
-        findings.append(_finding("compose-profile-vocabulary-drift", location, message))
+        count: int | None = None
+        messages: list[str] = []
+        if len(cells) != len(header):
+            messages.append(f"profile {name} row does not match its table header")
+        fields = dict(zip(header, cells, strict=False))
+        if fields.get("category", "") not in categories:
+            messages.append(f"profile {name} row has no valid category")
+        if not fields.get("purpose", "").strip():
+            messages.append(f"profile {name} row has no purpose")
+        count_key = next((key for key in ("서비스", "services") if key in header), None)
+        if count_key is not None:
+            raw_count = fields.get(count_key, "")
+            if not (raw_count.isascii() and raw_count.isdigit()):
+                count = -1
+                messages.append(f"profile {name} row has no integer service count")
+            else:
+                count = int(raw_count)
+        rows[name] = (count, line_number)
+        findings.extend(
+            _finding("compose-profile-vocabulary-drift", location, message)
+            for message in messages
+        )
     for name in sorted(declared.keys() - rows.keys()):
         findings.append(
             _finding(
@@ -835,7 +879,7 @@ def validate_compose_profile_vocabulary(
             message = (
                 f"profile {name} has a row and no tracked Compose service declares it"
             )
-        elif count >= 0 and count != declared[name]:
+        elif count is not None and count >= 0 and count != declared[name]:
             message = (
                 f"profile {name} row counts {count} service(s); "
                 f"Compose declares {declared[name]}"
@@ -1506,7 +1550,9 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                     number = packet_match.group("number")
                     artifact_pattern = profile.get("artifact_id_pattern")
                     expected_id = (
-                        artifact_pattern.replace("{number:4}", number)
+                        artifact_pattern.replace("{number:4}", number).replace(
+                            "{year:4}", child_relative.parts[3]
+                        )
                         if isinstance(artifact_pattern, str)
                         else ""
                     )
@@ -1524,7 +1570,9 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                         else None
                     )
                     expected_parent = (
-                        incident_pattern.replace("{number:4}", number)
+                        incident_pattern.replace("{number:4}", number).replace(
+                            "{year:4}", child_relative.parts[3]
+                        )
                         if isinstance(incident_pattern, str)
                         else ""
                     )

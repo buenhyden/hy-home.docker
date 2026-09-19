@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -36,7 +36,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/mongodb/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. 복제 노드와 exporter는 `data`와 `obs`에, `mongodb-arbiter`와 `mongo-express`는 `data`에만 속한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/mongodb/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. 복제 노드와 exporter는 `mongodb`와 `obs`에, `mongodb-arbiter`와 `mongo-express`는 `data`에만 속한다.
 - `MONGODB_ROOT_USERNAME`, `MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME`, `mongodb_root_password`, `mongo_express_basicauth_password`가 준비되어 있어야 한다.
 - replica set 이름은 compose command에 고정된 `MyReplicaSet` 기준이다. 현재 구현에는 별도 replica-set-name 환경 변수가 없다.
 
@@ -45,7 +45,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 1. 서비스 구성을 렌더링한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config
+   docker compose --profile mongodb config --quiet
    ```
 
 2. init job과 replica member 상태를 확인한다.
@@ -76,7 +76,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ## Common Checks
 
-- `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config`
+- `docker compose --profile mongodb config --quiet`
 - `docker compose logs mongo-init`
 - `docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'`
 
@@ -91,6 +91,8 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - Subject peers: [Policy](policy.md) (`POL-0027`), [Runbook](runbook.md) (`RUN-0027`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

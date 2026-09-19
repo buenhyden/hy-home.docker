@@ -1,4 +1,4 @@
-"""Failing-case coverage for the two Compose baseline gates.
+"""Compose baseline gates and PostgreSQL initialization contracts.
 
 Both gates run in CI through `.github/workflow-contract.yml` and neither had a
 covering test, so nothing proved they could go red. Each script resolves the
@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import sqlite3
 import subprocess
 import tempfile
 import unittest
@@ -284,6 +286,242 @@ class TemplateSecurityBaselineTests(BaselineGateHarness):
         result = self.run_gate(TEMPLATE_SECURITY, {"services": {}})
         self.assertEqual(1, result.returncode)
         self.assertIn("service count is 0", result.stderr)
+
+
+class PostgresInitializationContractTests(unittest.TestCase):
+    # Connection targeting checks without accessing a PostgreSQL runtime.
+    def init_scripts(self) -> list[str]:
+        return [
+            (ROOT / path).read_text(encoding="utf-8")
+            for path in (
+                "infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql",
+                "infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql",
+            )
+        ]
+
+    def test_schema_permissions_follow_a_direct_fail_closed_connection(self) -> None:
+        for index, sql in enumerate(self.init_scripts()):
+            with self.subTest(script=index):
+                self.assertTrue(sql.startswith("\\set ON_ERROR_STOP on\n"))
+                self.assertNotRegex(sql, r"SELECT format\('[^']*\\connect")
+                self.assertIn(
+                    "\\gset\n\\connect -reuse-previous=on :service_postgres_conninfo\n",
+                    sql,
+                )
+                self.assertLess(
+                    sql.index(
+                        "\\connect -reuse-previous=on :service_postgres_conninfo"
+                    ),
+                    sql.index("'ALTER SCHEMA public OWNER TO %I'"),
+                )
+
+    def test_database_names_are_escaped_as_one_libpq_value(self) -> None:
+        cases = (
+            ("service", "dbname='service'"),
+            ("Mixed Case", "dbname='Mixed Case'"),
+            ("owner's db", "dbname='owner\\'s db'"),
+            (r"path\db", r"dbname='path\\db'"),
+            ('a"b', "dbname='a\"b'"),
+            ("-", "dbname='-'"),
+            ("host=other dbname=postgres", "dbname='host=other dbname=postgres'"),
+            ("postgresql://other/db", "dbname='postgresql://other/db'"),
+            ("x' host=other", "dbname='x\\' host=other'"),
+            ("한글\nname", "dbname='한글\nname'"),
+        )
+        for index, sql in enumerate(self.init_scripts()):
+            with self.subTest(script=index):
+                query = re.search(
+                    r"(SELECT 'dbname='''[\s\S]*?AS service_postgres_conninfo)\s*\\gset",
+                    sql,
+                )
+                self.assertIsNotNone(
+                    query, "database switch must build a quoted conninfo value"
+                )
+                assert query is not None
+                # Evaluate the actual portable string expression, not a copy.
+                # SQLite does not emulate PostgreSQL/psql or prove readiness.
+                expression = query.group(1).replace(":'service_postgres_db'", "?")
+                with sqlite3.connect(":memory:") as connection:
+                    connection.create_function("chr", 1, chr)
+                    for database, expected in cases:
+                        with self.subTest(database=database):
+                            actual = connection.execute(
+                                expression, (database,)
+                            ).fetchone()[0]
+                            self.assertEqual(expected, actual)
+
+
+class ServiceConfigurationPathTests(unittest.TestCase):
+    def test_openbao_agent_config_argument_is_a_mounted_file(self) -> None:
+        import yaml
+
+        path = ROOT / "infra/03-security/openbao/docker-compose.yml"
+        agent = yaml.safe_load(path.read_text())["services"]["openbao-agent"]
+        configs = [
+            arg.removeprefix("-config=")
+            for arg in agent["command"]
+            if arg.startswith("-config=")
+        ]
+        targets = {mount.split(":")[1] for mount in agent["volumes"]}
+        self.assertEqual(1, len(configs))
+        self.assertIn(configs[0], targets)
+
+    def test_openbao_rendered_credentials_are_on_persistent_mount(self) -> None:
+        import yaml
+
+        path = ROOT / "infra/03-security/openbao/docker-compose.yml"
+        agent = yaml.safe_load(path.read_text())["services"]["openbao-agent"]
+        targets = [
+            mount.split(":")[1] for mount in agent["volumes"] if mount.endswith(":rw")
+        ]
+        destinations = re.findall(
+            r'destination\s*=\s*"([^\"]+)"',
+            (path.parent / "config/agent.hcl").read_text(),
+        )
+        self.assertTrue(destinations)
+        for destination in destinations:
+            self.assertTrue(
+                any(destination.startswith(target + "/") for target in targets),
+                destination,
+            )
+
+
+class MailpitHealthContractTests(unittest.TestCase):
+    def test_native_healthcheck_and_custom_ui_port_contract(self):
+        import yaml
+
+        text = (ROOT / "infra/10-communication/mailpit/docker-compose.yml").read_text()
+        for ui_port in (8025, 18025):
+            with self.subTest(ui_port=ui_port):
+                rendered = text.replace("${MAILPIT_UI_PORT:-8025}", str(ui_port))
+                service = yaml.safe_load(rendered)["services"]["mailpit"]
+                self.assertEqual(
+                    ["CMD", "/mailpit", "readyz"],
+                    service.get("healthcheck", {}).get("test"),
+                )
+                self.assertEqual(
+                    f"0.0.0.0:{ui_port}", service["environment"]["MP_UI_BIND_ADDR"]
+                )
+                self.assertEqual(
+                    str(ui_port),
+                    str(
+                        service["labels"][
+                            "traefik.http.services.mailpit-ui.loadbalancer.server.port"
+                        ]
+                    ),
+                )
+                self.assertTrue(
+                    any(port.endswith(f":{ui_port}") for port in service["ports"])
+                )
+                self.assertEqual(
+                    {
+                        "interval": "15s",
+                        "start_period": "10s",
+                        "timeout": "5s",
+                        "retries": 3,
+                    },
+                    {
+                        key: service["healthcheck"][key]
+                        for key in ("interval", "start_period", "timeout", "retries")
+                    },
+                )
+
+    def test_real_hardening_rejects_missing_or_shell_healthcheck(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in (
+                "scripts/hardening/check-all-hardening.sh",
+                "scripts/lib/hardening-lib.sh",
+                "infra/10-communication/stalwart/docker-compose.yml",
+                "infra/10-communication/mailpit/docker-compose.yml",
+            ):
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text((ROOT / name).read_text())
+            target = root / "infra/10-communication/mailpit/docker-compose.yml"
+            original = target.read_text()
+            for test in (
+                None,
+                ["CMD-SHELL", "curl -f http://localhost:8025/readyz"],
+                ["CMD", "true"],
+            ):
+                # Keep unrelated hardening string guards byte-stable.
+                body = re.sub(r"    healthcheck:\n(?:      .*\n)+", "", original)
+                if test is not None:
+                    body = body.replace(
+                        "    networks:\n",
+                        "    healthcheck:\n      test: "
+                        + json.dumps(test)
+                        + "\n    networks:\n",
+                    )
+                target.write_text(body)
+                env = {
+                    key: value
+                    for key, value in os.environ.items()
+                    if key != "HYHOME_CI_GATE_ROOT"
+                }
+                result = subprocess.run(
+                    [
+                        "bash",
+                        str(root / "scripts/hardening/check-all-hardening.sh"),
+                        "10-communication",
+                    ],
+                    cwd=root,
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertNotEqual(0, result.returncode, result.stdout + result.stderr)
+                self.assertIn("mailpit", result.stdout.lower())
+
+
+class OllamaPortContractTests(unittest.TestCase):
+    def test_public_render_keeps_direct_api_local_with_distinct_ports(self):
+        with tempfile.TemporaryDirectory() as home:
+            result = subprocess.run(
+                [
+                    "docker",
+                    "compose",
+                    "--env-file",
+                    str(ROOT / ".env.example"),
+                    "--profile",
+                    "ollama",
+                    "config",
+                    "--format",
+                    "json",
+                ],
+                cwd=ROOT,
+                env={
+                    "PATH": os.environ["PATH"],
+                    "HOME": home,
+                    "OLLAMA_HOST_PORT": "21434",
+                    "OLLAMA_PORT": "12434",
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+        self.assertEqual(0, result.returncode, "public Compose render failed")
+        services = json.loads(result.stdout)["services"]
+        self.assertEqual(
+            "0.0.0.0:12434", services["ollama"]["environment"]["OLLAMA_HOST"]
+        )
+        published = services["ollama"]["ports"]
+        self.assertEqual(1, len(published))
+        self.assertEqual("127.0.0.1", published[0].get("host_ip", "0.0.0.0"))
+        self.assertEqual("21434", published[0]["published"])
+        self.assertEqual(12434, published[0]["target"])
+        self.assertEqual(
+            "12434",
+            services["ollama"]["labels"][
+                "traefik.http.services.ollama.loadbalancer.server.port"
+            ],
+        )
+        self.assertEqual(
+            "ollama:12434", services["ollama-exporter"]["environment"]["OLLAMA_HOST"]
+        )
 
 
 if __name__ == "__main__":

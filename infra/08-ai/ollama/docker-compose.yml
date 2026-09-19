@@ -27,7 +27,7 @@ services:
     container_name: ollama
     read_only: false
     environment:
-      - OLLAMA_HOST=0.0.0.0 # 모든 네트워크 인터페이스에서 수신 허용
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434} # 컨테이너 인터페이스에서 수신
       - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL:-2}
       - OLLAMA_MAX_LOADED_MODELS=${OLLAMA_MAX_LOADED_MODELS:-1}
       - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-128}
@@ -45,7 +45,7 @@ services:
               count: 1
               capabilities: [ gpu ]
     ports:
-      - ${OLLAMA_HOST_PORT}:${OLLAMA_PORT}
+      - 127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}
       # - ${OPENCLAW_GATEWAY_HOST_PORT}:${OPENCLAW_GATEWAY_PORT}
     labels:
       <<: *tier-label

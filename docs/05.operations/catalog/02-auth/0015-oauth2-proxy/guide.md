@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -15,6 +15,8 @@ created: "2026-05-10"
 # 02-Auth OAuth2 Proxy Usage Guide
 
 ## Usage
+
+`oauth2-proxy-valkey-exporter` exposes the OAuth2 session-store metrics; its activation follows the authored Compose profiles.
 
 ### Overview
 
@@ -87,6 +89,8 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0015`), [Runbook](runbook.md) (`RUN-0015`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

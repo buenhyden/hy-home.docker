@@ -1,6 +1,6 @@
 {
   "policy_id": "OPS-IMAGE-TAG-EXCEPTIONS-001",
-  "effective_date": "2026-05-09",
+  "effective_date": "2026-09-19",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
   "floating_image_exceptions": [
@@ -8,13 +8,25 @@
       "image": "nginx:alpine",
       "owner": "Gateway Operator",
       "reason": "Uses the official nginx Alpine channel for the lightweight static gateway helper; runtime hardening is enforced by readonly template, healthcheck, and nginx config validation.",
-      "review_cadence": "monthly"
+      "review_cadence": "monthly",
+      "risk": "Channel tags may change content without a tag change; updates require manual review and rollback identity capture.",
+      "exit_condition": "Replace with a supported immutable tag plus digest after compatibility and recovery verification."
     },
     {
       "image": "lfnovo/open_notebook:v1-latest-single",
       "owner": "Laboratory Operator",
       "reason": "Open Notebook publishes a v1 latest single-user channel for local laboratory use; the service is outside the core profile and requires periodic review before production promotion.",
-      "review_cadence": "monthly"
+      "review_cadence": "monthly",
+      "risk": "Channel tags may change content without a tag change; updates require manual review and rollback identity capture.",
+      "exit_condition": "Replace with a supported immutable tag plus digest after compatibility and recovery verification."
     },
+    {
+      "image": "yanwk/comfyui-boot:cu126-slim",
+      "owner": "AI Operator",
+      "reason": "Existing GPU-specific third-party image channel retained for required HOME image workflows while CUDA compatibility and rebuild provenance are evaluated.",
+      "risk": "Mutable channel and third-party image; GPU/client compatibility and rollback digest must be reviewed before pulls.",
+      "review_cadence": "monthly",
+      "exit_condition": "Migrate to a verified maintained build or immutable digest after GTX 1060 compatibility, model persistence and restore rehearsal."
+    }
   ]
 }

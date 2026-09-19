@@ -1,10 +1,10 @@
 ---
-title: "03-Security Vault Operations Policy"
-version: "1.0.0"
+title: "Vault Legacy Migration Policy"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0016"
 parent_ids:
@@ -12,75 +12,44 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# 03-Security Vault Operations Policy
+# Vault Legacy Migration Policy
 
 ## Overview
 
-이 문서는 `03-security` Vault 운영 정책을 정의한다. 즉시 적용 하드닝 기준(템플릿 계약, healthcheck, 검증 자동화)과 단계적 확장 정책(auto-unseal, 원격 audit)을 명시한다.
+Vault는 MIGRATE 대상의 기존 비밀 저장소다. HOME의 canonical 비밀 관리 서비스는 OpenBao이며, 이 정책은 legacy 유지 기간의 데이터 보존과 전환 경계를 정의한다.
 
 ## Policy Scope
 
-- `infra/03-security/vault/docker-compose.yml`
-- `infra/03-security/vault/config/vault-agent.hcl`
-- `infra/03-security/vault/config/templates/*.ctmpl`
-- `scripts/hardening/check-all-hardening.sh 03-security`
-
-- **Systems**: Vault server, Vault Agent
-- **Agents**: Infra/Security/Ops agents
-- **Environments**: Local, Dev, Stage, Production-like
+- `infra/03-security/vault/docker-compose.yml`의 `vault`, `vault-agent` 및 기존 소비자.
+- `legacy-vault`를 명시적으로 선택한 이전·복구 작업.
+- 새 OpenBao 구축은 [POL-0085](../0085-openbao/policy.md)가 소유한다.
 
 ## Controls
 
-- **Required**:
-  - Vault Agent 템플릿은 `secret/data/hy-home/...` 경로 규약을 사용해야 한다.
-  - `vault-agent`는 PID 기반 healthcheck를 유지해야 한다.
-  - 렌더 출력은 `/vault/out` persistent volume에 저장해야 한다.
-  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `infrastructure-hardening` 게이트로 강제한다.
-  - 운영 모드는 fail-closed를 기본으로 유지한다.
-- **Allowed**:
-  - 외부 TLS는 Traefik 종료, 내부 `infra_net` HTTP 통신 모델 유지.
-  - auto-unseal/원격 audit는 승인 절차 후 단계적 도입.
-- **Disallowed**:
-  - placeholder 시크릿 경로(`secret/data/example`) 사용
-  - 평문 시크릿 하드코딩
-  - 승인 없는 auto-unseal/원격 audit 실적용
-
-### Auto-unseal & Remote Audit Adoption Gate
-
-- **Auto-unseal 승인 조건**:
-  - KMS/HSM 키 관리 책임자 지정
-  - 장애 시 수동 unseal fallback 절차 검증
-  - runbook 전환 체크리스트 승인
-- **Remote Audit 승인 조건**:
-  - 전송 대상(예: SIEM, object storage) 보존 정책 확정
-  - 감사 로그 무결성/지연 모니터링 기준 수립
-  - 로컬 + 원격 이중화 검증 완료
-
-### AI Agent Policy
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: infrastructure-hardening/doc-traceability 통과
-- **Log / Trace Retention**: audit/healthcheck/검증 로그 보존 정책 준수
-- **Safety Incident Thresholds**: seal 상태 지속, 렌더 실패 지속, audit 비활성 상태 감지 시 runbook 즉시 수행
+- Vault를 HOME `core`/`security` 상시 서비스로 다시 추가하지 않는다.
+- 기존 저장소와 OpenBao 저장소를 분리한다. 현재 데이터·백업·복원 상태가 확인되지 않았으므로 공유 볼륨, 덮어쓰기, 삭제를 전환 기본 절차에 포함하지 않는다.
+- 전환 전에 소비자 목록, 적용 버전의 upstream 호환성, 백업 복원 증거, key custody, 정책 및 인증 매핑, 되돌릴 시점을 기록한다.
+- AppRole/token/unseal key와 렌더된 비밀을 공개 문서·로그·증거에 복사하지 않는다. 자격 증명 재발급·회전은 별도 운영 변경으로 다룬다.
+- healthy는 API 과정의 생존 신호이며 unsealed·인증·소비자 연결 성공을 대신하지 않는다.
+- 전환 완료는 소비자별 검증과 복구 가능한 상태를 확인한 후 선언한다. 이 문서 변경만으로 완료 처리하지 않는다.
 
 ## Exceptions
 
-- 단기 테스트 환경에서 임시 로컬 audit만 사용 가능.
-- 단, 운영 환경 승격 전 원격 audit 전환 계획/검증 기준을 문서화해야 한다.
+기존 소비자의 복구 또는 승인된 마이그레이션에 한해 `legacy-vault`를 사용한다. 기간·소유자·종료 기준을 작업 기록에 남긴다. 새 서비스의 legacy 의존성 추가는 허용하지 않는다.
 
 ## Verification
 
-- `bash scripts/hardening/check-all-hardening.sh 03-security`
-- `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `docker inspect --format '{{json .State.Health}}' vault`
-- `docker inspect --format '{{json .State.Health}}' vault-agent`
+```bash
+docker compose --env-file .env.example --profile legacy-vault config --services
+docker compose --env-file .env.example --profile core config --services
+bash scripts/hardening/check-all-hardening.sh 03-security
+```
+
+정적 검증과 실제 Vault 데이터·unseal·OpenBao 소비자 검증을 별도 증거로 기록한다.
 
 ## Review Cadence
 
-- 월 1회 정기 점검
-- Vault 버전/구성/정책 변경 시 수시 점검
+매월 및 소비자 전환, 저장소·인증 설정 변경 시 검토한다.
 
 ## Traceability
 
@@ -89,6 +58,8 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [Vault Compose](../../../../../infra/03-security/vault/docker-compose.yml), [OpenBao Compose](../../../../../infra/03-security/openbao/docker-compose.yml): runtime 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [OpenBao 운영 가이드](../0085-openbao/guide.md), [정책](policy.md), [가이드](guide.md), [런북](runbook.md).
+- [Vault status 공식 문서](https://developer.hashicorp.com/vault/docs/commands/status).
+- [OpenBao 공식 마이그레이션 제약](https://openbao.org/docs/next/guides/migration/): development 문서이므로 적용할 릴리스의 지원 범위를 별도로 확인한다.

@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-Alertmanager handles alerts sent by Prometheus, then deduplicates, groups, inhibits, silences, and routes them to the configured receiver integrations. In this stack it runs as `infra-alertmanager`, uses `prom/alertmanager:v0.34.0`, stores runtime state in `alertmanager-data`, and renders Docker Secret values into an ephemeral `/tmp/config.yml` at startup.
+Alertmanager handles alerts sent by Prometheus, then deduplicates, groups, inhibits, silences, and routes them to the configured receiver integrations. In this stack it runs as `infra-alertmanager`, uses [declared runtime image](../../tech-stack.versions.json), stores runtime state in `alertmanager-data`, and renders Docker Secret values into an ephemeral `/tmp/config.yml` at startup.
 
 ## Audience
 
@@ -66,7 +66,7 @@ alertmanager/
 
 | Category     | Technology   | Version | Notes                          |
 | :----------- | :----------- | :------ | :----------------------------- |
-| Alerting     | Alertmanager | v0.33.0 | Single compose service with Docker Secret-rendered config |
+| Alerting     | Alertmanager | declared version | Single compose service with Docker Secret-rendered config |
 | Integrations | Slack / SMTP | -       | Webhook and SMTP relay         |
 
 ## Available Scripts
@@ -111,3 +111,5 @@ alertmanager/
 - **Policy**: `docs/05.operations/catalog/06-observability/0039-alertmanager/policy.md`
 - **Runbook**: `docs/05.operations/catalog/06-observability/0039-alertmanager/runbook.md`
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

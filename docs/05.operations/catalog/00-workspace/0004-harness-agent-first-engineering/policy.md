@@ -82,7 +82,7 @@ python3 -m json.tool .claude/settings.json >/dev/null
 bash -n .claude/hooks/*.sh scripts/**/*.sh
 CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
-printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
+printf '{"tool_input":{"file_path":"infra/10-communication/stalwart/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
 bash scripts/knowledge/report-graphify-health.sh

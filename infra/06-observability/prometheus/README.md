@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
@@ -20,9 +20,11 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 ## Tech Stack
 
-| Component | Technology | Version |
+Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
+| Component | Technology | Runtime source |
 | :--- | :--- | :--- |
-| Metrics DB | Prometheus | v3.14.0 |
+| Metrics DB | Prometheus | Declared in Compose |
 | Configuration | YAML-based | Static & File-based SD |
 | Tooling | promtool | Config/Rule Validation |
 

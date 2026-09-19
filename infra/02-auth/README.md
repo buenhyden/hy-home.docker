@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -62,6 +62,7 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 ```
 
 현재 예:
+
 - Flower
 - n8n
 - 자체 OIDC가 없는 내부 UI
@@ -73,6 +74,7 @@ Browser -> Traefik -> Application -> Keycloak
 ```
 
 현재:
+
 - Airflow
 - Kafbat UI
 
@@ -80,7 +82,7 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 
 ## How to Work in This Area
 
-1. [Auth Operations](../../docs/05.operations/catalog/02-auth/README.md)를 먼저 확인한다.
+1. [Auth Operations](../../docs/README.md)를 먼저 확인한다.
 2. Keycloak/OAuth2 Proxy compose/config를 변경하기 전에 guide/policy/runbook을 확인한다.
 3. 신규 서비스를 `Gateway ForwardAuth` 또는 `Application-native OIDC`로 분류한다.
 4. 승인된 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 중복 적용하지 않는다.
@@ -134,6 +136,8 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 - [Gateway](../01-gateway/README.md)
 - [Data](../04-data/README.md)
-- [Auth Operations](../../docs/05.operations/catalog/02-auth/README.md)
-- [Application Authentication Integration Guide](../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- [Auth Operations](../../docs/README.md)
+- [Application Authentication Integration Guide](../../docs/README.md)
 - [Documentation index](../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.

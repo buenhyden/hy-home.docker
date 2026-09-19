@@ -74,3 +74,5 @@ Requirement와 ADR을 통해 도입한다.
 - [Data hardening guide](../../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
 - [Data hardening policy](../../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)
 - [Data hardening runbook](../../05.operations/catalog/04-data/0030-optimization-hardening/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

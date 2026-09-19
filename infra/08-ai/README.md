@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -63,10 +63,12 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ## Tech Stack
 
+Runtime image pins are declared in [Ollama Compose](ollama/docker-compose.yml) and [Open WebUI Compose](open-webui/docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Inference | Ollama | `ollama/ollama:0.34.0` |
-| Interface | Open WebUI | `ghcr.io/open-webui/open-webui:v0.11.3-cuda` |
+| Inference | Ollama | Declared in Compose |
+| Interface | Open WebUI | Declared in Compose |
 | Acceleration | NVIDIA CUDA | Requires NVIDIA Container Toolkit |
 | Vector DB | Qdrant | External dependency in `04-data` |
 

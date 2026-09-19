@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -141,6 +141,8 @@ verification이 실패하거나, secret exposure risk가 보이거나, route/res
 - Subject peers: [Guide](guide.md) (`GDE-0044`), [Policy](policy.md) (`POL-0044`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0012"
 parent_ids: []
@@ -98,6 +98,8 @@ Runtime recovery is handled by [Traefik runbook](../0013-traefik/runbook.md) and
 - Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Gateway Traefik guide](../0013-traefik/guide.md)

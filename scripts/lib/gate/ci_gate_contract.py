@@ -9,9 +9,15 @@ import pathlib
 import re
 import stat
 import subprocess
+import sys
 from collections.abc import Mapping
 
 import yaml
+
+if __package__ in {None, ""}:
+    _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[3]
+    if str(_BOOTSTRAP_ROOT) not in sys.path:
+        sys.path.insert(0, str(_BOOTSTRAP_ROOT))
 
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 

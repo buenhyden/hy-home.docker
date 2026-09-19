@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -104,3 +104,5 @@ open-webui/
 
 - Changes to `docker-compose.yml` may affect SSO authentication flows.
 - Updating `RAG_EMBEDDING_MODEL` requires re-indexing of existing documents.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

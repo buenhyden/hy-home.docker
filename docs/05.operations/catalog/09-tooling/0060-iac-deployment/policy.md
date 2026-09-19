@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -16,18 +16,20 @@ created: "2026-03-25"
 
 ## Overview
 
-이 정책은 `09-tooling`의 Terraform CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
+이 정책은 `09-tooling`의 OpenTofu CLI helper와 Terrakube API/UI/executor를 이용한 IaC 변경의 승인, state, secret, evidence 기준을 정의한다.
 
 ## Policy Scope
 
-- **Systems**: `infra/09-tooling/terraform/docker-compose.yml`, `infra/09-tooling/terrakube/docker-compose.yml`
+- **Systems**: `infra/09-tooling/opentofu/docker-compose.yml`, `infra/09-tooling/terrakube/docker-compose.yml`
 - **Agents**: repo-local governance를 따르는 AI agents
 - **Environments**: local, development, homelab operations
+
+Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [migration handoff](../0068-terraform/guide.md)를 따른다.
 
 ## Controls
 
 - **Required**: IaC 변경은 PR review, plan evidence, apply approval, state backend boundary 기록을 거친다.
-- **Required**: Terraform helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다.
+- **Required**: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다.
 - **Required**: Terrakube secret material은 Docker Secret names만 문서화하고 값은 노출하지 않는다.
 - **Allowed**: 문서/검증 절차의 in-place 보강, state/backend 정책의 보수적 강화, approval gate 추가.
 - **Disallowed**: secret 값 노출, 승인 없는 apply, Docker socket 권한 확대, 정책과 절차의 중복 SSoT 생성.
@@ -40,7 +42,7 @@ created: "2026-03-25"
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
-- Terraform/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
+- OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ## Review Cadence
 
@@ -55,8 +57,11 @@ created: "2026-03-25"
 
 ## Related Documents
 
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+
 - [Operations index](../../../README.md)
-- [Terraform guide](../0068-terraform/guide.md)
+- [OpenTofu guide](../0082-opentofu/guide.md)
+- [Terraform migration handoff](../0068-terraform/guide.md)
 - [Terrakube guide](../0069-terrakube/guide.md)
-- [Terraform runbook](../0068-terraform/runbook.md)
+- [OpenTofu runbook](../0082-opentofu/runbook.md)
 - [Terrakube runbook](../0069-terrakube/runbook.md)

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-- SonarQube/Terrakube/Syncthing 경로를 gateway+SSO 정책에 정렬한다.
+- SonarQube/Terrakube 경로를 gateway+SSO 정책에 정렬한다.
 - tooling compose 네트워크 경계를 일관화한다.
 - locust/k6 테스트 런타임 계약을 안정화한다.
 - tooling 하드닝 회귀를 script/CI로 조기 차단한다.
@@ -50,9 +50,9 @@ created: "2026-05-17"
    - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `python3 scripts/validation/run-ci-gate.py --profile changed`
 2. Gateway/SSO 경계 정렬
-   - SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+   - SonarQube/Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 네트워크 경계 표준화
-   - tooling compose에 `infra_net` external 선언을 명시한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
+   - tooling 서비스의 `infra_net` 연결과 root Compose의 network 정의를 함께 확인한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
 4. 테스트 런타임 안정화
    - locust-worker healthcheck를 확인한다.
    - k6 leaf는 `k6` 단일 작업이며, `k6-data:/scripts:ro` volume 계약을 유지한다.
@@ -61,7 +61,7 @@ created: "2026-05-17"
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 로드맵 반영
-   - 도구별 확장 항목(terraform/terrakube/registry/sonarqube/k6/locust/syncthing)을 tasks/operations에 반영한다.
+   - 도구별 확장 항목(opentofu/terrakube/registry/sonarqube/k6/locust/renovate)을 tasks/operations에 반영한다.
 
 ### Common Pitfalls
 
@@ -86,7 +86,11 @@ created: "2026-05-17"
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Policy](policy.md) (`POL-0063`), [Runbook](runbook.md) (`RUN-0063`)
 
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](../0068-terraform/guide.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

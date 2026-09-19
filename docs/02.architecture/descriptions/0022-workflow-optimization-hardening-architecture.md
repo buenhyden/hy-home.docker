@@ -121,3 +121,5 @@ Tracked infra artifact가 없는 신규 workflow service는 active workflow arch
 - **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

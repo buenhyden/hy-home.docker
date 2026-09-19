@@ -32,6 +32,8 @@ one stable `0016-vault` subject without changing their operational content.
 | --- | --- |
 | [Vault](0016-vault/guide.md) | [Guide](0016-vault/guide.md), [Policy](0016-vault/policy.md), [Runbook](0016-vault/runbook.md) |
 
+| [OpenBao](0085-openbao/guide.md) | [Guide](0085-openbao/guide.md), [Policy](0085-openbao/policy.md), [Runbook](0085-openbao/runbook.md) |
+
 ## How to Work in This Area
 
 Read the guide for routine context and policy for control boundaries. Execute

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -57,6 +57,8 @@ Compliance is checked via the Airflow static/runtime checks documented in [Airfl
 - Subject peers: [Guide](guide.md) (`GDE-0051`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Airflow DAG basics guide](../0051-airflow-dag-lifecycle/guide.md)

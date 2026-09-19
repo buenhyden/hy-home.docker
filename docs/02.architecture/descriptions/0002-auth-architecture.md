@@ -78,6 +78,7 @@ graph TD
 ### Pattern 1: Gateway ForwardAuth
 
 적용 예:
+
 - Flower
 - n8n
 - 자체 OIDC가 없는 관리 UI
@@ -91,6 +92,7 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> OAuth2 Proxy Session -> Servic
 ### Pattern 2: Application-native OIDC
 
 현재 승인:
+
 - Apache Airflow
 - Kafbat UI
 
@@ -186,3 +188,5 @@ Kafbat UI는 `infra/05-messaging/kafka/docker-compose.yml`과
 - **Operations**: [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)
 - **Operations**: [OAuth2 Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
 - **Operations**: [Application authentication integration](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow 3.3.1와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.
 
 ## Policy Scope
 
@@ -24,7 +24,7 @@ created: "2026-05-17"
 - 메타데이터 DB 및 브로커(Valkey) 연결 정책
 - DAG 배포 및 운영 환경 보안 통제
 
-- **Systems**: Apache Airflow 3.3.1, CeleryExecutor
+- **Systems**: Apache Airflow, CeleryExecutor
 - **Agents**: CI/CD 배포 에이전트, 모니터링 에이전트
 - **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
 
@@ -69,6 +69,8 @@ created: "2026-05-17"
 - Subject peers: [Guide](guide.md) (`GDE-0050`), [Runbook](runbook.md) (`RUN-0050`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

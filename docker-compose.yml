@@ -108,8 +108,6 @@ secrets:
     file: ./secrets/db/valkey/service_password.txt
   mng_valkey_password:
     file: ./secrets/db/valkey/mng_password.txt
-  agent_office_valkey_password:
-    file: ./secrets/db/valkey/agent_office_password.txt
   oauth2_valkey_password:
     file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
@@ -149,8 +147,6 @@ secrets:
     file: ./secrets/automation/n8n_runner_auth_token.txt
 
   # ── Tooling: SonarQube ──────────────────────────────────
-  sonarqube_admin_password:
-    file: ./secrets/tools/sonarqube_admin_password.txt
 
   # ── Tooling: Terrakube ──────────────────────────────────
   terrakube_pat_secret:
@@ -177,18 +173,12 @@ secrets:
     file: ./secrets/data/supabase_openai_api_key.txt
   supabase_logflare_private_token:
     file: ./secrets/data/supabase_logflare_private_token.txt
-  supabase_db_enc_key:
-    file: ./secrets/data/supabase_db_enc_key.txt
 
   # ── Data: SURREAL DB ──────────────────────────────────────
   surreal_db_password:
     file: ./secrets/db/surreal_db/surreal_db_password.txt
 
   # ── InfluxDB ─────────────────────────────────────────────
-  influxdb_password:
-    file: ./secrets/db/influxdb/influxdb_password.txt
-  influxdb_api_token:
-    file: ./secrets/db/influxdb/influxdb_api_token.txt
 
   # ── CouchDB ──────────────────────────────────────────────
   couchdb_password:
@@ -259,7 +249,7 @@ include:
   - infra/09-tooling/opentofu/docker-compose.yml
   - infra/09-tooling/terrakube/docker-compose.yml
   - infra/09-tooling/renovate/docker-compose.yml
-  # 10-communication  
+  # 10-communication
   - infra/10-communication/mailpit/docker-compose.yml
   - infra/10-communication/stalwart/docker-compose.yml
   # 11-laboratory

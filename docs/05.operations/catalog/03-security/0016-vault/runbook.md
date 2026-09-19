@@ -1,10 +1,10 @@
 ---
-title: "03-Security Vault Runbook"
-version: "1.0.0"
+title: "Vault Legacy Migration Runbook"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0016"
 parent_ids:
@@ -12,103 +12,48 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# 03-Security Vault Runbook
+# Vault Legacy Migration Runbook
 
 ## Overview
 
-이 런북은 Vault seal/unseal, raft 상태 점검, audit 활성/검증, Vault Agent 렌더 실패 복구, 안전 롤백 절차를 즉시 실행 가능 형태로 제공한다.
-
-> Scope: Vault Secret Management Recovery & Maintenance
-
-### Purpose
-
-- Vault 장애/오작동 상황에서 복구 시간을 줄인다.
-- 하드닝 계약 위반을 빠르게 진단하고 원복한다.
+`legacy-vault`로 남겨 둔 Vault와 Agent의 상태를 확인하고 OpenBao 전환 중단·복구를 판단하는 절차다. 실제 데이터 이전 및 복원은 검증되지 않았다.
 
 ## When to Use
 
-- Vault가 `Sealed: true` 상태일 때
-- raft peer 상태가 비정상일 때
-- audit device가 비활성화되었을 때
-- Vault Agent healthcheck 또는 템플릿 렌더가 실패할 때
+legacy 소비자의 인증 실패, Vault seal 상태, Agent 렌더 중단 또는 OpenBao 전환 점검 실패 시 사용한다.
 
 ## Procedure
 
-### Checklist
+1. 저장소 루트에서 정적 경계를 확인한다.
 
-- [ ] `docker compose --profile security exec vault vault status` 확인
-- [ ] `docker inspect --format '{{json .State.Health}}' vault` 확인
-- [ ] `docker inspect --format '{{json .State.Health}}' vault-agent` 확인
-- [ ] 최근 변경 파일/커밋 식별
+   ```bash
+   docker compose --env-file .env.example --profile legacy-vault config --services
+   bash scripts/hardening/check-all-hardening.sh 03-security
+   ```
 
-### Steps
+2. 운영 점검이 허용된 기존 실행 인스턴스만 조회한다.
 
-1. Seal/Unseal 복구
-   - 상태 확인: `docker compose --profile security exec vault vault status`
-   - 필요한 경우 unseal 키 3회 입력
-2. Raft 상태 점검
-   - `docker compose --profile security exec vault vault operator raft list-peers`
-   - 비정상 peer 식별 후 정책에 따라 조치
-3. Audit 활성/검증
-   - `docker compose --profile security exec vault vault audit list`
-   - 로컬 audit 활성 확인, 원격 audit는 정책 승인 상태 확인
-4. Vault Agent 렌더 실패 복구
-   - `docker compose --profile security logs vault-agent --tail=200`
-   - `/vault/agent/role_id`, `/vault/agent/secret_id`, `/vault/agent/token` 확인
-   - 인증 정보(`role_id`/`secret_id`) 부재/오류 시 위 AppRole bootstrap 절차를 재실행한다. 생성값은 파일로 직접 저장하고 문서/PR/로그에 노출하지 않는다.
-   - `docker compose --profile security exec vault-agent ls -la /vault/out`로 출력 파일 재검증
-5. 재검증
-   - `bash scripts/hardening/check-all-hardening.sh 03-security`
-   - `bash scripts/validation/check-template-security-baseline.sh`
+   ```bash
+   docker compose --profile legacy-vault ps vault vault-agent
+   docker compose --profile legacy-vault exec vault vault status
+   ```
 
-### Verification Steps
-
-- [ ] `bash scripts/hardening/check-all-hardening.sh 03-security` 통과
-- [ ] `docker compose --profile security exec vault vault status`에서 `Sealed: false` 확인
-- [ ] `docker inspect`에서 `vault`, `vault-agent` health가 정상
-- [ ] `/vault/out` 하위 템플릿 파일 생성 확인
-
-### Observability and Evidence Sources
-
-- **Signals**: container health, Vault status, audit list, agent render logs
-- **Evidence to Capture**:
-  - `docker compose --profile security logs vault --tail=200`
-  - `docker compose --profile security logs vault-agent --tail=200`
-  - `vault status`, `vault operator raft list-peers`, `vault audit list` 출력
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 롤백 대상 파일
-  - `infra/03-security/vault/docker-compose.yml`
-  - `infra/03-security/vault/config/templates/*.ctmpl`
-  - `scripts/hardening/check-all-hardening.sh 03-security`
-  - `.github/workflows/ci-quality.yml`
-- [ ] compose 재반영
-  - `docker compose --profile security up -d vault vault-agent`
-- [ ] 하드닝/추적성 검증 재실행
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: CI `infrastructure-hardening` 임시 비활성은 승인 후만 수행
-- **Eval Re-run**: `check-all-hardening.sh 03-security`, root profile validation, `python3 scripts/validation/check-document-links.py --mode all`
-- **Trace Capture**: CI job logs + container logs
+3. status 종료 코드 2는 sealed이며 장애 원인과 키 관리자를 확인한다. 실제 threshold를 확인하지 않은 고정 횟수 unseal, 재초기화, key 재발급을 실행하지 않는다.
+4. 소비자 주소, 정책 참조, Agent 템플릿과 출력 경로를 공개 선언과 비교한다. 원시 token, SecretID 또는 렌더 출력 파일을 열어 증거로 수집하지 않는다.
+5. 마이그레이션 작업 중이면 후속 소비자 전환을 멈추고 원본 Vault 상태, 대상 OpenBao 상태, 마지막 성공 검증을 구분한다.
+6. [OpenBao 런북](../0085-openbao/runbook.md)에서 대상 서비스 검증을 수행할 운영자에게 인계한다.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+선택 profile, 서비스 상태, seal 여부, 종료 코드, 최근 공개 구성 변경, 실패한 소비자와 담당자를 기록한다. 로그 검토가 필요하면 운영자가 제한된 범위에서 비밀을 제거한 요약만 공유한다. 데이터 백업·복원 증거가 없으면 미검증으로 표시한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+소비자 endpoint 변경을 되돌리는 것은 기존 Vault가 계속 사용 가능하고 새 쓰기의 처리 방침이 확인된 경우에만 수행한다. OpenBao 데이터를 Vault 경로에 복사하거나 동일 볼륨으로 재시작하지 않는다. 검증된 데이터 역이전 절차는 없으며, 새 데이터가 기록된 뒤에는 운영자의 복구 계획이 필요하다. legacy 저장소와 키 자료는 삭제하지 않는다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+seal 해제, 자격 증명 발급·회전, 데이터 복원·삭제 또는 호환성 불명이 남으면 Security owner에게 인계한다. 상태와 마지막 성공 지점, 소비자 영향, 필요한 결정을 포함한다.
 
 ## Traceability
 
@@ -118,6 +63,8 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [Vault Compose](../../../../../infra/03-security/vault/docker-compose.yml), [OpenBao Compose](../../../../../infra/03-security/openbao/docker-compose.yml): runtime 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [OpenBao 운영 가이드](../0085-openbao/guide.md), [정책](policy.md), [가이드](guide.md), [런북](runbook.md).
+- [Vault status 공식 문서](https://developer.hashicorp.com/vault/docs/commands/status).
+- [OpenBao 공식 마이그레이션 제약](https://openbao.org/docs/next/guides/migration/): development 문서이므로 적용할 릴리스의 지원 범위를 별도로 확인한다.

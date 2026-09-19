@@ -37,6 +37,8 @@ procedures under their current four-digit subject directories.
 | [Optimization hardening](0058-optimization-hardening/guide.md) | [Guide](0058-optimization-hardening/guide.md), [Policy](0058-optimization-hardening/policy.md), [Runbook](0058-optimization-hardening/runbook.md) |
 | [RAG workflow](0059-rag-workflow/guide.md) | [Guide](0059-rag-workflow/guide.md) |
 
+| [ComfyUI](0081-comfyui/guide.md) | [Guide](0081-comfyui/guide.md), [Policy](0081-comfyui/policy.md), [Runbook](0081-comfyui/runbook.md) |
+
 ## How to Work in This Area
 
 Use guides for routine context, policies for control boundaries, and runbooks

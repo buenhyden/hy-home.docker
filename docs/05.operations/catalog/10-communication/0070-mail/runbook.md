@@ -1,10 +1,10 @@
 ---
-title: "Mail Recovery Runbook"
-version: "1.0.1"
+title: "Stalwart Mail Recovery Runbook"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0070"
 parent_ids:
@@ -12,80 +12,42 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Mail Recovery Runbook
+# Stalwart Mail Recovery Runbook
 
 ## Overview
 
-> Scope: Stalwart and MailHog static/runtime recovery for the `10-communication` mail compose that the `communication` profile selects.
-
-이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩의 검증 실패, UI 접근 실패, SMTP/IMAP 연결 실패가 발생했을 때 운영자가 증거를 보존하고 안전하게 복구 또는 에스컬레이션하기 위한 절차를 정의한다.
-
-### Purpose
-
-메일 서비스 장애 원인을 확인하되, secret 노출, 데이터 삭제, 검증되지 않은 rollback 명령을 피하고 현재 root compose와 `communication` profile 경계에 맞는 evidence를 남긴다.
+`mail-server` profile의 Stalwart 실제 메일 서비스 장애를 진단하는 절차다. 개발 트랩은 [Mailpit 런북](../0084-mailpit/runbook.md)이 소유한다.
 
 ## When to Use
 
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`이 실패할 때.
-- Stalwart Admin/JMAP UI(`mail.${DEFAULT_URL}`) 또는 MailHog UI(`mailhog.${DEFAULT_URL}`)가 응답하지 않을 때.
-- 운영 승격 후 SMTP/Submission/SMTPS/IMAPS 포트가 응답하지 않을 때.
-- MailHog가 개발 테스트 메일을 캡처하지 않을 때.
+Stalwart 관리 UI, SMTP/Submission/SMTPS, IMAPS 또는 외부 배달이 실패하거나 정적 검증이 실패할 때 사용한다.
 
 ## Procedure
 
-### Checklist
+1. 저장소 루트에서 정적 선언을 확인한다.
 
-- [ ] mail compose 파일이 루트 include 목록에 있는지 확인하고, 이번 세션에서 `communication` profile을 선택했는지 기록한다.
-- [ ] 최근 compose, `.env*`, secret reference, DNS, 인증서 변경 내역을 기록한다.
-- [ ] secret 값 원문은 열람하거나 로그에 남기지 않는다.
+   ```bash
+   docker compose --env-file .env.example --profile mail-server config --services
+   bash scripts/hardening/check-all-hardening.sh 10-communication
+   ```
 
-### Steps
-
-1. static baseline을 확인한다: `bash scripts/hardening/check-all-hardening.sh 10-communication`.
-2. repo stale guard를 확인한다: `python3 scripts/validation/run-ci-gate.py --profile changed`.
-3. 컨테이너가 실행 중이면 상태를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`.
-4. 실행 중인 컨테이너 로그를 확인한다: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`.
-5. 운영 승격 상태에서만 host port를 확인한다: `nc -zv localhost 25 465 587 993 4190`.
-6. MailHog 캡처 실패는 애플리케이션 SMTP host가 `mailhog`, port가 `1025`인지 확인한다.
-7. Stalwart 외부 전송 실패는 DNS(MX/SPF/DKIM/DMARC), 인증서, ISP/hosting provider의 port 25 정책 evidence를 확인한다.
-
-### Verification Steps
-
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
-- 운영 승격 시 UI route, TLS, DNS, host port evidence가 incident/task 기록에 남아 있어야 한다.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker logs --tail 100 stalwart`, `docker logs --tail 100 mailhog`
-- **Static config**: [mail compose](../../../../../infra/10-communication/mail/docker-compose.yml), [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-- **Runtime signals**: container status, host port probe output, Traefik route response, DNS/TLS probe output
-
-### Safe Rollback or Recovery Procedure
-
-1. static config drift는 current branch에서 compose/doc diff를 되돌리기 전에 변경 원인과 검증 실패를 기록한다.
-2. 운영 승격 후 재시작이 필요하면 사전 승인과 영향 범위를 기록한 뒤 Stalwart 또는 MailHog 단위로만 수행한다.
-3. MailHog queue 초기화는 개발 캡처 데이터 손실을 의미하므로 관련 개발자에게 알린 뒤 승인된 경우에만 재시작한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: secret exposure risk가 있으면 secret 파일 열람과 로그 공유를 중단한다.
-- **Eval Re-run**: hardening, repo contracts, documentation alignment checks를 재실행한다.
+2. 실제 서비스가 선택·기동된 운영 환경이면 `docker compose --profile mail-server ps stalwart`로 상태를 확인한다.
+3. 최근 DNS, 인증서 참조, host 포트, Compose, secret 참조 변경을 식별한다. 메일 내용, 패스워드 또는 private key를 열어 수집하지 않는다.
+4. 관리 UI 문제는 `mail.${DEFAULT_URL}`의 Traefik/SSO 경로를 확인한다. SMTP/IMAP 문제는 Compose의 게시 포트와 프로토콜 TLS·인증을 따로 확인한다.
+5. 외부 배달 실패는 DNS(MX/SPF/DKIM/DMARC), 송수신 정책과 ISP의 SMTP 제한을 확인한다. 승인된 테스트 수신자만 사용한다.
+6. 로그가 필요하면 운영자가 `docker compose --profile mail-server logs --tail=100 stalwart`를 제한된 환경에서 검토하고 메일 주소·내용·비밀을 제거한 요약만 공유한다.
 
 ## Evidence
 
-- 실행한 명령, 성공/실패 요약, 컨테이너 상태, 관련 로그 tail, DNS/TLS/port probe 결과를 task 또는 incident evidence에 기록한다.
-- secret 값, private key, 인증서 원문은 evidence에 포함하지 않는다.
+실행 명령·시간·종료 상태, profile, 서비스 상태, 공개 구성 변경, DNS/TLS/port 시험 요약과 실패 범위를 기록한다. 컨테이너 TCP healthcheck와 실제 배달 결과는 구분한다.
 
 ## Rollback or Recovery
 
-N/A — no verified broad rollback or data restore procedure is documented yet. Static config correction, approved service restart, and MailHog development queue reset만 이 runbook의 검증된 복구 범위다.
+확인된 공개 구성 변경만 영향 범위와 이전 검증 결과에 따라 복구한다. 재시작이 승인되면 `docker compose --profile mail-server restart stalwart`로 단일 서비스만 대상으로 한다. 메일함 데이터 복원·서버 downgrade·DNS rollback은 검증된 별도 계획이 필요하며 현재 문서는 성공을 보장하지 않는다. 볼륨 삭제 및 개발 트랩의 큐 초기화는 이 절차에 포함하지 않는다.
 
 ## Escalation
 
-verification이 실패하거나, 데이터 삭제/복구, production mail delivery 변경, DNS 변경, secret rotation, host firewall 변경이 필요하면 owning operator에게 에스컬레이션한다. 에스컬레이션에는 captured evidence, 최근 변경 내역, 선택한 profile, 현재 rollback/recovery 상태를 포함한다.
+메일 손실, 실제 배달 변경, DNS/방화벽 변경, 자격 증명 회전, 저장소 복원 또는 원인이 확인되지 않은 TLS 오류는 운영 책임자에게 인계한다. 마지막 성공 상태, 영향 도메인, 실패 증거와 복구 선택지를 포함한다.
 
 ## Traceability
 
@@ -95,6 +57,8 @@ verification이 실패하거나, 데이터 삭제/복구, production mail delive
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml): 서비스·profile·포트·데이터 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [Mailpit 개발 트랩 가이드](../0084-mailpit/guide.md), [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md).
+- [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
+- [Mailpit 공식 기능 문서](https://mailpit.axllent.org/docs/).

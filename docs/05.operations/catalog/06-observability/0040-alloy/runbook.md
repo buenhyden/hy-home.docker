@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -54,7 +54,7 @@ created: "2026-05-17"
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/alloy:v1.19.2|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    rg -n '/var/lib/docker/containers:/var/lib/docker/containers:ro|/var/run/docker.sock:/var/run/docker.sock:ro|alloy-data:/var/lib/alloy:rw' infra/06-observability/docker-compose.yml
    ```
 
@@ -154,6 +154,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, Docker mo
 
 ## Related Documents
 
+- [Runtime image declarations](../../../../../infra/06-observability/docker-compose.yml)
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)

@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0053"
 parent_ids:
@@ -111,6 +111,8 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - Subject peers: [Policy](policy.md) (`POL-0053`), [Runbook](runbook.md) (`RUN-0053`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

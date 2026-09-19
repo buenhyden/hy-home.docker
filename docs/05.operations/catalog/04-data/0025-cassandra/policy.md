@@ -44,7 +44,7 @@ N/A - no currently approved exceptions.
 ## Verification
 
 - Compare this policy with [Cassandra guide](guide.md), [Cassandra runbook](runbook.md), and [infra README](../../../../../infra/04-data/nosql/cassandra/README.md) after compose changes.
-- Run `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config` before approving service-name, volume, profile, or secret documentation updates.
+- Run `docker compose --profile cassandra config --quiet` before approving service-name, volume, profile, or secret documentation updates.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
@@ -58,6 +58,8 @@ N/A - no currently approved exceptions.
 - Subject peers: [Guide](guide.md) (`GDE-0025`), [Runbook](runbook.md) (`RUN-0025`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://cassandra.apache.org/doc/latest/cassandra/managing/operating/backups.html)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

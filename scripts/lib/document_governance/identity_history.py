@@ -51,6 +51,7 @@ HISTORICAL_ID_PATTERN = re.compile(
     r"REQ-[0-9]{4}(?:-(?:FR|NFR|IF)-[0-9]{4})?|"
     r"PRD-[0-9]{4}(?:-(?:R|AC|FR|NFR)-?[0-9]{4})?|"
     r"SRS-[0-9]{4}(?:-R[0-9]{4})?|IFR-[0-9]{4}(?:-R[0-9]{4})?|"
+    r"inc-[0-9]{4}-[0-9]{4}(?:-PM)?|"
     r"(?:AD|ADR|SPEC|RES|AUD|DATA)-[0-9]{4}|"
     r"(?:ad|adr|spec|ref|audit|guide|policy|runbook|ops|inc|mig|tombstone)-[0-9]{4}"
     r")\b"
@@ -353,6 +354,12 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
     if not numbers:
         return
     package = numbers[0]
+    if upper.startswith("INC-"):
+        # Current IDs include a year; legacy IDs carry only the allocation.
+        collected.setdefault("incident", set()).add(
+            numbers[1] if len(numbers) > 1 else package
+        )
+        return
     if upper.startswith(("REQ-", "PRD-", "SRS-", "IFR-")):
         collected.setdefault("requirement", set()).add(package)
         if len(numbers) > 1:

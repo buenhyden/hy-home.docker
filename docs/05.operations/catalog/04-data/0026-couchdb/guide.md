@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/couchdb/docker-compose.yml`에 정의된 CouchDB 3노드 클러스터 사용 기준을 설명한다. 루트 compose는 CouchDB 파일을 무조건 include하며 `data` profile을 선택할 때만 기동된다. 선택 시 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`가 `data` 프로파일과 `infra_net`에서 동작한다.
+이 문서는 `infra/04-data/nosql/couchdb/docker-compose.yml`에 정의된 CouchDB 3노드 클러스터 사용 기준을 설명한다. 루트 compose는 CouchDB 파일을 무조건 include하며 `couchdb` profile을 선택할 때만 기동된다. 선택 시 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`가 `data` 프로파일과 `infra_net`에서 동작한다.
 
 ### Usage Type
 
@@ -45,7 +45,7 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 1. 서비스 구성을 렌더링한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config
+   docker compose --profile couchdb config --quiet
    ```
 
 2. 클러스터와 init job 상태를 확인한다.
@@ -72,11 +72,11 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 
 - 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
 - Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
-- 클러스터 init은 `curlimages/curl:8.22.0` 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
+- 클러스터 init은 [curlimages/curl image declaration](../../../../../infra/04-data/nosql/couchdb/docker-compose.yml) 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 
 ## Common Checks
 
-- `docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config`
+- `docker compose --profile couchdb config --quiet`
 - `docker compose logs couchdb-cluster-init`
 - `docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'`
 
@@ -91,6 +91,8 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 - Subject peers: [Policy](policy.md) (`POL-0026`), [Runbook](runbook.md) (`RUN-0026`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

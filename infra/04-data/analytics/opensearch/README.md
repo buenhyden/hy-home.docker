@@ -4,7 +4,7 @@ version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -54,10 +54,10 @@ opensearch/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; `data-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
+| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; `opensearch-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `data`, `data-cluster` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml`; the single-node topology is the `data` profile and the three-node topology is `data-cluster`, both in that one file |
+| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `opensearch`, `opensearch-cluster` |
+| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml`; the single-node topology is the `opensearch` profile and the three-node topology is `opensearch-cluster`, both in that one file |
 | Networks | `infra_net` |
 | Volumes | `opensearch-data1:/usr/share/opensearch/data`, `${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2`, plus 15 more |
 | Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
@@ -84,7 +84,7 @@ opensearch/
 
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- The `data-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example --profile data-cluster config --services`.
+- The `opensearch-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example --profile opensearch-cluster config --services`.
 
 ## Troubleshooting
 
@@ -101,3 +101,7 @@ opensearch/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+
+Build source authority: [Dockerfile](Dockerfile).

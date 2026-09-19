@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -36,7 +36,7 @@ created: "2026-05-10"
   - `dedicated-valkey`를 선택하지 않은 경우의 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
   - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, `dedicated-valkey` profile을 선택하지 않았을 때의 `mng-valkey` broker 경계를 명시한다.
-  - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.29.5-local`)를 사용한다.
+  - n8n compose 기본 이미지는 custom image([hyhome/n8n image declaration](../../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
   - workflow 변경은 `check-all-hardening.sh 07-workflow` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지한다.
@@ -82,6 +82,8 @@ created: "2026-05-10"
 - Subject peers: [Guide](guide.md) (`GDE-0054`), [Runbook](runbook.md) (`RUN-0054`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
