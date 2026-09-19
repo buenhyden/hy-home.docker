@@ -459,10 +459,8 @@ services:
     volumes:
       - ./gatus/config/config.yaml:/config/config.yaml:ro
       - gatus-data:/data:rw
-
     expose:
       - '8080'
-
     healthcheck:
       test:
         - CMD-SHELL
@@ -471,21 +469,18 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
-
     labels:
       <<: *tier-label
-
       traefik.enable: 'true'
-
       traefik.http.routers.gatus.rule: Host(`status.${DEFAULT_URL}`)
       traefik.http.routers.gatus.entrypoints: websecure
       traefik.http.routers.gatus.tls: 'true'
       traefik.http.routers.gatus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.gatus.loadbalancer.server.port: 8080
-
     networks:
       infra_net:
         ipv4_address: 172.19.0.231
+        
   pyroscope:
     profiles:
       - obs
