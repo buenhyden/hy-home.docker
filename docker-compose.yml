@@ -258,6 +258,7 @@ include:
   - infra/09-tooling/sonarqube/docker-compose.yml
   - infra/09-tooling/opentofu/docker-compose.yml
   - infra/09-tooling/terrakube/docker-compose.yml
+  - infra/09-tooling/renovate/docker-compose.yml
   # 10-communication  
   - infra/10-communication/mailpit/docker-compose.yml
   - infra/10-communication/stalwart/docker-compose.yml

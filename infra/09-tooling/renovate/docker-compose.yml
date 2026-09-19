@@ -13,7 +13,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-med
 
-    image: renovate/renovate:44.103.2
+    image: renovate/renovate:44.103.2-full
     container_name: renovate
 
     restart: 'no'
@@ -40,18 +40,14 @@ services:
     # Vault/OpenBao 이전 후 같은 파일 path를 Agent가 공급하게 만들면 됨.
     secrets:
       - renovate_token
-
     entrypoint:
       - /bin/bash
       - -ec
-
     command:
       - |
         export RENOVATE_TOKEN="$$(cat /run/secrets/renovate_token)"
         exec renovate
-
     networks:
       - infra_net
-
     labels:
       <<: *tier-label
