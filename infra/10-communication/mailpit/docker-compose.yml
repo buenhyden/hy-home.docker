@@ -12,6 +12,7 @@ services:
   mailpit:
     profiles:
       - dev
+      - local
       - mail-dev
     extends:
       file: ../../common-optimizations.yml

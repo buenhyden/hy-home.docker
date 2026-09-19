@@ -57,7 +57,7 @@ services:
     profiles:
       - obs
       - obs-core
-      - local
+      - dev
       - alerting
       - batch-metrics
     extends:
@@ -189,8 +189,6 @@ services:
   alloy:
     profiles:
       - obs
-      - obs-core
-      - local
       - logs
       - tracing
       - profiling
@@ -248,7 +246,7 @@ services:
     profiles:
       - obs
       - obs-core
-      - local
+      - dev
       - logs
       - tracing
       - profiling
@@ -353,9 +351,8 @@ services:
   node-exporter:
     profiles:
       - obs
-      - obs-core
-      - local
       - obs-host
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
@@ -393,8 +390,8 @@ services:
   cadvisor:
     profiles:
       - obs
-      - obs-core
-      - local
+      - obs-host
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-host-observer-med
@@ -442,7 +439,7 @@ services:
     profiles:
       - obs
       - availability
-      - local
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
