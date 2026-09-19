@@ -180,8 +180,8 @@ services:
 
   valkey-cluster-init:
     profiles:
-      - data
       - service
+      - valkey-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -212,8 +212,8 @@ services:
       - infra_net
   valkey-cluster-exporter:
     profiles:
-      - data
       - service
+      - valkey-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
