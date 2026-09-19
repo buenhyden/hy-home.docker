@@ -16,36 +16,6 @@ volumes:
       device: ${DEFAULT_MANAGEMENT_DIR}/surrealdb/data
 
 services:
-  surrealdb:
-    profiles:
-      - admin
-      - notebook
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-db-med
-    build:
-      context: ./surrealdb
-      dockerfile: Dockerfile
-    environment:
-      SURREALDB_USERNAME: ${SURREALDB_USERNAME}
-    ports:
-      - '${SURREALDB_HOST_PORT:-8000}:8000'
-    volumes:
-      - surrealdb-data:/mydata
-    labels:
-      <<: *tier-label
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.122
-    healthcheck:
-      test: [ "CMD", "/usr/local/bin/surreal", "isready", "--conn", "http://127.0.0.1:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 20s
-    secrets:
-      - surreal_db_password
-
   open_notebook:
     profiles:
       - admin
