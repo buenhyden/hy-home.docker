@@ -1,0 +1,38 @@
+x-tier-label: &tier-label
+  hy-home.tier: communication
+
+volumes:
+  mailpit-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_COMMUNICATION_DIR}/mailpit/data
+services:
+  mailpit:
+    profiles:
+      - 'communication'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - mailpit-data:/data
+    ports:
+      - ${MAILPIT_UI_PORT}:${MAILPIT_UI_HOST_PORT}
+      - ${MAILPIT_SMTP_PORT}:${MAILPIT_SMTP_HOST_PORT}
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.mailpit-ui.rule: Host(`mail.${DEFAULT_URL}`)
+      traefik.http.routers.mailpit-ui.entrypoints: websecure
+      traefik.http.routers.mailpit-ui.tls: 'true'
+      traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.mailpit-ui.loadbalancer.server.port: ${MAILPIT_UI_PORT:-8025}
