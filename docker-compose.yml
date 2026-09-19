@@ -55,6 +55,8 @@ secrets:
     file: ./secrets/auth/pg_haproxy_stats_password.txt
   airflow_keycloak_client_secret:
     file: ./secrets/auth/airflow_client_secret.txt
+  dozzle_client_secret:
+    file: ./secrets/auth/dozzle_client_secret.txt
 
   # ── Security ───────────────────────────────────────
   vault_token:

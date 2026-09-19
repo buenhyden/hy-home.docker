@@ -20,11 +20,19 @@ services:
       service: template-stateful-med
     container_name: dozzle
     image: amir20/dozzle:v11.1.0
+    secrets:
+      - dozzle_client_secret
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - dozzle-data:/data
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
     expose:
       - ${DOZZLE_PORT:-8080}
+    environment:
+      DOZZLE_AUTH_PROVIDER: oidc
+      DOZZLE_AUTH_OIDC_ISSUER: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+      DOZZLE_AUTH_OIDC_CLIENT_ID: ${DOZZLE_OIDC_CLIENT_ID}
+      DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret
     healthcheck:
       test: [ 'CMD', '/dozzle', 'healthcheck' ]
       interval: 3s
@@ -38,7 +46,7 @@ services:
       traefik.http.routers.dozzle.entrypoints: websecure
       traefik.http.routers.dozzle.tls: 'true'
       traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
-      traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file
+      traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker
       traefik.http.services.dozzle.loadbalancer.server.port: ${DOZZLE_PORT:-8080}
     networks:
       infra_net:
