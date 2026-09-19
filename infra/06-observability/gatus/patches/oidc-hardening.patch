@@ -1,0 +1,490 @@
+--- a/api/api.go
++++ b/api/api.go
+@@ -77,14 +77,6 @@
+ 	////////////////////////
+ 	unprotectedAPIRouter := apiRouter.Group("/")
+ 	unprotectedAPIRouter.Get("/v1/config", ConfigHandler{securityConfig: cfg.Security, config: cfg}.GetConfig)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/health/badge.svg", HealthBadge)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/health/badge.shields", HealthBadgeShields)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration", UptimeRaw)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration/badge.svg", UptimeBadge)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration", ResponseTimeRaw)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/badge.svg", ResponseTimeBadge(cfg))
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/chart.svg", ResponseTimeChart)
+-	unprotectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/history", ResponseTimeHistory)
+ 	// This endpoint requires authz with bearer token, so technically it is protected
+ 	unprotectedAPIRouter.Post("/v1/endpoints/:key/external", CreateExternalEndpointResult(cfg))
+ 	// SPA
+@@ -130,6 +122,14 @@
+ 	}
+ 	protectedAPIRouter.Get("/v1/endpoints/statuses", EndpointStatuses(cfg))
+ 	protectedAPIRouter.Get("/v1/endpoints/:key/statuses", EndpointStatus(cfg))
++	protectedAPIRouter.Get("/v1/endpoints/:key/health/badge.svg", HealthBadge)
++	protectedAPIRouter.Get("/v1/endpoints/:key/health/badge.shields", HealthBadgeShields)
++	protectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration", UptimeRaw)
++	protectedAPIRouter.Get("/v1/endpoints/:key/uptimes/:duration/badge.svg", UptimeBadge)
++	protectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration", ResponseTimeRaw)
++	protectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/badge.svg", ResponseTimeBadge(cfg))
++	protectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/chart.svg", ResponseTimeChart)
++	protectedAPIRouter.Get("/v1/endpoints/:key/response-times/:duration/history", ResponseTimeHistory)
+ 	protectedAPIRouter.Get("/v1/suites/statuses", SuiteStatuses(cfg))
+ 	protectedAPIRouter.Get("/v1/suites/:key/statuses", SuiteStatus(cfg))
+ 	return app
+--- a/api/api_test.go
++++ b/api/api_test.go
+@@ -14,6 +14,7 @@
+ func TestNew(t *testing.T) {
+ 	type Scenario struct {
+ 		Name         string
++		Method       string
+ 		Path         string
+ 		ExpectedCode int
+ 		Gzip         bool
+@@ -87,6 +88,73 @@
+ 		{
+ 			Name:         "endpoints-should-return-401-if-not-authenticated",
+ 			Path:         "/api/v1/endpoints/statuses",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "metrics-remains-public-for-internal-scrape",
++			Path:         "/metrics",
++			ExpectedCode: fiber.StatusOK,
++			WithSecurity: true,
++		},
++		{
++			Name:         "health-remains-public-for-container-probe",
++			Path:         "/health",
++			ExpectedCode: fiber.StatusOK,
++			WithSecurity: true,
++		},
++		{
++			Name:         "health-badge-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/health/badge.svg",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "health-shields-badge-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/health/badge.shields",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "uptime-raw-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/uptimes/1h",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "uptime-badge-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/uptimes/1h/badge.svg",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "response-time-raw-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/response-times/1h",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "response-time-badge-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/response-times/1h/badge.svg",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "response-time-chart-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/response-times/1h/chart.svg",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "response-time-history-should-return-401-if-not-authenticated",
++			Path:         "/api/v1/endpoints/synthetic/response-times/1h/history",
++			ExpectedCode: fiber.StatusUnauthorized,
++			WithSecurity: true,
++		},
++		{
++			Name:         "external-result-keeps-bearer-token-boundary",
++			Method:       http.MethodPost,
++			Path:         "/api/v1/endpoints/synthetic/external?success=true",
+ 			ExpectedCode: fiber.StatusUnauthorized,
+ 			WithSecurity: true,
+ 		},
+@@ -116,7 +184,11 @@
+ 			}
+ 			api := New(cfg)
+ 			router := api.Router()
+-			request := httptest.NewRequest("GET", scenario.Path, http.NoBody)
++			method := scenario.Method
++			if method == "" {
++				method = http.MethodGet
++			}
++			request := httptest.NewRequest(method, scenario.Path, http.NoBody)
+ 			if scenario.Gzip {
+ 				request.Header.Set("Accept-Encoding", "gzip")
+ 			}
+--- a/api/config.go
++++ b/api/config.go
+@@ -28,7 +28,8 @@
+ 		"authenticated": isAuthenticated,
+ 	}
+ 	// Add announcements if available, otherwise use empty slice
+-	if handler.config != nil && handler.config.Announcements != nil && len(handler.config.Announcements) > 0 {
++	mayExposeAnnouncements := !hasOIDC || isAuthenticated
++	if mayExposeAnnouncements && handler.config != nil && handler.config.Announcements != nil && len(handler.config.Announcements) > 0 {
+ 		response["announcements"] = handler.config.Announcements
+ 	} else {
+ 		response["announcements"] = []interface{}{}
+--- a/api/config_test.go
++++ b/api/config_test.go
+@@ -6,6 +6,8 @@
+ 	"net/http/httptest"
+ 	"testing"
+ 
++	"github.com/TwiN/gatus/v5/config"
++	"github.com/TwiN/gatus/v5/config/announcement"
+ 	"github.com/TwiN/gatus/v5/security"
+ 	"github.com/gofiber/fiber/v2"
+ )
+@@ -45,3 +47,31 @@
+ 		t.Error("expected body to be `{\"announcements\":[],\"authenticated\":false,\"oidc\":true}`, but was", string(body))
+ 	}
+ }
++
++func TestConfigHandler_HidesAnnouncementsBeforeOIDCAuthentication(t *testing.T) {
++	securityConfig := &security.Config{OIDC: &security.OIDCConfig{}}
++	handler := ConfigHandler{
++		securityConfig: securityConfig,
++		config: &config.Config{Announcements: []*announcement.Announcement{
++			{Message: "internal maintenance detail"},
++		}},
++	}
++	app := fiber.New()
++	app.Get("/api/v1/config", handler.GetConfig)
++	if err := securityConfig.ApplySecurityMiddleware(app); err != nil {
++		t.Fatal(err)
++	}
++
++	response, err := app.Test(httptest.NewRequest("GET", "/api/v1/config", http.NoBody))
++	if err != nil {
++		t.Fatal(err)
++	}
++	defer response.Body.Close()
++	body, err := io.ReadAll(response.Body)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if string(body) != `{"announcements":[],"authenticated":false,"oidc":true}` {
++		t.Fatalf("unauthenticated OIDC bootstrap leaked announcements: %s", body)
++	}
++}
+--- a/security/config.go
++++ b/security/config.go
+@@ -13,9 +13,10 @@
+ )
+ 
+ const (
+-	cookieNameState   = "gatus_state"
+-	cookieNameNonce   = "gatus_nonce"
+-	cookieNameSession = "gatus_session"
++	cookieNameState        = "gatus_state"
++	cookieNameNonce        = "gatus_nonce"
++	cookieNameSession      = "gatus_session"
++	cookieNamePKCEVerifier = "gatus_pkce_verifier"
+ )
+ 
+ // Config is the security configuration for Gatus
+--- a/security/oidc.go
++++ b/security/oidc.go
+@@ -2,6 +2,8 @@
+ 
+ import (
+ 	"context"
++	"crypto/subtle"
++	"fmt"
+ 	"net/http"
+ 	"strings"
+ 	"time"
+@@ -57,7 +59,7 @@
+ }
+ 
+ func (c *OIDCConfig) loginHandler(ctx *fiber.Ctx) error {
+-	state, nonce := uuid.NewString(), uuid.NewString()
++	state, nonce, verifier := uuid.NewString(), uuid.NewString(), oauth2.GenerateVerifier()
+ 	ctx.Cookie(&fiber.Cookie{
+ 		Name:     cookieNameState,
+ 		Value:    state,
+@@ -65,6 +67,7 @@
+ 		MaxAge:   int(time.Hour.Seconds()),
+ 		SameSite: "lax",
+ 		HTTPOnly: true,
++		Secure:   true,
+ 	})
+ 	ctx.Cookie(&fiber.Cookie{
+ 		Name:     cookieNameNonce,
+@@ -73,28 +76,39 @@
+ 		MaxAge:   int(time.Hour.Seconds()),
+ 		SameSite: "lax",
+ 		HTTPOnly: true,
++		Secure:   true,
+ 	})
+-	return ctx.Redirect(c.oauth2Config.AuthCodeURL(state, oidc.Nonce(nonce)), http.StatusFound)
++	ctx.Cookie(&fiber.Cookie{
++		Name:     cookieNamePKCEVerifier,
++		Value:    verifier,
++		Path:     "/",
++		MaxAge:   int(time.Hour.Seconds()),
++		SameSite: "lax",
++		HTTPOnly: true,
++		Secure:   true,
++	})
++	return ctx.Redirect(c.oauth2Config.AuthCodeURL(state, oidc.Nonce(nonce), oauth2.S256ChallengeOption(verifier)), http.StatusFound)
+ }
+ 
+ func (c *OIDCConfig) callbackHandler(w http.ResponseWriter, r *http.Request) { // TODO: Migrate to a native fiber handler
++	clearOIDCCookies(w)
+ 	// Check if there's an error
+ 	if len(r.URL.Query().Get("error")) > 0 {
+ 		http.Error(w, r.URL.Query().Get("error")+": "+r.URL.Query().Get("error_description"), http.StatusBadRequest)
+ 		return
+ 	}
+ 	// Ensure that the state has the expected value
+-	state, err := r.Cookie(cookieNameState)
+-	if err != nil {
+-		http.Error(w, "state not found", http.StatusBadRequest)
++	if err := validateOIDCCookie(r, cookieNameState, r.URL.Query().Get("state"), "state"); err != nil {
++		http.Error(w, err.Error(), http.StatusBadRequest)
+ 		return
+ 	}
+-	if r.URL.Query().Get("state") != state.Value {
+-		http.Error(w, "state did not match", http.StatusBadRequest)
++	verifier, err := r.Cookie(cookieNamePKCEVerifier)
++	if err != nil || len(verifier.Value) == 0 {
++		http.Error(w, "pkce verifier not found", http.StatusBadRequest)
+ 		return
+ 	}
+ 	// Validate token
+-	oauth2Token, err := c.oauth2Config.Exchange(r.Context(), r.URL.Query().Get("code"))
++	oauth2Token, err := c.oauth2Config.Exchange(r.Context(), r.URL.Query().Get("code"), oauth2.VerifierOption(verifier.Value))
+ 	if err != nil {
+ 		http.Error(w, "Error exchanging token: "+err.Error(), http.StatusInternalServerError)
+ 		return
+@@ -110,30 +124,54 @@
+ 		return
+ 	}
+ 	// Validate nonce
+-	nonce, err := r.Cookie(cookieNameNonce)
+-	if err != nil {
+-		http.Error(w, "nonce not found", http.StatusBadRequest)
++	if err := validateOIDCCookie(r, cookieNameNonce, idToken.Nonce, "nonce"); err != nil {
++		http.Error(w, err.Error(), http.StatusBadRequest)
+ 		return
+ 	}
+-	if idToken.Nonce != nonce.Value {
+-		http.Error(w, "nonce did not match", http.StatusBadRequest)
+-		return
+-	}
+-	if len(c.AllowedSubjects) == 0 {
+-		// If there's no allowed subjects, all subjects are allowed.
++	if isSubjectAllowed(c.AllowedSubjects, idToken.Subject) {
+ 		c.setSessionCookie(w, idToken)
+ 		http.Redirect(w, r, "/", http.StatusFound)
+ 		return
+ 	}
+-	for _, subject := range c.AllowedSubjects {
+-		if strings.ToLower(subject) == strings.ToLower(idToken.Subject) {
+-			c.setSessionCookie(w, idToken)
+-			http.Redirect(w, r, "/", http.StatusFound)
+-			return
++	logr.Debugf("[security.callbackHandler] Subject %s is not in the list of allowed subjects", idToken.Subject)
++	http.Redirect(w, r, "/?error=access_denied", http.StatusFound)
++}
++
++func isSubjectAllowed(allowedSubjects []string, tokenSubject string) bool {
++	if len(allowedSubjects) == 0 {
++		return true
++	}
++	for _, allowedSubject := range allowedSubjects {
++		if allowedSubject == tokenSubject {
++			return true
+ 		}
+ 	}
+-	logr.Debugf("[security.callbackHandler] Subject %s is not in the list of allowed subjects", idToken.Subject)
+-	http.Redirect(w, r, "/?error=access_denied", http.StatusFound)
++	return false
++}
++
++func validateOIDCCookie(r *http.Request, cookieName, expectedValue, label string) error {
++	cookie, err := r.Cookie(cookieName)
++	if err != nil || len(cookie.Value) == 0 {
++		return fmt.Errorf("%s not found", label)
++	}
++	if subtle.ConstantTimeCompare([]byte(cookie.Value), []byte(expectedValue)) != 1 {
++		return fmt.Errorf("%s did not match", label)
++	}
++	return nil
++}
++
++func clearOIDCCookies(w http.ResponseWriter) {
++	for _, name := range []string{cookieNameState, cookieNameNonce, cookieNamePKCEVerifier} {
++		http.SetCookie(w, &http.Cookie{
++			Name:     name,
++			Path:     "/",
++			MaxAge:   -1,
++			Expires:  time.Unix(1, 0),
++			SameSite: http.SameSiteLaxMode,
++			HttpOnly: true,
++			Secure:   true,
++		})
++	}
+ }
+ 
+ func (c *OIDCConfig) setSessionCookie(w http.ResponseWriter, idToken *oidc.IDToken) {
+@@ -146,5 +184,7 @@
+ 		Path:     "/",
+ 		MaxAge:   int(c.SessionTTL.Seconds()),
+ 		SameSite: http.SameSiteStrictMode,
++		HttpOnly: true,
++		Secure:   true,
+ 	})
+ }
+--- a/security/oidc_test.go
++++ b/security/oidc_test.go
+@@ -3,10 +3,14 @@
+ import (
+ 	"net/http"
+ 	"net/http/httptest"
++	"net/url"
++	"strings"
+ 	"testing"
+ 	"time"
+ 
+ 	"github.com/coreos/go-oidc/v3/oidc"
++	"github.com/gofiber/fiber/v2"
++	"golang.org/x/oauth2"
+ )
+ 
+ func TestOIDCConfig_ValidateAndSetDefaults(t *testing.T) {
+@@ -57,11 +61,110 @@
+ 	// Try with state cookie and state query parameter
+ 	request, _ = http.NewRequest("GET", "/authorization-code/callback?state=fake-state", nil)
+ 	request.AddCookie(&http.Cookie{Name: cookieNameState, Value: "fake-state"})
++	request.AddCookie(&http.Cookie{Name: cookieNamePKCEVerifier, Value: "fake-verifier"})
+ 	responseRecorder = httptest.NewRecorder()
+ 	c.callbackHandler(responseRecorder, request)
+ 	// Exchange should fail, so 500.
+ 	if responseRecorder.Code != http.StatusInternalServerError {
+ 		t.Error("expected code to be 500, but was", responseRecorder.Code)
++	}
++}
++
++func TestOIDCConfig_loginHandlerUsesSecureCookiesAndPKCE(t *testing.T) {
++	c := &OIDCConfig{oauth2Config: oauth2.Config{
++		ClientID:    "client-id",
++		RedirectURL: "https://status.example.com/authorization-code/callback",
++		Endpoint:    oauth2.Endpoint{AuthURL: "https://sso.example.com/authorize"},
++	}}
++	app := fiber.New()
++	app.Get("/oidc/login", c.loginHandler)
++	response, err := app.Test(httptest.NewRequest(http.MethodGet, "/oidc/login", http.NoBody))
++	if err != nil {
++		t.Fatal(err)
++	}
++	cookies := response.Cookies()
++	if len(cookies) != 3 {
++		t.Fatalf("expected 3 OIDC cookies, got %d", len(cookies))
++	}
++	for _, cookie := range cookies {
++		if !cookie.Secure || !cookie.HttpOnly || cookie.SameSite != http.SameSiteLaxMode {
++			t.Fatalf("cookie %s is not Secure, HttpOnly, SameSite=Lax: %#v", cookie.Name, cookie)
++		}
++	}
++	location, err := url.Parse(response.Header.Get("Location"))
++	if err != nil {
++		t.Fatal(err)
++	}
++	if location.Query().Get("code_challenge_method") != "S256" || len(location.Query().Get("code_challenge")) == 0 {
++		t.Fatalf("authorization URL does not enforce S256 PKCE: %s", location.String())
++	}
++}
++
++func TestOIDCConfig_callbackRejectsMissingPKCEVerifier(t *testing.T) {
++	c := &OIDCConfig{}
++	request := httptest.NewRequest(http.MethodGet, "/authorization-code/callback?state=fake-state", http.NoBody)
++	request.AddCookie(&http.Cookie{Name: cookieNameState, Value: "fake-state"})
++	response := httptest.NewRecorder()
++
++	c.callbackHandler(response, request)
++
++	if response.Code != http.StatusBadRequest || !strings.Contains(response.Body.String(), "pkce verifier not found") {
++		t.Fatalf("expected missing PKCE verifier rejection, got %d: %s", response.Code, response.Body.String())
++	}
++	cleared := response.Result().Cookies()
++	if len(cleared) != 3 {
++		t.Fatalf("expected 3 one-time cookies to be cleared, got %d", len(cleared))
++	}
++	for _, cookie := range cleared {
++		if cookie.MaxAge != -1 || !cookie.Secure || !cookie.HttpOnly || cookie.SameSite != http.SameSiteLaxMode {
++			t.Fatalf("OIDC cookie %s was not securely cleared: %#v", cookie.Name, cookie)
++		}
++	}
++}
++
++func TestOIDCConfig_validateOIDCCookie(t *testing.T) {
++	for _, test := range []struct {
++		name, cookieName, cookieValue, expected, label, wantError string
++	}{
++		{name: "missing state", cookieName: cookieNameState, expected: "state", label: "state", wantError: "state not found"},
++		{name: "state mismatch", cookieName: cookieNameState, cookieValue: "state-a", expected: "state-b", label: "state", wantError: "state did not match"},
++		{name: "missing nonce", cookieName: cookieNameNonce, expected: "nonce", label: "nonce", wantError: "nonce not found"},
++		{name: "nonce mismatch", cookieName: cookieNameNonce, cookieValue: "nonce-a", expected: "nonce-b", label: "nonce", wantError: "nonce did not match"},
++		{name: "nonce match", cookieName: cookieNameNonce, cookieValue: "nonce", expected: "nonce", label: "nonce"},
++	} {
++		t.Run(test.name, func(t *testing.T) {
++			request := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
++			if len(test.cookieValue) > 0 {
++				request.AddCookie(&http.Cookie{Name: test.cookieName, Value: test.cookieValue})
++			}
++			err := validateOIDCCookie(request, test.cookieName, test.expected, test.label)
++			if test.wantError == "" && err != nil {
++				t.Fatal(err)
++			}
++			if test.wantError != "" && (err == nil || err.Error() != test.wantError) {
++				t.Fatalf("expected %q, got %v", test.wantError, err)
++			}
++		})
++	}
++}
++
++func TestOIDCConfig_isSubjectAllowedUsesExactMatch(t *testing.T) {
++	for _, test := range []struct {
++		name            string
++		allowedSubjects []string
++		tokenSubject    string
++		want            bool
++	}{
++		{name: "empty allowlist preserves upstream allow-all", tokenSubject: "subject-a", want: true},
++		{name: "exact subject", allowedSubjects: []string{"subject-a"}, tokenSubject: "subject-a", want: true},
++		{name: "case change rejected", allowedSubjects: []string{"Subject-A"}, tokenSubject: "subject-a"},
++		{name: "different subject rejected", allowedSubjects: []string{"subject-b"}, tokenSubject: "subject-a"},
++	} {
++		t.Run(test.name, func(t *testing.T) {
++			if got := isSubjectAllowed(test.allowedSubjects, test.tokenSubject); got != test.want {
++				t.Fatalf("expected %t, got %t", test.want, got)
++			}
++		})
+ 	}
+ }
+ 
+@@ -87,4 +190,7 @@
+ 	if sessionCookie.MaxAge != int(customTTL.Seconds()) {
+ 		t.Errorf("expected cookie MaxAge to be %d, but was %d", int(customTTL.Seconds()), sessionCookie.MaxAge)
+ 	}
++	if !sessionCookie.Secure || !sessionCookie.HttpOnly || sessionCookie.SameSite != http.SameSiteStrictMode {
++		t.Fatalf("session cookie is not Secure, HttpOnly, SameSite=Strict: %#v", sessionCookie)
++	}
+ }

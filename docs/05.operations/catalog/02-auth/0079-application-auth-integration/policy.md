@@ -28,7 +28,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Apache Airflow
 - OpenBao
 - 신규 OIDC-capable internal applications
-- Open WebUI, Gatus and Terrakube candidate migrations under Task 0004
+- Open WebUI/Gatus native integrations and the deferred Terrakube candidate under Task 0004
 
 ## Controls
 
@@ -37,11 +37,11 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
   하나를 주 인증 경로로 명시한다.
-- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao다.
-- Airflow/Kafbat/OpenBao Traefik router는 `gateway-standard-chain@file`만 사용한다.
+- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus다.
+- Airflow/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
-- Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 candidate acceptance evidence와 별도 승인 후에만 허용한다.
+- Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
 - token/refresh token/id token 원문을 문서, incident, PR, task evidence에 기록하지 않는다.
@@ -49,9 +49,14 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Airflow provider update 시 Keycloak permission migration 요구사항을 확인한다.
 - Kafbat RBAC `clusters`는 configured cluster name과 일치해야 한다.
 
+- Open WebUI 초기 전환은 가입을 비활성화하고 기존 gateway를 유지한다. 이메일 병합은
+  검증된 단일 기존 관리자 연결에 한정하며, 수용 검증 후 비활성화한다.
+- Gatus는 cookie/PKCE 보완과 전용 client·로그인 검증 전까지 gateway를 유지한다.
+- 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다.
+
 ### Disallowed
 
-- Airflow/Kafbat/OpenBao에 Native OIDC와 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
+- Native OIDC 서비스에 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
 - `rootCA-key.pem` 배포/공유
 - secret/token 원문 기록
 - 과거 OAuth callback URL 또는 authorization code 재사용
@@ -69,17 +74,21 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=availability bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=ai bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
 bash scripts/hardening/check-all-hardening.sh 02-auth
 bash scripts/hardening/check-all-hardening.sh 03-security
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/hardening/check-all-hardening.sh 07-workflow
+bash scripts/hardening/check-all-hardening.sh 06-observability
+bash scripts/hardening/check-all-hardening.sh 08-ai
 ```
 
 추가 검증:
 
-- Airflow/Kafbat/OpenBao router = gateway-only
+- Airflow/Kafbat/OpenBao/Open WebUI/Gatus router = gateway-only; Gatus는 외부 metrics 제외
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
 - Compose client secret Docker Secret mapping

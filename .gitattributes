@@ -22,3 +22,6 @@ Makefile text eol=lf
 *.svg binary
 *.ico binary
 *.pdf binary
+
+# Unified diff context uses a marker space before upstream Go tabs/blank lines.
+infra/06-observability/gatus/patches/oidc-hardening.patch whitespace=-blank-at-eol,-space-before-tab

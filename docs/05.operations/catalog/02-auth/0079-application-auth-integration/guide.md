@@ -110,7 +110,7 @@ sequenceDiagram
     A->>A: Apply local roles or policies
 ```
 
-Airflow, Kafbat UI, OpenBao가 이 경로를 사용한다. 현재 세 router는
+Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus가 이 경로를 사용한다. 이 router들은
 `gateway-standard-chain@file`을 사용하며 `sso-auth@file`을 적용하지 않는다.
 Keycloak에 이미 로그인했다면 비밀번호 입력이 생략될 수 있지만, 애플리케이션별
 callback 처리와 세션·권한 생성은 여전히 필요하다. OpenBao의 OIDC 로그인은
@@ -127,6 +127,8 @@ Realm은 `hy-home.realm`, issuer는
 | Kafbat UI | `home-kafbat` | `https://kafbat-ui.${DEFAULT_URL}/login/oauth2/code/keycloak` | Kafbat 그룹 기반 RBAC; [선언](../../../../../infra/05-messaging/kafka/docker-compose.yml) |
 | Airflow | `home-airflow` | `/auth/login_callback` at the Airflow origin | Keycloak Auth Manager와 Authorization Services; [운영 안내](../../07-workflow/0050-airflow/guide.md) |
 | OpenBao | `home-openbao` | `https://openbao.${DEFAULT_URL}/ui/vault/auth/oidc/oidc/callback` | `home-admin` → `hy-home-operator`; [검증된 로그인 절차](../../03-security/0085-openbao/guide.md) |
+| Open WebUI | `home-openwebui` | `https://chat.${DEFAULT_URL}/oauth/oidc/callback` | 기존 로컬 사용자 ID·역할 보존; [운영 절차](../../08-ai/0057-open-webui/runbook.md) |
+| Gatus | `home-gatus` | `https://status.${DEFAULT_URL}/authorization-code/callback` | 정확한 subject allowlist; [운영 절차](../../06-observability/0087-gatus/runbook.md) |
 
 OpenBao CLI callback은 `http://localhost:8250/oidc/callback`이다. 이는 브라우저
 루프백 수신점이며 서버의 공개 HTTP 주소가 아니다. 현재 OpenBao 그룹은
@@ -174,8 +176,8 @@ PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 
 
 표준 `sso-auth`는 `Authorization`과 access-token 관련 응답 헤더도 선택한다.
 단, 실제 전달되는 헤더는 Proxy가 내보낸 것과 Traefik의 선택 목록 교집합이다.
-앱이 자체 Bearer 인증을 한다면 충돌을 확인한다. Open WebUI 전용 middleware는
-사용자·이메일만 선택한다. `trustForwardHeader: false`여도 백엔드가 인터넷에서
+앱이 자체 Bearer 인증을 한다면 충돌을 확인한다. 과거 Open WebUI 전용 middleware는
+사용자·이메일만 선택했으며, 현재 Open WebUI router에서는 사용하지 않는다. `trustForwardHeader: false`여도 백엔드가 인터넷에서
 직접 접근 가능하면 신뢰 헤더 방식의 보호가 성립한다고 볼 수 없다.
 
 ### 로그아웃과 권한 회수
@@ -196,7 +198,10 @@ Proxy의 구체적 절차는 [Proxy runbook](../0015-oauth2-proxy/runbook.md)이
 - API는 브라우저 쿠키와 별도 방식인지 확인하고, 오류 시 헤더·토큰 원문을 남기지 않는다.
 
 등록만으로 완료하지 않는다. 브라우저 성공과 최소 권한 거부 사례가 해당 서비스의
-Task에 기록되어야 실제 수용 검증으로 취급한다.
+Task에 기록되어야 해당 검증의 완료로 취급한다. 별도 실제 비허용 사용자가 없는
+현재 Gatus 전환은 exact-subject 거부 회귀 검증과 실제 미인증/잘못된 세션 거부를
+확인했다. 두 번째 실제 Keycloak 사용자 로그인 거부는 수행하지 않았으며, 이
+검증 한계는 전환 완료와 구분해 Task에 남긴다.
 
 ### ForwardAuth Service Review
 
@@ -205,29 +210,35 @@ Native OIDC 전환은 제품의 browser login/session 기능이 Keycloak을 직�
 OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델이 OIDC를 이해한다고
 보지 않는다.
 
-2026-09-20 read-only inventory 기준 전환 후보는 다음과 같다. Open WebUI는
-공식 SSO 설정과 실행 중 container source의 `OAUTH_CLIENT_ID`,
-`OAUTH_CLIENT_SECRET`, `OPENID_PROVIDER_URL` 설정 근거가 있어 후보지만,
-기존 관리자 계정 보존과 자동가입/이메일 병합 종료 증거가 필요하다. Gatus는
-upstream source가 `security.oidc`와 `/authorization-code/callback`을 제공하므로
-후보지만, 현재 session cookie hardening 검토 전에는 gateway 보호를 제거하지 않는다.
-Terrakube는 tracked Compose가 이미 direct issuer를 선언하지만 `home-proxy-client`를
-재사용하고 실행 중 container가 없으므로, dedicated client와 API/UI/executor acceptance
-전까지 ForwardAuth를 유지한다.
+2026-09-20 조사 및 단계별 구현 상태는 다음과 같다. 실제 로그인 검증이 끝나기 전에는
+후보나 설정 완료를 전환 완료로 표시하지 않는다.
 
-그 외 Flower, n8n, SonarQube, Mailpit, Stalwart admin UI, Prometheus, Loki,
-Tempo, Alloy, cAdvisor, Pyroscope, Alertmanager, Pushgateway, Ollama, ComfyUI,
-Open Notebook, RedisInsight는 현재 증거로 native Keycloak OIDC browser login으로
-전환하지 않는다. 관측 계열은 Grafana 경유 또는 reverse-proxy/API 보호가 주된
-모델이고, n8n/SonarQube는 설치판·라이선스 조건 확인 없이 SSO를 도입하지 않는다.
-Mailpit/RedisInsight/Open Notebook/ComfyUI/Ollama/cAdvisor는 현재 배포에서
-Keycloak OIDC browser client 계약이 확인되지 않았다.
+| 서비스 | 지원 근거와 현재 상태 | 처리 |
+| --- | --- | --- |
+| Open WebUI | Native OIDC; 전용 `home-openwebui` confidential client 생성, 정확한 `https://chat.hy.home.arpa/oauth/oidc/callback`, S256, 서비스 healthy | 실제 관리자 로그인·동일 계정 검증 완료, 임시 병합·로컬 로그인 비활성화, 표준 gateway chain만 유지 |
+| Gatus | Native OIDC; session cookie·PKCE·정확한 subject·데이터 경로 보완, 전용 client와 실제 로그인 확인 | 전환 완료; 표준 gateway chain만 유지, 외부 metrics 차단·내부 수집 유지 |
+| Terrakube | Direct issuer 선언은 있으나 미기동; API 외부 JWT 경로에서 명시적 audience 검사 미확인 | proxy client 재사용 해소와 audience/RBAC 실행 검증 전까지 gateway 유지 |
+| n8n Community | [공식 SSO 안내](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/configure-sso)는 self-hosted Business/Enterprise만 지원 | 유료 기능 도입 없이 ForwardAuth 유지 |
+| Flower | [공식 인증 안내](https://flower.readthedocs.io/en/latest/auth.html)는 provider별 OAuth와 custom handler 제공; generic Keycloak OIDC 계약 없음 | custom 인증 코드 추가 없이 ForwardAuth 유지 |
+| Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않고 gateway 유지 |
+| RedisInsight | [공식 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)에서 UI OIDC 연동 설정 미확인; DB 연결 인증과 구분 | native 지원 미검증으로 유지; 불가능하다고 단정하지 않음 |
+| Open Notebook | [upstream OIDC 요청](https://github.com/lfnovo/open-notebook/issues/607)과 현재 배포의 password 인증 | native 계약 미확인, 유지 |
+| ComfyUI | [custom OIDC 요청](https://github.com/Comfy-Org/ComfyUI/issues/12558); Comfy 계정 로그인과 Keycloak 연동은 별개 | 유지 |
+| Mailpit, Ollama | [Mailpit HTTP 인증](https://mailpit.axllent.org/docs/configuration/http/), [Ollama 인증](https://docs.ollama.com/api/authentication)은 native Keycloak browser login 모델이 아님 | 유지 |
+| SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인, 유지 |
+| Prometheus, Alertmanager, Pushgateway, Loki, Tempo, Alloy, Pyroscope, cAdvisor | 현재 배포의 browser OIDC 계약 미확인; Grafana/API/reverse-proxy 보호 사용 | 유지 |
+
+Open WebUI는 OAuth role/group 자동 관리를 끄고 기존 로컬 관리자 역할을 보존한다.
+검증된 이메일을 가진 단일 기존 사용자만 초기 연결하며, 연결 후 email merge를 끈다.
+기존 데이터 ID·역할·채팅 소유권과 provider subject를 대조한다. 로그인 폼 설정은
+DB persistence 영향을 받으므로 UI/API readback으로 종료 여부를 확인한다.
+구체적 파일 소유권과 복구는 [Open WebUI runbook](../../08-ai/0057-open-webui/runbook.md)에 있다.
 
 Candidate cutover completion criteria:
 
 - 전용 Keycloak client와 정확한 redirect URI를 등록하고 client secret은 Docker Secret
   또는 승인된 secret store로만 전달한다.
-- gateway ForwardAuth 제거는 해당 서비스의 native login success, denied-user rejection,
+- gateway ForwardAuth 제거는 해당 서비스의 native login success, 접근 거부 검증의 범위·한계,
   logout/session behavior, data/account preservation, rollback evidence가 기록된 뒤에만
   적용한다.
 - rejected 또는 unverified 서비스는 `sso-errors@file,sso-auth@file` chain을 유지한다.
