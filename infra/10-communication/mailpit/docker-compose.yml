@@ -19,6 +19,7 @@ services:
     image: axllent/mailpit:v1.31.1
     container_name: mailpit
     restart: unless-stopped
+    user: '${MAILPIT_UID:-1000}:${MAILPIT_GID:-1000}'
     volumes:
       - mailpit-data:/data
     ports:

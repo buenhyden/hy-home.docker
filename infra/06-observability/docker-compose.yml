@@ -455,16 +455,16 @@ services:
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
       GATUS_LOG_LEVEL: INFO
-      PORT: '8080'
+      PORT: '${GATUS_PORT}'
     volumes:
       - ./gatus/config/config.yaml:/config/config.yaml:ro
       - gatus-data:/data:rw
     expose:
-      - '8080'
+      - '${GATUS_PORT}'
     healthcheck:
       test:
         - CMD-SHELL
-        - 'wget -qO- http://127.0.0.1:8080/health >/dev/null 2>&1 || exit 1'
+        - 'wget -qO- http://127.0.0.1:${GATUS_PORT}/health >/dev/null 2>&1 || exit 1'
       interval: 30s
       timeout: 10s
       retries: 5
@@ -476,11 +476,11 @@ services:
       traefik.http.routers.gatus.entrypoints: websecure
       traefik.http.routers.gatus.tls: 'true'
       traefik.http.routers.gatus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-      traefik.http.services.gatus.loadbalancer.server.port: 8080
+      traefik.http.services.gatus.loadbalancer.server.port: ${GATUS_PORT}
     networks:
       infra_net:
         ipv4_address: 172.19.0.231
-        
+
   pyroscope:
     profiles:
       - obs
