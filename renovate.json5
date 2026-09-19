@@ -12,6 +12,11 @@
     "custom.regex"
   ],
 
+  "ignorePaths": [
+    "docs/98.archive/**",
+    "**/fixtures/**"
+  ],
+
   "timezone": "Asia/Seoul",
 
   "schedule": [
@@ -58,7 +63,7 @@
 
   "packageRules": [
     {
-      "description": "Do not automerge infrastructure updates",
+      "description": "Never automerge infrastructure images",
       "matchManagers": [
         "docker-compose",
         "dockerfile",
@@ -68,7 +73,7 @@
     },
 
     {
-      "description": "Group observability patch/minor images",
+      "description": "Group observability patch and minor updates",
       "matchManagers": [
         "docker-compose",
         "dockerfile"
@@ -93,7 +98,7 @@
     },
 
     {
-      "description": "Ignore locally-built images",
+      "description": "Ignore locally built images",
       "matchDatasources": [
         "docker"
       ],
