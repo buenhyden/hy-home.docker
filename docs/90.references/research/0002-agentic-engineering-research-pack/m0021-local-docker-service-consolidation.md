@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.5.0"
+version: "0.6.0"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -186,7 +186,7 @@ not a substitute for an operator's assessment of the intended use.
 | Traefik | [Docker routing](https://doc.traefik.io/traefik/providers/docker/) | [Migration](https://doc.traefik.io/traefik/migrate/v2-to-v3/) | [License](https://github.com/traefik/traefik/blob/master/LICENSE.md) | Preserve routes, TLS material and Docker socket boundary; test ingress before promotion. |
 | Keycloak | [Containers](https://www.keycloak.org/server/containers), [reverse proxy](https://www.keycloak.org/server/reverseproxy) | [Upgrading](https://www.keycloak.org/docs/latest/upgrading/index.html) | [License](https://github.com/keycloak/keycloak/blob/main/LICENSE.txt) | PostgreSQL recovery and hostname/proxy-header configuration are HOME authentication prerequisites. |
 | OAuth2 Proxy | [Configuration](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/), [Keycloak OIDC](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/) | Restore configuration, cookie secret and identity client together; review release-specific changes before updating | [License](https://github.com/oauth2-proxy/oauth2-proxy/blob/master/LICENSE) | Existing Docker Secret delivery and redirect/allowlist settings remain critical recovery inputs. |
-| OpenBao | [Install](https://openbao.org/docs/install/), [security model](https://openbao.org/docs/internals/security/) | [Raft snapshots](https://openbao.org/docs/commands/operator/raft/), [upgrades](https://openbao.org/docs/upgrading/) | [License](https://github.com/openbao/openbao/blob/main/LICENSE) | Seal state, protected recovery material and an isolated snapshot restoration must be verified separately. |
+| OpenBao | [Install](https://openbao.org/docs/install/), [security model](https://openbao.org/docs/internals/security/), [OIDC auth](https://openbao.org/docs/auth/jwt/) | [Raft snapshots](https://openbao.org/docs/commands/operator/raft/), [upgrades](https://openbao.org/docs/upgrading/), [2.6 authenticated generate-root](https://openbao.org/docs/api/system/generate-root-token/) | [License](https://github.com/openbao/openbao/blob/main/LICENSE) | Seal state, protected recovery material, native OpenBao OIDC admin login and root-token lifecycle must be verified separately. Keycloak/OAuth2 gateway SSO is not equivalent to an OpenBao policy token. |
 | PostgreSQL | [Official image](https://hub.docker.com/_/postgres), [authentication](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html) | [Backup](https://www.postgresql.org/docs/current/backup.html), [upgrading](https://www.postgresql.org/docs/current/upgrading.html) | [License](https://www.postgresql.org/about/licence/) | Central HOME database; major-version migration cannot rely on reusing a data directory. |
 | Valkey | [Install](https://valkey.io/topics/installation/), [security](https://valkey.io/topics/security/) | [Persistence](https://valkey.io/topics/persistence/), [cluster operations](https://valkey.io/topics/cluster-tutorial/) | [Copying](https://github.com/valkey-io/valkey/blob/unstable/COPYING) | Shared workflow queues need an explicit persistence and recovery policy, not a cache-only assumption. |
 | MinIO | [Security checklist](https://docs.min.io/community/minio-object-store/operations/checklists/security.html) | [Upgrade documentation](https://docs.min.io/community/minio-object-store/operations/deployments/baremetal-upgrade-minio-deployment.html) | [License](https://github.com/minio/minio/blob/master/LICENSE) | Community URLs redirect toward AIStor; verify applicability to the retained community image instead of assuming equivalence. |
@@ -413,6 +413,18 @@ consumer and recovery validation remains required before deployment.
   both are corrected in tracked source. The official [Agent contract](https://openbao.org/docs/agent-and-proxy/agent/)
   confirms environment address override. Sealed status and secret delivery remain
   distinct readiness questions; existing Docker Secrets are not automatically migrated.
+- OpenBao 2.6 changes root-token recovery assumptions. The official
+  [2.6 release notes](https://openbao.org/community/release-notes/2-6-0/) and
+  [operator command documentation](https://openbao.org/docs/commands/operator/generate-root/)
+  state that `operator generate-root` now uses authenticated
+  `/sys/generate-root-token` endpoints. The deprecated
+  [legacy unauthenticated `/sys/generate-root/*` API](https://openbao.org/docs/api/system/generate-root/)
+  is disabled by default as of 2.5.3 through the
+  [TCP listener parameter](https://openbao.org/docs/configuration/listener/tcp/)
+  `disable_unauthed_generate_root_endpoints`. This audit does not prove human
+  OpenBao OIDC login is live; it records that temporary loopback-only legacy
+  recovery is a break-glass design input when the initial root token has been
+  revoked before human admin has been established.
 - Mailpit host/container ports were reversed and listener overrides were absent.
   The [runtime options](https://mailpit.axllent.org/docs/configuration/runtime-options/)
   specify separate UI and SMTP bind addresses. Direct publication is now loopback.

@@ -77,7 +77,7 @@ provider; applicable governance; public configuration and metadata only.
 | 5 | W5 | sync and strict configuration checks passed | existing synchronization and update configs |
 | 6 | W6 | metadata sync completed; values preserved, never output | public schemas and sync owner |
 | 7 | W7 | isolated full and changed exited 0; final full includes Ollama correction | existing validation graph |
-| 8 | W8 | not run; exact runtime approval pending | operational runbooks |
+| 8 | W8 | approved OpenBao bootstrap verified; broader runtime acceptance pending | operational runbooks |
 | 9 | W9 | branch pushed; Draft PR #167 created; hosted CI running | Git and PR |
 
 ### Baseline findings
@@ -756,14 +756,12 @@ validation assertions; isolated full and changed profiles subsequently exited 0.
 
 ## Commit Ledger
 
-The pre-existing rehearsal fixture permission repair was committed separately as
-`52036c3` (`test(infra): Isolate secure rehearsal fixture permissions`), after
-239 tests and independent specification/quality approval.
+The rehearsal fixture repair was committed separately as `52036c3`, after 239
+tests and independent specification/quality approval.
 The reviewed implementation was committed as one coupled source/document contract
 commit; subsequent changes record verification evidence only. The baseline repair,
-new Task declarations and their registry contracts must remain coherent. Actual
-commit IDs belong to Git history; no commit is claimed until the commit command
-succeeds. Runtime acceptance remains incomplete.
+new Task declarations and registry contracts remain coherent. Git history owns
+commit IDs. Broader runtime acceptance remains incomplete.
 
 Draft PR approval source is the owner's mission sequence ending in Pull Request /
 Final Report. Target is `buenhyden/hy-home.docker`, branch
@@ -788,9 +786,6 @@ Runtime targets and recovery must be reviewed before deployment approval.
 
 No scope dropped. Runtime acceptance and required hosted CI remain outstanding.
 
-Owner-requested OpenBao follow-up on 2026-09-19: read-only `bao status` exited 2,
-reporting initialized=false and sealed=true. Agent runs as UID 100/GID 1000;
-its configured data directory exists (0775, UID/GID 1000), but role_id, secret_id,
-token and both configured rendered output files are absent. Config/template/data
-mounts exist. Initial server and AppRole bootstrap remain incomplete; no init,
-unseal, credential provisioning, restart or private-value access was performed.
+OpenBao bootstrap, OIDC acceptance and subsequent private-schema reconciliation
+continue in [Task 0002](tsk-0002-openbao-access-and-env-convergence.md). The owner
+approved the named operations there; broader runtime acceptance remains pending.

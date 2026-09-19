@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -102,7 +102,8 @@ private metadata. A failed or unexecuted check is never recorded as PASS.
 - [AD-0028](../../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - [AD-0031 Home and Development Host](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Plan](plan.md)
-- [Current Task](tasks/tsk-0001-home-dev-convergence.md)
+- [Initial execution](tasks/tsk-0001-home-dev-convergence.md)
+- [Current Task](tasks/tsk-0002-openbao-access-and-env-convergence.md)
 
 ## Open Questions
 

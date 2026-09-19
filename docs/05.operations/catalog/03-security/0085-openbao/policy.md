@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -26,11 +26,41 @@ HOME secret control plane; Vault remains a separate migration source.
 
 Keep unseal/recovery material offline. Never log token, role_id, secret_id or rendered files. Current status health accepts sealed state: container health alone does not prove secret delivery. Existing application Docker Secrets are not automatically replaced by Agent output.
 
+Normal human administration must use a non-root OpenBao token issued through
+OpenBao native OIDC backed by Keycloak. The accepted HOME binding is the
+Keycloak group `/openbao-admins`, role `home-admin`, OpenBao OIDC client
+`home-openbao`, and OpenBao operator policy `hy-home-operator`. The policy TTL
+for human tokens must be finite. Gateway SSO in front of the OpenBao UI is only
+HTTP access control and does not replace OpenBao native OIDC authorization.
+
+Root tokens are bootstrap and break-glass material only. Do not revoke the last
+usable root token until all of the following are verified in the same maintenance
+record: a human OIDC login succeeds, the resulting OpenBao token has the
+expected non-root policy, AppRole renderer access still reads only the two
+declared KV paths, the root recovery method for the deployed OpenBao version is
+documented, and root token revocation has been observed.
+
+The upstream OpenBao release line documented in Traceability uses authenticated
+`/sys/generate-root-token` endpoints for `operator generate-root`. When no privileged human or root token remains, an
+Agent read-only token must not be promoted to call root-generation endpoints.
+The deprecated unauthenticated `/sys/generate-root/*` endpoints are disabled by
+default as of 2.5.3 and may be re-enabled only as an explicitly approved
+break-glass exception on a temporary loopback-only listener. The exception must
+keep the same data volumes and seal configuration, must not restore a snapshot
+by default, must be removed immediately after native OIDC administration is
+verified, and must end with revocation of the recovered root token.
+
 [Implementation](../../../../../infra/03-security/openbao/docker-compose.yml) and [version projection](../../../../../infra/tech-stack.versions.json) own runtime pins.
 
 ## Exceptions
 
 Owner @buenhyden must record scope, risk, expiry and exit condition before any deviation. Static configuration is not evidence of live backup or recovery.
+
+The only approved shape for temporary unauthenticated generate-root recovery is
+a loopback-only listener with `disable_unauthed_generate_root_endpoints = false`
+for the duration required to generate a replacement root token and establish the
+normal OIDC administrator path. The setting is forbidden on public or gateway
+listeners and cannot remain in the steady-state configuration.
 
 ## Verification
 
@@ -44,6 +74,11 @@ Review monthly and before image, persistence, authentication or exposure changes
 
 - Governing architecture: [AD-0003](../../../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md)
+- Official OpenBao TCP listener parameters: <https://openbao.org/docs/configuration/listener/tcp/>
+- Official OpenBao authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
+- Official OpenBao deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
+- Official OpenBao deprecation note for unauthenticated generate-root: <https://openbao.org/community/deprecation/unauthed-generate-root/>
+- Official OpenBao release notes for authenticated root generation: <https://openbao.org/community/release-notes/2-6-0/>
 
 ## Related Documents
 

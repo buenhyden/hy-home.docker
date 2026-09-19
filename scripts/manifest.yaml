@@ -560,6 +560,7 @@ files:
   disposition: retain
   successor: null
   tests:
+  - tests/validation/test_secret_metadata_sync.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/provider_surface_renderer.py
   kind: operations
