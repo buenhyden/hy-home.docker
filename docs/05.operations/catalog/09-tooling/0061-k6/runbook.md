@@ -1,10 +1,10 @@
 ---
-title: "k6 Wrapper Recovery Runbook"
+title: "k6 Load Test Recovery Runbook"
 version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0061"
 parent_ids:
@@ -14,111 +14,83 @@ created: "2026-05-17"
 
 # k6 Load Test Recovery Runbook
 
-<!-- [ID:09-tooling:k6] -->
-
-## Overview
-
-> Scope: stop or recover the `infra/09-tooling/k6` load-test job `k6`.
-
-이 런북은 `k6` 실행 중 target service SLI가 급락하거나 시나리오 오류가 나타났을 때 사용한다. `k6`는 worker가 없는 단일 프로세스 작업이며, 시나리오를 마치면 스스로 종료한다.
-
-### Purpose
-
-테스트 부하를 안전하게 중단하고 root compose context와 k6 종료 상태를 확인한 뒤 재실행 여부를 판단한다.
-
 ## When to Use
 
-- 부하 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
-- 시나리오 오류나 예상치 못한 종료 코드가 `k6` 로그에 나타난다.
-- Grafana `k6 Prometheus` 대시보드가 진행 중인 실행의 지표를 받지 못한다.
-- 이 leaf에 worker나 UI가 있다고 가정한 절차가 실행되어 구성이 어긋난다.
+Use this procedure when k6 targets the wrong endpoint, breaches an agreed limit,
+fails to export results, or exits unexpectedly. Commands run from the repository
+root and name only `k6`.
 
 ## Procedure
 
-### Checklist
-
-- [ ] 테스트 owner와 target service owner에게 중단 여부를 알린다.
-- [ ] root compose + k6 leaf compose를 함께 사용하는 실행 context인지 확인한다.
-- [ ] Test target credential 값은 로그나 evidence에 기록하지 않는다.
-
-### Steps
-
-1. Compose context 변수를 설정한다.
+1. Stop new load first:
 
    ```bash
-   K6_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/k6/docker-compose.yml"
+   docker compose --profile testing stop k6
+   docker compose --profile testing ps k6
    ```
 
-2. 테스트 부하를 중단한다.
+2. Confirm target recovery using target-side latency, error, and saturation
+   signals. Do not restart while impact remains unexplained.
+3. Capture sanitized job evidence:
 
    ```bash
-   docker compose $K6_COMPOSE_FILES --profile testing stop k6
+   docker compose --profile testing logs --tail=200 k6
    ```
 
-3. 상태와 로그를 확인한다.
+   Record target, `K6_SCRIPT`, `K6_TESTID`, image declaration, start/stop time,
+   exit code, and target recovery. Do not record credentials or response bodies.
+4. If metrics are absent, check the configured remote-write endpoint and the
+   receiving Prometheus before changing the scenario. Local job completion does
+   not prove result retention.
+5. If a scenario or image change caused the failure, restore the last reviewed
+   Git version, run the static checks, and use a disposable low-load target before
+   seeking approval to repeat the real test.
 
-   ```bash
-   docker compose $K6_COMPOSE_FILES --profile testing ps k6
-   docker compose $K6_COMPOSE_FILES --profile testing logs --tail=100 k6
-   ```
+### Verification
 
-4. root compose context가 필요한 검증 경계를 확인한다.
+```bash
+bash scripts/hardening/check-all-hardening.sh 09-tooling
+HYHOME_COMPOSE_PROFILES=testing bash scripts/validation/validate-docker-compose.sh
+```
 
-   ```bash
-   bash scripts/hardening/check-all-hardening.sh 09-tooling
-   python3 scripts/validation/run-ci-gate.py --profile changed
-   ```
+Recovery is complete only when k6 is stopped or exited, target signals have
+returned to the agreed range, and retained evidence identifies whether results
+reached Prometheus.
 
-5. 시나리오 변경이 원인으로 의심되면 host mount의 현재 스크립트와 마지막 정상 실행의 `testid`를 evidence로 기록하고 재실행 전 review를 요청한다.
+### Backup and Recovery Status
 
-### Verification Steps
-
-- `k6`가 stopped 또는 exited 상태로 명확히 확인된다. healthy 상태는 존재하지 않는다.
-- target service SLI가 정상 범위로 회복된다.
-- `bash scripts/hardening/check-all-hardening.sh 09-tooling`가 실패 0건으로 통과한다.
-
-### Observability and Evidence Sources
-
-- **Logs**: `k6` logs, target service logs
-- **Metrics**: target SLI, request error rate, response latency, Locust request statistics
-- **Evidence to Capture**: 실행 명령, 중단 시각, users/spawn rate, target, 오류 요약
-
-### Safe Rollback or Recovery Procedure
-
-1. 부하 발생을 중단한 상태를 유지한다.
-2. `locustfile.py` 또는 compose 변경이 원인이면 마지막 정상 commit과 현재 diff를 비교한다.
-3. 재실행은 target owner 승인 후 `k6`만 대상으로 수행한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`
+No persistent job-container restore exists. Version-controlled scripts are
+restored from Git; retained metrics are recovered under the Prometheus backup
+procedure. This procedure is planned documentation and was not executed during
+the 2026-09-20 correction.
 
 ## Evidence
 
-- Capture command output, timestamps, target, scenario file path, and final stopped/healthy state.
-- Record any failed check, suspected script change, and target SLI recovery state in the related task or incident evidence.
+Record the approval, target, scenario commit, test ID, image declaration,
+timestamps, exit code, sanitized summary, result-retention status, and target-side
+recovery. Never capture credentials or response bodies.
 
 ## Rollback or Recovery
 
-Use the stop-and-review procedure above. No broader verified rollback procedure is documented for changing target services or host networking from this runbook.
+Stop the job, restore scenarios from the last reviewed Git commit, and recover
+retained metrics under the receiving Prometheus procedure. Re-run only against a
+disposable target before seeking authorization for the original target.
 
 ## Escalation
 
-Escalate to the performance tooling owner when `k6` cannot stop, target SLI does not recover after stopping load, secret exposure risk appears, or root compose context cannot render required dependencies.
+Escalate when the job cannot be stopped, traffic continues after stop, target
+signals do not recover, credentials may be exposed, or result retention is
+needed but the receiving backend is unavailable.
 
 ## Traceability
 
 - Declared parent: [k6 Usage Guide](guide.md) (`GDE-0061`)
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0061`), [Policy](policy.md) (`POL-0061`)
+- Subject peers: [Guide](guide.md), [Policy](policy.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [k6 Compose source](../../../../../infra/09-tooling/k6/docker-compose.yml)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
+- [k6 results output](https://grafana.com/docs/k6/latest/results-output/)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)

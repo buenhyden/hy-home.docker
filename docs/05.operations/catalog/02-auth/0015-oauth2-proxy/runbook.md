@@ -126,9 +126,13 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+If Valkey session state is lost or incompatible, keep ForwardAuth fail-closed,
+restore the reviewed endpoint and credential references, then require users to
+authenticate again. Do not restore stale sessions from an unknown point or expose
+cookie/client secrets to preserve logins. If the cookie secret changed, explicitly
+invalidate old cookies and test a fresh Keycloak login. The session-loss recovery
+and upgrade rollback paths are planned and were not executed during the 2026-09-20
+documentation correction.
 
 ## Escalation
 
@@ -147,7 +151,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Official OAuth2 Proxy session storage](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/)
 - [Official OAuth2 Proxy endpoints](https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

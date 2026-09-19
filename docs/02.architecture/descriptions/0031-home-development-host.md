@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -71,9 +71,10 @@ current HOME candidate; it is not a new competing profile vocabulary or approval
 Use exact services for approved incremental deployment. Exclude cluster variants,
 legacy selectors and update/IaC jobs from unattended startup.
 
-Runtime versions come from Compose and Dockerfile declarations. The version
-registry is currently a curated drift projection; source inventory must also
-inspect build sources. Documents route to source instead of repeating patch pins.
+Runtime pins come from Compose and Dockerfile declarations. The version registry
+is a derived Compose image projection; source inventory separately inspects
+Dockerfile build sources. Documents route to the applicable source or projection
+instead of repeating patch pins without context.
 Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
 
 ## Quality Attributes
@@ -110,4 +111,4 @@ services or changing storage engines. Promote only validated optional capabiliti
 retire migrations through existing archive and identity contracts, never by
 rewriting history or deleting unverified data.
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies image drift verification.

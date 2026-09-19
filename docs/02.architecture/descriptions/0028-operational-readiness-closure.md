@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -82,4 +82,4 @@ file, database state는 task-scoped transient resource다. 실행 전 exact targ
 - `tests/lib/supply_chain/test_supply_chain_policy.py`
 - `tests/validation/test_sample_service_delivery_rehearsal.py`
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

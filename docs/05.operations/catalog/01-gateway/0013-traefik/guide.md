@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
 - "POL-0013"
+implementation_services:
+  infra/01-gateway/traefik/docker-compose.yml:
+  - traefik
 created: "2026-05-10"
 ---
 
@@ -16,9 +19,13 @@ created: "2026-05-10"
 
 ## Usage
 
+### Implementation Sources
+
+- [infra/01-gateway/traefik/docker-compose.yml](../../../../../infra/01-gateway/traefik/docker-compose.yml)
+
 ### Overview
 
-이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
+이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
 
 ### Usage Type
 
@@ -41,6 +48,15 @@ created: "2026-05-10"
 - `infra/01-gateway/traefik` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - root `core` profile compose validation 실행 가능
+
+Traefik is selected by `core`, `dev`, or `local`; the service name is `traefik`.
+It binds host ports 80/443, reads the Docker API through a read-only socket,
+mounts repository static/dynamic configuration read-only, and mounts
+`${DEFAULT_CERT_DIR}` read-only. A read-only socket prevents file writes but does
+not make Docker API access low privilege, so socket access remains a host-control
+security boundary. Compose grants `traefik_basicauth_password` and
+`traefik_opensearch_basicauth_password`; do not print either value in checks or
+evidence. The tracked configuration has no ACME storage declaration.
 
 ### Step-by-step Instructions
 
@@ -71,6 +87,17 @@ created: "2026-05-10"
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+### Configuration Recovery and Upgrade
+
+Git is the authority for static/dynamic configuration. The private certificate
+owner is the authority for `${DEFAULT_CERT_DIR}`; certificate private keys must
+not be copied into Git or incident evidence. Recovery restores a reviewed config
+commit and matching certificate set, validates Compose and hardening, then starts
+only `traefik` in an isolated/canary route context before accepting 80/443 traffic.
+An image upgrade must validate config syntax, dashboard BasicAuth, representative
+routes, metrics, and rollback to the prior image declaration. There is no tracked
+ACME state to back up. This recovery was documented but not executed here.
+
 ## Traceability
 
 - Declared parent: [01-Gateway Traefik Operations Policy](policy.md) (`POL-0013`)
@@ -80,8 +107,9 @@ created: "2026-05-10"
 ## Related Documents
 
 - [Official upstream operational documentation](https://doc.traefik.io/traefik/)
+- [Traefik Docker API security guidance](https://doc.traefik.io/traefik/providers/docker/)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

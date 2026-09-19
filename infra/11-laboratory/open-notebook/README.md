@@ -14,7 +14,7 @@ created: "2026-05-09"
 
 ## Overview
 
-Open Notebook provides an admin/laboratory notebook UI for local knowledge workflows. The stack includes the `open_notebook` application and a local `surrealdb` data store, both connected to `infra_net` and exposed through the gateway profile when enabled.
+Open Notebook provides an admin/laboratory notebook UI for local knowledge workflows. The flow uses the `open_notebook` application and the separately owned `infra/04-data/specialized/surrealdb` service, both connected to `infra_net` when selected.
 
 ## Audience
 
@@ -52,7 +52,7 @@ open-notebook/
 | --- | --- |
 | Purpose | Laboratory Open Notebook service leaf in `11-laboratory`; services: `surrealdb`, `open_notebook`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `SURREALDB_USERNAME`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `SURREAL_NAMESPACE`, `SURREAL_DATABASE`; profiles: `admin`, `dev` |
+| Config values | env keys: `SURREALDB_USERNAME`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `SURREAL_NAMESPACE`, `SURREAL_DATABASE`; profiles: `admin`, `notebook` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `surrealdb-data:/mydata`, `open-notebook-data:/app/data`, `open-notebook-data`, `surrealdb-data` |
@@ -67,7 +67,7 @@ open-notebook/
 ## How to Work in This Area
 
 1. Validate the root-active admin profile with `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`.
-2. Start only when the `admin` or `dev` profile is intentionally selected and host-bound API/DB ports are approved for the target environment.
+2. Start only when the `admin` or `notebook` profile is intentionally selected and host-bound API/DB ports are approved for the target environment.
 3. Keep floating image usage reviewed through `infra/image-tag-policy.exceptions.json`.
 4. Keep credentials in Docker secrets and environment variables; do not commit plaintext values.
 
@@ -104,4 +104,4 @@ open-notebook/
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

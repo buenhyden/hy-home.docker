@@ -4,11 +4,14 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0033"
 parent_ids:
 - "POL-0033"
+implementation_services:
+  infra/04-data/specialized/neo4j/docker-compose.yml:
+  - 'neo4j'
 created: "2026-05-10"
 ---
 
@@ -18,7 +21,21 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 [neo4j image declaration](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml), 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
+이 문서는 root compose에 active include된 [Neo4j Compose 구현](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml)을 설명한다. 현재 구현은 `OPTIONAL` 단일 Community `neo4j` 서비스, exact `graph` profile, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint와 Traefik Browser route를 사용한다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | OPTIONAL graph storage for consumers needing Cypher relationships; no cluster requirement is implemented. |
+| Source / updater | [Compose](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml) and secret-aware entrypoint own the Community image/process; review edition compatibility on updates. |
+| Services / profile | Single `neo4j`; exact `graph`. |
+| Flow / exposure | applications use internal Bolt; Browser uses Traefik HTTPS; no public Bolt router. |
+| Persistence / secrets | `neo4j-data:/data`; `neo4j_password` Docker Secret. |
+| Health / resources | secret-backed `cypher-shell RETURN 1`; `template-stateful-med` plus Compose heap/page-cache controls. |
+| Security | Community authentication, secret-aware entrypoint, Browser gateway boundary. |
+| Backup / upgrade | Community offline dump/load only; Enterprise online backup is unavailable. Restore-test before store-format upgrade/removal. |
+| License / edition | Neo4j Community is GPLv3; Enterprise backup/clustering commands and rights are not implied. |
 
 ### Usage Type
 
@@ -45,7 +62,7 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 1. root-active compose 구성을 렌더링한다.
 
    ```bash
-   docker compose --profile graph config --quiet neo4j
+   docker compose --profile graph config --quiet
    ```
 
 2. 서비스 상태를 확인한다.
@@ -73,10 +90,11 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 - 현재 구현은 Community single service다. clustering, multi-database enterprise operations, public Bolt routing을 구현된 기능처럼 설명하지 않는다.
 - Neo4j Browser는 Traefik HTTPS route를 통해 `${NEO4J_HTTP_PORT:-7474}`로 전달된다. `${NEO4J_HTTPS_PORT:-7473}` exposed port가 있어도 별도 HTTPS router가 선언된 것은 아니다.
 - `neo4j_password` 값은 entrypoint와 healthcheck가 secret mount에서 읽는다. 명령 예시는 secret 값을 출력하지 않아야 한다.
+- Community edition recovery uses an offline `neo4j-admin database dump/load` workflow. Online backup features documented for Enterprise must not be presented as available here.
 
 ## Common Checks
 
-- `docker compose --profile graph config --quiet neo4j`
+- `docker compose --profile graph config --quiet`
 - `docker compose ps neo4j`
 - `docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'`
 
@@ -92,7 +110,9 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Neo4j backup and restore](https://neo4j.com/docs/operations-manual/current/backup-restore/)
+- [Neo4j backup planning and edition scope](https://neo4j.com/docs/operations-manual/current/backup-restore/planning/)
+- [Neo4j open-source licensing](https://neo4j.com/open-source-project/)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
 - "POL-0049"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - tempo
 created: "2026-05-10"
 ---
 
@@ -79,9 +82,18 @@ created: "2026-05-10"
 - **Metrics generator assumption**: Service graph와 span metrics는 `metrics_generator`와 Prometheus remote write가 모두 정상이어야 보인다.
 - **Secret exposure**: MinIO secret value를 로그나 문서에 기록하지 않는다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `tempo` is an `OPTIONAL` trace store selected by `obs`/`tracing`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Tempo config](../../../../../infra/06-observability/tempo/config/tempo.yaml) are authoritative.
+- **Flow/state**: Alloy receives OTLP and sends traces to Tempo. Durable blocks reside in MinIO bucket `tempo-bucket`; `tempo-data:/var/tempo` holds ingest WAL, metrics-generator WAL, and local temporary blocks. Grafana queries Tempo.
+- **Secrets/dependencies/security**: `MINIO_APP_USERNAME` and `minio_app_user_password` access object storage. MinIO, Alloy, Grafana, gateway auth, root CA, and `infra_net` are dependencies. Do not render credentials or expose OTLP/query routes beyond declared controls.
+- **Resources/normal use**: source limits are not headroom. Render at root, validate readiness, send a labeled test trace through Alloy, query it, and monitor WAL/object-store errors.
+- **Lifecycle**: quiesce trace intake, coordinate a consistent `tempo-bucket` backup with the MinIO owner, and preserve local WAL/temp state/config at the same recovery point. Upgrade through supported versions and verify WAL replay plus historical/new traces.
+- **Upstream/license**: follow official [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/) and [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/). Tempo is AGPL-3.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps tempo`
+- `docker compose --profile obs ps tempo`
 - `docker logs --tail=100 infra-tempo`
 - `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
 - `rg -n 'block_retention: 24h|compacted_block_retention: 1h|bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
@@ -98,7 +110,9 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

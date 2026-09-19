@@ -15,7 +15,7 @@ created: "2025-11-12"
 ## Overview
 
 `07-workflow`는 Airflow와 n8n을 운영한다. broker는 shared `mng-valkey` 또는
-`dedicated-valkey` profile의 dedicated instance를 사용한다.
+`dedicated-valkey` profile로 전용 instances를 기동할 수 있다. 실제 broker 전환은 각 서비스의 host/secret environment pair를 함께 바꿔야 한다.
 
 Authentication은 서비스별로 다르다.
 
@@ -97,6 +97,19 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - broker -> workers 영향
 - auth middleware -> login/access 영향
 
+### Convergence service and command map
+
+Run from the repository root: `docker compose --profile workflow config --quiet` for static preflight and `docker compose --profile workflow up -d` for the core target.
+
+| Package/services | Class | Exact profiles |
+| --- | --- | --- |
+| Airflow core, Flower, StatsD exporter | HOME | `workflow`, `workflow-airflow` |
+| n8n core, workers, task runners | HOME | `workflow`, `workflow-n8n` |
+| Airflow Valkey + exporter | OPTIONAL | `dedicated-valkey` |
+| n8n Valkey + exporter | OPTIONAL | `dedicated-valkey` |
+
+The profile starts optional brokers but does not select them. Set each application's matching host and secret selector together. The stable documentation entry point is [docs/README.md](../../docs/README.md); exact Stage 05 subjects are `GDE/POL/RUN-0050` at `docs/05.operations/catalog/07-workflow/0050-airflow/` and `GDE/POL/RUN-0053` at `docs/05.operations/catalog/07-workflow/0053-n8n/`.
+
 ## Related Documents
 
 - [Data](../04-data/README.md)
@@ -105,4 +118,4 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - [Auth Integration](../../docs/README.md)
 - [Documentation index](../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.
+Workflow services are owner-confirmed always-on HOME capabilities; runtime pins are owned by the Compose/Dockerfile declarations and the [derived Compose image projection](../tech-stack.versions.json) provides drift verification.

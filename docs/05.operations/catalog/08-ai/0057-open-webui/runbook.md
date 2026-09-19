@@ -80,45 +80,24 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 - The mounted `rootCA.pem` is a public certificate, not a private key. It must be
   readable by UID 0 (0644); verify certificate-only content before changing mode.
   The entrypoint combines it with public CA roots without disabling TLS checks.
-- Initial acceptance retains ForwardAuth and local login, disables signup and
-  role/group management, and temporarily permits email merge only after verifying
-  the single existing administrator matches an enabled, email-verified Keycloak
-  identity. This is a bounded migration step, not a general account-linking policy.
-- Before acceptance, create an online SQLite backup, verify its integrity, and
-  record the existing user ID, role, OAuth linkage and chat ownership privately.
-  After browser login, require the same ID/admin role/chat ownership and the
-  expected provider subject. Do not use login success alone as identity evidence.
-- After acceptance, disable email merge and disable the login form through the
-  supported configuration model or authenticated admin configuration. `ENABLE_LOGIN_FORM` may be
-  overridden by persisted database configuration; changing Compose alone does
-  not prove it is disabled. The installed per-key `Config.upsert` can update only
-  `ui.enable_login_form` after a protected online backup; verify every other config
-  row and user/chat identity remains unchanged. Initialize the operator process
-  with the existing startup secret file internally, never a fabricated token.
-  Set `ENABLE_PASSWORD_AUTH=false` separately: hiding the form alone does not
-  disable `/api/v1/auths/signin`. Require a 403 denial, not merely a 400 invalid-
-  credential response. Remove only this service's ForwardAuth middleware
-  after the native allow/deny checks pass, then test a fresh browser session.
-- During a failed initial rollout, keep the gateway, preserve the named volume,
-  and restore the prior service configuration if the failure cannot be corrected
-  promptly. Do not restore the DB merely for a configuration failure. Database
-  restoration can discard later changes and needs a separately scoped recovery.
-- Evidence and current acceptance status live in
-  [Task 0004](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md).
-  The dated offline-custody backup is sensitive and must not be committed.
+### Historical transition record
+
+Task 0004 records the completed native-OIDC migration and acceptance evidence;
+it is not an executable current-state procedure. Current Compose uses the
+`home-openwebui` client and `gateway-standard-chain@file`, without `sso-auth@file`.
+Password login, signup, email account merge, and OAuth role/group management
+remain disabled. Do not re-enable them to diagnose an incident.
+
+The named `open-webui` bind volume holds the SQLite state. Do not copy its live
+database while the service may write. Follow the central [backup policy](../../04-data/0021-backup-and-restore/policy.md), restore first to isolated storage, and record identity/chat preservation evidence before any replacement. A configuration rollback does not justify a database restore.
 
 ### 3. SQLite Backup and Recovery
 
-```bash
-
-## 1) 데이터 백업
-cp -a ${DEFAULT_AI_MODEL_DIR}/open-webui ${DEFAULT_AI_MODEL_DIR}/open-webui.bak.$(date +%Y%m%d%H%M%S)
-
-## 2) 서비스 재기동
-docker compose restart open-webui
-```
-
-- DB 손상 의심 시, 최신 백업본으로 `webui.db` 복구 후 재기동한다.
+Do not copy the live directory. Quiesce users and RAG ingestion, stop
+`open-webui`, then use an approved SQLite-consistent backup or stopped
+filesystem snapshot. Record the image digest, database migration level, secret
+references, volume identity, file checksums, and the separately owned Qdrant
+snapshot reference. Restart only after the backup check succeeds.
 
 ### 4. RAG Index Re-sync
 
@@ -167,6 +146,15 @@ docker compose restart open-webui
 - **Eval Re-run**: 기본 채팅 + RAG smoke test 재실행
 - **Trace Capture**: 장애 시간대 로그/지표를 증적으로 보존
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Open WebUI restore is claimed here.
+
+1. Disable new sessions and ingestion, record image/database versions and identity/chat/upload counts, stop Open WebUI, and create a consistent backup of the whole `/app/backend/data` volume plus the matching auth/OIDC secret references. Obtain the Qdrant snapshot reference from [RUN-0034](../../04-data/0034-qdrant/runbook.md); do not operate on its storage here.
+2. Restore the WebUI backup and approved secrets into a separate Compose project/network with no production route. Restore or attach the separately rehearsed Qdrant copy under its owner before RAG verification.
+3. Start Open WebUI against isolated Ollama/Qdrant dependencies. Verify schema startup, user and chat counts, uploads, native Keycloak login with `home-openwebui`, disabled password/signup paths, model listing, and one controlled RAG query.
+4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched source backups; production volume, Qdrant, OIDC-client, or route replacement is a separate approved action.
+
 ## Evidence
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
@@ -175,7 +163,7 @@ docker compose restart open-webui
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- The isolated restore plan above remains unexecuted; attach dated WebUI and Qdrant-owner evidence before marking it rehearsed.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -190,7 +178,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -37,8 +37,11 @@ created: "2026-05-17"
   - `req-retry`는 `attempts=2`, `initialInterval=100ms`를 사용한다.
   - `req-circuit-breaker`는 `NetworkErrorRatio() > 0.30`을 사용한다.
   - Traefik 서비스는 readonly 템플릿(`template-infra-readonly-med`)을 사용한다.
-  - Traefik은 상태를 보유하지 않는 stateless 구성요소로 운영한다.
-  - 설정은 Git에서 관리하고 배포 시 볼륨으로 마운트한다.
+  - Traefik process는 상태를 보유하지 않으며 설정은 Git에서 관리하고 읽기 전용으로 마운트한다.
+  - `${DEFAULT_CERT_DIR}`의 private certificate material은 별도 private owner가
+    백업·회전한다. 현재 구성에 없는 ACME state를 있다고 가정하지 않는다.
+  - Docker socket은 read-only mount여도 host-control API다. 접근 주체와 노출
+    경로를 제한하고 일반 애플리케이션에 전달하지 않는다.
 - **Allowed**:
   - 신규 게이트웨이 소유 라우터에 동일 체인 적용
   - 운영 관측 결과 기반의 임계치 미세 조정(승인 후)
@@ -63,6 +66,13 @@ created: "2026-05-17"
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - Runtime health evidence such as `docker compose exec traefik traefik healthcheck --ping` is valid only after an approved root stack is running.
 
+### Recovery and Upgrade Controls
+
+Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
+호환되는지 isolated route에서 확인한 후 80/443 traffic을 수용한다. Image upgrade는
+official migration/release notes, config validation, dashboard authentication,
+representative routes, metrics, and explicit prior-image rollback을 요구한다.
+
 ## Review Cadence
 
 - 월 1회 정기 점검
@@ -77,7 +87,7 @@ created: "2026-05-17"
 
 - [Official upstream operational documentation](https://doc.traefik.io/traefik/)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -784,6 +784,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             "component": "ExampleDB",
             "images": ["vendor/exampledb:4.2.3"],
             "compose_files": ["infra/04-data/exampledb/docker-compose.yml"],
+            "direct_source": True,
         },
     )
     POINTER = "[Runtime declaration](docker-compose.yml)\n"
@@ -812,6 +813,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             "[Runtime](https://unrelated.example/docker-compose.yml)\n",
             "[Runtime](../unrelated/docker-compose.yml)\n",
             "<!-- [Runtime](docker-compose.yml) -->\n",
+            "```markdown\n[Runtime](docker-compose.yml)\n```\n",
         ):
             with self.subTest(body=body):
                 self.assertIn(
@@ -907,13 +909,20 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             [], self.findings("ExampleDB 3.9.8", "docs/98.archive/legacy/README.md")
         )
 
-    def test_operation_component_slug_uses_registry_authority(self) -> None:
+    def test_operation_component_slug_uses_authored_source_authority(self) -> None:
         path = "docs/05.operations/catalog/04-data/0001-exampledb/guide.md"
-        pointer = "[Runtime](/infra/tech-stack.versions.json)\n"
+        pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
         self.assertEqual([], self.findings(pointer + "Connection setup.", path))
         self.assertIn(
             "runtime-version-literal",
             {f.code for f in self.findings(pointer + "ExampleDB 3.9.8", path)},
+        )
+        self.assertEqual(
+            [],
+            self.findings(
+                "[Projection](/infra/tech-stack.versions.json)\nConnection setup.",
+                path,
+            ),
         )
 
     def test_real_active_cli_rejects_runtime_pin_and_accepts_authority_link(
@@ -929,7 +938,11 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 root / "docs/05.operations/catalog/04-data/9999-exampledb/policy.md"
             )
             document.parent.mkdir(parents=True)
-            (document.parent / "docker-compose.yml").write_text("services: {}\n")
+            source = root / "infra/04-data/exampledb/docker-compose.yml"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "services:\n  exampledb:\n    image: vendor/exampledb:4.2.3\n"
+            )
             frontmatter = (
                 '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
                 'type: "operation/policy"\nstatus: "active"\n'
@@ -937,7 +950,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n'
                 'created: "2026-09-19"\n---\n\n# ExampleDB\n\n'
             )
-            pointer = "[Runtime](/infra/tech-stack.versions.json)\n"
+            pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
             document.write_text(frontmatter + pointer + "ExampleDB 3.9.8\n")
             self.assertEqual(0, git(root, "add", ".").returncode)
             result = run_checker(root, "check-active", profiles=profiles)
@@ -972,22 +985,21 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
-    def test_current_architecture_is_checked_but_historical_decisions_are_not(
+    def test_active_general_readmes_and_architecture_decisions_are_checked(
         self,
     ) -> None:
         text = "[Runtime](/infra/tech-stack.versions.json)\nExampleDB 3.9.8\n"
-        self.assertIn(
-            "runtime-version-literal",
-            {
-                f.code
-                for f in self.findings(
-                    text, "docs/02.architecture/descriptions/9999-exampledb.md"
+        for path in (
+            "README.md",
+            "docs/README.md",
+            "docs/02.architecture/descriptions/9999-exampledb.md",
+            "docs/02.architecture/decisions/9999-exampledb.md",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {f.code for f in self.findings(text, path)},
                 )
-            },
-        )
-        self.assertEqual(
-            [], self.findings(text, "docs/02.architecture/decisions/9999-exampledb.md")
-        )
 
     def test_each_component_needs_authority_coverage(self):
         entries = (
@@ -996,6 +1008,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 "component": "OtherDB",
                 "images": ["vendor/other:8.7.6"],
                 "compose_files": ["infra/other/docker-compose.yml"],
+                "direct_source": True,
             },
         )
         record = metadata.Record(
@@ -1006,7 +1019,10 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         with patch.object(
             heading_module, "_runtime_version_entries", return_value=entries
         ):
-            body = "ExampleDB and OtherDB runtime.\n[First](/infra/04-data/exampledb/docker-compose.yml)\n"
+            body = (
+                "ExampleDB 4.2.2 and OtherDB 8.7.5 runtime.\n"
+                "[First](/infra/04-data/exampledb/docker-compose.yml)\n"
+            )
             self.assertIn(
                 "runtime-version-source-missing",
                 {
@@ -1014,13 +1030,90 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                     for f in heading_module._runtime_version_findings(record, body)
                 },
             )
-            for pointer in (
-                "[Second](/infra/other/docker-compose.yml)",
-                "[Registry](/infra/tech-stack.versions.json)",
-            ):
-                self.assertEqual(
-                    [], heading_module._runtime_version_findings(record, body + pointer)
+            self.assertNotIn(
+                "runtime-version-source-missing",
+                {
+                    f.code
+                    for f in heading_module._runtime_version_findings(
+                        record, body + "[Second](/infra/other/docker-compose.yml)"
+                    )
+                },
+            )
+            self.assertNotIn(
+                "runtime-version-source-missing",
+                {
+                    f.code
+                    for f in heading_module._runtime_version_findings(
+                        record, body + "[Registry](/infra/tech-stack.versions.json)"
+                    )
+                },
+            )
+
+    def test_cross_subject_mentions_without_versions_add_no_source_obligation(self):
+        entries = (
+            *self.ENTRIES,
+            {
+                "component": "OtherDB",
+                "images": ["vendor/other:8.7.6"],
+                "compose_files": ["infra/other/docker-compose.yml"],
+                "direct_source": True,
+            },
+        )
+        record = metadata.Record(
+            pathlib.Path("docs/02.architecture/descriptions/9999-platform.md"),
+            {},
+            "architecture",
+        )
+        with patch.object(
+            heading_module, "_runtime_version_entries", return_value=entries
+        ):
+            self.assertEqual(
+                [],
+                heading_module._runtime_version_findings(
+                    record,
+                    "ExampleDB and OtherDB exchange data.\n"
+                    "[First](/infra/04-data/exampledb/docker-compose.yml)\n",
+                ),
+            )
+
+    def test_cross_subject_upgrade_literal_uses_document_context(self) -> None:
+        entries = (
+            {
+                "component": "Airflow",
+                "images": ["hy-home/airflow:3.3.1-keycloak"],
+                "compose_files": ["infra/07-workflow/airflow/docker-compose.yml"],
+                "direct_source": True,
+            },
+        )
+        record = metadata.Record(
+            pathlib.Path(
+                "docs/05.operations/catalog/02-auth/"
+                "0079-application-auth-integration/guide.md"
+            ),
+            {},
+            "operation/guide",
+        )
+        with patch.object(
+            heading_module, "_runtime_version_entries", return_value=entries
+        ):
+            findings = heading_module._runtime_version_findings(
+                record,
+                "Airflow provider integration.\n"
+                "[Runtime](/infra/07-workflow/airflow/docker-compose.yml)\n"
+                "Provider 0.9.0 upgrade requires permission repair.\n",
+            )
+        self.assertIn("runtime-version-literal", {item.code for item in findings})
+
+    def test_owned_runtime_docs_reject_unlabelled_patch_literals(self) -> None:
+        self.assertIn(
+            "runtime-version-literal",
+            {
+                finding.code
+                for finding in self.findings(
+                    self.POINTER + "Secure mode is the default as of 4.2.3.\n"
                 )
+            },
+        )
 
     def test_changed_runtime_literals_preserve_identity_and_multiplicity(self):
         record = metadata.Record(
@@ -1089,6 +1182,235 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 ),
             )
 
+    def test_calendar_dates_are_not_runtime_patch_literals(self) -> None:
+        body = (
+            self.POINTER
+            + "ExampleDB review date: 2026.09.20, source audit completed.\n"
+        )
+        self.assertEqual([], self.findings(body))
+
+    def test_nonnumeric_image_tags_do_not_turn_ordinary_prose_into_literals(
+        self,
+    ) -> None:
+        entries = (
+            {
+                "component": "Gatus",
+                "images": ["hy/gatus:local"],
+                "compose_files": ["infra/06-observability/docker-compose.yml"],
+                "direct_source": True,
+            },
+        )
+        self.assertFalse(
+            heading_module._runtime_literal_line(
+                "Keep local validation evidence.", entries, owned_context=True
+            )
+        )
+
+    def test_noncurated_compose_sources_cover_component_and_cross_subject_literals(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            sources = {
+                "infra/04-data/nosql/cassandra/docker-compose.yml": (
+                    "services:\n  cassandra:\n    image: cassandra:5.0.9\n"
+                ),
+                "infra/04-data/nosql/mongodb/docker-compose.yml": (
+                    "services:\n  mongodb:\n    image: mongo:8.3.11-noble\n"
+                ),
+            }
+            for relative, content in sources.items():
+                source = root / relative
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_text(content)
+            self.assertEqual(0, git(root, "add", ".").returncode)
+
+            cases = (
+                (
+                    "docs/05.operations/catalog/04-data/0025-cassandra/policy.md",
+                    "[Runtime](/infra/04-data/nosql/cassandra/docker-compose.yml)\n"
+                    "Cassandra 5.0.8 compatibility boundary.\n",
+                ),
+                (
+                    "docs/05.operations/catalog/00-workspace/0001-auth/guide.md",
+                    "[Runtime](/infra/04-data/nosql/mongodb/docker-compose.yml)\n"
+                    "MongoDB 8.3.9 migration boundary.\n",
+                ),
+            )
+            for path, body in cases:
+                record = metadata.Record(pathlib.Path(path), {}, "operation/policy")
+                with self.subTest(path=path):
+                    self.assertEqual(
+                        {"runtime-version-literal"},
+                        {
+                            finding.code
+                            for finding in heading_module._runtime_version_findings(
+                                record, body, root
+                            )
+                        },
+                    )
+
+    def test_root_compose_variants_are_discovered_and_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "compose.override.yml"
+            source.write_text(
+                "services:\n  exampledb:\n    image: vendor/exampledb:4.2.3\n"
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(
+                (pathlib.Path("compose.override.yml"),),
+                heading_module._runtime_tracked_sources(root),
+            )
+            record = metadata.Record(pathlib.Path("README.md"), {}, "common/readme")
+            self.assertEqual(
+                {"runtime-version-literal"},
+                {
+                    finding.code
+                    for finding in heading_module._runtime_version_findings(
+                        record,
+                        "[Runtime](compose.override.yml)\nExampleDB 4.2.2.\n",
+                        root,
+                    )
+                },
+            )
+
+            source.write_text(
+                "services:\n  exampledb:\n    image: ${PRIVATE_EXAMPLE_IMAGE}\n"
+            )
+            with patch.dict(
+                os.environ, {"PRIVATE_EXAMPLE_IMAGE": "vendor/exampledb:9.9.9"}
+            ):
+                self.assertEqual(
+                    {"runtime-version-source-invalid"},
+                    {
+                        finding.code
+                        for finding in heading_module._runtime_version_findings(
+                            record,
+                            "[Runtime](compose.override.yml)\nExampleDB runtime.\n",
+                            root,
+                        )
+                    },
+                )
+
+    def test_unresolved_compose_image_authority_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/04-data/nosql/cassandra/docker-compose.yml"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "services:\n  cassandra:\n    image: ${PRIVATE_CASSANDRA_IMAGE}\n"
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            record = metadata.Record(
+                pathlib.Path("infra/04-data/nosql/cassandra/README.md"),
+                {},
+                "common/readme",
+            )
+            self.assertEqual(
+                {"runtime-version-source-invalid"},
+                {
+                    finding.code
+                    for finding in heading_module._runtime_version_findings(
+                        record,
+                        "[Runtime](docker-compose.yml)\nCassandra runtime.\n",
+                        root,
+                    )
+                },
+            )
+
+    def test_compose_merge_keys_remain_an_authored_runtime_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/09-tooling/opentofu/docker-compose.yml"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "x-runtime: &runtime\n"
+                "  image: hy-home/opentofu:1.12.6-local\n"
+                "services:\n"
+                "  opentofu:\n"
+                "    <<: *runtime\n"
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            record = metadata.Record(
+                pathlib.Path("infra/09-tooling/opentofu/README.md"),
+                {},
+                "common/readme",
+            )
+            self.assertEqual(
+                {"runtime-version-literal"},
+                {
+                    finding.code
+                    for finding in heading_module._runtime_version_findings(
+                        record,
+                        "[Runtime](docker-compose.yml)\nOpenTofu 1.12.5.\n",
+                        root,
+                    )
+                },
+            )
+
+    def test_inline_dockerfile_arg_defaults_are_authored_and_unresolved_fail_closed(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/09-tooling/opentofu/docker-compose.yml"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "services:\n"
+                "  opentofu:\n"
+                "    build:\n"
+                "      context: .\n"
+                "      dockerfile_inline: |\n"
+                "        ARG TOFU_VERSION=1.12.6\n"
+                "        FROM ghcr.io/opentofu/opentofu:${TOFU_VERSION}-minimal AS tofu\n"
+                "        FROM alpine:3.22\n"
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            record = metadata.Record(
+                pathlib.Path("infra/09-tooling/opentofu/README.md"),
+                {},
+                "common/readme",
+            )
+            self.assertEqual(
+                {"runtime-version-literal"},
+                {
+                    finding.code
+                    for finding in heading_module._runtime_version_findings(
+                        record,
+                        "[Runtime](docker-compose.yml)\nOpenTofu 1.12.5.\n",
+                        root,
+                    )
+                },
+            )
+
+            source.write_text(
+                "services:\n"
+                "  opentofu:\n"
+                "    build:\n"
+                "      context: .\n"
+                "      dockerfile_inline: |\n"
+                "        ARG TOFU_VERSION\n"
+                "        FROM ghcr.io/opentofu/opentofu:${TOFU_VERSION}-minimal\n"
+            )
+            with patch.dict(os.environ, {"TOFU_VERSION": "9.9.9"}):
+                self.assertEqual(
+                    {"runtime-version-source-invalid"},
+                    {
+                        finding.code
+                        for finding in heading_module._runtime_version_findings(
+                            record,
+                            "[Runtime](docker-compose.yml)\nOpenTofu runtime.\n",
+                            root,
+                        )
+                    },
+                )
+
     def test_unmapped_dockerfile_runtime_has_direct_authority(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -1122,16 +1444,13 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                         record, "[Build](Dockerfile)\nBuild instructions.", root
                     ),
                 )
-                self.assertIn(
-                    "runtime-version-source-missing",
-                    {
-                        f.code
-                        for f in heading_module._runtime_version_findings(
-                            record,
-                            "[Registry](/infra/tech-stack.versions.json)\nBuild instructions.",
-                            root,
-                        )
-                    },
+                self.assertEqual(
+                    [],
+                    heading_module._runtime_version_findings(
+                        record,
+                        "[Registry](/infra/tech-stack.versions.json)\nBuild instructions.",
+                        root,
+                    ),
                 )
 
     def test_build_source_defaults_are_authored_and_unresolved_args_fail_closed(self):

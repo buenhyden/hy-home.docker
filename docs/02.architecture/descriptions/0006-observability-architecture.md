@@ -53,8 +53,8 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 
 - **Performance**: Alloy를 통한 비동기 데이터 처리를 통해 애플리케이션 오버헤드 최소화.
 - **Security**: Keycloak OIDC 기반의 역할 기반 권한 제어(RBAC) 적용.
-- **Reliability**: Loki/Tempo의 S3 백엔드 구성을 통해 노드 장애 시에도 데이터 보존.
-- **Scalability**: Prometheus의 Remote Write와 S3 스토리지를 통한 수평적 확장 대비.
+- **Reliability**: Loki/Tempo의 MinIO object blocks와 각 서비스의 local WAL/working state를 함께 다루는 복구 경계.
+- **Scalability**: Prometheus는 현재 local TSDB가 durable authority이며 remote-write receiver 활성화만으로 외부 장기 저장소를 의미하지 않는다.
 - **Observability**: 자기 자신에 대한 모니터링(Self-monitoring) 대시보드 포함.
 
 ## Components
@@ -63,7 +63,12 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
-모든 인프라 컨테이너 및 애플리케이션은 **Grafana Alloy**로 텔레메트리 데이터를 전송한다. Alloy는 데이터를 정제하여 각 목적지(Prometheus, Loki, Tempo, Pyroscope)로 라우팅하며, 사용자는 **Grafana**의 통합 대시보드를 통해 이를 소비한다.
+현재 source에서 Docker logs와 OTLP traces는 **Grafana Alloy**를 거쳐
+Loki/Tempo로 이동하고, Prometheus는 exporters/services를 직접 scrape한다.
+Alloy self-metrics만 remote-write로 Prometheus에 전달된다. Pyroscope write
+sink는 있으나 profile source가 없으므로 end-to-end profile collection은
+현재 구성만으로 성립하지 않는다. 사용자는 **Grafana**에서 각 datasource를
+조회한다.
 
 ## Data Flow
 
@@ -72,10 +77,10 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
 - **Key Entities / Flows**:
-  - **Metrics Flow**: cAdvisor/Exporters -> Alloy -> Prometheus
+  - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus remote write
   - **Logs Flow**: Docker Logs -> Alloy -> Loki -> MinIO
   - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> MinIO
-  - **Profiles Flow**: App -> Alloy -> Pyroscope
+  - **Profiles Flow**: Pyroscope sink is configured, but no Alloy profile source is declared
 - **Storage Strategy**:
   - 메트릭: Prometheus local TSDB
   - 로그: Loki MinIO bucket `loki-bucket`, `retention_period: 168h`
@@ -86,7 +91,13 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose v2.x 기반 컨테이너 오케스트레이션.
-- **Deployment Model**: `obs` 프로파일을 통해 선택적으로 로드되는 시스템 인프라.
+- **Deployment Model**: `prometheus`, `grafana`, `loki`, `alloy`,
+  `node-exporter`, `cadvisor`, `gatus`, `alertmanager`는 `HOME`.
+  `tempo`, `pyroscope`, `pushgateway`는 `OPTIONAL`. `obs`는 전체
+  compatibility profile이며 `obs-core`, `obs-host`, `logs`, `tracing`,
+  `profiling`, `alerting`, `availability`, `batch-metrics`가 narrower
+  activation을 제공한다. HOME profile start는 이미 실행 중인 optional
+  container를 자동 중지하지 않는다.
 - **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
 
 ## Traceability
@@ -99,4 +110,4 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 - **Spec**: [../../03.specs/007-observability/spec.md](0006-observability-architecture.md)
 - **ADR**: [../decisions/0006-lgtm-stack-selection.md](../decisions/0006-lgtm-stack-selection.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

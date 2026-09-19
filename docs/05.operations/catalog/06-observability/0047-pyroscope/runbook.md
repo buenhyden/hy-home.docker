@@ -46,9 +46,9 @@ created: "2026-05-17"
 1. 현재 service 상태, ready endpoint, 최근 로그를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps pyroscope
+   docker compose --profile obs ps pyroscope
    docker logs --tail=200 infra-pyroscope
-   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}
    ```
 
 2. Compose and config boundary가 policy와 일치하는지 확인한다.
@@ -69,29 +69,29 @@ created: "2026-05-17"
    ```bash
    docker logs --tail=500 infra-pyroscope | grep -Ei 'storage|filesystem|label|cardinality|ingestion|limit|error|warn'
    docker stats --no-stream infra-pyroscope
-   docker compose -f infra/06-observability/docker-compose.yml config | grep -n 'pyroscope-data'
+   rg -n 'pyroscope-data|/var/lib/pyroscope' infra/06-observability/docker-compose.yml infra/06-observability/pyroscope/config/pyroscope.yaml
    ```
 
 5. Readiness or ingestion state가 config와 맞지만 회복되지 않으면 Pyroscope를 재시작한다. Alloy writer state도 함께 의심될 때만 Alloy를 같이 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope alloy
+   docker compose --profile obs restart pyroscope
+   docker compose --profile obs restart pyroscope alloy
    ```
 
 6. `pyroscope.yaml` 변경 후 장애가 발생했다면 Git-managed config diff를 되돌리고 readiness를 재확인한다.
 
    ```bash
    git diff -- infra/06-observability/pyroscope/config/pyroscope.yaml
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope
-   docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready
+   docker compose --profile obs restart pyroscope
+   docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}
    ```
 
    이 런북은 profile data deletion, filesystem mutation, retention change, or ingestion limit change를 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있거나 운영 기준을 바꾸는 조치는 별도 incident/task approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
-- [ ] `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`가 성공한다.
+- [ ] `profilecli ready` command above exits successfully.
 - [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
 - [ ] `docker stats --no-stream infra-pyroscope`에서 CPU/memory 사용량이 정상 범위로 돌아온다.
 - [ ] Storage symptom이면 `pyroscope-data`, `/var/lib/pyroscope`, and filesystem backend boundary가 policy와 일치한다.
@@ -119,6 +119,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Pyroscope restore is claimed.
+
+1. Record image/config digests, storage time bounds, producer/label inventory, and backup checksums. Stop profile writes and Pyroscope, then snapshot `pyroscope-data` consistently.
+2. Restore to a new path in a separate project/network with no production route and only a controlled test producer.
+3. Start Pyroscope, run `profilecli ready`, query a historical baseline, ingest/query one labeled test profile, and verify Grafana integration. Confirm an actual source before claiming Alloy collection.
+4. On mismatch, stop the isolated project and preserve evidence. Return to untouched backup; production state/route changes require separate approval.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -142,7 +151,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

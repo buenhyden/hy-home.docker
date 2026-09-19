@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -94,6 +94,8 @@ supabase/
 
 ## Validation
 
+Classification is `OPTIONAL`; all 13 services use exact profile `supabase`. Recovery is coherent only when PostgreSQL globals/schema/data, Storage metadata and object files, mounted Kong/functions/pooler configuration, and protected Auth/JWT/SMTP/provider settings are restored together in a fresh isolated stack. Owning artifacts are `GDE-0029`, `POL-0029`, and `RUN-0029`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Supabase.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
@@ -112,4 +114,4 @@ supabase/
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

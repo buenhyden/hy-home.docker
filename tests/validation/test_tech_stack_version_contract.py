@@ -29,6 +29,9 @@ from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
+RENOVATE_CONFIG = ROOT / "renovate.json5"
+RENOVATE_GLOBAL_CONFIG = ROOT / "infra/09-tooling/renovate/config/config.js"
+DEPENDABOT_CONFIG = ROOT / ".github/dependabot.yml"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
 OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
@@ -105,6 +108,213 @@ def lifecycle_classification_findings(
         elif context not in PRESERVED_LIFECYCLE_CONTEXTS:
             findings.append(f"{path}: unclassified lifecycle context {context}")
     return tuple(findings)
+
+
+def updater_contract_findings(
+    renovate: dict[str, object],
+    global_config: dict[str, object],
+    dependabot: dict[str, object],
+    root: pathlib.Path,
+) -> tuple[str, ...]:
+    findings: list[str] = []
+    managers = renovate.get("enabledManagers")
+    expected_managers = {
+        "docker-compose",
+        "dockerfile",
+        "github-actions",
+        "custom.regex",
+    }
+    if not isinstance(managers, list) or set(managers) != expected_managers:
+        findings.append("Renovate manager ownership drift")
+    if isinstance(managers, list) and "npm" in managers:
+        findings.append("npm updater ownership overlaps Dependabot")
+
+    custom_managers = renovate.get("customManagers")
+    expected_pattern = r"/^infra\/09-tooling\/opentofu\/docker-compose\.yml$/"
+    if not isinstance(custom_managers, list) or len(custom_managers) != 1:
+        findings.append("custom regex manager count drift")
+    else:
+        custom = custom_managers[0]
+        patterns = custom.get("managerFilePatterns")
+        match_strings = custom.get("matchStrings")
+        if patterns != [expected_pattern]:
+            findings.append("custom regex manager file ownership is broad")
+        if (
+            not isinstance(match_strings, list)
+            or not match_strings
+            or any(
+                not isinstance(pattern, str)
+                or not pattern.startswith(r"FROM\s+")
+                or "image" in pattern.lower()
+                for pattern in match_strings
+            )
+        ):
+            findings.append("custom regex manager overlaps Compose images")
+
+    infrastructure_managers = {"docker-compose", "dockerfile", "custom.regex"}
+    package_rules = renovate.get("packageRules")
+    has_no_automerge = any(
+        isinstance(rule, dict)
+        and set(rule.get("matchManagers", [])) == infrastructure_managers
+        and rule.get("automerge") is False
+        for rule in package_rules or []
+    )
+    if not has_no_automerge:
+        findings.append("infrastructure automerge must be disabled")
+    if renovate.get("minimumReleaseAge") != "7 days":
+        findings.append("normal updates must use the seven-day release age")
+    if renovate.get("minimumReleaseAgeBehaviour") != "timestamp-optional":
+        findings.append("unknown timestamps must use explicit manual review fallback")
+    if renovate.get("timezone") != "Asia/Seoul" or renovate.get("schedule") != [
+        "before 6am on monday"
+    ]:
+        findings.append("Renovate schedule drift")
+    alerts = renovate.get("vulnerabilityAlerts")
+    if (
+        not isinstance(alerts, dict)
+        or alerts.get("automerge") is not False
+        or "minimumReleaseAge" in alerts
+        or "schedule" in alerts
+    ):
+        findings.append("security updates must bypass normal delay without automerge")
+
+    if global_config.get("allowScripts") is not False:
+        findings.append("Renovate scripts must remain disabled")
+    if global_config.get("allowedCommands") != [
+        r"^bash scripts/operations/sync-tech-stack-versions\.sh$"
+    ]:
+        findings.append("Renovate command allowlist is unsafe")
+    if renovate.get("postUpgradeTasks") != {
+        "commands": ["bash scripts/operations/sync-tech-stack-versions.sh"],
+        "fileFilters": ["infra/tech-stack.versions.json"],
+        "executionMode": "branch",
+    }:
+        findings.append("Renovate version projection task drift")
+
+    updates = dependabot.get("updates")
+    if not isinstance(updates, list) or len(updates) != 1:
+        findings.append("Dependabot ownership must contain one npm target")
+    else:
+        update = updates[0]
+        directory = update.get("directory")
+        if update.get("package-ecosystem") != "npm":
+            findings.append("Dependabot must own npm only")
+        if update.get("open-pull-requests-limit") != 5:
+            findings.append("Dependabot pull-request limit drift")
+        if update.get("cooldown") != {"default-days": 7}:
+            findings.append("Dependabot cooldown drift")
+        if update.get("schedule") != {
+            "interval": "weekly",
+            "day": "wednesday",
+            "time": "05:00",
+            "timezone": "Asia/Seoul",
+        }:
+            findings.append("Dependabot staggered schedule drift")
+        if not isinstance(directory, str) or not directory.startswith("/"):
+            findings.append("Dependabot directory is invalid")
+        else:
+            target = root / directory.removeprefix("/")
+            for filename in ("package.json", "package-lock.json"):
+                if not (target / filename).is_file():
+                    findings.append(f"Dependabot target is missing {filename}")
+    return tuple(findings)
+
+
+class UpdaterOwnershipContractTests(unittest.TestCase):
+    @staticmethod
+    def load_contracts() -> tuple[
+        dict[str, object], dict[str, object], dict[str, object]
+    ]:
+        renovate = json.loads(RENOVATE_CONFIG.read_text(encoding="utf-8"))
+        result = subprocess.run(
+            [
+                "node",
+                "-e",
+                ("process.stdout.write(JSON.stringify(require(process.argv[1])))"),
+                str(RENOVATE_GLOBAL_CONFIG),
+            ],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        global_config = json.loads(result.stdout)
+        dependabot = yaml.safe_load(DEPENDABOT_CONFIG.read_text(encoding="utf-8"))
+        return renovate, global_config, dependabot
+
+    def test_current_updater_ownership_is_non_overlapping_and_fail_closed(
+        self,
+    ) -> None:
+        self.assertEqual(
+            (),
+            updater_contract_findings(*self.load_contracts(), ROOT),
+        )
+
+    def test_npm_overlap_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        overlap = json.loads(json.dumps(renovate))
+        overlap["enabledManagers"].append("npm")
+        self.assertIn(
+            "npm updater ownership overlaps Dependabot",
+            updater_contract_findings(overlap, global_config, dependabot, ROOT),
+        )
+
+    def test_broad_custom_regex_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        broad = json.loads(json.dumps(renovate))
+        broad["customManagers"][0]["managerFilePatterns"] = ["/.*/"]
+        self.assertIn(
+            "custom regex manager file ownership is broad",
+            updater_contract_findings(broad, global_config, dependabot, ROOT),
+        )
+
+    def test_unsafe_allowed_commands_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        unsafe_global = {**global_config, "allowedCommands": [".*"]}
+        self.assertIn(
+            "Renovate command allowlist is unsafe",
+            updater_contract_findings(renovate, unsafe_global, dependabot, ROOT),
+        )
+
+    def test_enabled_scripts_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        enabled = {**global_config, "allowScripts": True}
+        self.assertIn(
+            "Renovate scripts must remain disabled",
+            updater_contract_findings(renovate, enabled, dependabot, ROOT),
+        )
+
+    def test_missing_dependabot_package_json_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target = pathlib.Path(temporary_directory) / "projects/storybook/nextjs"
+            target.mkdir(parents=True)
+            (target / "package-lock.json").write_text("{}\n")
+            self.assertEqual(
+                ("Dependabot target is missing package.json",),
+                updater_contract_findings(
+                    renovate,
+                    global_config,
+                    dependabot,
+                    pathlib.Path(temporary_directory),
+                ),
+            )
+
+    def test_missing_dependabot_package_lock_mutation_is_detected(self) -> None:
+        renovate, global_config, dependabot = self.load_contracts()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            target = pathlib.Path(temporary_directory) / "projects/storybook/nextjs"
+            target.mkdir(parents=True)
+            (target / "package.json").write_text("{}\n")
+            self.assertEqual(
+                ("Dependabot target is missing package-lock.json",),
+                updater_contract_findings(
+                    renovate,
+                    global_config,
+                    dependabot,
+                    pathlib.Path(temporary_directory),
+                ),
+            )
 
 
 class TechStackVersionContractTests(unittest.TestCase):
@@ -637,20 +847,41 @@ class TechStackSynchronizationTests(unittest.TestCase):
         )
         self.registry = self.root / "infra/tech-stack.versions.json"
         self.registry.parent.mkdir()
-        self.compose = self.root / "infra/compose.yml"
+        self.compose = self.root / "infra/example/docker-compose.yml"
+        self.compose.parent.mkdir()
         self.compose.write_text("services:\n  app:\n    image: example/app:2\n")
         self.write_registry()
+        subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
+        subprocess.run(
+            ["git", "add", "infra/example/docker-compose.yml"],
+            cwd=self.root,
+            check=True,
+        )
 
     def write_registry(self, image: str = "example/app:1") -> None:
         self.registry.write_text(
             json.dumps(
                 {
-                    "source_of_truth": "Docker Compose image declarations",
+                    "source_of_truth": (
+                        "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} "
+                        "service image declarations"
+                    ),
+                    "local_repository_prefixes": ["hy/", "hyhome/", "hy-home/"],
                     "entries": [
                         {
                             "component": "Synthetic",
+                            "classification": "external",
+                            "repository_classifications": {"example/app": "external"},
                             "images": [image],
-                            "compose_files": ["infra/compose.yml"],
+                            "compose_files": ["infra/example/docker-compose.yml"],
+                            "sources": [
+                                {
+                                    "compose_file": (
+                                        "infra/example/docker-compose.yml"
+                                    ),
+                                    "images": [image],
+                                }
+                            ],
                         }
                     ],
                 },
@@ -695,16 +926,173 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.compose.unlink()
         self.assert_rejected_without_write("compose")
 
-    def test_removed_repository_fails_closed(self) -> None:
-        self.compose.write_text("services:\n  app:\n    image: other/app:2\n")
-        self.assert_rejected_without_write("not declared")
+    def test_missing_source_metadata_fails_closed(self) -> None:
+        body = json.loads(self.registry.read_text())
+        body.pop("source_of_truth")
+        self.registry.write_text(json.dumps(body))
+        self.assert_rejected_without_write("source_of_truth")
 
-    def test_ambiguity_fails_even_when_current_pin_is_a_candidate(self) -> None:
+    def test_new_external_repository_requires_projection_then_write_adds_it(
+        self,
+    ) -> None:
+        added = self.root / "infra/new/docker-compose.yaml"
+        added.parent.mkdir()
+        added.write_text("services:\n  new:\n    image: registry.test/team/new:3\n")
+        subprocess.run(
+            ["git", "add", "infra/new/docker-compose.yaml"],
+            cwd=self.root,
+            check=True,
+        )
+        before = self.registry.read_bytes()
+        check = self.run_sync("--check")
+        self.assertEqual(1, check.returncode)
+        self.assertIn("out of sync", check.stderr)
+        self.assertEqual(before, self.registry.read_bytes())
+
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        body = json.loads(self.registry.read_text())
+        added_entry = next(
+            entry
+            for entry in body["entries"]
+            if entry["images"] == ["registry.test/team/new:3"]
+        )
+        self.assertEqual("external", added_entry["classification"])
+        self.assertEqual(
+            ["infra/new/docker-compose.yaml"], added_entry["compose_files"]
+        )
+        self.assertEqual(0, self.run_sync("--check").returncode)
+
+    def test_hyphenated_compose_filename_is_in_source_universe(self) -> None:
+        baseline = self.run_sync()
+        self.assertEqual(0, baseline.returncode, baseline.stderr)
+        added = self.root / "infra/example/docker-compose-dev.yml"
+        added.write_text("services:\n  new:\n    image: example/new:1\n")
+        subprocess.run(
+            ["git", "add", "infra/example/docker-compose-dev.yml"],
+            cwd=self.root,
+            check=True,
+        )
+        before = self.registry.read_bytes()
+        check = self.run_sync("--check")
+        self.assertEqual(1, check.returncode)
+        self.assertIn("out of sync", check.stderr)
+        self.assertEqual(before, self.registry.read_bytes())
+
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        body = json.loads(self.registry.read_text())
+        added_entry = next(
+            entry for entry in body["entries"] if entry["images"] == ["example/new:1"]
+        )
+        self.assertEqual(
+            ["infra/example/docker-compose-dev.yml"],
+            added_entry["compose_files"],
+        )
+
+    def test_standard_compose_filename_is_in_source_universe(self) -> None:
+        baseline = self.run_sync()
+        self.assertEqual(0, baseline.returncode, baseline.stderr)
+        added = self.root / "infra/example/compose.yaml"
+        added.write_text("services:\n  new:\n    image: example/standard:1\n")
+        subprocess.run(
+            ["git", "add", "infra/example/compose.yaml"],
+            cwd=self.root,
+            check=True,
+        )
+        before = self.registry.read_bytes()
+        check = self.run_sync("--check")
+        self.assertEqual(1, check.returncode)
+        self.assertIn("out of sync", check.stderr)
+        self.assertEqual(before, self.registry.read_bytes())
+
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        body = json.loads(self.registry.read_text())
+        added_entry = next(
+            entry
+            for entry in body["entries"]
+            if entry["images"] == ["example/standard:1"]
+        )
+        self.assertEqual(
+            ["infra/example/compose.yaml"],
+            added_entry["compose_files"],
+        )
+
+    def test_duplicate_repository_ownership_fails_closed(self) -> None:
+        body = json.loads(self.registry.read_text())
+        duplicate = {**body["entries"][0], "component": "Duplicate"}
+        body["entries"].append(duplicate)
+        self.registry.write_text(json.dumps(body))
+        self.assert_rejected_without_write("duplicate repository ownership")
+
+    def test_removed_repository_requires_projection_then_write_removes_it(
+        self,
+    ) -> None:
+        self.compose.write_text("services: {}\n")
+        before = self.registry.read_bytes()
+        check = self.run_sync("--check")
+        self.assertEqual(1, check.returncode)
+        self.assertEqual(before, self.registry.read_bytes())
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        self.assertEqual([], json.loads(self.registry.read_text())["entries"])
+        self.assertEqual(0, self.run_sync("--check").returncode)
+
+    def test_local_custom_repository_is_explicitly_classified(self) -> None:
+        self.compose.write_text("services:\n  app:\n    image: hy-home/app:2-local\n")
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        entry = json.loads(self.registry.read_text())["entries"][0]
+        self.assertEqual("local-custom", entry["classification"])
+        self.assertEqual(["hy-home/app:2-local"], entry["images"])
+
+    def test_distinct_versions_preserve_exact_source_groups(self) -> None:
+        second = self.root / "infra/second/docker-compose.yml"
+        second.parent.mkdir()
+        second.write_text("services:\n  app:\n    image: example/app:3\n")
+        subprocess.run(
+            ["git", "add", "infra/second/docker-compose.yml"],
+            cwd=self.root,
+            check=True,
+        )
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        entry = json.loads(self.registry.read_text())["entries"][0]
+        self.assertEqual(["example/app:2", "example/app:3"], entry["images"])
+        self.assertEqual(
+            [
+                {
+                    "compose_file": "infra/example/docker-compose.yml",
+                    "images": ["example/app:2"],
+                },
+                {
+                    "compose_file": "infra/second/docker-compose.yml",
+                    "images": ["example/app:3"],
+                },
+            ],
+            entry["sources"],
+        )
+
+    def test_multiple_versions_keep_exact_authored_source_group(self) -> None:
         self.compose.write_text(
             "services:\n  app:\n    image: example/app:1\n"
             "  second:\n    image: example/app:2\n"
         )
-        self.assert_rejected_without_write("ambiguous")
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        entry = json.loads(self.registry.read_text())["entries"][0]
+        self.assertEqual(["example/app:1", "example/app:2"], entry["images"])
+        self.assertEqual(
+            [
+                {
+                    "compose_file": "infra/example/docker-compose.yml",
+                    "images": ["example/app:1", "example/app:2"],
+                }
+            ],
+            entry["sources"],
+        )
+        self.assertEqual(0, self.run_sync("--check").returncode)
 
     def test_yaml_service_images_exclude_comment_and_extension_decoys(self) -> None:
         self.compose.write_text(
@@ -776,6 +1164,20 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertEqual(0o640, self.registry.stat().st_mode & 0o777)
         self.assertEqual(0, self.run_sync("--check").returncode)
 
+    def test_dry_run_previews_exact_image_and_source_change(self) -> None:
+        before = self.registry.read_bytes()
+        result = self.run_sync("--dry-run")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn(
+            (
+                "change Synthetic "
+                "source=infra/example/docker-compose.yml "
+                "old=example/app:1 new=example/app:2"
+            ),
+            result.stdout,
+        )
+        self.assertEqual(before, self.registry.read_bytes())
+
     def test_argument_validation_rejects_extra_arguments(self) -> None:
         before = self.registry.read_bytes()
         for arguments in (("--bad",), ("--check", "extra"), ("--dry-run", "--check")):
@@ -845,17 +1247,28 @@ class TechStackSynchronizationTests(unittest.TestCase):
         )
 
     def test_registry_shape_and_nonimage_metadata_fail_closed(self) -> None:
+        valid = json.loads(self.registry.read_text())
         for invalid in (
-            {"entries": []},
-            {"entries": [{"component": "Synthetic", "images": "example/app:1"}]},
+            {**valid, "entries": "invalid"},
             {
+                **valid,
+                "entries": [
+                    {
+                        "component": "Synthetic",
+                        "images": "example/app:1",
+                        "compose_files": ["infra/example/docker-compose.yml"],
+                    }
+                ],
+            },
+            {
+                **valid,
                 "entries": [
                     {
                         "component": "Synthetic",
                         "images": ["example/app:1"],
-                        "compose_files": [],
+                        "compose_files": "infra/example/docker-compose.yml",
                     }
-                ]
+                ],
             },
         ):
             with self.subTest(invalid=invalid):
@@ -864,7 +1277,12 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.write_registry()
         body = json.loads(self.registry.read_text())
         self.registry.write_text(json.dumps({**body, "description": "example/app:1"}))
-        self.assert_rejected_without_write("non-image")
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(
+            "example/app:1",
+            json.loads(self.registry.read_text())["description"],
+        )
 
     def test_missing_default_and_path_escape_fail_closed(self) -> None:
         self.compose.write_text("services:\n  app:\n    image: ${IMAGE}\n")
@@ -873,7 +1291,16 @@ class TechStackSynchronizationTests(unittest.TestCase):
         body = json.loads(self.registry.read_text())
         entry = {**body["entries"][0], "compose_files": ["../compose.yml"]}
         self.registry.write_text(json.dumps({**body, "entries": [entry]}))
-        self.assert_rejected_without_write("compose")
+        before = self.registry.read_bytes()
+        check = self.run_sync("--check")
+        self.assertEqual(1, check.returncode)
+        self.assertEqual(before, self.registry.read_bytes())
+        write = self.run_sync()
+        self.assertEqual(0, write.returncode, write.stderr)
+        self.assertEqual(
+            ["infra/example/docker-compose.yml"],
+            json.loads(self.registry.read_text())["entries"][0]["compose_files"],
+        )
 
 
 if __name__ == "__main__":

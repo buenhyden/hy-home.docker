@@ -38,7 +38,7 @@ OpenBao 상시 서비스의 선언, legacy Vault 전환 경계, Agent 출력 계
 
 ## Tech Stack
 
-실행 이미지·profile·마운트의 원본은 [OpenBao Compose](openbao/docker-compose.yml)와 [Vault Compose](vault/docker-compose.yml)다. [Curated version projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
+실행 이미지·profile·마운트의 원본은 [OpenBao Compose](openbao/docker-compose.yml)와 [Vault Compose](vault/docker-compose.yml)다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
 
 ## Configuration
 

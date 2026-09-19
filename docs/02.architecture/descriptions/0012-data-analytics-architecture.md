@@ -94,7 +94,7 @@ graph LR
 
 ### Infrastructure Strategy
 
-- **Networking**: `infra_net` 내부 통신만 허용하며, 외부 접근은 Gateway Tier의 Reverse Proxy를 통해서만 가능.
+- **Networking**: 모든 서비스는 `infra_net`을 사용하지만 호스트 노출 방식은 서비스별 Compose 선언을 따른다. OpenSearch와 OpenSearch Dashboards HTTP 경로는 Traefik을 사용한다. ksqlDB는 `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}`, StarRocks FE는 `9030:9030`과 `8030:8030`, StarRocks BE는 `8040:8040`, OpenSearch cluster의 node1은 Performance Analyzer `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`을 호스트에 게시한다. 이 포트들은 Gateway 전용 노출로 간주하지 않는다.
 - **Storage Bindings**:
   - InfluxDB, ksqlDB, OpenSearch, OpenSearch Dashboards, StarRocks FE/BE는 bind-backed named volume을 사용한다.
   - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/ksql`, `${DEFAULT_DATA_DIR}/opensearch`, `${DEFAULT_DATA_DIR}/starrocks` 계열이다.
@@ -141,4 +141,4 @@ The existing infrastructure strategy section defines the deployment boundary for
 - **Specs**: [spec.md](0012-data-analytics-architecture.md)
 - **Guides**: [README.md](../../05.operations/catalog/04-data/README.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

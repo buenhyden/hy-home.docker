@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -44,8 +44,8 @@ Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데�
 
 | Category   | Technology                           | Notes                      |
 | :--------- | :----------------------------------- | :------------------------- |
-| Engine     | `cassandra:5.0.9`                    | Main Data Node             |
-| Monitoring | `bitnami/cassandra-exporter:2.3.11` | Metrics Collection         |
+| Engine     | Compose-declared Cassandra image       | Main Data Node             |
+| Monitoring | Compose-declared Cassandra exporter image | Metrics Collection    |
 | Network    | `infra_net`                          | Internal Traffic Isolation |
 | Resource   | `template-stateful-high`             | High Performance Profile   |
 
@@ -63,7 +63,7 @@ cassandra/
 | --- | --- |
 | Purpose | Apache Cassandra service leaf in `04-data`; unconditional root include, profile-selected; services: `cassandra-node1`, `cassandra-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `CASSANDRA_SEEDS`, `CASSANDRA_PASSWORD_SEEDER`, `CASSANDRA_USER`, `CASSANDRA_PASSWORD_FILE`, `MAX_HEAP_SIZE`, `HEAP_NEWSIZE`; profiles: `cassandra`, `obs` |
+| Config values | env keys are Compose-owned; exact profile for node and exporter: `cassandra` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
@@ -104,6 +104,8 @@ cassandra/
 
 ## Validation
 
+Classification is `LAB`; this is a single data node, not a quorum or HA cluster. Recovery binds a tagged snapshot to schema, keyspace/replication, topology/token, version, SSTables and checksums, then restores into an empty compatible node with `sstableloader` or `nodetool refresh`. Owning artifacts are `GDE-0025`, `POL-0025`, and `RUN-0025`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Cassandra.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking Cassandra documentation ready.
 
@@ -122,4 +124,4 @@ cassandra/
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

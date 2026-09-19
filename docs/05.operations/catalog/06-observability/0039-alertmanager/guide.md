@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
 - "POL-0039"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - alertmanager
 created: "2026-05-10"
 ---
 
@@ -87,9 +90,17 @@ created: "2026-05-10"
 - **Route drift**: `group_by`, `repeat_interval`, receiver name을 바꾸면 policy와 runbook evidence도 함께 갱신해야 한다.
 - **Direct access assumption**: 외부 UI 접근은 Traefik protected route와 SSO middleware를 통한다. 내부 compose network에서는 `alertmanager:9093`를 사용한다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `alertmanager` is a `HOME` alert-routing service selected by `obs`/`alerting`; [observability Compose](../../../../../infra/06-observability/docker-compose.yml), the mounted config template, and entrypoint are authoritative.
+- **Flow/dependencies/security**: Prometheus sends alerts over `infra_net`; Alertmanager groups, inhibits, and routes them to approved SMTP/Slack receivers. Traefik protects its UI. The entrypoint renders credentials from `smtp_username`, `smtp_password`, and `slack_webhook` Docker Secrets into a temporary runtime config; never render or archive that file as ordinary evidence.
+- **State/resources**: `alertmanager-data:/alertmanager` retains silences and the notification log. Its loss does not delete Prometheus alerts, but it can repeat notifications or lose silences. Compose limits are source configuration, not measured headroom.
+- **Normal use/lifecycle**: from root run `docker compose --profile obs config --quiet`, validate the source config without printing rendered secrets, then start/reload only after receiver tests. Back up the stopped data volume plus source template and secret references; upgrade one pinned image at a time and verify grouping, inhibition, silence retention, and a controlled notification.
+- **Upstream/license**: follow official [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/). Alertmanager is Apache-2.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager`
+- `docker compose --profile obs ps alertmanager`
 - `docker logs --tail=100 infra-alertmanager`
 - `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
@@ -106,7 +117,9 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

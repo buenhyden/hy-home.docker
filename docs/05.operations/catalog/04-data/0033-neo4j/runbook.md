@@ -1,10 +1,10 @@
 ---
 title: "Neo4j Health and Recovery Triage Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0033"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: Triage root-active Neo4j service health, route assumptions, secret-backed authentication, and evidence capture without destructive data actions.
 
-이 런북은 `neo4j` 서비스가 unhealthy, stopped, route failure, or authentication failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. offline dump/load, password rotation, data volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
+이 런북은 health triage와 별도 승인 후 수행할 Community offline dump의 격리 복원 rehearsal 계약을 제공한다. 이번 변경에서 dump/load나 database stop은 실행하지 않았다.
 
 ### Purpose
 
@@ -45,7 +45,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile graph config --quiet neo4j
+   docker compose --profile graph config --quiet
    ```
 
 2. 서비스 상태를 확인한다.
@@ -89,20 +89,29 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 - **Logs**: `docker compose logs --tail=120 neo4j`
 - **Health**: compose healthcheck and container-local `cypher-shell RETURN 1`
 - **Route**: Traefik labels on `neo4j`
-- **Config**: `docker compose --profile graph config --quiet neo4j`
+- **Config**: `docker compose --profile graph config --quiet`
 
 ### Safe Rollback or Recovery Procedure
 
 1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
 2. Runtime recovery in this runbook is limited to compose `up -d neo4j` after evidence capture.
-3. N/A — no verified offline dump/load, password rotation, data restore, or volume rollback procedure is documented yet.
+3. 실패한 isolated target과 전용 volume을 폐기한다. source volume과 dump는 변경하지 않는다.
+
+### Planned Isolated Restore Rehearsal
+
+1. 사전 승인과 downtime window를 확보하고 database name, Community engine version, store format, schema/index/constraint inventory, label/relationship/count invariants, free space를 기록한다. password는 기록하지 않는다.
+2. source database를 정상 offline 상태로 전환한 뒤 해당 Community version의 `neo4j-admin database dump`로 named database dump를 생성하고 checksum/manifest와 함께 보호한다. online Enterprise backup 명령을 사용하거나 live store files를 복사하지 않는다.
+3. production network/volume을 공유하지 않는 fresh compatible Community target과 별도 test password를 준비한다.
+4. target database가 없는 상태에서 `neo4j-admin database load`로 dump를 적재하고 target만 시작한다. partial/failed load target은 재사용하지 않는다.
+5. database online state, constraints/indexes, label/relationship/count invariants, representative read-only Cypher, Browser/Bolt health를 검증한다.
+6. 실패하면 target을 승격하지 않고 폐기한다. production cutover와 password rotation은 별도 승인 사항이다.
 
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
+- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 
@@ -112,7 +121,7 @@ Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, 
 
 ## Rollback or Recovery
 
-N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If dump/load, password rotation, data mutation, or volume replacement is required, preserve evidence and escalate.
+데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이번 변경에서는 dump/load, password rotation, data mutation과 volume replacement를 실행하지 않았다.
 
 ## Escalation
 
@@ -126,7 +135,11 @@ Escalate to the owning operator when `cypher-shell RETURN 1` fails after restart
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Compose implementation: infra/04-data/specialized/neo4j/docker-compose.yml](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml)
+
+- [Neo4j backup and restore](https://neo4j.com/docs/operations-manual/current/backup-restore/)
+- [Neo4j backup planning and edition scope](https://neo4j.com/docs/operations-manual/current/backup-restore/planning/)
+- [Neo4j open-source licensing](https://neo4j.com/open-source-project/)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

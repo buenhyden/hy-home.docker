@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
 - "POL-0044"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - cadvisor
 created: "2026-05-17"
 ---
 
@@ -40,7 +43,8 @@ created: "2026-05-17"
 
 - Docker / Docker Compose 실행 환경
 - `infra/06-observability` 및 `scripts/` 수정 권한
-- Traefik `gateway-standard-chain` 및 `sso-*` middleware 준비
+- Traefik `gateway-standard-chain` and proxy `sso-*` middleware 준비,
+  plus native Keycloak clients for Grafana and Gatus
 
 ### Step-by-step Instructions
 
@@ -48,7 +52,11 @@ created: "2026-05-17"
    - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
    - service-local context: root networks/secrets를 선언한 임시 validation overlay를 함께 사용한다.
 2. Gateway/SSO 경계 정렬
-   - 공개 라우터(`prometheus`, `alloy`, `grafana`, `alertmanager`, `pushgateway`, `loki`, `tempo`, `pyroscope`, `cadvisor`)에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+   - Native OIDC routers `grafana` and `gatus` use
+     `gateway-standard-chain@file`; authentication stays in each application.
+   - Proxy-protected routers `prometheus`, `alloy`, `alertmanager`,
+     `pushgateway`, `loki`, `tempo`, `pyroscope`, and `cadvisor` use
+     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
 3. 의존성/헬스 보강
    - Alloy/Grafana의 Loki/Tempo 의존성을 `service_healthy`로 설정한다.
    - cAdvisor healthcheck(`/healthz`)를 추가한다.
@@ -63,10 +71,20 @@ created: "2026-05-17"
 
 ### Common Pitfalls
 
-- 일부 라우터만 SSO 체인을 적용해 관리 경로 노출이 발생하는 실수
+- Native and proxy-protected routers에 동일한 auth middleware를 일괄 적용해
+  native OIDC를 중복하거나 proxy protection을 누락하는 실수
 - `service_started` 의존성으로 부팅 race condition을 남기는 실수
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
+
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `node-exporter` and `cadvisor` are `HOME` host/container metric exporters selected by `obs`/`obs-host`/`dev`; [Compose](../../../../../infra/06-observability/docker-compose.yml) is authoritative.
+- **Flow/security**: Prometheus scrapes both over `infra_net`. node-exporter uses host PID and read-only root/proc/sys mounts; cAdvisor is privileged with host filesystem/device mounts including `/dev/kmsg`. These grants are the security boundary and must not be generalized as non-root isolation. cAdvisor's route remains protected; node-exporter is internal-only.
+- **State/secrets/resources**: neither exporter owns durable application data or Docker Secrets. Host metrics are observations, not backup content. CPU/memory declarations are source limits, not measured headroom.
+- **Normal use/lifecycle**: render from root, verify metrics endpoints internally, confirm Prometheus targets/labels, and compare cardinality/scrape cost before changing collectors. Upgrade one image at a time and verify host/container series continuity.
+- **Backup/recovery**: rebuild from tracked Compose; no service-state restore is required. Preserve dashboards/rules elsewhere and capture the pre-change target/series baseline.
+- **Upstream/license**: use [node_exporter](https://github.com/prometheus/node_exporter) and [cAdvisor](https://github.com/google/cadvisor) upstream release/security guidance. Both are Apache-2.0 licensed.
 
 ## Common Checks
 
@@ -86,9 +104,11 @@ created: "2026-05-17"
 
 ## Related Documents
 
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
 - [Official cAdvisor deployment and host access](https://github.com/google/cadvisor)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

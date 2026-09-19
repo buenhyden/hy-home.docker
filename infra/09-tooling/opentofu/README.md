@@ -29,13 +29,13 @@ Local service definitions and implementation navigation. Operational controls an
 
 ## Tech Stack
 
-Runtime pins belong to [Compose](docker-compose.yml) and its referenced build sources. The [version registry](../../../infra/tech-stack.versions.json) is a curated projection, not a deployment manifest.
+Runtime pins belong to [Compose](docker-compose.yml) and its referenced build sources. The [version registry](../../../infra/tech-stack.versions.json) is a derived Compose image projection, not a deployment manifest.
 
 ## Configuration
 
 | Service | Profiles | Networks | Host ports | Secret references |
 | --- | --- | --- | --- | --- |
-| `opentofu` | `tooling, iac` | `infra_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `opentofu` | `iac` | `infra_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:
 

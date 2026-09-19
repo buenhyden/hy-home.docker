@@ -4,11 +4,22 @@ version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
 - "POL-0036"
+implementation_services:
+  infra/05-messaging/kafka/docker-compose.yml:
+  - 'kafbat-ui'
+  - 'kafka-1'
+  - 'kafka-2'
+  - 'kafka-3'
+  - 'kafka-connect'
+  - 'kafka-exporter'
+  - 'kafka-init'
+  - 'kafka-rest-proxy'
+  - 'schema-registry'
 created: "2026-05-10"
 ---
 
@@ -16,96 +27,107 @@ created: "2026-05-10"
 
 ## Usage
 
-### Overview
+Kafka is an OPTIONAL event-streaming capability. No current HOME consumer proves
+that it should run continuously. The three brokers share one Docker host, so the
+`messaging-cluster` profile tests KRaft/replication behavior without providing
+host availability. The current implementation contains no second broker family.
 
-이 문서는 `05-messaging` Kafka 사용 가이드다. 현재 root `docker-compose.yml`은 `infra/05-messaging/kafka/docker-compose.yml`를 include해 단일 broker 개발 구성을 렌더링하고, `infra/05-messaging/kafka/docker-compose.yml`은 root network/secret context가 필요한 3 broker full compose로 유지한다.
+## Current implementation
 
-### Usage Type
+[`infra/05-messaging/kafka/docker-compose.yml`](../../../../../infra/05-messaging/kafka/docker-compose.yml)
+defines nine services:
 
-`system-guide | how-to | operational-reference`
+| Service | Role | Current selectors |
+| --- | --- | --- |
+| `kafka-1` | KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql` |
+| `kafka-2`, `kafka-3` | additional same-host brokers/controllers | `messaging-cluster` |
+| `schema-registry` | schema storage/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql` |
+| `kafka-connect` | connector runtime | `messaging`, `messaging-connect`, `messaging-admin` |
+| `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
+| `kafbat-ui` | administrative UI with native OIDC/RBAC | `messaging`, `messaging-admin` |
+| `kafka-exporter`, `kafka-init` | metrics and topic bootstrap | `messaging`, `messaging-broker`, `messaging-cluster` |
 
-### Target Audience
+`kafka-1-data`, `kafka-2-data`, `kafka-3-data`, and `kafka-connect-data` are
+bind-backed named volumes under `${DEFAULT_MESSAGE_BROKER_DIR}/kafka`. Broker
+listeners are currently `PLAINTEXT`, including published host listeners; there is
+no broker authentication or TLS. All services use `infra_net` and shared resource
+and health templates.
 
-- Developers
-- Operators
-- Data Engineers
-- AI Agents
+Kafbat renders its native `auth.type: OAUTH2` configuration into tmpfs, reads
+`kafbat_client_secret`, trusts the local CA and applies group-based RBAC. Its
+Traefik route uses `gateway-standard-chain@file`; the gateway is transport and
+header protection, while Kafbat itself performs authentication. No forwarding-auth gateway chain belongs on this native-OIDC route.
 
-### Purpose
+## Images, configuration and resource controls
 
-이 가이드는 Kafka deployment surface, topic 작업 경계, Schema Registry/Kafka Connect 접근 경로, 일반 점검 방법을 설명한다.
+The Compose file owns pinned Confluent Kafka/Schema/Connect/REST, Kafbat and Kafka
+exporter image families; repository Renovate may propose updates and the version
+projection is derived. Broker keys include `CLUSTER_ID`, `KAFKA_PROCESS_ROLES`,
+quorum/listener/advertised-listener/log/replication settings and node IDs. Schema,
+Connect and REST use their namespaced keys; Kafbat uses
+`KAFKA_CLUSTERS_0_*`, `DYNAMIC_CONFIG_ENABLED`, and `KAFBAT_OAUTH_CLIENT_ID` plus
+the client-secret file. Brokers and Connect extend high stateful templates;
+Schema, REST and Kafbat medium infrastructure templates; exporter low and init job
+low. All long-running services declare health checks.
 
-### Prerequisites
-
-- [Docker & Docker Compose](https://docs.docker.com/get-docker/)
-- Repository root에서 실행 가능한 `docker compose`
-- [infra/05-messaging/kafka README](../../../../../infra/05-messaging/kafka/README.md)
-- 3 broker 구성(`messaging-cluster` profile)을 서비스 compose 파일만으로 검증하려면 root `infra_net` 및 `kafbat_client_secret` context 또는 임시 validation overlay가 필요하다.
-
-### Step-by-step Instructions
-
-1. Deployment surface를 확인한다.
+## Static preflight and profile choice
 
 ```bash
-HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
+docker compose --env-file .env.example --profile messaging-cluster config --quiet
 ```
 
-현재 root messaging profile은 `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`, `rabbitmq`를 렌더링한다.
+Run from the repository root. The init job creates `infra-events` and
+`application-logs` with replication factor 3, so its bootstrap is valid only when
+three healthy brokers are available; do not treat the single-broker `messaging`
+selection as successful topic initialization without a separately approved fix.
+Starting services, creating topics or producing test records is runtime work.
 
-1. Kafka topic 작업은 실행 중인 broker 컨테이너 내부 CLI로 수행한다.
+## Backup, restore and upgrade boundary
 
-```bash
-docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
-docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --topic infra-events
-```
+Kafka recovery includes more than broker directories. Inventory topic data and
+configs, partition counts, consumer-group offsets, KRaft cluster metadata,
+Schema Registry `_schemas` history/IDs, Connect connector definitions and its
+config/offset/status topics. Prefer replay from an authoritative producer source
+or approved cross-cluster replication to a fresh isolated cluster. Raw broker
+log-directory reuse and live KRaft identity reuse are prohibited.
 
-`messaging-cluster` profile을 함께 선택하면 `kafka-2`/`kafka-3`이 합류해 `replication-factor=3` 토픽을 사용할 수 있다. `messaging` 또는 `dev`만 선택하면 `kafka-1` 단일 broker이므로 신규 토픽에 `replication-factor=3`을 요구하지 않는다.
+[RUN-0036](runbook.md) restores schemas before dependent records, recreates topic
+configuration, restores/repositions offsets, keeps connectors paused, and proves
+end offsets plus application consumption before cutover. An image or protocol
+upgrade requires official compatibility review for Kafka, Confluent components,
+Kafbat, clients and stored formats, with a current recovery artifact and rollback.
 
-1. Schema Registry와 Kafka Connect는 내부 service DNS 또는 Traefik route로 확인한다.
+## License and source boundary
 
-```bash
-docker inspect --format '{{json .State.Health}}' schema-registry
-docker inspect --format '{{json .State.Health}}' kafka-connect
-```
+Apache Kafka and Kafbat are Apache-2.0 projects. Schema Registry, Connect and REST
+images come from Confluent and require separate current license/edition review;
+Cluster Linking or other edition-specific features are not declared or assumed.
 
-- Internal endpoints: `http://schema-registry:8081`, `http://kafka-connect:8083`, `http://kafka-rest-proxy:8082`
-- Gateway routes: `https://schema-registry.${DEFAULT_URL}`, `https://kafka-connect.${DEFAULT_URL}`, `https://kafka-rest.${DEFAULT_URL}`
-- Kafbat UI route: `https://kafbat-ui.${DEFAULT_URL}` with `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
+## Official references
 
-1. Kafka Connect connector 등록/변경은 정책 검토 후 수행한다.
-   - connector secret 값은 문서나 shell history에 남기지 않는다.
-   - Connector runtime state는 `kafka-connect` health와 logs를 함께 확인한다.
-
-### Common Pitfalls
-
-- `messaging`/`dev` profile만 선택한 단일 broker 구성을 3 broker HA 구성으로 오해하는 경우
-- service-local compose를 root network/secret context 없이 standalone으로 검증하려는 경우
-- dev single broker에서 `replication-factor=3` 토픽을 생성하려는 경우
-- compose에 선언되지 않은 전역 retention 값을 current truth로 단정하는 경우
+- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Kafka KRaft](https://kafka.apache.org/documentation/#kraft)
+- [Kafka license](https://kafka.apache.org/licensing)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Kafbat configuration](https://ui.docs.kafbat.io/configuration/configuration-file)
+- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
+- [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
 
 ## Common Checks
 
-- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-- `docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092`
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [Kafka Operations Policy](policy.md) (`POL-0036`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Policy](policy.md) (`POL-0036`), [Runbook](runbook.md) (`RUN-0036`)
+- Artifact: `GDE-0036`; governing policy: `POL-0036`.
+- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
 - [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
-- [Infra README](../../../../../infra/05-messaging/kafka/README.md)
+- [Cluster recovery runbook](runbook.md)
+- [Messaging architecture](../../../../02.architecture/descriptions/0005-messaging-architecture.md)

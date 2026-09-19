@@ -1,147 +1,96 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
 - "POL-0066"
+implementation_services:
+  infra/09-tooling/sonarqube/docker-compose.yml:
+  - sonarqube
 created: "2026-05-10"
 ---
 
 # SonarQube Usage Guide
 
-<!-- [ID:09-tooling:sonarqube] -->
-
 ## Usage
 
-### Overview
+### Purpose and classification
 
-이 문서는 SonarQube를 사용해 코드 품질과 보안 분석을 수행하는 방법을 설명한다. 프로젝트 생성, 로컬 scan, quality gate 확인은 guide에서 다루고, 운영 통제와 복구 절차는 policy/runbook으로 분리한다.
+SonarQube Community Build is an on-demand **OPTIONAL** code-quality/SAST service
+under `tooling` and `sast`, excluded from HOME. This repository does not define a
+universal merge quality gate in this service guide; project/CI owners decide how
+analysis results gate delivery.
 
-### Usage Type
+### Current implementation and flow
 
-`system-guide | how-to`
+- [SonarQube Compose](../../../../../infra/09-tooling/sonarqube/docker-compose.yml)
+  owns the runtime image, profiles, DB secret, JVM heap, routes, volumes, and health.
+- Browser/scanner -> Traefik -> SonarQube. The route uses OAuth2 Proxy
+  ForwardAuth. No tracked SonarQube SAML/OIDC configuration proves native
+  Keycloak login or group provisioning; SonarQube users, permissions, and analysis
+  tokens remain application-owned.
+- PostgreSQL at `${POSTGRES_MNG_HOSTNAME}` stores authoritative projects,
+  settings, issues, users, and analysis state. `/opt/sonarqube/data` stores local
+  search indexes and `/opt/sonarqube/logs` stores logs. The Compose leaf has no
+  persistent extensions/plugins/config volume.
+- `sonarqube_db_password` is file-mounted. Analysis tokens are created in
+  SonarQube and never belong in Compose or evidence.
+- Both web and search JVMs are capped at 512 MiB heap by tracked environment;
+  the service inherits `template-stateful-high`.
+- `/api/system/health` proves process health only; it does not prove DB backup,
+  index consistency, scanner authorization, or gateway login.
 
-### Target Audience
+### Normal use
 
-- Operators
-- Developers
-- Contributors
-- AI Agents
+1. Validate `docker compose --profile sast config --quiet` from the root and
+   verify the management PostgreSQL dependency separately.
+2. Start only SonarQube, wait for system health, then verify gateway access and
+   SonarQube permissions as separate controls.
+3. Use an expiring project/global analysis token with the minimum permission.
+   Keep it out of shell history and logs.
+4. Run a scanner for the intended project and record project key, commit, quality
+   result, and task ID without token or source content.
 
-### Purpose
+### Backup, restore, and upgrade
 
-- SonarQube Usage Guide의 운영 사용 맥락을 빠르게 파악한다.
-- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
-- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+The database is the backup authority. Official guidance uses database-native
+backup and rebuilds Elasticsearch indexes after restore. A consistent recovery
+also preserves tracked config, DB secret custody, and any externally installed
+plugins/config not represented here. Restore to an isolated DB, start SonarQube
+with local indexes absent, allow reindexing, and verify projects/settings/users
+and representative scans. Deleting active indexes is never a first-line repair.
 
-### Prerequisites
-
-- Repository checkout 접근 가능
-- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
-- 필요한 경우 Docker/Docker Compose 명령 실행 권한
-
-### Step-by-step Instructions
-
-1. 이 문서의 overview와 usage context를 확인한다.
-2. 관련 service, configuration, 또는 documentation target을 식별한다.
-3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
-4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
-
-### Overview
-
-SonarQube is the platform's central hub for static application security testing (SAST) and code quality management. It provides a visual dashboard for identifying technical debt, vulnerabilities, and code smells across all projects.
-
-### Architecture Context
-
-- **Endpoint**: `https://sonarqube.${DEFAULT_URL}`
-- **Persistence**: External PostgreSQL (`mng-db`)
-- **Indexing**: Integrated ElasticSearch
-- **Authentication**: Keycloak SSO
-
-### How-to Procedures
-
-#### 1. Access and Authentication
-
-1. Navigate to `https://sonarqube.${DEFAULT_URL}`.
-2. Click **Log in**.
-3. Select **Keycloak** (if configured) or use your platform credentials.
-4. Developers should automatically have "Execute Analysis" permissions for their designated projects.
-
-#### 2. Creating a New Project
-
-1. Click **Create Project** -> **Manually**.
-2. Enter a **Project key** (e.g., `hy-home:my-service`).
-3. Set the **Main branch name** (usually `main`).
-4. Generate a **Project Token** for CI/CD integration.
-
-#### 3. Running a Local Scan
-
-Standard scan using the `sonar-scanner` CLI:
-
-```bash
-
-## Set environment variables
-read -rsp "Sonar token: " SONAR_TOKEN; echo
-export SONAR_TOKEN
-export SONAR_HOST_URL="https://sonarqube.${DEFAULT_URL}"
-
-## Execute scan
-sonar-scanner \
-  -Dsonar.projectKey=hy-home:my-service \
-  -Dsonar.sources=. \
-  -Dsonar.host.url=${SONAR_HOST_URL}
-
-unset SONAR_TOKEN
-```
-
-### Troubleshooting & Pitfalls
-
-#### elasticsearch.max_map_count
-
-**Symptom**: SonarQube fails to start or crashes during startup.
-
-**Solution**: Ensure the host has `vm.max_map_count=262144`.
-
-```bash
-sysctl -w vm.max_map_count=262144
-```
-
-#### Memory Exhaustion
-
-**Symptom**: "Quality Gate" background tasks failing with `OutOfMemoryError`.
-
-**Solution**: Adjust `SONAR_SEARCH_JAVAOPTS` and `SONAR_WEB_JAVAOPTS` in `docker-compose.yml`.
+Before upgrade, back up/verify the DB, read all release/upgrade notes, confirm DB
+and host prerequisites, inventory plugins, and test on a restored copy. Rollback
+requires both the previous image and the pre-upgrade database; image rollback
+alone cannot undo schema migration. No backup/restore/upgrade ran here.
 
 ## Common Checks
 
+- `docker compose --profile sast config --quiet`
+- `docker compose --profile sast config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- Runtime approval 후 service가 실행 중이면 `docker compose exec sonarqube curl -f http://localhost:${SONARQUBE_PORT:-9000}/api/system/status`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Use the [runbook](runbook.md) for DB failures, indexing recovery, analysis queues,
+or upgrades.
 
 ## Traceability
 
-- Declared parent: [SonarQube Operations Policy](policy.md) (`POL-0066`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0066`), [Runbook](runbook.md) (`RUN-0066`)
+- [Policy](policy.md) (`POL-0066`)
+- [Runbook](runbook.md) (`RUN-0066`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
+- [SonarQube backup and restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
+- [SonarQube upgrade guide](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)
+- [Community Build authentication capabilities](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
+- [Community Build Web API authentication](https://docs.sonarsource.com/sonarqube-community-build/extension-guide/web-api)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0061"
 parent_ids:
@@ -14,82 +14,62 @@ created: "2026-05-17"
 
 # k6 Operations Policy
 
-<!-- [ID:09-tooling:k6] -->
-> k6 인프라 유닛을 활용한 성능 테스트 수행 및 인프라 운영 정책입니다.
-
----
-
 ## Overview
 
-이 문서는 로드 테스팅 수행 시의 거버넌스, 리소스 할당 최소 기준, 그리고 성능 지표 데이터의 보안 및 보존 정책을 정의합니다.
-
-### Policy Goals
-
-- **운영 서비스 보호**: 테스트 수행이 실제 서비스 사용자에게 영향을 미치지 않도록 관리.
-- **데이터 보안**: 지표 전송 과정에서의 인증 및 기밀성 보장.
-- **거버넌스 준수**: 승인된 시나리오와 정해진 윈도우에서의 테스팅 문화 정착.
+k6 is an explicitly selected `testing` job. A live run creates traffic against
+another system and therefore requires target-owner approval and recorded limits.
 
 ## Policy Scope
 
-This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
-
-### Target Audience
-
-- Operator
-- SRE
-- Security Engineer
+This policy covers the `k6` service, its read-only scenario mount, remote-write
+output, image upgrade, and retained run evidence.
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
-
-### Operational Standards
-
-#### 1. 테스팅 수행 윈도우
-
-- **Standard Test**: 평시 상시 수행 가능 (낮은 부하).
-- **Stress/Soak Test**: 백업 및 정기 정검 시간대(02:00 ~ 05:00)에만 수행 권장.
-
-#### 2. 리소스 및 비용 관리
-
-- k6 leaf는 `k6` 단일 service로 유지하며, 승인된 런타임 외에는 기동하지 않는다. `k6`는 `testing` profile만 선언하므로 `tooling` 선택으로는 기동되지 않는다.
-- Locust 결과와 테스트 evidence의 보존은 관련 Task/Incident 정책을 따른다.
-
-#### 3. 보안 표준
-
-- Test target credential은 compose에 추가하지 않고 별도 승인된 secret owner를 따른다.
-- 현재 compose에는 k6 Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
-
-### Monitoring Requirements
-
-- **Alerting**: 테스트 실행 중 Gateway의 응답 성공률이 95% 이하로 떨어질 경우 즉시 중단 경고 발생.
-- **Logging**: 테스트 실행 기록(시작 시간, 시나리오명, 수행자, target, 결과 요약)을 task 또는 incident evidence에 기록한다.
-
-## Exceptions
-
-N/A — 현재 승인된 예외 없음.
+- Select only `testing`; `tooling` must not start k6.
+- Name the `k6` service in live commands. Do not start a broad profile as a
+  shortcut for one test.
+- Record target, script revision, test ID, traffic model, maximum duration, stop
+  conditions, owner approval, and result. Credentials and response bodies stay
+  out of scripts, logs, and evidence.
+- Stop immediately on the approved target SLI threshold, unexpected endpoints,
+  authorization failures, or saturation outside the agreed test boundary.
+- Preserve `restart: "no"`, read-only scripts, no published ports, and the
+  explicit remote-write destination. Prometheus availability is checked before a
+  run when metric retention is required.
+- Treat scenarios as Git-backed state and the metrics backend as the authority
+  for retained time series. The job container is disposable.
+- Upgrade by immutable image pin, release-note review, disposable-target canary,
+  and rollback evidence. Do not infer compatibility from a successful pull.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
-- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
+```bash
+bash scripts/hardening/check-all-hardening.sh 09-tooling
+HYHOME_COMPOSE_PROFILES=testing bash scripts/validation/validate-docker-compose.sh
+```
+
+Runtime evidence is valid only for an approved test and must include the job exit
+code plus target-side signals.
+
+## Exceptions
+
+Any deviation from the reviewed target, traffic model, duration, stop conditions,
+or credential boundary needs target-owner approval with an expiry and rollback.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review before every target or scenario change and whenever the k6 image,
+remote-write contract, or receiving dashboard changes.
 
 ## Traceability
 
 - Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0061`), [Runbook](runbook.md) (`RUN-0061`)
+- Subject peers: [Guide](guide.md), [Runbook](runbook.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [k6 Compose source](../../../../../infra/09-tooling/k6/docker-compose.yml)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
+- [k6 test lifecycle](https://grafana.com/docs/k6/latest/using-k6/test-lifecycle/)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)

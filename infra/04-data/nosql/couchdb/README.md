@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -44,8 +44,8 @@ CouchDB는 데이터 동기화 및 복제에 특화된 문서 지향 NoSQL 데�
 
 | Category   | Technology                 | Notes                      |
 | :--------- | :------------------------- | :------------------------- |
-| Engine     | `couchdb:3.5.2`            | Cluster Nodes              |
-| Init Job   | `curlimages/curl:8.22.0`   | Bootstrap Automation       |
+| Engine     | Compose-declared CouchDB image | Cluster Nodes             |
+| Init Job   | Compose-declared curl image    | Bootstrap Automation      |
 | Proxy      | `traefik`                  | HTTP API & TLS Termination |
 | Network    | `infra_net`                | Erlang Distribution        |
 
@@ -104,6 +104,8 @@ couchdb/
 
 ## Validation
 
+Classification is `LAB`; three members on one host do not provide host-level HA. Recovery prefers replication to a fresh compatible cluster. A file recovery requires a quiesced coherent set including configuration, `_dbs`, system databases, shards and indexes, with indexes restored before database files. Owning artifacts are `GDE-0026`, `POL-0026`, and `RUN-0026`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect CouchDB.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking CouchDB documentation ready.
 
@@ -122,4 +124,4 @@ couchdb/
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

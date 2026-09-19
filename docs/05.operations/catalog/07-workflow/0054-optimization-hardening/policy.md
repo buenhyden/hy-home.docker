@@ -32,7 +32,7 @@ created: "2026-05-10"
 
 - **Required**:
   - Airflow/Flower/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - `dedicated-valkey` profile을 선택한 Airflow는 `airflow-valkey` `service_healthy` dependency를 사용한다.
+  - `dedicated-valkey` profile은 `airflow-valkey`를 기동할 뿐이다. 실제 전환에는 `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`의 matching pair가 필요하다.
   - `dedicated-valkey`를 선택하지 않은 경우의 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
   - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, `dedicated-valkey` profile을 선택하지 않았을 때의 `mng-valkey` broker 경계를 명시한다.
@@ -83,7 +83,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

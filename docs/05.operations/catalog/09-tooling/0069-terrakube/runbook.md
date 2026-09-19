@@ -1,10 +1,10 @@
 ---
-title: "Terrakube Runbook"
-version: "1.0.0"
+title: "Terrakube Recovery Runbook"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -12,150 +12,80 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Terrakube Runbook
-
-<!-- [ID:09-tooling:terrakube] -->
-
-## Overview
-
-이 런북은 `docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
-
-> Procedures for recovering the Terrakube platform from executor failures, sync drift, and database corruption.
+# Terrakube Recovery Runbook
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-### Symptoms
-
-- UI shows jobs stuck in "Pending" or "Running" for hours.
-- Login redirection loops between Terrakube and Keycloak.
-- "Error: S3 Storage not reachable" in API logs.
-- Workspace state is "Locked" permanently in the UI.
+Use for API/UI/executor failure, stuck runs, OIDC failure, missing state/output,
+or an approved backup/restore/upgrade. Work from the repository root.
 
 ## Procedure
 
-### Diagnostic Steps
-
-#### 1. Check API and Executor Health
-
-Terrakube provides Spring Actuator endpoints for health checks.
-
-```bash
-curl -I https://terrakube-api.${DEFAULT_URL}/actuator/health
-```
-
-#### 2. Verify Docker Socket Access
-
-The executor requires a healthy Docker socket to spawn Terraform runs.
-
-```bash
-docker exec terrakube-executor docker info
-```
-
-### Recovery Procedures
-
-#### 1. Cleaning Up Hung Executors
-
-If the UI shows a job as running but the host has no associated container:
-
-1. Locate the `terrakube-executor` logs to find the orphan job ID.
-2. Manually kill the subprocess if it exists on the host.
-3. Restart the executor service to reset internal queue state:
+1. Freeze new Terrakube runs. Record workspace/run IDs, VCS ref, state key,
+   component status, and whether any apply is active. Do not stop an active apply
+   until its remote effect and recovery owner are understood.
+2. Validate and inspect bounded state:
 
    ```bash
-   cd ${DEFAULT_TOOLING_DIR}/terrakube
-   docker compose restart terrakube-executor
+   docker compose --profile iac config --quiet
+   docker compose --profile iac ps terrakube-api terrakube-ui terrakube-executor
+   docker compose --profile iac logs --tail=200 terrakube-api terrakube-ui terrakube-executor
    ```
 
-#### 2. Resolving OIDC / DEX Auth Loops
+3. Classify before restarting:
+   - UI only: inspect gateway and OIDC redirect/claims.
+   - API DB errors: inspect `mng-pg`; do not retry migrations repeatedly.
+   - missing state/output: inspect MinIO bucket/key and DB reference without
+     downloading state into logs.
+   - stuck execution: inspect Valkey coordination and executor/Docker access;
+     confirm remote provider action before cancellation or replay.
+4. Restart only the failed component after the dependency and active-run check.
+   Replaying a job or apply requires separate authorization.
 
-If users cannot login despite valid Keycloak credentials:
+### Coordinated backup and isolated restore
 
-1. Check the `terrakube-api` log for "Invalid Token" or "JWK extraction failure".
-2. Ensure the `OAUTH2_PROXY_CLIENT_ID` and Secrets match between Keycloak and the `docker-compose.yml`.
-3. Restart the API server to refresh the OIDC configuration.
+1. Block scheduling, wait for or safely resolve active runs, then stop API/UI and
+   executor so no Terrakube writer remains.
+2. Use the PostgreSQL owner's online logical/physical backup procedure and the
+   MinIO owner's versioned object backup for `tfstate`. Record one recovery-point
+   receipt joining DB backup ID, object snapshot/version inventory, source commit,
+   and Keycloak/client configuration. Capture no secret/state contents.
+3. Restore both stores to isolated targets. Use replacement secrets and disable
+   provider, VCS webhook, and executor egress.
+4. Start the restored component set against only the isolated stores. Verify
+   organization/workspace/run counts, referenced state/output keys, OIDC role
+   mapping, and a non-applying plan. Do not point the restored executor at live accounts.
+5. Promote only after review; otherwise discard the isolated copy and leave the
+   source unchanged.
 
-#### 3. Manual Workspace Unlock
+### Upgrade
 
-If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
-
-1. Connect to the `terrakube` database in PostgreSQL.
-2. Update the workspace record status manually.
-
-   ```sql
-   UPDATE workspace SET locked = false WHERE name = '<workspace_name>';
-   ```
-
-> [!WARNING]
-> Manual DB modifications are high-risk. Always back up the `terrakube` database before running raw SQL.
-
-### Checklist
-
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
-
-### Steps
-
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
-
-### Verification Steps
-
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
-
-### Observability and Evidence Sources
-
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+Complete the coordinated backup, review every migration/release note, test the
+new API/UI/executor against restored stores, then upgrade the compatible set.
+On failure, stop the new set and restore both DB and objects with the prior images.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+Record sanitized component health, run/workspace counts, backup IDs/checksums,
+state-key counts, release/source commit, non-applying plan result, and final state.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+These coordinated backup/restore and upgrade steps are **planned but unexecuted**.
+Do not claim recovery from a component restart or one-store snapshot.
 
 ## Escalation
 
-- Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
-
-- **P1**: Total loss of the `tfstate` bucket content in MinIO -> Follow Disaster Recovery Plan.
-- **P2**: Intermittent executor failures or UI sync issues -> Follow manual restart and queue cleanup.
+Stop on an active/unknown apply, missing DB-object consistency, Docker-socket
+unexpected access, auth ambiguity, unavailable backup, or destructive migration.
 
 ## Traceability
 
-- Declared parent: [Operations: Terrakube Policy Usage Guide](guide.md) (`GDE-0069`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0069`), [Policy](policy.md) (`POL-0069`)
+- [Guide](guide.md) (`GDE-0069`)
+- [Policy](policy.md) (`POL-0069`)
+- [Terrakube Compose](../../../../../infra/09-tooling/terrakube/docker-compose.yml)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [Terrakube documentation](https://docs.terrakube.io/)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)

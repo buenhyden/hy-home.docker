@@ -45,6 +45,7 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 08-ai/
 ├── ollama/             # Inference engine (Go-based)
 ├── open-webui/         # Web interface and RAG logic
+├── comfyui/            # Image workflow UI
 └── README.md           # This file
 ```
 
@@ -63,7 +64,7 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ## Tech Stack
 
-Runtime image pins are declared in [Ollama Compose](ollama/docker-compose.yml) and [Open WebUI Compose](open-webui/docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+Ollama, Open WebUI and ComfyUI are owner-confirmed always-on HOME capabilities. Runtime image pins are declared in [Ollama Compose](ollama/docker-compose.yml), [Open WebUI Compose](open-webui/docker-compose.yml) and [ComfyUI Compose](comfyui/docker-compose.yml). The [derived Compose image projection](../tech-stack.versions.json) is a drift view.
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -79,6 +80,7 @@ Runtime image pins are declared in [Ollama Compose](ollama/docker-compose.yml) a
 | `ollama` | HTTP | `ai`, `dev` | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` and `ollama.${DEFAULT_URL}` |
 | `open-webui` | HTTP | `ai` | `chat.${DEFAULT_URL}` via Traefik; no host port is declared |
 | `ollama-exporter` | HTTP metrics | `ai`, `dev` | exposed on `${OLLAMA_EXPORTER_PORT}` inside `infra_net` |
+| `comfyui` | HTTP | `ai`, `ai-image` | `comfyui.${DEFAULT_URL}` plus declared loopback port |
 
 ## Configuration
 
@@ -95,6 +97,18 @@ docker compose exec ollama nvidia-smi
 # List loaded models
 docker compose exec ollama ollama list
 ```
+
+### Convergence service and command map
+
+Run from the repository root: `docker compose --profile ai config --quiet` for static preflight and `docker compose --profile ai up -d` for the approved HOME target.
+
+| Services | Class | Exact profiles |
+| --- | --- | --- |
+| `ollama`, `ollama-exporter` | HOME | `ai`, `ai-llm`, `ollama` |
+| `open-webui` | HOME | `ai`, `ai-llm` |
+| `comfyui` | HOME | `ai`, `ai-image` |
+
+The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0056` under `docs/05.operations/catalog/08-ai/0056-ollama/`, `GDE/POL/RUN-0057` under `.../0057-open-webui/`, and `GDE/POL/RUN-0081` under `.../0081-comfyui/`.
 
 ## Related Documents
 

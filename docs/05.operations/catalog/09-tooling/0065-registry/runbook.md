@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -14,90 +14,72 @@ created: "2026-05-17"
 
 # Docker Registry Runbook
 
-## Overview
-
-이 런북은 `docs/05.operations/catalog/09-tooling/0065-registry/runbook.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
-
-Procedure for recovering the local Docker registry in the `09-tooling` tier.
-
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
-
-### Symptoms
-
-- `Error: response from daemon: Get https://registry.hy-home.com/v2/: dial tcp ...`
-- Container `registry` is in `restarting` state.
+Use for `/v2/` failure, push/pull or digest mismatch, storage exhaustion, a
+consistent backup/restore, an upgrade, or separately approved garbage collection.
 
 ## Procedure
 
-### Recovery Steps
+1. From the repository root validate and capture bounded status:
 
-1. Verify storage mounts: `df -h ${DEFAULT_DATA_DIR}/registry`
-2. Restart service: `docker compose restart registry`
-3. Verify logs: `docker compose logs -f registry`
+   ```bash
+   docker compose --profile registry config --quiet
+   docker compose --profile registry ps registry
+   docker compose --profile registry logs --tail=200 registry
+   ```
 
-### Checklist
+2. Confirm `${DEFAULT_REGISTRY_DIR}` exists, is on the expected filesystem, and
+   has adequate free space without listing private artifact contents. Verify the
+   client reaches the intended trusted endpoint; do not widen firewall/client trust.
+3. For a digest mismatch, stop promotion, record expected/observed digests, and
+   pull from a known source. Do not retag over evidence or delete blobs.
+4. Restart only `registry` after storage and network checks. Verify `/v2/`, then
+   push/pull one non-sensitive canary and compare its digest.
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+### Consistent backup and restore
 
-### Steps
+1. Block pushes/pulls and stop `registry` because the tracked config has no
+   read-only maintenance mode.
+2. Snapshot or copy the entire `${DEFAULT_REGISTRY_DIR}` filesystem to protected
+   storage. Record source commit, filesystem snapshot/checksum, and repository/
+   tag/digest inventory. Start the source only after snapshot completion.
+3. Restore into an isolated Registry with no untrusted network route. Verify API,
+   catalog/tag counts, and pull a representative set by digest.
+4. Promote the restored store only after digest verification and explicit data
+   replacement approval.
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+### Garbage collection and upgrade
 
-### Verification Steps
-
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
-
-### Observability and Evidence Sources
-
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- GC is destructive: take/verify the backup, keep the registry stopped or
+  configure reviewed read-only mode, run a dry-run if supported, review the mark
+  set, then execute only under explicit approval. Verify required digest pulls.
+- For upgrade, test the new image against an isolated restored copy first. Verify
+  canary push/pull and digest equality; revert image plus storage snapshot if the
+  format or behavior is incompatible.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+Record exits, endpoint boundary, source commit, snapshot ID/checksum, counts,
+selected digests, and final service state. Do not capture credentials or layers.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+Backup/restore, GC, and upgrade rehearsal are **planned but unexecuted** here.
+Never use `rm` on Registry storage as a recovery step.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Stop on untrusted exposure, unknown artifact provenance, missing backup, digest
+mismatch, filesystem corruption, or requests for deletion/GC without approval.
 
 ## Traceability
 
-- Declared parent: [Docker Registry Usage Guide](guide.md) (`GDE-0065`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0065`), [Policy](policy.md) (`POL-0065`)
+- [Guide](guide.md) (`GDE-0065`)
+- [Policy](policy.md) (`POL-0065`)
+- [Registry Compose](../../../../../infra/09-tooling/registry/docker-compose.yml)
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
+- [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)

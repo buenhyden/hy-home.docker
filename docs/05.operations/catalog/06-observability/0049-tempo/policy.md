@@ -63,6 +63,13 @@ storage, block retention, metrics generator, secret boundary, protected route를
   - 승인 없이 bucket, retention, metrics generator processors, remote_write
     endpoint, route middleware, image version을 runtime에서 변경하는 행위
 
+### Lifecycle and data controls
+
+- Keep Tempo `OPTIONAL`; runtime presence does not reclassify it. A future HOME-only transition must explicitly stop preexisting Tempo.
+- Treat `tempo-bucket`, local WAL/temp state, config, and matching MinIO credentials as a coordinated recovery set; the object-store owner performs bucket backup/restore.
+- Quiesce OTLP ingestion before consistency capture. Rehearse with isolated bucket/path and verify WAL replay, historical/new trace queries, metrics-generator behavior, and Alloy/Grafana integration.
+- Removal requires producer/exporter migration, retention decision, credentials/route cleanup, and explicit approval before deleting object or local data.
+
 ## Exceptions
 
 - Retention, bucket, sampling, remote_write, route, secret reference 예외는
@@ -94,7 +101,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

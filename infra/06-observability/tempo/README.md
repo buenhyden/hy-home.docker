@@ -61,8 +61,8 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d tempo` | Start Tempo service from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f tempo` | Follow Tempo logs from the repository root |
+| `docker compose --profile obs up -d tempo` | Start Tempo service from the repository root |
+| `docker compose --profile obs logs -f tempo` | Follow Tempo logs from the repository root |
 
 ## Configuration
 
@@ -85,12 +85,20 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OTLP ingestion errors: confirm port bindings and that Alloy's Tempo exporter targets the correct endpoint.
 - For trace query errors: verify the Tempo datasource URL in Grafana matches the Tempo container's network address.
 - For storage issues: confirm the Tempo data volume is mounted and the backend storage path is correctly configured.
 - For WAL, bucket, retention, or object mutation: stop and use the linked runbook escalation path before taking data-loss-risk action.
+
+### Convergence contract
+
+- Classification: **OPTIONAL**. Exact profiles: `obs`, `tracing`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d tempo`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0049-tempo/`; IDs `GDE-0049`, `POL-0049`, `RUN-0049`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
@@ -115,7 +123,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
 | Operations | Guide (`docs/05.operations/catalog/06-observability/0049-tempo/guide.md`), Policy (`docs/05.operations/catalog/06-observability/0049-tempo/policy.md`), Runbook (`docs/05.operations/catalog/06-observability/0049-tempo/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose --profile obs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 

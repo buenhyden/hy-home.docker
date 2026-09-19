@@ -4,11 +4,16 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0018"
 parent_ids:
 - "POL-0018"
+implementation_services:
+  infra/04-data/analytics/ksql/docker-compose.yml:
+  - 'ksql-datagen'
+  - 'ksqldb-cli'
+  - 'ksqldb-server'
 created: "2026-05-10"
 ---
 
@@ -18,7 +23,18 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 사용 가이드다. 현재 compose는 `ksqldb-server`를 `data` profile로 실행하고, `ksqldb-cli`와 `ksql-datagen`은 `ksql` profile의 보조 job/tooling service로 유지한다.
+이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 사용 가이드다. 현재 Compose의 세 서비스는 모두 `ksql` profile에 속하며 on-demand OPTIONAL stream-processing 실험으로 유지한다.
+
+### Current implementation
+
+| Field | Current contract |
+| --- | --- |
+| Services and flow | `ksqldb-server` connects to `kafka-1..3`, `schema-registry`, and `kafka-connect`; `ksqldb-cli` is an interactive companion; `ksql-datagen` only waits for Kafka/Schema Registry and tails. It does not load sample data automatically. |
+| Network and exposure | All services use `infra_net`; only server port `${KSQLDB_HOST_PORT:-8088}` is host-published. No Traefik route or Docker Secret is declared. |
+| Persistence | `ksqldb-data-volume` persists local server state, while durable command and stream state also depends on Kafka internal/source/sink topics and Schema Registry. The local volume alone is not a complete recovery point. |
+| Configuration | `KSQL_BOOTSTRAP_SERVERS`, `KSQL_KSQL_SCHEMA_REGISTRY_URL`, `KSQL_KSQL_CONNECT_URL`, listeners, replication factor, and 512 MiB JVM heap are declared in Compose. |
+| Health and resources | `/info` is the readiness endpoint. The server inherits 1 CPU/512 MiB; CLI and datagen inherit low-tier limits and dependency health gates. |
+| Upgrade and licence | Keep CLI/server compatibility, review the Confluent upgrade notes, command-topic compatibility, UDFs, and Kafka/Schema versions. ksqlDB uses the Confluent Community License, so distribution or service use needs licence review. |
 
 ### Usage Type
 
@@ -61,7 +77,7 @@ created: "2026-05-10"
 3. CLI profile은 server가 healthy일 때만 실행한다.
 
    ```bash
-   docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
+   docker compose --profile ksql run --rm --entrypoint ksql ksqldb-cli http://ksqldb-server:8088
    ```
 
 ### Common Pitfalls
@@ -73,7 +89,7 @@ created: "2026-05-10"
 ## Common Checks
 
 - `test -f infra/04-data/analytics/ksql/docker-compose.yml`
-- `python3 scripts/validation/check-document-links.py --mode alignment`
+- `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff
@@ -88,9 +104,14 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [ksqlDB architecture and command topic](https://docs.confluent.io/platform/current/ksqldb/operate-and-deploy/how-it-works.html)
+- [ksqlDB upgrade guidance](https://docs.confluent.io/platform/current/ksqldb/upgrading.html)
+- [ksqlDB source and licence](https://github.com/confluentinc/ksql)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/analytics/ksql/README.md)
+- [Compose implementation: infra/04-data/analytics/ksql/docker-compose.yml](../../../../../infra/04-data/analytics/ksql/docker-compose.yml)

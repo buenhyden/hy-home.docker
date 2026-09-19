@@ -9,6 +9,10 @@ layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
 - "POL-0045"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - node-exporter
+  - prometheus
 created: "2026-05-10"
 ---
 
@@ -69,8 +73,15 @@ created: "2026-05-10"
 
    ```bash
    docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml
+   docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
    ```
+
+   Rule glob expansion must occur in the container. An unquoted host-side path
+   under `/etc/prometheus` does not exist on the host, and `promtool check
+   rules` accepts existing file arguments rather than expanding a literal
+   wildcard. The config check also verifies referenced credential files; while
+   the staged `openbao_token` is unprovisioned it can stop at that prerequisite,
+   so use the container-side rule check for independent rule syntax evidence.
 
 4. Target 상태는 Prometheus UI `Targets` page 또는 Prometheus API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이며, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
 
@@ -147,12 +158,21 @@ Prometheus evaluates rules on the configured `evaluation_interval` and dispatche
 
 Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current config.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `prometheus` is a `HOME` metrics/rules service and its mapped `node-exporter` is also `HOME`; `obs`/`obs-core`/`dev` plus narrower alerting/batch profiles select it. [Compose](../../../../../infra/06-observability/docker-compose.yml), scrape config, and rule files are authoritative.
+- **Flow/state**: Prometheus scrapes exporters/services, evaluates rules, sends alerts to Alertmanager, accepts explicitly configured remote-write, and stores local TSDB blocks/WAL in `prometheus-data:/prometheus`. No external long-term metrics store is declared.
+- **Secrets/dependencies/security**: `opensearch_exporter_password` and staged `openbao_token` are scrape secrets. The tracked token/policy contract does not prove the running target loaded it. Exporters, Alertmanager, gateway auth, root CA, storage, and `infra_net` are dependencies; never expose secret-bearing rendered config.
+- **Resources/normal use**: source retention/resource flags are configuration, not headroom. Render from root, run `promtool` config/rules checks, verify readiness, targets, rule health, and a bounded query before changes.
+- **Lifecycle**: `--web.enable-lifecycle` and remote-write receiver are enabled, but `--web.enable-admin-api` is not. Therefore do not prescribe the online snapshot endpoint. Use an approved stopped consistent copy/storage snapshot, or separately approve and validate an admin-API design. Upgrade with TSDB compatibility review and verify WAL replay, queries, rules, alerts, and remote-write.
+- **Upstream/license**: follow official [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/). Prometheus is Apache-2.0 licensed.
+
 ## Common Checks
 
 - `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
 - `rg --files infra/06-observability/prometheus/config/alert_rules`
 - `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`
-- `docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml`
+- `docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
 
 ## Runbook Handoff
 

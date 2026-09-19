@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -56,7 +56,7 @@ neo4j/
 | --- | --- |
 | Purpose | Neo4j service leaf in `04-data`; services: `neo4j`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `NEO4J_server_memory_heap_initial__size`, `NEO4J_server_memory_heap_max__size`, `NEO4J_server_memory_pagecache_size`, `NEO4J_server_default__listen__address`, `NEO4J_server_bolt_advertised__address`, `NEO4J_server_http_advertised__address`; profiles: `graph`, `graph` |
+| Config values | env keys are Compose-owned; exact profile: `graph` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `neo4j-data:/data:rw`, `./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro`, `neo4j-data` |
@@ -79,12 +79,14 @@ neo4j/
 
 | Category   | Technology        | Notes                     |
 | ---------- | ----------------- | ------------------------- |
-| Engine     | `neo4j:5.26.30-community` | Community single service |
+| Engine     | Compose-declared Neo4j Community image | Single service |
 | Protocol   | Bolt / HTTP / S   | Exposed internally as 7687 / 7474 / 7473 |
 | Security   | Docker Secrets    | `neo4j_password`          |
 | Route      | Traefik HTTP      | `neo4j.${DEFAULT_URL}` to `${NEO4J_HTTP_PORT:-7474}` |
 
 ## Validation
+
+Classification is `OPTIONAL`. Community recovery uses offline `neo4j-admin database dump/load` into a fresh compatible target; Enterprise online-backup or cluster commands are outside this deployment. Verify constraints, indexes, graph counts, and representative Cypher. Owning artifacts are `GDE-0033`, `POL-0033`, and `RUN-0033`.
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Neo4j.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking Neo4j documentation ready.
@@ -102,4 +104,4 @@ neo4j/
 - Neo4j Recovery Runbook (`docs/05.operations/catalog/04-data/0033-neo4j/runbook.md`)
 - [Documentation index](../../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

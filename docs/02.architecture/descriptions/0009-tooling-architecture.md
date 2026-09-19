@@ -78,7 +78,11 @@ created: "2026-03-26"
 ## Deployment View
 
 - **Runtime / Platform**: 현재 root Compose include 및 profile 계약을 사용하는 Docker Compose.
-- **Deployment Model**: root `docker-compose.yml`은 09-tooling compose 파일을 모두 무조건 include하며, `tooling` 프로필과 서비스별 역할 프로필(`iac`, `sast`, `testing`, `registry`, `dependency-update`) 중 선택한 것이 기동 대상을 결정한다. `dependency-update`는 Renovate 수동 작업만 선택하고 `testing`은 Locust master와 k6를 선택한다. 역할 프로필은 계층의 부분집합만 선택하므로, `locust-worker`처럼 `tooling`에만 속한 서비스는 역할 프로필로 기동되지 않는다.
+- **Deployment Model**: root `docker-compose.yml`은 모든 leaf를 include하고
+  profile이 서비스를 선택한다. `tooling`은 Registry와 SonarQube만,
+  `testing`은 k6와 Locust master/worker 모두, `iac`은 OpenTofu와 Terrakube
+  API/UI/executor 모두, `dependency-update`는 Renovate만 선택한다. `registry`
+  와 `sast`는 해당 단일 역할을 선택한다. 이 도구들은 HOME에 포함되지 않는다.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability
@@ -93,4 +97,4 @@ created: "2026-03-26"
 - [Terraform migration handoff](../../05.operations/catalog/09-tooling/0068-terraform/guide.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

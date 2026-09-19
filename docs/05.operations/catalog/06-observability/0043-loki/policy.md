@@ -57,6 +57,13 @@ Loki 운영 기준을 다룬다.
   - 승인 없이 Loki route, retention, compactor, MinIO bucket, resource cap을
     runtime에서 변경하는 행위
 
+### Lifecycle and data controls
+
+- Keep Loki `HOME`; retain gateway controls, MinIO secret-file use, schema-v13 configuration, and the declared 168h retention unless an approved capacity/retention change says otherwise.
+- The MinIO `loki-bucket`, configuration, and recovery-relevant local `loki-data` state form a coordinated set. Object-store backup remains with its storage owner.
+- Quiesce ingestion or document the consistency point before backup/restore/upgrade. Rehearse on isolated bucket prefixes/storage and verify old/new queries, ruler behavior, compaction, and retention.
+- Removal requires producer migration, retention/export decision, MinIO-owner cleanup approval, revoked credentials, and explicit approval before deleting local or object data.
+
 ## Exceptions
 
 - Retention, label cardinality, MinIO storage, resource cap 예외는 사용자
@@ -86,7 +93,7 @@ Loki 운영 기준을 다룬다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

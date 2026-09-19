@@ -8,60 +8,61 @@ updated: "2026-09-04"
 created: "2025-11-12"
 ---
 
-# Data Tier (04-data)
-
-> Central repository for databases, object storage, and persistence engines.
+# 04 Data
 
 ## Overview
 
-`infra/04-data`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
+This tier contains persistent engines and stateful platform dependencies. The root
+Compose project includes the leaf files and owns shared networks, secrets and
+`extends`; operate from the repository root rather than treating a leaf as a
+standalone project.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
+This package map is for operators and maintainers of the repository data tier.
 
 ## Scope
 
-### In Scope
-
-- Compose 서비스 정의와 관련 설정 설명
-- 서비스별 README와 운영 문서 연결
-- 검증 시 참고해야 할 구성 파일 인벤토리
-
-### Out of Scope
-
-- secret 값 원문
-- 사용자 승인 없는 runtime 동작 변경
-- 다른 tier의 서비스 정책 중복 정의
+It covers the data packages selected by the root Compose project and their
+documented operating boundaries.
 
 ## Structure
 
-```text
-infra/04-data/
-├── analytics/  # 하위 구성 영역
-├── cache-and-kv/  # 하위 구성 영역
-├── lake-and-object/  # 하위 구성 영역
-├── nosql/  # 하위 구성 영역
-├── operational/  # 하위 구성 영역
-├── relational/  # 하위 구성 영역
-├── specialized/  # 하위 구성 영역
-└── README.md  # This file
-```
+### Package map and disposition
+
+| Component | Root profile(s) | Classification | Relationship and service operations |
+| --- | --- | --- | --- |
+| [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
+| [`lake-and-object/minio`](lake-and-object/minio/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`; `storage-cluster` | HOME single node; LAB four nodes | Current Loki/Tempo and object buckets; preserve data while lifecycle migration is evaluated |
+| [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
+| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `seaweedfs`, `storage-seaweedfs`, `seaweedfs-mount` | OPTIONAL | Named filer/S3 experiment; privileged FUSE is separate; no automatic MinIO replacement |
+| [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
+| [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
+| [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |
+| [`analytics/ksql`](analytics/ksql/README.md) | `ksql` | OPTIONAL | Kafka-dependent stream processing; requires named Kafka workload |
+| [`analytics/opensearch`](analytics/opensearch/README.md) | `opensearch`, `opensearch-cluster` | OPTIONAL/LAB | Single-node search versus same-host cluster exercise |
+| [`analytics/starrocks`](analytics/starrocks/README.md) | `starrocks` | OPTIONAL | Named analytical workload only |
+| [`nosql/cassandra`](nosql/cassandra/README.md), [`couchdb`](nosql/couchdb/README.md), [`mongodb`](nosql/mongodb/README.md) | `cassandra`, `couchdb`, `mongodb` | LAB | Separate same-host datastore laboratories; no cross-engine volume or migration assumption |
+| [`specialized/qdrant`](specialized/qdrant/README.md) | `ai`, `ai-llm`, `qdrant` | HOME | Vector store for HOME AI; snapshot/isolated restore required |
+| [`specialized/neo4j`](specialized/neo4j/README.md) | `graph` | OPTIONAL | Graph workload only; distinct from Qdrant |
+| [`specialized/surrealdb`](specialized/surrealdb/README.md) | `surrealdb`, `admin`, `notebook` | OPTIONAL | Database and optional admin/notebook clients with separate auth/data scope |
 
 ## How to Work in This Area
 
-1. 먼저 대상 하위 폴더 README와 `docker-compose*.yml` 또는 설정 파일을 확인한다.
-2. 데이터 변경, 백업, 복구, 보존 절차는 대응 operations guide/policy/runbook으로 이동한다.
-3. runtime 또는 데이터 파괴 작업은 이 인덱스가 아니라 승인된 runbook 경계를 따른다.
-4. secret 값, token, 인증서 원문은 열람하거나 문서에 쓰지 않는다.
+### Operating contract
+
+- Use the exact profile from the matrix through the root project; for example,
+  `docker compose --env-file .env.example --profile mng config --quiet`.
+- Do not print rendered secrets or private resolved host paths into evidence.
+- A named volume backed by a host directory is persistent state, not a backup.
+  Same-host replicas do not protect against host loss.
+- Every selected engine needs a named consumer, capacity/retention boundary,
+  engine-supported backup, separate encrypted destination and isolated restore.
+- Image, topology, credential, volume, migration and cleanup changes require the
+  owning Stage 05 guide/policy/runbook and an approved task.
 
 ## Related Documents
 
-- [infra/README.md](../README.md)
-- `docs/05.operations/README.md`
-- [Documentation index](../../docs/README.md)
+Use the [documentation entry point](../../docs/README.md) to locate the Stage 05
+Data catalog (`docs/05.operations/catalog/04-data/`), especially POL-0021 for the
+HOME state-owner matrix and RUN-0035 for storage exhaustion.

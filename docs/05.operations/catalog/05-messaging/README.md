@@ -4,49 +4,37 @@ version: "1.0.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 ---
 
 # Operations — 05 Messaging
 
-> Messaging operations documents grouped by stable Kafka and hardening subjects.
-
 ## Overview
 
-This domain co-locates each existing guide, policy, and runbook under its
-current four-digit subject directory without changing operational behavior.
-
-## Audience
-
-- Operators, SREs, messaging platform engineers, developers, and AI agents.
-
-## Scope
-
-- Existing messaging usage, approved controls, and recovery procedures.
-- No broker startup, topic mutation, credential access, or new operational role.
+The current messaging implementation is Kafka-family only; no second broker family is present in the root Compose project.
 
 ## Structure
 
-| Subject | Available documents |
-| --- | --- |
-| [Kafka](0036-kafka/guide.md) | [Guide](0036-kafka/guide.md), [Policy](0036-kafka/policy.md), [Runbook](0036-kafka/runbook.md) |
-| [Optimization hardening](0037-optimization-hardening/guide.md) | [Guide](0037-optimization-hardening/guide.md), [Policy](0037-optimization-hardening/policy.md), [Runbook](0037-optimization-hardening/runbook.md) |
+| Subject | Disposition | Operator contract |
+| --- | --- | --- |
+| [Kafka](0036-kafka/guide.md) | OPTIONAL; three-broker topology remains same-host | Nine current services, exact profile families, KRaft/data recovery, Schema Registry, Connect, REST, exporter, init and Kafbat native OIDC |
+| [Messaging hardening](0037-optimization-hardening/guide.md) | Static control baseline | Root rendering, plaintext broker boundary, secret/OIDC checks, resource controls and recovery evidence |
 
-ksqlDB remains a data analytics subject; use the
-[ksqlDB guide](../04-data/0018-ksqldb/guide.md).
+## Scope
+
+The canonical source is `infra/05-messaging/kafka/docker-compose.yml`, included by
+the root project.
 
 ## How to Work in This Area
 
-Use guides for routine context, policies for control boundaries, and runbooks
-for existing executable recovery procedures. Follow each document's safety,
-evidence, rollback or recovery, and escalation boundaries.
+Stage 05 documents do not authorize service activation, topic
+changes, credential rotation, data restore or image upgrades.
 
 ## Related Documents
 
-- [Operations index](../../README.md)
-- [Messaging infrastructure](../../../../infra/05-messaging/README.md)
-- [Guides index](../../README.md)
-- [Policies index](../../README.md)
-- [Runbooks index](../../README.md)
-- [Incident records](../../incidents/README.md)
+- [Kafka policy](0036-kafka/policy.md)
+- [Kafka runbook](0036-kafka/runbook.md)
+- [Hardening policy](0037-optimization-hardening/policy.md)
+- [Hardening runbook](0037-optimization-hardening/runbook.md)
+- [Messaging architecture](../../../02.architecture/descriptions/0005-messaging-architecture.md)

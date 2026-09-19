@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
-# Sync the curated tech-stack registry to Docker Compose image tags/digests.
+# Derive the tech-stack registry from tracked infrastructure Compose images.
 #
-# infra/tech-stack.versions.json is, by its own declaration, downstream of the
-# Docker Compose image declarations ("source_of_truth": "Docker Compose image
-# declarations"). When an image tag changes in a listed compose file (for
-# example via a Dependabot bump), this script re-points the matching curated
-# registry image to the compose-declared tag, preserving file formatting and the
-# curated image set.
+# infra/tech-stack.versions.json is downstream of Git-tracked infrastructure
+# Compose service image declarations, the sole authority for this projection.
+# Existing component labels remain stable where possible, while repository,
+# image, source-file and local/custom classifications are regenerated.
 #
 # Modes:
 #   (default)    Apply tag updates in place (write mode).
 #   --check      Report drift and exit 1 if the registry is out of sync; no write.
 #   --dry-run    Print planned component/image changes only; no write.
 #
-# This is the public tech-stack drift gate. It reads service image declarations
-# with a safe YAML loader; it does not render environment files or follow builds.
-# Dockerfile FROM/ARG and inline builds need a separate registry source contract.
+# This is the public tech-stack drift gate. It reads checked-in defaults with a
+# safe YAML loader; it does not render environment files or follow builds.
+# Dockerfile FROM/ARG and inline builds remain upstream build sources owned by
+# the Dockerfile/custom Renovate managers, outside this Compose-only projection.
 set -euo pipefail
 
 if (( $# > 1 )); then
@@ -71,6 +70,7 @@ import os
 import pathlib
 import re
 import stat
+import subprocess
 import sys
 import tempfile
 
@@ -112,7 +112,12 @@ IMAGE = re.compile(
     r"(?::(?P<tag>[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}))?"
     r"(?:@sha256:(?P<digest>[a-fA-F0-9]{64}))?"
 )
-JSON_STRING = re.compile(r'"(?:[^"\\]|\\.)*"')
+COMPOSE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml\Z")
+SOURCE_OF_TRUTH = (
+    "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} "
+    "service image declarations"
+)
+LOCAL_REPOSITORY_PREFIXES = ("hy/", "hyhome/", "hy-home/")
 
 
 def image_repository(image):
@@ -155,74 +160,217 @@ def declared_images(relative):
         raise ContractError(f"invalid compose declaration: {relative}") from exc
 
 
+def tracked_compose_files():
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "-z", "--", "infra"],
+            check=True,
+            capture_output=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ContractError("unable to enumerate tracked compose files") from exc
+    paths = []
+    for raw in result.stdout.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            relative = raw.decode("utf-8")
+        except UnicodeError as exc:
+            raise ContractError("invalid tracked compose path") from exc
+        path = pathlib.PurePosixPath(relative)
+        if COMPOSE_NAME.fullmatch(path.name):
+            paths.append(relative)
+    return sorted(paths)
+
+
+def discovered_repositories():
+    discovered = {}
+    for relative in tracked_compose_files():
+        for image in declared_images(relative):
+            repository = image_repository(image)
+            discovered.setdefault(repository, {}).setdefault(relative, set()).add(image)
+    return discovered
+
+
 def read_registry(path):
     if path.is_symlink() or not path.is_file():
         raise ContractError("missing or invalid tech-stack version registry")
     raw = path.read_bytes().decode("utf-8")
     registry = json.loads(raw)
-    entries = registry.get("entries") if isinstance(registry, dict) else None
-    if not isinstance(entries, list) or not entries:
-        raise ContractError("registry must define a non-empty entries list")
+    if not isinstance(registry, dict):
+        raise ContractError("invalid registry document")
+    if registry.get("source_of_truth") != SOURCE_OF_TRUTH:
+        raise ContractError(f"source_of_truth must equal {SOURCE_OF_TRUTH!r}")
+    if registry.get("local_repository_prefixes") != list(LOCAL_REPOSITORY_PREFIXES):
+        raise ContractError("invalid local_repository_prefixes")
+    entries = registry.get("entries")
+    if not isinstance(entries, list):
+        raise ContractError("registry must define an entries list")
+    components = set()
+    repository_owners = {}
     for entry in entries:
-        if not isinstance(entry, dict) or not isinstance(entry.get("component"), str):
+        component = entry.get("component") if isinstance(entry, dict) else None
+        if not isinstance(component, str) or not component or component in components:
             raise ContractError("invalid registry entry")
+        components.add(component)
         for field in ("images", "compose_files"):
             values = entry.get(field)
-            if not isinstance(values, list) or not values or not all(
+            if not isinstance(values, list) or not all(
                 isinstance(value, str) and value for value in values
             ):
                 raise ContractError(f"invalid registry {field}")
+        for image in entry["images"]:
+            repository = image_repository(image)
+            if (
+                repository in repository_owners
+                and repository_owners[repository] != component
+            ):
+                raise ContractError(
+                    "duplicate repository ownership: "
+                    f"{repository} ({repository_owners[repository]}, {component})"
+                )
+            repository_owners[repository] = component
     return raw, registry
 
 
-def plan_changes(entries):
-    planned = []
-    for entry in entries:
-        discovered = set()
-        for relative in entry["compose_files"]:
-            discovered.update(declared_images(relative))
-        by_repository = {}
-        for image in discovered:
-            by_repository.setdefault(image_repository(image), set()).add(image)
-        for image in entry["images"]:
-            repository = image_repository(image)
-            candidates = by_repository.get(repository, set())
-            if not candidates:
-                raise ContractError(
-                    f"{entry['component']}: registry image repo not declared in compose: {repository}"
-                )
-            if len(candidates) != 1:
-                raise ContractError(
-                    f"{entry['component']}: ambiguous compose declarations for {repository}"
-                )
-            candidate = next(iter(candidates))
-            if candidate != image:
-                planned.append((entry["component"], image, candidate))
-    return planned
-
-
-def updated_registry(raw, registry, planned):
-    replacements = {}
-    for _, old, new in planned:
-        if old in replacements and replacements[old] != new:
-            raise ContractError("ambiguous registry replacement")
-        replacements[old] = new
-    # JSON token substitution preserves whitespace and untouched escapes. The
-    # semantic comparison below forbids changes outside the curated image lists.
-    updated = JSON_STRING.sub(
-        lambda match: json.dumps(replacements[json.loads(match[0])])
-        if json.loads(match[0]) in replacements else match[0], raw
+def repository_classification(repository):
+    return (
+        "local-custom"
+        if repository.startswith(LOCAL_REPOSITORY_PREFIXES)
+        else "external"
     )
-    expected = {
+
+
+def expected_entries(registry, discovered):
+    repository_owner = {}
+    existing_by_component = {}
+    component_order = []
+    for entry in registry["entries"]:
+        component = entry["component"]
+        component_order.append(component)
+        existing_by_component[component] = entry
+        for image in entry["images"]:
+            repository_owner[image_repository(image)] = component
+
+    grouped = {}
+    for repository in sorted(discovered):
+        component = repository_owner.get(repository, f"Compose image: {repository}")
+        grouped.setdefault(component, []).append(repository)
+
+    ordered_components = [
+        component for component in component_order if component in grouped
+    ]
+    ordered_components.extend(
+        sorted(component for component in grouped if component not in component_order)
+    )
+    entries = []
+    for component in ordered_components:
+        repositories = sorted(grouped[component])
+        existing = existing_by_component.get(component, {})
+        entry = {"component": component}
+        if isinstance(existing.get("tier"), str) and existing["tier"]:
+            entry["tier"] = existing["tier"]
+        elif component.startswith("Compose image: "):
+            first_path = sorted(discovered[repositories[0]])[0]
+            parts = pathlib.PurePosixPath(first_path).parts
+            if len(parts) > 1:
+                entry["tier"] = parts[1]
+        classifications = {
+            repository: repository_classification(repository)
+            for repository in repositories
+        }
+        unique_classes = set(classifications.values())
+        entry["classification"] = (
+            next(iter(unique_classes)) if len(unique_classes) == 1 else "mixed"
+        )
+        entry["repository_classifications"] = classifications
+        entry["images"] = sorted(
+            {
+                image
+                for repository in repositories
+                for images in discovered[repository].values()
+                for image in images
+            }
+        )
+        entry["compose_files"] = sorted(
+            {
+                relative
+                for repository in repositories
+                for relative in discovered[repository]
+            }
+        )
+        entry["sources"] = [
+            {
+                "compose_file": relative,
+                "images": sorted(images),
+            }
+            for repository in repositories
+            for relative, images in sorted(discovered[repository].items())
+        ]
+        entries.append(entry)
+    return entries
+
+
+def expected_registry(registry, discovered):
+    return {
         **registry,
-        "entries": [
-            {**entry, "images": [replacements.get(image, image) for image in entry["images"]]}
-            for entry in registry["entries"]
-        ],
+        "source_of_truth": SOURCE_OF_TRUTH,
+        "local_repository_prefixes": list(LOCAL_REPOSITORY_PREFIXES),
+        "entries": expected_entries(registry, discovered),
     }
-    if json.loads(updated) != expected:
-        raise ContractError("replacement would change non-image registry metadata")
-    return updated
+
+
+def source_projection(entries):
+    projection = {}
+    for entry in entries:
+        component = entry["component"]
+        sources = entry.get("sources")
+        if isinstance(sources, list):
+            for source in sources:
+                if not isinstance(source, dict):
+                    continue
+                relative = source.get("compose_file")
+                images = source.get("images")
+                if not isinstance(relative, str) or not isinstance(images, list):
+                    continue
+                key = (component, relative)
+                projection.setdefault(key, set()).update(
+                    image for image in images if isinstance(image, str)
+                )
+            continue
+        for relative in entry["compose_files"]:
+            projection.setdefault((component, relative), set()).update(entry["images"])
+    return projection
+
+
+def projection_preview(registry, expected):
+    current = source_projection(registry["entries"])
+    target = source_projection(expected["entries"])
+    lines = []
+    for component, relative in sorted(set(current) | set(target)):
+        old = sorted(current.get((component, relative), set()))
+        new = sorted(target.get((component, relative), set()))
+        if old == new:
+            continue
+        if not old:
+            action = "add"
+        elif not new:
+            action = "remove"
+        else:
+            action = "change"
+        lines.append(
+            f"{action} {component} source={relative} "
+            f"old={','.join(old) or '-'} new={','.join(new) or '-'}"
+        )
+    return lines
+
+
+def render_registry(raw, registry):
+    newline = "\r\n" if "\r\n" in raw else "\n"
+    indent_match = re.search(r'(?:\r?\n)( +)"', raw)
+    indent = len(indent_match[1]) if indent_match else 2
+    rendered = json.dumps(registry, indent=indent, ensure_ascii=False) + "\n"
+    return rendered.replace("\n", newline)
 
 
 def atomic_write(path, raw, updated):
@@ -255,14 +403,34 @@ def main():
     mode = os.environ["SYNC_MODE"]
     path = pathlib.Path("infra/tech-stack.versions.json")
     raw, registry = read_registry(path)
-    planned = plan_changes(registry["entries"])
-    updated = updated_registry(raw, registry, planned)
-    if not planned:
-        print("tech-stack registry is in sync with declared compose images. changes=0")
+    discovered = discovered_repositories()
+    expected = expected_registry(registry, discovered)
+    if registry == expected:
+        external = sum(
+            repository_classification(repository) == "external"
+            for repository in discovered
+        )
+        local = len(discovered) - external
+        print(
+            "tech-stack registry is in sync with tracked compose images. "
+            f"repositories={len(discovered)} external={external} local_custom={local}"
+        )
         return 0
-    for component, old, new in planned:
-        print(f"{component}: {old} -> {new}")
-    print(f"changes={len(planned)}")
+    updated = render_registry(raw, expected)
+    current_repositories = {
+        image_repository(image)
+        for entry in registry["entries"]
+        for image in entry["images"]
+    }
+    target_repositories = set(discovered)
+    for line in projection_preview(registry, expected):
+        print(line)
+    print(
+        "projection drift: "
+        f"add={len(target_repositories - current_repositories)} "
+        f"remove={len(current_repositories - target_repositories)} "
+        f"repositories={len(target_repositories)}"
+    )
     if mode == "check":
         print("FAIL: tech-stack registry is out of sync; run scripts/operations/sync-tech-stack-versions.sh", file=sys.stderr)
         return 1

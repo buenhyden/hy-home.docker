@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.1.1"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -15,13 +15,13 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `05-messaging` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. Kafka/RabbitMQ의 관리 트래픽 경로를 게이트웨이 표준 체인과 SSO 경계로 정렬하고, 운영 회귀를 CI 기준선 검증으로 차단하는 구조를 설명한다.
+이 문서는 `05-messaging` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 현재 구현된 Kafka 관리 트래픽 경로를 게이트웨이 표준 체인과 인증 경계로 정렬하고, 운영 회귀를 CI 기준선 검증으로 차단하는 구조를 설명한다.
 
 ### Stakeholders and Concerns
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-메시징 계층은 데이터 평면(Kafka broker, RabbitMQ AMQP)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `infra_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
+메시징 계층은 Kafka broker 데이터 평면과 관리 UI/API 평면을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `infra_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
 
 ## System Boundaries
 
@@ -63,10 +63,8 @@ created: "2026-03-28"
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
 - Kafka:
-  - `messaging` 또는 `dev` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
   - 여기에 `messaging-cluster`를 더한 경우: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-- RabbitMQ:
-  - `rabbitmq` (AMQP + Management)
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
 - Internal Path:
@@ -88,7 +86,6 @@ created: "2026-03-28"
 
 - **Key Entities / Flows**:
   - Kafka topics (event/log streams)
-  - RabbitMQ queues (task/retry/dead-letter flows)
 - **Storage Strategy**:
   - `${DEFAULT_MESSAGE_BROKER_DIR}` 기반 상태 데이터 분리
 - **Data Boundaries**:
@@ -99,7 +96,7 @@ created: "2026-03-28"
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
-  - `messaging`/`dev` profile: Kafka `kafka-1` 단일 broker + RabbitMQ single-node
+  - `messaging` profile: Kafka `kafka-1` 단일 broker와 선택한 schema/connect/rest/admin 구성
   - `messaging-cluster`를 더한 경우: 같은 파일의 Kafka 3 broker 모델. 파일 단독 검증에는 root network/secret context가 필요하다
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
@@ -119,4 +116,4 @@ created: "2026-03-28"
 - **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/catalog/05-messaging/0037-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

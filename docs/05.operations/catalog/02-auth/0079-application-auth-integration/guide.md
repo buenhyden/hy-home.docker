@@ -347,7 +347,7 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all
 - role policies
 - permissions
 
-0.9.0 upgrade 후 기존 non-team permission repair:
+0.9.0 upgrade 후 기존 non-team permission repair <!-- runtime-version-exception: compatibility — 이 provider 경계부터 기존 permission row를 새 team-aware schema로 다시 생성해야 함 -->:
 
 ```bash
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
@@ -381,10 +381,10 @@ Keycloak Authorization Services bootstrap 미완료.
 
 `Viewer`, `User`, `Op`, `Admin`, `SuperAdmin` realm role을 먼저 생성한다.
 
-#### provider 0.8.2 Admin 403
+#### provider 0.8.2 Admin 403 <!-- runtime-version-exception: compatibility — 이 provider release에는 later admin permission repair가 없어 403이 재현됨 -->
 
 `Admin` permission에 alternative role policies가 `UNANIMOUS`로 묶일 수 있다.
-0.9.0으로 upgrade하고 `create-permissions`를 다시 실행한다.
+0.9.0으로 upgrade하고 `create-permissions`를 다시 실행한다. <!-- runtime-version-exception: compatibility — 새 provider schema에 맞는 permission row 재생성이 필요함 -->
 
 #### `/auth/login_callback` 403
 
@@ -437,7 +437,7 @@ Verify each application uses its documented ForwardAuth or native OIDC path, the
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Keycloak Guide](../0014-keycloak/guide.md)
 - [OAuth2 Proxy Guide](../0015-oauth2-proxy/guide.md)

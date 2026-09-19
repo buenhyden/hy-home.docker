@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -14,113 +14,83 @@ created: "2026-05-17"
 
 # Locust Recovery Runbook
 
-<!-- [ID:09-tooling:locust] -->
-
-## Overview
-
-> Scope: recover or stop `locust-master` and `locust-worker` under `infra/09-tooling/locust`.
-
-이 런북은 Locust master/worker 연결 끊김, 요청 통계 이상, 또는 테스트 부하로 인한 target service 영향이 발생했을 때 사용한다.
-
-### Purpose
-
-부하 생성을 즉시 통제하고 master/worker 연결과 Locust 결과를 확인한 뒤 안전하게 재시작 또는 escalation한다.
-
 ## When to Use
 
-- Locust UI나 로그에 worker disconnect가 나타난다.
-- `locust-worker` healthcheck가 실패하거나 restart loop에 들어간다.
-- Locust request error 또는 통계 수집 이상이 발생한다.
-- target service SLI가 테스트 중 급격히 저하된다.
+Use when target health degrades during a test, workers disconnect, the master UI
+fails, scenario files are damaged, or a Locust image/dependency upgrade needs an
+approved canary. All commands run from the repository root.
 
 ## Procedure
 
-### Checklist
-
-- [ ] 테스트 owner와 target service owner에게 현재 상태를 공유한다.
-- [ ] root compose + Locust leaf compose를 함께 사용하는 실행 context인지 확인한다.
-- [ ] 현재 users, spawn rate, target host, 시나리오 파일을 기록한다.
-
-### Steps
-
-1. Compose context 변수를 설정한다.
+1. Record target, users, spawn rate, duration, worker count, scenario digest, and
+   the first failing target SLI. Do not collect cookies, tokens, or response bodies.
+2. Stop load before diagnosis:
 
    ```bash
-   LOCUST_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/locust/docker-compose.yml"
+   docker compose --profile testing stop locust-worker locust-master
    ```
 
-2. 부하를 먼저 중단한다.
+3. Capture bounded status and logs:
 
    ```bash
-   docker compose $LOCUST_COMPOSE_FILES --profile tooling --profile testing stop locust-worker locust-master
+   docker compose --profile testing ps locust-master locust-worker
+   docker compose --profile testing logs --tail=200 locust-master locust-worker
    ```
 
-3. master/worker 상태와 최근 로그를 확인한다.
+4. Confirm `docker compose --profile testing config --quiet`. Inspect the master
+   health failure before recreating a worker. If the target SLI has not recovered,
+   leave Locust stopped and escalate to the target owner.
+5. When the master is healthy and restart is approved, start the master first,
+   then the worker:
 
    ```bash
-   docker compose $LOCUST_COMPOSE_FILES --profile tooling --profile testing ps locust-master locust-worker
-   docker compose $LOCUST_COMPOSE_FILES --profile tooling --profile testing logs --tail=100 locust-master locust-worker
+   docker compose --profile testing up -d locust-master
+   docker compose --profile testing up -d locust-worker
    ```
 
-4. worker 재동기화가 필요한 경우 master health를 먼저 확인한 뒤 worker만 재생성한다.
-
-   ```bash
-   docker compose $LOCUST_COMPOSE_FILES --profile tooling --profile testing up -d --force-recreate locust-worker
-   ```
-
-5. 정적 기준선을 재검증한다.
-
-   ```bash
-   bash scripts/hardening/check-all-hardening.sh 09-tooling
-   python3 scripts/validation/run-ci-gate.py --profile changed
-   ```
+6. For scenario recovery, keep both services stopped, copy the current
+   bind-backed scenario directory to a protected quarantine path, restore the
+   reviewed files into a separate directory, compare hashes, and only then
+   replace the active files. Never restore captured credentials or raw personal data.
+7. For an upgrade, rebuild from the reviewed Dockerfile, start one master and one
+   worker, and run a small separately approved canary. Roll back the image/build
+   change if workers fail to register or statistics diverge. Keep the target
+   stopped between attempts.
 
 ### Verification Steps
 
-- `locust-master`와 `locust-worker` 상태가 stopped 또는 healthy로 명확히 확인된다.
-- target service SLI가 정상 범위로 회복된다.
-- `locust-worker` logs에서 master 연결 실패가 반복되지 않는다.
-
-### Observability and Evidence Sources
-
-- **Logs**: `locust-master`, `locust-worker`, target service logs
-- **Metrics**: target SLI, request error rate, worker count, Locust request statistics
-- **Evidence to Capture**: 실행 명령, 중단 시각, users/spawn rate, target, worker count, 오류 요약
-
-### Safe Rollback or Recovery Procedure
-
-1. 부하 발생을 중단한 상태를 유지한다.
-2. worker만 문제가 있으면 master health 확인 후 `locust-worker`만 재생성한다.
-3. `locustfile.py` 변경이 원인이면 마지막 정상 commit과 현재 diff를 evidence로 남기고 review 후 재실행한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`
+- Master UI health succeeds and the expected worker count registers.
+- A separately approved canary stays within the named target SLI.
+- The final full run is either explicitly approved or Locust remains stopped.
+- Scenario/result restore and upgrade rehearsal remain **unexecuted** until a
+  Task records the protected paths, commands, and observed results.
 
 ## Evidence
 
-- Capture command output, timestamps, worker count, scenario file path, and final stopped/healthy state.
-- Record failed checks, suspected script changes, and target SLI recovery state in the related task or incident evidence.
+Record command exits, timestamps, configuration commit, scenario digest, worker
+count, sanitized aggregates, target SLI, and final stopped/running disposition.
 
 ## Rollback or Recovery
 
-Use the stop, inspect, and worker-only recreate procedure above. No broader verified rollback procedure is documented for target services or host networking from this runbook.
+Stop Locust, restore the prior reviewed scenario/build in isolation, then repeat
+static validation and a small approved canary. No action in this runbook rolls
+back the target service or repairs target data.
 
 ## Escalation
 
-Escalate to the performance tooling owner when workers cannot reconnect after master health is restored, target SLI does not recover after stopping load, secret exposure risk appears, or root compose context cannot render required dependencies.
+Escalate when target health does not recover after load stops, workers cannot
+register against a healthy master, scenario provenance is unknown, or secrets or
+personal data appear in logs/results.
 
 ## Traceability
 
-- Declared parent: [Locust Usage Guide](guide.md) (`GDE-0062`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0062`), [Policy](policy.md) (`POL-0062`)
+- [Guide](guide.md) (`GDE-0062`)
+- [Policy](policy.md) (`POL-0062`)
+- [Locust Compose](../../../../../infra/09-tooling/locust/docker-compose.yml)
 
 ## Related Documents
 
+- [Locust Compose source](../../../../../infra/09-tooling/locust/docker-compose.yml)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
+- [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)

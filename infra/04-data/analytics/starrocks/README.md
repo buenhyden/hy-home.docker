@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-20"
 created: "2026-03-26"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Overview
 
-`warehouses` 스택은 서브-세컨드 OLAP 쿼리 및 대규모 데이터 웨어하우징을 위해 StarRocks 클러스터 (FE 및 BE 노드)를 제공한다. `infra_net`과 통합되어 안전한 데이터 수집 및 쿼리를 지원한다.
+`starrocks` 스택은 서브-세컨드 OLAP 쿼리 및 대규모 데이터 웨어하우징을 위해 같은 host의 FE/BE pair를 제공한다. `infra_net`과 통합되지만 host-level HA를 제공하지 않는다.
 
 ## Audience
 
@@ -42,7 +42,7 @@ created: "2026-03-26"
 ## Structure
 
 ```text
-warehouses/
+starrocks/
 ├── docker-compose.yml  # Standard StarRocks stack
 └── README.md           # This file
 ```
@@ -53,8 +53,8 @@ warehouses/
 | --- | --- |
 | Purpose | StarRocks (OLAP Warehouse) service leaf in `04-data`; services: `starrocks-fe`, `starrocks-be`; the root [docker-compose.yml](../../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `data` |
-| Compose linkage | root include active; the `data` profile selects `starrocks-fe` and `starrocks-be` |
+| Config values | exact profile: `starrocks` |
+| Compose linkage | root include active; the `starrocks` profile selects `starrocks-fe` and `starrocks-be` |
 | Networks | `infra_net` |
 | Volumes | `starrocks-fe-data:/opt/starrocks/fe/meta:rw`, `starrocks-be-data:/opt/starrocks/be/storage:rw`, `starrocks-fe-data`, `starrocks-be-data` |
 | Ports | `9030:9030`, `8030:8030`, `8040:8040` |
@@ -79,7 +79,9 @@ warehouses/
 
 ## Validation
 
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect warehouse services.
+Classification is `OPTIONAL`. Host ports are Compose-declared and no Docker Secret is wired, so default/root authentication is a pre-production gap. Recovery uses repository-backed StarRocks `BACKUP`/`RESTORE` with required repository/export privileges in a fresh isolated pair. Owning artifacts are `GDE-0020`, `POL-0020`, and `RUN-0020`.
+
+- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect StarRocks.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
@@ -89,7 +91,9 @@ warehouses/
 
 ## Related Documents
 
-- **System Guide**: docs/05.operations/catalog/04-data/analytics/warehouses.md (`docs/05.operations/catalog/04-data/0020-starrocks/guide.md`)
+- [Compose implementation](docker-compose.yml)
+
+- **System Guide**: `docs/05.operations/catalog/04-data/0020-starrocks/guide.md` (`GDE-0020`)
 - **Policy**: `docs/05.operations/catalog/04-data/0020-starrocks/policy.md`
 - **Runbook**: `docs/05.operations/catalog/04-data/0020-starrocks/runbook.md`
 - **Health**: FE/BE healthchecks in `docker-compose.yml`

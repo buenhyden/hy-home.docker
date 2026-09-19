@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Architecture Description"
-version: "2.0.0"
+version: "2.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -124,4 +124,4 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

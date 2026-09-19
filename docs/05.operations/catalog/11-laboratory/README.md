@@ -15,8 +15,11 @@ layer: "operations"
 ## Overview
 
 This domain co-locates the current Dozzle, Open Notebook,
-optimization-hardening and RedisInsight roles under stable
-four-digit subject identities. Role membership follows the current tree.
+optimization-hardening and RedisInsight roles under stable four-digit subject
+identities. Dozzle uses `admin`/`admin-logs`, RedisInsight uses
+`admin`/`admin-data`, and Open Notebook plus separately owned SurrealDB use
+`admin`/`notebook`. There is no current laboratory `dev` profile or Metabase
+service.
 
 ## Audience
 

@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
 - "POL-0047"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - pyroscope
 created: "2026-05-10"
 ---
 
@@ -74,11 +77,20 @@ created: "2026-05-10"
 - **Storage assumption**: 현재 backend는 local filesystem이다. 오래된 profile data 삭제나 retention 변경은 guide 범위가 아니라 runbook escalation 대상이다.
 - **Language support**: 언어와 runtime에 따라 CPU, memory, goroutine, mutex, block profile 지원 범위가 다르다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `pyroscope` is an `OPTIONAL` continuous-profile store selected by `obs`/`profiling`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Pyroscope config](../../../../../infra/06-observability/pyroscope/config/pyroscope.yaml) are authoritative.
+- **Flow/dependencies/security**: clients or an Alloy profile source would write profiles; Grafana queries them. Current Alloy config has a write sink but no profile source, so end-to-end collection is not proven. Traefik protects the route; Grafana, producers, storage, and `infra_net` are dependencies.
+- **State/resources**: single-node filesystem state is under `pyroscope-data:/var/lib/pyroscope`; there are no service Docker Secrets. Source resource values are limits, not measured headroom.
+- **Normal use**: render from root, verify readiness with `profilecli ready`, ingest a labeled test profile only from an approved client, and query it from Pyroscope/Grafana.
+- **Lifecycle**: stop writes and take a consistent stopped filesystem snapshot; preserve config and producer labels. Upgrade with storage-format guidance, then verify historical/new profile queries and producer compatibility.
+- **Upstream/license**: follow official [storage](https://grafana.com/docs/pyroscope/latest/configure-server/storage/) and [deployment modes](https://grafana.com/docs/pyroscope/latest/reference-pyroscope-v2-architecture/deployment-modes/) guidance. Pyroscope is AGPL-3.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps pyroscope`
+- `docker compose --profile obs ps pyroscope`
 - `docker logs --tail=100 infra-pyroscope`
-- `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`
+- `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
 - `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 
 ## Runbook Handoff
@@ -93,7 +105,9 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

@@ -116,6 +116,6 @@ k6/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
 
 Build source authority: [Dockerfile](Dockerfile).

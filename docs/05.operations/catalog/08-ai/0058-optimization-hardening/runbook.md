@@ -48,7 +48,10 @@ created: "2026-05-17"
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 3. 증상별 복구
    - middleware 회귀:
-     - Ollama/Open WebUI 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
+     - Ollama에는
+       `gateway-standard-chain@file,sso-errors@file,sso-auth@file`, Open
+       WebUI에는 `gateway-standard-chain@file`과 native OIDC contract를
+       source대로 재적용
    - Ollama 과부하/queue 적체:
      - `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 보수값으로 복원
    - Open WebUI stateful drift:
@@ -104,7 +107,7 @@ created: "2026-05-17"
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- Configuration rollback rehearsal is planned and not executed. Stateful recovery remains in `RUN-0056`, `RUN-0057`, and `RUN-0081`; do not infer model, SQLite, vector, or workflow recovery from this optimization runbook.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -119,7 +122,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

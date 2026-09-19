@@ -68,6 +68,13 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
     persistent volume, config path를 runtime에서 변경하는 행위
   - 운영 환경에서 근거 없이 high-overhead block/mutex profiling을 상시 활성화하는 행위
 
+### Lifecycle and data controls
+
+- Keep Pyroscope `OPTIONAL`; a currently running container does not change classification. Explicit future targets must stop it when leaving profiling because `HOME up` does not remove preexisting extras.
+- Retain gateway auth and local filesystem boundaries. A configured write sink without a profile source is not collection evidence.
+- Back up only after stopping writes/service or using a validated consistent snapshot. Rehearse on isolated storage and verify historical/new queries plus producer labels.
+- Removal requires producer/Grafana cleanup, retention decision, route shutdown, and explicit approval before deleting `pyroscope-data`.
+
 ## Exceptions
 
 - Retention, storage backend, ingestion limits, profile source, route 예외는
@@ -97,7 +104,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

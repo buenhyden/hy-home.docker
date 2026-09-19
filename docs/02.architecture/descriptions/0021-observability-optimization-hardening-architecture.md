@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -115,4 +115,4 @@ created: "2026-03-28"
 - **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -46,7 +46,7 @@ created: "2026-05-17"
 1. 현재 service 상태, 최근 로그, route/health signal을 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alloy
+   docker compose --profile obs ps alloy
    docker logs --tail=200 infra-alloy
    docker exec infra-alloy bash -lc 'exec 3<>/dev/tcp/localhost/12345; printf "HEAD /-/healthy HTTP/1.1\r\nHost: localhost\r\n\r\n" >&3; timeout 2 head -1 <&3'
    ```
@@ -88,14 +88,14 @@ created: "2026-05-17"
 7. Config가 현재 정책과 일치하지만 runtime state가 회복되지 않으면 Alloy를 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy
+   docker compose --profile obs restart alloy
    ```
 
 8. `config.alloy` 변경 후 장애가 발생했다면 Git-managed config diff를 되돌리고 readiness를 재확인한다.
 
    ```bash
    git diff -- infra/06-observability/alloy/config/config.alloy
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy
+   docker compose --profile obs restart alloy
    docker logs --tail=100 infra-alloy
    ```
 
@@ -103,7 +103,7 @@ created: "2026-05-17"
 
 ### Verification Steps
 
-- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alloy`에서 `alloy` service가 running이다.
+- [ ] `docker compose --profile obs ps alloy`에서 `alloy` service가 running이다.
 - [ ] Alloy UI `https://alloy.${DEFAULT_URL}`에서 pipeline graph에 failed component가 없다.
 - [ ] Logs appear in Loki, Alloy self metrics appear in Prometheus, and OTLP traces appear in Tempo for affected paths.
 - [ ] Pyroscope writer endpoint remains configured, and profile ingestion is only claimed when a profile source is explicitly connected.
@@ -130,6 +130,15 @@ created: "2026-05-17"
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+### Planned isolated recovery rehearsal
+
+Status: **planned and not executed**. Exact in-flight telemetry recovery is not claimed.
+
+1. Record image/config digests, active components, downstream endpoints, queue/WAL metrics, and whether any component actually uses `/var/lib/alloy`. Quiesce test producers where possible.
+2. Restore the tracked config and only verified component state into a separate project/network connected to test Loki/Tempo/Prometheus/Pyroscope endpoints; keep host/Docker access read-only and minimal.
+3. Validate config, start Alloy, inject labeled test log/trace/metric inputs, and verify each configured downstream plus retry/WAL behavior. Test profiles only after confirming a source component.
+4. On mismatch, stop the isolated collector and preserve logs. Roll back config/image; record any accepted in-flight loss before production change.
 
 ## Evidence
 

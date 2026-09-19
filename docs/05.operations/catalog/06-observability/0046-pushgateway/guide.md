@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0046"
 parent_ids:
 - "POL-0046"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - pushgateway
 created: "2026-05-10"
 ---
 
@@ -91,9 +94,18 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 - **High cardinality**: user ID, request ID, unbounded build ID를 label에 넣으면 cleanup이 어려워지고 메모리 사용량이 커진다.
 - **Scrape assumption**: Pushgateway service가 떠 있어도 Prometheus scrape job이 없으면 Prometheus target이나 alert에서 해당 metric을 볼 수 없다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `pushgateway` is an `OPTIONAL` batch-metric bridge selected by `obs`/`batch-metrics`; [Compose](../../../../../infra/06-observability/docker-compose.yml) is authoritative.
+- **Flow/dependencies/security**: approved short-lived jobs push metrics; Prometheus scrapes them. Traefik protects the UI/API route, but producer authorization and metric-label discipline remain required. Prometheus, gateway/auth, and `infra_net` are dependencies.
+- **State**: current Compose declares no volume and no `--persistence.file`; metrics live in process memory and are lost on restart. There are no Docker Secrets. Never describe current Pushgateway contents as durable or exactly restorable.
+- **Resources/normal use**: source limits are not headroom. Render from root, start only for batch use, push a labeled test group, verify Prometheus scrape, and delete stale groups after producer completion.
+- **Lifecycle/recovery**: backup is producer definitions and metric contracts, not gateway memory. After restart/rebuild, producers repush only current valid metrics; do not replay stale observations. Upgrade with API/label compatibility checks.
+- **Upstream/license**: follow the official [Prometheus Pushgateway repository](https://github.com/prometheus/pushgateway). Pushgateway is Apache-2.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps pushgateway`
+- `docker compose --profile obs ps pushgateway`
 - `curl -I http://pushgateway:9091/-/ready`
 - `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`
 
@@ -109,7 +121,9 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

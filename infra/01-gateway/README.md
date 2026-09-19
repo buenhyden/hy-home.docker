@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The root stack includes both leaves unconditionally and a profile decides what starts: `traefik` belongs to `core` and `dev`, while `nginx` belongs to the dedicated `nginx` profile. Neither resolves when no profile is selected. Nginx must still be validated or run with an explicit root network/dependency context.
+The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The root stack includes both leaves unconditionally and a profile decides what starts: `traefik` belongs to `core`, `dev`, and `local`, while `nginx` belongs only to `nginx`. Both publish host ports 80/443, so they must not be selected together on one host. Neither resolves when no profile is selected. Nginx also requires the root network and healthy MinIO dependency context.
 
 ## Audience
 
@@ -51,7 +51,7 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 
 ## Tech Stack
 
-Runtime image pins are declared in [Traefik Compose](traefik/docker-compose.yml) and [NGINX Compose](nginx/docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+Runtime image pins are declared in [Traefik Compose](traefik/docker-compose.yml) and [NGINX Compose](nginx/docker-compose.yml). The [version registry](../tech-stack.versions.json) is a derived Compose image projection.
 
 | Category   | Technology                        | Notes                     |
 | ---------- | --------------------------------- | ------------------------- |
@@ -70,9 +70,9 @@ Runtime image pins are declared in [Traefik Compose](traefik/docker-compose.yml)
 
 ## How to Work in This Area
 
-1. Review the Gateway operations guides (`docs/05.operations/catalog/01-gateway/README.md`) to understand traffic flow.
+1. Review the [documentation index](../../docs/README.md) and subject package `docs/05.operations/catalog/01-gateway/README.md` to understand traffic flow.
 2. Ensure secrets are generated via `scripts/operations/gen-secrets.sh` before deployment.
-3. Follow the Edge routing stack guide (`docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md`) for initial deployment boundaries.
+3. Follow subject `0012-edge-routing-stack` under `docs/05.operations/catalog/01-gateway/` for initial deployment boundaries.
 4. Verify static readiness with `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` and `bash scripts/hardening/check-all-hardening.sh 01-gateway`; use runtime health commands only against an approved running stack.
 
 ## Related Documents

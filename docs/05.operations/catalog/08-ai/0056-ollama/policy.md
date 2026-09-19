@@ -47,6 +47,14 @@ Ollama 추론 엔진 운영 전반:
   - 출처 불명/무검증 모델 운영 반영.
   - 운영 시간대 무단 리소스 상향.
 
+### Lifecycle and data controls
+
+- Ollama and its exporter remain `HOME`. Model additions and replacements require source, digest, model-card/license, resource fit, and representative quality/safety evidence.
+- Treat model blobs as rebuildable only when the exact artifact is reproducible; otherwise preserve the model volume as recovery data. User prompts or generated content are outside this service volume and follow their owning application.
+- Before upgrade, record image/model digests and GPU/driver compatibility, preserve a recoverable model set, and verify API, exporter, representative inference, and Open WebUI integration before accepting the new version.
+- Resource declarations are caps/reservations, not headroom claims. Any concurrency increase requires measured CPU, RAM, VRAM, latency, and failure evidence under the shared-GPU workload.
+- Removal requires an approved model-retention decision, provenance export, client shutdown, route removal, and explicit approval before deleting the model volume.
+
 ## Exceptions
 
 - 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
@@ -79,7 +87,7 @@ Ollama 추론 엔진 운영 전반:
 
 - [Ollama API authentication](https://docs.ollama.com/api/authentication): local API의 무인증 동작과 cloud API 인증을 구분한다.
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

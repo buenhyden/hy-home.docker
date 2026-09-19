@@ -10,12 +10,14 @@ layer: "operations"
 
 # Operations — 03 Security
 
-> Security operations documents grouped by the stable Vault subject.
+> Canonical OpenBao and legacy Vault operations grouped by stable subject.
 
 ## Overview
 
-This domain keeps the existing Vault guide, policy, and runbook together under
-one stable `0016-vault` subject without changing their operational content.
+OpenBao (`0085-openbao`) is the canonical HOME secret service with Raft,
+AppRole Agent rendering, and native Keycloak OIDC. Vault (`0016-vault`) is
+retained only under `legacy-vault` for migration and recovery. Their data paths,
+seal material, snapshots, and consumers remain separate.
 
 ## Audience
 
@@ -23,8 +25,9 @@ one stable `0016-vault` subject without changing their operational content.
 
 ## Scope
 
-- Existing Vault usage context, approved controls, and recovery procedure.
-- No secret values, Vault runtime change, or additional operational role.
+- OpenBao current operation and legacy Vault migration/recovery.
+- No secret values, runtime change, credential rotation, restore execution, or
+  unauthenticated root recovery is authorized by this index.
 
 ## Structure
 

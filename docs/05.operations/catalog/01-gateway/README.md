@@ -23,7 +23,7 @@ one four-digit subject folder. Roles remain separate and no missing role is adde
 
 ## Scope
 
-- Nginx routing under the `nginx` profile, Traefik routing under `core`/`dev`, and the edge-routing stack.
+- Nginx routing under the `nginx` profile, Traefik routing under `core`/`dev`/`local`, and the edge-routing stack. Because both publish 80/443, they are alternative listeners.
 - No runtime configuration, secret, or deployment mutation.
 
 ## Structure

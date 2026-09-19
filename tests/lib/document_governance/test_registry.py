@@ -1097,6 +1097,60 @@ class DocumentRegistryTests(unittest.TestCase):
             schema["$defs"]["branchIntegrationReceipt"]["additionalProperties"],
         )
 
+    def test_guide_implementation_services_has_one_optional_typed_contract(
+        self,
+    ) -> None:
+        registry = load_registry()
+        schema_path = (
+            ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        )
+        guide = registry.profiles["guide"]
+        self.assertIn("implementation_services", guide["optional_frontmatter"])
+        self.assertTrue(
+            all(
+                "implementation_services" not in profile["optional_frontmatter"]
+                for profile_id, profile in registry.profiles.items()
+                if profile_id != "guide"
+            )
+        )
+        self.assertIn("implementation_services", registry.common["frontmatter_order"])
+
+        valid = {
+            "implementation_services": {
+                "infra/04-data/nosql/cassandra/docker-compose.yml": [
+                    "cassandra-node1",
+                    "cassandra-exporter",
+                ]
+            }
+        }
+        self.assertEqual((), validate_frontmatter(valid, schema_path))
+        for value in (
+            {},
+            {"infra/example/docker-compose.yml": []},
+            {"infra/example/docker-compose.yml": ["service", "service"]},
+            {"/infra/example/docker-compose.yml": ["service"]},
+            {"infra/example/../docker-compose.yml": ["service"]},
+            {"docs/example/docker-compose.yml": ["service"]},
+            {"infra/example/docker-compose.yml": ["invalid service"]},
+        ):
+            with self.subTest(value=value):
+                self.assertEqual(
+                    {"frontmatter-schema-invalid"},
+                    {
+                        finding.code
+                        for finding in validate_frontmatter(
+                            {"implementation_services": value}, schema_path
+                        )
+                    },
+                )
+
+        template = (
+            ROOT / "docs/99.templates/templates/operations/guide.template.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("implementation_services", template)
+        self.assertIn("Service Guides", template)
+        self.assertIn("workspace and process Guides omit", template)
+
     def test_registered_templates_use_one_placeholder_grammar(self) -> None:
         registry = load_registry()
 
@@ -1126,6 +1180,53 @@ class DocumentRegistryTests(unittest.TestCase):
                             for token in native_tokens
                         )
                     )
+
+    def test_operations_templates_prompt_for_applicable_service_contracts(self) -> None:
+        template_root = ROOT / "docs/99.templates/templates/operations"
+        expected = {
+            "guide.template.md": (
+                "actual implementation",
+                "service profiles",
+                "network and exposure",
+                "data and persistence",
+                "dependency",
+                "environment and secret names",
+                "resources",
+                "security",
+                "normal use",
+                "backup prerequisites and recovery",
+                "upgrade and migration",
+                "official sources",
+            ),
+            "policy.template.md": (
+                "authentication",
+                "secret handling",
+                "data retention",
+                "resource limits",
+                "upgrade and migration",
+                "removal or decommission",
+            ),
+            "runbook.template.md": (
+                "preconditions",
+                "static checks",
+                "diagnosis and logs",
+                "authorized start, stop, and restart",
+                "backup and restore",
+                "upgrade and migration",
+                "rollback",
+                "verification",
+                "escalation",
+                "current image",
+            ),
+        }
+
+        for name, phrases in expected.items():
+            text = (template_root / name).read_text(encoding="utf-8").casefold()
+            with self.subTest(template=name):
+                self.assertIn("for a service subject", text)
+                self.assertIn("omit nonapplicable fields without filler", text)
+                for phrase in phrases:
+                    self.assertIn(phrase, text)
 
     def test_registry_is_deeply_immutable(self) -> None:
         registry = load_registry()

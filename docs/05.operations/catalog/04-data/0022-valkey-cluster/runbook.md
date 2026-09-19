@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -12,120 +12,96 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Valkey Cluster Health Runbook
-
-> Scope: health checks, cluster status checks, evidence capture, and escalation for the Valkey cluster.
-
----
-
-## Overview
-
-이 런북은 Valkey cluster의 compose render, 6개 노드 상태, init job, exporter 상태, cluster info를 즉시 확인해야 할 때 사용한다. 데이터 볼륨 삭제, 강제 cluster recreation, RDB/AOF restore는 이 런북의 검증된 복구 범위가 아니다.
-
-### Purpose
-
-`valkey-node-0..5`, `valkey-cluster-init`, `valkey-cluster-exporter`의 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
+# Valkey Cluster Health and Recovery Runbook
 
 ## When to Use
 
-- One or more `valkey-node-*` services are missing or unhealthy.
-- `valkey-cluster-init` failed or skipped cluster creation unexpectedly.
-- Cluster status, slot assignment, or exporter health needs verification.
-- Linked Valkey operations docs or compose references were changed and need local verification evidence.
+Use for approved static diagnosis, backup planning or isolated recovery of this
+exact subject. Live writes, restore, cutover, cleanup and credential changes need
+a separately approved task.
+
+## Scope
+
+Static validation is safe to perform in this documentation task. Starting the
+cluster, writing data, taking a live backup, restoring or changing membership is
+planned operator work and was not executed.
 
 ## Procedure
 
-### Checklist
+From the repository root:
 
-- [ ] Confirm this is a health/status verification task, not volume deletion, forced recreation, or backup restore.
-- [ ] Confirm Docker Secret file `service_valkey_password` exists without printing its value.
-- [ ] Confirm `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5` are the approved runtime data locations.
-- [ ] Confirm any evidence capture avoids copying secret values or full credential-bearing command output.
+```bash
+docker compose --env-file .env.example --profile valkey-cluster config --quiet
+docker compose --env-file .env.example --profile valkey-cluster config --services
+```
 
-### Steps
+Confirm six node services, the init job and exporter; six distinct data volumes;
+`infra_net`; the password secret; node health checks; and the 6379–6384 client and
+16379–16384 bus mappings. Stop if rendered paths are empty or unexpected.
 
-1. Render the current compose configuration.
+## Planned backup procedure
 
-   ```bash
-   docker compose --profile valkey-cluster config --quiet
-   ```
+1. Open an approved maintenance window and identify the application writers.
+2. Record engine/image source, cluster node IDs, slot ownership, primary/replica
+   relationships and persistence mode. Pause writes or establish an explicitly
+   accepted consistency point.
+3. On each primary, request and verify an RDB checkpoint. Copy the complete RDB
+   and, when enabled, every AOF base/increment file plus its manifest as one set.
+   Do not copy an AOF while it is being rewritten.
+4. Include configuration and a diagnostic copy of cluster metadata, but mark
+   `nodes.conf` as source identity rather than a file to reuse.
+5. Write a manifest of node role, timestamp, file size and checksum. Transfer the
+   sets to a separate encrypted destination under restricted custody.
 
-2. Check service status.
+## Planned isolated restore
 
-   ```bash
-   docker compose --profile valkey-cluster ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
-   ```
-
-3. Inspect relevant logs if a service is unhealthy. Do not copy secret values into evidence.
-
-   ```bash
-   docker compose --profile valkey-cluster logs valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-init valkey-cluster-exporter
-   ```
-
-4. Check cluster state from inside the node boundary without printing the secret.
-
-   ```bash
-   docker compose --profile valkey-cluster exec valkey-node-0 sh -c 'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password | tr -d "\n"); valkey-cli -a "$VALKEY_PASSWORD" -p "${PORT:-6379}" cluster info | grep "^cluster_state:"'
-   ```
-
-5. Re-run the init job only when cluster creation or idempotent init verification is explicitly required.
-
-   ```bash
-   docker compose --profile valkey-cluster run --rm valkey-cluster-init
-   ```
-
-### Verification Steps
-
-- `docker compose --profile valkey-cluster config --quiet`
-- `docker compose --profile valkey-cluster ps`
-- Expected result: compose renders, six node services and exporter are present, and cluster state evidence is recorded without exposing the secret.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker compose --profile valkey-cluster logs ...`
-- **Health**: compose `ps` status for six nodes and exporter
-- **Cluster status**: `cluster info` and `cluster nodes` summaries captured from inside a node container
-- **Evidence to Capture**: command names, timestamps, service status summary, cluster-state summary, init-job outcome if run, and skipped destructive actions
-
-### Safe Rollback or Recovery Procedure
-
-1. For documentation-only changes, revert the last documentation diff and rerun validation.
-2. For an init-job failure, preserve logs and current data-volume state, then escalate; do not delete volumes or force recreate the cluster from this runbook.
-3. For suspected secret exposure, stop copying output and escalate under `## Escalation`.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop using commands that reveal secret-bearing output when exposure risk appears.
-- **Eval Re-run**: Re-run linked validation scripts after documentation remediation.
+1. Provision an empty, network-isolated six-node target at a persistence-compatible
+   Valkey version with disposable credentials. Do not connect application clients.
+2. Recreate the intended three-primary/three-replica topology with fresh cluster
+   identity. Map each primary backup to the documented slot owner; never merge
+   unrelated node sets.
+3. With target nodes stopped, place each complete persistence set in its empty
+   data directory with correct ownership. Do not reuse live `nodes.conf`.
+4. Start only the isolated target. Confirm AOF loading completes without truncation
+   or repair, `cluster_state` is healthy, all slots are covered, and replicas are
+   attached to the intended primaries.
+5. Compare per-slot/key counts and selected values with the manifest, then run a
+   disposable cluster-aware client read/write/delete test.
+6. Record observed recovery point and elapsed time. A separate approved cutover
+   must pause writers, take a final backup, switch clients, validate, and retain
+   the previous state for rollback.
 
 ## Evidence
 
-- Record the compose command executed, service status, cluster-state summary, init-job result if applicable, and any destructive action that was intentionally skipped.
-- Attach failed validation output or service symptoms to the related task or incident evidence without copying secret values.
+Record source revision/version, scope, timestamps, manifest/checksum summary,
+commands and exit status, validation result, observed recovery point/time and all
+unverified gaps. Exclude secrets, raw payloads and private resolved paths.
 
 ## Rollback or Recovery
 
-N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If volume restore, forced cluster recreation, or credential rotation is required, stop and escalate with captured evidence.
+A failed cutover returns clients to the preserved original cluster after validating
+its identity and write boundary; backup sets and the isolated target remain retained. Cutover occurs only after owner approval,
+final consistency capture, application validation and a retained rollback window.
 
 ## Escalation
 
-Escalate to the owning operator when compose render fails, required secrets are missing, services remain unhealthy after documented checks, cluster state cannot be verified, secret exposure risk appears, or destructive data recovery is required.
+Stop for missing AOF segments, checksum mismatch, unexpected identity, uncovered
+slots, replica drift or any prompt to repair/truncate persistence. Preserve logs
+without secret values and escalate to the data owner.
 
 ## Traceability
 
-- Declared parent: [Valkey Cluster Usage Guide](guide.md) (`GDE-0022`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0022`), [Policy](policy.md) (`POL-0022`)
+- Runtime source: [Valkey Cluster Compose](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
+- Artifact: `RUN-0022`; parent guide: `GDE-0022`.
+- Procedures are planned unless a dated verification record explicitly says they ran.
+
+## References
+
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)
+- [Policy](policy.md)
+
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
-- [Infrastructure service README](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
+- [Domain catalog](../README.md)

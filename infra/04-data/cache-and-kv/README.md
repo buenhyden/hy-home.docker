@@ -8,71 +8,43 @@ updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
-# Cache & Key-Value Stores (04-data/cache-and-kv)
-
-> Distributed Caching and Fast Key-Value Storage Services / 분산 캐싱 및 고성능 키-밸류 저장소 서비스
+# Cache and key-value data
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 캐싱 및 키-밸류 저장소 서비스를 위한 구성을 포함합니다. 고성능 데이터 액세스와 임시 상태 관리에 최적화된 서비스를 제공합니다.
-
-This directory contains infrastructure configurations for caching and key-value storage services within `hy-home.docker`. These services are optimized for high-performance data access and transient state management.
+This area documents the repository's cache and key-value data package.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- 인프라를 배포하고 관리하는 **Operators**
-- 캐시 서비스를 연동하는 **Developers**
-- 자동화된 운영 작업을 수행하는 **AI Agents**
+It is intended for operators and maintainers of the Valkey deployment.
 
 ## Scope
 
-### In Scope
-
-- Valkey Cluster (6-node) 구성 및 관리
-- 분산 캐싱 인프라 프로비저닝
-- 클러스터 헬스체크 및 성능 모니터링 구성
-
-### Out of Scope
-
-- 애플리케이션 레벨의 데이터 모델링
-- 캐시 무효화 로직 구현
-- 개별(Stand-alone) Valkey 인스턴스 관리
+It covers the selected package and the boundary between cluster and management
+Valkey state.
 
 ## Structure
 
-```text
-cache-and-kv/
-├── valkey-cluster/       # 6-node 분산 클러스터 (Primary + Replica)
-└── README.md             # This file
-```
+### Current package
+
+[`valkey-cluster`](valkey-cluster/README.md) is the only package in this tier. Its
+six Valkey nodes, init job and exporter use the exact `valkey-cluster` profile and
+are classified LAB. It is distinct from HOME `mng-valkey`, which is owned by
+`operational/mng-db` and supplies workflow broker/cache state.
 
 ## How to Work in This Area
 
-1. [valkey-cluster/README.md](./valkey-cluster/README.md)를 통해 세부 클러스터 구성을 확인합니다.
-2. 실행 가이드는 Valkey Cluster Guide (`docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`)를 참조합니다.
-3. 운영 정책은 Valkey Operations Policy (`docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`)를 확인합니다.
+### Operator boundary
+
+Render the `valkey-cluster` profile through the root project. Keep six data paths
+and cluster identities separate, protect `service_valkey_password`, and treat
+published client and cluster-bus ports as trusted-network exposure. The same-host
+three-primary/three-replica topology is not host availability.
+
+Backup requires coordinated RDB checkpoints plus complete AOF sets/manifests and
+an isolated fresh-identity restore.
 
 ## Related Documents
 
-- **Guides**: `docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`
-- **Policy**: `docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`
-- **Runbook**: `docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md`
-- [Documentation index](../../../docs/README.md)
-
-## Tech Stack
-
-| Category   | Technology   | Notes                     |
-| ---------- | ------------ | ------------------------- |
-| Storage    | Valkey       | Redis-compatible high-perf|
-| Topology   | 3P + 3R      | 6-node Cluster            |
-
-## Available Scripts
-
-| Command | Description |
-| :--- | :--- |
-| `docker compose --profile valkey-cluster up -d` | 클러스터 전체 노드 시작 |
-| `docker compose --profile valkey-cluster ps` | 노드별 상태 확인 |
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Use the [documentation entry point](../../../docs/README.md)
+to locate Stage 05 subject `04-data/0022-valkey-cluster` and backup policy POL-0021.

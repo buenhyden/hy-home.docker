@@ -16,6 +16,7 @@ from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     validate_active_operations_references,
     validate_compose_profile_vocabulary,
     validate_current_operations,
+    validate_service_inventory,
 )
 
 
@@ -39,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
             *validate_current_operations(ROOT),
             *validate_active_operations_references(ROOT),
             *validate_compose_profile_vocabulary(ROOT),
+            *validate_service_inventory(ROOT),
         )
     except OperationsAuthorityError as error:
         print(f"FAIL {error.code}: {error}")

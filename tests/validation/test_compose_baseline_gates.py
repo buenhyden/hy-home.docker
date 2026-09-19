@@ -21,6 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 QUICKWIN = ROOT / "scripts/validation/check-quickwin-baseline.sh"
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
+VALIDATE_COMPOSE = ROOT / "scripts/validation/validate-docker-compose.sh"
 
 COMPLIANT_SERVICE = {
     "restart": "unless-stopped",
@@ -117,6 +118,318 @@ class BaselineGateHarness(unittest.TestCase):
             env=self.gate_env(),
             check=False,
         )
+
+
+class ComposeSelectionValidationTests(unittest.TestCase):
+    def _run_port_matrix(
+        self, services: dict[str, dict[str, object]]
+    ) -> subprocess.CompletedProcess[str]:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
+            policy = (
+                root / "docs/05.operations/catalog/00-workspace/"
+                "0078-compose-profile-vocabulary/policy.md"
+            )
+            policy.parent.mkdir(parents=True)
+            policy.write_text(
+                "| Named selection | Profiles | Forbidden categories |\n"
+                "| --- | --- | --- |\n"
+                "| HOME | `alpha`, `beta` | "
+                "`automation`, `lifecycle`, `topology` |\n",
+                encoding="utf-8",
+            )
+            fakebin = root / "fakebin"
+            fakebin.mkdir()
+            docker = fakebin / "docker"
+            docker.write_text(
+                """#!/usr/bin/env python3
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+if "--profiles" in args:
+    print("alpha")
+    print("beta")
+    raise SystemExit(0)
+profiles = [
+    args[index + 1]
+    for index, value in enumerate(args)
+    if value == "--profile"
+]
+all_services = json.loads(os.environ["FAKE_COMPOSE_SERVICES"])
+services = {profile: all_services[profile] for profile in profiles}
+if "--services" in args:
+    print("\\n".join(services))
+else:
+    print(json.dumps({"services": services}))
+""",
+                encoding="utf-8",
+            )
+            docker.chmod(0o755)
+            return subprocess.run(
+                ["bash", os.fspath(VALIDATE_COMPOSE)],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
+                    "FAKE_COMPOSE_SERVICES": json.dumps(services),
+                },
+                check=False,
+            )
+
+    def test_default_mode_checks_home_union_for_cross_profile_port_collisions(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
+            policy = (
+                root / "docs/05.operations/catalog/00-workspace/"
+                "0078-compose-profile-vocabulary/policy.md"
+            )
+            policy.parent.mkdir(parents=True)
+            policy.write_text(
+                "| Named selection | Profiles | Forbidden categories |\n"
+                "| --- | --- | --- |\n"
+                "| HOME | `alpha`, `beta` | "
+                "`automation`, `lifecycle`, `topology` |\n",
+                encoding="utf-8",
+            )
+            fakebin = root / "fakebin"
+            fakebin.mkdir()
+            docker = fakebin / "docker"
+            docker.write_text(
+                """#!/usr/bin/env python3
+import json
+import sys
+
+args = sys.argv[1:]
+if "--profiles" in args:
+    print("alpha")
+    print("beta")
+    raise SystemExit(0)
+profiles = [
+    args[index + 1]
+    for index, value in enumerate(args)
+    if value == "--profile"
+]
+services = {
+    profile: {
+        "ports": [
+            {
+                "host_ip": "127.0.0.1",
+                "published": "18080",
+                "protocol": "tcp",
+            }
+        ]
+    }
+    for profile in profiles
+}
+if "--services" in args:
+    print("\\n".join(services))
+elif "--format" in args:
+    print(json.dumps({"services": services}))
+else:
+    print(json.dumps({"services": services}))
+""",
+                encoding="utf-8",
+            )
+            docker.chmod(0o755)
+            result = subprocess.run(
+                ["bash", os.fspath(VALIDATE_COMPOSE)],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
+                },
+                check=False,
+            )
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("FAIL: HOME:", result.stdout)
+
+    def test_ipv4_wildcard_and_omitted_host_overlap_specific_address(self) -> None:
+        for wildcard in ({"host_ip": "0.0.0.0"}, {}):
+            with self.subTest(wildcard=wildcard):
+                result = self._run_port_matrix(
+                    {
+                        "alpha": {
+                            "ports": [
+                                {
+                                    **wildcard,
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                        "beta": {
+                            "ports": [
+                                {
+                                    "host_ip": "127.0.0.1",
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                    }
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn("FAIL: HOME:", result.stdout)
+
+    def test_ipv6_wildcard_overlaps_specific_ipv6_address(self) -> None:
+        result = self._run_port_matrix(
+            {
+                "alpha": {
+                    "ports": [
+                        {
+                            "host_ip": "::",
+                            "published": "18080",
+                            "protocol": "tcp",
+                        }
+                    ]
+                },
+                "beta": {
+                    "ports": [
+                        {
+                            "host_ip": "::1",
+                            "published": "18080",
+                            "protocol": "tcp",
+                        }
+                    ]
+                },
+            }
+        )
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("FAIL: HOME:", result.stdout)
+
+    def test_omitted_or_empty_host_overlaps_specific_ipv6_address(self) -> None:
+        for implicit in ({}, {"host_ip": ""}):
+            with self.subTest(implicit=implicit):
+                result = self._run_port_matrix(
+                    {
+                        "alpha": {
+                            "ports": [
+                                {
+                                    **implicit,
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                        "beta": {
+                            "ports": [
+                                {
+                                    "host_ip": "::1",
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                    }
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn("FAIL: HOME:", result.stdout)
+
+    def test_ipv4_mapped_ipv6_addresses_overlap_native_ipv4_bindings(self) -> None:
+        cases = (
+            ("same specific address", "::ffff:127.0.0.1", "127.0.0.1"),
+            ("mapped wildcard", "::ffff:0.0.0.0", "127.0.0.1"),
+        )
+        for label, mapped, native in cases:
+            with self.subTest(case=label):
+                result = self._run_port_matrix(
+                    {
+                        "alpha": {
+                            "ports": [
+                                {
+                                    "host_ip": mapped,
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                        "beta": {
+                            "ports": [
+                                {
+                                    "host_ip": native,
+                                    "published": "18080",
+                                    "protocol": "tcp",
+                                }
+                            ]
+                        },
+                    }
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertIn("FAIL: HOME:", result.stdout)
+
+    def test_nonoverlapping_address_family_and_protocol_bindings_pass(self) -> None:
+        cases = (
+            ("distinct IPv4", "127.0.0.1", "127.0.0.2", "tcp", "tcp"),
+            ("distinct IPv6", "::1", "2001:db8::1", "tcp", "tcp"),
+            ("separate families", "0.0.0.0", "::", "tcp", "tcp"),
+            ("separate protocols", "0.0.0.0", "127.0.0.1", "tcp", "udp"),
+        )
+        for label, first_host, second_host, first_protocol, second_protocol in cases:
+            with self.subTest(case=label):
+                result = self._run_port_matrix(
+                    {
+                        "alpha": {
+                            "ports": [
+                                {
+                                    "host_ip": first_host,
+                                    "published": "18080",
+                                    "protocol": first_protocol,
+                                }
+                            ]
+                        },
+                        "beta": {
+                            "ports": [
+                                {
+                                    "host_ip": second_host,
+                                    "published": "18080",
+                                    "protocol": second_protocol,
+                                }
+                            ]
+                        },
+                    }
+                )
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                self.assertIn("Docker Compose validation passed", result.stdout)
+
+    def test_invalid_host_ip_fails_closed(self) -> None:
+        result = self._run_port_matrix(
+            {
+                "alpha": {
+                    "ports": [
+                        {
+                            "host_ip": "not-an-ip",
+                            "published": "18080",
+                            "protocol": "tcp",
+                        }
+                    ]
+                },
+                "beta": {"ports": []},
+            }
+        )
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("invalid host IP", result.stdout + result.stderr)
 
 
 class QuickwinBaselineTests(BaselineGateHarness):

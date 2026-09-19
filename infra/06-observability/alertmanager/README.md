@@ -73,9 +73,9 @@ alertmanager/
 
 | Command                  | Description                 |
 | :----------------------- | :-------------------------- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d alertmanager` | Start Alertmanager from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alertmanager` | Apply configuration changes from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f alertmanager` | Tail Alertmanager logs from the repository root |
+| `docker compose --profile obs up -d alertmanager` | Start Alertmanager from the repository root |
+| `docker compose --profile obs restart alertmanager` | Apply configuration changes from the repository root |
+| `docker compose --profile obs logs -f alertmanager` | Tail Alertmanager logs from the repository root |
 
 ## Configuration
 
@@ -91,19 +91,27 @@ alertmanager/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify service readiness with `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager` and `docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready`.
+- Verify service readiness with `docker compose --profile obs ps alertmanager` and `docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready`.
 - Verify routing tree syntax by checking `docker logs --tail=200 infra-alertmanager` after `config.yml` changes.
 - Confirm Prometheus delivery with `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`.
 - Confirm receiver connectivity by triggering a test alert and verifying the notification reaches the expected Slack channel.
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For routing tree errors: validate `config.yml` YAML syntax and check that all referenced receivers are defined.
 - For notification failures: confirm `slack_webhook`, `smtp_username`, and `smtp_password` Docker Secrets are mounted.
 - For inhibition rule issues: review `inhibit_rules` in `config.yml` to ensure source and target match labels are correct.
 - Do not capture `/tmp/config.yml` or secret values as troubleshooting evidence.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `alerting`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alertmanager`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0039-alertmanager/`; IDs `GDE-0039`, `POL-0039`, `RUN-0039`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
@@ -112,4 +120,4 @@ alertmanager/
 - **Runbook**: `docs/05.operations/catalog/06-observability/0039-alertmanager/runbook.md`
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -65,11 +65,11 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
-| Secret refs | names: `opensearch_exporter_password`, `vault_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/vault_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
+| Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
 | Operations | Guide index (`docs/05.operations/catalog/06-observability/README.md`), Policy index (`docs/05.operations/catalog/06-observability/README.md`), Runbook index (`docs/05.operations/catalog/06-observability/README.md`) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | From the repository root, use `docker compose --profile obs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -87,7 +87,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 ## Tech Stack
 
-Runtime image pins are declared in [Compose](docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+Runtime image pins are declared in [Compose](docker-compose.yml). The [derived Compose image projection](../tech-stack.versions.json) is a drift view.
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
@@ -119,6 +119,7 @@ Runtime image pins are declared in [Compose](docker-compose.yml). The [version r
 
 - **Persistence**: Loki and Tempo use MinIO (`04-data`) as the S3-compatible object store; Prometheus and Pyroscope use local bind-backed volumes.
 - **Auth**: Grafana is integrated with Keycloak (`02-auth`) for OAuth2 SSO.
+- **OpenBao metrics**: Prometheus source configuration declares only the dedicated `openbao_token` Docker Secret and the OpenBao `prometheus` policy. The secret contract is staged and unprovisioned; the historic live-Vault-down/no-OpenBao-loaded observation remains separate from current source readiness. A tracked source change does not prove the running Prometheus loaded the job or that the target is healthy.
 - **Networking**: All telemetry traffic flows through the `infra_net`.
 
 ## Testing
@@ -144,8 +145,27 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm LGTM service, network, volume, and secret references render.
+- From the repository root, start with `docker compose --profile obs config --quiet` to confirm LGTM service, network, volume, and secret references render.
 - Check service-specific logs first, then follow the linked observability runbook for data-path failures.
+
+### Convergence service and command map
+
+All commands run from the repository root. `docker compose --profile <profile> config --quiet` is the static preflight; `docker compose --profile <profile> up -d <service>` starts the named target. Selecting `HOME` does not stop preexisting optional containers, so a future transition must explicitly stop Pyroscope, Tempo, or Pushgateway when they are absent from the approved target.
+
+| Service | Class | Exact profiles |
+| --- | --- | --- |
+| `prometheus` | HOME | `obs`, `obs-core`, `dev`, `alerting`, `batch-metrics` |
+| `grafana` | HOME | `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics` |
+| `loki` | HOME | `obs`, `logs` |
+| `alloy` | HOME | `obs`, `logs`, `tracing`, `profiling` |
+| `node-exporter`, `cadvisor` | HOME | `obs`, `obs-host`, `dev` |
+| `gatus` | HOME | `obs`, `availability`, `dev` |
+| `alertmanager` | HOME | `obs`, `alerting` |
+| `tempo` | OPTIONAL | `obs`, `tracing` |
+| `pyroscope` | OPTIONAL | `obs`, `profiling` |
+| `pushgateway` | OPTIONAL | `obs`, `batch-metrics` |
+
+The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, and `0087` under `docs/05.operations/catalog/06-observability/`.
 
 ## Related Documents
 

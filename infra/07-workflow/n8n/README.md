@@ -114,6 +114,13 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - Start with the root workflow validation command because this leaf depends on root `infra_net`, Docker Secrets, and root include context.
 - Check n8n service logs and the linked runbook before changing queue or credential settings.
 
+### Convergence contract
+
+- n8n core/workers/task runners are **HOME** on `workflow`/`workflow-n8n`; n8n Valkey and exporter are **OPTIONAL** on `dedicated-valkey`.
+- Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d n8n n8n-worker n8n-task-runner n8n-task-runner-worker`.
+- `dedicated-valkey` only starts the pair; actual selection requires matching `N8N_VALKEY_HOST` and `N8N_VALKEY_SECRET`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/07-workflow/0053-n8n/`; IDs `GDE-0053`, `POL-0053`, `RUN-0053`. Its isolated restore is planned and unexecuted.
+
 ## Related Documents
 
 - **Guide**: n8n usage guide (`docs/05.operations/catalog/07-workflow/0053-n8n/guide.md`)
@@ -121,6 +128,6 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **Runbook**: n8n recovery runbook (`docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md`)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
 
 Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).

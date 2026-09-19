@@ -46,7 +46,7 @@ created: "2026-05-17"
 1. 현재 service 상태, 최근 로그, readiness를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki
+   docker compose --profile obs ps loki
    docker logs --tail=200 infra-loki
    docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
    ```
@@ -87,7 +87,7 @@ created: "2026-05-17"
 7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Loki를 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart loki
+   docker compose --profile obs restart loki
    docker logs --tail=100 infra-loki
    docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
    ```
@@ -96,7 +96,7 @@ created: "2026-05-17"
 
    ```bash
    git diff -- infra/06-observability/loki/config/loki-config.yaml infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart loki
+   docker compose --profile obs restart loki
    docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
    ```
 
@@ -104,7 +104,7 @@ created: "2026-05-17"
 
 ### Verification Steps
 
-- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki`에서 `loki` service가 running이다.
+- [ ] `docker compose --profile obs ps loki`에서 `loki` service가 running이다.
 - [ ] `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`가 ready response를 반환한다.
 - [ ] Alloy `loki.write` endpoint가 `http://loki:3100/loki/api/v1/push`를 유지한다.
 - [ ] Grafana datasource `Loki`가 `http://loki:3100`를 유지한다.
@@ -133,6 +133,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Loki bucket/local-state restore is claimed.
+
+1. Record image/config/schema/retention values, bucket version/checksum inventory, local-state identity, and a bounded test-query baseline. Quiesce ingestion and coordinate a consistent `loki-bucket` snapshot with the MinIO owner plus a stopped copy of recovery-relevant `loki-data`.
+2. Restore to a new bucket/prefix and local path in a separate project/network with test credentials and no production route.
+3. Start Loki, verify readiness, historical baseline queries, new labeled ingestion/query, ruler evaluation, compactor health, and retention behavior.
+4. On mismatch, stop the isolated project and retain evidence. Return to untouched object/local backups; production bucket or route changes require separate approval.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -156,7 +165,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, retention
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

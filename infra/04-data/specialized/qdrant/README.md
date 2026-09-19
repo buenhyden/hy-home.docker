@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -55,7 +55,7 @@ qdrant/
 | --- | --- |
 | Purpose | Qdrant service leaf in `04-data`; services: `qdrant`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/qdrant/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `QDRANT__TELEMETRY_DISABLED`, `QDRANT__SERVICE__HTTP_PORT`, `QDRANT__SERVICE__GRPC_PORT`, `QDRANT__STORAGE__SNAPSHOTS_PATH`, `QDRANT__STORAGE__TEMP_PATH`; profiles: `ai`, `data`, `dev` |
+| Config values | env keys are Compose-owned; exact profiles: `ai`, `ai-llm`, `qdrant` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/qdrant/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `qdrant-data:/qdrant/storage:rw`, `qdrant-data` |
@@ -85,6 +85,8 @@ qdrant/
 
 ## Validation
 
+Classification is `HOME`. Current Compose declares no Qdrant API-key secret. Snapshot recovery uses a fresh same-minor or next-minor target, an absent destination collection unless force is separately approved, and roughly twice the snapshot size in free disk. Owning artifacts are `GDE-0034`, `POL-0034`, and `RUN-0034`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Qdrant.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep Qdrant documentation and operation links synchronized.
 
@@ -101,4 +103,4 @@ qdrant/
 - Qdrant Recovery Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`)
 - [Documentation index](../../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

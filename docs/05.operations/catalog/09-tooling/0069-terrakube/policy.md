@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -14,88 +14,65 @@ created: "2026-05-17"
 
 # Terrakube Operations Policy
 
-<!-- [ID:09-tooling:terrakube] -->
-
 ## Overview
 
-Terrakube serves as the authoritative source for infrastructure state. Strict access control and operational hygiene are required to prevent data loss or unauthorized provisioning.
+Terrakube is an explicit `iac` control plane. Its Apache-2.0 project license does
+not establish support, SLA, enterprise features, or HA for this single-host deployment.
 
 ## Policy Scope
 
-This policy applies to Terrakube workspace access, execution governance, registry maintenance, sensitive variable handling, and routine platform maintenance in the tooling tier.
+API/UI/executor activation, native/gateway authentication, Docker-socket and
+provider authority, PostgreSQL/MinIO/Valkey data, coordinated recovery, upgrades,
+and removal.
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
-
-### Access Control Policy
-
-#### 1. Workspace RBAC
-
-- **Admin**: Full control over organization settings and workspace secrets (Senior DevOps only).
-- **Maintainer**: Can trigger plans and applies for specific workspaces.
-- **Reader**: View-only access to execution logs.
-
-#### 2. SSO Authentication
-
-- All users must authenticate via Keycloak.
-- Local admin accounts are disabled in production to ensure auditability.
-
-### Resource & Execution Policy
-
-| Policy Type | Setting | Description |
-| :--- | :--- | :--- |
-| **Execution Timeout** | 60 minutes | Jobs exceeding this limit are killed to prevent resource leaks. |
-| **Max Concurrency** | 5 jobs | Maximum simultaneous executors per node. |
-| **Log Retention** | 30 days | Execution logs are purged from the DB after one month. |
-
-### Registry Maintenance
-
-- **Module Versioning**: All modules must follow Semantic Versioning (SemVer).
-- **Audit**: Monthly review of unused modules and old versions to reclaim storage.
-
-### Security Standards
-
-- **Secret Scanning**: All Git repositories integrated with Terrakube must undergo pre-commit scanning.
-- **Sensitive Variables**: Mandatory encryption for all cloud provider secrets hosted within Terrakube.
-
-### Routine Maintenance
-
-#### Weekly
-
-- Monitor `terrakube-api` logs for worker drift or storage connectivity errors.
-- Verify `tfstate` bucket health in MinIO.
-
-#### Monthly
-
-- Perform a manual backup of the Terrakube metadata database (PostgreSQL).
-- Update the base Docker images for executors to include the latest security patches.
+- **Activation:** start only the three named Terrakube services under `iac`, with
+  exact dependencies selected separately. It is excluded from HOME/tooling.
+- **Authentication:** verify both the tracked gateway middleware and application
+  OIDC behavior. Do not claim native OIDC or group authorization from env labels alone.
+- **Execution:** executor Docker socket access and provider credentials are
+  privileged. Plans and applies name repository/ref, workspace, account, expected
+  resources, and approver. Apply/destroy remain separately approved.
+- **Secrets:** use only declared secret files; no secret/state/plan output in
+  logs, screenshots, Tasks, or support bundles.
+- **Data:** PostgreSQL metadata and MinIO `tfstate` are jointly authoritative.
+  Valkey is coordination state. Retention must cover a consistent recovery point.
+- **Backup/recovery:** quiesce scheduling/execution, capture PostgreSQL and MinIO
+  consistently, preserve config/client/custody metadata, and rehearse with
+  external execution disabled. One-store recovery is incomplete.
+- **Resources/availability:** treat this as a single-host, single-replica DEV
+  deployment. Do not describe container restart as HA or disaster recovery.
+- **Upgrade:** test migrations on restored copies and move API/UI/executor as a
+  compatible set. Database/state rollback accompanies an incompatible downgrade.
+- **Removal:** retain workspaces, runs, state, outputs, VCS mappings, and recovery
+  custody until an approved successor owns them; deleting containers is insufficient.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+An exception cannot bypass provider/apply approval, Docker-socket review, secret
+handling, or coordinated backup. Record expiry and recovery owner.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
-- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
+Static Compose and component health are partial signals. End-to-end evidence
+requires login/authorization, DB/object reachability, executor registration, and
+a reviewed non-applying plan. Restore remains unverified until rehearsed.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review before each release, auth change, storage/backend change, or Docker-socket
+permission change.
 
 ## Traceability
 
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0069`), [Runbook](runbook.md) (`RUN-0069`)
+- [Guide](guide.md) (`GDE-0069`)
+- [Runbook](runbook.md) (`RUN-0069`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [Terrakube Compose source](../../../../../infra/09-tooling/terrakube/docker-compose.yml)
+- [Terrakube documentation](https://docs.terrakube.io/)
+- [Terrakube license](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)

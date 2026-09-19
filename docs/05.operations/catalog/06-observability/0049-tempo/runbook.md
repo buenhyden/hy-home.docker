@@ -46,7 +46,7 @@ created: "2026-05-17"
 1. 현재 service 상태, ready endpoint, 최근 로그를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps tempo
+   docker compose --profile obs ps tempo
    docker logs --tail=200 infra-tempo
    docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
    ```
@@ -80,15 +80,15 @@ created: "2026-05-17"
 6. Readiness or ingestion state가 config와 맞지만 회복되지 않으면 Tempo를 재시작한다. Alloy exporter state도 함께 의심될 때만 Alloy를 같이 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart tempo
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart tempo alloy
+   docker compose --profile obs restart tempo
+   docker compose --profile obs restart tempo alloy
    ```
 
 7. WAL corruption or local-block corruption이 의심되면 삭제하지 말고 evidence만 수집한다.
 
    ```bash
    docker logs --tail=500 infra-tempo | grep -Ei 'wal|corrupt|local block|compactor|failed to replay'
-   docker compose -f infra/06-observability/docker-compose.yml config | grep -n 'tempo-data'
+   rg -n 'tempo-data|/var/tempo|tempo-bucket' infra/06-observability/docker-compose.yml infra/06-observability/tempo/config/tempo.yaml
    ```
 
    이 런북은 WAL 삭제, bucket mutation, or volume file mutation을 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있는 조치는 별도 incident/task approval과 backup evidence가 필요하다.
@@ -123,6 +123,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Tempo bucket/WAL restore is claimed.
+
+1. Record image/config digests, block/WAL time bounds, tenant/trace baseline, bucket inventory, local-state identity, and checksums. Quiesce Alloy/producer trace intake; coordinate a consistent `tempo-bucket` snapshot and stopped `tempo-data` copy.
+2. Restore to a new bucket/prefix and local path in a separate project/network with test credentials and no production route.
+3. Start Tempo, verify readiness/WAL replay, query a historical trace, send/query a new labeled trace through isolated Alloy, and verify Grafana plus metrics-generator behavior.
+4. On mismatch, stop the isolated project and retain evidence. Return to untouched object/local backups; production bucket/path/route replacement requires separate approval.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -146,7 +155,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -31,7 +31,10 @@ created: "2026-05-10"
 ## Controls
 
 - **Required**:
-  - Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - Ollama public route는
+    `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
+    Open WebUI route는 `gateway-standard-chain@file`만 적용하고 native
+    Keycloak OIDC를 유지한다.
   - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다.
   - Open WebUI는 `template-stateful-med`를 사용한다.
   - `ollama-exporter`는 `ollama` health 기반 의존성과 metrics healthcheck를 유지한다.
@@ -84,7 +87,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0023"
 parent_ids:
@@ -14,66 +14,83 @@ created: "2026-05-17"
 
 # MinIO Object Storage Operations Policy
 
-> This policy governs the current MinIO object storage services under `04-data/lake-and-object`.
-
----
-
 ## Overview
 
-이 정책은 root-active MinIO 단일 service와 bucket bootstrap job의 운영 통제를 정의한다. 정책 기준은 `infra/04-data/lake-and-object/minio/docker-compose.yml`의 실제 service, profile, network, secret, bucket initialization surface다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-- **Systems**: `minio`, `minio-create-buckets`
-- **Configs**: `infra/04-data/lake-and-object/minio/docker-compose.yml` and `docker-compose.cluster.yaml`; the root file includes both and the profile selects between them
-- **Profiles**: `minio`은 `storage`, `obs`, `dev`, `nginx`, `minio-create-buckets`는 `storage`, `obs`, `dev`
-- **Networks**: `infra_net`
-- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or object-storage runtime boundaries
+The current single-node service remains HOME because named consumers depend on
+its buckets. The distributed same-host topology remains LAB. The archived
+community upstream creates a migration-evaluation obligation, not permission to
+replace or delete current storage.
 
 ## Controls
 
-- **Required**:
-  - Root and app credentials are injected through Docker Secrets under `/run/secrets/`.
-  - Compose-facing documentation must distinguish the single-node topology, selected by `storage`, from the four-node topology, selected by `storage-cluster`, and must not describe either as excluded from the root include.
-  - Bucket bootstrap behavior must match `minio-create-buckets`: `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets`, and public anonymous read only for `cdn-bucket`.
-  - Public access changes beyond the bootstrap policy require explicit approval and evidence.
-- **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config`.
-  - Read-only service health/log checks that do not expose secret values.
-  - Cluster topology review when clearly scoped to the `storage-cluster` profile and not presented as part of the `storage` surface.
-- **Disallowed**:
-  - Recording secret values, access keys, tokens, or private bucket content in documentation or task evidence.
-  - Treating `storage-cluster` nodes as part of the `storage` surface.
-  - Performing destructive bucket deletion, credential rotation, or volume restore as a documentation-only action.
-  - Assuming direct host-port exposure when current root-active compose uses Traefik routing and no direct `ports` entries.
+- Select services through root profiles: `storage`, `obs`, `logs`, `tracing` or
+  `nginx` for HOME, and `storage-cluster` only for a named LAB exercise.
+- Keep root and application identities in the four declared Docker secrets. Do
+  not disclose values in commands, evidence or documentation.
+- Preserve `infra_net`, health checks, resource limits and the standard gateway
+  chain. Record that internal S3 is HTTP and no KMS/server-side encryption is
+  declared in current Compose.
+- Review the public-read `cdn-bucket` policy and all additional policy changes as
+  exposure decisions. Buckets for logs/traces are never public.
+- Treat four nodes on one host as a distribution test, not host availability.
+
+## Backup and recovery
+
+Back up objects through an S3-aware mirror or supported replication to a distinct
+encrypted target. Preserve bucket names, policies, users, versioning, retention
+and object metadata in a manifest. Retain daily recovery sets for 30 days and weekly sets for 90 days. The planning
+objective is RPO 24 hours and RTO 8 hours; no rehearsal currently proves either.
+Shared resource limits remain mandatory; removal requires proven client migration,
+complete export, isolated restore and rollback.
+
+Restore only to a fresh isolated compatible target. Recreate identities from
+protected custody, recreate bucket controls, restore objects, compare counts,
+bytes, checksums and version metadata, then test Loki/Tempo and other named
+clients. Production cutover, lifecycle deletion and credential rotation require
+separate approval.
+
+## Upgrade and migration
+
+Every image update or replacement requires official source/release review,
+license review, client/API compatibility, a current export, an isolated restore,
+and rollback. AIStor and SeaweedFS remain unselected candidates until a migration
+spec proves semantics and recovery.
 
 ## Exceptions
 
-Exceptions require explicit owner or user approval and must record scope, affected buckets/services, commands, secret-safety considerations, validation output, and rollback/escalation state in related task or incident evidence.
+The LAB cluster may be absent; HOME MinIO remains until an approved migration. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- Run `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config` after changing compose-facing documentation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
-- Search updated docs for confusion between the `storage` and `storage-cluster` topologies, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-Review on any change to MinIO compose services, image tag, profiles, network, secret refs, Traefik routes, bucket bootstrap job, `storage-cluster` topology, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
-
----
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0023`), [Runbook](runbook.md) (`RUN-0023`)
+- Runtime sources: [HOME MinIO Compose](../../../../../infra/04-data/lake-and-object/minio/docker-compose.yml) and [LAB cluster Compose](../../../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml).
+- Artifact: `POL-0023`; parent: `AD-0004`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+## References
+
+- [Community repository and license](https://github.com/minio/minio)
+- [MinIO client](https://github.com/minio/mc)
+- [Backup policy](../0021-backup-and-restore/policy.md)
+- [Runbook](runbook.md)
+
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)
+- [Domain catalog](../README.md)

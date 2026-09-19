@@ -63,7 +63,9 @@ Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의
 
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
-Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외부 IP(또는 도메인)로 들어오는 모든 요청은 Traefik을 거치며, 설정된 규칙에 따라 직접 백엔드 컨테이너로 가거나 Nginx 프록시를 거쳐 특수 처리가 이루어진 후 전달된다.
+Gateway leaves join `infra_net`, but they are alternative host listeners. Normal
+HOME traffic enters Traefik. The `nginx` profile instead selects Nginx for its
+special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
 ## Data Flow
 
@@ -73,14 +75,18 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 
 - **Key Entities / Flows**:
   - `Internet -> Traefik (TLS Term) -> Service Container`
-  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO` when the `nginx` profile selects the Nginx leaf and root network/dependency context is present
+  - `Internet -> Nginx (TLS Term + Path Rewrite) -> Keycloak/MinIO` when the
+    alternative `nginx` profile is selected
 - **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
 - **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
 
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose / Linux Alpine 기반 컨테이너.
-- **Deployment Model**: the root compose includes both `infra/01-gateway/traefik/docker-compose.yml` and `infra/01-gateway/nginx/docker-compose.yml` unconditionally; the `nginx` profile selects the Nginx service, which still requires an explicit network and backend context to render on its own.
+- **Deployment Model**: the root compose includes both leaves. `traefik` is selected
+  by `core`, `dev`, or `local`; `nginx` is selected only by `nginx`. Both publish
+  host ports 80/443, so they must not be selected together. Nginx also requires
+  the root network and healthy MinIO dependency context.
 - **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
 ## Traceability
@@ -93,4 +99,4 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 - **Spec**: [../../03.specs/001-gateway/spec.md](0001-gateway-architecture.md)
 - **ADR**: [../decisions/0001-traefik-nginx-hybrid.md](../decisions/0001-traefik-nginx-hybrid.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

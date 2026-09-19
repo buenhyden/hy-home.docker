@@ -47,7 +47,7 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 1. 현재 상태와 로그를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps pushgateway
+   docker compose --profile obs ps pushgateway
    docker logs --tail=100 pushgateway
    curl -I http://pushgateway:9091/-/ready
    ```
@@ -76,7 +76,7 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 5. 상태가 매우 불안정하거나 메모리 임계치에 도달한 경우 Pushgateway를 재시작하여 in-memory buffer를 초기화한다. 현재 Compose는 persistence option을 선언하지 않으므로 restart는 보관 중인 metric을 잃을 수 있다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pushgateway
+   docker compose --profile obs restart pushgateway
    ```
 
 6. 작업 노드와 external route에서 도달성을 다시 확인한다.
@@ -102,8 +102,17 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 ### Safe Rollback or Recovery Procedure
 
 - 삭제한 metric group은 Git rollback으로 복원되지 않는다. metric이 필요하면 batch job을 재실행하거나 마지막으로 검증된 metric payload를 다시 push한다.
-- Restart 후 Pushgateway가 올라오지 않으면 `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d pushgateway`를 실행하고 healthcheck를 재확인한다.
+- Restart 후 Pushgateway가 올라오지 않으면 `docker compose --profile obs up -d pushgateway`를 실행하고 healthcheck를 재확인한다.
 - Push 실패가 계속되면 batch job log와 network path를 확인하고, 추가 config 변경 전 escalation한다.
+
+### Planned isolated recovery rehearsal
+
+Status: **planned and not executed**. Pushgateway has no persistent service state to restore.
+
+1. Record image/config identity, producer inventory, grouping-key/metric contract, Prometheus target labels, and current optional runtime observation. Do not export memory contents as an authoritative backup.
+2. Recreate from tracked Compose in an isolated project/network with a test Prometheus. Push only synthetic current metrics from a controlled producer.
+3. Verify health, push/delete semantics, scrape labels, stale-group cleanup, and expected loss across restart. Confirm no volume or `--persistence.file` appeared.
+4. On mismatch, stop the optional isolated service and revert config/image. Production activation or producer changes require separate approval.
 
 ## Evidence
 
@@ -128,7 +137,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, metric �
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

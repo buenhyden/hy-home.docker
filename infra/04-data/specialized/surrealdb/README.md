@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Implementation"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 ---
 
 # SurrealDB
@@ -31,7 +31,7 @@ Local service definitions and implementation navigation. Operational controls an
 
 ## Tech Stack
 
-Runtime pins belong to [Compose](docker-compose.yml) and its referenced build sources. The [version registry](../../../../infra/tech-stack.versions.json) is a curated projection, not a deployment manifest.
+Runtime pins belong to [Compose](docker-compose.yml) and its referenced build sources. The [derived Compose image projection](../../../../infra/tech-stack.versions.json) is a curated projection, not a deployment manifest.
 
 ## Configuration
 
@@ -46,6 +46,8 @@ Persistence:
 Environment key names and defaults are declared in Compose and the [public environment example](../../../../.env.example). Mount grants and healthcheck commands in Compose describe the implementation; a passing config check does not prove runtime readiness. Do not print private environment values, credential files or raw rendered configuration.
 
 ## Validation
+
+Classification is `OPTIONAL`; exact profiles are `surrealdb`, `notebook`, and `admin`. Recovery exports an explicitly named namespace/database with the appropriate auth scope and imports into a fresh compatible target. Because import can partially apply, any failed target is discarded and recreated empty. Owning artifacts are `GDE-0080`, `POL-0080`, and `RUN-0080`.
 
 From the repository root, select the documented profiles and use `scripts/validation/validate-docker-compose.sh`. Use the owning operations Runbook for targeted runtime checks and recovery after approval. Stop on missing mounts, unexpected exposure or failed initialization.
 

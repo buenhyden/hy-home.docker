@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.1.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -23,7 +23,7 @@ created: "2026-06-04"
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-- **Systems**: Docker Compose 기반 인프라 서비스 40개(서비스 디렉터리 기준. Compose 파일은 41개이며 MinIO만 파일 2개를 갖는다)
+- **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
 - **Agents**: Infra/DevOps/Operations 역할의 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
@@ -31,7 +31,7 @@ created: "2026-06-04"
 
 - **Required**:
   - 모든 장기 실행 서비스에 `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용
-  - 민감정보는 환경변수 직접 주입 대신 `secrets` 또는 Vault 경유 주입을 기본 정책으로 적용
+  - 민감정보는 환경변수 직접 주입 대신 Docker Secrets 또는 현재 HOME secret authority인 OpenBao 경유 주입을 기본 정책으로 적용
   - 서비스별 운영 문서(`05.operations`)와 실행 절차(`05.operations`)를 상호 링크로 동기화
 - **Allowed**:
   - 서비스 성격(상태저장/배치/실험성)에 따른 예외 설정
@@ -39,6 +39,21 @@ created: "2026-06-04"
 - **Disallowed**:
   - 운영 서비스에 무검증 무중단 정책 없는 이미지/설정 변경
   - 근거 없는 외부 포트 노출 및 `latest` 태그 관행
+
+### Source and lifecycle boundary
+
+- Compose/Dockerfile declarations own runtime pins. `infra/tech-stack.versions.json`은
+  Compose image declaration에서 파생한 projection이며 Dockerfile build pin 전체를
+  대체하지 않는다.
+- 새 service는 root include, POL-0078 canonical profile membership, public
+  environment/secret schema, image projection/update owner, service README와
+  Guide/Policy/Runbook을 함께 갱신한다. Guide의 optional
+  `implementation_services` mapping이 exact Compose path/service binding을 소유하고,
+  existing operations-catalog validator가 global join을 검증한다.
+- current HOME selection은 `core mng ai workflow storage obs-core obs-host
+  availability logs alerting`이며 37 service identity다. `tooling`, `testing`,
+  `iac`, `dependency-update`는 named operator/development work이고 HOME에 포함하지
+  않는다. profile vocabulary 또는 full membership table은 POL-0078에서만 관리한다.
 
 ### AI Agent Policy
 
@@ -93,7 +108,9 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 #### 03-security
 
-- [vault](../../../../../infra/03-security/vault/README.md): auto-unseal(KMS/HSM) 도입 검토, audit device 원격 적재, `no-new-privileges` 및 자원 상한 일괄 적용
+- [openbao](../../../../../infra/03-security/openbao/README.md): 현재 HOME secret authority의 single-node Raft 복구, auto-unseal(KMS/HSM), remote audit와 최소 권한 운영을 단계적으로 검토
+  ([OPER](../../03-security/0085-openbao/guide.md), [RUN](../../03-security/0085-openbao/runbook.md))
+- [vault](../../../../../infra/03-security/vault/README.md): `legacy-vault` MIGRATE 전용 export/rollback custody를 보존하고 신규 서비스 연계나 current authority로 사용하지 않음
   ([OPER](../../03-security/0016-vault/guide.md), [RUN](../../03-security/0016-vault/runbook.md))
 
 #### 04-data
@@ -164,7 +181,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 - [airflow](../../../../../infra/07-workflow/airflow/README.md): DAG 품질 게이트(파싱/스케줄/지연) CI 추가, 워커 오토스케일 기준 정의
   ([OPER](../../07-workflow/0050-airflow/guide.md), [RUN](../../07-workflow/0050-airflow/runbook.md))
-- [n8n](../../../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화, 자격증명 스토어 Vault 연계 강화
+- [n8n](../../../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화. 자격증명 저장소의 OpenBao 연계는 별도 설계·승인·마이그레이션 후에만 도입하며 현재 통합으로 간주하지 않음
   ([OPER](../../07-workflow/0053-n8n/guide.md), [RUN](../../07-workflow/0053-n8n/runbook.md))
 
 #### 08-ai
@@ -273,6 +290,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides Compose-image drift verification.
 
 - [Operations index](../../../README.md)

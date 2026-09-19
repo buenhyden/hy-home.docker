@@ -74,9 +74,9 @@ grafana/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d grafana` | Start Grafana from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana` | Restart Grafana after approved provisioning, dashboard, or secret-reference changes |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f grafana` | Tail Grafana logs from the repository root |
+| `docker compose --profile obs up -d grafana` | Start Grafana from the repository root |
+| `docker compose --profile obs restart grafana` | Restart Grafana after approved provisioning, dashboard, or secret-reference changes |
+| `docker compose --profile obs logs -f grafana` | Tail Grafana logs from the repository root |
 
 ## Configuration
 
@@ -107,18 +107,26 @@ grafana/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking infrastructure documentation ready.
-- Verify readiness with `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana` and `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`.
+- Verify readiness with `docker compose --profile obs ps grafana` and `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`.
 - Verify datasource provisioning with `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`.
 - Verify dashboard provisioning with `rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`.
 - Verify dashboard inventory with `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`.
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, environment, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, environment, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For SSO failures, inspect redacted OAuth/role mapping logs and confirm `/admins` or `/editors` group membership separately.
 - For datasource errors, confirm the datasource UID and backend endpoint in provisioning YAML.
 - For dashboard loading errors, validate dashboard provider paths and dashboard JSON files.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d grafana`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0041-grafana/`; IDs `GDE-0041`, `POL-0041`, `RUN-0041`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
@@ -129,4 +137,4 @@ grafana/
 - Grafana runbook (`docs/05.operations/catalog/06-observability/0041-grafana/runbook.md`)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

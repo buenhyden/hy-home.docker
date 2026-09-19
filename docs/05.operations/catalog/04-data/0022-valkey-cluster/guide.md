@@ -4,108 +4,119 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
 - "POL-0022"
+implementation_services:
+  infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml:
+  - 'valkey-cluster-exporter'
+  - 'valkey-cluster-init'
+  - 'valkey-node-0'
+  - 'valkey-node-1'
+  - 'valkey-node-2'
+  - 'valkey-node-3'
+  - 'valkey-node-4'
+  - 'valkey-node-5'
 created: "2026-05-10"
 ---
 
 # Valkey Cluster Usage Guide
 
-> Use this guide to understand and verify the current 6-node Valkey cluster implementation.
-
----
-
 ## Usage
 
-### Overview
+This package describes the optional six-node Valkey Cluster laboratory. M0021
+classifies every service as **LAB** because all nodes share one Docker host. It is
+not the HOME workflow broker; Airflow and n8n use `mng-valkey` by default.
 
-`valkey-cluster`는 `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`에 선언된 6-node Valkey cache/kv cluster다. 현재 구현은 `data` 및 `service` profile에서 `valkey-node-0`부터 `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`를 실행하고, 모든 runtime credential은 Docker Secret `service_valkey_password`로 주입한다.
+## Current implementation
 
-### Usage Type
+The root Compose project includes
+[`infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
+The only selector is `valkey-cluster`. It starts `valkey-node-0` through
+`valkey-node-5`, the one-shot `valkey-cluster-init`, and
+`valkey-cluster-exporter`. The initializer forms three primaries and three
+replicas on `infra_net`.
 
-`system-guide | operational-reference`
+Each node owns one bind-backed volume, `valkey0-data` through `valkey5-data`,
+resolved under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`. Nodes publish
+client ports 6379–6384 and expose cluster-bus ports 16379–16384. The shared
+`service_valkey_password` Docker secret is read by the startup, init and exporter
+paths. The tracked configuration enables both periodic RDB snapshots and AOF with
+`appendfsync everysec`; `/data/nodes.conf` is node-local cluster identity.
+Resource limits and health checks come from the shared Compose templates and must
+be inspected in rendered root configuration before selection.
 
-### Target Audience
+## Images, configuration and resource controls
 
-- Operator
-- Developer
-- SRE
-- AI Agent
+The Compose file is authoritative for the pinned `valkey/valkey` and
+`oliver006/redis_exporter` images; repository Renovate configuration may propose
+updates and `infra/tech-stack.versions.json` is derived drift evidence. `PORT` and
+`NODE_NAME` configure nodes, while root `VALKEY*_PORT`, `VALKEY*_BUS_PORT` and
+`VALKEY_EXPORTER_PORT` keys control exposure. Nodes extend
+`template-stateful-med`, init `template-job-low`, and exporter
+`template-infra-readonly-low`; each declares a health check except the one-shot
+initializer. Clients flow directly to cluster-aware node endpoints and the
+exporter observes all six nodes.
 
-### Purpose
+## Static preflight and normal use
 
-이 가이드는 Valkey cluster의 현재 compose service set, port model, initialization job, secret boundary, 일반 확인 절차를 이해하고 애플리케이션 및 운영 문서가 실제 구현과 같은 surface를 참조하도록 돕는다.
+Run from the repository root; do not render the leaf file alone because shared
+networks, secrets and `extends` paths are root-owned.
 
-### Prerequisites
+```bash
+docker compose --env-file .env.example --profile valkey-cluster config --quiet
+docker compose --env-file .env.example --profile valkey-cluster config --services
+```
 
-- Repository checkout at the project root.
-- Docker Compose access on the local or approved infrastructure host.
-- `.env` or approved environment values for `VALKEY0_PORT` through `VALKEY5_PORT` and bus ports.
-- Docker Secret file for `service_valkey_password`; secret values must not be copied into docs, logs, or commits.
-- Runtime data directories under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`.
+Starting the profile, writing test keys, changing membership or stopping nodes is
+a runtime action and needs a separately approved task. When selected, record
+cluster-aware client compatibility, intended dataset, retention, capacity and the
+fact that same-host replicas do not protect against host loss.
 
-### Step-by-step Instructions
+## Backup, restore and upgrade boundary
 
-1. 현재 compose service set을 확인한다.
+Use [RUN-0022](runbook.md). A usable backup must contain a coordinated persistence
+set from every primary (and any intentionally retained replica), the complete
+multi-part AOF directory and manifest when AOF is used, RDB checkpoints, engine
+version, slot ownership and checksums. Never mix files from different points in
+time or treat `nodes.conf` as portable identity.
 
-   ```bash
-   docker compose --profile valkey-cluster config --services
-   ```
+Restore is rehearsed on an isolated compatible six-node target. Recreate cluster
+identity, restore complete persistence sets, validate all slots and replica links,
+and compare key counts/application reads before any cutover. Upgrades use a
+separate plan with release notes, client compatibility and rollback; no in-place
+major jump is authorized by this guide.
 
-   Expected services: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`.
+## Security and license
 
-2. 노드와 포트 모델을 확인한다.
+The password secret does not provide transport encryption. Published host ports
+and cluster-bus reachability must be restricted to the intended trusted host and
+network; Valkey's own guidance warns that Cluster is designed for trusted
+networks. Valkey uses the BSD 3-Clause license; clients and images retain their
+own licenses.
 
-   - Node ports: `${VALKEY0_PORT:-6379}` through `${VALKEY5_PORT:-6384}`
-   - Cluster bus ports: `${VALKEY0_BUS_PORT:-16379}` through `${VALKEY5_BUS_PORT:-16384}`
-   - Exporter: `${VALKEY_EXPORTER_PORT:-9121}`
-   - Network: `infra_net`
+## Official references
 
-3. 초기화 job 경계를 확인한다.
-
-   `valkey-cluster-init` runs [valkey-cluster-init.sh](../../../../../infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh), waits for all six nodes to be healthy, checks `valkey-node-0`, and creates the cluster with `--cluster-replicas 1`. The script skips destructive re-initialization when nodes already contain data or cluster metadata.
-
-4. 일반 상태를 확인한다.
-
-   ```bash
-   docker compose --profile valkey-cluster ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
-   ```
-
-### Common Pitfalls
-
-- Referring to old init service names. The current init service is `valkey-cluster-init`.
-- Referring to a single `valkey-cluster` container. The current implementation uses six node containers plus init/exporter services.
-- Passing passwords through shell variables in docs or evidence. Use Docker Secrets inside the container boundary and avoid copying secret values.
-- Assuming a memory eviction policy is configured when `config/valkey.conf` does not declare one.
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Valkey Cluster tutorial and security boundary](https://valkey.io/topics/cluster-tutorial/)
+- [Valkey security](https://valkey.io/topics/security/)
+- [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
 
 ## Common Checks
 
-- `docker compose --profile valkey-cluster config --quiet`
-- `docker compose --profile valkey-cluster ps`
-- Search paired guide/policy/runbook and infra README for old service names, direct password variables, stale image tags, or single-container assumptions.
-- Expected result: compose renders, documented services match the compose file, and no stale service/container name is used as an operational command target.
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
-[recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [Valkey Cluster Operations Policy](policy.md) (`POL-0022`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0022`), [Runbook](runbook.md) (`RUN-0022`)
+- Artifact: `GDE-0022`; governing policy: `POL-0022`.
+- Runtime authority: `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`.
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
 - [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
+- [Health and recovery runbook](runbook.md)
+- [Data backup policy](../0021-backup-and-restore/policy.md)

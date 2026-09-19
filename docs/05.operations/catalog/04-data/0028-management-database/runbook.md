@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -12,120 +12,93 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Management Database Health and Init Runbook
-
-> Scope: health checks, init-job rerun, evidence capture, and escalation for `mng-db`.
-
----
-
-## Overview
-
-이 런북은 `mng-db`의 compose render, 서비스 상태, PostgreSQL readiness, Valkey readiness, `mng-pg-init` 재실행을 즉시 점검해야 할 때 사용한다. 파괴적 데이터 복구나 HA failover 절차는 이 런북의 범위가 아니다.
-
-### Purpose
-
-관리용 PostgreSQL/Valkey가 unhealthy 상태이거나 신규 관리 서비스 DB/role 동기화가 필요한 상황에서, 안전한 확인 절차와 증거 수집 기준을 제공한다.
+# Management Database Health and Recovery Runbook
 
 ## When to Use
 
-- `mng-pg`, `mng-valkey`, or exporter services are missing or unhealthy.
-- A new management service database/role must be synchronized through `mng-pg-init`.
-- Linked operations docs or compose references were changed and need local verification evidence.
-- Secret exposure risk or destructive data recovery is not required.
+Use for approved static diagnosis, backup planning or isolated recovery of this
+exact subject. Live writes, restore, cutover, cleanup and credential changes need
+a separately approved task.
 
 ## Procedure
 
-### Checklist
+From the repository root:
 
-- [ ] Confirm the task or incident scope and record the reason for running this procedure.
-- [ ] Confirm Docker Secret files exist for the compose secret refs without printing their values.
-- [ ] Confirm `DEFAULT_MANAGEMENT_DIR` points to the approved runtime data location.
-- [ ] Confirm the operation is not a destructive restore, volume deletion, or credential disclosure task.
+```bash
+docker compose --env-file .env.example --profile mng config --quiet
+docker compose --env-file .env.example --profile mng config --services
+```
 
-### Steps
+Confirm both engines, init, exporters, separate persistent volumes, secret
+references, health checks and `infra_net`. Do not print the fully rendered
+configuration where environment substitutions could expose private values.
 
-1. Render the current compose configuration.
+## Planned PostgreSQL backup
 
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config
-   ```
+1. Open a consumer-aware window and inventory roles plus `postgres`, `n8n`,
+   `keycloak`, `airflow`, `terrakube`, `sonarqube` and the configured application
+   database. Discover additions rather than assuming this list is exhaustive.
+2. Use a compatible PostgreSQL client to dump cluster globals and each database
+   in a restorable logical format. Never raw-copy live `PGDATA`.
+3. Record source/server and client versions, database names, sizes, dump sizes,
+   exit status and hashes. Store artifacts on a separate encrypted destination;
+   keep passwords out of arguments and evidence.
 
-2. Check service status.
+## Planned PostgreSQL isolated restore
 
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps mng-pg mng-valkey mng-pg-exporter mng-valkey-exporter
-   ```
+1. Provision an empty isolated target at a supported compatible version with no
+   application routes. Use a least-privileged restore operator.
+2. Inspect the trusted dump source because `pg_restore` can execute statements
+   selected by source superusers. Restore globals/roles, then create and restore
+   each database in dependency-aware order.
+3. Validate roles and grants, schema objects, extension availability, table/row
+   counts and selected application reads. Connect disposable Keycloak, Airflow,
+   n8n, Terrakube and SonarQube checks only when their owners approve.
+4. Record recovery point and elapsed time. A separate cutover pauses writers,
+   takes a final dump, switches consumers and retains the prior volume for rollback.
 
-3. Inspect relevant logs if a service is unhealthy. Do not copy secret values into evidence.
+## Planned Valkey backup and restore
 
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng logs mng-pg mng-valkey mng-pg-init
-   ```
-
-4. Re-run the initialization job only when database/role synchronization is required.
-
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng run --rm mng-pg-init
-   ```
-
-5. Capture a final status snapshot.
-
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps
-   ```
-
-### Verification Steps
-
-- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config`
-- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps`
-- Expected result: compose renders, `mng-pg` and `mng-valkey` are present, and the init job completes when explicitly run.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng logs ...`
-- **Health**: compose `ps` status for `mng-pg`, `mng-valkey`, and exporters
-- **Config**: compose render output without secret values
-- **Evidence to Capture**: command names, timestamps, service status summary, failure symptoms, and whether `mng-pg-init` was run
-
-### Safe Rollback or Recovery Procedure
-
-1. For documentation-only changes, revert the last documentation diff and rerun the validation commands.
-2. For an init-job failure, stop further changes, preserve logs, and escalate; do not delete volumes or restore databases from this runbook.
-3. For suspected credential exposure, stop reading secret-bearing output and escalate under `## Escalation`.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop using commands that reveal secret-bearing output when exposure risk appears.
-- **Eval Re-run**: Re-run the linked validation scripts after documentation remediation.
+1. Pause or drain workflow producers/workers and document whether queued jobs will
+   be replayed or discarded.
+2. Create/verify an RDB checkpoint and copy the entire AOF directory and manifest
+   without crossing an AOF rewrite. Record hashes and persistence configuration.
+3. Restore the complete set to an empty isolated compatible Valkey target. Confirm
+   clean load, key/type/TTL counts and a disposable read/write/delete test.
+4. Never connect restored stale queue state to active workers without workflow
+   owner approval.
 
 ## Evidence
 
-- Record the compose command executed, final service status, init-job result if applicable, and any skipped destructive action.
-- Attach failed validation output or service symptoms to the related task or incident evidence without copying secret values.
+Record source revision/version, scope, timestamps, manifest/checksum summary,
+commands and exit status, validation result, observed recovery point/time and all
+unverified gaps. Exclude secrets, raw payloads and private resolved paths.
 
 ## Rollback or Recovery
 
-N/A — no verified destructive rollback or data recovery procedure is documented in this runbook. If volume restore, credential rotation, or database repair is required, stop and escalate with the captured evidence.
+A failed cutover returns consumers to the validated prior HOME engines and volumes;
+the isolated restore remains blocked from clients. Cutover occurs only after owner approval,
+final consistency capture, application validation and a retained rollback window.
 
 ## Escalation
 
-Escalate to the owning operator when compose render fails, required secrets are missing, services remain unhealthy after the documented checks, secret exposure risk appears, or destructive data recovery is required.
+Stop on missing databases, dump errors, unsupported extensions, ownership drift,
+AOF truncation/repair prompts, checksum mismatch or ambiguous queue semantics.
+No recovery described here was executed by the documentation correction task.
 
 ## Traceability
 
-- Declared parent: [Management Database Usage Guide](guide.md) (`GDE-0028`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0028`), [Policy](policy.md) (`POL-0028`)
+- Artifact: `RUN-0028`; parent guide: `GDE-0028`.
+- Procedures are planned unless a dated verification record explicitly says they ran.
+
+## References
+
+- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
+- [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Policy](policy.md)
+
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://www.postgresql.org/docs/current/backup.html)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
-- [Infrastructure service README](../../../../../infra/04-data/operational/mng-db/README.md)
+- [Domain catalog](../README.md)

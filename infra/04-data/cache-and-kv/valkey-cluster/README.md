@@ -8,109 +8,58 @@ updated: "2026-09-19"
 created: "2025-11-20"
 ---
 
-# Valkey Distributed Cluster
-
-> 고성능, 6노드 분산 캐시 클러스터 (Redis 호환 가능) / High-performance, 6-node Distributed Cache Cluster
+# Valkey Cluster
 
 ## Overview
 
-`valkey-cluster`는 `hy-home.docker` 에코시스템을 위한 고처리량, 저지연 캐싱 및 상태 저장소 계층을 제공한다. 3개의 프라이머리 노드와 3개의 복제본(Replica) 노드로 구성되어 자동 파티셔닝과 고가용성을 보장하도록 설계되었다.
-
-`valkey-cluster` provides a high-throughput, low-latency caching and state storage layer for the `hy-home.docker` ecosystem. It is designed with 3 primary nodes and 3 replica nodes to ensure automatic partitioning and high availability.
+This package defines the repository's six-node Valkey cluster.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- 인프라를 배포하고 관리하는 **Operators**
-- 클러스터와 연결되는 서비스를 개발하는 **Developers**
-- 자동화된 운영 작업을 수행하는 **AI Agents**
+It is intended for operators and maintainers of the Valkey LAB deployment.
 
 ## Scope
 
-### In Scope
-
-- 6노드 Valkey 클러스터 구성 및 관리
-- Docker Compose 기반 배포 및 헬스체크
-- 클러스터 초기화 및 상태 검증 스크립트
-
-### Out of Scope
-
-- 클러스터 외부의 개별 Valkey 인스턴스 (`mng-valkey`)
-- 애플리케이션 레벨의 데이터 모델링 설계
-- 다중 리전 복제 및 재해 복구 구성
+Source: [`docker-compose.yml`](docker-compose.yml). Profile: `valkey-cluster`.
+Services: `valkey-node-0` through `valkey-node-5`, one-shot
+`valkey-cluster-init`, and `valkey-cluster-exporter`. The initializer creates three
+primaries and three replicas on `infra_net`.
 
 ## Structure
 
-```text
-valkey-cluster/
-├── config/                  # Configuration files
-├── scripts/                 # Initialization and management scripts
-├── docker-compose.yml       # Cluster orchestration
-└── README.md                # This file
-```
-
-## Service Readiness
-
-| Field | Evidence |
-| --- | --- |
-| Purpose | Valkey Distributed Cluster service leaf in `04-data`; services: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, plus 2 more; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `config --quiet`, `config/valkey.conf` |
-| Config values | env keys: `PORT`, `NODE_NAME`; profiles: `valkey-cluster`, `service` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
-| Networks | `infra_net` |
-| Volumes | `valkey0-data:/data:rw`, `./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro`, `./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro`, `valkey1-data:/data:rw`, `valkey2-data:/data:rw`, `valkey3-data:/data:rw`, `valkey4-data:/data:rw`, `valkey5-data:/data:rw`, plus 7 more |
-| Ports | `${VALKEY0_PORT:-6379}:${VALKEY0_PORT:-6379}`, `${VALKEY0_BUS_PORT:-16379}`, `${VALKEY1_PORT:-6380}:${VALKEY1_PORT:-6380}`, `${VALKEY1_BUS_PORT:-16380}`, `${VALKEY2_PORT:-6381}:${VALKEY2_PORT:-6381}`, `${VALKEY2_BUS_PORT:-16381}`, `${VALKEY3_PORT:-6382}:${VALKEY3_PORT:-6382}`, `${VALKEY3_BUS_PORT:-16382}`, plus 5 more |
-| Labels | `hy-home.tier` |
-| Secret refs | names: `service_valkey_password`; mounts: `/run/secrets/service_valkey_password` |
-| Healthcheck | Compose healthcheck declared for `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, plus 2 more; not declared for `valkey-cluster-init` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`), Policy (`docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
+Each node owns `valkey0-data` through `valkey5-data`, backed by
+`${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`. Client ports 6379–6384 and
+cluster-bus ports 16379–16384 are published/exposed. Startup, init and exporter read `service_valkey_password`.
+[`config/valkey.conf`](config/valkey.conf),
+[`scripts/valkey-start.sh`](./scripts/valkey-start.sh), and
+[`scripts/valkey-cluster-init.sh`](./scripts/valkey-cluster-init.sh) own configuration.
+Every node has an authenticated `PING` health check, the exporter has an HTTP
+health check, and init is a one-shot completion job; `nodes.conf` is node-local
+identity.
 
 ## How to Work in This Area
 
-1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.
-2. [scripts/valkey-cluster-init.sh](./scripts/valkey-cluster-init.sh)를 통해 초기화 로직을 이해한다.
-3. 가이드 문서는 `docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`를 참조한다.
-4. 운영 정책은 `docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`를 확인한다.
-5. 장애 조치 지침은 `docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md`를 따른다.
+From the repository root:
 
-## Validation
+```bash
+docker compose --env-file .env.example --profile valkey-cluster config --quiet
+docker compose --env-file .env.example --profile valkey-cluster config --services
+```
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify cluster connectivity from `valkey-node-0` by reading `service_valkey_password` inside the container boundary and checking `cluster_state:ok` without printing the secret.
-- Confirm replication health by checking the six `valkey-node-*` logs and `valkey-cluster-init` outcome after config changes.
+This is a same-host LAB and does not replace HOME `mng-valkey`. Selection needs a
+named cluster-aware client. No TLS is declared, so restrict published ports to the
+intended trusted boundary.
 
-## Troubleshooting
-
-- Start with `docker compose config --quiet` to confirm network, volume, secret, and label references render correctly.
-- Check container logs and the linked runbook before changing configuration or secret references.
-- For cluster connectivity errors: verify all cluster nodes can reach each other on the gossip port and confirm `cluster-enabled yes` in the config.
-- For replication errors: check node roles with `cluster nodes` command and verify the replica count matches the configuration.
-- For persistence issues: confirm the Valkey data volume is mounted and `appendonly` or `save` settings are correct.
+Backup and restore must coordinate every primary, complete AOF sets/manifests,
+RDB checkpoints and slot ownership. Restore on an isolated compatible cluster
+with fresh identity; never reuse live `nodes.conf`.
 
 ## Related Documents
 
-- **Guide**: Valkey Cluster Guide (`docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`)
-- **Policy**: Valkey Operations Policy (`docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`)
-- **Runbook**: Valkey Recovery Runbook (`docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md`)
-- [Documentation index](../../../../docs/README.md)
+Use the
+[documentation entry point](../../../../docs/README.md) to locate Stage 05 subject
+`04-data/0022-valkey-cluster` and POL-0021.
 
-## Tech Stack
-
-| Category   | Technology   | Notes                     |
-| ---------- | ------------ | ------------------------- |
-| Image      | valkey/valkey| declared version             |
-| Interface  | valkey-cli   | Cluster protocol          |
-| Clustering | 3P + 3R      | 6 nodes architecture      |
-
-## Available Scripts
-
-| Command | Description |
-| :--- | :--- |
-| `docker compose --profile valkey-cluster up -d` | 클러스터 전체 노드 시작 |
-| `docker compose --profile valkey-cluster ps` | 노드별 상태 및 헬스체크 확인 |
-| `docker compose --profile valkey-cluster logs valkey-node-0 valkey-cluster-init valkey-cluster-exporter` | 주요 노드, 초기화, exporter 로그 확인 |
-| `docker compose --profile valkey-cluster run --rm valkey-cluster-init` | 클러스터 초기화 job 재실행 |
+Official sources: [persistence](https://valkey.io/topics/persistence/),
+[cluster operations](https://valkey.io/topics/cluster-tutorial/), and
+[license](https://github.com/valkey-io/valkey/blob/unstable/COPYING).

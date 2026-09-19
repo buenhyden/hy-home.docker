@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -33,6 +33,21 @@ Keycloak group `/openbao-admins`, role `home-admin`, OpenBao OIDC client
 for human tokens must be finite. Gateway SSO in front of the OpenBao UI is only
 HTTP access control and does not replace OpenBao native OIDC authorization.
 
+### Prometheus Metrics Credential
+
+Prometheus must authenticate to `sys/metrics` with a dedicated service token
+whose only service policy is the tracked
+`infra/03-security/openbao/config/policies/prometheus.hcl`. That policy grants
+only `read` on `sys/metrics`. The token is manually issued into
+`secrets/security/openbao_token.txt`, mounted only by Prometheus, and rotated
+before its finite expiry. Do not enable unauthenticated metrics or reuse a root,
+human operator, renderer AppRole or renderer sink token.
+
+Applying the policy, issuing or revoking the token, writing its file and
+recreating Prometheus are live credential/runtime changes that require a
+separately approved maintenance record. Tracked policy, Compose and scrape
+configuration prove only the source contract.
+
 Root tokens are bootstrap and break-glass material only. Do not revoke the last
 usable root token until all of the following are verified in the same maintenance
 record: a human OIDC login succeeds, the resulting OpenBao token has the
@@ -44,7 +59,7 @@ The upstream OpenBao release line documented in Traceability uses authenticated
 `/sys/generate-root-token` endpoints for `operator generate-root`. When no privileged human or root token remains, an
 Agent read-only token must not be promoted to call root-generation endpoints.
 The deprecated unauthenticated `/sys/generate-root/*` endpoints are disabled by
-default as of 2.5.3 and may be re-enabled only as an explicitly approved
+default as of 2.5.3 <!-- runtime-version-exception: history — unauthenticated root generation was disabled upstream to close a recovery-path security exposure --> and may be re-enabled only as an explicitly approved
 break-glass exception on a temporary loopback-only listener. The exception must
 keep the same data volumes and seal configuration, must not restore a snapshot
 by default, must be removed immediately after native OIDC administration is
@@ -84,3 +99,4 @@ Review monthly and before image, persistence, authentication or exposure changes
 
 - [Operations index](../../../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
+- [OpenBao unauthenticated generate-root deprecation](https://openbao.org/community/deprecation/unauthed-generate-root/)

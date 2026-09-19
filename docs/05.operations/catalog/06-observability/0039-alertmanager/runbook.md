@@ -46,7 +46,7 @@ created: "2026-05-17"
 1. 현재 service 상태, 최근 로그, readiness를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager
+   docker compose --profile obs ps alertmanager
    docker logs --tail=200 infra-alertmanager
    docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
    ```
@@ -84,7 +84,7 @@ created: "2026-05-17"
 7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Alertmanager를 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alertmanager
+   docker compose --profile obs restart alertmanager
    docker logs --tail=100 infra-alertmanager
    ```
 
@@ -92,7 +92,7 @@ created: "2026-05-17"
 
    ```bash
    git diff -- infra/06-observability/alertmanager/config/config.yml
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alertmanager
+   docker compose --profile obs restart alertmanager
    docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
    ```
 
@@ -100,7 +100,7 @@ created: "2026-05-17"
 
 ### Verification Steps
 
-- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alertmanager`에서 `alertmanager` service가 running이다.
+- [ ] `docker compose --profile obs ps alertmanager`에서 `alertmanager` service가 running이다.
 - [ ] `/-/ready` endpoint가 성공한다.
 - [ ] Prometheus config의 `alertmanagers` target이 `alertmanager:9093`를 유지한다.
 - [ ] Alertmanager UI에서 firing alerts, silences, receivers를 확인할 수 있다.
@@ -129,6 +129,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Alertmanager state restore is claimed.
+
+1. Disable or redirect notification delivery to test receivers, record image/config digests and silence inventory, stop Alertmanager, then snapshot `alertmanager-data` consistently and preserve the template plus secret references.
+2. Restore to a separate project/network with test-only credentials and no production route. Start Alertmanager after config validation.
+3. Verify readiness, source alert ingestion, silence retention, inhibition/grouping, notification-log behavior, and one controlled test delivery without exposing secret values.
+4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production route/state replacement is separately approved.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -152,7 +161,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, receiver/
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -131,7 +131,7 @@ Stop and escalate to the owning operator when host `nvidia-smi` fails, NVIDIA Co
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Ollama usage guide](../0056-ollama/guide.md)

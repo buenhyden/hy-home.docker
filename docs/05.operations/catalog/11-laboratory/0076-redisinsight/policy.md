@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -14,57 +14,52 @@ created: "2026-05-17"
 
 # RedisInsight Operations Policy
 
-> Redis 관리 UI의 운영 및 보안 정책 정의.
-
----
-
 ## Overview
 
-이 정책은 RedisInsight 관리 UI의 접근 권한, 연결 메타데이터, 운영 가드레일을 정의한다.
+RedisInsight is an OPTIONAL credential-bearing admin client. Gateway access does
+not replace least-privilege authorization on each target database.
 
 ## Policy Scope
 
-RedisInsight의 접근 권한, 연결 메타데이터 관리, 그리고 운영 가드레일.
-
-- **Systems**: RedisInsight (Database GUI)
-- **Environments**: Laboratory/Management Tier
+Activation, gateway/CIDR, stored target credentials/history, target actions,
+telemetry/license, settings backup/restore, upgrade, and removal.
 
 ## Controls
 
-- **Authentication**:
-  - Traefik `gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file` 체인을 통한 외부 접근 차단이 필수적이다.
-- **Data Security**:
-  - Redis 서버의 패스워드 정보를 RedisInsight에 저장할 때 'Save' 옵션 사용 여부는 팀의 보안 정책에 따른다 (가급적 매치 세션마다 입력을 권장).
-- **Persistence**:
-  - 연결 설정 및 튜닝 데이터는 `${DEFAULT_MANAGEMENT_DIR}/redisinsight` 볼륨에 안전하게 보관되어야 한다.
-
-### Disallowed Actions
-
-- RedisInsight를 퍼블릭 망에 노출하거나 SSO 없이 접근 가능하게 설정하는 행위.
-- 고부하 환경에서 `keys *` 명령을 Profiler 없이 직접 실행하는 행위 (Scan 명령 권장).
+- Use only `admin`/`admin-data`; keep outside HOME.
+- Preserve ForwardAuth and admin CIDR. Use unique least-privilege target accounts;
+  destructive Workbench commands require target-owner approval.
+- Treat `/data` and backups as sensitive. Current source lacks
+  `RI_ENCRYPTION_KEY`; track that as a security gap, not an assurance.
+- A RedisInsight backup covers client settings only. Target Redis/Valkey backups
+  follow each engine's owner and cannot be replaced by `/data`.
+- Stop the service for a consistent settings copy; restore with production target
+  network disabled and the matching encryption key when configured.
+- Review release notes, telemetry settings, and applicable SSPL/license terms
+  before upgrades. Revoke stored target credentials before removal.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+No exception may bypass target authorization or treat gateway login as database
+permission. Unencrypted credential storage cannot be called secure.
 
 ## Verification
 
-- **Audit Logs**: 관리자 로그를 통해 비정상적인 데이터 대량 삭제 행위가 있는지 모니터링한다.
-- **Access Check**: `https://redisinsight.${DEFAULT_URL}` 접속 시 SSO 인증이 강제되는지 확인한다.
+Verify gateway/CIDR allow/deny, target account scope, settings persistence, and
+that restore testing cannot reach production targets.
 
 ## Review Cadence
 
-- Semi-annually (데이터 접근 권한 감사와 병행)
+Review on image/license, auth/CIDR, encryption-key, target, or storage changes.
 
 ## Traceability
 
-- Declared parent: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0076`), [Runbook](runbook.md) (`RUN-0076`)
+- [Guide](guide.md) (`GDE-0076`)
+- [Runbook](runbook.md) (`RUN-0076`)
+- [Laboratory architecture](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [RedisInsight Compose source](../../../../../infra/11-laboratory/redisinsight/docker-compose.yml)
+- [RedisInsight configuration](https://redis.io/docs/latest/operate/redisinsight/configuration/)
+- [RedisInsight documentation](https://redis.io/docs/latest/develop/tools/insight/)

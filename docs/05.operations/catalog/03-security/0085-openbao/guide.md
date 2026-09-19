@@ -9,12 +9,20 @@ layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
 - "POL-0085"
+implementation_services:
+  infra/03-security/openbao/docker-compose.yml:
+  - openbao
+  - openbao-agent
 created: "2026-09-19"
 ---
 
 # OpenBao Guide
 
 ## Usage
+
+### Implementation Sources
+
+- [infra/03-security/openbao/docker-compose.yml](../../../../../infra/03-security/openbao/docker-compose.yml)
 
 HOME secret control plane; Vault remains a separate migration source.
 

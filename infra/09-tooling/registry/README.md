@@ -4,20 +4,20 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 created: "2026-03-19"
 ---
 
 <!-- [ID:09-tooling:registry] -->
 # Docker Registry
 
-> Private OCI-compliant image distribution service.
+> On-demand OPTIONAL OCI image store; the tracked endpoint is unauthenticated HTTP.
 
 ## Overview
 
-이 서비스는 컨테이너 이미지를 내부 네트워크에서 관리하고 배포하는 **프라이빗 도커 레지스트리**입니다. 외부 네트워크 의존성을 줄이고 보안이 강화된 이미지 저장소로 활용됩니다.
+이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 `${REGISTRY_PORT:-5000}`을 bind address 없이 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 외부 firewall 또는 Docker daemon 정책은 tracked source로 확인되지 않으므로 보호 수단으로 가정하지 않습니다.
 
-The `registry` service acts as the internal repository for container images in `hy-home.docker`. It enables fast, local pulls for internal infrastructure and avoids dependency on external public registries for proprietary or sensitive images.
+The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its current all-interface endpoint is unauthenticated HTTP. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
 
 ## Audience
 
@@ -37,7 +37,7 @@ The `registry` service acts as the internal repository for container images in `
 
 ### Out of Scope
 
-- External authentication (handled via proxy or basic auth if needed).
+- TLS, authentication, and access control (not implemented in the tracked service).
 - High Availability (HA) persistence (currently single-node binding).
 - Image security scanning (handled by SonarQube or Trivy separately).
 
@@ -68,10 +68,12 @@ registry/
 
 ## Available Scripts
 
+Run these read-only checks from the repository root. Starting or changing Registry requires runtime approval.
+
 | Command | Description |
 | :--- | :--- |
-| `docker compose up -d` | Start the registry service. |
-| `docker pause registry` | Pause the registry service. |
+| `docker compose --profile registry config --services` | Confirm the selected root-project services. |
+| `docker compose --profile registry logs --tail=200 registry` | Inspect an approved running Registry service. |
 
 ## Validation
 
@@ -116,3 +118,6 @@ registry/
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+
+Runtime image and profile authority is [docker-compose.yml](docker-compose.yml);
+the [derived Compose image projection](../../tech-stack.versions.json) is drift evidence.

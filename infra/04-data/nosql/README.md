@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 created: "2026-03-27"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 에코시스템에서 선택적으로 사용할 수 있는 NoSQL 데이터베이스 인프라 구성을 포함한다. 루트 compose는 Cassandra, CouchDB, MongoDB compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. 세 서비스 모두 `data` profile에 속하고, Cassandra와 MongoDB의 exporter는 `obs` profile로도 선택된다.
+이 디렉터리는 `hy-home.docker`의 `LAB` NoSQL 구성을 포함한다. 루트 compose는 세 leaf를 include하며 exact profiles `cassandra`, `couchdb`, `mongodb`가 각각의 전체 service set을 선택한다. 같은 host의 복수 member는 host-level HA가 아니다.
 
 ## Audience
 
@@ -52,9 +52,15 @@ nosql/
 
 ## How to Work in This Area
 
+| Package | Classification | Exact profile | Stage 05 subject |
+| --- | --- | --- | --- |
+| [Cassandra](cassandra/README.md) | `LAB` | `cassandra` | `0025-cassandra` |
+| [CouchDB](couchdb/README.md) | `LAB` | `couchdb` | `0026-couchdb` |
+| [MongoDB](mongodb/README.md) | `LAB` | `mongodb` | `0027-mongodb` |
+
 1. **Selection**: 요구사항(단일 노드 wide-column, 문서 sync cluster, replica set)에 맞는 엔진을 선택한다.
 2. **Deployment**: 루트 compose include 상태를 확인한 뒤 각 서브디렉터리의 `docker-compose.yml`을 함께 렌더링한다.
-3. **Standards**: 각 엔진은 `common-optimizations.yml`을 확장하고, exporter가 선언된 Cassandra/MongoDB는 `obs` 프로파일 경계를 유지한다.
+3. **Standards**: 각 엔진은 `common-optimizations.yml`의 source-declared template을 확장하며 exporter도 해당 engine의 exact profile에 속한다.
 4. **Documentation**: 변경 사항 발생 시 하위 README와 상위 `docs/05.operations/catalog/04-data/` 문서를 함께 업데이트한다.
 
 ## Related Documents
@@ -62,7 +68,7 @@ nosql/
 - **Architecture**: Data Tier Architecture Description (`docs/02.architecture/descriptions/0004-data-architecture.md`)
 - **Guides**: NoSQL Guides (`docs/05.operations/catalog/04-data/README.md`)
 - **Policies**: NoSQL Policies (`docs/05.operations/catalog/04-data/README.md`)
-- **Runbooks**: NoSQL Runbooks (`docs/05.operations/catalog/04-data/README.md`)
+- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
 - **Source**: [Data Tier Root](../README.md)
 - [Documentation index](../../../docs/README.md)
 

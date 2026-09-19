@@ -79,8 +79,8 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 | Command                        | Description                 |
 | :----------------------------- | :-------------------------- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart alloy` | Apply configuration changes from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f alloy` | Tail collector logs from the repository root |
+| `docker compose --profile obs restart alloy` | Apply configuration changes from the repository root |
+| `docker compose --profile obs logs -f alloy` | Tail collector logs from the repository root |
 
 ## Configuration
 
@@ -101,12 +101,20 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For OTLP ingestion errors: verify port bindings (`ALLOY_OTLP_GRPC_PORT`, `ALLOY_OTLP_HTTP_PORT`) and check that applications target the correct Alloy endpoint.
 - For collector config errors: validate `config.alloy` HCL syntax and check the Alloy UI at `https://alloy.${DEFAULT_URL}` for component status.
 - For exporter errors: confirm downstream services (Prometheus, Loki, Tempo, Pyroscope) are reachable and their endpoints match `config.alloy` export targets.
 - For Docker socket/container mount or relabel cardinality changes: stop and use the linked runbook escalation path before changing the current policy boundary.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `logs`, `tracing`, `profiling`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alloy`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0040-alloy/`; IDs `GDE-0040`, `POL-0040`, `RUN-0040`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 

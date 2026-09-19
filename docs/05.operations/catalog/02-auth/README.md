@@ -14,8 +14,10 @@ layer: "operations"
 
 ## Overview
 
-The authentication domain preserves the existing Keycloak and OAuth2 Proxy
-roles in domain-first four-digit subject folders; no new role is inferred.
+The authentication domain separates the Keycloak identity provider, OAuth2 Proxy
+ForwardAuth, and application integration contract. Current native Keycloak OIDC
+includes Airflow, Kafbat UI, Open WebUI, Gatus, and OpenBao; suitable remaining
+web UIs use the standard gateway ForwardAuth route.
 
 ## Audience
 
@@ -32,6 +34,7 @@ roles in domain-first four-digit subject folders; no new role is inferred.
 | --- | --- |
 | [Keycloak](0014-keycloak/guide.md) | [Guide](0014-keycloak/guide.md), [Policy](0014-keycloak/policy.md), [Runbook](0014-keycloak/runbook.md) |
 | [OAuth2 Proxy](0015-oauth2-proxy/guide.md) | [Guide](0015-oauth2-proxy/guide.md), [Policy](0015-oauth2-proxy/policy.md), [Runbook](0015-oauth2-proxy/runbook.md) |
+| [Application authentication integration](0079-application-auth-integration/guide.md) | [Guide](0079-application-auth-integration/guide.md), [Policy](0079-application-auth-integration/policy.md) |
 
 ## How to Work in This Area
 

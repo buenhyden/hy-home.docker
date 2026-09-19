@@ -48,6 +48,14 @@ created: "2026-05-17"
   - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
   - 사용자 인증(FAB) 또는 gateway SSO가 비활성화된 상태에서의 UI 노출.
 
+### Lifecycle and data controls
+
+- Core Airflow services remain `HOME`; the dedicated broker pair remains `OPTIONAL`. Selecting `dedicated-valkey` does not authorize or perform a broker cutover without the matching host/secret variables and a drained-queue change plan.
+- PostgreSQL metadata, the current `airflow_fernet_key`, DAGs, plugins, config, and required logs are one recovery unit. A database copy without the matching Fernet key cannot recover encrypted Connections.
+- Pause schedules and producers and reconcile running/queued tasks before backup, restore, broker migration, or schema upgrade. Do not treat Valkey queue contents as the authoritative task history.
+- Restore rehearsals must use an isolated project/network and restored copies, never overwrite production volumes. Verify DB migration level, DAG parsing, Connections decryption without printing values, worker/broker health, login, and a canary DAG.
+- Resource changes require before/after evidence; Compose limits are configuration, not proof of spare capacity. Removal requires exported evidence, a retained recovery set, revoked clients/secrets, and explicit deletion approval.
+
 ## Exceptions
 
 - **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
@@ -70,7 +78,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

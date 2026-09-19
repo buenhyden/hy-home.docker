@@ -49,7 +49,15 @@ legacy 소비자의 인증 실패, Vault seal 상태, Agent 렌더 중단 또는
 
 ## Rollback or Recovery
 
-소비자 endpoint 변경을 되돌리는 것은 기존 Vault가 계속 사용 가능하고 새 쓰기의 처리 방침이 확인된 경우에만 수행한다. OpenBao 데이터를 Vault 경로에 복사하거나 동일 볼륨으로 재시작하지 않는다. 검증된 데이터 역이전 절차는 없으며, 새 데이터가 기록된 뒤에는 운영자의 복구 계획이 필요하다. legacy 저장소와 키 자료는 삭제하지 않는다.
+승인된 운영자 token으로 Vault Raft snapshot을 보호된 경로에 생성하고 checksum,
+cluster identity, image declaration, seal configuration을 기록한다. restore는 network
+egress와 소비자 접근이 차단된 새 data path에서만 수행하고, 같은 threshold 절차로
+unseal한 뒤 mount/policy/secret metadata와 대표 비밀의 존재를 값 노출 없이 확인한다.
+그 후에야 consumer 전환 판단을 한다. 소비자 endpoint 변경을 되돌리는 것은 기존
+Vault가 계속 사용 가능하고 새 쓰기의 처리 방침이 확인된 경우에만 수행한다.
+OpenBao 데이터를 Vault 경로에 복사하거나 동일 볼륨으로 재시작하지 않는다.
+검증된 데이터 역이전 절차는 없으며 legacy 저장소와 키 자료는 삭제하지 않는다.
+이 snapshot restore rehearsal은 2026-09-20 문서 교정 중 실행되지 않았다.
 
 ## Escalation
 

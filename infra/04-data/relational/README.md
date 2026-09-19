@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2026-03-27"
 ---
 
@@ -49,10 +49,14 @@ relational/
 
 ## How to Work in This Area
 
+| Package | Classification | Exact profile | Stage 05 subject |
+| --- | --- | --- | --- |
+| [PostgreSQL cluster](postgresql-cluster/README.md) | `LAB` | `postgres-ha` | `0031-postgresql-cluster` |
+
 1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 Relational DB Guides (`docs/05.operations/catalog/04-data/README.md`)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
 3. 운영 정책은 Relational Policies (`docs/05.operations/catalog/04-data/README.md`)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 Relational Runbooks (`docs/05.operations/catalog/04-data/README.md`)를 따릅니다.
+4. 장애 대응 및 복구는 `docs/05.operations/catalog/04-data/0031-postgresql-cluster/`의 Guide/Policy/Runbook을 따릅니다.
 
 ## Available Scripts
 
@@ -82,7 +86,7 @@ docker compose --env-file .env.example --profile postgres-ha config --quiet
 
 - **Guides**: `docs/05.operations/catalog/04-data/README.md`
 - **Policies**: `docs/05.operations/catalog/04-data/README.md`
-- **Runbooks**: `docs/05.operations/catalog/04-data/README.md`
+- Stage 05 subject: `docs/05.operations/catalog/04-data/0031-postgresql-cluster/`
 - **Service Guide**: postgresql-cluster guide (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md`)
 - **ARD**: `docs/02.architecture/descriptions/0004-data-architecture.md`
 - [Documentation index](../../../docs/README.md)
@@ -90,4 +94,4 @@ docker compose --env-file .env.example --profile postgres-ha config --quiet
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

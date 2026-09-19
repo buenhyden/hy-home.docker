@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -112,7 +112,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 - For documentation mistakes, revert only the affected stage doc or README hunk.
 - For runtime catalog drift, regenerate provider projections from the canonical canonical agent governance roles, skills, and provider registry.
-- For Compose validation failures, inspect the changed `infra/**/docker-compose*.yml` files before editing unrelated files.
+- For Compose validation failures, inspect the changed Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` files before editing unrelated files.
 - For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
 
 ### Agent Operations (If Applicable)

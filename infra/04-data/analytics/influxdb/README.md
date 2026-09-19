@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-21"
 ---
 
@@ -53,7 +53,7 @@ influxdb/
 | --- | --- |
 | Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profile: `data`; database name is an explicit write-request input, not a root environment key |
+| Config values | exact profile: `influxdb`; database name is an explicit write-request input, not a root environment key |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) |
 | Networks | `infra_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw` |
@@ -81,12 +81,14 @@ influxdb/
 
 ## Validation
 
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect InfluxDB.
+Classification is `OPTIONAL`. Recovery uses the InfluxDB 3 Core ordered local-object-store set (snapshots, databases, WAL, catalog, checkpoint) and a fresh compatible target; no built-in backup command or live data copy is claimed. Owning artifacts are `GDE-0017`, `POL-0017`, and `RUN-0017` under `docs/05.operations/catalog/04-data/0017-influxdb/`.
+
+- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect InfluxDB.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with repository validators and `docker logs influxdb` for runtime evidence. Service-local compose config requires root network/secret context or a local validation overlay.
+- Start with repository validators and `docker compose --profile influxdb logs --tail=120 influxdb` for runtime evidence.
 - Do not diagnose writes from a presumed secret path. Escalate for approved token provisioning and authenticated write acceptance before changing retention, database, or version settings.
 
 ## Related Documents
@@ -101,4 +103,4 @@ influxdb/
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

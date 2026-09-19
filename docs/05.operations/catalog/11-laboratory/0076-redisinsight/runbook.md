@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0076"
 parent_ids:
@@ -14,82 +14,62 @@ created: "2026-05-17"
 
 # RedisInsight Recovery Runbook
 
-관련 구성요소의 현재 선언은 [버전 레지스트리](../../../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
-
-## Overview
-
-> Scope: RedisInsight route hardening, root-active admin profile evidence, and non-destructive connection diagnosis.
-
-이 런북은 RedisInsight UI 접속 실패, Redis/Valkey connection failure, route hardening drift를 진단하고 비파괴적 evidence를 남기는 절차를 정의한다.
-
-### Purpose
-
-RedisInsight의 current image/route/storage boundary를 유지하면서 운영 캐시 직접 수정이나 data reset을 승인 없는 복구 절차로 수행하지 않도록 한다.
-
 ## When to Use
 
-- `redisinsight.${DEFAULT_URL}` UI가 응답하지 않을 때.
-- Redis/Valkey 연결이 실패하거나 key browser가 비어 있을 때.
-- hardening check에서 RedisInsight image, static route, middleware, healthcheck drift가 감지될 때.
+Use for gateway login failure, lost/corrupt settings, target auth failure,
+credential exposure, settings restore, or upgrade.
 
 ## Procedure
 
-### Checklist
+1. Validate and inspect from the root:
 
-- [ ] target Redis/Valkey endpoint와 권한 범위를 기록한다.
-- [ ] RedisInsight data path 변경이나 EULA/connection config 변경 내역을 기록한다.
-- [ ] cache mutation, data reset, volume deletion은 승인 필요 작업으로 분리한다.
+   ```bash
+   docker compose --profile admin-data config --quiet
+   docker compose --profile admin-data ps redisinsight
+   docker compose --profile admin-data logs --tail=200 redisinsight
+   ```
 
-### Steps
+2. Separate gateway/CIDR, RedisInsight settings, and target database symptoms.
+   Never test with an administrator target credential unless explicitly approved.
+3. If stored credentials may be exposed, stop RedisInsight, rotate them at each
+   target, remove/re-add connection definitions after recovery, and preserve only
+   sanitized evidence.
+4. Restart only after `/data` ownership/free-space and gateway controls pass.
 
-1. static hardening을 확인한다: `bash scripts/hardening/check-all-hardening.sh 11-laboratory`.
-2. root-active admin profile을 확인한다: `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`.
-3. 실행 중이면 상태와 로그를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`, `docker logs --tail 100 redisinsight`.
-4. route drift가 있으면 normal/static router 모두 `gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file`로 복구한다.
-5. Redis/Valkey 연결 실패는 endpoint host/port와 승인된 credential reference만 확인한다. credential 값은 출력하지 않는다.
+### Settings restore and upgrade
 
-### Verification Steps
-
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-- 활성화된 runtime에서 UI 접속 및 read-only inspection evidence를 기록한다.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker logs --tail 100 redisinsight`
-- **Static config**: [RedisInsight compose](../../../../../infra/11-laboratory/redisinsight/docker-compose.yml)
-
-### Safe Rollback or Recovery Procedure
-
-N/A — no verified config reset, volume deletion, or cache mutation procedure is documented for autonomous execution.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: stop if credential values or cache data values may be exposed.
-- **Eval Re-run**: hardening, root profile validation, doc traceability.
+1. Stop RedisInsight and copy all of `/data` to protected storage. Record checksum
+   and source commit; protect it as credential-bearing material.
+2. Restore to an isolated instance with production target network blocked. Use
+   the same `RI_ENCRYPTION_KEY` if the source deployment had one; current tracked
+   configuration does not declare it.
+3. Verify settings/log counts and UI access without connecting to live targets.
+4. For upgrade, review release/license notes, test the target image on the copied
+   settings, and verify gateway access plus a disposable test database connection.
 
 ## Evidence
 
-- Record hardening output, root profile validation result, container status/log tail, and read-only connection diagnosis.
+Record exits, source commit, settings checksum/counts, gateway/CIDR booleans,
+credential-rotation receipt, target account scope, and final state. No passwords,
+keys, query history, or data values.
 
 ## Rollback or Recovery
 
-If data reset, volume deletion, cache mutation, credential rotation, or broad restart is required, stop and escalate.
+Settings restore and upgrade rehearsal are **planned but unexecuted**. Restore of
+target Redis/Valkey data belongs to the target engine runbook.
 
 ## Escalation
 
-Escalate to the owning operator when cache mutation, connection credential changes, data reset/delete, or auth/allowlist changes are required.
+Stop on credential exposure, missing encryption key for encrypted data, unknown
+target authority, settings corruption, license ambiguity, or production target
+reachability during restore rehearsal.
 
 ## Traceability
 
-- Declared parent: [RedisInsight Usage Guide](guide.md) (`GDE-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0076`), [Policy](policy.md) (`POL-0076`)
+- [Guide](guide.md) (`GDE-0076`)
+- [Policy](policy.md) (`POL-0076`)
+- [RedisInsight Compose](../../../../../infra/11-laboratory/redisinsight/docker-compose.yml)
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [RedisInsight configuration](https://redis.io/docs/latest/operate/redisinsight/configuration/)

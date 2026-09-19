@@ -58,7 +58,7 @@ Compliance is checked via the Airflow static/runtime checks documented in [Airfl
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Airflow DAG basics guide](../0051-airflow-dag-lifecycle/guide.md)

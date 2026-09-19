@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2026-03-27"
 ---
 
@@ -47,11 +47,18 @@ analytics/
 ├── influxdb/       # Time Series Database (TSDB)
 ├── ksql/           # Streaming SQL engine for Kafka
 ├── opensearch/     # Log Search & Analytics Engine
-├── warehouses/     # StarRocks (OLAP) Engine
+├── starrocks/      # StarRocks (OLAP) Engine
 └── README.md       # This file
 ```
 
 ## How to Work in This Area
+
+| Package | Classification | Exact profile | Stage 05 subject |
+| --- | --- | --- | --- |
+| [InfluxDB](influxdb/README.md) | `OPTIONAL` | `influxdb` | `0017-influxdb` |
+| [ksqlDB](ksql/README.md) | `OPTIONAL` | `ksql` | `0018-ksqldb` |
+| [OpenSearch](opensearch/README.md) | `OPTIONAL` primary / `LAB` cluster | `opensearch` / `opensearch-cluster` | `0019-opensearch` |
+| [StarRocks](starrocks/README.md) | `OPTIONAL` | `starrocks` | `0020-starrocks` |
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -66,12 +73,10 @@ analytics/
 
 ## Related Documents
 
-- **System Guide**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
-- **Policies**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
-- **Runbooks**: Operations data catalog (`docs/05.operations/catalog/04-data/README.md`)
+- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
 - [Documentation index](../../../docs/README.md)
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

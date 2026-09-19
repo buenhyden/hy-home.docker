@@ -9,6 +9,18 @@ layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
 - "POL-0050"
+implementation_services:
+  infra/07-workflow/airflow/docker-compose.yml:
+  - airflow-apiserver
+  - airflow-dag-processor
+  - airflow-init
+  - airflow-scheduler
+  - airflow-statsd-exporter
+  - airflow-triggerer
+  - airflow-valkey
+  - airflow-valkey-exporter
+  - airflow-worker
+  - flower
 created: "2026-05-10"
 ---
 
@@ -64,8 +76,10 @@ created: "2026-05-10"
 - API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
  임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
  Forwarded header 신뢰 범위는 Traefik 주소 `172.19.0.2`로 제한한다.
-- 기본 Celery broker는 `mng-valkey`이며 `dedicated-valkey` profile을 선택하면
- `airflow-valkey`와 exporter가 별도로 실행된다.
+- 기본 Celery broker는 `mng-valkey`다. `dedicated-valkey` profile은
+  `airflow-valkey`와 exporter를 **기동만** 한다. 전용 broker를 실제로 쓰려면
+  `AIRFLOW_VALKEY_HOST=airflow-valkey`와
+  `AIRFLOW_VALKEY_SECRET=airflow_valkey_password`를 함께 설정해야 한다.
 
 #### 1. 시스템 아키텍처 이해
 
@@ -73,7 +87,7 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 
 - **Scheduler & DAG Processor**: 작업 예약 및 DAG 파일 해석 (독립 실행으로 안정성 확보)
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
-- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. compose 파일은 `infra/07-workflow/airflow/docker-compose.yml` 하나이며, `dedicated-valkey` profile을 선택하면 `airflow-valkey`가 기동하고 선택하지 않으면 `${AIRFLOW_VALKEY_HOST:-mng-valkey}` 기본값이 공유 `mng-valkey`로 해석된다.
+- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. compose 파일은 `infra/07-workflow/airflow/docker-compose.yml` 하나다. `${AIRFLOW_VALKEY_HOST:-mng-valkey}`와 `${AIRFLOW_VALKEY_SECRET:-mng_valkey_password}`가 실제 선택을 결정하며, `dedicated-valkey` profile만 추가해도 이 두 기본값은 바뀌지 않는다.
 - **API Server**: UI 및 외부 통합을 위한 `airflow-apiserver` 엔드포인트
 
 로그인 흐름은 `airflow.${DEFAULT_URL}`에서 Traefik HTTPS route를 거쳐
@@ -105,6 +119,17 @@ docker compose exec airflow-apiserver airflow dags list
 - **Worker Timeout**: 리소스 부족으로 워커가 종료되면 태스크가 `Queued` 상태로 멈출 수 있습니다.
 - **XCom Abuse**: XCom은 작은 데이터 교환용입니다. 대용량 데이터는 S3/MinIO 등 외부 저장소를 사용하십시오.
 
+### Source-backed operating contract
+
+- **Purpose/classification**: Airflow 코어 8개 서비스는 owner-confirmed `HOME` orchestration capability다. `airflow-valkey`와 exporter는 shared broker를 분리할 때만 쓰는 `OPTIONAL` pair다.
+- **Profiles/source**: 코어는 `workflow`/`workflow-airflow`, 전용 broker pair는 `dedicated-valkey`; authoritative source는 [Compose](../../../../../infra/07-workflow/airflow/docker-compose.yml)와 [Dockerfile](../../../../../infra/07-workflow/airflow/Dockerfile)이다.
+- **State flow**: DAGs enter through the `dags` mount; scheduler/processor persist authoritative metadata in PostgreSQL database `airflow` on `mng-pg`; Celery messages pass through the selected Valkey; workers write task logs to `airflow-logs`. Queue contents are in-flight coordination, not the durable workflow record.
+- **Secrets/environment**: preserve `airflow_db_password`, `airflow_fernet_key`, `airflow_api_jwt_secret`, `airflow_keycloak_client_secret`, and the selected broker password. `AIRFLOW_VALKEY_HOST` and `AIRFLOW_VALKEY_SECRET` must select the same broker. The Fernet key is inseparable from encrypted Connections.
+- **Dependencies/security**: `mng-pg`, the selected Valkey, Keycloak, Traefik, root CA, and `infra_net` must be ready. Native Keycloak Auth Manager protects the Airflow UI; Flower uses the gateway auth chain. Do not expose internal scheduler, worker, broker, or database ports.
+- **Persistence/resources**: PostgreSQL metadata plus `airflow-dags`, `airflow-logs`, `airflow-plugins`, and `airflow-config` form the recovery set. Compose CPU/memory values are source limits, not measured headroom; scale only from observed scheduler/worker/DB/broker pressure.
+- **Normal use/lifecycle**: use `docker compose --profile workflow config --quiet` from the repository root, then `docker compose --profile workflow up -d`. Before upgrade, pause schedules and inbound producers, reconcile running tasks, take a consistent PostgreSQL backup through the database owner, preserve the same Fernet key and mounted artifacts, run the supported Airflow DB migration, and verify DAG parsing plus a canary DAG before resuming.
+- **Upstream/license**: follow [Airflow database setup](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet guidance](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), and [best practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html). Apache Airflow is Apache-2.0 licensed.
+
 ## Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
@@ -123,7 +148,7 @@ docker compose exec airflow-apiserver airflow dags list
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

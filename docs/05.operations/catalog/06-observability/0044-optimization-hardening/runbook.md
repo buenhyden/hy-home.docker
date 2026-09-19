@@ -52,10 +52,11 @@ created: "2026-05-17"
    bash scripts/hardening/check-all-hardening.sh 06-observability
    ```
 
-2. Gateway/SSO middleware boundary를 확인한다.
+2. Native and proxy gateway boundaries를 각각 확인한다.
 
    ```bash
-   rg -n 'traefik.http.routers.(prometheus|alloy|grafana|alertmanager|pushgateway|loki|tempo|pyroscope|cadvisor).*middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'traefik.http.routers.(grafana|gatus).middlewares: gateway-standard-chain@file|GF_AUTH_GENERIC_OAUTH_ENABLED|GATUS_OIDC_CLIENT_ID' infra/06-observability/docker-compose.yml
+   rg -n 'traefik.http.routers.(prometheus|alloy|alertmanager|pushgateway|loki|tempo|pyroscope|cadvisor).middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 3. Health dependency and healthcheck boundary를 확인한다.
@@ -119,6 +120,15 @@ created: "2026-05-17"
 - **Eval Re-run**: `check-all-hardening.sh 06-observability`, `check-template-security-baseline`, `python3 scripts/validation/check-document-links.py --mode all`
 - **Trace Capture**: CI logs + compose config output + health 상태
 
+### Planned isolated recovery rehearsal
+
+Status: **planned and not executed**. These stateless exporters have no data restore to claim.
+
+1. Record pinned images, mount/namespace grants, metrics endpoint baselines, Prometheus target labels, and dependent rule/dashboard inventory.
+2. Recreate each exporter from tracked Compose on an isolated test host/project that can safely provide equivalent read-only host inputs; do not copy host files as service backup.
+3. Verify health, expected host/container series, label continuity, scrape duration/cardinality, protected cAdvisor route, and absence of unexpected writable mounts or secrets.
+4. On mismatch, stop the isolated services and revert image/config. Production privilege or mount changes require separate security approval.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -142,7 +152,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, route/res
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

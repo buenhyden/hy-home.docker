@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -46,7 +46,7 @@ created: "2026-05-17"
 
    ```bash
    test -f infra/04-data/analytics/opensearch/docker-compose.yml
-   python3 scripts/validation/check-document-links.py --mode alignment
+   python3 scripts/validation/check-document-links.py --mode all
    ```
 
 2. Primary health를 HTTPS로 확인한다.
@@ -60,16 +60,14 @@ created: "2026-05-17"
 3. Logs를 확인한다.
 
    ```bash
-   docker logs opensearch --tail 100
-   docker logs opensearch-dashboards --tail 100
+   docker compose --profile opensearch logs --tail 100 opensearch opensearch-dashboards
    ```
 
 4. cluster 구성은 같은 compose 파일의 `opensearch-cluster` profile로 확인한다.
 
    ```bash
-   HYHOME_COMPOSE_PROFILES='data data-cluster' \
-     bash scripts/validation/validate-docker-compose.sh
-   docker logs opensearch-node1 --tail 100
+   docker compose --profile opensearch-cluster config --quiet
+   docker compose --profile opensearch-cluster logs --tail 100 opensearch-node1 opensearch-node2 opensearch-node3
    ```
 
 ### Verification Steps
@@ -84,10 +82,17 @@ created: "2026-05-17"
 - **Metrics**: N/A unless a separate exporter is running
 - **Evidence**: health response, compose file selected, service logs summary, secret boundary confirmation
 
-### Safe Rollback or Recovery Procedure
+### Planned isolated snapshot restore
 
-- N/A - no verified index/shard rollback procedure is documented here.
-- Snapshot, shard routing, or security config changes must escalate before execution.
+This procedure is documented from upstream guidance and **was not executed in this task**.
+
+1. Record the selected topology, cluster UUID/version, index inventory, shard health, repository plugin/configuration, encryption and credential owner, free disk, and an approved restore destination. Preserve the tracked security configuration and certificates separately.
+2. Register or verify a repository outside the live data volumes with the least-privilege credential. Create a named snapshot that excludes `.opendistro_security`, wait for `SUCCESS`, and record included indices plus failures. Do not rely on a live data-directory copy.
+3. Provision a fresh compatible isolated primary or cluster topology with empty volumes, a distinct cluster name, and no production router. Register the same repository without exposing credentials.
+4. Restore selected application indices under temporary names or into the empty target. Apply reviewed security configuration separately; never restore the security index blindly.
+5. Verify green/yellow cluster health as appropriate, shard allocation, expected index/document counts, representative searches, Dashboards connectivity, TLS, roles, and absence of unexpected write aliases.
+6. If restore or security validation fails, stop and discard only the isolated volumes, then retry from the unchanged snapshot. Do not reroute shards or overwrite active indices to force recovery.
+7. Cutover, alias mutation, snapshot deletion, or active-cluster restore requires separate approval. Restore remains unverified until a rehearsal records success.
 
 ### Agent Operations (If Applicable)
 
@@ -103,7 +108,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-N/A - no verified generic rollback procedure can restore OpenSearch index or security state from this runbook. Use approved snapshot/security recovery evidence if mutation is required.
+Rollback from rehearsal is disposal of the isolated topology while the source cluster and snapshot remain unchanged. A cutover plan must retain the source and define alias/DNS reversal independently.
 
 ## Escalation
 
@@ -116,6 +121,12 @@ Escalate when health remains red/unavailable, shard mutation is needed, secrets 
 - Subject peers: [Guide](guide.md) (`GDE-0019`), [Policy](policy.md) (`POL-0019`)
 
 ## Related Documents
+
+- [Compose implementation: infra/04-data/analytics/opensearch/docker-compose.yml](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)
+- [Custom image source: infra/04-data/analytics/opensearch/Dockerfile](../../../../../infra/04-data/analytics/opensearch/Dockerfile)
+
+- [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
+- [Compose implementation](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)

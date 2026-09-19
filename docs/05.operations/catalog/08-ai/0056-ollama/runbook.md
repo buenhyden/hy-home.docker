@@ -128,6 +128,15 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 - **Eval Re-run**: 추론 smoke test + Open WebUI 연동 테스트 재실행
 - **Trace Capture**: 장애 시간대 API/리소스 로그 보존
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. This document contains no evidence of a successful Ollama model-store restore.
+
+1. Record the image digest, driver/runtime versions, model list, manifest/blob checksums, model source/license, Compose profiles, and a representative inference request/expected invariant. Stop model pulls and active inference before taking a consistent stopped copy or approved storage snapshot of `ollama-models`.
+2. Restore the copy to a separate project and isolated model path with no public route. If rebuilding instead, fetch only the recorded digest/version from the approved source and verify its license and checksum.
+3. Start Ollama with compatible GPU/runtime settings; verify `/api/tags`, model digest, GPU visibility, one representative inference, and exporter collection. Test Open WebUI only against the isolated endpoint.
+4. On any mismatch, stop the isolated service, retain logs and checksums, and return to the untouched backup/source manifest. Replacing the production volume or route needs a separate approved change.
+
 ## Evidence
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
@@ -136,7 +145,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- The isolated recovery plan above remains unexecuted; attach dated evidence before marking it rehearsed.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -151,7 +160,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

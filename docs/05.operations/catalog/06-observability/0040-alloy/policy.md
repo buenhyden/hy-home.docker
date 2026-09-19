@@ -71,6 +71,13 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
   - profile source가 연결되지 않았는데 profiling ingestion이 active라고
     선언하는 행위
 
+### Lifecycle and data controls
+
+- Keep Alloy `HOME`; Docker socket remains read-only and no public OTLP/UI exposure may bypass declared network/gateway controls.
+- Configuration is the durable authority. Back up a state directory only after proving which component uses it; never promise exact recovery of in-flight telemetry.
+- Before upgrades, validate config against the target version, record acceptable loss, and verify each configured downstream separately. A Pyroscope sink without a profile source is not end-to-end profiling.
+- Removal requires producer migration, downstream gap acceptance, route/port closure, and explicit handling of any verified WAL/checkpoint state.
+
 ## Exceptions
 
 - Pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과

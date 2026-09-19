@@ -31,6 +31,7 @@ created: "2026-03-26"
   - LLM 추론 엔진 (`Ollama`)
   - AI 사용자 인터페이스 및 RAG 오케스트레이터 (`Open WebUI`)
   - 로컬 모델 가중치 및 설정 관리
+  - ComfyUI image-workflow interface and its persistent workflow assets
 - **Consumes**:
   - GPU 하드웨어 자원 (via NVIDIA Container Toolkit)
   - 벡터 데이터베이스 (`04-data/qdrant`)
@@ -79,12 +80,20 @@ created: "2026-03-26"
 
 - **Key Entities / Flows**: User Prompt → Open WebUI (RAG Context Enrich) → Ollama (Inference) → Response Streaming.
 - **Storage Strategy**: 대용량 모델 파일(`${DEFAULT_AI_MODEL_DIR}/ollama`)은 bind mount를 통해 호스트의 대용량 스토리지와 직접 연동한다.
-- **Data Boundaries**: 사용자 문서는 Open WebUI 내부 DB와 Qdrant에만 존재하며, 추론 엔진에는 일시적인 컨텍스트로만 전달된다.
+- **Data Boundaries**: 사용자/채팅/업로드 상태는 Open WebUI의 기본 SQLite
+  data volume에, vector state는 Qdrant에 존재하며 두 저장소는 별도 owner가
+  조정해 복구한다. ComfyUI workflow/user/input/output/custom-node state와
+  model provenance는 해당 service mounts에 있다. 추론 엔진에는 context가
+  일시적으로 전달된다.
 
 ## Deployment View
 
 - **Runtime / Platform**: Docker Compose v3.8+ (NVIDIA Container Support).
-- **Deployment Model**: `ai` 프로필로 분리되어 필요 시에만 선택적으로 배포 가능.
+- **Deployment Model**: Ollama/exporter, Open WebUI, and ComfyUI are
+  owner-confirmed `HOME` capabilities. `ai` selects the full target;
+  `ai-llm` selects Ollama/Open WebUI, `ollama` selects Ollama/exporter, and
+  `ai-image` selects ComfyUI. Compose resource declarations are source limits,
+  not measured shared-GPU headroom.
 - **Operational Evidence**: `nvidia-smi`를 통한 실시간 GPU 상태 확인 및 `ollama-exporter` 대시보드.
 
 ## Traceability
@@ -97,4 +106,4 @@ created: "2026-03-26"
 - **Spec**: [009-ai/spec.md](0008-ai-architecture.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../decisions/0008-ollama-openwebui-local-ai.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

@@ -53,7 +53,7 @@ sonarqube/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | SonarQube Community | `sonarqube:26.9.0.129388-community` |
+| **Service** | SonarQube Community Build | Runtime image is declared only in [Compose](docker-compose.yml) |
 | **Database** | PostgreSQL | Management Cluster |
 | **Network** | Traefik | SSL termination |
 | **Storage** | Bind Mount | `${DEFAULT_TOOLING_DIR}/sonarqube` |
@@ -70,10 +70,12 @@ sonarqube/
 
 ## Available Scripts
 
+Run these read-only checks from the repository root. Starting or changing SonarQube requires runtime approval.
+
 | Command | Description |
 | :--- | :--- |
-| `docker compose up -d` | Start the SonarQube service. |
-| `docker compose logs -f` | View real-time service logs. |
+| `docker compose --profile sast config --services` | Confirm the selected root-project services. |
+| `docker compose --profile sast logs --tail=200 sonarqube` | Inspect an approved running SonarQube service. |
 
 ## Validation
 
@@ -119,4 +121,4 @@ sonarqube/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

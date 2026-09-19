@@ -8,69 +8,38 @@ updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
-# Operational Data Tier (04-data/operational)
-
-> Shared core databases and management platforms for the hy-home.docker ecosystem.
+# Operational data
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 플랫폼의 운영 및 관리를 지원하는 공통 데이터 서비스를 포함합니다. 여기에는 ID 관리, 자동화, 워크플로우를 위한 핵심 데이터베이스(`mng-db`)와 통합 백엔드 플랫폼(`supabase`)이 포함됩니다.
+This area documents the operational data packages used by repository services.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- **Platform Ops**: 플랫폼 부트스트랩 및 서비스 관리
-- **Backend Developers**: 공통 DB 및 Supabase 연동 개발
-- **SREs**: 가용성 모니터링 및 장애 대응
-- **AI Agents**: 시스템 의존성 분석 및 하위 가이드 제공
+It is intended for operators and maintainers of shared operational state.
 
 ## Scope
 
-### In Scope
-
-- **Management Database (mng-db)**: Keycloak, n8n, Airflow 등을 위한 전용 PostgreSQL/Valkey.
-- **Supabase Stack**: Auth, Realtime, Storage를 포함한 로컬 Firebase 대체 플랫폼.
-- **Operational Alignment**: 관리 서비스 간의 데이터 격리 및 공유 정책 준수.
-- **HA PostgreSQL Cluster (Reference)**: 비관리형 고가용성 DB는 [relational](../relational/README.md) 참조.
-
-### Out of Scope
-
-- **High-Availability Production Data**: 플랫폼 핵심 메타데이터 외의 서비스 데이터는 [relational](../relational/README.md) 활용.
-- **Specialized Analytics**: 벡터 검색이나 그래프 데이터는 [Qdrant](../specialized/qdrant/README.md) 또는 [Neo4j](../specialized/neo4j/README.md) 참조.
+It covers the HOME management databases and the separate optional application
+platform.
 
 ## Structure
 
-```text
-operational/
-├── mng-db/             # Shared management PostgreSQL & Valkey
-├── supabase/           # Self-hosted Supabase platform
-└── README.md           # This file
-```
+### Packages and ownership
+
+- [`mng-db`](mng-db/README.md) is HOME shared PostgreSQL and Valkey for current
+  auth, workflow and tooling consumers.
+- [`supabase`](supabase/README.md) is a separate OPTIONAL application platform.
+It does not replace, extend or share directories with `mng-db`.
 
 ## How to Work in This Area
 
-1. **서비스 기동 순서**: `mng-db`가 먼저 실행되어야 하며, 이후 `supabase` 및 다른 관리 서비스가 실행됩니다.
-2. **권한 관리**: 모든 비밀번호는 `/run/secrets/` 하위의 파일로 관리되어야 합니다.
-3. **문서 동기화**: 인프라 변경 시 `docs/05.operations/catalog/04-data/`의 관련 문서와 이 README를 함께 갱신합니다.
-
-## Tech Stack
-
-| Service | Technology | Role |
-| :--- | :--- | :--- |
-| **mng-pg** | PostgreSQL 18 | Platform Metadata Storage |
-| **mng-valkey** | Valkey 9 | Platform Shared Cache |
-| **Supabase** | Multi-stack | Integrated Backend Platform |
+Operate each through its exact root profile. Never merge schemas, credentials,
+queues or volumes because two packages expose similar database/cache protocols.
+Promotion, consolidation or removal needs a named application, schema/data
+migration, isolated recovery proof and rollback.
 
 ## Related Documents
 
-- **Guide**: Operational Guides (`docs/05.operations/catalog/04-data/README.md`)
-- **Policies**: Operational Policies (`docs/05.operations/catalog/04-data/README.md`)
-- **Runbooks**: Operational Runbooks (`docs/05.operations/catalog/04-data/README.md`)
-- **HA PostgreSQL Reference**: [Relational Data Tier](../relational/README.md)
-- [Documentation index](../../../docs/README.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Use the [documentation entry point](../../../docs/README.md) to locate Stage 05
+subject `04-data/0028-management-database` and backup policy POL-0021.

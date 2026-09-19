@@ -8,108 +8,58 @@ updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
-<!-- [ID:04-data:minio] -->
-# MinIO Object Storage
-
-> S3-compatible object storage for observability buckets and public asset storage.
+# MinIO object storage
 
 ## Overview
 
-MinIO is the object storage service for `hy-home.docker`. This leaf is the only one holding two Compose files, and the root file includes both of them unconditionally. `docker-compose.yml` declares a single `minio` service, selected by the `storage`, `obs`, `dev`, and `nginx` profiles, plus a `minio-create-buckets` bootstrap job that `nginx` does not select. `docker-compose.cluster.yaml` declares the four-node topology `minio1` through `minio4`, selected only by `storage-cluster`. The two topologies are separated by profile rather than by include state, and no profile selects both.
+This package defines the repository's HOME and LAB MinIO surfaces.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Infrastructure Operators
-- Application Developers using S3-compatible storage
-- SREs
-- AI Agents
+It is intended for operators and maintainers of MinIO-backed object storage.
 
 ## Scope
 
-### In Scope
-
-- Root-active MinIO service and bucket bootstrap behavior
-- Docker Secret names and mount paths, without secret values
-- Traefik API/console route surface
-- `storage-cluster` topology identification
-
-### Out of Scope
-
-- Secret values, access keys, and private bucket contents
-- Application-level object lifecycle design
-- SeaweedFS configuration
-- Treating the `storage-cluster` topology as part of the single-node `storage` surface
+[`docker-compose.yml`](docker-compose.yml) defines HOME `minio` and
+`minio-create-buckets` for `storage`, `obs`, `logs`, `tracing`, and `nginx`.
+[`docker-compose.cluster.yaml`](docker-compose.cluster.yaml) defines LAB
+`minio1`–`minio4` for `storage-cluster`. The root project includes both sources.
 
 ## Structure
 
-```text
-minio/
-├── docker-compose.yml          # Single-node service plus bootstrap job, storage profile
-├── docker-compose.cluster.yaml # 4-node topology, selected by the storage-cluster profile
-├── Dockerfile                  # Optional image/build context
-└── README.md                   # This file
-```
+HOME state is `minio-data` at `${DEFAULT_DATA_DIR}/minio/data-1`; LAB members use
+separate `data1` through `data4` paths. Root/application identities use
+`minio_root_username`, `minio_root_password`, `minio_app_username`, and
+`minio_app_user_password`. Services use `infra_net`; API/console routes use
+`gateway-standard-chain@file`. Gateway TLS does not prove internal TLS or storage
+encryption. The service API/console listen on the Compose-declared internal ports
+and are gateway-routed; no direct host `ports` mapping exists. The service checks
+its live-health endpoint and bootstrap is a completion job. Configuration is
+inline in Compose; no external server configuration file is mounted.
 
-## Service Readiness
-
-| Field | Evidence |
-| --- | --- |
-| Purpose | MinIO Object Storage service leaf in `04-data`; `storage` profile services: `minio`, `minio-create-buckets`; `storage-cluster` profile services: `minio1` to `minio4` in `docker-compose.cluster.yaml` |
-| Config files | `docker-compose.yml`, `docker-compose.cluster.yaml`, `Dockerfile` |
-| Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev`, `nginx` |
-| Compose linkage | the root [docker-compose.yml](../../../../docker-compose.yml) includes both files unconditionally; `docker-compose.yml` is selected by `storage`, `obs`, `dev`, `nginx` and `docker-compose.cluster.yaml` only by `storage-cluster` |
-| Networks | `infra_net`; static IPs: `172.19.0.29` (`minio`), `172.19.0.39` (`minio-create-buckets`) |
-| Volumes | `minio-data:/data:rw`; bind source `${DEFAULT_DATA_DIR}/minio/data-1` |
-| Ports | Direct host `ports` not declared; Traefik routes API and console to `${MINIO_PORT:-9000}` and `${MINIO_CONSOLE_PORT:-9001}` |
-| Labels | `hy-home.tier`, Traefik API route `minio.${DEFAULT_URL}`, Traefik console route `minio-console.${DEFAULT_URL}` |
-| Secret refs | `minio_root_username`, `minio_root_password`, `minio_app_username`, `minio_app_user_password`; mounted under `/run/secrets/` |
-| Healthcheck | Compose healthcheck declared for `minio`; not declared for `minio-create-buckets` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0023-minio/guide.md`), Policy (`docs/05.operations/catalog/04-data/0023-minio/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0023-minio/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`, then inspect service logs and linked operations/runbook evidence. |
+The bootstrap creates `loki-bucket`, `tempo-bucket`, `cdn-bucket`, and
+`doc-intel-assets`; only `cdn-bucket` is intentionally public-read.
 
 ## How to Work in This Area
 
-1. Review the linked operations guide, policy, and runbook before changing MinIO configuration.
-2. Keep credentials in Docker Secrets and document only secret names or mounted paths.
-3. Record which profile was selected, because the single-node and four-node topologies are distinguished by profile and not by include state.
-4. After compose or bucket initialization changes, run the validation commands listed below.
+```bash
+docker compose --env-file .env.example --profile storage config --quiet
+docker compose --env-file .env.example --profile storage config --services
+docker compose --env-file .env.example --profile storage-cluster config --quiet
+```
 
-## Runtime Surface
+Run from the repository root. The four-node topology shares one host and is LAB.
+Back up through an object-aware mirror/replication plus bucket policies, IAM,
+versioning and object metadata to a separate encrypted target; do not raw-copy
+active `/data`. Restore into an isolated compatible target and validate every
+named client before cutover.
 
-| Surface | Current Evidence |
-| --- | --- |
-| Image | `minio/minio:RELEASE.2025-09-07T16-13-09Z` |
-| Root-active services | `minio`, `minio-create-buckets` |
-| API route | `https://minio.${DEFAULT_URL}` |
-| Console route | `https://minio-console.${DEFAULT_URL}` |
-| Bootstrap buckets | `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets` |
-| Public bucket policy | `cdn-bucket` anonymous public read is set by `minio-create-buckets` |
-
-## Validation
-
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Validate this service with `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`.
-- Verify status with `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps minio minio-create-buckets`.
-
-## Troubleshooting
-
-- Start with compose render and service status before changing configuration or secrets.
-- Check `minio` and `minio-create-buckets` logs without copying secret-bearing output.
-- For credential errors, verify Docker Secret file presence and mounted paths; do not print secret values.
-- For bucket access errors, confirm bootstrap job evidence and linked operations runbook before changing bucket policy.
+The [community repository](https://github.com/minio/minio) was archived and says
+it is no longer maintained. Preserve current HOME data while a separate migration
+evaluation reviews compatibility and licensing.
 
 ## Related Documents
 
-- **Guide**: Technical Guide (`docs/05.operations/catalog/04-data/0023-minio/guide.md`)
-- **Policy**: Operations Policy (`docs/05.operations/catalog/04-data/0023-minio/policy.md`)
-- **Runbook**: Recovery Runbook (`docs/05.operations/catalog/04-data/0023-minio/runbook.md`)
-- [Documentation index](../../../../docs/README.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Use the
+[documentation entry point](../../../../docs/README.md) to locate Stage 05 subject
+`04-data/0023-minio` and POL-0021.

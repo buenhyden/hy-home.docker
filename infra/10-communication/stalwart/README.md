@@ -35,7 +35,7 @@ Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언�
 | Setting | Source / behavior |
 | --- | --- |
 | Profile | `mail-server` |
-| Image | [Compose](docker-compose.yml); [curated projection](../../tech-stack.versions.json) |
+| Image | [Compose](docker-compose.yml); [derived Compose image projection](../../tech-stack.versions.json) |
 | Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/opt/stalwart` |
 | Certificates | `${DEFAULT_CERT_DIR}` → `/opt/stalwart/certs:ro` |
 | Secret | `stalwart_password` → `/run/secrets/stalwart_password`; 원문 출력 금지 |

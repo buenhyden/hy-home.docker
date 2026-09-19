@@ -105,7 +105,7 @@ created: "2026-05-17"
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- Configuration rollback rehearsal is planned and not executed. Stateful recovery remains in `RUN-0050` and `RUN-0053`; do not infer database, encryption-key, or queue recovery from this optimization runbook.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -120,7 +120,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

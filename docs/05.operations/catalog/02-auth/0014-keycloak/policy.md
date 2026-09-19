@@ -59,6 +59,17 @@ created: "2026-05-17"
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
+### Backup and Upgrade Controls
+
+- `mng-pg`의 Keycloak database를 권위 백업으로 취급한다. realm export만으로
+  사용자, 세션, 자격 증명, 실행 중 변경의 완전한 복구를 주장하지 않는다.
+- 일관된 export가 필요하면 공식 offline 절차에 따라 모든 Keycloak node를
+  중지한다. 실행 중 export를 database backup 대체물로 쓰지 않는다.
+- 백업 접근, 관리자 password, database password, client secret은 각 secret
+  owner가 보관하며 문서나 증거에 값을 복사하지 않는다.
+- upgrade 전에 복구 가능한 database backup을 확인하고 격리 복제본에서 migration과
+  대표 OIDC 흐름을 검증한다. rollback에는 이전 image와 이전 database가 함께 필요하다.
+
 ## Review Cadence
 
 - 월 1회 정기 점검
@@ -73,7 +84,7 @@ created: "2026-05-17"
 
 - [Official upstream operational documentation](https://www.keycloak.org/server/containers)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

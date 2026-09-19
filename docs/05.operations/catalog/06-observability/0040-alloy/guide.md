@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
 - "POL-0040"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - alloy
 created: "2026-05-10"
 ---
 
@@ -86,9 +89,18 @@ created: "2026-05-10"
 - **Profiling assumption**: `pyroscope.write` endpoint가 있다고 해서 profile source가 자동으로 수집되는 것은 아니다.
 - **Docker socket boundary**: Docker socket and container log mounts는 read-only여야 한다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `alloy` is the `HOME` telemetry collector selected by `obs`, `logs`, `tracing`, or `profiling`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Alloy config](../../../../../infra/06-observability/alloy/config/config.alloy) are authoritative.
+- **Flow/dependencies**: read-only Docker socket/container logs feed Loki, OTLP 4317/4318 feeds Tempo, Alloy self-metrics remote-write to Prometheus, and a Pyroscope write sink exists. Current config declares no profile source, so the sink alone does not prove profiles are collected. Loki, Tempo, Prometheus, Docker, and `infra_net` are dependencies.
+- **State/security**: config and host log mounts are read-only; Docker socket access is security-sensitive. `alloy-data:/var/lib/alloy` is mounted, but current command does not explicitly set a storage path, so do not claim that every component WAL/checkpoint resides there. In-flight telemetry can be lost and is not a guaranteed recovery asset.
+- **Resources/normal use**: source CPU/memory limits are not headroom. Render at root with `docker compose --profile obs config --quiet`, run Alloy config validation, then verify downstream writes and bounded retry/WAL signals.
+- **Lifecycle**: preserve config and any component-specific verified state; drain or accept documented in-flight loss, update one pinned version, validate component compatibility, then verify logs/traces/metrics and only claim profiling when a source is present.
+- **Upstream/license**: use official [How Alloy works](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/) and [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) guidance. Grafana Alloy is Apache-2.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps alloy`
+- `docker compose --profile obs ps alloy`
 - `docker logs --tail=100 infra-alloy`
 - `rg -n 'discovery.docker|loki.source.docker|prometheus.remote_write|otelcol.receiver.otlp|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
 - `rg -n 'ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`

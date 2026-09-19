@@ -77,6 +77,14 @@ or restored monitoring history.
 
 Preserve data and credentials during changes. Review exact runtime targets before deployment. Keep operational procedures in the existing operations subject.
 
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `availability`, `dev`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d gatus`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0087-gatus/`; IDs `GDE-0087`, `POL-0087`, `RUN-0087`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
+
 ## Related Documents
 
 - [Infrastructure index](../../../infra/README.md)

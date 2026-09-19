@@ -9,12 +9,20 @@ layer: "operations"
 artifact_id: "GDE-0016"
 parent_ids:
 - "POL-0016"
+implementation_services:
+  infra/03-security/vault/docker-compose.yml:
+  - vault
+  - vault-agent
 created: "2026-05-10"
 ---
 
 # Vault Legacy Migration Guide
 
 ## Usage
+
+### Implementation Sources
+
+- [infra/03-security/vault/docker-compose.yml](../../../../../infra/03-security/vault/docker-compose.yml)
 
 ### Overview
 
@@ -55,6 +63,16 @@ Vault와 `vault-agent`는 **MIGRATE** 대상이며 `legacy-vault` profile에서�
 ## Runbook Handoff
 
 전환 중 seal, 인증, 렌더링 또는 소비자 오류가 발생하면 [런북](runbook.md)의 중단·복구 판단을 따른다.
+
+### Legacy Data Protection
+
+Vault integrated-storage state and its unseal/recovery material are separate
+recovery authorities. An operator-authenticated Raft snapshot protects the data;
+the threshold key custodians protect the ability to unseal. Keep both outside the
+container and never place either in Git or task evidence. Before migration or
+image change, capture a protected snapshot and rehearse restore into isolated
+storage with the same seal configuration and supported image. This repository has
+not proven an online Vault-to-OpenBao data conversion.
 
 ## Traceability
 

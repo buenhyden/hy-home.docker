@@ -1,14 +1,17 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
 - "POL-0076"
+implementation_services:
+  infra/11-laboratory/redisinsight/docker-compose.yml:
+  - redisinsight
 created: "2026-05-10"
 ---
 
@@ -16,80 +19,56 @@ created: "2026-05-10"
 
 ## Usage
 
-### Overview
+### Purpose and classification
 
-이 문서는 RedisInsight를 사용하여 Redis 데이터를 탐색하고 분석하는 방법을 설명한다. 키 브라우징, 메모리 분석기, 그리고 웹 기반 CLI 사용 절차를 포함한다.
+RedisInsight is an OPTIONAL admin UI under `admin` and `admin-data`; it is not a
+Redis/Valkey server and does not back up target databases. It persists connection
+definitions, credentials, workbench history, and logs under
+`${DEFAULT_MANAGEMENT_DIR}/redisinsight` mounted at `/data`.
 
-### Usage Type
+### Current implementation and gap
 
-`system-guide | how-to`
+- [RedisInsight Compose](../../../../../infra/11-laboratory/redisinsight/docker-compose.yml)
+  owns profiles, volume, route, CIDR, middleware, and healthcheck.
+- The UI is reachable only through Traefik, with admin CIDR and OAuth2 Proxy
+  ForwardAuth. No host port is published.
+- Current source declares no `RI_ENCRYPTION_KEY`. Upstream states this key encrypts
+  locally stored database passwords/workbench history. Until configured and
+  migrated, treat `/data` and its backups as sensitive plaintext-at-rest risk.
+- Directory health proves only `/data` availability. It does not prove gateway
+  auth, target credentials, or target database authorization.
+- Upstream identifies RedisInsight as SSPL-licensed and requires applicable terms
+  acceptance; this repository does not assert another edition/license.
 
-### Step-by-step Instructions
+### Normal use, backup, and upgrade
 
-#### 1. Connection Setup
+Validate `docker compose --profile admin-data config --quiet`. Verify gateway
+auth/CIDR, then add only least-privilege target credentials. Destructive commands
+in Workbench require target-owner approval; ForwardAuth does not constrain Redis
+permissions.
 
-1. `https://redisinsight.${DEFAULT_URL}`에 접속한다.
-2. 'Add Redis Database'를 클릭한다.
-3. 호스트명(같은 네트워크 내의 경우 서비스 이름, 예: `redis`)과 포트(6379)를 입력한다.
-4. 연결이 성공하면 대시보드에서 데이터 요약을 확인할 수 있다.
-
-#### 2. Key Analysis & Browser
-
-1. 'Browser' 탭에서 필터링 기능을 사용하여 특정 패턴의 키를 검색한다.
-2. 'Key Analyzer'를 실행하여 어떤 키 타입이 메모리를 가장 많이 점유하는지 분석한다.
-3. 데이터의 TTL(Time-to-Live)을 실시간으로 확인하고 수정할 수 있다.
-
-#### 3. Using Profiler
-
-1. 'Profiler' 기능을 활성화하여 특정 애플리케이션의 쿼리 부하를 실시간으로 캡처한다.
-2. 느린 쿼리를 식별하고 최적화 포인트를 찾는다.
-
-### Best Practices
-
-- **Read-Only Mode**: 운영 환경의 데이터를 조회할 때는 실수로 데이터가 변경되지 않도록 주의하라.
-- **TTL Management**: 메모리 부족 방지를 위해 모든 키에 적절한 TTL이 설정되어 있는지 주기적으로 점검하라.
-- **Sampling**: 대규모 데이터셋 분석 시에는 성능 저하를 막기 위해 샘플링 기능을 활용하라.
-
-### Common Pitfalls
-
-- **Network reachability**: `infra_net` 외부의 Redis에 연결하려면 적절한 네트워크 브릿지 또는 호스트 매핑이 필요하다.
-- **Version Compatibility**: Redis 모듈(JSON, Search 등) 사용 시 RedisInsight의 버전과 호환되는지 확인하라.
-
-### Target Audience
-
-- Developer
-- Operator
-- AI Agent
-
-### Purpose
-
-관련 인프라 서비스나 문서 영역을 이해하고 안전하게 변경 또는 운영할 수 있도록 돕는다.
-
-### Prerequisites
-
-- Repository root README 확인
-- 관련 `infra/` 서비스 README 확인
-- 필요한 경우 대응 operation/runbook 문서 확인
+Stop RedisInsight before copying `/data`. Protect the backup as credential-bearing
+material; a UI settings backup is not a target database backup. Restore first
+into an isolated RedisInsight with no access to production Redis/Valkey and the
+same encryption key if one is later configured. Before upgrade, review release
+and license terms and test stored connections/history. No backup/restore ran here.
 
 ## Common Checks
 
+- `docker compose --profile admin-data config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Use the [runbook](runbook.md) for auth, settings, credential, target, or upgrade recovery.
 
 ## Traceability
 
-- Declared parent: [RedisInsight Operations Policy](policy.md) (`POL-0076`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Policy](policy.md) (`POL-0076`), [Runbook](runbook.md) (`RUN-0076`)
+- [Policy](policy.md) (`POL-0076`)
+- [Runbook](runbook.md) (`RUN-0076`)
+- [Laboratory architecture](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
+- [RedisInsight configuration and encryption key](https://redis.io/docs/latest/operate/redisinsight/configuration/)
+- [RedisInsight usage, telemetry, logs, and SSPL license](https://redis.io/docs/latest/develop/tools/insight/)

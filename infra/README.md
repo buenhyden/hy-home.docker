@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-24"
 ---
 
@@ -70,12 +70,18 @@ docker compose --env-file .env.example --profile '*' config --services
 ```
 
 프로파일 어휘와 목적은 POL-0078이 소유한다. [문서 인덱스](../docs/README.md)에서
-Compose Profile Vocabulary Policy로 이동한다. 전수 분류와 관측 일자는 Stage 90의
+Compose Profile Vocabulary Policy로 이동한다. Canonical path는
+`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`다. 전수 분류와 관측 일자는 Stage 90의
 기존 local Docker service consolidation 연구에 기록한다.
 
 ## Tech Stack
 
-실행 버전의 원본은 각 Compose/Dockerfile 선언이며 [버전 레지스트리](tech-stack.versions.json)는 검증 가능한 투영이다. README에 정확한 patch 버전을 복제하지 않는다.
+실행 version pin의 원본은 각 Compose/Dockerfile 선언이다.
+[version projection](tech-stack.versions.json)은 tracked Compose image 선언에서
+파생한 기계 판독 projection이며, drift 검사와 업데이트 소유권 탐색에 사용한다.
+Dockerfile `FROM`/`ARG`와 inline build의 pin은 별도 build authority이므로 이
+projection이 그것들의 완전한 목록이라고 주장하지 않는다. README에는 source link
+없이 exact patch literal을 복제하지 않는다.
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -93,14 +99,17 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 
 | Selection | Purpose |
 | --- | --- |
-| `core mng` | Gateway, identity, OpenBao, shared application DB/broker and exporters |
-| `ai workflow` | Ollama, Open WebUI, ComfyUI, Qdrant, Airflow and n8n with workers |
-| `storage` | Single-node object persistence and bucket initialization |
-| `obs-core obs-host availability logs alerting` | Metrics, host visibility, availability, logs and alerts |
-| `mail-dev` | DEV mail capture; no external delivery |
-| `dependency-update`, `iac` | Explicit operator jobs; excluded from HOME |
+| `core` | Gateway, identity, and OpenBao bootstrap selection; it is not the complete HOME selection |
+| `mng` | Shared management database/broker and exporters needed by the selected HOME services |
+| `ai workflow storage` | Confirmed always-on AI/workflow capability and its object/vector/state dependencies |
+| `obs-core obs-host availability logs alerting` | HOME metrics, host visibility, availability, logs and alerts |
+| `tooling` | Registry and SonarQube only; excluded from HOME |
+| `testing` | k6 and the Locust master/worker pair; excluded from HOME |
+| `iac` | OpenTofu and Terrakube API/UI/executor; excluded from HOME |
+| `dependency-update` | Renovate update job only; excluded from `tooling` and HOME |
 
-위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
+HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting`의
+37-service selection이다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
 AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
 초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
@@ -148,7 +157,7 @@ service directory and cover the following agent-verifiable fields:
 | Field | Required evidence |
 | :--- | :--- |
 | Purpose | Service role, tier, and the profiles that select its services |
-| Config files | Local `docker-compose*.yml`, Dockerfile, scripts, and mounted config paths |
+| Config files | Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}`, Dockerfile, scripts, and mounted config paths |
 | Config values | Non-secret environment keys and defaults that affect operation |
 | Compose linkage | Root include/profile status and any variant compose files |
 | Networks | Declared networks and intended trust boundary |
@@ -163,10 +172,11 @@ service directory and cover the following agent-verifiable fields:
 
 ## How to Work in This Area
 
-1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
-2. **Global Integration**: 새 서비스 compose 파일은 루트 `docker-compose.yml`의 `include`에 주석 없이 추가하고, 각 서비스에 `profiles:`를 선언한 뒤 그 이름을 POL-0078에 등록합니다.
-3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
-4. **Validation**: `scripts/validation/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
+1. **Service Addition**: `infra/<tier>/<service>/` 디렉터리와 Compose/Dockerfile implementation source를 만듭니다.
+2. **Global Integration**: 새 Compose fragment는 루트 `docker-compose.yml` `include`에 추가하고, 각 service의 `profiles:`와 POL-0078 membership을 함께 갱신합니다. HOME 여부는 새 vocabulary가 아니라 current consumer evidence로 결정합니다.
+3. **Configuration and ownership**: public environment/secret schema와 secret-file reference를 함께 추가하고, 값은 절대 문서화하지 않습니다. Compose image pin은 projection/updater owner와 동기화하고 Dockerfile build pin은 해당 Dockerfile authority에 연결합니다.
+4. **Operations and documentation**: service Guide의 `implementation_services` mapping에 exact Compose path/service binding을 추가하고, Policy/Runbook, service README, current Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 global joins를 검증하므로 별도 registry/checker를 만들지 않습니다.
+5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link checks를 변경 범위에 맞게 실행합니다.
 
 공유 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../.agents/governance/agentic.md)와 [documentation protocol](../.agents/governance/documentation-protocol.md)로 라우팅한다.
 

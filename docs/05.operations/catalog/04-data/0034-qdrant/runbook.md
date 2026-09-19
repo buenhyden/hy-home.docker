@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: Triage root-active Qdrant service health, REST/gRPC route assumptions, persistence path, and evidence capture without destructive data actions.
 
-이 런북은 `qdrant` 서비스가 unhealthy, stopped, route failure, or readiness failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. collection delete, snapshot recovery, volume replacement, cluster repair는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
+이 런북은 health triage와 별도 승인 후 수행할 Qdrant snapshot의 격리 복원 rehearsal 계약을 제공한다. 이번 변경에서 snapshot create/recover API나 storage mutation은 실행하지 않았다.
 
 ### Purpose
 
@@ -45,7 +45,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile qdrant config --quiet qdrant
+   docker compose --profile qdrant config --quiet
    ```
 
 2. 서비스 상태를 확인한다.
@@ -82,27 +82,36 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 
 - `docker compose ps qdrant`에서 `qdrant`가 running 또는 healthy 상태인지 확인한다.
 - `/readyz`가 200 response evidence를 제공하는지 확인한다.
-- `docker compose --profile qdrant config --quiet qdrant`에서 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`가 유지되는지 확인한다.
+- `docker compose --profile qdrant config --quiet`가 통과하는지 확인하고, source Compose에서 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`가 유지되는지 비교한다.
 
 ### Observability and Evidence Sources
 
 - **Logs**: `docker compose logs --tail=120 qdrant`
 - **Health**: `/readyz` and compose healthcheck
 - **Route**: Traefik HTTP labels on `qdrant` and TCP labels on `qdrant-grpc`
-- **Config**: `docker compose --profile qdrant config --quiet qdrant`
+- **Config**: `docker compose --profile qdrant config --quiet`
 
 ### Safe Rollback or Recovery Procedure
 
 1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
 2. Runtime recovery in this runbook is limited to compose `up -d qdrant` after evidence capture.
-3. N/A — no verified snapshot recovery, collection restore, volume replacement, or cluster rollback procedure is documented yet.
+3. 실패한 isolated target과 전용 volume을 폐기한다. source service, snapshot과 tracked volume은 변경하지 않는다.
+
+### Planned Isolated Restore Rehearsal
+
+1. 사전 승인 후 source engine minor version, collection list/config/status, aliases, point-count invariants, snapshot scope/identifier와 free disk를 기록한다. 현재 no-secret exposure risk도 명시한다.
+2. approved collection or full-storage snapshot을 생성하고 `/qdrant/storage/snapshots`에서 manifest/checksum과 함께 보호한다. snapshot API response나 vector payload를 evidence에 복사하지 않는다.
+3. production network/route/volume을 공유하지 않는 fresh target을 same minor 또는 upstream이 허용하는 next minor로 준비한다. snapshot 크기의 약 2배 free disk와 absent target collection을 확인한다.
+4. collection snapshot recovery API 또는 full-storage startup recovery 중 snapshot type에 맞는 upstream procedure 하나만 사용한다. `force`는 target collision이 명시적으로 검토된 경우에만 별도 승인한다.
+5. `/readyz`, collection status/config, aliases, point counts와 representative search invariants를 검증한다. version, checksum 또는 count mismatch면 승격하지 않는다.
+6. 실패하면 target을 폐기한다. production route switch, API-key 도입, collection deletion과 volume replacement는 별도 승인 사항이다.
 
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if application data or credentials appear in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
+- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 
@@ -112,7 +121,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 
 ## Rollback or Recovery
 
-N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If collection mutation, snapshot restore, volume replacement, or cluster repair is required, preserve evidence and escalate.
+데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이번 변경에서는 snapshot mutation, collection restore/delete, volume replacement와 route change를 실행하지 않았다.
 
 ## Escalation
 
@@ -126,7 +135,10 @@ Escalate to the owning operator when `/readyz` fails after restart, logs show st
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Compose implementation: infra/04-data/specialized/qdrant/docker-compose.yml](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)
+
+- [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
+- [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

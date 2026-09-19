@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2026-03-26"
 ---
 
@@ -12,139 +12,70 @@ created: "2026-03-26"
 
 ## Overview
 
-`11-laboratory` 계층은 시스템 관리, 리소스 시각화 및 실험적 도구들을 위한 통합 관리 환경을 제공한다. 루트 compose는 이 계층의 네 compose 파일을 모두 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. Dozzle, RedisInsight, Open Notebook, SurrealDB는 `admin`과 `dev` profile에서 선택된다.
+This tier contains optional administrative tools. The root project includes the
+three leaves, while profiles select services:
 
-## Architecture
+| Service | Profiles | Authority and risk |
+| --- | --- | --- |
+| `dozzle` | `admin`, `admin-logs` | Docker logs; read-only socket still grants powerful Docker API visibility |
+| `redisinsight` | `admin`, `admin-data` | local connection/settings database; target Redis/Valkey data remains external |
+| `open_notebook` | `admin`, `notebook` | application data/provider credentials plus encryption-key custody |
+| `surrealdb` | `admin`, `notebook`, `surrealdb` | separate owner at `infra/04-data/specialized/surrealdb/`; Open Notebook database |
 
-### Component Diagram
+There is no `dev` profile for these services. Dozzle and RedisInsight can run
+without Open Notebook. Selecting `notebook` brings both Open Notebook and its
+SurrealDB dependency through the root project.
 
-```mermaid
-graph TD
-    subgraph "Access Layer"
-        User[Admin/Developer]
-        TF[Traefik Proxy]
-    end
+## Audience
 
-    subgraph "11-laboratory"
-        RI[RedisInsight]
-        Doz[Dozzle]
-        ON[Open Notebook]
-        SDB[SurrealDB]
-    end
+Infrastructure administrators, laboratory users, security reviewers, and
+documentation agents responsible for optional admin-tool boundaries.
 
-    subgraph "Downstream Infrastructure"
-        DockerPool[Docker Engine]
-        RedisPool[Valkey/Redis Cluster]
-    end
+## Scope
 
-    User --> TF
-    TF -- "gateway+allowlist+SSO" --> RI
-    TF -- "gateway+allowlist+SSO" --> Doz
-    TF -- "gateway+allowlist+SSO" --> ON
+This tier owns the Dozzle, RedisInsight, and Open Notebook service declarations
+and their UI access/persistence contracts. SurrealDB remains owned by `04-data`.
+It does not own target Redis/Valkey data, copied Docker logs, provider accounts,
+production notebook workloads, or Metabase.
 
-    Doz -.-> DockerPool
-    RI -.-> RedisPool
-    ON -.-> SDB
+## Structure
+
+```text
+11-laboratory/
+├── dozzle/
+├── open-notebook/
+├── redisinsight/
+└── README.md
 ```
 
-- **RedisInsight**: 데이터 저장소(Valkey/Redis)의 데이터 탐색 및 성능 분석.
-- **Dozzle**: 실시간 컨테이너 로그 스트리밍 및 모니터링.
-- **Open Notebook**: 로컬 지식 작업과 SurrealDB-backed 실험성 노트북 환경.
+## Configuration
 
-## Integration
+All three UIs use Traefik routes with the tracked gateway/allowlist/ForwardAuth
+controls. Dozzle also has native OIDC configuration; its Docker socket remains a
+host-security boundary. Dozzle `/data` stores settings, not copied container logs.
+RedisInsight `/data` stores sensitive connection metadata and currently lacks a
+tracked `RI_ENCRYPTION_KEY`. Open Notebook `/app/data`, SurrealDB `/mydata`, and
+the Open Notebook encryption key form one recovery set; losing the key can make
+stored provider secrets unreadable. Target Redis/Valkey backup is owned by the
+target data service.
 
-### Upstream Dependencies
+## How to Work in This Area
 
-- **02-auth**: Traefik SSO middleware를 통한 통합 인증 및 접근 제어.
-- **01-gateway**: Traefik 리버스 프록시를 이용한 보안 라우팅.
-
-### Downstream Consumers
-
-- **Administrators**: 전체 인프라 상태 및 컨테이너 리소스 관리.
-- **Developers**: 데이터베이스 조회 및 서비스 접근 경로 확인.
-
-## Operations
-
-### Deployment
+Use the [documentation index](../../docs/README.md), then exact Stage 05 subjects
+`0072-dozzle`, `0073-open-notebook`, and `0076-redisinsight` under
+`docs/05.operations/catalog/11-laboratory/`. Run from the repository root:
 
 ```bash
 HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 11-laboratory
 ```
 
-Runtime start/stop은 `admin` profile 선택과 운영자 승인 범위를 확인한 뒤 수행한다. Service-local standalone compose rendering은 root `infra_net`, secret, common template context를 보존하지 못하므로 readiness evidence로 사용하지 않는다.
-
-### Key Ports
-
-- **Logs UI**: `dozzle.${DEFAULT_URL}` -> Dozzle internal `${DOZZLE_PORT:-8080}` (`admin` profile)
-- **Data UI**: `redisinsight.${DEFAULT_URL}` -> RedisInsight internal `${REDIS_INSIGHT_PORT:-5540}` (`admin` profile)
-- **Notebook UI**: `open-notebook.${DEFAULT_URL}` -> Open Notebook web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` (`admin` profile)
-
-## Governance
-
-### Standard Compliance
-
-- **Architecture**: March 2026 "Thin Root" 규격을 준수한다.
-- **Documentation**: [docs/README.md](../../docs/README.md) 기반의 Stage-Gate Taxonomy를 따른다.
-
-### Related Documents
-
-- PRD (`docs/01.requirements/0012-laboratory.md`)
-- Architecture Description (`docs/02.architecture/descriptions/0011-laboratory-architecture.md`)
-- ADR (`docs/02.architecture/decisions/0011-laboratory-services.md`)
-- Operations guide (`docs/05.operations/catalog/11-laboratory/README.md`)
-- Operations policy (`docs/05.operations/catalog/11-laboratory/README.md`)
-- Operations runbook (`docs/05.operations/catalog/11-laboratory/README.md`)
-
----
-
-## Audience
-
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
-
-## Scope
-
-### In Scope
-
-- Compose 서비스 정의와 관련 설정 설명
-- 서비스별 README와 운영 문서 연결
-- 검증 시 참고해야 할 구성 파일 인벤토리
-
-### Out of Scope
-
-- secret 값 원문
-- 사용자 승인 없는 runtime 동작 변경
-- 다른 tier의 서비스 정책 중복 정의
-
-## Structure
-
-```text
-infra/11-laboratory/
-├── dashboard/  # 하위 구성 영역
-├── dozzle/  # 하위 구성 영역
-├── open-notebook/  # 하위 구성 영역
-├── redisinsight/  # 하위 구성 영역
-└── README.md  # This file
-```
-
-## How to Work in This Area
-
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+Static validation is not runtime access, Docker API safety, provider egress, or
+restore evidence. Compose/Dockerfile declarations own runtime pins;
+[tech-stack.versions.json](../tech-stack.versions.json) is a derived image projection.
 
 ## Related Documents
 
-- [infra/README.md](../README.md)
-- `docs/05.operations/README.md`
-- Laboratory guides (`docs/05.operations/catalog/11-laboratory/README.md`)
-- Laboratory policies (`docs/05.operations/catalog/11-laboratory/README.md`)
-- Laboratory runbooks (`docs/05.operations/catalog/11-laboratory/README.md`)
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.
+- [Documentation index](../../docs/README.md)
+- [Infrastructure index](../README.md)
+- Stage 05 laboratory package: `docs/05.operations/catalog/11-laboratory/README.md`

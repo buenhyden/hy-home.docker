@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -14,108 +14,66 @@ created: "2026-05-17"
 
 # 05-Messaging Optimization Hardening Runbook
 
-## Overview
-
-이 런북은 05-messaging 하드닝 항목에서 발생할 수 있는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. 관리 경로 middleware/SSO 누락, 이미지 태그 회귀, dev 경로 오류, CI 하드닝 실패를 중심으로 점검/복구 절차를 정의한다.
-
-> Scope: Messaging Gateway/Compose Baseline Recovery
-
-### Purpose
-
-- 메시징 관리 경로의 보안/안정성 기준을 신속히 복구한다.
-- compose 정합성과 CI 기준선 회귀를 빠르게 차단한다.
-
 ## When to Use
 
-- `infrastructure-hardening` CI가 실패할 때
-- Kafka/RabbitMQ 관리 UI가 Traefik 경유로 비정상 응답할 때
-- `messaging`/`dev` profile로 선택한 Kafka가 경로/네트워크 오류로 기동 실패할 때
-- 부동 태그 이미지 회귀가 발견될 때
+Use for approved static diagnosis of the current Kafka hardening baseline. Runtime
+change, restore, cleanup and credential rotation need a separate task.
 
 ## Procedure
 
-### Checklist
+1. From the repository root, render the current selectors:
 
-- [ ] 실패 항목(이미지/라우터/경로/문서 링크) 식별
-- [ ] 최근 변경 커밋과 영향 범위 확인
-- [ ] 운영 영향도(관리 경로/데이터 평면) 평가
+   ```bash
+   docker compose --env-file .env.example --profile messaging config --quiet
+   docker compose --env-file .env.example --profile messaging-cluster config --quiet
+   bash scripts/hardening/check-all-hardening.sh 05-messaging
+   ```
 
-### Steps
-
-1. 정적 구성 점검
-   - `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
-   - `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
-   - `docker compose --env-file .env.example --profile messaging config --services`
-2. 하드닝 기준 점검
-   - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-3. 증상별 복구
-   - middleware 누락:
-     - 대상 라우터에 `gateway-standard-chain@file` 재적용
-   - 관리 UI 접근 제어 누락:
-     - `kafka-ui`, `rabbitmq` 라우터에 `sso-errors@file,sso-auth@file` 재적용
-   - 이미지 회귀:
-     - `kafka-ui` 이미지를 고정 태그로 복원
-   - dev 경로 오류:
-     - `./jmx-exporter`, `./kafbat-ui/dynamic_config.template.yaml` 경로로 복원
-4. 재검증
-   - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `python3 scripts/validation/check-document-links.py --mode traceability`
-
-### Verification Steps
-
-- [ ] root messaging 및 messaging+dev profile 검증 통과
-- [ ] `check-all-hardening.sh 05-messaging` 실패 0건
-- [ ] optimization-hardening 문서 링크와 README 인덱스 최신화 확인
-
-### Observability and Evidence Sources
-
-- **Signals**: CI `infrastructure-hardening` job 상태, Traefik 라우터 상태, 컨테이너 health
-- **Evidence to Capture**:
-  - 변경 전후 `check-all-hardening.sh 05-messaging` 출력
-  - root profile validation 결과와 rendered service list
-  - 관련 compose/docs diff
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 롤백 대상 파일
-  - `infra/05-messaging/kafka/docker-compose.yml`
-  - `scripts/hardening/check-all-hardening.sh 05-messaging`
-  - `.github/workflows/ci-quality.yml`
-- [ ] 롤백 후 정적 검증 재실행
-- [ ] 운영 정책/가이드/태스크 문서 링크 재확인
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: 메시징 관리 자동화 작업 일시 중지(승인 필요)
-- **Eval Re-run**: `check-all-hardening.sh 05-messaging`, `check-template-security-baseline`, `python3 scripts/validation/check-document-links.py --mode all`
-- **Trace Capture**: CI logs + compose config output + health 상태 스냅샷
-
-## Evidence
-
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+2. Inspect root-rendered services, profiles, networks, secret references, volumes,
+   health checks and resource limits. Do not print private substituted values.
+3. Confirm broker listener protocols remain explicitly documented, Kafbat uses its
+   native OIDC template and secret, and every Kafbat route uses only
+   `gateway-standard-chain@file`.
+4. Confirm topic initialization with replication factor 3 is limited to a
+   three-broker-capable plan.
+5. Review the exact diff and operations documents. Record commands, exit status
+   and unresolved gaps without starting containers.
 
 ## Rollback or Recovery
 
-Use only recovery or rollback steps already documented in this runbook, including the `Safe Rollback or Recovery Procedure` subsection above. Service-local compose validation requires root network/secret context or an explicit validation overlay; do not treat standalone `docker compose -f infra/05-messaging/... --profile messaging config` failure on `infra_net` as a runtime service outage.
+For a static failure, identify the owning leaf source or shared template and patch
+only the approved scope. Re-render the same selectors. Do not bypass a failed
+secret, health, resource, network or persistence control by deleting it.
+
+For a runtime incident, preserve broker/UI logs without records or credentials,
+stop mutation, and use [RUN-0036](../0036-kafka/runbook.md). Raw log-directory
+repair, offset movement, schema deletion, connector resume and cluster identity
+changes require an approved recovery task.
+
+## Evidence
+
+Pass means root configuration parses, current profiles resolve, the scoped
+hardening script passes, native OIDC and standard gateway routing agree, and
+recovery ownership is explicit. It does not prove runtime, performance, OIDC
+login, failover or restore.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Stop on source/profile, persistence, secret, OIDC, listener-security or recovery
+ownership drift and escalate to the messaging owner.
 
 ## Traceability
 
-- Declared parent: [05-Messaging Optimization Hardening Usage Guide](guide.md) (`GDE-0037`)
-- Governing authority: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Policy](policy.md) (`POL-0037`)
+- Artifact: `RUN-0037`; parent guide: `GDE-0037`.
+- Static evidence does not prove runtime or restore.
+
+## References
+
+- [Kafka runbook](../0036-kafka/runbook.md)
+- [Hardening policy](policy.md)
+
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [Kafka runbook](../0036-kafka/runbook.md)
+- [Hardening policy](policy.md)
