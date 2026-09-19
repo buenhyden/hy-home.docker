@@ -51,31 +51,3 @@ services:
       traefik.http.routers.stalwart-ui.tls: 'true'
       traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
-
-  mailhog:
-    profiles:
-      - 'communication'
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-low
-    image: mailhog/mailhog:v1.0.1
-    container_name: mailhog
-    read_only: true
-    tmpfs:
-      - /tmp
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.229
-    healthcheck:
-      test: [ 'CMD', 'wget', '-qO-', 'http://localhost:8025/' ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.routers.mailhog.rule: Host(`mailhog.${DEFAULT_URL}`)
-      traefik.http.routers.mailhog.entrypoints: websecure
-      traefik.http.routers.mailhog.tls: 'true'
-      traefik.http.services.mailhog.loadbalancer.server.port: ${MAILHOG_UI_PORT:-8025}
-      traefik.http.routers.mailhog.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file

@@ -157,9 +157,6 @@ secrets:
     file: ./secrets/tools/terrakube_pat_secret.txt
   terrakube_internal_secret:
     file: ./secrets/tools/terrakube_internal_secret.txt
-  # ── Tooling: Syncthing ──────────────────────────────────
-  syncthing_password:
-    file: ./secrets/tools/syncthing_password.txt
 
   # ── Data: Supabase ──────────────────────────────────────
   supabase_jwt_secret:
@@ -254,11 +251,11 @@ include:
   - infra/09-tooling/locust/docker-compose.yml
   - infra/09-tooling/registry/docker-compose.yml
   - infra/09-tooling/sonarqube/docker-compose.yml
-  - infra/09-tooling/syncthing/docker-compose.yml
   - infra/09-tooling/terraform/docker-compose.yml
   - infra/09-tooling/terrakube/docker-compose.yml
-  # 10-communication
-  - infra/10-communication/mail/docker-compose.yml
+  # 10-communication  
+  - infra/10-communication/mailhog/docker-compose.yml
+  - infra/10-communication/stalwart/docker-compose.yml
   # 11-laboratory
   - infra/11-laboratory/dozzle/docker-compose.yml
   - infra/11-laboratory/open-notebook/docker-compose.yml
