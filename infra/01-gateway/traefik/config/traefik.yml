@@ -42,7 +42,7 @@ api:
 
 # 4. Observability (Logs & Metrics)
 log:
-  level: INFO
+  level: DEBUG
 
 accessLog: {}
 
