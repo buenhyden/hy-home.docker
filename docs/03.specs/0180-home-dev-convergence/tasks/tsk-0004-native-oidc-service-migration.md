@@ -201,7 +201,22 @@ repository requirement or installed package.
 
 The preceding remote CI run on `64d8200bd` failed on a pre-existing Storybook
 TypeScript/ESLint compatibility issue, not native OIDC checks. Its minimal
-compatibility correction and fresh CI result are recorded separately below.
+compatibility correction pins the Storybook example's TypeScript to exact
+`5.9.3`, the intersection of typescript-eslint's `<6.1` and tsconfck's `^5`
+peer contracts, in its manifest and lock only. ESLint and other dependency
+versions are unchanged. Clean npm install, lint, typecheck, dependency-tree check
+and npm audit all passed; no known npm vulnerability was reported. Independent
+review approved the two-file correction. Existing Storybook addon/Vitest peer
+range debt was not expanded or hidden: lock-only regeneration needed force for
+that pre-existing resolution, but subsequent clean `npm ci` passed without it.
+Fresh hosted CI is pending the final push.
+
+The OIDC implementation is committed as `e3fd3c7`. The normal pre-commit hook
+initially mistook a quoted environment placeholder for a credential. Equivalent
+YAML block-scalar syntax resolved that false positive without disabling hooks;
+parsed YAML equality and eleven Gatus tests passed. Exact-path Git whitespace
+attributes preserve mandatory unified-diff context markers without changing the
+patch or suppressing other paths' checks. Final narrow review passed both changes.
 
 ## Commit Ledger
 
