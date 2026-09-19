@@ -38,7 +38,7 @@ promotion to HOME or replacement of `mng-valkey`.
   Three replicas on one host are a topology exercise, not host availability.
 - Preserve shared health checks, resource limits and the `infra_net` boundary.
 
-## Data protection
+### Data protection
 
 RDB and AOF protect against different failure modes. A backup must preserve a
 coordinated point across the primaries, the entire AOF set/manifest where present,
@@ -54,7 +54,7 @@ identity on an isolated compatible target, restores complete persistence sets,
 and validates `cluster_state`, slot coverage, replicas, key counts and
 application reads. Production cutover or data destruction requires approval.
 
-## Change and upgrade policy
+### Change and upgrade policy
 
 Pin changes require official release-note review, client and persistence
 compatibility review, a fresh backup, isolated restore evidence and a rollback
@@ -83,7 +83,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0022`; parent: `AD-0004`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)

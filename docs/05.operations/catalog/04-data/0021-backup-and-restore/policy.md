@@ -19,7 +19,7 @@ created: "2026-06-04"
 This policy binds current source configuration to data protection, security,
 resource, lifecycle and independently verifiable operator controls.
 
-## Purpose
+### Purpose
 
 This policy assigns a recoverability method to every retained HOME state owner. A
 Compose volume is not a backup, replication on this single host is not host
@@ -33,7 +33,7 @@ host value remains private operator state.
 
 This policy applies to the current source-backed package and its retained state.
 
-## HOME state-owner matrix
+### HOME state-owner matrix
 
 | Owner and data class | Current state surface | Required backup method and destination | Encryption and retention | Planning target | Rehearsal and recovery owner |
 | --- | --- | --- | --- | --- | --- |
@@ -72,7 +72,7 @@ This policy applies to the current source-backed package and its retained state.
 5. Destructive recovery, cutover, cleanup, credential rotation or live service
    change requires a separately approved task. This policy does not authorize it.
 
-## Restore acceptance
+### Restore acceptance
 
 A rehearsal uses an isolated target, compatible engine version and disposable
 credentials. It proves application-level reads and writes, records elapsed time
@@ -101,7 +101,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0021`; parent: `AD-0004`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## Official references
+### Official references
 
 - [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
 - [SQLite Online Backup API](https://sqlite.org/backup.html) and [backup-copy hazards](https://sqlite.org/howtocorrupt.html)

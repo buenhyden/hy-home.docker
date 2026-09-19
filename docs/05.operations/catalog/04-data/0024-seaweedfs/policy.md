@@ -37,7 +37,7 @@ MinIO requires a separate migration decision and recovery evidence.
 - Record the client, data semantics, capacity, retention and security boundary
   before activation. Same-host services do not provide host availability.
 
-## Backup and restore
+### Backup and restore
 
 Pause or fence writers for a coordinated recovery point. Capture volume data with
 an engine-aware method, export filer metadata, and capture master/topology state
@@ -53,7 +53,7 @@ then use volume consistency checks,
 filer traversal and S3/file client tests. Production cutover, deletion or state
 reuse requires separate approval.
 
-## Change policy
+### Change policy
 
 Image updates require official release and license review plus isolated restore
 proof. Authentication/TLS enablement, FUSE host access and MinIO migration are
@@ -81,7 +81,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0024`; parent: `AD-0004`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [Data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [Security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)

@@ -35,7 +35,7 @@ health checks, Kafbat native OIDC secret/config, standard gateway chain and
 PLAINTEXT listeners. Confirm `kafka-init` replication factor 3 is paired with the
 three-broker selector before any runtime use.
 
-## Planned backup or replication capture
+### Planned backup or replication capture
 
 1. Identify producers, consumers, schemas, connectors, retention and an accepted
    recovery point. Pause or fence changes to topics, schemas and connectors.
@@ -52,7 +52,7 @@ three-broker selector before any runtime use.
 6. Protect manifests and any exported data on a separate encrypted destination.
    Do not copy active broker log directories or KRaft metadata piecemeal.
 
-## Planned isolated restore
+### Planned isolated restore
 
 1. Provision a fresh network-isolated Kafka target at a compatible version with a
    new cluster identity. Keep external producers, consumers and connectors blocked.
@@ -94,7 +94,7 @@ documentation task.
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
-## References
+### References
 
 - [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
 - [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)

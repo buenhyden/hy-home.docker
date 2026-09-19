@@ -41,7 +41,7 @@ credentials exist, and an engine-specific recovery method.
 - Review upstream security, upgrade and license sources before pin changes. A
   current image declaration does not prove supported lifecycle.
 
-## Validation and evidence
+### Validation and evidence
 
 Root `config --quiet` for the affected exact profile and
 `scripts/hardening/check-all-hardening.sh 04-data` are mandatory static checks.
@@ -49,7 +49,7 @@ Evidence records command, source revision, exit status, scope and unresolved gap
 without credentials or data. Runtime checks are separately approved and must not
 be inferred from static success.
 
-## Failure handling
+### Failure handling
 
 Do not bypass a failed health, resource, secret, network, persistence or recovery
 control. Patch within approved scope or escalate to the owning architecture and

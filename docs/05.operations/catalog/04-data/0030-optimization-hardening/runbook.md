@@ -42,7 +42,7 @@ a separately approved task.
 5. Review the exact diff. Correct only the owning source and repeat the same
    checks.
 
-## Regression response
+### Regression response
 
 A parse failure is corrected at the root include, leaf source or shared template
 that owns it. A missing secret is restored through the secret-management process;
@@ -72,7 +72,9 @@ final consistency capture, application validation and a retained rollback window
 Stop on scope, identity, checksum, security, compatibility or ownership drift;
 preserve safe evidence and escalate to the service/data owner.
 
-## Acceptance
+## Verification Record
+
+### Acceptance
 
 Static acceptance requires root configuration parse success, scoped hardening
 success, accurate classification/profile documentation and an explicit recovery

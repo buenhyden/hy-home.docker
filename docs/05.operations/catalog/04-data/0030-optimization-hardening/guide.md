@@ -21,7 +21,7 @@ explicit persistence ownership, secrets, health checks, resources, network
 boundaries and recovery ownership. It does not authorize service activation,
 data access, cleanup, migration or tuning.
 
-## Root validation
+### Root validation
 
 Run from the repository root because leaf files depend on root-owned networks,
 secrets and shared templates. Select representative current profiles rather than
@@ -40,14 +40,14 @@ classification/profile alignment, unique writable volumes, `infra_net`, secret
 files, health checks, CPU/memory limits, intended port publication and an
 engine-specific backup/restore owner.
 
-## Interpretation
+### Interpretation
 
 A static pass proves parse and policy conformance only. It does not prove runtime
 health, storage capacity, backup completeness, recovery time, encryption at rest,
 application compatibility or same-host availability. Record those as unverified
 until a scoped runtime test or isolated rehearsal supplies evidence.
 
-## Correction workflow
+### Correction workflow
 
 Fix the owning leaf Compose source or shared template inside an approved task,
 re-render the same root profiles, rerun the scoped hardening check and inspect the

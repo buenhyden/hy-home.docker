@@ -38,7 +38,7 @@ rollback.
 - Treat Valkey as workflow broker state, not a disposable cache. Restoring stale
   queues can duplicate or reorder work.
 
-## Backup and restore
+### Backup and restore
 
 Capture PostgreSQL globals and each current database with logical tools to a
 separate encrypted destination. Capture Valkey's complete AOF set and manifest
@@ -54,7 +54,7 @@ and validate roles, schemas, row counts and named consumer health. Restore Valke
 only after workflow owners approve queue replay semantics. Production cutover or
 data replacement requires separate approval.
 
-## Upgrade policy
+### Upgrade policy
 
 Review official release notes, extension/client compatibility and rollback for
 every pin change. A PostgreSQL major upgrade requires isolated logical
@@ -82,7 +82,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0028`; parent: `AD-0004`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html)
 - [pg_restore security and options](https://www.postgresql.org/docs/current/app-pgrestore.html)

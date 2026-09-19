@@ -19,7 +19,7 @@ Use for approved static diagnosis, backup planning or isolated recovery of this
 exact subject. Live writes, restore, cutover, cleanup and credential changes need
 a separately approved task.
 
-## Scope and safety
+### Scope and safety
 
 This runbook triages low-space conditions without deleting data. It does not
 authorize `docker system prune`, volume removal, database compaction, retention
@@ -66,7 +66,9 @@ Do not delete PostgreSQL WAL/data, Valkey AOF/RDB, MinIO objects, SeaweedFS volu
 files, Kafka logs, SQLite WAL/journal files, OpenBao Raft data, Qdrant snapshots or
 observability WALs through filesystem commands.
 
-## Validation and closeout
+## Verification Record
+
+### Validation and closeout
 
 After an approved remediation, prove filesystem headroom, service health,
 application reads/writes and backup continuity. Record capacity before/after,

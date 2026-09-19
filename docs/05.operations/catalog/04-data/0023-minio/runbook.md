@@ -33,7 +33,7 @@ Confirm `minio`, `minio-create-buckets`, `minio-data`, `infra_net`, the four
 secret references, health check and standard gateway chain. A LAB review may
 render `storage-cluster`, but must not start it or reuse HOME paths.
 
-## Planned backup procedure
+### Planned backup procedure
 
 1. Obtain a maintenance window and record source image, endpoint, bucket list,
    policies, IAM identities, versioning/object-lock settings and client owners.
@@ -47,7 +47,7 @@ render `storage-cluster`, but must not start it or reuse HOME paths.
 5. Hash the manifest, protect it with the backup, and retain source credentials
    separately.
 
-## Planned isolated restore
+### Planned isolated restore
 
 1. Provision an empty, network-isolated, compatible MinIO target with disposable
    root credentials. Do not point it at HOME or LAB data directories.
@@ -89,7 +89,7 @@ reason to improvise a replacement.
 - Artifact: `RUN-0023`; parent guide: `GDE-0023`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
-## References
+### References
 
 - [MinIO community repository](https://github.com/minio/minio)
 - [MinIO client mirror](https://github.com/minio/mc/blob/master/README.md)

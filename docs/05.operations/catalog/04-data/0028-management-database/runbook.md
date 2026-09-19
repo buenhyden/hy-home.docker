@@ -33,7 +33,7 @@ Confirm both engines, init, exporters, separate persistent volumes, secret
 references, health checks and `infra_net`. Do not print the fully rendered
 configuration where environment substitutions could expose private values.
 
-## Planned PostgreSQL backup
+### Planned PostgreSQL backup
 
 1. Open a consumer-aware window and inventory roles plus `postgres`, `n8n`,
    `keycloak`, `airflow`, `terrakube`, `sonarqube` and the configured application
@@ -44,7 +44,7 @@ configuration where environment substitutions could expose private values.
    exit status and hashes. Store artifacts on a separate encrypted destination;
    keep passwords out of arguments and evidence.
 
-## Planned PostgreSQL isolated restore
+### Planned PostgreSQL isolated restore
 
 1. Provision an empty isolated target at a supported compatible version with no
    application routes. Use a least-privileged restore operator.
@@ -57,7 +57,7 @@ configuration where environment substitutions could expose private values.
 4. Record recovery point and elapsed time. A separate cutover pauses writers,
    takes a final dump, switches consumers and retains the prior volume for rollback.
 
-## Planned Valkey backup and restore
+### Planned Valkey backup and restore
 
 1. Pause or drain workflow producers/workers and document whether queued jobs will
    be replayed or discarded.
@@ -91,7 +91,7 @@ No recovery described here was executed by the documentation correction task.
 - Artifact: `RUN-0028`; parent guide: `GDE-0028`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
-## References
+### References
 
 - [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
 - [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)

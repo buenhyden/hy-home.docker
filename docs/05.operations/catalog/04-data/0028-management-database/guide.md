@@ -30,7 +30,7 @@ workflow and tooling. `mng-pg` stores the `n8n`, `keycloak`, `airflow`,
 management PostgreSQL in current Compose; it owns `grafana-data` and uses its
 current default database configuration.
 
-## Current implementation
+### Current implementation
 
 [`infra/04-data/operational/mng-db/docker-compose.yml`](../../../../../infra/04-data/operational/mng-db/docker-compose.yml)
 defines `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, and
@@ -45,7 +45,7 @@ password secrets and creates roles/databases idempotently. Valkey owns
 come from root environment keys. Health checks and resources come from shared
 templates.
 
-## Images, configuration and resource controls
+### Images, configuration and resource controls
 
 The Compose file is authoritative for pinned upstream PostgreSQL, Valkey and the
 two exporter image families; repository Renovate may propose updates and the
@@ -58,7 +58,7 @@ control host bindings. `mng-pg` extends `template-stateful-db-med`, `mng-valkey`
 consumers connect over `infra_net`; init creates roles/databases after PostgreSQL
 health, while exporters observe the engines.
 
-## Static preflight
+### Static preflight
 
 ```bash
 docker compose --env-file .env.example --profile mng config --quiet
@@ -69,7 +69,7 @@ Run from the repository root. Do not render or start the leaf file alone. Do not
 rerun init, rotate credentials, query HOME databases or change broker queues
 without an approved runtime task.
 
-## Backup, recovery and upgrades
+### Backup, recovery and upgrades
 
 PostgreSQL requires a logical dump of global roles plus every database. Valkey
 requires one complete AOF set/manifest and an RDB checkpoint; an incident owner
@@ -81,7 +81,7 @@ upstream method. Minor image and Valkey changes still require release notes,
 backup and rollback. Never attach a new major PostgreSQL image to the existing
 `PGDATA` or copy live database files.
 
-## Official references
+### Official references
 
 - [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
 - [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)

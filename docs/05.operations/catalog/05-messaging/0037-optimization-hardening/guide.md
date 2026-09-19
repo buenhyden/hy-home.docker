@@ -21,7 +21,7 @@ root-rendered Kafka family, Kafbat native OIDC, persistence, health, resources a
 network exposure. It does not claim that PLAINTEXT broker listeners are secure or
 that three same-host brokers provide host availability.
 
-## Source-backed checks
+### Source-backed checks
 
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
@@ -42,7 +42,7 @@ Run from the repository root. Inspect rendered services and verify:
 Static success does not prove runtime health, authentication flow, performance,
 data durability or restore. Those require separately approved tests.
 
-## Change workflow
+### Change workflow
 
 Correct source at the owning leaf file and shared template, render the root
 profiles again, run the scoped hardening check, inspect the diff, and follow
@@ -60,7 +60,7 @@ A static pass is configuration evidence only; runtime and restore remain separat
 - Artifact: `GDE-0037`; governing policy: `POL-0037`.
 - Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.
 
-## References
+### References
 
 - [Kafka security](https://kafka.apache.org/documentation/#security)
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)

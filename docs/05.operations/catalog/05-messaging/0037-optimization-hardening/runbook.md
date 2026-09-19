@@ -67,7 +67,7 @@ ownership drift and escalate to the messaging owner.
 - Artifact: `RUN-0037`; parent guide: `GDE-0037`.
 - Static evidence does not prove runtime or restore.
 
-## References
+### References
 
 - [Kafka runbook](../0036-kafka/runbook.md)
 - [Hardening policy](policy.md)

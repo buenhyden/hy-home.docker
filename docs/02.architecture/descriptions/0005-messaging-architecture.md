@@ -14,13 +14,13 @@ created: "2026-03-26"
 
 # Messaging Architecture Description
 
-## Context and stakeholders
+## Context and Stakeholders
 
 `05-messaging` is the optional Kafka event-streaming boundary. The current
 implementation contains Kafka KRaft brokers, Schema Registry, Kafka Connect,
 Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second broker family is part of the current architecture.
 
-## System boundaries
+## System Boundaries
 
 - **Owns:** Kafka topic/configuration and KRaft state, schema history, Connect
   runtime state, REST access, metrics export and Kafbat administration.
@@ -29,7 +29,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - **Does not own:** Keycloak lifecycle, OAuth2 Proxy sessions, workflow
   orchestration, producer source-of-truth data, or external connector systems.
 
-## Quality attributes
+## Quality Attributes
 
 - **Reliability:** health checks, explicit persistent broker/Connect volumes and
   complete topic/offset/schema/connector recovery. Three brokers on one host do
@@ -42,7 +42,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - **Observability:** JMX/Kafka exporter metrics without record payload or secret
   disclosure.
 
-## Components and selectors
+## Components
 
 - `kafka-1` participates in `messaging`, role-specific selectors and
   `messaging-cluster`.
@@ -52,7 +52,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - The init job declares replication factor 3 for its two bootstrap topics, so a
   valid initialization requires the three-broker topology.
 
-## Identity and request flow
+## Data Flow
 
 Kafbat renders native `auth.type: OAUTH2` configuration from its tracked template,
 reads its client secret from Docker secret custody, trusts the local CA and maps
@@ -67,7 +67,7 @@ Kafka Connect -> Kafka + approved external system
 browser -> Traefik standard chain -> Kafbat -> Keycloak OIDC
 ```
 
-## Persistence and recovery
+## Deployment View
 
 Broker and Connect volumes are separate bind-backed named volumes. Recovery must
 coordinate topic records/configs, consumer offsets, KRaft metadata, Schema
@@ -76,7 +76,7 @@ The preferred path is producer replay or approved cross-cluster replication into
 a fresh isolated cluster. Piecemeal raw log-directory copy and live cluster-ID
 reuse are outside the architecture.
 
-## Risks and evolution
+## Risks
 
 Kafka remains OPTIONAL until a durable producer/consumer is named. Current
 PLAINTEXT listeners and same-host replication limit the suitable workload. Image,

@@ -39,7 +39,7 @@ replace or delete current storage.
   exposure decisions. Buckets for logs/traces are never public.
 - Treat four nodes on one host as a distribution test, not host availability.
 
-## Backup and recovery
+### Backup and recovery
 
 Back up objects through an S3-aware mirror or supported replication to a distinct
 encrypted target. Preserve bucket names, policies, users, versioning, retention
@@ -54,7 +54,7 @@ bytes, checksums and version metadata, then test Loki/Tempo and other named
 clients. Production cutover, lifecycle deletion and credential rotation require
 separate approval.
 
-## Upgrade and migration
+### Upgrade and migration
 
 Every image update or replacement requires official source/release review,
 license review, client/API compatibility, a current export, an isolated restore,
@@ -83,7 +83,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0023`; parent: `AD-0004`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [Community repository and license](https://github.com/minio/minio)
 - [MinIO client](https://github.com/minio/mc)

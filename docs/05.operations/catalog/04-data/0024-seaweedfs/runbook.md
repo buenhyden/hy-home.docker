@@ -34,7 +34,7 @@ volumes, `infra_net`, health checks and standard gateway chain. Render
 `seaweedfs-mount` separately and verify `SYS_ADMIN` and `/dev/fuse` are present
 only when that privileged path is approved.
 
-## Planned coordinated backup
+### Planned coordinated backup
 
 1. Record image source/version, topology, volume IDs, filer stores, clients and
    object/file counts. Select a separate encrypted destination.
@@ -50,7 +50,7 @@ only when that privileged path is approved.
    The official guide itself describes limitations, so mark backup status
    unverified until restore succeeds.
 
-## Planned isolated restore
+### Planned isolated restore
 
 1. Provision an empty isolated target at the same SeaweedFS version with fresh
    master identity. Do not expose its S3 route or mount it on the HOME host.
@@ -89,7 +89,7 @@ volume-only restore.
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
-## References
+### References
 
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [Policy](policy.md)

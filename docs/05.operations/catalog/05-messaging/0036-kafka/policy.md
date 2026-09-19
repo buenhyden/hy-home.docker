@@ -43,7 +43,7 @@ Controls for removed broker families do not apply to the current implementation.
   healthy brokers. A one-broker selection must not run that initialization as if
   it were valid.
 
-## Data protection
+### Data protection
 
 Recovery scope includes topic records/configuration, consumer offsets, KRaft
 metadata, Schema Registry history and IDs, Connect definitions and internal
@@ -59,7 +59,7 @@ consumer, topic, schema, offset and connector inventory plus replay/restore proo
 rehearsed in isolation and prove schema compatibility, end offsets, record counts
 or checksums, consumer positions and paused-then-resumed connector behavior.
 
-## Upgrade and license policy
+### Upgrade and license policy
 
 Review Apache Kafka protocol/storage compatibility, Confluent component
 compatibility and license/edition terms, Kafbat release/security notes and client
@@ -89,7 +89,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0036`; parent: `AD-0005`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [Kafka operations](https://kafka.apache.org/documentation/#operations)
 - [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)

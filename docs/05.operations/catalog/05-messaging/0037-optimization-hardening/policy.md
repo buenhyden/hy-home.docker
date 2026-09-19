@@ -30,7 +30,7 @@ Every messaging change must preserve root Compose validity, explicit profiles,
 health checks, resource limits, persistence ownership, `infra_net`, secret files
 and an actionable recovery owner. The only current broker family is Kafka.
 
-## Security policy
+### Security policy
 
 - PLAINTEXT Kafka listeners are a documented gap and must not carry sensitive or
   untrusted traffic. TLS/SASL requires an architectural change and client rollout.
@@ -42,7 +42,7 @@ and an actionable recovery owner. The only current broker family is Kafka.
 - Topic/bootstrap changes require three-broker compatibility where replication
   factor 3 is declared.
 
-## Reliability and recovery policy
+### Reliability and recovery policy
 
 Same-host replication is not host availability. New workloads must define
 retention, partitions, replication, capacity, producer/consumer ownership,
@@ -50,7 +50,7 @@ RPO/RTO and replay source. Recovery must cover data, topic configs, offsets,
 schemas, Connect state and KRaft identity and must be rehearsed on an isolated
 cluster before promotion.
 
-## Validation contract
+### Validation contract
 
 Use the exact root-profile `config --quiet` commands in [GDE-0037](guide.md) for
 `messaging` and `messaging-cluster`, then the scoped `05-messaging` hardening
@@ -79,7 +79,7 @@ lifecycle change and at least annually while retained.
 - Artifact: `POL-0037`; parent: `AD-0005`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 
-## References
+### References
 
 - [Kafka policy](../0036-kafka/policy.md)
 - [Kafka security](https://kafka.apache.org/documentation/#security)

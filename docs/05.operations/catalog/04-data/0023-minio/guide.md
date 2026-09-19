@@ -37,7 +37,7 @@ source. Preserve the current data while a separate migration evaluation measures
 S3/client compatibility. AIStor documentation is not evidence that the retained
 community image has the same lifecycle or license terms.
 
-## Current implementation
+### Current implementation
 
 [`infra/04-data/lake-and-object/minio/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/minio/docker-compose.yml) defines HOME `minio` and one-shot `minio-create-buckets`;
 [`docker-compose.cluster.yaml`](../../../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml)
@@ -53,7 +53,7 @@ routes the API and console through `gateway-standard-chain@file`. Gateway TLS do
 not prove service-to-service TLS or storage encryption. The bootstrap grants
 public read to `cdn-bucket`; treat that as intentional exposure requiring review.
 
-## Images, configuration and resource controls
+### Images, configuration and resource controls
 
 The Compose sources are authoritative for the pinned `quay.io/minio/minio` image;
 repository Renovate may propose updates and the version projection is derived.
@@ -65,7 +65,7 @@ HOME MinIO extends `template-stateful-db-med` and its bootstrap
 through `infra_net` or the gateway, while the bootstrap configures buckets/users
 through the internal endpoint.
 
-## Static preflight
+### Static preflight
 
 From the repository root:
 
@@ -78,7 +78,7 @@ docker compose --env-file .env.example --profile storage-cluster config --quiet
 Do not render the leaf file alone. Shared secrets, network, labels and templates
 are root-owned. Starting services or changing buckets is a separate runtime task.
 
-## Data protection and lifecycle
+### Data protection and lifecycle
 
 Use object-aware mirror/replication to a separate encrypted destination. Capture
 bucket inventory, versioning/object-lock state, policies and IAM configuration in
@@ -90,7 +90,7 @@ Before an image change or replacement, inventory clients and S3 features, export
 all objects/configuration, test the candidate with representative workloads, and
 prepare cutover and rollback. No migration target is selected by this guide.
 
-## Official references
+### Official references
 
 - [MinIO community repository, status and AGPL license](https://github.com/minio/minio)
 - [MinIO client mirror documentation](https://github.com/minio/mc/blob/master/README.md)

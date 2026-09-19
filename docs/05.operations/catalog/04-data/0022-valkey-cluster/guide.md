@@ -30,7 +30,7 @@ This package describes the optional six-node Valkey Cluster laboratory. M0021
 classifies every service as **LAB** because all nodes share one Docker host. It is
 not the HOME workflow broker; Airflow and n8n use `mng-valkey` by default.
 
-## Current implementation
+### Current implementation
 
 The root Compose project includes
 [`infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
@@ -48,7 +48,7 @@ paths. The tracked configuration enables both periodic RDB snapshots and AOF wit
 Resource limits and health checks come from the shared Compose templates and must
 be inspected in rendered root configuration before selection.
 
-## Images, configuration and resource controls
+### Images, configuration and resource controls
 
 The Compose file is authoritative for the pinned `valkey/valkey` and
 `oliver006/redis_exporter` images; repository Renovate configuration may propose
@@ -60,7 +60,7 @@ updates and `infra/tech-stack.versions.json` is derived drift evidence. `PORT` a
 initializer. Clients flow directly to cluster-aware node endpoints and the
 exporter observes all six nodes.
 
-## Static preflight and normal use
+### Static preflight and normal use
 
 Run from the repository root; do not render the leaf file alone because shared
 networks, secrets and `extends` paths are root-owned.
@@ -75,7 +75,7 @@ a runtime action and needs a separately approved task. When selected, record
 cluster-aware client compatibility, intended dataset, retention, capacity and the
 fact that same-host replicas do not protect against host loss.
 
-## Backup, restore and upgrade boundary
+### Backup, restore and upgrade boundary
 
 Use [RUN-0022](runbook.md). A usable backup must contain a coordinated persistence
 set from every primary (and any intentionally retained replica), the complete
@@ -89,7 +89,7 @@ and compare key counts/application reads before any cutover. Upgrades use a
 separate plan with release notes, client compatibility and rollback; no in-place
 major jump is authorized by this guide.
 
-## Security and license
+### Security and license
 
 The password secret does not provide transport encryption. Published host ports
 and cluster-bus reachability must be restricted to the intended trusted host and
@@ -97,7 +97,7 @@ network; Valkey's own guidance warns that Cluster is designed for trusted
 networks. Valkey uses the BSD 3-Clause license; clients and images retain their
 own licenses.
 
-## Official references
+### Official references
 
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Valkey Cluster tutorial and security boundary](https://valkey.io/topics/cluster-tutorial/)

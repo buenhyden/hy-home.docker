@@ -20,7 +20,7 @@ Use for approved static diagnosis, backup planning or isolated recovery of this
 exact subject. Live writes, restore, cutover, cleanup and credential changes need
 a separately approved task.
 
-## Scope
+### Scope
 
 Static validation is safe to perform in this documentation task. Starting the
 cluster, writing data, taking a live backup, restoring or changing membership is
@@ -39,7 +39,7 @@ Confirm six node services, the init job and exporter; six distinct data volumes;
 `infra_net`; the password secret; node health checks; and the 6379–6384 client and
 16379–16384 bus mappings. Stop if rendered paths are empty or unexpected.
 
-## Planned backup procedure
+### Planned backup procedure
 
 1. Open an approved maintenance window and identify the application writers.
 2. Record engine/image source, cluster node IDs, slot ownership, primary/replica
@@ -53,7 +53,7 @@ Confirm six node services, the init job and exporter; six distinct data volumes;
 5. Write a manifest of node role, timestamp, file size and checksum. Transfer the
    sets to a separate encrypted destination under restricted custody.
 
-## Planned isolated restore
+### Planned isolated restore
 
 1. Provision an empty, network-isolated six-node target at a persistence-compatible
    Valkey version with disposable credentials. Do not connect application clients.
@@ -95,7 +95,7 @@ without secret values and escalate to the data owner.
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
-## References
+### References
 
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)

@@ -32,7 +32,7 @@ that it should run continuously. The three brokers share one Docker host, so the
 `messaging-cluster` profile tests KRaft/replication behavior without providing
 host availability. The current implementation contains no second broker family.
 
-## Current implementation
+### Current implementation
 
 [`infra/05-messaging/kafka/docker-compose.yml`](../../../../../infra/05-messaging/kafka/docker-compose.yml)
 defines nine services:
@@ -58,7 +58,7 @@ Kafbat renders its native `auth.type: OAUTH2` configuration into tmpfs, reads
 Traefik route uses `gateway-standard-chain@file`; the gateway is transport and
 header protection, while Kafbat itself performs authentication. No forwarding-auth gateway chain belongs on this native-OIDC route.
 
-## Images, configuration and resource controls
+### Images, configuration and resource controls
 
 The Compose file owns pinned Confluent Kafka/Schema/Connect/REST, Kafbat and Kafka
 exporter image families; repository Renovate may propose updates and the version
@@ -70,7 +70,7 @@ the client-secret file. Brokers and Connect extend high stateful templates;
 Schema, REST and Kafbat medium infrastructure templates; exporter low and init job
 low. All long-running services declare health checks.
 
-## Static preflight and profile choice
+### Static preflight and profile choice
 
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
@@ -84,7 +84,7 @@ three healthy brokers are available; do not treat the single-broker `messaging`
 selection as successful topic initialization without a separately approved fix.
 Starting services, creating topics or producing test records is runtime work.
 
-## Backup, restore and upgrade boundary
+## Runbook Handoff
 
 Kafka recovery includes more than broker directories. Inventory topic data and
 configs, partition counts, consumer-group offsets, KRaft cluster metadata,
@@ -99,13 +99,13 @@ end offsets plus application consumption before cutover. An image or protocol
 upgrade requires official compatibility review for Kafka, Confluent components,
 Kafbat, clients and stored formats, with a current recovery artifact and rollback.
 
-## License and source boundary
+### License and source boundary
 
 Apache Kafka and Kafbat are Apache-2.0 projects. Schema Registry, Connect and REST
 images come from Confluent and require separate current license/edition review;
 Cluster Linking or other edition-specific features are not declared or assumed.
 
-## Official references
+### Official references
 
 - [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
 - [Kafka KRaft](https://kafka.apache.org/documentation/#kraft)

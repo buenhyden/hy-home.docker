@@ -27,7 +27,7 @@ SeaweedFS is an OPTIONAL master/volume/filer/S3 topology with no proven current
 client. It is retained for a named file/object-storage experiment and is not the
 HOME MinIO replacement. The FUSE mount is a separate privileged selector.
 
-## Current implementation
+### Current implementation
 
 [`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)
 defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`
@@ -42,7 +42,7 @@ authentication, transport encryption or mounted `security.toml` is declared.
 The mount adds `SYS_ADMIN` and `/dev/fuse`, so it is never implied by ordinary S3
 selection.
 
-## Images, configuration and resource controls
+### Images, configuration and resource controls
 
 The Compose file owns the pinned `chrislusf/seaweedfs` image; repository Renovate
 may propose updates and the version projection is derived. Root
@@ -53,7 +53,7 @@ listeners; no credential environment key is present. Master/filer extend
 the mount declares health checks. Flow is master → volume, filer → master/volume,
 then S3 or FUSE → filer.
 
-## Static preflight
+### Static preflight
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
@@ -64,7 +64,7 @@ docker compose --env-file .env.example --profile seaweedfs-mount config --quiet
 Run from the repository root. Activation requires a named client, capacity and
 security review, especially for the unauthenticated S3 endpoint and FUSE access.
 
-## Recovery and lifecycle
+### Recovery and lifecycle
 
 A usable recovery set coordinates volume data, filer metadata and the master
 topology inventory at one accepted write boundary. The local master volume may be
@@ -79,7 +79,7 @@ Upgrade or MinIO-migration work needs a separate spec, official release review,
 S3/file semantic tests, export/restore proof and rollback. SeaweedFS is Apache-2.0
 licensed; mounted clients and images retain their own license obligations.
 
-## Official references
+### Official references
 
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
