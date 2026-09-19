@@ -1,0 +1,115 @@
+x-tier-label: &tier-label
+  hy-home.tier: security
+
+volumes:
+  openbao-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/openbao/data
+  openbao-agent-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/openbao/agent
+  openbao-agent-out:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/openbao/out
+
+services:
+  openbao:
+    profiles:
+      - core
+      - security
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: openbao/openbao:2.6.2
+    container_name: openbao
+    hostname: openbao
+    restart: unless-stopped
+    expose:
+      - '${OPENBAO_PORT:-8200}'
+      - '${OPENBAO_CLUSTER_PORT:-8201}'
+    environment:
+      BAO_ADDR: 'http://127.0.0.1:${OPENBAO_PORT:-8200}'
+      BAO_API_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
+      BAO_CLUSTER_ADDR: 'https://openbao:${OPENBAO_CLUSTER_PORT:-8201}'
+      BAO_LOCAL_CONFIG: >-
+        {"ui":true,"disable_mlock":true,
+        "storage":{"raft":{"path":"/openbao/data","node_id":"openbao-node1"}},
+        "listener":[{"tcp":{"address":"0.0.0.0:${OPENBAO_PORT:-8200}",
+        "cluster_address":"0.0.0.0:${OPENBAO_CLUSTER_PORT:-8201}","tls_disable":true}}],
+        "api_addr":"http://openbao:${OPENBAO_PORT:-8200}",
+        "cluster_addr":"https://openbao:${OPENBAO_CLUSTER_PORT:-8201}",
+        "telemetry":{"disable_hostname":true,"prometheus_retention_time":"30s"}}
+    volumes:
+      - openbao-data:/openbao/data:rw
+    command:
+      - server
+    networks:
+      k3d-hyhome: {}
+      infra_net:
+        ipv4_address: 172.19.0.17
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'bao status >/dev/null 2>&1; rc=$$?; [ "$$rc" -eq 0 ] || [ "$$rc" -eq 2 ]',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.openbao.rule: Host(`openbao.${DEFAULT_URL}`)
+      traefik.http.routers.openbao.entrypoints: websecure
+      traefik.http.routers.openbao.tls: 'true'
+      traefik.http.routers.openbao.middlewares: gateway-standard-chain@file
+      traefik.http.services.openbao.loadbalancer.server.port: ${OPENBAO_PORT:-8200}
+
+  openbao-agent:
+    profiles:
+      - core
+      - security
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: openbao/openbao:2.6.2
+    container_name: openbao-agent
+    hostname: openbao-agent
+    restart: unless-stopped
+    depends_on:
+      openbao:
+        condition: service_healthy
+    environment:
+      BAO_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
+      VAULT_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
+    volumes:
+      - ../vault/config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro
+      - ../vault/config/templates:/vault/config/templates:ro
+      - openbao-agent-data:/vault/agent:rw
+      - openbao-agent-out:/vault/out:rw
+    command:
+      - agent
+      - -config=/vault/config/vault-agent.hcl
+    healthcheck:
+      test: ['CMD-SHELL', 'test -s /vault/agent/token']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.18
+    labels:
+      <<: *tier-label
