@@ -28,6 +28,8 @@ repos:
         exclude: *frozen_archive_payloads
       - id: trailing-whitespace
         exclude: *frozen_archive_payloads
+        # Unified diff context markers must remain byte-identical.
+        exclude_types: [diff]
 
   # --- 2. Linting (YAML, Markdown, Shell) ---
   - repo: https://github.com/adrienverge/yamllint.git

@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -42,6 +42,7 @@ Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local L
 ```text
 open-webui/
 ├── docker-compose.yml  # Svelte-based interface & RAG backend
+├── docker-entrypoint.sh # Client secret and combined CA loading
 └── README.md           # This file
 ```
 
@@ -50,14 +51,14 @@ open-webui/
 | Field | Evidence |
 | --- | --- |
 | Purpose | Open WebUI service leaf in `08-ai`; services: `open-webui`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
-| Config files | `docker-compose.yml` |
+| Config files | `docker-compose.yml`, `docker-entrypoint.sh` |
 | Config values | env keys: `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
-| Secret refs | Not declared |
+| Secret refs | `openwebui_oidc_client_secret`; root:root 0600 host file |
 | Healthcheck | Compose healthcheck declared for `open-webui` |
 | Operations | Guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`), Policy (`docs/05.operations/catalog/08-ai/0057-open-webui/policy.md`), Runbook (`docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -92,13 +93,28 @@ open-webui/
 
 ## Configuration
 
+### Native OIDC
+
+Open WebUI uses the dedicated Keycloak client `home-openwebui`, S256 PKCE and
+`/oauth/oidc/callback`. Its router keeps only `gateway-standard-chain@file`.
+Trusted-header auth, OAuth signup, email merge, role/group management and password
+authentication are disabled. The existing administrator keeps the same local ID
+and role after the verified OIDC linkage. Public/local CA roots are combined; TLS
+verification is enabled.
+
+`ENABLE_LOGIN_FORM=false` hides the form, while `ENABLE_PASSWORD_AUTH=false`
+separately rejects the password API. Persisted UI configuration must also be
+verified. See the runbook
+(`docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md`) for secret ownership,
+one-key configuration updates and recovery.
+
 ### Environment Variables
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
 | `OLLAMA_BASE_URL` | Yes | Endpoint for Ollama API. |
 | `VECTOR_DB_URL` | Yes | Endpoint for Qdrant vector store. |
-| `RAG_EMBEDDING_MODEL` | Yes | Model used for document indexing; current compose value is `qwen3-embedding:0.6b`. |
+| `RAG_EMBEDDING_MODEL` | Yes | Model used for document indexing; the current value is owned by Compose. |
 
 ## Change Impact
 

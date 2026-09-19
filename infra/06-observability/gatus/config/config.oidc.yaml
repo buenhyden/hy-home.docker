@@ -1,0 +1,73 @@
+metrics: true
+
+storage:
+  type: sqlite
+  path: /data/gatus.db
+
+ui:
+  title: Hy Home Status
+  header: Hy Home Infrastructure
+
+security:
+  oidc:
+    issuer-url: "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm"
+    redirect-url: "https://status.${DEFAULT_URL}/authorization-code/callback"
+    client-id: "home-gatus"
+    client-secret: |-
+      ${GATUS_OIDC_CLIENT_SECRET}
+    scopes:
+      - openid
+    allowed-subjects:
+      - "${GATUS_OIDC_ALLOWED_SUBJECT}"
+    session-ttl: 1h
+
+endpoints:
+  - name: Prometheus
+    group: observability
+    url: http://prometheus:9090/-/ready
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+      - '[RESPONSE_TIME] < 1000'
+
+  - name: Grafana
+    group: observability
+    url: http://grafana:3000/api/health
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+
+  - name: Keycloak
+    group: core
+    url: http://keycloak:9000/health/ready
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+
+  - name: OAuth2 Proxy
+    group: core
+    url: http://oauth2-proxy:4180/ping
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+
+  - name: OpenBao
+    group: security
+    url: http://openbao:8200/v1/sys/health
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+
+  - name: Management PostgreSQL
+    group: data
+    url: tcp://mng-pg:5432
+    interval: 30s
+    conditions:
+      - '[CONNECTED] == true'
+
+  - name: Management Valkey
+    group: data
+    url: tcp://mng-valkey:6379
+    interval: 30s
+    conditions:
+      - '[CONNECTED] == true'

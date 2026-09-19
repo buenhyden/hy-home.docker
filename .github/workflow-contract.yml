@@ -726,6 +726,8 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_compose_baseline_gates",
+        "tests.validation.test_openwebui_oidc_entrypoint",
+        "tests.validation.test_gatus_oidc",
         "-v"
       ],
       "cwd": ".",

@@ -97,22 +97,24 @@ secrets/
 | --- | --- | --- |
 | `compose-declared` | 루트 `docker-compose.yml`의 현재 `secrets:` 선언; 파일 존재 검사는 별도 실행 증거 | Docker Secret mount 계약으로 관리 |
 | `bind-mounted-cert` | `certs/cert.pem`, `certs/key.pem`, `certs/rootCA.pem`, `certs/rootCA-key.pem` | canonical certificate path는 `secrets/certs/`; 값/원문은 문서화하지 않음 |
-| `registry/local-only` | `security/unseal_keys.txt`, `auth/traefik_admin_password.txt`, `tools/terrakube_minio_secret_key.txt`, retired Agent Office and metadata-only SonarQube/Supabase/InfluxDB credentials | root Compose secret 선언과 별개로 registry 또는 운영 절차에서 분류 |
+| `derived-input` | `auth/traefik_admin_password.txt`처럼 생성 스크립트가 실제 소비하는 입력 | 파생 소비자 근거가 있는 항목만 registry에 유지 |
+| `retired/local-only` | 현행 소비자가 없는 이전 credential 파일 | 활성 registry에서 제외하되 파일 삭제·credential 폐기는 별도 승인 |
 | `private-registry` | `SENSITIVE_ENV_VARS.md` | 개인 gitignored registry로 취급하고 내용은 열람하지 않음 |
 | `example-registry` | `SENSITIVE_ENV_VARS.md.example` | 새 환경과 문서 검토용 예시 mapping |
 
 `infra/secrets/certs/` 같은 비표준 local-only 경로가 보이더라도 문서 진입점이나 인증서 절차의 기준으로 사용하지 않습니다. 인증서 기준 경로는 항상 `secrets/certs/`입니다.
 
-Root declarations without a service grant are retired from Compose. Their private
-files and registry rows remain preserved; metadata presence does not claim an active
-consumer or permission to rotate/delete a credential.
+Root declarations without a service grant are retired from Compose. Unused
+registry rows are removed from both schema copies after owner-approved review;
+retained values and individual credential files remain unchanged. Removed IDs
+remain reserved by history and must not be reused.
 
 ## Secret Management System
 
 ### Registry
 
 - 공개 ID·환경 키·경로·자동화 메타데이터의 원본은 `SENSITIVE_ENV_VARS.md.example`과 실제 Compose 소비자입니다.
-- `SENSITIVE_ENV_VARS.md`는 개인 값과 로컬 전용 행을 보존하는 gitignored 투영이며 공개 계약을 대체하지 않습니다.
+- `SENSITIVE_ENV_VARS.md`는 개인 값을 보존하는 gitignored 투영이며 ID·env-key 집합은 검증된 공개 계약과 같아야 합니다.
 - 새 환경이나 문서 검토에서는 `SENSITIVE_ENV_VARS.md.example`을 사용합니다.
 - registry는 파일 경로, 대응 `.env` 변수, 자동화 상태, 갱신 이력을 추적해야 합니다.
 
@@ -126,13 +128,23 @@ bash scripts/operations/gen-secrets.sh --dry-run
 # check는 쓰지 않으며 drift=1, unsafe/ambiguous input=2를 반환한다.
 bash scripts/operations/gen-secrets.sh --sync-metadata-check
 bash scripts/operations/gen-secrets.sh --sync-metadata
+
+# 실제 소비자 검토와 미사용 키 제거 승인을 받은 경우에만 사용한다.
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune
 ```
 
-메타데이터 정렬은 기존 Value/date cell, 알 수 없는 개인 행, 기존 `.env` assignment와
+기본 메타데이터 정렬은 기존 Value/date cell, 알 수 없는 개인 행, 기존 `.env` assignment와
 주석을 보존한다. 빠진 공개 키와 placeholder 행만 추가하며 secret 파일 생성·읽기·
 변경, htpasswd 생성, 회전은 수행하지 않는다. 경로 이탈·symlink·중복 ID/키·해석할 수
 없는 행을 거부하고 원자적 파일 교체를 사용한다. 동시 수동 편집은 중단하고 다시
 검사한다. 개인 값을 shell `source`로 실행하거나 전체 내용을 출력하지 않는다.
+
+엄격한 prune 모드는 공개 스키마에 없는 개인 registry 행과 `.env` 키를 제거해
+두 쌍의 키 집합을 일치시킨다. 공개 스키마의 실제 소비자는 실행 전에 검토해야
+하며 이 모드 자체가 사용 여부를 추측하지 않는다. 먼저 0700 디렉터리에 0600
+백업을 만들고, 유지 대상 값/생성일 보존과 집합 일치를 검증한다. 비밀 파일은
+삭제하지 않는다. 모호한 multiline 환경변수는 안전하게 거부한다.
 
 옵션 없는 실행은 별도 생성/갱신 기능이며 비밀 파일과 htpasswd를 쓸 수 있다.
 메타데이터 감사 용도로 실행하지 않는다. `--check`는 이 생성 기능의 도구까지 검사하므로

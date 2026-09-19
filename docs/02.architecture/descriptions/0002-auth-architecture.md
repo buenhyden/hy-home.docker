@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.4.0"
+version: "1.5.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -39,7 +39,7 @@ created: "2026-03-26"
 - **Selective Enforcement**: ForwardAuth와 Native OIDC를 서비스 특성에 따라 선택한다.
 - **No Double Auth by Default**: Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 - **Fail Closed**: 인증/권한 검증 실패 시 보호 자원 접근을 허용하지 않는다.
-- **Secret Boundary**: client secret, cookie secret, JWT secret은 파일 기반 Secret으로 주입한다.
+- **Secret Boundary**: Compose가 주입하는 client/cookie/JWT secret은 파일 기반 Secret을 사용한다. 승인된 OpenBao native OIDC client secret은 OpenBao auth backend에 저장한다.
 
 ## Components
 
@@ -56,6 +56,7 @@ graph TD
     ForwardApp["ForwardAuth-protected Service"]
     Airflow["Airflow (Native Keycloak Auth Manager)"]
     Kafbat["Kafbat UI (Native OAuth2/OIDC)"]
+    OpenBao["OpenBao (Native OIDC + Bao policy)"]
     PostgreSQL["PostgreSQL (Identity DB)"]
     Valkey["Valkey (OAuth2 Proxy Session Cache)"]
 
@@ -63,7 +64,7 @@ graph TD
 
     Gateway -->|ForwardAuth| OAuth2Proxy
     OAuth2Proxy -->|OIDC| Keycloak
-    OAuth2Proxy --> ForwardApp
+    Gateway -->|Authorized request| ForwardApp
     OAuth2Proxy <--> Valkey
 
     Gateway --> Airflow
@@ -71,6 +72,9 @@ graph TD
 
     Gateway --> Kafbat
     Kafbat -->|OIDC| Keycloak
+
+    Gateway --> OpenBao
+    OpenBao -->|OIDC| Keycloak
 
     Keycloak <--> PostgreSQL
 ```
@@ -86,7 +90,9 @@ graph TD
 흐름:
 
 ```text
-Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> OAuth2 Proxy Session -> Service
+Request: Browser -> Traefik -> /oauth2/auth check -> Traefik -> Service
+Login when needed: Browser <-> OAuth2 Proxy <-> Keycloak
+After login: Proxy session cookie -> repeat original request
 ```
 
 ### Pattern 2: Application-native OIDC
@@ -95,6 +101,7 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> OAuth2 Proxy Session -> Servic
 
 - Apache Airflow
 - Kafbat UI
+- OpenBao (owner-approved native OIDC; operator login verified)
 
 흐름:
 
@@ -116,7 +123,7 @@ flow와 application authorization을 수행한다.
 
 - **IAM Engine**: Keycloak
 - **Gateway SSO**: OAuth2 Proxy
-- **Native OIDC**: Airflow, Kafbat UI
+- **Native OIDC**: Airflow, Kafbat UI, OpenBao
 - **Session Manager**: Valkey for OAuth2 Proxy
 - **Storage**: PostgreSQL for Keycloak realm/user/client state
 
@@ -128,13 +135,15 @@ flow와 application authorization을 수행한다.
 ForwardAuth 대상 서비스는 OAuth2 Proxy `/oauth2/auth` 검사를 거쳐 Keycloak
 OIDC와 Valkey session을 사용한다.
 
-Native OIDC 대상인 Airflow와 Kafbat UI는 OAuth2 Proxy를 거치지 않고
+Native OIDC 대상인 Airflow, Kafbat UI, OpenBao는 OAuth2 Proxy를 거치지 않고
 애플리케이션이 Keycloak과 직접 OIDC flow를 수행한다. Airflow는 추가로
 Keycloak Authorization Services를 사용해 resource authorization을 평가한다.
 
 Keycloak realm/user/session metadata는 PostgreSQL에 저장한다.
 
-Client/cookie/DB/JWT secret은 `/run/secrets` 경계에서만 읽는다.
+Compose가 주입하는 client/cookie/DB/JWT secret은 `/run/secrets`에서 읽는다.
+OpenBao native OIDC client secret은 승인된 bootstrap 과정에서 OpenBao auth
+backend에 저장되며 공개 Compose나 문서에 포함하지 않는다.
 
 ## System Boundaries
 
@@ -152,7 +161,7 @@ Client/cookie/DB/JWT secret은 `/run/secrets` 경계에서만 읽는다.
   - secret 값 자체
   - 개별 실행의 evidence
 - **Native OIDC Boundary**:
-  - Airflow와 Kafbat UI application-level RBAC는 각 application과 Operations 문서가 소유한다.
+  - Airflow/Kafbat RBAC와 OpenBao policy는 각 application과 Operations 문서가 소유한다.
   - OAuth2 Proxy가 해당 RBAC를 대체하지 않는다.
 - **Non-goals**:
   - 신규 identity provider 도입
@@ -178,6 +187,12 @@ Airflow는 `infra/07-workflow/airflow/docker-compose.yml`에서
 Kafbat UI는 `infra/05-messaging/kafka/docker-compose.yml`과
 `kafbat-ui/dynamic_config.template.yaml`에서 native OAuth2를 구성하며 router는
 `gateway-standard-chain@file`만 적용한다.
+
+OpenBao router도 `gateway-standard-chain@file`만 사용한다. Keycloak 그룹
+`/openbao-admins`는 OpenBao OIDC role `home-admin`의 조건이며, 로그인 결과는
+`hy-home-operator` 정책의 OpenBao 토큰이다. Keycloak 사용자·그룹과 OpenBao
+role·policy는 별도 객체다. 실제 로그인 검증은
+[OpenBao 작업 기록](../../03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md)이 소유한다.
 
 ## Related Documents
 

@@ -49,6 +49,10 @@ secrets:
     file: ./secrets/auth/oauth2_proxy_cookie_secret.txt
   kafbat_client_secret:
     file: ./secrets/auth/kafbat_client_secret.txt
+  openwebui_oidc_client_secret:
+    file: ./secrets/auth/openwebui_oidc_client_secret.txt
+  gatus_oidc_client_secret:
+    file: ./secrets/auth/gatus_oidc_client_secret.txt
   grafana_client_secret:
     file: ./secrets/auth/grafana_client_secret.txt
   pg_haproxy_stats_password:

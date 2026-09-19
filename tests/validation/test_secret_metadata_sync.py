@@ -100,6 +100,137 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(self.example.read_bytes(), self.target.read_bytes())
         self.assertEqual(0o600, self.target.stat().st_mode & 0o777)
 
+    def test_preserving_mode_keeps_unparsed_environment_lines(self):
+        env_text = "# operator comment\nsource local-overrides.env\nEXISTING=synthetic-private-env\n"
+        (self.root / ".env").write_text(env_text)
+
+        result = self.run_mode()
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(env_text + "ADDED=default\n", (self.root / ".env").read_text())
+
+    def test_prune_makes_public_and_private_key_sets_exact(self):
+        self.example.write_text(
+            self.example.read_text()
+            + "| **TEST-002** | `O` | `PW` | `(empty)` | `ADDED` | `secrets/added.txt` | 2026-01-02 | Added purpose |\n"
+        )
+        unknown = (
+            "| **LOCAL-001** | `X` | `PW` | `synthetic-private-local` | "
+            "`UNKNOWN` | `secrets/local.txt` | 2025-01-03 | Local purpose |\n"
+        )
+        self.target.write_text("# registry comment\n" + self.private + unknown)
+        secret_file = self.root / "secrets/local.txt"
+        secret_file.write_text("synthetic-secret-file")
+        before_retained = self.private.split("|")
+        before_env_line = "EXISTING=synthetic-private-env\n"
+
+        result = self.run_mode("--sync-metadata-prune")
+
+        self.assertEqual(0, result.returncode, result.stderr)
+        env_text = (self.root / ".env").read_text()
+        self.assertEqual(
+            "# operator comment\n" + before_env_line + "ADDED=default\n",
+            env_text,
+        )
+        self.assertEqual(
+            {"EXISTING", "ADDED"},
+            {
+                line.split("=", 1)[0]
+                for line in env_text.splitlines()
+                if line and not line.startswith("#")
+            },
+        )
+        registry = self.target.read_text()
+        self.assertIn("# registry comment\n", registry)
+        self.assertNotIn("LOCAL-001", registry)
+        rows = [
+            line.split("|") for line in registry.splitlines() if line.startswith("| **")
+        ]
+        self.assertEqual({"TEST-001", "TEST-002"}, {row[1].strip("* ") for row in rows})
+        retained = next(row for row in rows if "TEST-001" in row[1])
+        self.assertEqual(before_retained[4], retained[4])
+        self.assertEqual(before_retained[7], retained[7])
+        self.assertEqual("NEW_KEY", retained[5].strip(" `"))
+        self.assertTrue(secret_file.is_file())
+        self.assertEqual("synthetic-secret-file", secret_file.read_text())
+
+        env_before = (self.root / ".env").read_bytes()
+        registry_before = self.target.read_bytes()
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune-check").returncode)
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune").returncode)
+        self.assertEqual(env_before, (self.root / ".env").read_bytes())
+        self.assertEqual(registry_before, self.target.read_bytes())
+
+    def test_prune_check_reports_exact_set_drift_without_writes(self):
+        registry_before = self.target.read_bytes()
+        env_before = (self.root / ".env").read_bytes()
+
+        result = self.run_mode("--sync-metadata-prune-check")
+
+        self.assertEqual(1, result.returncode)
+        self.assertEqual(registry_before, self.target.read_bytes())
+        self.assertEqual(env_before, (self.root / ".env").read_bytes())
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune").returncode)
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune-check").returncode)
+
+    def test_prune_rejects_multiline_environment_forms_before_any_write(self):
+        cases = (
+            'EXISTING="synthetic-private\ncontinued"\nUNKNOWN=keep\n',
+            "EXISTING=synthetic-private\\\ncontinued\nUNKNOWN=keep\n",
+        )
+        for env_text in cases:
+            with self.subTest(env_text=repr(env_text)):
+                (self.root / ".env").write_text(env_text)
+                registry_before = self.target.read_bytes()
+                env_before = (self.root / ".env").read_bytes()
+
+                result = self.run_mode("--sync-metadata-prune")
+
+                self.assertEqual(2, result.returncode)
+                self.assertEqual(registry_before, self.target.read_bytes())
+                self.assertEqual(env_before, (self.root / ".env").read_bytes())
+
+    def test_prune_rejects_duplicate_environment_key_before_any_write(self):
+        (self.root / ".env.example").write_text(
+            "EXISTING=public\nADDED=default\nEXISTING=duplicate\n"
+        )
+        registry_before = self.target.read_bytes()
+        env_before = (self.root / ".env").read_bytes()
+
+        result = self.run_mode("--sync-metadata-prune")
+
+        self.assertEqual(2, result.returncode)
+        self.assertEqual(registry_before, self.target.read_bytes())
+        self.assertEqual(env_before, (self.root / ".env").read_bytes())
+
+    def test_prune_rejects_malformed_registry_row_before_any_write(self):
+        self.target.write_text(
+            self.private
+            + "| BROKEN | `X` | `PW` | `(empty)` | `-` | `-` | 2025-01-01 | Bad |\n"
+        )
+        registry_before = self.target.read_bytes()
+        env_before = (self.root / ".env").read_bytes()
+
+        result = self.run_mode("--sync-metadata-prune")
+
+        self.assertEqual(2, result.returncode)
+        self.assertEqual(registry_before, self.target.read_bytes())
+        self.assertEqual(env_before, (self.root / ".env").read_bytes())
+
+    def test_prune_rejects_symlink_source_before_any_write(self):
+        outside = self.root / "outside-env-example"
+        outside.write_text("EXISTING=public\nADDED=default\n")
+        (self.root / ".env.example").unlink()
+        (self.root / ".env.example").symlink_to(outside)
+        registry_before = self.target.read_bytes()
+        env_before = (self.root / ".env").read_bytes()
+
+        result = self.run_mode("--sync-metadata-prune")
+
+        self.assertEqual(2, result.returncode)
+        self.assertEqual(registry_before, self.target.read_bytes())
+        self.assertEqual(env_before, (self.root / ".env").read_bytes())
+
 
 class PublicSecretSchemaTests(unittest.TestCase):
     def test_public_ids_paths_and_env_keys_have_unique_owners(self):

@@ -501,8 +501,15 @@ check_08_ai() {
   check_file "$webui_compose"
 
   check_contains "$ollama_compose" "sso-auth@file" "ollama sso missing"
-  check_contains "$webui_compose" "gateway-standard-chain@file,sso-errors@file,sso-auth-open-webui@file" "open-webui dedicated trusted-header auth chain missing"
-  check_contains "$webui_compose" "WEBUI_AUTH_TRUSTED_EMAIL_HEADER=X-Auth-Request-Email" "open-webui trusted identity header missing"
+  check_contains "$webui_compose" "traefik.http.routers.open-webui.middlewares: gateway-standard-chain@file" "open-webui native oidc gateway chain missing"
+  check_not_contains "$webui_compose" "sso-auth" "open-webui double-auth middleware must not be enabled"
+  check_not_contains "$webui_compose" "WEBUI_AUTH_TRUSTED_" "open-webui trusted-header auth must not be enabled"
+  check_contains "$webui_compose" "OAUTH_CLIENT_ID: home-openwebui" "open-webui dedicated oidc client missing"
+  check_contains "$webui_compose" "OAUTH_CODE_CHALLENGE_METHOD: S256" "open-webui pkce missing"
+  check_contains "$webui_compose" "ENABLE_PASSWORD_AUTH: 'false'" "open-webui password auth must be disabled"
+  check_contains "$webui_compose" "ENABLE_OAUTH_SIGNUP: 'false'" "open-webui oauth signup must be disabled"
+  check_contains "$webui_compose" "OAUTH_MERGE_ACCOUNTS_BY_EMAIL: 'false'" "open-webui temporary email merge must be disabled"
+  check_contains "$webui_compose" "openwebui_oidc_client_secret" "open-webui oidc secret missing"
 }
 
 # --- Tier 09: Tooling ---

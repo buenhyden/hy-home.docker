@@ -34,7 +34,7 @@ ROW_FILE_PATH=""
 
 usage() {
     cat <<'USAGE'
-Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run|--sync-metadata|--sync-metadata-check]
+Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run|--sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check]
 
 Generate local Docker secret files from repository secret registry metadata.
 
@@ -48,6 +48,10 @@ Modes:
   --sync-metadata        Preserve private value cells and existing env assignments;
                          align public metadata and append missing public keys only.
   --sync-metadata-check  Same comparison without writes; exits 1 on drift.
+  --sync-metadata-prune  Also remove private env assignments and registry rows
+                         absent from their public metadata sources.
+  --sync-metadata-prune-check
+                         Same exact-set comparison without writes; exits 1 on drift.
 
 No-argument mode preserves the existing operator workflow and may read/write
 local secret registry and secret files. Do not use no-argument mode for audit
@@ -101,7 +105,7 @@ parse_args() {
         --dry-run)
             MODE="dry-run"
             ;;
-        --sync-metadata|--sync-metadata-check)
+        --sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check)
             MODE="${1#--}"
             ;;
         *)
@@ -528,7 +532,9 @@ import sys
 import tempfile
 
 root = Path(sys.argv[1]).resolve()
-check_only = sys.argv[2] == "sync-metadata-check"
+mode = sys.argv[2]
+check_only = mode.endswith("-check")
+prune = mode.startswith("sync-metadata-prune")
 
 
 def safe_path(relative):
@@ -550,17 +556,25 @@ def clean(cell):
     return cell.strip().strip("*`").strip()
 
 
-def rows(text):
+def rows(text, strict):
     result = {}
     for line in text.splitlines(keepends=True):
         if not line.lstrip().startswith("|"):
             continue
         cells = line.split("|")
+        if strict and len(cells) != 10:
+            raise ValueError("malformed registry row")
         identity = clean(cells[1]) if len(cells) > 1 else ""
-        if not re.fullmatch(r"[A-Z][A-Z0-9_-]*-[0-9]+", identity):
+        if identity == "ID" or re.fullmatch(r":?-{3,}:?", identity):
             continue
-        if len(cells) != 10 or identity in result:
-            raise ValueError("ambiguous registry row")
+        if not re.fullmatch(r"[A-Z][A-Z0-9_-]*-[0-9]+", identity):
+            if strict:
+                raise ValueError("malformed registry identity")
+            continue
+        if len(cells) != 10:
+            raise ValueError("malformed registry row")
+        if identity in result:
+            raise ValueError("duplicate registry identity")
         relative = clean(cells[6])
         if relative and relative != "-":
             path = safe_path(relative)
@@ -570,15 +584,17 @@ def rows(text):
     return result
 
 
-def registry_plan(source, current):
-    public = rows(source)
-    private = rows(current)
+def registry_plan(source, current, exact):
+    public = rows(source, exact)
+    private = rows(current, exact)
     output = current
     for identity, (line, cells) in private.items():
         if identity not in public:
+            if exact:
+                output = output.replace(line, "", 1)
             continue
         metadata = public[identity][1]
-        # Preserve value/date cells and unknown rows byte-for-byte.
+        # Preserve private value/date cells while aligning public metadata.
         merged = [metadata[i] if i in (1, 2, 3, 5, 6, 8) else cell
                   for i, cell in enumerate(cells)]
         output = output.replace(line, "|".join(merged), 1)
@@ -593,23 +609,68 @@ def registry_plan(source, current):
     return output
 
 
-def env_keys(text):
+def env_assignment_key(line, strict):
+    body = line.rstrip("\r\n")
+    stripped = body.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    if not strict:
+        match = re.match(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=", line)
+        return match[1] if match else None
+    match = re.fullmatch(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)", body)
+    if match is None:
+        raise ValueError("unparseable environment line")
+    value = match.group(2)
+    if (len(value) - len(value.rstrip("\\"))) % 2:
+        raise ValueError("continued environment assignment")
+    candidate = value.lstrip()
+    if candidate.startswith(('"', "'")):
+        quote = candidate[0]
+        escaped = False
+        closing = None
+        for index, character in enumerate(candidate[1:], 1):
+            if quote == '"' and character == "\\" and not escaped:
+                escaped = True
+                continue
+            if character == quote and not escaped:
+                closing = index
+                break
+            escaped = False
+        if closing is None:
+            raise ValueError("multiline environment assignment")
+        tail = candidate[closing + 1:].strip()
+        if tail and not tail.startswith("#"):
+            raise ValueError("ambiguous environment assignment")
+    return match.group(1)
+
+
+def env_keys(text, strict):
     result = {}
     for line in text.splitlines(keepends=True):
-        match = re.match(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=", line)
-        if match:
-            if match[1] in result:
-                raise ValueError("duplicate environment key")
-            result[match[1]] = line
+        key = env_assignment_key(line, strict)
+        if key is None:
+            continue
+        if key in result:
+            raise ValueError("duplicate environment key")
+        result[key] = line
     return result
 
 
-def env_plan(source, current):
-    public, private = env_keys(source), env_keys(current)
-    additions = "".join(line for key, line in public.items() if key not in private)
+def env_plan(source, current, exact):
+    public, private = env_keys(source, exact), env_keys(current, exact)
     if not current:
         return source
-    return current + (("" if current.endswith("\n") else "\n") + additions if additions else "")
+    if exact:
+        output = "".join(
+            line for line in current.splitlines(keepends=True)
+            if (key := env_assignment_key(line, True)) is None or key in public
+        )
+    else:
+        output = current
+    additions = "".join(line for key, line in public.items() if key not in private)
+    if additions:
+        output += ("" if output.endswith("\n") or not output else "\n") + additions
+    return output
 
 
 def snapshot(path):
@@ -646,7 +707,7 @@ def main():
         before, identity = snapshot(target)
         public = source.read_bytes().decode("utf-8")
         current = (before or b"").decode("utf-8")
-        after = planner(public, current).encode("utf-8")
+        after = planner(public, current, prune).encode("utf-8")
         if after != before:
             plans.append((target, before, identity, after))
     print("METADATA files_changed=" + str(len(plans)) + " values=preserved secret_files=untouched")
@@ -695,7 +756,7 @@ main() {
         dry-run)
             run_dry_run
             ;;
-        sync-metadata|sync-metadata-check)
+        sync-metadata|sync-metadata-check|sync-metadata-prune|sync-metadata-prune-check)
             run_metadata_sync
             ;;
         run)

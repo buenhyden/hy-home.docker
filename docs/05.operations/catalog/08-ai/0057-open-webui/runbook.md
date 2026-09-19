@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -64,6 +64,48 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 ## Open WebUI -> Qdrant
 docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
+
+### Native Keycloak OIDC migration and recovery
+
+- Dedicated client: `home-openwebui`; confidential authorization-code flow with
+  S256 PKCE. Callback: `https://chat.${DEFAULT_URL}/oauth/oidc/callback`.
+  Discovery uses the `hy-home.realm` realm and verified private-CA TLS.
+- Client secret: `secrets/auth/openwebui_oidc_client_secret.txt`, mounted read-only
+  at `/run/secrets/openwebui_oidc_client_secret`. Open WebUI runs as UID 0 with
+  all capabilities dropped: the host file must be **root:root 0600**. A UID 1000
+  mode-0600 file is unreadable to this process. Rotation must include a privileged
+  ownership transfer of this exact file; do not broaden permissions or add DAC
+  capabilities to the application. Never print the file or put its value in
+  Compose environment text. The entrypoint exports it only inside the process.
+- The mounted `rootCA.pem` is a public certificate, not a private key. It must be
+  readable by UID 0 (0644); verify certificate-only content before changing mode.
+  The entrypoint combines it with public CA roots without disabling TLS checks.
+- Initial acceptance retains ForwardAuth and local login, disables signup and
+  role/group management, and temporarily permits email merge only after verifying
+  the single existing administrator matches an enabled, email-verified Keycloak
+  identity. This is a bounded migration step, not a general account-linking policy.
+- Before acceptance, create an online SQLite backup, verify its integrity, and
+  record the existing user ID, role, OAuth linkage and chat ownership privately.
+  After browser login, require the same ID/admin role/chat ownership and the
+  expected provider subject. Do not use login success alone as identity evidence.
+- After acceptance, disable email merge and disable the login form through the
+  supported configuration model or authenticated admin configuration. `ENABLE_LOGIN_FORM` may be
+  overridden by persisted database configuration; changing Compose alone does
+  not prove it is disabled. The installed per-key `Config.upsert` can update only
+  `ui.enable_login_form` after a protected online backup; verify every other config
+  row and user/chat identity remains unchanged. Initialize the operator process
+  with the existing startup secret file internally, never a fabricated token.
+  Set `ENABLE_PASSWORD_AUTH=false` separately: hiding the form alone does not
+  disable `/api/v1/auths/signin`. Require a 403 denial, not merely a 400 invalid-
+  credential response. Remove only this service's ForwardAuth middleware
+  after the native allow/deny checks pass, then test a fresh browser session.
+- During a failed initial rollout, keep the gateway, preserve the named volume,
+  and restore the prior service configuration if the failure cannot be corrected
+  promptly. Do not restore the DB merely for a configuration failure. Database
+  restoration can discard later changes and needs a separately scoped recovery.
+- Evidence and current acceptance status live in
+  [Task 0004](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md).
+  The dated offline-custody backup is sensitive and must not be committed.
 
 ### 3. SQLite Backup and Recovery
 

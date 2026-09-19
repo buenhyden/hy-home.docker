@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -46,16 +46,19 @@ created: "2026-05-10"
 - Open WebUI 환경변수 확인:
   - `OLLAMA_BASE_URL`
   - `VECTOR_DB_URL`
-  - `RAG_EMBEDDING_MODEL` (기본값: `qwen3-embedding:0.6b`)
-- SSO 환경(예: Keycloak + `sso-auth@file`)이 정상이어야 한다.
+  - `RAG_EMBEDDING_MODEL` (현재 값은 Compose 선언 확인)
+- Keycloak의 전용 `home-openwebui` client와 native OIDC 경로가 정상이어야 한다.
+  이 서비스는 `sso-auth@file`을 사용하지 않는다.
 
 ### Step-by-step Instructions
 
 #### 1. Access & Authentication
 
 1. 브라우저에서 `https://chat.${DEFAULT_URL}` 접속.
-2. SSO 로그인 완료 후 Open WebUI 대시보드 진입 확인.
-3. 로그인 루프 또는 401 발생 시 먼저 인증 계층 상태를 확인한다.
+2. 로그인 화면에서 **Keycloak**을 선택하고 기존 계정으로 로그인한다.
+3. 기존 권한으로 Open WebUI 대시보드에 들어가는지 확인한다. 로컬 비밀번호
+   로그인과 신규 가입은 비활성화되어 있다.
+4. 로그인 루프 또는 401 발생 시 먼저 인증 계층 상태를 확인한다.
 
 #### 2. Model Selection & Chat
 

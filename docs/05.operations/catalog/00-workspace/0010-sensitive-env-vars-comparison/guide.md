@@ -1,6 +1,6 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "2.0.0"
+version: "3.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -30,18 +30,20 @@ grant의 대응 관계를 함께 확인한다. 실제 점검 수치와 결과는
 저장소 루트에서 값이 출력되지 않는 기존 검사 경로를 사용한다.
 
 ```bash
-bash scripts/operations/gen-secrets.sh --sync-metadata-check
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 bash scripts/operations/gen-secrets.sh --dry-run
 ```
 
-승인된 메타데이터 동기화는 `--sync-metadata`로 수행하고 동일 검사로 drift가
-사라졌는지 확인한다. 기존 값·생성일·미등록 로컬 행은 보존되며 secret 값 파일은
-이 경로에서 읽거나 쓰지 않는다. 오류나 경로 교체가 감지되면 중단하고 원인을
-조사한다. 동기화 성공은 서비스 인증이나 credential 회전 성공을 의미하지 않는다.
+두 registry의 ID와 env-key 집합은 정확히 같아야 하며 공개 행마다 실제 소비자,
+초기화 입력 또는 파생값 생성 경로가 있어야 한다. 비활성 서비스도 지원되는
+profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 공개/개인 목록에서
+함께 제거한다. 제거한 ID는 Git 이력에 남기고 다른 의미로 재사용하지 않는다.
 
-공개 registry의 파일 경로가 모두 root Compose grant인 것은 아니다. 초기화용,
-파생값 또는 보존된 비활성 metadata 항목은 명시적으로 구분한다. 현재 service
-소비자가 없는 선언을 제거하더라도 개인 파일과 ID를 임의 삭제하지 않는다.
+소비자 검토와 보호된 0600 백업 후, 승인된 `--sync-metadata-prune`로 정리하고
+같은 check 모드로 drift가 없는지 확인한다. 유지하는 Value/date cell은 그대로
+보존한다. 이 경로는 개별 secret 값 파일을 생성·회전·삭제하지 않는다. 공개
+스키마 밖의 행을 보존하는 기존 `--sync-metadata`는 이번 정확한 집합 일치의
+완료 검사와 다르다. 중복·모호한 입력·경로 교체는 값을 출력하지 않고 거부한다.
 
 로컬 registry가 없으면 관찰되지 않음으로 기록한다. 존재하는 경우 Git ignore와
 0600 권한을 확인하고 값, 원문 행, 인증 파일이나 token 내용을 증거에 남기지 않는다.
@@ -51,7 +53,8 @@ bash scripts/operations/gen-secrets.sh --dry-run
 
 [Secret 관리 안내](../../../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
 실제 credential 변경, 재시작 또는 데이터 복구는 대상과 영향을 명시한 별도 승인
-범위에서 수행한다. 줄 수를 맞추기 위해 로컬 값을 덮어쓰거나 삭제하지 않는다.
+범위에서 수행한다. 단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로
+정리하며, 유지 대상의 개인 값을 덮어쓰지 않는다.
 
 ## Traceability
 
