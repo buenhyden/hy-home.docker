@@ -5,6 +5,13 @@
     "config:recommended"
   ],
 
+  "enabledManagers": [
+    "docker-compose",
+    "dockerfile",
+    "github-actions",
+    "custom.regex"
+  ],
+
   "timezone": "Asia/Seoul",
 
   "schedule": [
@@ -30,12 +37,32 @@
     "executionMode": "branch"
   },
 
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "OpenTofu inline Dockerfile images",
+
+      "managerFilePatterns": [
+        "/^infra\\/09-tooling\\/opentofu\\/docker-compose\\.yml$/"
+      ],
+
+      "matchStrings": [
+        "FROM\\s+(?<depName>ghcr\\.io/opentofu/opentofu):(?<currentValue>[^\\s]+)\\s+AS\\s+tofu",
+        "FROM\\s+(?<depName>alpine):(?<currentValue>[^\\s]+)"
+      ],
+
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+
   "packageRules": [
     {
-      "description": "Do not auto-merge infrastructure updates",
+      "description": "Do not automerge infrastructure updates",
       "matchManagers": [
         "docker-compose",
-        "dockerfile"
+        "dockerfile",
+        "custom.regex"
       ],
       "automerge": false
     },
@@ -66,13 +93,14 @@
     },
 
     {
-      "description": "Ignore locally built images",
+      "description": "Ignore locally-built images",
       "matchDatasources": [
         "docker"
       ],
       "matchPackageNames": [
         "/^hy\\//",
-        "/^hyhome\\//"
+        "/^hyhome\\//",
+        "/^hy-home\\//"
       ],
       "enabled": false
     }

@@ -4,133 +4,30 @@
 # ============================================================================
 
 version: 2
+version: 2
+
 updates:
-  # 1. GitHub Actions
-  # 워크플로우 내의 Action 버전들을 주간 단위로 확인합니다.
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 10
-    cooldown:
-      default-days: 7
-    commit-message:
-      prefix: "ci"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "github-actions"
-    groups:
-      actions:
-        patterns:
-          - "*"
-
-  # 2. Dockerfile / Containerfile
-  # Dockerfile 기반 이미지 의존성을 감시합니다.
-  - package-ecosystem: "docker"
-    directories:
-      - "/infra/02-auth/keycloak"
-      - "/infra/02-auth/oauth2-proxy"
-      - "/infra/04-data/analytics/opensearch"
-      - "/infra/06-observability/loki"
-      - "/infra/06-observability/tempo"
-      - "/infra/07-workflow/n8n"
-      - "/infra/09-tooling/locust"
-      - "/infra/11-laboratory/open-notebook/surrealdb"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 10
-    cooldown:
-      default-days: 7
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "docker"
-    groups:
-      docker-images:
-        patterns:
-          - "*"
-
-  # 3. Docker Compose
-  # Compose 파일에 선언된 이미지 의존성을 감시합니다.
-  - package-ecosystem: "docker-compose"
-    directories:
-      - "/"
-      - "/infra/01-gateway/nginx"
-      - "/infra/01-gateway/traefik"
-      - "/infra/02-auth/keycloak"
-      - "/infra/02-auth/oauth2-proxy"
-      - "/infra/03-security/vault"
-      - "/infra/04-data/analytics/influxdb"
-      - "/infra/04-data/analytics/ksql"
-      - "/infra/04-data/analytics/opensearch"
-      - "/infra/04-data/analytics/warehouses"
-      - "/infra/04-data/cache-and-kv/valkey-cluster"
-      - "/infra/04-data/lake-and-object/minio"
-      - "/infra/04-data/lake-and-object/seaweedfs"
-      - "/infra/04-data/nosql/cassandra"
-      - "/infra/04-data/nosql/couchdb"
-      - "/infra/04-data/nosql/mongodb"
-      - "/infra/04-data/operational/mng-db"
-      - "/infra/04-data/operational/supabase"
-      - "/infra/04-data/relational/postgresql-cluster"
-      - "/infra/04-data/specialized/neo4j"
-      - "/infra/04-data/specialized/qdrant"
-      - "/infra/05-messaging/kafka"
-      - "/infra/06-observability"
-      - "/infra/07-workflow/airflow"
-      - "/infra/07-workflow/n8n"
-      - "/infra/08-ai/ollama"
-      - "/infra/08-ai/open-webui"
-      - "/infra/09-tooling/k6"
-      - "/infra/09-tooling/locust"
-      - "/infra/09-tooling/registry"
-      - "/infra/09-tooling/sonarqube"
-      - "/infra/09-tooling/syncthing"
-      - "/infra/09-tooling/terraform"
-      - "/infra/09-tooling/terrakube"
-      - "/infra/10-communication/mail"
-      - "/infra/11-laboratory/dozzle"
-      - "/infra/11-laboratory/open-notebook"
-      - "/infra/11-laboratory/redisinsight"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 10
-    cooldown:
-      default-days: 7
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-      - "docker-compose"
-    groups:
-      docker-compose-images:
-        patterns:
-          - "*"
-
-  # 4. Storybook Next.js
-  # CI에서 설치되는 Storybook Next.js npm 의존성을 감시합니다.
   - package-ecosystem: "npm"
     directory: "/projects/storybook/nextjs"
+
     schedule:
       interval: "weekly"
       day: "monday"
-    open-pull-requests-limit: 10
+
+    open-pull-requests-limit: 5
+
     cooldown:
       default-days: 7
+
     commit-message:
       prefix: "chore"
       include: "scope"
+
     labels:
       - "dependencies"
       - "npm"
       - "storybook"
+
     groups:
       storybook-nextjs:
         patterns:

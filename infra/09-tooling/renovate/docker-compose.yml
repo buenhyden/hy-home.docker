@@ -24,7 +24,6 @@ services:
 
     environment:
       RENOVATE_PLATFORM: github
-      RENOVATE_REPOSITORIES: buenhyden/hy-home.docker
       RENOVATE_CONFIG_FILE: /usr/src/app/config.js
       RENOVATE_REQUIRE_CONFIG: required
       RENOVATE_CONFIG_VALIDATION_ERROR: 'true'
