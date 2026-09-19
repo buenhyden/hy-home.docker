@@ -11,7 +11,8 @@ volumes:
 services:
   mailpit:
     profiles:
-      - 'communication'
+      - dev
+      - mail-dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

@@ -1,0 +1,42 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+services:
+  opentofu:
+    profiles:
+      - 'tooling'
+      - iac
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu
+        FROM alpine:3.22
+        RUN apk add --no-cache \
+            bash \
+            ca-certificates \
+            curl \
+            git \
+            openssh-client
+        COPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu
+        ENTRYPOINT ["tofu"]
+    image: hy-home/opentofu:1.12.6-local
+    pull_policy: build
+    container_name: opentofu
+    restart: 'no'
+    read_only: false
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./workspace:/workspace:rw
+      - $HOME/.aws:/root/.aws:ro
+      - $HOME/.azure:/root/.azure:ro
+    working_dir: /workspace
+    entrypoint: ['tofu']
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.224
+    labels:
+      <<: *tier-label
