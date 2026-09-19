@@ -35,7 +35,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.mailpit-ui.rule: Host(`mail.${DEFAULT_URL}`)
+      traefik.http.routers.mailpit-ui.rule: Host(`mailpit.${DEFAULT_URL}`)
       traefik.http.routers.mailpit-ui.entrypoints: websecure
       traefik.http.routers.mailpit-ui.tls: 'true'
       traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
