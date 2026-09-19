@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -28,6 +28,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Apache Airflow
 - OpenBao
 - 신규 OIDC-capable internal applications
+- Open WebUI, Gatus and Terrakube candidate migrations under Task 0004
 
 ## Controls
 
@@ -40,6 +41,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Airflow/Kafbat/OpenBao Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
+- Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 candidate acceptance evidence와 별도 승인 후에만 허용한다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
 - token/refresh token/id token 원문을 문서, incident, PR, task evidence에 기록하지 않는다.

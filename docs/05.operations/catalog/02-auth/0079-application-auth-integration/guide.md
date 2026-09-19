@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -197,6 +197,48 @@ Proxy의 구체적 절차는 [Proxy runbook](../0015-oauth2-proxy/runbook.md)이
 
 등록만으로 완료하지 않는다. 브라우저 성공과 최소 권한 거부 사례가 해당 서비스의
 Task에 기록되어야 실제 수용 검증으로 취급한다.
+
+### ForwardAuth Service Review
+
+Native OIDC 전환은 제품의 browser login/session 기능이 Keycloak을 직접 신뢰할 수
+있고, 현재 설치판에서 라이선스나 외부 plugin 없이 지원될 때만 선택한다.
+OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델이 OIDC를 이해한다고
+보지 않는다.
+
+2026-09-20 read-only inventory 기준 전환 후보는 다음과 같다. Open WebUI는
+공식 SSO 설정과 실행 중 container source의 `OAUTH_CLIENT_ID`,
+`OAUTH_CLIENT_SECRET`, `OPENID_PROVIDER_URL` 설정 근거가 있어 후보지만,
+기존 관리자 계정 보존과 자동가입/이메일 병합 종료 증거가 필요하다. Gatus는
+upstream source가 `security.oidc`와 `/authorization-code/callback`을 제공하므로
+후보지만, 현재 session cookie hardening 검토 전에는 gateway 보호를 제거하지 않는다.
+Terrakube는 tracked Compose가 이미 direct issuer를 선언하지만 `home-proxy-client`를
+재사용하고 실행 중 container가 없으므로, dedicated client와 API/UI/executor acceptance
+전까지 ForwardAuth를 유지한다.
+
+그 외 Flower, n8n, SonarQube, Mailpit, Stalwart admin UI, Prometheus, Loki,
+Tempo, Alloy, cAdvisor, Pyroscope, Alertmanager, Pushgateway, Ollama, ComfyUI,
+Open Notebook, RedisInsight는 현재 증거로 native Keycloak OIDC browser login으로
+전환하지 않는다. 관측 계열은 Grafana 경유 또는 reverse-proxy/API 보호가 주된
+모델이고, n8n/SonarQube는 설치판·라이선스 조건 확인 없이 SSO를 도입하지 않는다.
+Mailpit/RedisInsight/Open Notebook/ComfyUI/Ollama/cAdvisor는 현재 배포에서
+Keycloak OIDC browser client 계약이 확인되지 않았다.
+
+Candidate cutover completion criteria:
+
+- 전용 Keycloak client와 정확한 redirect URI를 등록하고 client secret은 Docker Secret
+  또는 승인된 secret store로만 전달한다.
+- gateway ForwardAuth 제거는 해당 서비스의 native login success, denied-user rejection,
+  logout/session behavior, data/account preservation, rollback evidence가 기록된 뒤에만
+  적용한다.
+- rejected 또는 unverified 서비스는 `sso-errors@file,sso-auth@file` chain을 유지한다.
+
+Primary references: Open WebUI SSO docs (<https://docs.openwebui.com/features/sso/>),
+Gatus OIDC source (<https://raw.githubusercontent.com/TwiN/gatus/master/security/oidc.go>),
+Prometheus web config (<https://prometheus.io/docs/prometheus/latest/configuration/https/>),
+Loki authentication docs (<https://grafana.com/docs/loki/latest/operations/authentication/>),
+n8n SSO docs (<https://docs.n8n.io/user-management/saml/>), Mailpit docs
+(<https://mailpit.axllent.org/docs/>), Stalwart OIDC backend docs
+(<https://stalw.art/docs/auth/backend/oidc/>).
 
 ### Kafbat UI
 
