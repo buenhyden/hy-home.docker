@@ -73,12 +73,12 @@ provider; applicable governance; public configuration and metadata only.
 | 1 | W1 | source inventory and read-only runtime measured | implementation and operations |
 | 2 | W1 | primary-source matrix recorded; installed compatibility/restore unverified | Stage 90 |
 | 3 | W2 | source/profile validation passed; runtime not applied | POL-0078 and Compose |
-| 4 | W3, W4 | source/document contracts implemented; final checks pending | Stage 99 and Stage 05 |
+| 4 | W3, W4 | source/document contracts implemented; local final checks passed | Stage 99 and Stage 05 |
 | 5 | W5 | sync and strict configuration checks passed | existing synchronization and update configs |
 | 6 | W6 | metadata sync completed; values preserved, never output | public schemas and sync owner |
 | 7 | W7 | isolated full and changed exited 0; final full includes Ollama correction | existing validation graph |
 | 8 | W8 | not run; exact runtime approval pending | operational runbooks |
-| 9 | W9 | not run | Git and PR |
+| 9 | W9 | branch pushed; Draft PR #167 created; hosted CI running | Git and PR |
 
 ### Baseline findings
 
@@ -759,8 +759,8 @@ validation assertions; isolated full and changed profiles subsequently exited 0.
 The pre-existing rehearsal fixture permission repair was committed separately as
 `52036c3` (`test(infra): Isolate secure rehearsal fixture permissions`), after
 239 tests and independent specification/quality approval.
-The reviewed implementation follows as one coupled source/document contract
-commit, followed only by evidence corrections if required. The baseline repair,
+The reviewed implementation was committed as one coupled source/document contract
+commit; subsequent changes record verification evidence only. The baseline repair,
 new Task declarations and their registry contracts must remain coherent. Actual
 commit IDs belong to Git history; no commit is claimed until the commit command
 succeeds. Runtime acceptance remains incomplete.
@@ -768,8 +768,11 @@ succeeds. Runtime acceptance remains incomplete.
 Draft PR approval source is the owner's mission sequence ending in Pull Request /
 Final Report. Target is `buenhyden/hy-home.docker`, branch
 `codex/home-dev-convergence` against `main`; authenticated preflight found no
-existing PR for this branch. Planned operations are branch push with upstream and
-draft PR creation. Recovery is a follow-up source commit or closure of the draft;
+existing PR for this branch. Branch push with upstream succeeded;
+[Draft PR #167](https://github.com/buenhyden/hy-home.docker/pull/167) was created
+and read back as draft at the committed implementation head. Required hosted
+`validation-changed` was in progress; post-commit metadata check passed with
+311 selected documents and zero violations. Recovery is a follow-up source commit or closure of the draft;
 no force push, merge or protected-branch mutation is authorized. Branch protection
 readback requires `validation-changed`, with zero required approving reviews and
 no enforced code-owner review; effective branch rulesets returned an empty list.
@@ -783,4 +786,11 @@ Runtime targets and recovery must be reviewed before deployment approval.
 
 ## Deferred Items
 
-No scope dropped. Runtime acceptance, remote CI and final PR remain outstanding.
+No scope dropped. Runtime acceptance and required hosted CI remain outstanding.
+
+Owner-requested OpenBao follow-up on 2026-09-19: read-only `bao status` exited 2,
+reporting initialized=false and sealed=true. Agent runs as UID 100/GID 1000;
+its configured data directory exists (0775, UID/GID 1000), but role_id, secret_id,
+token and both configured rendered output files are absent. Config/template/data
+mounts exist. Initial server and AppRole bootstrap remain incomplete; no init,
+unseal, credential provisioning, restart or private-value access was performed.
