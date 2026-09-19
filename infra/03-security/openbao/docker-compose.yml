@@ -24,8 +24,11 @@ volumes:
 services:
   openbao:
     profiles:
-      - secrets-openbao
-      - secrets-migration-openbao
+      - security
+      - secrets
+      - core
+      - local
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -67,8 +70,11 @@ services:
 
   openbao-agent:
     profiles:
-      - secrets-openbao
-      - secrets-migration-openbao
+      - security
+      - secrets
+      - core
+      - local
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -83,15 +89,15 @@ services:
       BAO_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
       VAULT_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
     volumes:
-      - ../vault/config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro
-      - ../vault/config/templates:/vault/config/templates:ro
-      - openbao-agent-data:/vault/agent:rw
-      - openbao-agent-out:/vault/out:rw
+      - ./config/agent.hcl:/openbao/config/agent.hcl:ro
+      - ./config/templates:/openbao/config/templates:ro
+      - openbao-agent-data:/openbao/agent:rw
+      - openbao-agent-out:/openbao/out:rw
     command:
       - agent
-      - -config=/vault/config/vault-agent.hcl
+      - -config=/openbao/config/openbao-agent.hcl
     healthcheck:
-      test: [ 'CMD-SHELL', 'test -s /vault/agent/token' ]
+      test: [ 'CMD-SHELL', 'test -s /openbao/agent/token' ]
       interval: 30s
       timeout: 10s
       retries: 5

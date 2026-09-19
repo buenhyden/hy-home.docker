@@ -23,14 +23,6 @@ endpoints:
     interval: 30s
     conditions:
       - '[STATUS] == 200'
-      - '[RESPONSE_TIME] < 1000'
-
-  - name: Alloy
-    group: observability
-    url: http://alloy:12345/-/healthy
-    interval: 30s
-    conditions:
-      - '[STATUS] == 200'
 
   - name: Keycloak
     group: core
@@ -42,6 +34,13 @@ endpoints:
   - name: OAuth2 Proxy
     group: core
     url: http://oauth2-proxy:4180/ping
+    interval: 30s
+    conditions:
+      - '[STATUS] == 200'
+
+  - name: OpenBao
+    group: security
+    url: http://openbao:8200/v1/sys/health
     interval: 30s
     conditions:
       - '[STATUS] == 200'
