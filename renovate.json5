@@ -1,0 +1,80 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "config:recommended"
+  ],
+
+  "timezone": "Asia/Seoul",
+
+  "schedule": [
+    "before 6am on monday"
+  ],
+
+  "minimumReleaseAge": "7 days",
+
+  "dependencyDashboard": true,
+
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+
+  "semanticCommits": "enabled",
+
+  "postUpgradeTasks": {
+    "commands": [
+      "bash scripts/operations/sync-tech-stack-versions.sh"
+    ],
+    "fileFilters": [
+      "infra/tech-stack.versions.json"
+    ],
+    "executionMode": "branch"
+  },
+
+  "packageRules": [
+    {
+      "description": "Do not auto-merge infrastructure updates",
+      "matchManagers": [
+        "docker-compose",
+        "dockerfile"
+      ],
+      "automerge": false
+    },
+
+    {
+      "description": "Group observability patch/minor images",
+      "matchManagers": [
+        "docker-compose",
+        "dockerfile"
+      ],
+      "matchFileNames": [
+        "infra/06-observability/**"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "groupName": "observability container images"
+    },
+
+    {
+      "description": "Group GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "github actions",
+      "semanticCommitType": "ci"
+    },
+
+    {
+      "description": "Ignore locally built images",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "/^hy\\//",
+        "/^hyhome\\//"
+      ],
+      "enabled": false
+    }
+  ]
+}

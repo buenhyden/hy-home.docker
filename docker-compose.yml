@@ -201,6 +201,9 @@ secrets:
   open_notebook_encryption_key:
     file: ./secrets/tools/open_notebook_encryption_key.txt
 
+  renovate_token:
+    file: ./secrets/tools/renovate_token.txt
+
 include:
   # Every file below is included unconditionally; Compose profiles decide what
   # starts. Selecting no profile resolves no service. The profile vocabulary is

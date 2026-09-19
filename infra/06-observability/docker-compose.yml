@@ -443,23 +443,18 @@ services:
       - obs
       - availability
       - local
-
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
-
     build:
       context: ./gatus
       dockerfile: Dockerfile
-
-    image: hy/gatus:5.36.0
+    image: hy/gatus:local
     container_name: gatus
-
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
       GATUS_LOG_LEVEL: INFO
       PORT: '8080'
-
     volumes:
       - ./gatus/config/config.yaml:/config/config.yaml:ro
       - gatus-data:/data:rw
@@ -484,9 +479,7 @@ services:
       traefik.http.routers.gatus.rule: Host(`status.${DEFAULT_URL}`)
       traefik.http.routers.gatus.entrypoints: websecure
       traefik.http.routers.gatus.tls: 'true'
-
       traefik.http.routers.gatus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-
       traefik.http.services.gatus.loadbalancer.server.port: 8080
 
     networks:
