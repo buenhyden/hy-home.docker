@@ -53,7 +53,6 @@ volumes:
 services:
   etcd-1:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -92,7 +91,6 @@ services:
 
   etcd-2:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -131,7 +129,6 @@ services:
 
   etcd-3:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -170,7 +167,6 @@ services:
 
   pg-router:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -230,7 +226,6 @@ services:
 
   pg-cluster-init:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -283,7 +278,6 @@ services:
 
   pg-0:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -327,7 +321,6 @@ services:
 
   pg-1:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -371,7 +364,6 @@ services:
 
   pg-2:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -415,7 +407,6 @@ services:
 
   pg-0-exporter:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -454,7 +445,6 @@ services:
 
   pg-1-exporter:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
@@ -493,7 +483,6 @@ services:
 
   pg-2-exporter:
     profiles:
-      - service
       - postgres-ha
     extends:
       file: ../../../common-optimizations.yml

@@ -3,7 +3,6 @@ x-tier-label: &tier-label
 
 x-valkey-node-base: &valkey-node-base
   profiles:
-    - service
     - valkey-cluster
   extends:
     file: ../../../common-optimizations.yml
@@ -179,8 +178,7 @@ services:
         ipv4_address: 172.19.0.46
 
   valkey-cluster-init:
-    profiles:
-      - service
+    profiles:      
       - valkey-cluster
     extends:
       file: ../../../common-optimizations.yml
@@ -211,8 +209,7 @@ services:
     networks:
       - infra_net
   valkey-cluster-exporter:
-    profiles:
-      - service
+    profiles:      
       - valkey-cluster
     extends:
       file: ../../../common-optimizations.yml

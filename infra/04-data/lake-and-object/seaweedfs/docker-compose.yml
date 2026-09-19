@@ -9,6 +9,7 @@ services:
   seaweedfs-master:
     profiles:
       - seaweedfs
+      - storage-seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -42,6 +43,7 @@ services:
   seaweedfs-volume:
     profiles:
       - seaweedfs
+      - storage-seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -72,6 +74,7 @@ services:
   seaweedfs-filer:
     profiles:
       - seaweedfs
+      - storage-seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -108,7 +111,7 @@ services:
   seaweedfs-s3:
     profiles:
       - seaweedfs
-      - storage
+      - storage-seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
