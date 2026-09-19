@@ -218,6 +218,15 @@ parsed YAML equality and eleven Gatus tests passed. Exact-path Git whitespace
 attributes preserve mandatory unified-diff context markers without changing the
 patch or suppressing other paths' checks. Final narrow review passed both changes.
 
+The Storybook production and static Storybook builds also passed after the
+compatibility correction. A final formatter audit reproduced that the generic
+trailing-whitespace fixer changes mandatory unified-diff context markers on a
+temporary patch copy. The formatter now excludes only the `diff` file type; all
+other hooks and ordinary text remain selected. Pre-commit configuration validates,
+type-selection evidence passes, the reviewed patch SHA is unchanged, and the
+regression moved from RED to GREEN. Gatus now has twelve focused Python tests.
+This format boundary was independently approved; no hook was disabled or bypassed.
+
 ## Commit Ledger
 
 Use separate reviewed commits on `codex/openbao-bootstrap-access` and PR #168.

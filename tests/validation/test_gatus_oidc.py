@@ -23,7 +23,7 @@ UPSTREAM_SHA256 = "5638de42703fc6a936b9820920c3e07d1b1e017f1aabea94808155ed99534
 
 
 class GatusOidcComposeTests(unittest.TestCase):
-    def test_service_selects_oidc_inputs_behind_existing_forward_auth(self):
+    def test_service_selects_native_oidc_after_verified_cutover(self):
         service = yaml.safe_load(COMPOSE.read_text())["services"]["gatus"]
         environment = service["environment"]
 
@@ -54,6 +54,16 @@ class GatusOidcComposeTests(unittest.TestCase):
             "Host(`status.${DEFAULT_URL}`) && !PathPrefix(`/metrics`)",
             service["labels"]["traefik.http.routers.gatus.rule"],
         )
+
+    def test_diff_artifacts_keep_context_whitespace_without_skipping_other_hooks(self):
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
+        for hook in hooks:
+            if hook["id"] == "trailing-whitespace":
+                self.assertIn("diff", hook.get("exclude_types", []))
+            else:
+                self.assertNotIn("diff", hook.get("exclude_types", []))
+        self.assertNotIn("diff", config.get("exclude_types", []))
 
     def test_native_oidc_configuration_is_exact_and_fail_closed(self):
         oidc = yaml.safe_load(CONFIG.read_text())["security"]["oidc"]
