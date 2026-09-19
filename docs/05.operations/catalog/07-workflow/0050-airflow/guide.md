@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -16,9 +16,11 @@ created: "2026-05-10"
 
 ## Usage
 
+`airflow-valkey-exporter` belongs to the separately selected Airflow broker topology. The HOME management broker uses its own exporter; exporters are not substitutes for broker readiness.
+
 ### Overview
 
-이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow 3.3.1, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
 
 ---
 
@@ -54,18 +56,16 @@ created: "2026-05-10"
 
 #### 0. 현재 구현 변경사항
 
-- Airflow는 `apache-airflow:3.3.1` 기반의 로컬 이미지
-	`hy-home/airflow:3.3.1-keycloak`로 빌드된다. Dockerfile은 Airflow 3.3.1과
-	Python 3.13 constraints를 사용해 Keycloak provider를 추가한다.
+- Airflow는 [Dockerfile](../../../../../infra/07-workflow/airflow/Dockerfile)에 선언된 upstream base와 Python constraints로 Keycloak provider를 포함한 로컬 이미지를 빌드한다. 실행 image tag는 [Compose](../../../../../infra/07-workflow/airflow/docker-compose.yml)에서 확인한다.
 - 인증 manager는
-	`airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`다.
-	`AIRFLOW_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_URL`은 환경 설정으로,
-	client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
+ `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`다.
+ `AIRFLOW_KEYCLOAK_CLIENT_ID`, `KEYCLOAK_REALM`, `KEYCLOAK_URL`은 환경 설정으로,
+ client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
 - API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
-	임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
-	Forwarded header 신뢰 범위는 Traefik 주소 `172.19.0.2`로 제한한다.
+ 임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
+ Forwarded header 신뢰 범위는 Traefik 주소 `172.19.0.2`로 제한한다.
 - 기본 Celery broker는 `mng-valkey`이며 `dedicated-valkey` profile을 선택하면
-	`airflow-valkey`와 exporter가 별도로 실행된다.
+ `airflow-valkey`와 exporter가 별도로 실행된다.
 
 #### 1. 시스템 아키텍처 이해
 
@@ -122,6 +122,8 @@ docker compose exec airflow-apiserver airflow dags list
 - Subject peers: [Policy](policy.md) (`POL-0050`), [Runbook](runbook.md) (`RUN-0050`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

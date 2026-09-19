@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -36,10 +36,10 @@ created: "2026-05-17"
   - Authentication and node-to-node `masterauth` use Docker Secret `service_valkey_password`.
   - The six data volumes are bound under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`.
   - Cluster initialization uses `valkey-cluster-init`; destructive re-initialization is not allowed as a documentation-only operation.
-  - Compose-facing documentation must list the current service set and image family `valkey/valkey:9.1.2-alpine`.
+  - Compose-facing documentation must list the current service set and image family [valkey/valkey image declaration](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
   - Persistence controls must match current config evidence: RDB snapshots and AOF are enabled.
 - **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config`.
+  - Metadata-only compose validation with `docker compose ... config --quiet`.
   - Read-only status, cluster-info, and exporter metric checks that do not print secret values.
   - Approved node/config changes when guide, policy, runbook, infra README, and task evidence are updated together.
 - **Disallowed**:
@@ -54,7 +54,7 @@ Exceptions require explicit owner or user approval and must record scope, affect
 
 ## Verification
 
-- Run `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config` after changing compose-facing documentation.
+- Run `docker compose --profile valkey-cluster config --quiet` after changing compose-facing documentation.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for stale service names, direct password variable examples, stale image tags, unsupported runtime controls, and single-container assumptions before committing.
@@ -71,6 +71,10 @@ Review on any change to Valkey compose services, image tags, ports, profiles, ne
 - Subject peers: [Guide](guide.md) (`GDE-0022`), [Runbook](runbook.md) (`RUN-0022`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

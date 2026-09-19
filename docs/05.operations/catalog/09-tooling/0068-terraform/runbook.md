@@ -12,119 +12,43 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Terraform Runbook
-
-<!-- [ID:09-tooling:terraform] -->
-
-## Overview
-
-이 런북은 `infra/09-tooling/terraform`의 컨테이너 기반 Terraform 실행 중 state lock,
-state 손상, provider credential 오류가 발생했을 때 사용하는 복구 절차다. 정상 사용 배경은
-guide에, 운영 통제 기준은 policy에 남기고, 이 문서는 반복 가능한 진단·복구·증거 수집만 다룬다.
+# Terraform to OpenTofu Migration Runbook
 
 ## When to Use
 
-- Terraform 실행에서 `Error acquiring the state lock`가 발생한 경우
-- `Failed to load state` 또는 state corruption 의심 오류가 발생한 경우
-- provider credential 만료, `AccessDenied`, `No valid credentials found` 오류가 발생한 경우
-- Terraform 작업 전후 evidence capture가 필요한 경우
+기존 Terraform workspace를 현재 OpenTofu 운영으로 이관할 때 사용한다. 저장소에는
+기동할 Terraform 서비스가 없으므로 과거 Compose 명령을 재실행하지 않는다.
 
 ## Procedure
 
-### 1. Confirm Execution Context
-
-저장소 루트에서 정적 기준선을 먼저 확인한다. `infra/09-tooling/terraform/docker-compose.yml`은 root `infra_net` context가 필요하고 `tooling`/`iac` profile이 선택하는 leaf이므로 service-local compose 단독 config를 성공 기준으로 삼지 않는다.
-
-```bash
-bash scripts/hardening/check-all-hardening.sh 09-tooling
-python3 scripts/validation/run-ci-gate.py --profile changed
-```
-
-### 2. Verify Remote Backend Access
-
-원격 backend를 사용하는 경우, backend 서비스는 해당 data tier runbook으로 상태를 확인한다. Terraform helper runbook에서 MinIO compose를 단독 렌더링하거나 remote state를 변경하지 않는다.
-
-```bash
-test -f infra/04-data/lake-and-object/minio/docker-compose.yml
-bash scripts/hardening/check-all-hardening.sh 04-data
-```
-
-### 3. Force Unlocking State
-
-이전 Terraform 실행이 비정상 종료되어 lock이 남아 있고, 다른 운영자 또는 자동화가 현재 apply를
-수행 중이 아님을 확인한 뒤에만 lock을 해제한다.
-
-```bash
-: "${TERRAFORM_LOCK_ID:?Set TERRAFORM_LOCK_ID from the Terraform error output}"
-TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform force-unlock "$TERRAFORM_LOCK_ID"
-```
-
-### 4. Restore Corrupted Local State
-
-로컬 state 파일이 손상되었고 원격 backend 또는 최신 backup이 없는 경우에만 로컬 backup을 사용한다.
-
-```bash
-test -f terraform.tfstate.backup
-mv terraform.tfstate terraform.tfstate.corrupted
-cp terraform.tfstate.backup terraform.tfstate
-TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform plan
-```
-
-### 5. Refresh Provider Credentials
-
-호스트에 mount되는 cloud credential을 갱신한다. AWS SSO는 `AWS_PROFILE`을 사용하며, 별도 지정이
-없으면 `default` profile을 사용한다.
-
-```bash
-AWS_PROFILE="${AWS_PROFILE:-default}"
-aws sso login --profile "$AWS_PROFILE"
-TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform init
-```
-
-Azure credential을 사용하는 작업이면 호스트에서 `az login`을 수행한 뒤 Terraform container를
-다시 실행한다.
-
-### 6. Verify Terraform Health
-
-복구 후 format, validation, plan을 순서대로 확인한다.
-
-```bash
-TERRAFORM_COMPOSE_FILES="-f docker-compose.yml -f infra/09-tooling/terraform/docker-compose.yml"
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform fmt -check
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform validate
-docker compose $TERRAFORM_COMPOSE_FILES --profile tooling --profile iac run --rm terraform plan
-```
+1. state backend와 lock 소유자, provider lock file, module source를 메타데이터로 식별한다.
+2. 승인된 절차로 암호화된 state 복구본을 확보하고 복제 workspace를 준비한다.
+3. [OpenTofu Runbook](../0082-opentofu/runbook.md)의 승인 경계에 따라 복제본을 검증한다.
+4. 예상하지 않은 resource replacement, backend 이동 또는 schema 변경이 있으면 멈춘다.
+5. 검토된 plan과 복구 증거를 확인한 뒤 실제 이관 대상을 별도로 승인받는다.
 
 ## Evidence
 
-- 발생한 오류 메시지와 lock ID 또는 state 파일 증상을 기록한다.
-- 실행한 명령, 종료 코드, `plan` 요약, operator/agent 이름, timestamp를 task evidence에 남긴다.
-- credential 갱신은 값이 아니라 profile 이름, provider 종류, 성공 여부만 기록한다.
+원본 CLI/source commit, provider/module identity, 비교 결과와 복구 시험 상태만 남긴다.
+state, plan 파일 내용, credential과 token은 출력하지 않는다.
 
 ## Rollback or Recovery
 
-- `force-unlock` 후에도 같은 lock이 반복되면 추가 unlock을 중단하고 active Terraform 실행 주체를 확인한다.
-- 로컬 state 복구가 실패하면 `terraform.tfstate.corrupted`와 backup 파일을 보존하고 원격 backend 또는 백업 담당자에게 이관한다.
-- 문서 변경만 있었다면 직전 diff 단위로 되돌리고 `python3 scripts/validation/run-ci-gate.py --profile changed`를 재실행한다.
-- runtime, secret value, remote deployment 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+검증 전 원본 state를 덮어쓰지 않는다. 적용 이후에는 Git 되돌리기만으로 복구하지
+말고 원래 CLI/provider의 호환성과 백업을 확인해 별도 복구 계획을 실행한다.
 
 ## Escalation
 
-- 원격 state가 손상되었거나 backup이 없으면 Infrastructure Architect에게 즉시 escalation한다.
-- credential 오류가 권한 축소, 계정 잠금, MFA 실패와 연결되면 Security/Ops owner에게 escalation한다.
-- 복구 절차가 현재 관측된 장애와 맞지 않으면 변경을 멈추고 evidence를 보존한다.
+동시 lock, 미검증 provider 또는 복구본 부재는 @buenhyden에게 보고하고 중단한다.
 
 ## Traceability
 
-- Declared parent: [Operations: Terraform Policy Usage Guide](guide.md) (`GDE-0068`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0068`), [Policy](policy.md) (`POL-0068`)
+- Governing architecture: [AD-0009](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
+- Retained migration subject: [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md)
+- Current implementation owner: [OpenTofu](../0082-opentofu/guide.md)
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [OpenTofu implementation](../../../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [Version projection](../../../../../infra/tech-stack.versions.json)

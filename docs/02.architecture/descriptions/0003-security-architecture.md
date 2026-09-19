@@ -131,3 +131,5 @@ The existing constraints, component architecture, and reliability sections descr
 - [Vault ADR](../decisions/0003-vault-as-secrets-manager.md)
 - [Security spec](0003-security-architecture.md)
 - Security standardization plan
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

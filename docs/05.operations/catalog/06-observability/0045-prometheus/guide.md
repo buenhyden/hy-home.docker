@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -14,7 +14,11 @@ created: "2026-05-10"
 
 # Prometheus Usage Guide
 
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
+
 ## Usage
+
+`node-exporter` collects host metrics for Prometheus. Its host mounts and namespace grants are defined by Compose and require review before changing scope.
 
 ### Overview
 
@@ -49,7 +53,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: prom/prometheus:v3.14.0|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Scrape job과 rule file boundary를 확인한다.
@@ -162,6 +166,7 @@ Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current co
 
 ## Related Documents
 
+- [Runtime image declarations](../../../../../infra/06-observability/docker-compose.yml)
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)

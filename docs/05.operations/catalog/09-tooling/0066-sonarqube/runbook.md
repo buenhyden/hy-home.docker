@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -155,6 +155,8 @@ Monitor these files for specific error patterns:
 - Subject peers: [Guide](guide.md) (`GDE-0066`), [Policy](policy.md) (`POL-0066`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

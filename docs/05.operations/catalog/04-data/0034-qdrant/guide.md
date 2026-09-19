@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `qdrant/qdrant:v1.19.1-unprivileged`, 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
+이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 [qdrant/qdrant image declaration](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml), 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
 
 ### Usage Type
 
@@ -45,7 +45,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 1. root-active compose 구성을 렌더링한다.
 
    ```bash
-   docker compose --profile data --profile ai config qdrant
+   docker compose --profile qdrant config --quiet qdrant
    ```
 
 2. 서비스 상태를 확인한다.
@@ -76,7 +76,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 ## Common Checks
 
-- `docker compose --profile data --profile ai config qdrant`
+- `docker compose --profile qdrant config --quiet qdrant`
 - `docker compose ps qdrant`
 - `curl -fsS "https://qdrant.${DEFAULT_URL}/readyz"`
 - `curl -fsS "https://qdrant.${DEFAULT_URL}/collections"`
@@ -92,6 +92,8 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 - Subject peers: [Policy](policy.md) (`POL-0034`), [Runbook](runbook.md) (`RUN-0034`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

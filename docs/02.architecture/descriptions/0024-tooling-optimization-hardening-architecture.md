@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Architecture Description"
-version: "1.0.1"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -23,10 +23,10 @@ created: "2026-03-28"
 
 Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 서비스 집합이다.
 
-- IaC: terraform/terrakube
+- IaC: OpenTofu/Terrakube
 - Quality: sonarqube
 - Performance: k6/locust
-- Artifact/Data sync: registry/syncthing
+- Artifact storage: registry
 
 모든 공개 관리 경로는 Traefik TLS 경계 뒤에서 정책 통제되어야 한다.
 
@@ -71,9 +71,9 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
 - **Ingress path**:
-  - Operator/Developer -> Traefik(websecure) -> SonarQube/Terrakube/Syncthing
+  - Operator/Developer -> Traefik(websecure) -> SonarQube/Terrakube
 - **Execution plane**:
-  - terraform job container
+  - OpenTofu job container
   - terrakube api/ui/executor
   - locust master/worker, k6 service
 - **Shared dependencies**:
@@ -86,9 +86,9 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
 - **Key Entities / Flows**:
-  - tfstate/workspace metadata, quality gate results, perf metrics, image artifacts, sync metadata
+  - tfstate/workspace metadata, quality gate results, perf metrics, image artifacts
 - **Storage Strategy**:
-  - registry/syncthing/sonarqube/persistence는 bind volume + data tier backend를 사용
+  - registry/sonarqube persistence는 bind volume + data tier backend를 사용
 - **Data Boundaries**:
   - tooling tier는 운영 도구 메타데이터와 실행 정책을 소유한다.
 
@@ -104,13 +104,12 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 ## Evolution
 
-- **terraform**: plan/apply 승인 게이트, state 잠금/백업 강화, drift 자동 탐지
+- **OpenTofu**: plan/apply 승인 게이트, state 잠금/백업 강화, drift 자동 탐지
 - **terrakube**: workspace 분리, 실행 권한 제어, 감사 로그 연동
 - **registry**: cosign 기반 서명/검증, 취약점 스캔 실패 차단 정책
 - **sonarqube**: 품질게이트 임계값 재정의, 브랜치/보안 룰셋 분리
 - **k6**: 성능 회귀 baseline 저장/비교 자동화, 시나리오 태그 표준화
 - **locust**: 분산 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴
-- **syncthing**: 폴더 ACL/암호화 강화, 충돌 파일 처리 정책 명문화
 
 ## Traceability
 
@@ -124,3 +123,5 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

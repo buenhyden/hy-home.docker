@@ -24,9 +24,9 @@ services:
     environment:
       SURREALDB_USERNAME: ${SURREALDB_USERNAME}
     expose:
-      - '${SURREALDB_PORT:-8000}'''
+      - '8000'
     ports:
-      - '${SURREALDB_HOST_PORT:-8000}:8000'
+      - '127.0.0.1:${SURREALDB_HOST_PORT:-8000}:8000'
     volumes:
       - surrealdb-data:/mydata
     labels:

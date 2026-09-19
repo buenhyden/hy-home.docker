@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0023"
 parent_ids:
@@ -70,6 +70,8 @@ Review on any change to MinIO compose services, image tag, profiles, network, se
 - Subject peers: [Guide](guide.md) (`GDE-0023`), [Runbook](runbook.md) (`RUN-0023`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

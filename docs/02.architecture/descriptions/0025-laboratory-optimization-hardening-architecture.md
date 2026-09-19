@@ -111,3 +111,5 @@ This hardening Architecture Description does not introduce production data owner
 - **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
 - **Operation**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

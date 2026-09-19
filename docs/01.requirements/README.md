@@ -25,7 +25,7 @@ Stage 03, 실행 증거는 현재 변경 패킷, 운영 절차는 Stage 05가 �
 
 ## Scope
 
-이 디렉터리는 현재 17개의 Requirement Package를 보유한다. 각 패키지는
+이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, non-functional, solution-independent interface 요구사항을 같은
 경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다.
 
@@ -52,6 +52,7 @@ docs/01.requirements/
 ├── 0024-agent-governance-standardization.md
 ├── 0025-operational-readiness-closure.md
 ├── 0026-document-retention-and-retirement.md
+├── 0027-home-development-host.md
 └── README.md
 ```
 
@@ -100,3 +101,5 @@ Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호�
 - [Agent Governance Standardization Requirements](./0024-agent-governance-standardization.md)
 - [Operational Readiness Closure Requirements](./0025-operational-readiness-closure.md)
 - [문서 보존 및 은퇴 요구사항](./0026-document-retention-and-retirement.md)
+
+- [Home and Development Host Requirements](./0027-home-development-host.md)

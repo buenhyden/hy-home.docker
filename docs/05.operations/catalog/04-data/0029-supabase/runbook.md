@@ -47,19 +47,19 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 1. Render the current compose configuration.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config
+   docker compose --profile supabase config --quiet
    ```
 
 2. Check service status.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps studio kong auth rest realtime storage db analytics supavisor
+   docker compose --profile supabase ps studio kong auth rest realtime storage db analytics supavisor
    ```
 
 3. Inspect relevant service logs. Do not copy secret values into evidence.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data logs kong auth rest storage db analytics supavisor
+   docker compose --profile supabase logs kong auth rest storage db analytics supavisor
    ```
 
 4. Verify the public Kong access path declared by compose.
@@ -73,18 +73,18 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 6. Capture a final status snapshot.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps
+   docker compose --profile supabase ps
    ```
 
 ### Verification Steps
 
-- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps`
+- `docker compose --profile supabase config --quiet`
+- `docker compose --profile supabase ps`
 - Expected result: compose renders, services are present, Kong route status is recorded, and no secret values are captured.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data logs ...`
+- **Logs**: `docker compose --profile supabase logs ...`
 - **Health**: compose `ps` status for the Supabase service set
 - **Access**: Kong HTTP/HTTPS host-port checks using compose variables
 - **Evidence to Capture**: command names, timestamps, service status summary, Kong route result, skipped destructive actions

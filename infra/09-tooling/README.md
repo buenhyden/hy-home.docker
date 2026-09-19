@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -14,7 +14,9 @@ created: "2025-11-12"
 
 ## Overview
 
-`09-tooling` 계층은 개발 주기 전반에 걸친 보조 서비스를 제공하는 인프라 계층이다. 인프라 자동화(Terrakube/Terraform), 코드 품질 분석(SonarQube), 성능 테스트(Locust와 k6), 컨테이너 이미지 저장소(Registry), 파일 동기화(Syncthing)를 포함한다. root `docker-compose.yml`은 이 계층의 compose 파일을 모두 무조건 include하며, 기동 대상은 선택한 profile이 결정한다. `k6`를 제외한 모든 서비스가 `tooling` profile에 속하고, 역할 profile(`iac`, `sast`, `testing`, `registry`, `sync`)이 그 부분집합을 선택한다. 역할 profile이 계층 전체를 대체하지는 않는다. 예를 들어 `testing`은 `locust-master`와 `k6`를 선택하고 `locust-worker`는 `tooling`에만 속한다. `k6`는 시나리오를 한 번 실행하고 종료하는 작업이므로 `testing`만 선언한다.
+`09-tooling`은 OpenTofu/Terrakube IaC, SonarQube 분석, Locust/k6 부하 테스트, OCI Registry와 Renovate dependency-update 작업을 제공한다. Root Compose가 leaf를 include하며 profile이 실행 대상을 선택한다. `tooling`은 OpenTofu, Terrakube API/UI/executor, SonarQube, Registry, Locust master/worker를 선택한다. `iac`, `sast`, `registry`는 해당 역할을 선택하고 `testing`은 Locust master와 k6를 선택한다. Locust worker는 `tooling`에만 포함된다. Renovate는 별도 `dependency-update` profile의 수동 작업이다.
+
+Terraform과 Syncthing runtime은 제거되었다. 현재 IaC 실행은 OpenTofu를 사용하며 기존 Terraform workspace 이관은 문서 인덱스의 `0068-terraform` migration handoff를 따른다.
 
 ## Audience
 
@@ -29,7 +31,7 @@ created: "2025-11-12"
 ### In Scope
 
 - Tooling tier service index and high-level integration map
-- Terrakube, SonarQube, Locust, Registry, Syncthing, Terraform, and k6 service boundaries
+- OpenTofu, Terrakube, SonarQube, Locust, Registry, Renovate, and k6 service boundaries
 - Links to canonical tooling guide, policy, runbooks, and specs
 
 ### Out of Scope
@@ -46,8 +48,8 @@ created: "2025-11-12"
 ├── locust/      # Locust distributed load-testing service
 ├── registry/    # Private OCI registry
 ├── sonarqube/   # Code quality service
-├── syncthing/   # File synchronization service
-├── terraform/   # Terraform helper/runtime area
+├── opentofu/    # OpenTofu CLI helper and workspace
+├── renovate/    # Manual dependency-update job
 ├── terrakube/   # IaC automation service
 └── README.md    # This file
 ```
@@ -56,12 +58,12 @@ created: "2025-11-12"
 
 ![Tooling Architecture](https://img.shields.io/badge/Architecture-Tooling_Tier-blue)
 
-본 계층은 서비스별로 독립된 컨테이너 환경을 가지며, 필요한 경우 `04-data` 계층의 PostgreSQL, MinIO, Valkey, InfluxDB와 연동한다.
+본 계층은 서비스별로 독립된 컨테이너 환경을 가지며, 필요한 경우 `04-data` 계층의 PostgreSQL, MinIO, Valkey와 연동한다.
 
-- **IaC Engine**: Terrakube를 통한 Terraform 상태 관리 및 자동화.
+- **IaC Engine**: OpenTofu CLI helper 및 Terrakube workspace 실행 관리.
 - **Analysis Engine**: SonarQube를 통한 정적 코드 분석 및 품질 게이트 적용.
 - **Load Generator**: Locust를 통한 분산 부하 테스트 환경 제공.
-- **Storage**: OCI Registry 및 Syncthing을 통한 리소스 배포 및 공유.
+- **Storage**: OCI Registry를 통한 컨테이너 이미지 보관.
 
 ## Services
 
@@ -72,8 +74,8 @@ created: "2025-11-12"
 | **Locust** | Performance | Python-based Load Testing | Distributed Workers |
 | **k6** | Performance | `k6` one-shot job; metrics via Prometheus remote write | Prometheus |
 | **Registry** | Cont. Storage | Private OCI Registry | Bind mount `${DEFAULT_REGISTRY_DIR}` |
-| **Syncthing** | Data Sync | P2P File Synchronization | Local Storage |
-| **Terraform** | IaC CLI | Containerized Terraform helper | Local workspace |
+| **OpenTofu** | IaC CLI | Containerized `tofu` helper | Local workspace; read-only provider credential mounts |
+| **Renovate** | Dependency Updates | Manual `dependency-update` job | GitHub; Docker Secret token; cache volume |
 
 ## Operational Governance
 
@@ -97,3 +99,5 @@ created: "2025-11-12"
 - **Policy**: 09-tooling policy index (`docs/05.operations/catalog/09-tooling/README.md`)
 - **Runbook**: 09-tooling runbooks (`docs/05.operations/catalog/09-tooling/README.md`)
 - [Documentation index](../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.

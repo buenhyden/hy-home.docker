@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0020"
 parent_ids:
@@ -39,7 +39,7 @@ Manual FE metadata changes, backend add/drop operations, or destructive data cle
 
 ## Verification
 
-- `test -f infra/04-data/analytics/warehouses/docker-compose.yml`
+- `test -f infra/04-data/analytics/starrocks/docker-compose.yml`
 - `mysql -u root -h starrocks-fe -P 9030 -e "SHOW FRONTENDS;"`
 - `mysql -u root -h starrocks-fe -P 9030 -e "SHOW BACKENDS;"`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
@@ -56,7 +56,11 @@ Manual FE metadata changes, backend add/drop operations, or destructive data cle
 
 ## Related Documents
 
+- [Official upstream operational documentation](https://docs.starrocks.io/docs/administration/management/Backup_and_restore/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+
 - [Operations policies index](../../../README.md)
 - [Usage guide](guide.md)
 - [Recovery runbook](runbook.md)
-- [Infra README](../../../../../infra/04-data/analytics/warehouses/README.md)
+- [Infra README](../../../../../infra/04-data/analytics/starrocks/README.md)

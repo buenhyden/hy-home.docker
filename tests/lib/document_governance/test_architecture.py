@@ -263,6 +263,12 @@ class ArchitectureDocumentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = pathlib.Path(directory) / "mixed.md"
             target.write_bytes(b"a" * (70 * 1024))
+            # Ensure a same-size mutation is observable on coarse timestamp filesystems.
+            created = target.stat()
+            architecture.os.utime(
+                target,
+                ns=(created.st_atime_ns, max(0, created.st_mtime_ns - 10_000_000_000)),
+            )
             initial = target.stat()
             real_read = architecture.os.read
             mutated = False

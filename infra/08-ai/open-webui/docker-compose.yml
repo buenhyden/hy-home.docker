@@ -19,6 +19,8 @@ services:
       service: template-stateful-med
     image: ghcr.io/open-webui/open-webui:v0.11.3-cuda
     container_name: open-webui
+    mem_limit: 2g
+    cpus: "2.00"
     environment:
       - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434}
       - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT:-6333}

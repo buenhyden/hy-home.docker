@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-19"
 ---
 
 # Traefik Static Configuration
@@ -63,3 +63,5 @@ infra/01-gateway/traefik/config/
 - [Traefik service README](../README.md)
 - Gateway operations guides (`docs/05.operations/catalog/01-gateway/README.md`)
 - [Documentation index](../../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

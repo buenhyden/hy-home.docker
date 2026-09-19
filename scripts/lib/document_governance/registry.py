@@ -1612,6 +1612,33 @@ def load_trusted_requirement_allocation_baseline(
     revision: str,
     *,
     root: pathlib.Path = ROOT,
+    allow_pinned_recovery: bool = False,
+) -> RequirementAllocationBaseline:
+    """Keep strict loading default; admit only an evidenced, exact repair."""
+    try:
+        return _load_strict_requirement_allocation_baseline(revision, root=root)
+    except RegistryError as error:
+        if not allow_pinned_recovery or str(error) != (
+            "trusted Requirement declarations disagree with allocation history: REQ-0012.FR"
+        ):
+            raise
+        from scripts.lib.document_governance.requirement_recovery import (
+            recover_pinned_requirement_baseline,
+        )
+
+        declarations = recover_pinned_requirement_baseline(revision, root=root)
+        return _load_strict_requirement_allocation_baseline(
+            revision,
+            root=root,
+            recovered_declarations=declarations,
+        )
+
+
+def _load_strict_requirement_allocation_baseline(
+    revision: str,
+    *,
+    root: pathlib.Path = ROOT,
+    recovered_declarations: Mapping[str, tuple[int, ...]] | None = None,
 ) -> RequirementAllocationBaseline:
     """Derive immutable history from an explicit index marker or commit."""
 
@@ -1726,6 +1753,8 @@ def load_trusted_requirement_allocation_baseline(
             )
             next_number = high_water + 1
         declared = tuple(sorted(declarations.get(str(name), set())))
+        if recovered_declarations and str(name) in recovered_declarations:
+            declared = recovered_declarations[str(name)]
         explicit_current = value.get("current_issued")
         explicit_reserved = value.get("reserved_history")
         has_explicit_history = isinstance(explicit_current, list) and isinstance(

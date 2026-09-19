@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -65,12 +65,12 @@ qdrant/
 | Healthcheck | Compose healthcheck declared for `qdrant` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`), Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 1. Review the Technical Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`) for RAG integration patterns.
-2. Ensure the `ai` or `data` profiles are active when deploying.
+2. Ensure the `ai` or `qdrant` profiles are active when deploying.
 3. Snapshots are configured inside the persistent volume; verify path mapping before any owner-approved backup operation.
 4. Monitor health via the `/readyz` endpoint.
 
@@ -78,7 +78,7 @@ qdrant/
 
 | Category   | Technology   | Notes                          |
 | ---------- | ------------ | ------------------------------ |
-| Engine     | `qdrant/qdrant:v1.19.1-unprivileged` | Single unprivileged service |
+| Engine     | [declared runtime image](../../../tech-stack.versions.json) | Single unprivileged service |
 | REST API   | HTTP         | Port 6333                      |
 | gRPC API   | gRPC         | Port 6334                      |
 | Persistence | Local Bind  | `${DEFAULT_DATA_DIR}/qdrant/data` |
@@ -90,7 +90,7 @@ qdrant/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Qdrant volume, network, and label references render.
+- Start with `docker compose config --quiet` to confirm Qdrant volume, network, and label references render.
 - Check Qdrant logs and the linked runbook before changing collection, snapshot, or persistence settings.
 
 ## Related Documents
@@ -100,3 +100,5 @@ qdrant/
 - Qdrant Operations Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`)
 - Qdrant Recovery Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`)
 - [Documentation index](../../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

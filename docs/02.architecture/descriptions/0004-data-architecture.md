@@ -112,3 +112,5 @@ graph TD
 - **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
 - **Spec**: [../../03.specs/004-data/spec.md](0004-data-architecture.md)
 - **ADR**: [../decisions/0004-postgresql-ha-patroni.md](../decisions/0004-postgresql-ha-patroni.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

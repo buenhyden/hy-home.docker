@@ -101,3 +101,5 @@ graph TD
 - **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Spec**: [../../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
 - **ADR**: [../decisions/0011-laboratory-services.md](../decisions/0011-laboratory-services.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

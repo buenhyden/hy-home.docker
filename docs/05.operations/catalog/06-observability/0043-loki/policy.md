@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0043"
 parent_ids:
@@ -25,7 +25,7 @@ Loki guide가, 장애 대응 절차는 Loki runbook이 담당한다.
 이 정책은 current `infra/06-observability/loki` compose와 config에 선언된
 Loki 운영 기준을 다룬다.
 
-- **Systems**: compose service `loki`, container `infra-loki`, image `hy/loki:3.7.3-custom`, MinIO bucket `loki-bucket`, config `infra/06-observability/loki/config/loki-config.yaml`
+- **Systems**: compose service `loki`, container `infra-loki`, image [hy/loki image declaration](../../../../../infra/06-observability/docker-compose.yml), MinIO bucket `loki-bucket`, config `infra/06-observability/loki/config/loki-config.yaml`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -69,7 +69,7 @@ Loki 운영 기준을 다룬다.
 - Loki config:
   `rg -n 'bucketnames: loki-bucket|retention_enabled: true|retention_period: 168h|compaction_interval: 10m' infra/06-observability/loki/config/loki-config.yaml`
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: hy/loki:3.7.3-custom|minio_app_user_password|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: hy/loki:|minio_app_user_password|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 
@@ -85,6 +85,8 @@ Loki 운영 기준을 다룬다.
 - Subject peers: [Guide](guide.md) (`GDE-0043`), [Runbook](runbook.md) (`RUN-0043`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

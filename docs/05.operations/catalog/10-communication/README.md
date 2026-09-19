@@ -1,10 +1,10 @@
 ---
 title: "Operations — 10 Communication"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 ---
 
@@ -14,9 +14,9 @@ layer: "operations"
 
 ## Overview
 
-This domain co-locates the current Stalwart and MailHog guide, policy, and
-runbook under the stable `0070-mail` identity. Its role membership follows the
-current subject tree.
+This domain co-locates the Stalwart guide, policy, and runbook under stable subject `0070-mail`
+for optional real mail service (`mail-server`). Development SMTP capture belongs
+to Mailpit subject `0084-mailpit` (`dev`, `local`, `mail-dev`).
 
 ## Audience
 
@@ -33,7 +33,8 @@ current subject tree.
 
 | Subject | Available documents |
 | --- | --- |
-| [Mail](0070-mail/guide.md) | [Guide](0070-mail/guide.md), [Policy](0070-mail/policy.md), [Runbook](0070-mail/runbook.md) |
+| [Stalwart mail](0070-mail/guide.md) | [Guide](0070-mail/guide.md), [Policy](0070-mail/policy.md), [Runbook](0070-mail/runbook.md) |
+| [Mailpit](0084-mailpit/guide.md) | [Guide](0084-mailpit/guide.md), [Policy](0084-mailpit/policy.md), [Runbook](0084-mailpit/runbook.md) |
 
 ## How to Work in This Area
 

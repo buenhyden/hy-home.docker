@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -59,7 +59,7 @@ Authentication은 서비스별로 다르다.
 
 | Category | Technology | Notes |
 | --- | --- | --- |
-| Orchestration | Airflow 3.3.1 | CeleryExecutor |
+| Orchestration | Airflow | CeleryExecutor |
 | Automation | n8n | queue mode |
 | Broker | Valkey | shared/dedicated |
 | Database | PostgreSQL | `mng-pg` |
@@ -102,5 +102,7 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - [Data](../04-data/README.md)
 - [Observability](../06-observability/README.md)
 - [Gateway](../01-gateway/README.md)
-- [Auth Integration](../../docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- [Auth Integration](../../docs/README.md)
 - [Documentation index](../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -35,7 +35,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 ### Checklist
 
-- [ ] 루트 compose의 `include:` 목록에 CouchDB 파일이 있는지 확인하고, 이번 런타임에서 `data` profile을 선택했는지 기록한다.
+- [ ] 루트 compose의 `include:` 목록에 CouchDB 파일이 있는지 확인하고, 이번 런타임에서 `couchdb` profile을 선택했는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`로만 기록한다.
 - [ ] 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
@@ -45,7 +45,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config
+   docker compose --profile couchdb config --quiet
    ```
 
 2. 컨테이너와 init job 상태를 확인한다.
@@ -75,7 +75,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data up -d couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   docker compose --profile couchdb up -d couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
    ```
 
 ### Verification Steps
@@ -107,7 +107,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 - Capture command names, pass/fail status, service states, image tags, sanitized logs, and membership summary.
 - Do not capture secret values, cookie values, or full authenticated HTTP output if it includes sensitive fields.
-- Record which profiles were selected for the runtime session; the root file includes the CouchDB compose file unconditionally and the `data` profile decides whether its services resolve.
+- Record which profiles were selected for the runtime session; the root file includes the CouchDB compose file unconditionally and the `couchdb` profile decides whether its services resolve.
 
 ## Rollback or Recovery
 
@@ -124,6 +124,8 @@ Escalate to the owning operator when membership does not show the expected three
 - Subject peers: [Guide](guide.md) (`GDE-0026`), [Policy](policy.md) (`POL-0026`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

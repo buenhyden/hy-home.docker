@@ -341,12 +341,19 @@ check_02_auth() {
   if [[ "$oauth_valkey_compose_image" != "$valkey_image" ]]; then
     fail "oauth2-proxy valkey image tag mismatch"
   fi
-  check_contains "$oauth_full_compose" "image: oliver006/redis_exporter:v1.91.0-alpine" "oauth2-proxy valkey exporter image tag mismatch"
+  if [[ "$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")" != "$(registry_component_image "Valkey Exporter")" ]]; then
+    fail "oauth2-proxy valkey exporter registry drift"
+  fi
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
   check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
 
-  check_contains "$oauth_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src" "oauth2-proxy source image tag mismatch"
-  check_contains "$oauth_dev_dockerfile" "FROM quay.io/oauth2-proxy/oauth2-proxy:v7.15.4 AS src" "oauth2-proxy dev source image tag mismatch"
+  local oauth_source_image oauth_dev_source_image
+  oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
+  oauth_dev_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dev_dockerfile")"
+  if [[ ! "$oauth_source_image" =~ ^quay.io/oauth2-proxy/oauth2-proxy:v[0-9]+\.[0-9]+\.[0-9]+([-.][A-Za-z0-9.]+)?$ ]] ||
+    [[ "$oauth_dev_source_image" != "$oauth_source_image" ]]; then
+    fail "oauth2-proxy build sources must agree on an explicit upstream pin"
+  fi
   check_contains "$oauth_dockerfile" "addgroup -S -g 101 oauth2proxy" "oauth2-proxy production group identity mismatch"
   check_contains "$oauth_dockerfile" "adduser -S -D -H -u 100 -s /sbin/nologin -G oauth2proxy oauth2proxy" "oauth2-proxy production user identity mismatch"
   check_contains "$oauth_dockerfile" "USER 100:101" "oauth2-proxy production non-root identity mismatch"
@@ -494,7 +501,8 @@ check_08_ai() {
   check_file "$webui_compose"
 
   check_contains "$ollama_compose" "sso-auth@file" "ollama sso missing"
-  check_contains "$webui_compose" "sso-auth@file" "open-webui sso missing"
+  check_contains "$webui_compose" "gateway-standard-chain@file,sso-errors@file,sso-auth-open-webui@file" "open-webui dedicated trusted-header auth chain missing"
+  check_contains "$webui_compose" "WEBUI_AUTH_TRUSTED_EMAIL_HEADER=X-Auth-Request-Email" "open-webui trusted identity header missing"
 }
 
 # --- Tier 09: Tooling ---
@@ -512,18 +520,34 @@ check_10_communication() {
   local tier="10-communication"
   start_tier "$tier"
 
-  local mail_compose="infra/10-communication/mail/docker-compose.yml"
+  local mail_compose="infra/10-communication/stalwart/docker-compose.yml"
+  local mailpit_compose="infra/10-communication/mailpit/docker-compose.yml"
   check_file "$mail_compose"
-
+  check_file "$mailpit_compose"
   check_contains "$mail_compose" "service: template-stateful-med" "stalwart template inheritance missing"
-  check_contains "$mail_compose" "service: template-infra-low" "mailhog template inheritance missing"
   check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
-  check_contains "$mail_compose" "traefik.http.routers.mailhog.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "mailhog route sso middleware mismatch"
   check_contains "$mail_compose" "ipv4_address: 172.19.0.228" "stalwart infra_net IP mismatch"
-  check_contains "$mail_compose" "ipv4_address: 172.19.0.229" "mailhog infra_net IP mismatch"
-
   check_service_healthcheck "$mail_compose" "stalwart"
-  check_service_healthcheck "$mail_compose" "mailhog"
+  check_contains "$mailpit_compose" "traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "mailpit UI auth missing"
+  check_contains "$mailpit_compose" '127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}' "mailpit UI publication must be loopback"
+  check_contains "$mailpit_compose" '127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}' "mailpit SMTP publication must be loopback"
+  check_service_healthcheck "$mailpit_compose" "mailpit"
+  if ! python3 - "$mailpit_compose" <<'MAILPIT_HEALTH'
+import sys
+import yaml
+
+try:
+    with open(sys.argv[1], encoding="utf-8") as source:
+        health = yaml.safe_load(source)["services"]["mailpit"]["healthcheck"]
+    valid = health.get("test") == ["CMD", "/mailpit", "readyz"] and not health.get("disable", False)
+except (OSError, ValueError, KeyError, TypeError, AttributeError, yaml.YAMLError):
+    valid = False
+raise SystemExit(0 if valid else 1)
+MAILPIT_HEALTH
+  then
+    fail "mailpit healthcheck must use native CMD /mailpit readyz"
+  fi
+
 }
 
 # --- Tier 11: Laboratory ---
@@ -544,7 +568,9 @@ check_11_laboratory() {
   dozzle_compose_image="$(compose_service_image "$dozzle_compose" "dozzle")"
 
   check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
-  check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file" "dozzle middleware chain mismatch"
+  check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker" "dozzle gateway/IP boundary missing"
+  check_contains "$dozzle_compose" "DOZZLE_AUTH_PROVIDER: oidc" "dozzle native authentication missing"
+  check_contains "$dozzle_compose" "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret" "dozzle OIDC secret grant missing"
   if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
     fail "dozzle image tag mismatch"
   fi
@@ -554,16 +580,18 @@ check_11_laboratory() {
   check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"
-  check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
+  check_contains "infra/04-data/specialized/surrealdb/docker-compose.yml" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
   check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.123" "open-notebook infra_net IP mismatch"
 
-  check_contains "$redisinsight_compose" "image: redis/redisinsight:3.8.0" "redisinsight image tag mismatch"
+  if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
+    fail "redisinsight registry drift"
+  fi
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
   check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"
 
   check_service_healthcheck "$dozzle_compose" "dozzle"
-  check_service_healthcheck "$open_notebook_compose" "surrealdb"
+  check_service_healthcheck "infra/04-data/specialized/surrealdb/docker-compose.yml" "surrealdb"
   check_service_healthcheck "$open_notebook_compose" "open_notebook"
   check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }

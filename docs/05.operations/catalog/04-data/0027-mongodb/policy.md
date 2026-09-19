@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -45,7 +45,7 @@ N/A - no currently approved exceptions.
 ## Verification
 
 - Compare this policy with [MongoDB guide](guide.md), [MongoDB runbook](runbook.md), and [infra README](../../../../../infra/04-data/nosql/mongodb/README.md) after compose changes.
-- Run `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config` before approving service-name, replica set, route, secret, keyfile, or exporter documentation updates.
+- Run `docker compose --profile mongodb config --quiet` before approving service-name, replica set, route, secret, keyfile, or exporter documentation updates.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
@@ -59,6 +59,8 @@ N/A - no currently approved exceptions.
 - Subject peers: [Guide](guide.md) (`GDE-0027`), [Runbook](runbook.md) (`RUN-0027`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -54,3 +54,5 @@ runbook for executable recovery or validation. Do not infer a missing role.
 - [Guides index](../../README.md)
 - [Policies index](../../README.md)
 - [Runbooks index](../../README.md)
+
+- [Dependency version management](0086-dependency-version-management/guide.md): [Policy](0086-dependency-version-management/policy.md), [Runbook](0086-dependency-version-management/runbook.md)

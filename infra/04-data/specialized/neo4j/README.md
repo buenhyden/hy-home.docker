@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -56,7 +56,7 @@ neo4j/
 | --- | --- |
 | Purpose | Neo4j service leaf in `04-data`; services: `neo4j`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `NEO4J_server_memory_heap_initial__size`, `NEO4J_server_memory_heap_max__size`, `NEO4J_server_memory_pagecache_size`, `NEO4J_server_default__listen__address`, `NEO4J_server_bolt_advertised__address`, `NEO4J_server_http_advertised__address`; profiles: `data`, `graph` |
+| Config values | env keys: `NEO4J_server_memory_heap_initial__size`, `NEO4J_server_memory_heap_max__size`, `NEO4J_server_memory_pagecache_size`, `NEO4J_server_default__listen__address`, `NEO4J_server_bolt_advertised__address`, `NEO4J_server_http_advertised__address`; profiles: `graph`, `graph` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `neo4j-data:/data:rw`, `./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro`, `neo4j-data` |
@@ -66,7 +66,7 @@ neo4j/
 | Healthcheck | Compose healthcheck declared for `neo4j` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0033-neo4j/guide.md`), Policy (`docs/05.operations/catalog/04-data/0033-neo4j/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0033-neo4j/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -91,7 +91,7 @@ neo4j/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Neo4j volume, network, and secret references render.
+- Start with `docker compose config --quiet` to confirm Neo4j volume, network, and secret references render.
 - Check Neo4j logs and the linked runbook before changing graph persistence or password settings.
 
 ## Related Documents
@@ -101,3 +101,5 @@ neo4j/
 - Neo4j Operations Policy (`docs/05.operations/catalog/04-data/0033-neo4j/policy.md`)
 - Neo4j Recovery Runbook (`docs/05.operations/catalog/04-data/0033-neo4j/runbook.md`)
 - [Documentation index](../../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

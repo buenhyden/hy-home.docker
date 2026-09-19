@@ -396,6 +396,17 @@ files:
   tests:
   - tests/lib/document_governance/test_identity_history.py
   - tests/lib/document_governance/test_registry.py
+- path: scripts/lib/document_governance/requirement_recovery.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/registry.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_requirement_allocation_recovery.py
 - path: scripts/lib/document_governance/requirements.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -777,7 +788,6 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/03-security/0016-vault/guide.md
   disposition: retain
   successor: null
   tests:

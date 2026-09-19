@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -26,7 +26,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 이 정책은 current `infra/06-observability/pyroscope` compose와
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
 
-- **Systems**: compose service `pyroscope`, container `infra-pyroscope`, image `grafana/pyroscope:2.3.1`, config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
+- **Systems**: compose service `pyroscope`, container `infra-pyroscope`, image [grafana/pyroscope image declaration](../../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -34,7 +34,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 - **Required**:
   - Pyroscope service는 `template-infra-med`, image
-    `grafana/pyroscope:2.3.1`, read-only config mount, persistent
+    [grafana/pyroscope image declaration](../../../../../infra/06-observability/docker-compose.yml), read-only config mount, persistent
     `pyroscope-data` volume을 유지한다.
   - Runtime command는 `-config.file=/etc/pyroscope/pyroscope.yaml`와
     `-config.expand-env=true`를 유지한다.
@@ -78,7 +78,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-infra-med|image: grafana/pyroscope:2.3.1|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-infra-med|image: grafana/pyroscope:|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml`
 - Pyroscope config:
   `rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 - Repository contracts:
@@ -96,6 +96,8 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - Subject peers: [Guide](guide.md) (`GDE-0047`), [Runbook](runbook.md) (`RUN-0047`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

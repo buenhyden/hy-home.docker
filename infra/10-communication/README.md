@@ -1,141 +1,60 @@
 ---
-title: "10-communication - Communication Tier"
-version: "1.0.1"
+title: "Communication Tier (10-communication)"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
-# 10-communication - Communication Tier
+# Communication Tier (10-communication)
 
 ## Overview
 
-`10-communication` 계층은 시스템의 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. 현재 구현은 루트가 무조건 include하는 `mail` leaf로 구성되며 Stalwart와 MailHog를 핵심 구성 요소로 사용한다. 두 서비스 모두 `communication` profile에서만 선택된다.
-
-## Architecture
-
-### Component Diagram
-
-```mermaid
-graph TD
-    subgraph "External"
-        Internet[Internet Mail Servers]
-    end
-
-    subgraph "10-communication"
-        MH[MailHog: Dev SMTP Trap]
-        SW[Stalwart: Prod Mail Server]
-    end
-
-    subgraph "01-gateway"
-        TF[Traefik: Reverse Proxy]
-    end
-
-    subgraph "02-auth"
-        KC[Keycloak: Identity Provider]
-    end
-
-    TF --- MH
-    TF --- SW
-    TF --- KC
-    SW --- Internet
-```
-
-- **MailHog**: 개발 모드에서 모든 아웃바운드 SMTP 연결을 캡처하여 메모리에 보관.
-- **Stalwart**: 운영 모드에서 JMAP, IMAP, SMTP 프로토콜을 통한 실제 메일 수발신 처리.
-
-## Integration
-
-### Upstream Dependencies
-
-- **02-auth**: Traefik SSO 미들웨어를 통한 관리 UI 접근 제어.
-- **01-gateway**: Traefik을 통한 가상 호스트 라우팅.
-
-### Downstream Consumers
-
-- **Applications**: 시스템 알림, 비밀번호 재설정 메일 등 SMTP 클라이언트로 연동.
-- **Developers**: Web UI를 통한 메일 발송 결과 실시간 모니터링.
-
-## Operations
-
-### Deployment
-
-이 tier의 compose 파일은 루트가 무조건 include하며 `communication` profile을 선택하지 않으면 어떤 서비스도 resolve되지 않는다. static readiness는 다음 기준으로 확인한다.
-
-```bash
-bash scripts/hardening/check-all-hardening.sh 10-communication
-```
-
-runtime 시작/중지는 `communication` profile 선택과 운영 승격 evidence가 준비된 뒤 승인된 절차로 수행한다.
-
-### Key Ports
-
-- **MailHog SMTP (internal)**: 1025
-- **Stalwart Mail Ports (host-bound)**: 25, 465, 587, 993, 4190
-- **Web UI (Traefik route)**: 8025 target for MailHog, 8080 target for Stalwart Admin/JMAP
-
-## Governance
-
-### Standard Compliance
-
-- **Architecture**: March 2026 "Thin Root" 규격을 준수한다.
-- **Documentation**: [docs/README.md](../../docs/README.md) 기반의 Stage-Gate Taxonomy를 따른다.
-
-### Related Documents
-
-- PRD (`docs/01.requirements/0011-communication.md`)
-- Architecture Description (`docs/02.architecture/descriptions/0010-communication-architecture.md`)
-- ADR (`docs/02.architecture/decisions/0010-communication-services.md`)
-- Guide (`docs/05.operations/catalog/10-communication/0070-mail/guide.md`)
-- Policy (`docs/05.operations/catalog/10-communication/0070-mail/policy.md`)
-- Runbook (`docs/05.operations/catalog/10-communication/0070-mail/runbook.md`)
-
----
+실제 메일 서버 Stalwart와 개발용 SMTP 캡처 Mailpit을 별도 leaf·profile·운영 subject로 관리한다. Stalwart는 선택형 `mail-server`, Mailpit은 `dev`, `local`, `mail-dev`에서 선택된다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
+애플리케이션 개발자, 메일 서비스 운영자와 인프라 담당자.
 
 ## Scope
 
-### In Scope
-
-- Compose 서비스 정의와 관련 설정 설명
-- 서비스별 README와 운영 문서 연결
-- 검증 시 참고해야 할 구성 파일 인벤토리
-
-### Out of Scope
-
-- secret 값 원문
-- 사용자 승인 없는 runtime 동작 변경
-- 다른 tier의 서비스 정책 중복 정의
+메일 서비스 선택, 네트워크·영속성 선언과 운영 문서 연결을 소유한다. 메일 내용, 비밀 원문 및 도메인 공급자의 설정 변경은 이 README의 범위 밖이다.
 
 ## Structure
 
-```text
-infra/10-communication/
-├── mail/  # 하위 구성 영역
-└── README.md  # This file
-```
+| Leaf | Profile | 운영 소유자 |
+| --- | --- | --- |
+| [stalwart/](stalwart/README.md) | `mail-server` | [0070-mail — 문서 인덱스](../../docs/README.md) (`GDE-0070`): 실제 송수신 |
+| [mailpit/](mailpit/README.md) | `dev`, `local`, `mail-dev` | [0084-mailpit — 문서 인덱스](../../docs/README.md) (`GDE-0084`): 개발 캡처 |
 
 ## How to Work in This Area
 
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+1. 개발 SMTP는 Mailpit을 사용하고 외부 배달 경로와 분리한다.
+2. Stalwart는 DNS·TLS·인증·포트·백업 복구 준비를 확인한 뒤 선택한다.
+3. 루트 Compose의 network·secret·공통 template 맥락을 유지해 검증한다.
+4. 이미지와 포트 기본값은 [Stalwart Compose](stalwart/docker-compose.yml), [Mailpit Compose](mailpit/docker-compose.yml)를 참조한다. [Curated version projection](../tech-stack.versions.json)은 drift 검증 자료다.
+
+## Configuration
+
+Mailpit UI/SMTP 호스트 바인딩은 loopback이며 수신 데이터는 `/data/mailpit.db`에 영속화한다. 내부 애플리케이션은 `mailpit` 서비스 DNS를 사용한다. Stalwart는 실제 메일 프로토콜 포트를 호스트에 게시하고 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`를 보존한다. 관리 UI SSO는 SMTP/IMAP의 별도 인증·TLS를 대신하지 않는다.
+
+## Testing
+
+저장소 루트에서 실행한다.
+
+```bash
+docker compose --env-file .env.example --profile mail-dev config --services
+docker compose --env-file .env.example --profile mail-server config --services
+bash scripts/hardening/check-all-hardening.sh 10-communication
+```
+
+정적 통과는 실제 메일 배달·수신 또는 데이터 복원 성공의 증거가 아니다.
 
 ## Related Documents
 
-- [infra/README.md](../README.md)
-- `docs/05.operations/README.md`
-- Mail operations guide (`docs/05.operations/catalog/10-communication/0070-mail/guide.md`)
-- Mail operations policy (`docs/05.operations/catalog/10-communication/0070-mail/policy.md`)
-- Mail recovery runbook (`docs/05.operations/catalog/10-communication/0070-mail/runbook.md`)
+- [Stalwart 정책 — 문서 인덱스](../../docs/README.md) (`POL-0070`), [런북 — 문서 인덱스](../../docs/README.md) (`RUN-0070`).
+- [Mailpit 정책 — 문서 인덱스](../../docs/README.md) (`POL-0084`), [런북 — 문서 인덱스](../../docs/README.md) (`RUN-0084`).
+- [Stalwart 공식 Docker 설치](https://stalw.art/docs/install/platform/docker/), [Mailpit 공식 문서](https://mailpit.axllent.org/docs/).
+- [Infrastructure index](../README.md).

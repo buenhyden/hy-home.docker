@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -51,9 +51,11 @@ The `01-gateway` tier is the unified entry point for traffic entering the `hy-ho
 
 ## Tech Stack
 
+Runtime image pins are declared in [Traefik Compose](traefik/docker-compose.yml) and [NGINX Compose](nginx/docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+
 | Category   | Technology                        | Notes                     |
 | ---------- | --------------------------------- | ------------------------- |
-| Router     | Traefik v3.7.13                    | Primary dynamic router    |
+| Router     | Traefik                    | Primary dynamic router    |
 | Proxy      | Nginx Alpine                      | Specialized path proxy    |
 | Discovery  | Docker Provider                   | Auto-detection of containers |
 | Security   | OAuth2 Proxy / Keycloak           | Integrated SSO provider   |

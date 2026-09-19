@@ -2,9 +2,9 @@
 title: "Syncthing Operations Policy"
 version: "1.0.0"
 type: "operation/policy"
-status: "active"
+status: "retired"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0067"
 parent_ids:

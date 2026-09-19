@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2026-05-09"
 ---
 
@@ -75,12 +75,12 @@ open-notebook/
 
 | Component | Image / Source | Purpose |
 | --- | --- | --- |
-| `open_notebook` | `lfnovo/open_notebook:v1-latest-single` | Notebook UI and API runtime |
+| `open_notebook` | [declared runtime image](../../tech-stack.versions.json) | Notebook UI and API runtime |
 | `surrealdb` | `./surrealdb/Dockerfile` | Local metadata and notebook persistence |
 
 ## Image Tag Review
 
-- `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses `lfnovo/open_notebook:v1-latest-single`, which is a latest-like tag.
+- `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses [declared runtime image](../../tech-stack.versions.json), which is a latest-like tag.
 - The tag is registered in `infra/image-tag-policy.exceptions.json` for monthly Laboratory Operator review; keep it unchanged unless a later approved pass pins a stable tag or removes the exception.
 
 ## Validation
@@ -103,3 +103,5 @@ open-notebook/
 - Laboratory runbooks (`docs/05.operations/catalog/11-laboratory/README.md`)
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

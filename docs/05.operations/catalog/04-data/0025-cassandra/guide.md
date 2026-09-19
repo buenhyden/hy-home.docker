@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 루트 compose는 Cassandra 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `cassandra-node1`과 `cassandra-exporter`가 `infra_net`에서 동작하며, 두 서비스 모두 `data`와 `obs` 프로파일에 속한다.
+이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 루트 compose는 Cassandra 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `cassandra-node1`과 `cassandra-exporter`가 `infra_net`에서 동작하며, 두 서비스 모두 `cassandra`와 `obs` 프로파일에 속한다.
 
 ### Usage Type
 
@@ -36,7 +36,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/cassandra/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `cassandra-node1`과 `cassandra-exporter`는 모두 `data`와 `obs`에 속한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/cassandra/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `cassandra-node1`과 `cassandra-exporter`는 모두 `cassandra`와 `obs`에 속한다.
 - `DEFAULT_DATA_DIR`, `CASSANDRA_USERNAME`, `cassandra_password` secret 파일이 로컬 환경에서 준비되어 있어야 한다.
 - 런타임 점검은 container 내부 secret 파일을 읽는 방식으로 수행하고, secret 값을 문서나 로그에 남기지 않는다.
 
@@ -45,7 +45,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 1. 서비스 구성을 렌더링한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config
+   docker compose --profile cassandra config --quiet
    ```
 
 2. Cassandra 서비스가 활성화된 런타임에서 컨테이너 상태를 확인한다.
@@ -76,7 +76,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 
 ## Common Checks
 
-- `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config`
+- `docker compose --profile cassandra config --quiet`
 - `docker exec cassandra-node1 nodetool status`에서 `cassandra-node1` 상태가 `UN`인지 확인한다.
 - `docker compose ps cassandra-node1 cassandra-exporter`에서 Cassandra가 healthy이고 exporter가 실행 중인지 확인한다.
 
@@ -91,6 +91,8 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 - Subject peers: [Policy](policy.md) (`POL-0025`), [Runbook](runbook.md) (`RUN-0025`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://cassandra.apache.org/doc/latest/cassandra/managing/operating/backups.html)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

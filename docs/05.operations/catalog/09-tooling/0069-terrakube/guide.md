@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -137,6 +137,8 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 - Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

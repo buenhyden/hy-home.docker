@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0033"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active specialized data service인 Neo4j 운영 기준을 정의한다. 기준은 현재 tracked compose의 `neo4j:5.26.30-community`, 단일 `neo4j` service, `data`/`graph` profiles, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route다.
+이 정책은 root-active specialized data service인 Neo4j 운영 기준을 정의한다. 기준은 현재 tracked compose의 [neo4j image declaration](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml), 단일 `neo4j` service, `data`/`graph` profiles, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route다.
 
 ## Policy Scope
 
@@ -45,7 +45,7 @@ N/A - no currently approved exceptions.
 ## Verification
 
 - Compare this policy with [Neo4j guide](guide.md), [Neo4j runbook](runbook.md), and [infra README](../../../../../infra/04-data/specialized/neo4j/README.md) after compose changes.
-- Run `docker compose --profile data --profile graph config neo4j` before approving service-name, image, memory, route, secret, or volume documentation updates.
+- Run `docker compose --profile graph config --quiet neo4j` before approving service-name, image, memory, route, secret, or volume documentation updates.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
@@ -59,6 +59,8 @@ N/A - no currently approved exceptions.
 - Subject peers: [Guide](guide.md) (`GDE-0033`), [Runbook](runbook.md) (`RUN-0033`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

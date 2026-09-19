@@ -1,10 +1,10 @@
 ---
 title: "Tooling Tier (09-tooling) Product Requirements"
-version: "1.0.0"
+version: "2.0.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "requirements"
 artifact_id: "REQ-0010"
 parent_ids: []
@@ -27,7 +27,7 @@ created: "2026-03-26"
 ### Personas
 
 - **DevOps Engineer**: IaC 자동화를 통해 인프라를 일관되게 관리하고 배포 시간을 단축하고 싶어 한다.
-- **Developer**: 작업 중인 코드의 품질 지표를 실시간으로 확인하고, 로컬 파일 시스템을 원격지와 동기화하고 싶어 한다.
+- **Developer**: 작업 중인 코드의 품질 지표를 확인하고 내부 이미지 저장소를 통해 배포 산출물을 공유하고 싶어 한다.
 - **QA/Performance Engineer**: 시스템의 한계 치를 측정하기 위해 대규모 부하 테스트를 쉽게 구성하고 실행하고 싶어 한다.
 
 ### Key Use Cases
@@ -38,11 +38,10 @@ created: "2026-03-26"
 
 ## Functional Requirements
 
-- **REQ-0010-FR-0001**: Terraform 실행 및 상태 관리를 위한 중앙 집중식 IaC 오케스트레이션 지원 (Terrakube).
+- **REQ-0010-FR-0001**: IaC 실행 및 상태 관리를 위한 OpenTofu CLI helper와 중앙 집중식 오케스트레이션 지원 (Terrakube).
 - **REQ-0010-FR-0002**: 다중 언어 정적 코드 분석 및 품질 게이트 적용 지원 (SonarQube).
 - **REQ-0010-FR-0003**: Python 기반의 시나리오 정의 및 분산 부하 생성 지원 (Locust).
 - **REQ-0010-FR-0004**: 내부 서비스 배포를 위한 단일 노드 사설 이미지 레지스트리 제공.
-- **REQ-0010-FR-0005**: P2P 공유를 통한 장치 간 파일 동기화 기능 제공 (Syncthing).
 
 ## Non-functional Requirements
 
@@ -59,6 +58,8 @@ No separately numbered solution-independent external interface requirement was i
 - **REQ-0010-FR-0003**: 신규 환경 구축 시간 70% 이상 단축.
 
 ## Constraints
+
+Syncthing runtime 제거에 따라 종전 functional allocation `0005`의 파일 동기화 의무는 2026-09-19에 철회되었다. 현재 제공 의무나 다른 기능으로 재할당하지 않는다. `REQ-0010.FR`의 high-water는 유지하고 번호 5는 Stage 99 Registry의 `reserved_history`에 영구 보존한다. 위 수용 기준은 검증 목표이며 현재 호스트에서 달성되었다는 증거를 뜻하지 않는다.
 
 - **In Scope**:
   - 인프라 자동화 도구 및 관리 플랫폼.
@@ -77,11 +78,11 @@ N/A
 ## Risks
 
 - **Risks**: Terrakube API 장애 시 인프라 변경 차단 위험.
-- **Dependencies**: Terrakube/SonarQube/Syncthing 등 선택 서비스는 필요에 따라 `04-data` (PostgreSQL/MinIO/Valkey/InfluxDB) 및 `02-auth` (Keycloak/Dex)를 사용한다. Registry와 Terraform helper는 현재 local/bind-mount 중심이다.
+- **Dependencies**: Terrakube/SonarQube 등 선택 서비스는 선언된 `04-data` backend와 `02-auth` 경계를 사용한다. Registry와 OpenTofu helper는 현재 local/bind-mount 중심이다. 단일 호스트의 volume 보존만으로 백업이나 호스트 장애 복구가 보장되지는 않는다.
 
 ## Traceability
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Spec**: [010-tooling/spec.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- **Plan**: 2026-03-26-09-tooling-standardization.md
+- [Current convergence Spec](../03.specs/0180-home-dev-convergence/spec.md)
+- [Current convergence Plan](../03.specs/0180-home-dev-convergence/plan.md)
 - **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)

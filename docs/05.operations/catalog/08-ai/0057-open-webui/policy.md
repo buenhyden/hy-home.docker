@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -72,6 +72,8 @@ Open WebUI 서비스 운영 전반:
 - Subject peers: [Guide](guide.md) (`GDE-0057`), [Runbook](runbook.md) (`RUN-0057`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

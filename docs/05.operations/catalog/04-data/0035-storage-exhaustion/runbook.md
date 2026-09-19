@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0035"
 parent_ids: []
@@ -113,6 +113,8 @@ Escalate to the owning operator before destructive cleanup, when backup evidence
 - Subject peers: none — `04-data/0035-storage-exhaustion` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [04-data runbooks index](../README.md)

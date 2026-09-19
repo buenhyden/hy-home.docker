@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -63,7 +63,7 @@ cassandra/
 | --- | --- |
 | Purpose | Apache Cassandra service leaf in `04-data`; unconditional root include, profile-selected; services: `cassandra-node1`, `cassandra-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `CASSANDRA_SEEDS`, `CASSANDRA_PASSWORD_SEEDER`, `CASSANDRA_USER`, `CASSANDRA_PASSWORD_FILE`, `MAX_HEAP_SIZE`, `HEAP_NEWSIZE`; profiles: `data`, `obs` |
+| Config values | env keys: `CASSANDRA_SEEDS`, `CASSANDRA_PASSWORD_SEEDER`, `CASSANDRA_USER`, `CASSANDRA_PASSWORD_FILE`, `MAX_HEAP_SIZE`, `HEAP_NEWSIZE`; profiles: `cassandra`, `obs` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
@@ -73,11 +73,11 @@ cassandra/
 | Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0025-cassandra/guide.md`), Policy (`docs/05.operations/catalog/04-data/0025-cassandra/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0025-cassandra/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data --profile obs config`로 렌더링한다.
+1. **Deployment**: 루트 compose include 상태를 확인하고 `docker compose --profile cassandra config --quiet`로 렌더링한다.
 2. **Configuration**: 환경 변수, Docker Secret, 볼륨 경로는 `docker-compose.yml`을 기준으로 한다.
 3. **Verification**: `docker exec cassandra-node1 nodetool status` 명령으로 서비스 상태를 확인한다.
 4. **Documentation**: 상세 운영 지침 및 복구 절차는 상위 `docs/05.operations` 경로의 산출물을 확인한다.
@@ -86,7 +86,7 @@ cassandra/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data --profile obs config` | Cassandra 선택 스택 렌더링 |
+| `docker compose --profile cassandra config --quiet` | Cassandra 선택 스택 렌더링 |
 | `docker exec cassandra-node1 nodetool status` | Cassandra 노드 상태 확인 |
 | `docker exec cassandra-node1 sh -lc 'cqlsh -u "$CASSANDRA_USER" -p "$(cat /run/secrets/cassandra_password)" -e "SELECT cluster_name FROM system.local;"'` | Secret mount 기반 read-only CQL 확인 |
 
@@ -109,7 +109,7 @@ cassandra/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Cassandra network, volume, and secret references render.
+- Start with `docker compose config --quiet` to confirm Cassandra network, volume, and secret references render.
 - Check Cassandra logs and `nodetool` status before changing cluster or persistence settings.
 
 ## Related Documents
@@ -121,3 +121,5 @@ cassandra/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

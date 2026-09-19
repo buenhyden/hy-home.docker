@@ -671,6 +671,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         / "postgres"
                     )
                     handoff_dir.mkdir(parents=True, mode=0o700)
+                    # parents=True does not apply mode to intermediate directories.
+                    handoff_dir.parent.chmod(0o700)
                     handoff = handoff_dir / "recovery-verdict.json"
                     handoff.write_text('{"stale":true}\n', encoding="utf-8")
                     handoff.chmod(0o600)
@@ -733,6 +735,8 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         / "postgres"
                     )
                     handoff_dir.mkdir(parents=True, mode=0o700)
+                    # parents=True does not apply mode to intermediate directories.
+                    handoff_dir.parent.chmod(0o700)
                     handoff = handoff_dir / "recovery-verdict.json"
                     handoff.write_text('{"stale":true}\n', encoding="utf-8")
                     fake_bin = Path(tmp) / "bin"

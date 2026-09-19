@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import re
 import shlex
+import shutil
 import subprocess
 import tempfile
 import unittest
 
 import yaml
 
+from scripts.lib.document_governance.metadata.heading import validate_body_contract
+from scripts.lib.document_governance.metadata.profile import Record
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
     parse_gate_registry,
@@ -37,14 +41,6 @@ DRIFT_COMPONENTS = (
     "Alloy",
     "Ollama",
 )
-STALE_IMAGES = {
-    "Traefik": "traefik:v3.7.8",
-    "Keycloak": "quay.io/keycloak/keycloak:26.7.0-0",
-    "Prometheus": "prom/prometheus:v3.13.1",
-    "Alloy": "grafana/alloy:v1.18.0",
-    "Ollama": "ollama/ollama:0.32.1",
-    "Dozzle": "amir20/dozzle:v10.6.11",
-}
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
 PRESERVED_LIFECYCLE_CONTEXTS = frozenset(
@@ -67,36 +63,23 @@ TARGET_ROOTS = (
     "secrets",
     "tests",
 )
-DIRECT_CURRENT_DOCS = {
-    "infra/01-gateway/README.md": (("Traefik", "tag"),),
-    "infra/02-auth/keycloak/README.md": (("Keycloak", "image"),),
-    "infra/06-observability/README.md": (
-        ("Prometheus", "tag"),
-        ("Alloy", "tag"),
-    ),
-    "infra/06-observability/alloy/README.md": (("Alloy", "tag"),),
-    "infra/06-observability/prometheus/README.md": (("Prometheus", "tag"),),
-    "infra/06-observability/pushgateway/README.md": (("Prometheus", "tag"),),
-    "infra/06-observability/pyroscope/README.md": (("Alloy", "tag"),),
-    "infra/06-observability/tempo/README.md": (("Alloy", "tag"),),
-    "infra/08-ai/README.md": (("Ollama", "image"),),
-    "infra/11-laboratory/dozzle/README.md": (("Dozzle", "tag"),),
-    "docs/05.operations/catalog/06-observability/0040-alloy/guide.md": (
-        ("Alloy", "image"),
-    ),
-    "docs/05.operations/catalog/06-observability/0045-prometheus/guide.md": (
-        ("Prometheus", "image"),
-    ),
-    "docs/05.operations/catalog/06-observability/0040-alloy/policy.md": (
-        ("Alloy", "image"),
-    ),
-    "docs/05.operations/catalog/06-observability/0045-prometheus/policy.md": (
-        ("Prometheus", "image"),
-    ),
-    "docs/05.operations/catalog/06-observability/0040-alloy/runbook.md": (
-        ("Alloy", "image"),
-    ),
-}
+DIRECT_RUNTIME_DOCS = (
+    "infra/01-gateway/README.md",
+    "infra/02-auth/keycloak/README.md",
+    "infra/06-observability/README.md",
+    "infra/06-observability/alloy/README.md",
+    "infra/06-observability/prometheus/README.md",
+    "infra/06-observability/pushgateway/README.md",
+    "infra/06-observability/pyroscope/README.md",
+    "infra/06-observability/tempo/README.md",
+    "infra/08-ai/README.md",
+    "infra/11-laboratory/dozzle/README.md",
+    "docs/05.operations/catalog/06-observability/0040-alloy/guide.md",
+    "docs/05.operations/catalog/06-observability/0045-prometheus/guide.md",
+    "docs/05.operations/catalog/06-observability/0040-alloy/policy.md",
+    "docs/05.operations/catalog/06-observability/0045-prometheus/policy.md",
+    "docs/05.operations/catalog/06-observability/0040-alloy/runbook.md",
+)
 
 
 def declared_images(path: pathlib.Path) -> set[str]:
@@ -121,20 +104,6 @@ def lifecycle_classification_findings(
             findings.append(f"{path}: registered active obsolete implementation")
         elif context not in PRESERVED_LIFECYCLE_CONTEXTS:
             findings.append(f"{path}: unclassified lifecycle context {context}")
-    return tuple(findings)
-
-
-def direct_current_document_version_findings(
-    text: str,
-    *,
-    current: str,
-    stale: str,
-) -> tuple[str, ...]:
-    findings: list[str] = []
-    if current not in text:
-        findings.append("current version absent")
-    if stale in text:
-        findings.append("stale version present")
     return tuple(findings)
 
 
@@ -206,48 +175,24 @@ class TechStackVersionContractTests(unittest.TestCase):
                     ),
                 )
 
-    def test_direct_current_docs_use_registry_versions(self) -> None:
-        entries = self.registry_entries()
-        for relative_path, expectations in DIRECT_CURRENT_DOCS.items():
-            text = (ROOT / relative_path).read_text(encoding="utf-8")
-            for component, representation in expectations:
-                with self.subTest(path=relative_path, component=component):
-                    images = (
-                        sorted(declared_images(DOZZLE_COMPOSE))
-                        if component == "Dozzle"
-                        else entries[component]["images"]
-                    )
-                    self.assertEqual(1, len(images))
-                    image = images[0]
-                    expected = (
-                        image if representation == "image" else image.rsplit(":", 1)[1]
-                    )
-                    stale_image = STALE_IMAGES[component]
-                    stale = (
-                        stale_image
-                        if representation == "image"
-                        else stale_image.rsplit(":", 1)[1]
-                    )
-                    self.assertEqual(
-                        (),
-                        direct_current_document_version_findings(
-                            text,
-                            current=expected,
-                            stale=stale,
-                        ),
-                    )
-
-    def test_direct_current_document_rejects_stale_and_current_versions(
-        self,
-    ) -> None:
-        self.assertEqual(
-            ("stale version present",),
-            direct_current_document_version_findings(
-                "canonical:v2\nstale:v1\n",
-                current="canonical:v2",
-                stale="stale:v1",
-            ),
-        )
+    def test_runtime_docs_link_authority_without_duplicating_pins(self) -> None:
+        for relative_path in DIRECT_RUNTIME_DOCS:
+            with self.subTest(path=relative_path):
+                record = Record(pathlib.Path(relative_path), {}, "common/readme")
+                findings = validate_body_contract(
+                    record,
+                    (ROOT / relative_path).read_text(encoding="utf-8"),
+                    {"profiles": {}},
+                    False,
+                )
+                self.assertEqual(
+                    [],
+                    [
+                        finding
+                        for finding in findings
+                        if finding.code.startswith("runtime-version-")
+                    ],
+                )
 
     def test_hardening_checker_has_no_independent_stale_keycloak_literal(self) -> None:
         text = HARDENING_CHECKER.read_text(encoding="utf-8")
@@ -678,6 +623,257 @@ class TechStackVersionContractTests(unittest.TestCase):
             (f"{path}: registered active obsolete implementation",),
             findings,
         )
+
+
+class TechStackSynchronizationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = pathlib.Path(temporary.name)
+        self.script = self.root / "scripts/operations/sync-tech-stack-versions.sh"
+        self.script.parent.mkdir(parents=True)
+        shutil.copyfile(
+            ROOT / "scripts/operations/sync-tech-stack-versions.sh", self.script
+        )
+        self.registry = self.root / "infra/tech-stack.versions.json"
+        self.registry.parent.mkdir()
+        self.compose = self.root / "infra/compose.yml"
+        self.compose.write_text("services:\n  app:\n    image: example/app:2\n")
+        self.write_registry()
+
+    def write_registry(self, image: str = "example/app:1") -> None:
+        self.registry.write_text(
+            json.dumps(
+                {
+                    "source_of_truth": "Docker Compose image declarations",
+                    "entries": [
+                        {
+                            "component": "Synthetic",
+                            "images": [image],
+                            "compose_files": ["infra/compose.yml"],
+                        }
+                    ],
+                },
+                indent=4,
+            )
+            + "\n"
+        )
+
+    def run_sync(
+        self,
+        *arguments: str,
+        extra_env: dict[str, str] | None = None,
+        pass_fds: tuple[int, ...] = (),
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", str(self.script), *arguments],
+            cwd=self.root,
+            env={
+                **{
+                    key: value
+                    for key, value in os.environ.items()
+                    if key != "HYHOME_CI_GATE_ROOT"
+                },
+                **(extra_env or {}),
+            },
+            text=True,
+            capture_output=True,
+            check=False,
+            pass_fds=pass_fds,
+        )
+
+    def assert_rejected_without_write(self, expected: str) -> None:
+        before = self.registry.read_bytes()
+        for mode in ((), ("--check",), ("--dry-run",)):
+            with self.subTest(mode=mode):
+                result = self.run_sync(*mode)
+                self.assertNotEqual(0, result.returncode, result.stdout)
+                self.assertIn(expected, result.stderr)
+                self.assertEqual(before, self.registry.read_bytes())
+
+    def test_missing_compose_file_fails_closed(self) -> None:
+        self.compose.unlink()
+        self.assert_rejected_without_write("compose")
+
+    def test_removed_repository_fails_closed(self) -> None:
+        self.compose.write_text("services:\n  app:\n    image: other/app:2\n")
+        self.assert_rejected_without_write("not declared")
+
+    def test_ambiguity_fails_even_when_current_pin_is_a_candidate(self) -> None:
+        self.compose.write_text(
+            "services:\n  app:\n    image: example/app:1\n"
+            "  second:\n    image: example/app:2\n"
+        )
+        self.assert_rejected_without_write("ambiguous")
+
+    def test_yaml_service_images_exclude_comment_and_extension_decoys(self) -> None:
+        self.compose.write_text(
+            "x-decoy:\n  image: example/app:9\n"
+            "services:\n  app: {image: 'example/app:2'}\n"
+        )
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('"example/app:2"', self.registry.read_text())
+
+    def test_compose_override_and_reset_tags_have_declared_semantics(self) -> None:
+        self.compose.write_text(
+            "services:\n  app:\n    image: !override example/app:2\n"
+            "  reset:\n    image: !reset example/app:9\n"
+            "    ports: !reset []\n"
+        )
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('"example/app:2"', self.registry.read_text())
+
+    def test_duplicate_yaml_keys_and_unsafe_scalars_are_rejected(self) -> None:
+        for text in (
+            "services:\n  app:\n    image: example/app:1\n    image: example/app:2\n",
+            "services:\n  app:\n    image: [example/app:2]\n",
+            "services:\n  app:\n    image: example/app:2 trailing\n",
+            "services:\n  app:\n    image: !unknown example/app:2\n",
+        ):
+            with self.subTest(text=text):
+                self.compose.write_text(text)
+                self.assert_rejected_without_write("compose")
+
+    def test_digest_changes_keep_repository_identity(self) -> None:
+        old_digest, new_digest = "a" * 64, "b" * 64
+        for old, new in (
+            (
+                f"example/app:1@sha256:{old_digest}",
+                f"example/app:2@sha256:{new_digest}",
+            ),
+            (f"example/app@sha256:{old_digest}", f"example/app@sha256:{new_digest}"),
+            (
+                "registry.test:5000/team/app:1",
+                f"registry.test:5000/team/app@sha256:{new_digest}",
+            ),
+        ):
+            with self.subTest(old=old):
+                self.write_registry(old)
+                self.compose.write_text(f"services:\n  app:\n    image: {new}\n")
+                result = self.run_sync()
+                self.assertEqual(0, result.returncode, result.stderr)
+                images = json.loads(self.registry.read_text())["entries"][0]["images"]
+                self.assertEqual([new], images)
+
+    def test_dry_run_and_check_never_write_and_write_preserves_format(self) -> None:
+        before = self.registry.read_bytes()
+        for mode, code in (("--dry-run", 0), ("--check", 1)):
+            with self.subTest(mode=mode):
+                result = self.run_sync(mode)
+                self.assertEqual(code, result.returncode, result.stderr)
+                self.assertEqual(before, self.registry.read_bytes())
+        self.registry.chmod(0o640)
+        with self.registry.open("rb") as original:
+            result = self.run_sync()
+            self.assertEqual(0, result.returncode, result.stderr)
+            self.assertEqual(before, original.read(), "write must replace atomically")
+        self.assertEqual(
+            before.replace(b"example/app:1", b"example/app:2"),
+            self.registry.read_bytes(),
+        )
+        self.assertEqual(0o640, self.registry.stat().st_mode & 0o777)
+        self.assertEqual(0, self.run_sync("--check").returncode)
+
+    def test_argument_validation_rejects_extra_arguments(self) -> None:
+        before = self.registry.read_bytes()
+        for arguments in (("--bad",), ("--check", "extra"), ("--dry-run", "--check")):
+            with self.subTest(arguments=arguments):
+                result = self.run_sync(*arguments)
+                self.assertEqual(2, result.returncode)
+                self.assertEqual(before, self.registry.read_bytes())
+
+    def test_interpolation_uses_declared_defaults_without_environment(self) -> None:
+        self.compose.write_text(
+            "services:\n  app:\n    image: ${IMAGE:-example/app:2}\n"
+        )
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('"example/app:2"', self.registry.read_text())
+
+    def test_write_preserves_registry_line_endings(self) -> None:
+        before = self.registry.read_bytes().replace(b"\n", b"\r\n")
+        self.registry.write_bytes(before)
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(
+            before.replace(b"example/app:1", b"example/app:2"),
+            self.registry.read_bytes(),
+        )
+
+    def test_yaml_merge_can_override_an_inherited_image(self) -> None:
+        self.compose.write_text(
+            "x-default: &base\n  image: example/app:9\n"
+            "services:\n  app:\n    <<: *base\n    image: example/app:2\n"
+        )
+        result = self.run_sync()
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('"example/app:2"', self.registry.read_text())
+
+    def test_root_identity_guard_accepts_only_matching_directory_fd(self) -> None:
+        invalid = self.run_sync(
+            "--check", extra_env={"HYHOME_CI_GATE_ROOT": str(self.root)}
+        )
+        self.assertEqual(2, invalid.returncode)
+        descriptor = os.open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            accepted = self.run_sync(
+                "--dry-run",
+                extra_env={"HYHOME_CI_GATE_ROOT": f"/proc/self/fd/{descriptor}"},
+                pass_fds=(descriptor,),
+            )
+            self.assertEqual(0, accepted.returncode, accepted.stderr)
+        finally:
+            os.close(descriptor)
+
+    def test_atomic_replace_failure_preserves_original_and_cleans_temp(self) -> None:
+        hook_dir = self.root / "hooks"
+        hook_dir.mkdir()
+        (hook_dir / "sitecustomize.py").write_text(
+            "import os\n"
+            "def fail_replace(*args, **kwargs):\n"
+            "    raise OSError('synthetic replace failure')\n"
+            "os.replace = fail_replace\n"
+        )
+        before = self.registry.read_bytes()
+        result = self.run_sync(extra_env={"PYTHONPATH": str(hook_dir)})
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(before, self.registry.read_bytes())
+        self.assertEqual(
+            [], list(self.registry.parent.glob(".tech-stack.versions.json.*"))
+        )
+
+    def test_registry_shape_and_nonimage_metadata_fail_closed(self) -> None:
+        for invalid in (
+            {"entries": []},
+            {"entries": [{"component": "Synthetic", "images": "example/app:1"}]},
+            {
+                "entries": [
+                    {
+                        "component": "Synthetic",
+                        "images": ["example/app:1"],
+                        "compose_files": [],
+                    }
+                ]
+            },
+        ):
+            with self.subTest(invalid=invalid):
+                self.registry.write_text(json.dumps(invalid))
+                self.assert_rejected_without_write("registry")
+        self.write_registry()
+        body = json.loads(self.registry.read_text())
+        self.registry.write_text(json.dumps({**body, "description": "example/app:1"}))
+        self.assert_rejected_without_write("non-image")
+
+    def test_missing_default_and_path_escape_fail_closed(self) -> None:
+        self.compose.write_text("services:\n  app:\n    image: ${IMAGE}\n")
+        self.assert_rejected_without_write("compose")
+        self.compose.write_text("services:\n  app:\n    image: example/app:2\n")
+        body = json.loads(self.registry.read_text())
+        entry = {**body["entries"][0], "compose_files": ["../compose.yml"]}
+        self.registry.write_text(json.dumps({**body, "entries": [entry]}))
+        self.assert_rejected_without_write("compose")
 
 
 if __name__ == "__main__":

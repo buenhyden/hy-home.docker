@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0059"
 parent_ids: []
@@ -76,6 +76,8 @@ created: "2026-03-25"
 - Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Open WebUI usage guide](../0057-open-webui/guide.md)

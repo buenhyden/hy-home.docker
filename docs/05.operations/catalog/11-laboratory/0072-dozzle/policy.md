@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -59,6 +59,8 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 - Subject peers: [Guide](guide.md) (`GDE-0072`), [Runbook](runbook.md) (`RUN-0072`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

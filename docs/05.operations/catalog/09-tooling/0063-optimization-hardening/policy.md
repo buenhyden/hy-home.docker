@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -23,15 +23,15 @@ created: "2026-05-10"
 - `infra/09-tooling/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-tooling`
 
-- **Systems**: terraform, terrakube, registry, sonarqube, k6, locust, syncthing
+- **Systems**: opentofu, terrakube, registry, sonarqube, k6, locust, renovate
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
 
 - **Required**:
-  - SonarQube/Terrakube/Syncthing 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - tooling compose는 `infra_net` external 경계 선언을 유지한다.
+  - SonarQube/Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - tooling 서비스는 root Compose가 정의한 `infra_net` bridge에 연결한다.
   - locust-worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.
   - tooling 변경은 `check-all-hardening.sh 09-tooling` 및 CI `infrastructure-hardening`을 통과해야 한다.
@@ -46,7 +46,7 @@ created: "2026-05-10"
 
 ### Catalog Expansion Approval Gates
 
-- **terraform 승인 조건**:
+- **opentofu 승인 조건**:
   - plan/apply 승인 게이트 문서화
   - state 잠금/백업 정책 및 drift 자동 탐지 절차 정의
 - **terrakube 승인 조건**:
@@ -61,8 +61,9 @@ created: "2026-05-10"
 - **k6/locust 승인 조건**:
   - 회귀 baseline 저장/비교 및 시나리오 태그 표준화
   - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
-- **syncthing 승인 조건**:
-  - 폴더 ACL/암호화 정책 및 충돌 처리 표준화
+- **renovate 승인 조건**:
+  - `dependency-update` 수동 작업 범위와 최소 token 권한을 유지한다.
+  - post-upgrade command 허용 목록과 변경 PR 검증을 확인한다.
 
 ## Exceptions
 
@@ -87,7 +88,11 @@ created: "2026-05-10"
 - Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0063`), [Runbook](runbook.md) (`RUN-0063`)
 
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](../0068-terraform/guide.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

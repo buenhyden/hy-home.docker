@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -89,6 +89,8 @@ backup 책임 경계를 다룬다.
 - Subject peers: none — `06-observability/0048-telemetry-retention` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Observability policy index](../../../README.md)

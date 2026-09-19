@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: restore the documented hardening baseline for the profile-selected `09-tooling` compose leaves.
 
-이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, `infra_net` external 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
+이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, root 소유 `infra_net` 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
 
 ### Purpose
 
@@ -27,7 +27,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 ## When to Use
 
 - `infrastructure-hardening` CI or local hardening check fails for `09-tooling`.
-- SonarQube/Terrakube/Syncthing middleware chain drifts.
+- SonarQube/Terrakube middleware chain drifts.
 - Locust worker healthcheck or command contract drifts.
 - k6 wrapper volume or service-name documentation drifts.
 - Active docs reintroduce service-local standalone config claims for profile-selected tooling leaves.
@@ -56,8 +56,8 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
    ```
 
 3. 증상별로 복구한다.
-   - Middleware drift: SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
-   - Network drift: tooling compose의 `infra_net` external 선언을 복원한다.
+   - Middleware drift: SonarQube/Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
+   - Network drift: tooling 서비스의 `infra_net` 연결과 root Compose network 정의를 복원한다.
    - Locust drift: `locust-worker` command와 worker process healthcheck를 복원한다.
    - k6 drift: `k6` service name과 `k6-data:/scripts:ro` volume 계약을 복원한다.
    - Documentation drift: active docs에서 없는 worker/route/version/service-local standalone claims를 제거한다.
@@ -115,6 +115,8 @@ Escalate to the tooling owner when hardening remains failed after focused restor
 - Declared parent: [09-Tooling Optimization Hardening Usage Guide](guide.md) (`GDE-0063`)
 - Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - Subject peers: [Guide](guide.md) (`GDE-0063`), [Policy](policy.md) (`POL-0063`)
+
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [migration handoff](../0068-terraform/guide.md)를 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
 ## Related Documents
 

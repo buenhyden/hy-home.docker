@@ -26,13 +26,13 @@ auto_auth {
 
 template {
   source      = "/openbao/config/templates/keycloak_admin_password.ctmpl"
-  destination = "/openbao/rendered/auth/keycloak_admin_password.txt"
+  destination = "/openbao/out/auth/keycloak_admin_password.txt"
   perms       = 0600
 }
 
 template {
   source      = "/openbao/config/templates/grafana_admin_password.ctmpl"
-  destination = "/openbao/rendered/observability/grafana_admin_password.txt"
+  destination = "/openbao/out/observability/grafana_admin_password.txt"
   perms       = 0600
 }
 

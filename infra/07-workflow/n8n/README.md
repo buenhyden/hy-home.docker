@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -83,10 +83,10 @@ n8n/
 
 | Component | Technology | Version | Note |
 | :--- | :--- | :--- | :--- |
-| Core Service | n8n | 2.29.5 | Node.js based |
+| Core Service | n8n | declared version | Node.js based |
 | Metadata DB | PostgreSQL | Management PostgreSQL | Managed via `infra/04-data/operational/mng-db` |
-| Queue Broker | Valkey (Redis-compatible) | 9.1.0; `${N8N_VALKEY_HOST:-mng-valkey}` by default, `n8n-valkey` under the `dedicated-valkey` profile | Queue orchestration |
-| Task Runner | n8nio/runners | 2.29.5 | Isolated execution environment |
+| Queue Broker | Valkey (Redis-compatible) | declared version; `${N8N_VALKEY_HOST:-mng-valkey}` by default, `n8n-valkey` under the `dedicated-valkey` profile | Queue orchestration |
+| Task Runner | n8nio/runners | declared version | Isolated execution environment |
 
 ## Architecture
 
@@ -120,3 +120,7 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **Policy**: n8n operations policy (`docs/05.operations/catalog/07-workflow/0053-n8n/policy.md`)
 - **Runbook**: n8n recovery runbook (`docs/05.operations/catalog/07-workflow/0053-n8n/runbook.md`)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+
+Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).

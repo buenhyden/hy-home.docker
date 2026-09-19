@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import ast
 import dataclasses
+import datetime
 import os
 import pathlib
 import re
@@ -12,30 +13,22 @@ from typing import Final
 
 import yaml
 
-try:
-    from scripts.lib.gate.ci_gate_contract import (
-        CI_DEPENDENCY_BOOTSTRAP,
-        GateContractError,
-        GateRegistry,
-        load_contract_document,
-        parse_gate_registry,
-        parse_public_gate_contract,
-        public_root_gate_ids,
-        select_public_suites,
-        validate_gate_registry,
-    )
-except ModuleNotFoundError:  # Direct sibling-script execution.
-    from ci_gate_contract import (  # type: ignore[no-redef]
-        CI_DEPENDENCY_BOOTSTRAP,
-        GateContractError,
-        GateRegistry,
-        load_contract_document,
-        parse_gate_registry,
-        parse_public_gate_contract,
-        public_root_gate_ids,
-        select_public_suites,
-        validate_gate_registry,
-    )
+if __package__ in {None, ""}:
+    _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[3]
+    if str(_BOOTSTRAP_ROOT) not in sys.path:
+        sys.path.insert(0, str(_BOOTSTRAP_ROOT))
+
+from scripts.lib.gate.ci_gate_contract import (
+    CI_DEPENDENCY_BOOTSTRAP,
+    GateContractError,
+    GateRegistry,
+    load_contract_document,
+    parse_gate_registry,
+    parse_public_gate_contract,
+    public_root_gate_ids,
+    select_public_suites,
+    validate_gate_registry,
+)
 
 WORKFLOW_CONTRACT: Final = pathlib.PurePosixPath(".github/workflow-contract.yml")
 WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
@@ -216,11 +209,11 @@ _ACTION_REGISTRY_BASELINE: Final = (
     ),
     (
         "astral-sh/setup-uv",
-        "20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
+        "bec219d24cd3e171d82865faccec33120bb574f4",
     ),
     (
         "github/codeql-action/upload-sarif",
-        "cdf488f595d80d6e07e03d4674febd5ab45fa938",
+        "b96794f015dfd88f77b49b1c93e0fa7110f94c63",
     ),
 )
 
@@ -235,6 +228,15 @@ class WorkflowContractError(ValueError):
 
 class _UniqueKeyLoader(yaml.SafeLoader):
     pass
+
+
+def _valid_retrieval_date(value: str) -> bool:
+    if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        return False
+    try:
+        return datetime.date.fromisoformat(value) <= datetime.date.today()
+    except ValueError:
+        return False
 
 
 def _construct_unique_mapping(
@@ -1637,7 +1639,7 @@ def validate_workflows(
         )
         if (
             action.manifest_url != expected_url
-            or action.retrieved_at != "2026-09-02"
+            or not _valid_retrieval_date(action.retrieved_at)
             or action.security_disposition
             not in {"approved-node24", "approved-composite-reviewed"}
         ):

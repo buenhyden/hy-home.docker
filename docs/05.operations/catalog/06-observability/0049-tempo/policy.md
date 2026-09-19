@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -26,7 +26,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 이 정책은 current `infra/06-observability/tempo` compose와
 `config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
 
-- **Systems**: compose service `tempo`, container `infra-tempo`, image `hy/tempo:3.0.2-custom`, config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, MinIO bucket `tempo-bucket`
+- **Systems**: compose service `tempo`, container `infra-tempo`, image [hy/tempo image declaration](../../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, MinIO bucket `tempo-bucket`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -34,9 +34,9 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 - **Required**:
   - Tempo service는 `template-stateful-high`, image
-    `hy/tempo:3.0.2-custom`, user `10001:10001`, read-only config mount,
+    [hy/tempo image declaration](../../../../../infra/06-observability/docker-compose.yml), user `10001:10001`, read-only config mount,
     persistent `tempo-data` volume을 유지한다.
-  - Custom Tempo image는 upstream `grafana/tempo:3.0.3`, non-root user
+  - Custom Tempo image는 upstream [grafana/tempo image declaration](../../../../../infra/06-observability/tempo/Dockerfile), non-root user
     `10001:10001`, and `/docker-entrypoint.sh` secret guard를 유지한다.
   - OTLP receiver는 internal gRPC `4317`과 HTTP `4318` endpoints를 유지한다.
   - HTTP/query/health surface는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck를
@@ -73,11 +73,11 @@ storage, block retention, metrics generator, secret boundary, protected route를
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: hy/tempo:3.0.2-custom|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: hy/tempo:|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml`
 - Tempo config:
   `rg -n 'block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: minio:9000|secret_key: \\$\\{MINIO_APP_USER_PASSWORD\\}' infra/06-observability/tempo/config/tempo.yaml`
 - Custom image secret guard:
-  `rg -n 'FROM grafana/tempo:3.0.3|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
+  `rg -n 'FROM grafana/tempo:|USER 10001:10001|missing secret: /run/secrets/minio_app_user_password' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 
@@ -93,6 +93,8 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - Subject peers: [Guide](guide.md) (`GDE-0049`), [Runbook](runbook.md) (`RUN-0049`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

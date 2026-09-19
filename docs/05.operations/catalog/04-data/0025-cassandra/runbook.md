@@ -45,7 +45,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data --profile obs config
+   docker compose --profile cassandra config --quiet
    ```
 
 2. 컨테이너 상태를 확인한다.
@@ -69,7 +69,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 5. 컨테이너가 stopped 상태이고 데이터 복구 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data --profile obs up -d cassandra-node1 cassandra-exporter
+   docker compose --profile cassandra up -d cassandra-node1 cassandra-exporter
    ```
 
 6. read-only CQL 확인을 수행한다.
@@ -88,7 +88,7 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 
 - **Logs**: `docker compose logs --tail=120 cassandra-node1`, `docker compose logs --tail=120 cassandra-exporter`
 - **Metrics**: `cassandra-exporter` exposed ports `${CASSANDRA_EXPORTER_PORT:-8080}` and `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}`
-- **Config**: `docker compose ... config` rendered output without secret values
+- **Config**: `docker compose ... config --quiet` rendered output without secret values
 
 ### Safe Rollback or Recovery Procedure
 
@@ -124,6 +124,8 @@ Escalate to the owning operator when `nodetool status` does not return `UN`, log
 - Subject peers: [Guide](guide.md) (`GDE-0025`), [Policy](policy.md) (`POL-0025`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://cassandra.apache.org/doc/latest/cassandra/managing/operating/backups.html)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -112,3 +112,5 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
   "prompt": "Why is the sky blue?"
 }'
 ```
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

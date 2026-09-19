@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-24"
 ---
 
@@ -14,7 +14,7 @@ created: "2025-11-24"
 
 ## Overview
 
-The `infra/` directory manages the **Service Definitions** for the entire home server and AI development environment. It follows a strictly tiered architecture (01-11), where each service is isolated in its own subdirectory containing a `docker-compose.yml`. These definitions are aggregated into the root `docker-compose.yml` using the `include` feature, providing a modular yet unified infrastructure management experience.
+The `infra/` directory manages the **Service Definitions** for the entire home server and AI development environment. Tier and component directories own Compose declarations, build sources and mounted configuration. Root `docker-compose.yml` aggregates the registered fragments with `include`; some fragments own multiple services. Directory organization and profiles do not establish runtime isolation.
 
 ## Audience
 
@@ -31,7 +31,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 - Service definitions across 11 functional tiers.
 - Global orchestration via root `docker-compose.yml`.
 - Compose file inventory, and the profile that selects each service.
-- Standardized execution models using **Docker Profiles** (`core`, `data`, `obs`, etc.).
+- Standardized execution models using **Docker Profiles** (`core`, `mng`, `obs`, etc.).
 - Resource optimization and security hardening templates.
 
 ### Out of Scope
@@ -44,93 +44,82 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | Production |
-| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | Production |
-| **03** | **Security** | [Vault](./03-security/vault) | Production |
-| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [MinIO](./04-data/lake-and-object/minio), [Qdrant](./04-data/specialized/qdrant) | Production |
-| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Production |
-| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | Production |
-| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | Production |
-| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui) | Production |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / optional; see disposition |
+| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / optional; see disposition |
+| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME bootstrap; Vault is legacy migration |
+| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [MinIO](./04-data/lake-and-object/minio), [Qdrant](./04-data/specialized/qdrant) | HOME / optional; see disposition |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Optional; cluster is LAB |
+| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / optional; see disposition |
+| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / optional; see disposition |
+| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui) | HOME |
 | **09** | **Tooling** | [SonarQube](./09-tooling/sonarqube), [Terrakube](./09-tooling/terrakube) | Dev/Ops |
-| **10** | **Communication** | [Stalwart / MailHog](./10-communication/mail) | Optional |
+| **10** | **Communication** | [Mailpit](./10-communication/mailpit), [Stalwart](./10-communication/stalwart) | DEV / optional |
 | **11** | **Laboratory** | [Dozzle](./11-laboratory/dozzle), [RedisInsight](./11-laboratory/redisinsight), [Open Notebook](./11-laboratory/open-notebook) | Admin |
 
 ## Compose Inventory Snapshot
 
-`infra/`에는 41개의 Compose 파일이 있습니다. 이 중 40개는 `docker-compose*.yml`이고 1개는 MinIO cluster variant인 `docker-compose.cluster.yaml`입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`은 이 41개를 모두 주석 없이 `include`합니다.
+루트 [Compose](../docker-compose.yml)의 `include`가 파일 목록을, 각 서비스의
+`profiles`가 활성화 범위를 소유한다. 파일 수와 서비스 수를 문서 상수로
+관리하지 않는다. `common-optimizations.yml`의 상속 자원 제한과 보안 설정도
+최종 모델에 포함된다. profile 미선택은 전체 스택 시작을 의미하지 않는다.
 
-파일 목록은 무엇이 기동되는지를 결정하지 않습니다. `include:`는 파일을 무조건 병합하고, 선택한 profile이 어떤 서비스가 resolve되는지를 결정합니다. profile 이름의 canonical 정의는 Compose Profile Vocabulary Policy (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다.
+```bash
+# 공개 예제만 사용해 이름을 조회한다. 실제 .env의 전체 config는 출력하지 않는다.
+docker compose --env-file .env.example config --profiles
+docker compose --env-file .env.example --profile '*' config --services
+```
 
-| Fact | Value | Documentation Rule |
-| --- | --- | --- |
-| Compose 파일 | 41 | 파일 존재가 곧 기동을 뜻하지 않음 |
-| Service directory | 40 | MinIO leaf만 파일 2개를 보유 |
-| 루트 `include` 항목 | 41 | 주석 처리된 include 항목은 없음 |
-| 활성화 결정자 | 선택한 profile | 서비스 설명은 그 서비스의 `profiles:` 값을 근거로 작성 |
-| Template security baseline 검사 대상 | 40 (`.yml`만) | `docker-compose.cluster.yaml`은 그 검사에서만 제외되며, 루트 include에서는 제외되지 않음 |
-
-profile을 하나도 선택하지 않으면 어떤 서비스도 resolve되지 않습니다. 서비스를 "루트에 포함되었다"는 이유로 기본 실행면으로 서술하지 않고, 그 서비스를 선택하는 profile 이름을 함께 적습니다.
+프로파일 어휘와 목적은 POL-0078이 소유한다. [문서 인덱스](../docs/README.md)에서
+Compose Profile Vocabulary Policy로 이동한다. 전수 분류와 관측 일자는 Stage 90의
+기존 local Docker service consolidation 연구에 기록한다.
 
 ## Tech Stack
 
+실행 버전의 원본은 각 Compose/Dockerfile 선언이며 [버전 레지스트리](tech-stack.versions.json)는 검증 가능한 투영이다. README에 정확한 patch 버전을 복제하지 않는다.
+
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Orchestration | Docker Compose v2.20+ | Using `include` & `profiles` |
+| Orchestration | Docker Compose | `include` and explicit `profiles` |
 | Edge Router | Traefik v3.x | Dynamic service discovery |
 | Identity | Keycloak / OIDC | Centralized IAM |
 | Observability | LGTM Stack | Loki, Grafana, Tempo, Prometheus |
 
 ## Execution Model
 
-`hy-home.docker`는 Docker Compose의 **Profiles** 기능을 사용하여 서비스 활성화를 제어합니다. 이를 통해 시스템 자원(Memory/CPU)을 효율적으로 관리할 수 있습니다.
+HOME은 접근·인증·비밀 기반, 관리 PostgreSQL/Valkey, 단일 노드 오브젝트 저장소,
+AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와 워크플로우의 상시
+필요성을 확인했다. 모델 추론과 이미지 생성의 동시 GPU 사용은 별도 자원 검증
+대상이며, 컨테이너 상시 실행이 모든 작업의 동시 실행 보장은 아니다.
 
-### Service Profiles
+| Selection | Purpose |
+| --- | --- |
+| `core mng` | Gateway, identity, OpenBao, shared application DB/broker and exporters |
+| `ai workflow` | Ollama, Open WebUI, ComfyUI, Qdrant, Airflow and n8n with workers |
+| `storage` | Single-node object persistence and bucket initialization |
+| `obs-core obs-host availability logs alerting` | Metrics, host visibility, availability, logs and alerts |
+| `mail-dev` | DEV mail capture; no external delivery |
+| `dependency-update`, `iac` | Explicit operator jobs; excluded from HOME |
 
-`hy-home.docker`는 Docker Compose의 **Profiles**를 사용하여 환경별/목적별 서비스 그룹을 제어합니다.
-
-- `profiles: [ "core" ]`: 필수 인프라 (Traefik, Keycloak, OAuth2 Proxy, Vault)
-- `profiles: [ "dev" ]`: 루트 통합 개발 스택
-- `profiles: [ "auth" ]`: 인증 계층
-- `profiles: [ "security" ]`: Vault 보안 계층
-- `profiles: [ "data" ]`: 범용 데이터 저장소 (Qdrant 등)
-- `profiles: [ "mng" ]`: 시스템 관리용 DB 계층 (mng-db)
-- `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
-- `profiles: [ "messaging" ]`: Kafka 메시징 브로커
-- `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
-- `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
-- `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB
-- `profiles: [ "admin" ]`: 관리 대시보드 및 운영 보조 도구
+위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
+AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
+초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
+프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
 
 ## Getting Started
 
-### 1. Prerequisites
-
-- **Docker Engine** >= 24.0.0
-- **Docker Compose** >= 2.20.0
-- **NVIDIA Container Toolkit** (Optional, for AI GPU acceleration)
-- **Secret Inventory**: Ensure `scripts/operations/gen-secrets.sh` has been executed.
-
-### 2. Integrated Execution (Standard)
-
-기본 진입점은 저장소 루트의 `docker-compose.yml`입니다.
+저장소 루트에서 Docker Engine과 Compose `include` 지원을 확인한다. 공개
+환경 스키마는 [.env.example](../.env.example), secret 참조 계약은
+[Secret Management](../secrets/README.md)를 따른다. 비밀 값은 문서와 명령 출력에
+넣지 않는다. NVIDIA workload는 호스트 드라이버와 Container Toolkit이 필요하다.
 
 ```bash
-# 전체 필수 서비스 실행 (core 프로필)
-docker compose --profile core up -d
-
-# 특정 계층 통합 실행 (예: AI 계층)
-docker compose --profile ai up -d
+# 구성 검증만 수행하며 컨테이너를 시작하지 않는다.
+HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availability logs alerting" \
+  bash scripts/validation/validate-docker-compose.sh
 ```
 
-### 3. Standalone Verification
-
-서비스 compose 파일은 단독으로 기동할 수 없습니다. 루트가 선언하는 `infra_net`과
-secret에 의존하므로, 검증은 저장소 루트에서 profile을 선택해 수행합니다.
-
-```bash
-HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
-```
+실제 기동·재시작·복구는 운영 문서의 대상 서비스와 승인 경계를 따른다.
+개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 루트에서 검증한다.
 
 ## Structure
 
@@ -138,9 +127,9 @@ HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 infra/
 ├── 01-gateway/        # Edge Routing & SSL Ingress
 ├── 02-auth/           # SSO, IAM, and OAuth2 Proxy
-├── 03-security/       # Vault and Security Hardening
+├── 03-security/       # OpenBao; Vault migration surface
 ├── 04-data/           # Persistence (SQL, NoSQL, Object)
-├── 05-messaging/      # Event Streaming (Kafka, RabbitMQ)
+├── 05-messaging/      # Event Streaming (Kafka)
 ├── 06-observability/  # Monitoring, Logging, Tracing
 ├── 07-workflow/       # DAG Orchestration & Automation
 ├── 08-ai/             # LLM Inference & RAG Engines

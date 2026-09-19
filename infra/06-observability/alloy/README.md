@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
@@ -67,9 +67,11 @@ alloy/
 
 ## Tech Stack
 
-| Category  | Technology    | Version | Notes                    |
+Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
+| Category  | Technology    | Runtime source | Notes                    |
 | :-------- | :------------ | :------ | :----------------------- |
-| Collector | Grafana Alloy | v1.19.2 | Unified agent            |
+| Collector | Grafana Alloy | Declared in Compose | Unified agent            |
 | Protocol  | OTLP          | v1.x    | Standard interface       |
 | Runtime   | Docker        | Latest  | Containerized deployment |
 

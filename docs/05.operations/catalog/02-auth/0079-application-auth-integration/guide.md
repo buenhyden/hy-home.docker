@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -47,6 +47,7 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 ```
 
 대상:
+
 - 자체 OIDC가 없는 서비스
 - gateway-level authentication이 적절한 서비스
 - 현재 Flower/n8n 등
@@ -58,6 +59,7 @@ Browser -> Traefik -> Application -> Keycloak
 ```
 
 대상:
+
 - Apache Airflow
 - Kafbat UI
 
@@ -82,11 +84,13 @@ https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
 ### OAuth2 Proxy
 
 현재 역할:
+
 - ForwardAuth provider
 - Keycloak OIDC client
 - Valkey-backed browser session
 
 운영 원칙:
+
 - Native OIDC 앱에는 적용하지 않는다.
 - `Authorization` forwarding은 upstream 자체 JWT/Bearer scheme과 충돌 여부를 확인한다.
 - cookie domain은 `.${DEFAULT_URL}` 경계를 유지한다.
@@ -95,13 +99,15 @@ https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
 ### Kafbat UI
 
 현재 구현:
-- `kafbat/kafka-ui:v1.5.0`
+
+- [kafbat/kafka-ui image declaration](../../../../../infra/05-messaging/kafka/docker-compose.yml)
 - `auth.type: OAUTH2`
 - direct Keycloak issuer
 - `roles-field: groups`
 - gateway-only Traefik route
 
 Keycloak client:
+
 - Client ID: `home-kafbat`
 - Client Authentication: ON
 - Standard Flow: ON
@@ -109,6 +115,7 @@ Keycloak client:
 - Web Origin: `https://kafbat-ui.${DEFAULT_URL}`
 
 RBAC:
+
 - `/admins` -> admin
 - `/users` -> readonly
 
@@ -128,8 +135,9 @@ local root CA만 담긴 새 truststore로 JDK public CA roots를 대체하지 �
 ### Airflow
 
 현재 구현:
-- Airflow 3.3.1
-- Keycloak provider 0.9.0
+
+- Airflow: [build declaration](../../../../../infra/07-workflow/airflow/Dockerfile)
+- Keycloak provider: [build declaration](../../../../../infra/07-workflow/airflow/Dockerfile)
 - `KeycloakAuthManager`
 - `home-airflow`
 - fixed Airflow API JWT secret
@@ -140,10 +148,12 @@ local root CA만 담긴 새 truststore로 JDK public CA roots를 대체하지 �
 #### Token model
 
 Keycloak tokens:
+
 - OIDC login
 - Authorization Services evaluation
 
 Airflow internal JWT:
+
 - Airflow browser/API session
 - `AIRFLOW__API_AUTH__JWT_SECRET`으로 서명
 
@@ -162,6 +172,7 @@ SuperAdmin
 ```
 
 Client:
+
 - Client Authentication ON
 - Authorization ON
 - Standard Flow ON
@@ -175,6 +186,7 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all
 ```
 
 생성 대상:
+
 - scopes: `GET`, `POST`, `PUT`, `DELETE`, `MENU`, `LIST`
 - resources: `Dag`, `Asset`, `Pool`, `View`, ...
 - role policies
@@ -256,6 +268,10 @@ docker compose exec -T airflow-apiserver airflow dags list
 - [Kafka/Kafbat Runbook](../../05-messaging/0036-kafka/runbook.md)
 - [Airflow Runbook](../../07-workflow/0050-airflow/runbook.md)
 
+## Common Checks
+
+Verify each application uses its documented ForwardAuth or native OIDC path, the client ID matches provisioned Keycloak metadata, and unauthorized access is rejected. Do not print client secrets or tokens. Container health alone does not prove role authorization.
+
 ## Traceability
 
 - Parent: [POL-0079](policy.md)
@@ -263,6 +279,8 @@ docker compose exec -T airflow-apiserver airflow dags list
 - Architecture: [AD-0002](../../../../02.architecture/descriptions/0002-auth-architecture.md)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Keycloak Guide](../0014-keycloak/guide.md)
 - [OAuth2 Proxy Guide](../0015-oauth2-proxy/guide.md)

@@ -77,6 +77,7 @@ AD_TO_REQUIREMENT_PACKAGE = {
     "AD-0027": "REQ-0024",
     "AD-0028": "REQ-0025",
     "AD-0030": "REQ-0026",
+    "AD-0031": "REQ-0027",
 }
 
 ADR_TO_AD = {
@@ -114,6 +115,7 @@ ADR_TO_AD = {
     "ADR-0035": "AD-0030",
     "ADR-0036": "AD-0030",
     "ADR-0037": "AD-0030",
+    "ADR-0038": "AD-0002",
 }
 
 

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -47,42 +47,42 @@ SeaweedFS 서비스 상태를 안전하게 확인하고, elevated mount behavior
 1. Render the current compose configuration.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config
+   docker compose --env-file .env.example --profile seaweedfs --profile seaweedfs-mount config --quiet
    ```
 
 2. Check service status.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
+   docker compose --profile seaweedfs --profile seaweedfs-mount ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
    ```
 
 3. Inspect relevant logs if a service is unhealthy.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data logs seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
+   docker compose --profile seaweedfs --profile seaweedfs-mount logs seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
    ```
 
 4. Check master status from the service boundary.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data exec seaweedfs-master wget -qO- "http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status"
+   docker compose --profile seaweedfs exec seaweedfs-master wget -qO- "http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status"
    ```
 
 5. Restart `seaweedfs-mount` only when mount evidence points to a stale mount and host-impacting scope is approved.
 
    ```bash
-   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data restart seaweedfs-mount
+   docker compose --profile seaweedfs-mount restart seaweedfs-mount
    ```
 
 ### Verification Steps
 
-- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps`
-- Expected result: compose renders, all expected services are present, health status and master status evidence are recorded, and destructive recovery is skipped.
+- `docker compose --env-file .env.example --profile seaweedfs --profile seaweedfs-mount config --quiet`
+- `docker compose --profile seaweedfs ps`
+- Expected result: compose renders, services selected by the approved profiles are present, health status and master status evidence are recorded, and destructive recovery is skipped.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data logs ...`
+- **Logs**: `docker compose --profile seaweedfs logs ...`
 - **Health**: compose health checks for master, volume, filer, and S3
 - **Routes**: Traefik labels for `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`
 - **Evidence to Capture**: command names, timestamps, service status summary, master status summary, mount restart result if approved, and skipped destructive actions
@@ -120,6 +120,8 @@ Escalate to the owning operator when compose render fails, services remain unhea
 - Subject peers: [Guide](guide.md) (`GDE-0024`), [Policy](policy.md) (`POL-0024`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

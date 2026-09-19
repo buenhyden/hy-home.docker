@@ -472,6 +472,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(set(entrypoints), set(modes))
         self.assertEqual({"100755"}, set(modes.values()))
 
+    def test_action_evidence_date_is_a_real_nonfuture_iso_date(self) -> None:
+        self.assertTrue(self.module._valid_retrieval_date("2026-09-02"))
+        self.assertTrue(self.module._valid_retrieval_date("2026-09-19"))
+        for value in ("", "2026-99-01", "2026-02-30", "9999-01-01", "2026-9-2"):
+            with self.subTest(value=value):
+                self.assertFalse(self.module._valid_retrieval_date(value))
+
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         self.assertEqual(8, len(contract.actions))
@@ -481,7 +488,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         for action in contract.actions:
             with self.subTest(action=action.action):
-                self.assertEqual("2026-09-02", action.retrieved_at)
+                self.assertTrue(self.module._valid_retrieval_date(action.retrieved_at))
                 self.assertIn(f"/{action.sha}/", action.manifest_url)
                 self.assertEqual("approved-node24", action.security_disposition)
 
@@ -506,7 +513,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
             changed_steps[1]["uses"],
         )
-        setup_uv = "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d"
+        setup_uv = next(
+            f"{action.action}@{action.sha}"
+            for action in contract.actions
+            if action.action == "astral-sh/setup-uv"
+        )
         self.assertEqual(setup_uv, changed_steps[3]["uses"])
         self.assertEqual(setup_uv, full_steps[3]["uses"])
         self.assertEqual(

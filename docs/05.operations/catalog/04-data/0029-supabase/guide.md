@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-10"
 
 ### Overview
 
-`supabase`는 `infra/04-data/operational/supabase/docker-compose.yml`에 선언된 `data` profile 기반의 통합 백엔드 플랫폼이다. 현재 구현은 PostgreSQL, Kong Gateway, Auth, REST, Realtime, Storage, Studio, Edge Functions, analytics/logging, pooler를 `infra_net` 안에서 구성하고, 외부 접근은 compose에 선언된 Kong 및 일부 관리 포트를 통해 제한한다.
+`supabase`는 `infra/04-data/operational/supabase/docker-compose.yml`에 선언된 `supabase` profile 기반의 통합 백엔드 플랫폼이다. 현재 구현은 PostgreSQL, Kong Gateway, Auth, REST, Realtime, Storage, Studio, Edge Functions, analytics/logging, pooler를 `infra_net` 안에서 구성하고, 외부 접근은 compose에 선언된 Kong 및 일부 관리 포트를 통해 제한한다.
 
 ### Usage Type
 
@@ -51,7 +51,7 @@ created: "2026-05-10"
 1. 현재 compose surface를 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config --services
+   docker compose --profile supabase config --services
    ```
 
    Expected services: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
@@ -67,7 +67,7 @@ created: "2026-05-10"
 3. 서비스 상태를 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps studio kong auth rest realtime storage db analytics supavisor
+   docker compose --profile supabase ps studio kong auth rest realtime storage db analytics supavisor
    ```
 
 4. 데이터와 config 경계를 확인한다.
@@ -83,8 +83,8 @@ created: "2026-05-10"
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps`
+- `docker compose --profile supabase config --quiet`
+- `docker compose --profile supabase ps`
 - Search the paired guide/policy/runbook for direct Studio host-port assumptions, old Compose CLI spelling, or template copyright remnants before committing.
 - Expected result: compose renders, services match the compose file, and stale Studio/direct-port or template remnants are absent.
 
@@ -100,6 +100,8 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0029`), [Runbook](runbook.md) (`RUN-0029`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

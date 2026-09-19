@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0043"
 parent_ids:
@@ -54,13 +54,13 @@ created: "2026-05-17"
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: hy/loki:3.7.3-custom|container_name: infra-loki|loki-data|MINIO_APP_USERNAME|minio_app_user_password|LOKI_HOST_PORT|LOKI_PORT|/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: hy/loki:|container_name: infra-loki|loki-data|MINIO_APP_USERNAME|minio_app_user_password|LOKI_HOST_PORT|LOKI_PORT|/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 3. Custom image and secret expansion boundary를 확인한다.
 
    ```bash
-   rg -n 'FROM grafana/loki:3.7.7|ENTRYPOINT \\[\"/docker-entrypoint.sh\"\\]|-config.expand-env=true|MINIO_APP_USER_PASSWORD|/run/secrets/minio_app_user_password|exec /usr/bin/loki' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
+   rg -n 'FROM grafana/loki:|ENTRYPOINT \\[\"/docker-entrypoint.sh\"\\]|-config.expand-env=true|MINIO_APP_USER_PASSWORD|/run/secrets/minio_app_user_password|exec /usr/bin/loki' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh
    ```
 
 4. MinIO storage, retention, compactor, and ruler boundary를 확인한다.
@@ -155,6 +155,8 @@ verification이 실패하거나, secret exposure risk가 보이거나, retention
 - Subject peers: [Guide](guide.md) (`GDE-0043`), [Policy](policy.md) (`POL-0043`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

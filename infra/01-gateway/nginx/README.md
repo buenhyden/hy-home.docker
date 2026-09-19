@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-29"
 ---
 
@@ -123,3 +123,5 @@ healthcheck:
 - Nginx Runbook (`docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md`)
 - SSO Setup Guide (`docs/05.operations/catalog/02-auth/README.md`)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

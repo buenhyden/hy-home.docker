@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -40,7 +40,7 @@ created: "2026-05-17"
   - `seaweedfs-mount` privileged/SYS_ADMIN behavior must be treated as host-impacting.
   - Public access must use the declared Traefik routes: `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`.
 - **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config`.
+  - Metadata-only compose validation with `docker compose ... config --quiet`.
   - Read-only service health/log checks.
   - Mount container restart only after capturing evidence and confirming host-impacting scope.
 - **Disallowed**:
@@ -56,7 +56,7 @@ Exceptions require explicit owner or user approval and must record scope, affect
 
 ## Verification
 
-- Run `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config` after changing compose-facing documentation.
+- Run `docker compose --profile seaweedfs config --quiet` after changing compose-facing documentation.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
 - Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
 - Search updated docs for stale image versions, unmounted security config claims, single-container log commands, and destructive recovery commands before committing.
@@ -73,6 +73,8 @@ Review on any change to SeaweedFS compose services, image tag, routes, ports, pr
 - Subject peers: [Guide](guide.md) (`GDE-0024`), [Runbook](runbook.md) (`RUN-0024`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

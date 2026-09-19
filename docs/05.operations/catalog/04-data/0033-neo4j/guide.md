@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0033"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `neo4j:5.26.30-community`, 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
+이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 [neo4j image declaration](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml), 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
 
 ### Usage Type
 
@@ -45,7 +45,7 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 1. root-active compose 구성을 렌더링한다.
 
    ```bash
-   docker compose --profile data --profile graph config neo4j
+   docker compose --profile graph config --quiet neo4j
    ```
 
 2. 서비스 상태를 확인한다.
@@ -76,7 +76,7 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 
 ## Common Checks
 
-- `docker compose --profile data --profile graph config neo4j`
+- `docker compose --profile graph config --quiet neo4j`
 - `docker compose ps neo4j`
 - `docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'`
 
@@ -91,6 +91,8 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
 - Subject peers: [Policy](policy.md) (`POL-0033`), [Runbook](runbook.md) (`RUN-0033`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

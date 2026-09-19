@@ -4,13 +4,13 @@ version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
 # Airflow (07-workflow)
 
-> Apache Airflow 3.3.1 + CeleryExecutor + Native Keycloak Auth Manager.
+> Apache Airflow + CeleryExecutor + Native Keycloak Auth Manager.
 
 ## Overview
 
@@ -56,10 +56,10 @@ airflow/
 
 ## Current Implementation Notes
 
-- base: `apache/airflow:3.3.1`
-- image: `hy-home/airflow:3.3.1-keycloak`
+- base: [Dockerfile declaration](Dockerfile)
+- image: [declared runtime image](../../tech-stack.versions.json)
 - Python: 3.13
-- provider: `apache-airflow-providers-keycloak==0.9.0`
+- provider: `apache-airflow-providers-keycloak`, pinned in [Dockerfile](Dockerfile)
 - auth manager:
   `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`
 - client: `home-airflow`
@@ -77,10 +77,12 @@ airflow/
 ### Token Boundary
 
 Keycloak token:
+
 - OIDC login
 - Authorization Services
 
 Airflow internal JWT:
+
 - application session/API
 - `airflow_api_jwt_secret`
 
@@ -113,7 +115,7 @@ SuperAdmin
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
 ```
 
-After provider 0.9.0 upgrade on an existing non-team setup:
+After provider 0.9.0 upgrade on an existing non-team setup: <!-- runtime-version-exception: migration — permission migration is required when crossing this provider boundary -->
 
 ```bash
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
@@ -132,8 +134,8 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-per
 
 | Category | Technology | Version |
 | --- | --- | --- |
-| Airflow | Apache Airflow | 3.3.1 |
-| Keycloak Provider | apache-airflow-providers-keycloak | 0.9.0 |
+| Airflow | Apache Airflow | declared version |
+| Keycloak Provider | apache-airflow-providers-keycloak | declared version |
 | Executor | CeleryExecutor | distributed |
 | Broker | Valkey | shared/dedicated |
 | DB | PostgreSQL | management DB |
@@ -165,3 +167,5 @@ docker compose exec airflow-apiserver airflow dags list
 - **Runbook**: `docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`
 - **Auth Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`
 - **Incident**: `docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md`
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

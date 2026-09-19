@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import subprocess
+import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 
@@ -16,9 +20,13 @@ from tests.lib.document_governance.metadata._support import (
     REQUIREMENT_TARGET_BODY,
     ROOT,
     body_with_headings,
+    copy_registry_contract_fixture,
     current_profiles,
+    git,
     metadata,
+    run_checker,
 )
+from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
 
 class CurrentBodyContractTests(unittest.TestCase):
@@ -768,3 +776,490 @@ class SealedSectionShapeTests(unittest.TestCase):
 
         self.assertIn("body-sealed-shape", codes(None, None))
         self.assertNotIn("body-sealed-shape", codes(record, body))
+
+
+class RuntimeVersionBodyTests(unittest.TestCase):
+    ENTRIES = (
+        {
+            "component": "ExampleDB",
+            "images": ["vendor/exampledb:4.2.3"],
+            "compose_files": ["infra/04-data/exampledb/docker-compose.yml"],
+        },
+    )
+    POINTER = "[Runtime declaration](docker-compose.yml)\n"
+
+    def findings(self, body, path="infra/04-data/exampledb/README.md"):
+        record = metadata.Record(pathlib.Path(path), {}, "common/readme")
+        with patch.object(
+            heading_module,
+            "_runtime_version_entries",
+            return_value=self.ENTRIES,
+            create=True,
+        ):
+            return [
+                finding
+                for finding in metadata.validate_body_contract(
+                    record, body, {"profiles": {}}, False
+                )
+                if finding.code.startswith("runtime-version-")
+            ]
+
+    def test_runtime_docs_require_an_actual_authority_link(self) -> None:
+        self.assertEqual([], self.findings(self.POINTER + "ExampleDB service.\n"))
+        for body in (
+            "ExampleDB service.\n",
+            "Runtime authority: `infra/tech-stack.versions.json`\n",
+            "[Runtime](https://unrelated.example/docker-compose.yml)\n",
+            "[Runtime](../unrelated/docker-compose.yml)\n",
+            "<!-- [Runtime](docker-compose.yml) -->\n",
+        ):
+            with self.subTest(body=body):
+                self.assertIn(
+                    "runtime-version-source-missing",
+                    {f.code for f in self.findings(body)},
+                )
+
+    def test_current_and_stale_patch_literals_are_both_rejected(self) -> None:
+        for literal in (
+            "vendor/exampledb:4.2.3",
+            "vendor/exampledb:3.9.8",
+            "ExampleDB 4.2.3",
+            "ExampleDB 3.9.8",
+            "Version: 3.9.8",
+            "Document version: 1.0.0; ExampleDB 3.9.8",
+        ):
+            with self.subTest(literal=literal):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {f.code for f in self.findings(self.POINTER + literal)},
+                )
+
+    def test_reasoned_exceptions_are_scoped_to_their_own_line(self) -> None:
+        for category in (
+            "migration",
+            "compatibility",
+            "advisory",
+            "workaround",
+            "history",
+        ):
+            with self.subTest(category=category):
+                exception = (
+                    "ExampleDB 3.9.8 "
+                    f"<!-- runtime-version-exception: {category} — explains the affected restore format -->\n"
+                )
+                self.assertEqual([], self.findings(self.POINTER + exception))
+                self.assertIn(
+                    "runtime-version-literal",
+                    {
+                        f.code
+                        for f in self.findings(
+                            self.POINTER + exception + "ExampleDB 4.2.3\n"
+                        )
+                    },
+                )
+
+    def test_invalid_or_reasonless_exceptions_do_not_hide_stale_pins(self) -> None:
+        for marker in (
+            "<!-- runtime-version-exception: compatibility — -->",
+            "<!-- runtime-version-exception: anything — rationale -->",
+            "<!-- runtime-version-exception: history -->",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {
+                        f.code
+                        for f in self.findings(
+                            self.POINTER + "ExampleDB 3.9.8 " + marker
+                        )
+                    },
+                )
+
+    def test_frontmatter_and_explicit_document_versions_are_not_runtime_pins(
+        self,
+    ) -> None:
+        text = "---\nversion: 4.2.3\n---\n" + self.POINTER + "Document version: 4.2.3\n"
+        self.assertEqual([], self.findings(text))
+        self.assertEqual(
+            [], self.findings("Document version: 7.8.9\n", "infra/navigation/README.md")
+        )
+
+    def test_runtime_endpoint_ipv4_is_not_a_version_literal(self) -> None:
+        for endpoint in (
+            "http://127.0.0.1:3100/ready",
+            "/dev/tcp/127.0.0.1/9000",
+            "127.0.0.1:${EXAMPLE_PORT}",
+            "172.19.0.2",
+        ):
+            with self.subTest(endpoint=endpoint):
+                self.assertEqual(
+                    [], self.findings(self.POINTER + "ExampleDB health: " + endpoint)
+                )
+
+    def test_frozen_archive_and_nonruntime_guides_are_outside_scope(self) -> None:
+        for path in (
+            "docs/98.archive/legacy/README.md",
+            "docs/05.operations/catalog/00-workspace/0001-editing/guide.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual([], self.findings("Document revision 7.8.9", path))
+        self.assertEqual(
+            [], self.findings("ExampleDB 3.9.8", "docs/98.archive/legacy/README.md")
+        )
+
+    def test_operation_component_slug_uses_registry_authority(self) -> None:
+        path = "docs/05.operations/catalog/04-data/0001-exampledb/guide.md"
+        pointer = "[Runtime](/infra/tech-stack.versions.json)\n"
+        self.assertEqual([], self.findings(pointer + "Connection setup.", path))
+        self.assertIn(
+            "runtime-version-literal",
+            {f.code for f in self.findings(pointer + "ExampleDB 3.9.8", path)},
+        )
+
+    def test_real_active_cli_rejects_runtime_pin_and_accepts_authority_link(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            profiles = copy_registry_contract_fixture(root)
+            registry = root / "infra/tech-stack.versions.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(json.dumps({"entries": list(self.ENTRIES)}))
+            document = (
+                root / "docs/05.operations/catalog/04-data/9999-exampledb/policy.md"
+            )
+            document.parent.mkdir(parents=True)
+            (document.parent / "docker-compose.yml").write_text("services: {}\n")
+            frontmatter = (
+                '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
+                'type: "operation/policy"\nstatus: "active"\n'
+                'owner: "@fixture"\nupdated: "2026-09-19"\n'
+                'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n'
+                'created: "2026-09-19"\n---\n\n# ExampleDB\n\n'
+            )
+            pointer = "[Runtime](/infra/tech-stack.versions.json)\n"
+            document.write_text(frontmatter + pointer + "ExampleDB 3.9.8\n")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            result = run_checker(root, "check-active", profiles=profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn("runtime-version-literal", result.stdout)
+            document.write_text(frontmatter + pointer + "Connection setup.\n")
+            result = run_checker(root, "check-active", profiles=profiles)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+            runtime_readme = root / "infra/04-data/exampledb/README.md"
+            runtime_readme.parent.mkdir(parents=True, exist_ok=True)
+            readme_metadata = frontmatter.replace(
+                'type: "operation/policy"', 'type: "common/package-readme"'
+            )
+            readme_metadata = readme_metadata.replace(
+                'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n', ""
+            )
+            runtime_readme.write_text(readme_metadata + pointer + "ExampleDB 3.9.8\n")
+            unrelated = runtime_readme.parent / "private-config.md"
+            unrelated.write_text("---\ninvalid: [\n")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            untracked = root / "infra/untracked/README.md"
+            untracked.parent.mkdir(parents=True)
+            untracked.write_text("---\ninvalid: [\n")
+            result = run_checker(root, "check-active", profiles=profiles)
+            self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+            self.assertIn(
+                "infra/04-data/exampledb/README.md: runtime-version-literal",
+                result.stdout,
+            )
+            runtime_readme.write_text(readme_metadata + pointer + "Connection setup.\n")
+            result = run_checker(root, "check-active", profiles=profiles)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_current_architecture_is_checked_but_historical_decisions_are_not(
+        self,
+    ) -> None:
+        text = "[Runtime](/infra/tech-stack.versions.json)\nExampleDB 3.9.8\n"
+        self.assertIn(
+            "runtime-version-literal",
+            {
+                f.code
+                for f in self.findings(
+                    text, "docs/02.architecture/descriptions/9999-exampledb.md"
+                )
+            },
+        )
+        self.assertEqual(
+            [], self.findings(text, "docs/02.architecture/decisions/9999-exampledb.md")
+        )
+
+    def test_each_component_needs_authority_coverage(self):
+        entries = (
+            *self.ENTRIES,
+            {
+                "component": "OtherDB",
+                "images": ["vendor/other:8.7.6"],
+                "compose_files": ["infra/other/docker-compose.yml"],
+            },
+        )
+        record = metadata.Record(
+            pathlib.Path("docs/02.architecture/descriptions/9999-platform.md"),
+            {},
+            "architecture",
+        )
+        with patch.object(
+            heading_module, "_runtime_version_entries", return_value=entries
+        ):
+            body = "ExampleDB and OtherDB runtime.\n[First](/infra/04-data/exampledb/docker-compose.yml)\n"
+            self.assertIn(
+                "runtime-version-source-missing",
+                {
+                    f.code
+                    for f in heading_module._runtime_version_findings(record, body)
+                },
+            )
+            for pointer in (
+                "[Second](/infra/other/docker-compose.yml)",
+                "[Registry](/infra/tech-stack.versions.json)",
+            ):
+                self.assertEqual(
+                    [], heading_module._runtime_version_findings(record, body + pointer)
+                )
+
+    def test_changed_runtime_literals_preserve_identity_and_multiplicity(self):
+        record = metadata.Record(
+            pathlib.Path("infra/04-data/exampledb/README.md"), {}, "common/readme"
+        )
+        base = self.POINTER + "ExampleDB 3.9.8\n"
+        with patch.object(
+            heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+        ):
+            for current in (
+                base + "ExampleDB 4.1.9\n",
+                base + "ExampleDB 3.9.8\n",
+                self.POINTER + "ExampleDB 4.1.9\n",
+            ):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {
+                        f.code
+                        for f in heading_module._introduced_body_findings(
+                            record, current, record, base, {"profiles": {}}
+                        )
+                    },
+                )
+            self.assertEqual(
+                [],
+                heading_module._introduced_body_findings(
+                    record,
+                    "ExampleDB 3.9.8\n" + self.POINTER,
+                    record,
+                    base,
+                    {"profiles": {}},
+                ),
+            )
+
+    def test_exception_reason_requires_explanation(self):
+        for reason in (
+            "x",
+            ".",
+            "TBD",
+            "TODO",
+            "   ",
+            "____________",
+            "TODO TODO TODO",
+            "TBD placeholder TODO",
+        ):
+            body = (
+                self.POINTER
+                + "ExampleDB 3.9.8 <!-- runtime-version-exception: history — "
+                + reason
+                + " -->"
+            )
+            self.assertIn(
+                "runtime-version-literal", {f.code for f in self.findings(body)}
+            )
+        for reason in (
+            "required for the legacy restore format",
+            "이전 백업 형식의 복원 호환성을 설명함",
+        ):
+            self.assertEqual(
+                [],
+                self.findings(
+                    self.POINTER
+                    + "ExampleDB 3.9.8 <!-- runtime-version-exception: compatibility — "
+                    + reason
+                    + " -->"
+                ),
+            )
+
+    def test_unmapped_dockerfile_runtime_has_direct_authority(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/buildonly/Dockerfile"
+            source.parent.mkdir(parents=True)
+            source.write_text("FROM vendor/buildonly:9.8.7\n")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            record = metadata.Record(
+                pathlib.Path("infra/buildonly/README.md"), {}, "common/readme"
+            )
+            with patch.object(
+                heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+            ):
+                for body in (
+                    "[Build](Dockerfile)\nvendor/buildonly:9.8.7",
+                    "[Build](Dockerfile)\nBuildonly version: 9.8.6",
+                ):
+                    self.assertIn(
+                        "runtime-version-literal",
+                        {
+                            f.code
+                            for f in heading_module._runtime_version_findings(
+                                record, body, root
+                            )
+                        },
+                    )
+                self.assertEqual(
+                    [],
+                    heading_module._runtime_version_findings(
+                        record, "[Build](Dockerfile)\nBuild instructions.", root
+                    ),
+                )
+                self.assertIn(
+                    "runtime-version-source-missing",
+                    {
+                        f.code
+                        for f in heading_module._runtime_version_findings(
+                            record,
+                            "[Registry](/infra/tech-stack.versions.json)\nBuild instructions.",
+                            root,
+                        )
+                    },
+                )
+
+    def test_build_source_defaults_are_authored_and_unresolved_args_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/buildonly/Dockerfile"
+            source.parent.mkdir(parents=True)
+            record = metadata.Record(
+                pathlib.Path("infra/buildonly/README.md"), {}, "common/readme"
+            )
+            with patch.object(
+                heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+            ):
+                source.write_text(
+                    "ARG BUILD_VERSION=9.8.7\nFROM vendor/buildonly:${BUILD_VERSION}\n"
+                )
+                self.assertEqual(0, git(root, "add", ".").returncode)
+                findings = heading_module._runtime_version_findings(
+                    record, "[Build](Dockerfile)\nvendor/buildonly:9.8.7", root
+                )
+                self.assertIn("runtime-version-literal", {f.code for f in findings})
+                for content in (
+                    "ARG BUILD_VERSION\nFROM vendor/buildonly:${BUILD_VERSION}\n",
+                    "FROM vendor/buildonly:${BUILD_VERSION}\nARG BUILD_VERSION=9.8.7\n",
+                ):
+                    source.write_text(content)
+                    self.assertIn(
+                        "runtime-version-source-invalid",
+                        {
+                            f.code
+                            for f in heading_module._runtime_version_findings(
+                                record, "[Build](Dockerfile)", root
+                            )
+                        },
+                    )
+
+    def test_tracked_dockerfile_variants_are_covered_without_private_untracked_files(
+        self,
+    ):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/buildonly/dev.Dockerfile"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "FROM vendor/buildonly:9.8.7 AS Builder\nFROM builder AS Final\n"
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            source.with_name("private.Dockerfile").write_text("FROM ${PRIVATE_IMAGE}\n")
+            source.with_name("Dockerfile").write_text("FROM ${PRIVATE_IMAGE}\n")
+            record = metadata.Record(
+                pathlib.Path("infra/buildonly/README.md"), {}, "common/readme"
+            )
+            with patch.object(
+                heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+            ):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {
+                        f.code
+                        for f in heading_module._runtime_version_findings(
+                            record, "[Build](dev.Dockerfile)\nBuildonly 9.8.7", root
+                        )
+                    },
+                )
+                self.assertEqual(
+                    [],
+                    heading_module._runtime_version_findings(
+                        record, "[Build](dev.Dockerfile)\nBuild instructions.", root
+                    ),
+                )
+
+    def test_failed_tracked_build_discovery_fails_closed(self):
+        record = metadata.Record(
+            pathlib.Path("infra/04-data/exampledb/README.md"), {}, "common/readme"
+        )
+        with (
+            patch.object(
+                heading_module, "_runtime_version_entries", return_value=self.ENTRIES
+            ),
+            patch.object(
+                heading_module.subprocess,
+                "run",
+                return_value=heading_module.subprocess.CompletedProcess(
+                    [], 128, b"", b"discovery unavailable"
+                ),
+            ),
+        ):
+            self.assertIn(
+                "runtime-version-source-invalid",
+                {
+                    f.code
+                    for f in heading_module._runtime_version_findings(
+                        record, self.POINTER + "ExampleDB service."
+                    )
+                },
+            )
+
+    def test_runtime_validation_under_inherited_gate_root_descriptor(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.assertEqual(0, git(root, "init").returncode)
+            source = root / "infra/buildonly/Dockerfile"
+            source.parent.mkdir(parents=True)
+            source.write_text("FROM vendor/buildonly:9.8.7\n")
+            (root / "infra/tech-stack.versions.json").write_text(
+                json.dumps({"entries": list(self.ENTRIES)})
+            )
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            descriptor = os.open(root, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                program = """import pathlib, sys
+from scripts.lib.document_governance.metadata.heading import _runtime_version_findings
+from scripts.lib.document_governance.metadata.profile import Record
+root = pathlib.Path('/proc/self/fd/' + sys.argv[1])
+record = Record(pathlib.Path('infra/buildonly/README.md'), {}, 'common/readme')
+findings = _runtime_version_findings(record, '[Build](Dockerfile)\\nBuildonly 9.8.7', root)
+assert {f.code for f in findings} == {'runtime-version-literal'}, findings
+"""
+                result = subprocess.run(
+                    [sys.executable, "-c", program, str(descriptor)],
+                    cwd=ROOT,
+                    check=False,
+                    pass_fds=(*gate_root_pass_fds(ROOT), descriptor),
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            finally:
+                os.close(descriptor)

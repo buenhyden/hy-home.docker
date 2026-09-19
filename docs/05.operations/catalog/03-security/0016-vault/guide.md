@@ -1,10 +1,10 @@
 ---
-title: "03-Security Vault Usage Guide"
-version: "1.0.0"
+title: "Vault Legacy Migration Guide"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0016"
 parent_ids:
@@ -12,107 +12,49 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# 03-Security Vault Usage Guide
+# Vault Legacy Migration Guide
 
 ## Usage
 
 ### Overview
 
-이 문서는 `03-security` Vault 운영/개발 가이드다. Vault Agent 템플릿 경로 규약, AppRole 부트스트랩, 렌더 출력 확인 절차를 중심으로 optimization/hardening 기준을 설명한다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- Security Operators
-- Infra/DevOps Engineers
-- Service Developers
-
-### Purpose
-
-- `secret/data/hy-home/...` 시크릿 경로/키 계약을 일관되게 사용한다.
-- Vault Agent 렌더링 결과를 서비스에 안전하게 연결한다.
-- 하드닝 회귀를 사전 검증한다.
+Vault와 `vault-agent`는 **MIGRATE** 대상이며 `legacy-vault` profile에서만 선택된다. HOME의 상시 비밀 관리 기준은 OpenBao와 `openbao-agent`다. 이 문서는 기존 Vault 의존성을 조사하고 전환 준비를 관리한다. 구성 변경은 실제 데이터 이전, 초기화, unseal 또는 자격 증명 교체 완료를 의미하지 않는다.
 
 ### Prerequisites
 
-- `infra/03-security/vault` 구성 파일 접근
-- Vault 초기화/Unseal 가능한 운영 권한
-- AppRole RoleID/SecretID 발급 권한
+저장소 루트에서 실행한다. 운영자는 기존 Vault 소비자, 보존 데이터, 키 관리 책임자와 복구 가능성을 먼저 확인한다. 데이터 존재·백업·복원 성공 여부는 아직 검증되지 않았다.
 
 ### Step-by-step Instructions
 
-1. Vault 기본 상태 확인
-   - `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
-   - `bash scripts/hardening/check-all-hardening.sh 03-security`
-   - Runtime-only: `docker compose --profile security exec vault vault status`
-2. AppRole bootstrap
-   - Vault가 unsealed 상태인지 확인한 뒤 아래 절차로 Agent 인증 및 접근 권한을 설정한다.
-   - 명령은 `role_id`와 `secret_id`를 파일로 직접 리다이렉션해야 하며, 생성값을 문서/PR/로그에 붙여넣지 않는다.
+1. 공개 선언을 검사하고 선택된 서비스를 확인한다.
 
    ```bash
-   set -euo pipefail
-   set +u
-   [ -f .env ] && . ./.env
-   set -u
-   default_security_dir="${DEFAULT_SECURITY_DIR:-./volumes/security}"
-   agent_dir="${default_security_dir}/vault/agent"
-   mkdir -p "$agent_dir"
-   umask 077
-
-   docker compose --profile security exec -T vault vault policy write vault-agent-policy - <<'EOF'
-   path "secret/data/hy-home/*" {
-     capabilities = ["read", "list"]
-   }
-   EOF
-
-   docker compose --profile security exec -T vault vault auth enable approle || true
-   docker compose --profile security exec -T vault vault write auth/approle/role/vault-agent \
-     secret_id_ttl=0 \
-     token_num_uses=0 \
-     token_ttl=0 \
-     token_max_ttl=0 \
-     secret_id_num_uses=0 \
-     token_policies="vault-agent-policy"
-
-   docker compose --profile security exec -T vault vault read -field=role_id auth/approle/role/vault-agent/role-id > "$agent_dir/role_id"
-   docker compose --profile security exec -T vault vault write -f -field=secret_id auth/approle/role/vault-agent/secret-id > "$agent_dir/secret_id"
-   chmod 600 "$agent_dir/role_id" "$agent_dir/secret_id"
-   docker run --rm -v "$agent_dir:/agent" alpine sh -c 'chown -R 100:1000 /agent 2>/dev/null || true'
-   docker compose --profile security restart vault-agent >/dev/null
+   docker compose --env-file .env.example --profile legacy-vault config --services
+   docker compose --env-file .env.example --profile core config --services
+   bash scripts/hardening/check-all-hardening.sh 03-security
    ```
 
-   - token sink(`/vault/agent/token`) 생성 확인
-3. 시크릿 경로 규약 적용
-   - `secret/data/hy-home/04-data/mng-db` -> `password`
-   - `secret/data/hy-home/02-auth/keycloak` -> `db_password`, `admin_username`, `admin_password`
-   - `secret/data/hy-home/02-auth/oauth2-proxy` -> `client_secret`, `cookie_secret`
-   - `secret/data/hy-home/06-observability/grafana` -> `admin_password`, `db_password`, `grafana_client_secret`
-4. 렌더 출력 확인
-   - Runtime-only: `docker compose --profile security exec vault-agent ls -la /vault/out`
-   - 서비스별 파일 존재/권한(0600) 점검
-5. 정적 하드닝 검증
-   - `bash scripts/hardening/check-all-hardening.sh 03-security`
-   - `bash scripts/validation/check-template-security-baseline.sh`
+2. Vault 주소와 Agent 출력에 의존하는 소비자를 목록화한다. 비밀 값 대신 서비스명, 경로 계약, 담당자, 전환 순서만 기록한다.
+3. 이미 실행 중인 legacy 인스턴스에 대한 운영 점검이 허용된 경우 다음 상태 조회를 사용한다.
 
-### Common Pitfalls
+   ```bash
+   docker compose --profile legacy-vault ps vault vault-agent
+   docker compose --profile legacy-vault exec vault vault status
+   ```
 
-- placeholder 경로(`secret/data/example`)를 템플릿에 남겨두는 실수
-- KV 경로와 키 이름 불일치로 빈 렌더 파일 생성
-- `role_id`/`secret_id` 누락으로 Agent 인증 실패
+   `vault status` 종료 코드 0은 unsealed, 2는 sealed, 1은 오류다. Compose healthcheck는 sealed/uninitialized 응답도 허용하므로 healthy를 비밀 제공 가능 상태로 해석하지 않는다.
+4. 기존 데이터와 대상 OpenBao 저장소를 분리한 채, 호환성·백업 복원·인증 방식·정책·Agent 템플릿의 전환 계획을 검토한다. 공식 migration 문서는 제한된 Vault CE 조합만 검증하므로 현재 선언 이미지에 대한 저장소 호환성을 추정하지 않는다.
+5. 새 소비자와 초기 구축은 [OpenBao 가이드](../0085-openbao/guide.md)를 따른다. legacy Vault의 AppRole bootstrap, 토큰 발급 또는 강제 재초기화를 반복하지 않는다.
 
 ## Common Checks
 
-- `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 03-security`
-- `bash scripts/validation/check-template-security-baseline.sh`
+- Vault 서비스 선택 profile은 `legacy-vault`이고 OpenBao는 `core` 및 `security`에 포함되는지 확인한다.
+- `${DEFAULT_SECURITY_DIR}/vault/{data,agent,out}`과 OpenBao 저장소가 공유되지 않는지 선언을 검토한다.
+- 상태 점검 결과, 실제 데이터 검증 여부와 정적 검증 결과를 구분한다.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+전환 중 seal, 인증, 렌더링 또는 소비자 오류가 발생하면 [런북](runbook.md)의 중단·복구 판단을 따른다.
 
 ## Traceability
 
@@ -122,6 +64,8 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
+- [Vault Compose](../../../../../infra/03-security/vault/docker-compose.yml), [OpenBao Compose](../../../../../infra/03-security/openbao/docker-compose.yml): runtime 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [OpenBao 운영 가이드](../0085-openbao/guide.md), [정책](policy.md), [가이드](guide.md), [런북](runbook.md).
+- [Vault status 공식 문서](https://developer.hashicorp.com/vault/docs/commands/status).
+- [OpenBao 공식 마이그레이션 제약](https://openbao.org/docs/next/guides/migration/): development 문서이므로 적용할 릴리스의 지원 범위를 별도로 확인한다.

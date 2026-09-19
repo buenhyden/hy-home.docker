@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
@@ -80,6 +80,8 @@ healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 - Subject peers: none — `00-workspace/0008-new-service-onboarding` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Spec contract template](../../../../99.templates/templates/specs/spec.template.md)

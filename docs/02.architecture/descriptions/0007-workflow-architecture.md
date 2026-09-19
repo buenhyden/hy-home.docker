@@ -80,9 +80,11 @@ n8n은 queue mode로 실행되고 공개 UI는 gateway ForwardAuth 정책을 따
 ### Broker
 
 기본:
+
 - `mng-valkey`
 
 `dedicated-valkey` profile:
+
 - `airflow-valkey`
 - `n8n-valkey`
 
@@ -117,17 +119,20 @@ Airflow compose:
 `infra/07-workflow/airflow/docker-compose.yml`
 
 Airflow auth:
-- Airflow 3.3.1
-- Keycloak provider 0.9.0
+
+- Airflow, pinned in [build source](../../../infra/07-workflow/airflow/Dockerfile)
+- Keycloak provider, pinned in the same Airflow build source
 - `KeycloakAuthManager`
 - fixed `airflow_api_jwt_secret`
 - CA bundle + `--proxy-headers`
 - gateway-only router
 
-## Related Documents
+## Traceability
 
 - **PRD**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 - **ADR**: [Airflow/n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
 - **ADR**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 - **Airflow Operations**: [Guide](../../05.operations/catalog/07-workflow/0050-airflow/guide.md)
 - **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

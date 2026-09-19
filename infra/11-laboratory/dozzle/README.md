@@ -1,10 +1,10 @@
 ---
 title: "Dozzle"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
@@ -73,9 +73,11 @@ dozzle/
 
 ## Tech Stack
 
+Runtime image pins are declared in [Compose](docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |
-| Image      | amir20/dozzle | v11.0.1                 |
+| Image      | amir20/dozzle | Declared in Compose                 |
 | Interface  | Web UI       | Real-time streaming       |
 | Monitoring | Docker Logs  | via `/var/run/docker.sock`|
 

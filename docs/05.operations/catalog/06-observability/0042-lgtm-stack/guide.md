@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0042"
 parent_ids: []
@@ -109,6 +109,8 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 - Subject peers: none — `06-observability/0042-lgtm-stack` holds this document alone.
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Prometheus guide](../0045-prometheus/guide.md)

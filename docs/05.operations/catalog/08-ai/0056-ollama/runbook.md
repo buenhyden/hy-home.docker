@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -51,7 +51,7 @@ created: "2026-05-17"
 ```bash
 docker ps --filter name=ollama
 docker logs --tail 200 ollama
-curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
+curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags
 ```
 
 ##### 2. GPU Recognition Recovery
@@ -73,7 +73,7 @@ docker compose restart ollama
 ```bash
 
 ## keep_alive=0으로 상주 모델 언로드(예시)
-curl -X POST http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
+curl -X POST http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
   "model": "llama3",
   "prompt": "release memory",
   "keep_alive": 0
@@ -100,7 +100,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 ### Verification Steps
 
-- [ ] `curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags` 성공
+- [ ] `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags` 성공
 - [ ] `docker compose exec ollama nvidia-smi` 성공
 - [ ] 기본 추론 요청(`/api/generate`) 성공
 - [ ] Open WebUI에서 모델 조회/채팅 성공
@@ -150,6 +150,8 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - Subject peers: [Guide](guide.md) (`GDE-0056`), [Policy](policy.md) (`POL-0056`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0027"
 parent_ids:
@@ -45,7 +45,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config
+   docker compose --profile mongodb config --quiet
    ```
 
 2. key generator, replica member, init job, UI, exporter 상태를 확인한다.
@@ -69,7 +69,7 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs up -d mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
+   docker compose --profile mongodb up -d mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
    ```
 
 6. Mongo Express route는 Traefik label 기준으로 확인하고, password 값은 출력하지 않는다.
@@ -125,6 +125,8 @@ Escalate to the owning operator when no primary can be identified, `mongo-init` 
 - Subject peers: [Guide](guide.md) (`GDE-0027`), [Policy](policy.md) (`POL-0027`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

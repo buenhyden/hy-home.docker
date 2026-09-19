@@ -34,7 +34,7 @@ ROW_FILE_PATH=""
 
 usage() {
     cat <<'USAGE'
-Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run]
+Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run|--sync-metadata|--sync-metadata-check]
 
 Generate local Docker secret files from repository secret registry metadata.
 
@@ -44,6 +44,10 @@ Modes:
              secret values, .env, or secret files.
   --dry-run  Report planned actions from the example registry by ID/path only.
              Does not read .env, SENSITIVE_ENV_VARS.md, or secret files.
+
+  --sync-metadata        Preserve private value cells and existing env assignments;
+                         align public metadata and append missing public keys only.
+  --sync-metadata-check  Same comparison without writes; exits 1 on drift.
 
 No-argument mode preserves the existing operator workflow and may read/write
 local secret registry and secret files. Do not use no-argument mode for audit
@@ -96,6 +100,9 @@ parse_args() {
             ;;
         --dry-run)
             MODE="dry-run"
+            ;;
+        --sync-metadata|--sync-metadata-check)
+            MODE="${1#--}"
             ;;
         *)
             usage >&2
@@ -482,7 +489,7 @@ dry_run_action_for_row() {
 run_dry_run() {
     local line full_path action total=0
 
-    check_required_tools
+    # Metadata-only inspection does not require htpasswd or generation tools.
     [[ -f "$EXAMPLE_FILE" ]] || die "example registry not found: ${EXAMPLE_FILE}"
 
     printf 'DRY-RUN source=example-registry path=%s\n' "$EXAMPLE_FILE"
@@ -510,6 +517,172 @@ run_dry_run() {
     printf 'DRY-RUN summary rows=%d\n' "$total"
 }
 
+
+run_metadata_sync() {
+    python3 - "$REPO_ROOT" "$MODE" <<'PY_METADATA'
+import os
+from pathlib import Path
+import re
+import stat
+import sys
+import tempfile
+
+root = Path(sys.argv[1]).resolve()
+check_only = sys.argv[2] == "sync-metadata-check"
+
+
+def safe_path(relative):
+    path = Path(relative)
+    if path.is_absolute() or ".." in path.parts:
+        raise ValueError("unsafe metadata path")
+    target = root / path
+    for item in (target, *target.parents):
+        if item == root:
+            break
+        if item.is_symlink():
+            raise ValueError("symlink metadata path")
+    if not target.resolve().is_relative_to(root):
+        raise ValueError("metadata path escapes repository")
+    return target
+
+
+def clean(cell):
+    return cell.strip().strip("*`").strip()
+
+
+def rows(text):
+    result = {}
+    for line in text.splitlines(keepends=True):
+        if not line.lstrip().startswith("|"):
+            continue
+        cells = line.split("|")
+        identity = clean(cells[1]) if len(cells) > 1 else ""
+        if not re.fullmatch(r"[A-Z][A-Z0-9_-]*-[0-9]+", identity):
+            continue
+        if len(cells) != 10 or identity in result:
+            raise ValueError("ambiguous registry row")
+        relative = clean(cells[6])
+        if relative and relative != "-":
+            path = safe_path(relative)
+            if not path.is_relative_to(root / "secrets"):
+                raise ValueError("secret metadata path outside secret directory")
+        result[identity] = (line, cells)
+    return result
+
+
+def registry_plan(source, current):
+    public = rows(source)
+    private = rows(current)
+    output = current
+    for identity, (line, cells) in private.items():
+        if identity not in public:
+            continue
+        metadata = public[identity][1]
+        # Preserve value/date cells and unknown rows byte-for-byte.
+        merged = [metadata[i] if i in (1, 2, 3, 5, 6, 8) else cell
+                  for i, cell in enumerate(cells)]
+        output = output.replace(line, "|".join(merged), 1)
+    missing = [line for identity, (line, _) in public.items() if identity not in private]
+    if not current:
+        return source
+    if missing:
+        output += ("" if output.endswith("\n") else "\n") + "\n## Public metadata additions\n\n"
+        output += "| ID | Auto | Kind | Value | Env | Path | Date | Purpose |\n"
+        output += "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+        output += "".join(missing)
+    return output
+
+
+def env_keys(text):
+    result = {}
+    for line in text.splitlines(keepends=True):
+        match = re.match(r"\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=", line)
+        if match:
+            if match[1] in result:
+                raise ValueError("duplicate environment key")
+            result[match[1]] = line
+    return result
+
+
+def env_plan(source, current):
+    public, private = env_keys(source), env_keys(current)
+    additions = "".join(line for key, line in public.items() if key not in private)
+    if not current:
+        return source
+    return current + (("" if current.endswith("\n") else "\n") + additions if additions else "")
+
+
+def snapshot(path):
+    safe_path(path.relative_to(root))
+    if not path.exists():
+        return None, None
+    info = path.stat()
+    if not stat.S_ISREG(info.st_mode):
+        raise ValueError("metadata target must be regular")
+    return path.read_bytes(), (info.st_dev, info.st_ino, info.st_mtime_ns, info.st_mode)
+
+
+def replace(path, payload, mode):
+    safe_path(path.relative_to(root))
+    descriptor, name = tempfile.mkstemp(prefix=".metadata-", dir=path.parent)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            os.fchmod(stream.fileno(), mode)
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+
+def main():
+    specifications = (("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
+                      (".env.example", ".env", env_plan))
+    plans = []
+    for source_name, target_name, planner in specifications:
+        source, target = safe_path(source_name), safe_path(target_name)
+        before, identity = snapshot(target)
+        public = source.read_bytes().decode("utf-8")
+        current = (before or b"").decode("utf-8")
+        after = planner(public, current).encode("utf-8")
+        if after != before:
+            plans.append((target, before, identity, after))
+    print("METADATA files_changed=" + str(len(plans)) + " values=preserved secret_files=untouched")
+    if check_only:
+        return int(bool(plans))
+    for target, before, identity, _ in plans:
+        if snapshot(target) != (before, identity):
+            raise ValueError("metadata changed during planning")
+    completed = []
+    try:
+        for target, before, identity, after in plans:
+            if snapshot(target) != (before, identity):
+                raise ValueError("metadata changed before replacement")
+            mode = stat.S_IMODE(identity[3]) if identity else 0o600
+            replace(target, after, mode)
+            completed.append((target, before, identity, after))
+    except Exception:
+        for target, before, identity, after in reversed(completed):
+            # Never overwrite an operator edit made after this replacement.
+            if target.read_bytes() == after:
+                if before is None:
+                    target.unlink()
+                else:
+                    replace(target, before, stat.S_IMODE(identity[3]))
+        raise
+    return 0
+
+
+try:
+    raise SystemExit(main())
+except Exception:
+    print("METADATA rejected: unsafe, ambiguous, changed or unreadable input; no values logged", file=sys.stderr)
+    raise SystemExit(2)
+PY_METADATA
+}
+
 main() {
     parse_args "$@"
     case "$MODE" in
@@ -521,6 +694,9 @@ main() {
             ;;
         dry-run)
             run_dry_run
+            ;;
+        sync-metadata|sync-metadata-check)
+            run_metadata_sync
             ;;
         run)
             run_generation

@@ -95,7 +95,7 @@ services:
       - openbao-agent-out:/openbao/out:rw
     command:
       - agent
-      - -config=/openbao/config/openbao-agent.hcl
+      - -config=/openbao/config/agent.hcl
     healthcheck:
       test: [ 'CMD-SHELL', 'test -s /openbao/agent/token' ]
       interval: 30s

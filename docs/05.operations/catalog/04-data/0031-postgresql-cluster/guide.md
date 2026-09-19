@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -36,7 +36,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. etcd, pg-router, pg-0부터 pg-2, exporter까지 열한 개 서비스가 모두 `data`와 `service`에 속한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. etcd, pg-router, pg-0부터 pg-2, exporter까지 열한 개 서비스가 모두 `postgres-ha`와 `service`에 속한다.
 - `DEFAULT_DATA_DIR`, `POSTGRES_DEFAULT_DB`, Patroni usernames, service DB/user variables, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
@@ -45,7 +45,7 @@ created: "2026-05-10"
 1. 선택 클러스터 구성을 렌더링한다.
 
    ```bash
-   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
+   docker compose --profile postgres-ha config --quiet
    ```
 
 2. 핵심 서비스 상태를 확인한다.
@@ -81,7 +81,7 @@ created: "2026-05-10"
 
 ## Common Checks
 
-- `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config`
+- `docker compose --profile postgres-ha config --quiet`
 - `docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
 - `docker exec pg-0 patronictl -c /home/postgres/postgres.yml list`
 - `docker compose logs --tail=120 pg-router pg-cluster-init`
@@ -97,6 +97,8 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0031`), [Runbook](runbook.md) (`RUN-0031`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

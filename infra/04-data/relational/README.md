@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리한다. 루트 compose는 `postgresql-cluster` compose 파일을 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. etcd, Patroni/PostgreSQL 노드, `pg-router`, exporter는 모두 `data`와 `service` profile에 속한다.
+이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리한다. 루트 compose는 `postgresql-cluster` compose 파일을 무조건 include하며, 기동 여부는 선택한 profile이 결정한다. etcd, Patroni/PostgreSQL 노드, `pg-router`, exporter는 모두 `postgres-ha` profile에 속한다.
 
 ## Audience
 
@@ -58,7 +58,7 @@ relational/
 
 | Command | Description |
 | ------- | ----------- |
-| `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` | 선택 클러스터 compose 렌더링 |
+| `docker compose --env-file .env.example --profile postgres-ha config --quiet` | 선택 클러스터 compose 렌더링 |
 | `docker compose ps` | 서비스 상태 확인 |
 | `docker compose logs --tail=120 pg-router pg-0 pg-1 pg-2` | 핵심 서비스 로그 확인 |
 
@@ -66,16 +66,16 @@ relational/
 
 | Category   | Technology                                | Notes                     |
 | ---------- | ----------------------------------------- | ------------------------- |
-| DB Engine  | `ghcr.io/zalando/spilo-17:4.0-p3`         | Patroni/PostgreSQL nodes  |
+| DB Engine  | [Spilo declaration](postgresql-cluster/docker-compose.yml)         | Patroni/PostgreSQL nodes  |
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
-| DCS        | etcd 3.7.1                                | Distributed Locks         |
-| Router     | `haproxy:3.4.4`                          | Traffic Distribution      |
-| Init Job   | `postgres:18.6-alpine`                    | Role/database sync        |
+| DCS        | etcd (Compose source)                                | Distributed Locks         |
+| Router     | HAProxy (Compose source)                          | Traffic Distribution      |
+| Init Job   | [PostgreSQL init declaration](postgresql-cluster/docker-compose.yml)                    | Role/database sync        |
 
 ## Getting Started
 
 ```bash
-docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
+docker compose --env-file .env.example --profile postgres-ha config --quiet
 ```
 
 ## Related Documents
@@ -89,3 +89,5 @@ docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-clus
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

@@ -159,8 +159,15 @@ SELECT format(
 -----------------------------------------------------------------------
 -- 4. app/service database 내부 schema 권한 정리
 -----------------------------------------------------------------------
-SELECT format('\\connect %I', :'service_postgres_db')
-\gexec
+-- gexec sends SQL to the server; connect must be executed by psql itself.
+-- Quote a libpq dbname value, including literal quotes/backslashes, so names
+-- containing '=' or URI prefixes cannot override the existing connection.
+SELECT 'dbname=''' || replace(
+  replace(:'service_postgres_db', chr(92), chr(92) || chr(92)),
+  '''', chr(92) || ''''
+) || '''' AS service_postgres_conninfo
+\gset
+\connect -reuse-previous=on :service_postgres_conninfo
 
 SELECT format(
   'ALTER SCHEMA public OWNER TO %I',

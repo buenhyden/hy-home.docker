@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
@@ -44,11 +44,13 @@ pushgateway/
 
 ## Tech Stack
 
-| Category | Technology | Version | Role |
+Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
+| Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
-| Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | v1.11.3 | Metrics ingestion buffer |
-| Ingress | [Traefik](../../01-gateway/README.md) | v3.3.4 | SSL Termination & Routing |
-| Scraper | [Prometheus](../prometheus/README.md) | v3.14.0 | Expected scrape-to-pull bridge; verify the scrape job before depending on pushed metrics |
+| Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | Declared in Compose | Metrics ingestion buffer |
+| Ingress | [Traefik](../../01-gateway/README.md) | Declared in Compose | SSL Termination & Routing |
+| Scraper | [Prometheus](../prometheus/README.md) | Declared in Compose | Expected scrape-to-pull bridge; verify the scrape job before depending on pushed metrics |
 
 ## Usage Instructions
 

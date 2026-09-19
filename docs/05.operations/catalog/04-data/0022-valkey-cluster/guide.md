@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -52,7 +52,7 @@ created: "2026-05-10"
 1. 현재 compose service set을 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config --services
+   docker compose --profile valkey-cluster config --services
    ```
 
    Expected services: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`.
@@ -71,7 +71,7 @@ created: "2026-05-10"
 4. 일반 상태를 확인한다.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
+   docker compose --profile valkey-cluster ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
    ```
 
 ### Common Pitfalls
@@ -83,8 +83,8 @@ created: "2026-05-10"
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps`
+- `docker compose --profile valkey-cluster config --quiet`
+- `docker compose --profile valkey-cluster ps`
 - Search paired guide/policy/runbook and infra README for old service names, direct password variables, stale image tags, or single-container assumptions.
 - Expected result: compose renders, documented services match the compose file, and no stale service/container name is used as an operational command target.
 
@@ -100,6 +100,10 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0022`), [Runbook](runbook.md) (`RUN-0022`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

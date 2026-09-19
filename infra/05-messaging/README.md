@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -55,18 +55,18 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 2. Check the Operations Policy (`docs/05.operations/catalog/05-messaging/README.md`) for topic and secret controls.
 3. Consult the Messaging Runbook (`docs/05.operations/catalog/05-messaging/README.md`) for recovery.
 
-5. Always use the `Schema Registry` for any new topic schemas.
-6. Use `replication-factor: 3` only when the `messaging-cluster` profile is selected; `messaging`/`dev` alone runs the single `kafka-1` broker.
-7. Check consumer lag metrics before scaling producer throughput.
+4. Always use the `Schema Registry` for any new topic schemas.
+5. Use `replication-factor: 3` only when the `messaging-cluster` profile is selected; `messaging`/`dev` alone runs the single `kafka-1` broker.
+6. Check consumer lag metrics before scaling producer throughput.
 
 ## Tech Stack
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Streaming  | Confluent Kafka                | `confluentinc/cp-kafka:8.3.1` |
+| Streaming  | Confluent Kafka                | [declared runtime image](../tech-stack.versions.json) |
 | Mode       | KRaft (Zookeeper-less)         | `messaging`/`dev` runs the single `kafka-1` broker; adding `messaging-cluster` brings up `kafka-2` and `kafka-3` |
-| Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.3.1` |
-| Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.3.0`      |
+| Schema     | Schema Registry                | [declared runtime image](../tech-stack.versions.json) |
+| Connect    | Kafka Connect / REST Proxy     | Confluent CP [declared version](../tech-stack.versions.json)      |
 
 ## Service Matrix
 
@@ -120,3 +120,5 @@ docker exec rabbitmq rabbitmq-diagnostics check_running
 - Kafka guide (`docs/05.operations/catalog/05-messaging/0036-kafka/guide.md`)
 - RabbitMQ guide (`docs/05.operations/catalog/05-messaging/0038-rabbitmq/guide.md`)
 - [Documentation index](../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.

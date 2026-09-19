@@ -1,142 +1,54 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "1.0.2"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0003"
 parent_ids: []
 created: "2026-06-04"
 ---
 
-
 # `.env.example` vs `.env` Key Comparison
-
-> **중요**: 이 문서는 키 이름과 구조만 기록한다. 실제 값은 포함하지 않는다.
 
 ## Usage
 
-### Overview
+공개 `.env.example`은 현재 환경변수 계약을 소유하고, 로컬 `.env`는 운영자 값을
+보존한다. 키 추가·폐기 시 Compose, Dockerfile, 스크립트의 직접·간접 소비자를
+확인한다. 공개 예제에서 폐기한 키를 로컬 파일에서 자동 삭제하지 않는다.
+순서나 로컬 전용 키가 남아 있다는 사실만으로 drift라고 판단하지 않는다.
 
-이 문서는 `.env.example`과 `.env`의 환경변수 키 일관성을 확인하는 운영 참조 문서다. 키셋 동기화 여부, 순서 차이, 누락·추가·deprecated 키를 기록한다.
-
-이 문서는 `.env.example`과 `.env`의 키 동기화 상태를 확인할 때 참조한다. 값은 포함하지 않으므로 공개 저장소에서 안전하게 열람 가능하다. 신규 서비스 추가 시 `.env.example`에 먼저 키를 추가하고, `.env`에도 동기화한다. 주기 점검은 `## 점검 주기` 섹션을 따른다.
-
-### Usage Type
-
-`operational-reference | system-guide`
-
-### Target Audience
-
-- Operators
-- Developers
-- Contributors
-- AI Agents
-
-### Purpose
-
-- `.env.example` vs `.env` Key Comparison의 운영 사용 맥락을 빠르게 파악한다.
-- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
-- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
-
-### Prerequisites
-
-- Repository checkout 접근 가능
-- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
-- 필요한 경우 Docker/Docker Compose 명령 실행 권한
-
-### Step-by-step Instructions
-
-1. 이 문서의 overview와 usage context를 확인한다.
-2. 관련 service, configuration, 또는 documentation target을 식별한다.
-3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
-4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+키 수와 실제 비교 결과는 날짜·commit과 함께 현재 Task에 기록한다. 이 가이드는
+과거 감사 숫자를 현재 상태로 유지하지 않는다. 값, 원문 환경, 확장된 private
+Compose 모델은 증거에 포함하지 않는다.
 
 ## Common Checks
 
-- `.env.example`의 tracked key 수는 고정 숫자로 적지 않고
-  `grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env.example | sort -u | wc -l`로
-  측정한다. 아래 요약은 감사 기준일의 측정값이다.
-- local `.env`가 존재할 때만 값은 출력하지 않고 key 이름 집합을 비교한다.
-- local `.env`가 없으면 실제 key 수나 차이를 추정하지 않고 `not observed`로
-  기록한다.
+저장소 루트에서 기존 메타데이터 도구를 사용한다.
 
-### 감사 기준일
+```bash
+bash scripts/operations/gen-secrets.sh --sync-metadata-check
+bash scripts/operations/gen-secrets.sh --dry-run
+```
 
-2026-09-14
+첫 명령은 값과 미등록 로컬 항목을 보존하는 메타데이터 계약을 확인한다.
+`--dry-run`은 생성 계획이며 런타임 인증 성공이나 credential 회전의 증거가 아니다.
+`--check`는 생성 도구 의존성도 확인하므로 `htpasswd` 등 도구가 없으면 실패한다.
 
-### 요약
+공개 키 중복, 사용되지 않는 키, secret registry의 env mapping 및 파일 경로를
+함께 검토한다. 경로를 조합하는 키나 ID 기반 htpasswd username처럼 간접 소비하는
+키는 단순 문자열 검색 결과만으로 삭제하지 않는다. 로컬 파일이 없으면 상태를
+관찰되지 않음으로 남기고 기존 값이 있다고 가정하지 않는다.
 
-| 항목                    | 결과                                          |
-| ----------------------- | --------------------------------------------- |
-| `.env.example` 키 수    | 343                                           |
-| `.env` 키 수            | not observed (local file absent)              |
-| 키셋 동일 여부          | not evaluated                                  |
-| `.env.example`에만 존재 | not evaluated                                  |
-| `.env`에만 존재         | not evaluated                                  |
-| 순서 차이               | not evaluated                                  |
-
-### 상세 분석
-
-#### 순서 차이 (실질적 영향 없음)
-
-local `.env`가 없는 상태에서는 순서 차이를 평가하지 않는다.
-
-| 키                        | `.env.example` 위치         | `.env` 위치          | 영향 |
-| ------------------------- | --------------------------- | -------------------- | ---- |
-| not observed | not evaluated | not evaluated | local `.env` 필요 |
-
-순서 차이는 Docker Compose 동작에 영향을 미치지 않는다. `.env`를 `.env.example` 순서와 동기화하려면 해당 키를 올바른 섹션으로 이동하면 된다.
-
-#### 누락 키
-
-not evaluated.
-
-#### 추가 키 (`.env`에만 존재)
-
-not evaluated.
-
-#### 순서 불일치 키
-
-| 키                        | 상태        | 비고                     |
-| ------------------------- | ----------- | ------------------------ |
-| not observed | not evaluated | local `.env` 필요 |
-
-### 키 카테고리 현황
-
-| 카테고리               | `.env.example` 그룹                                                                               |
-| ---------------------- | ------------------------------------------------------------------------------------------------- |
-| Global & Project       | `DEFAULT_URL`, `DEFAULT_TIMEZONE`                                                                 |
-| Infrastructure Network | `INFRA_SUBNET`, `INFRA_GATEWAY`, `KEYCLOAK_IP`, `PROJECT_NET_NAME`, `HYHOME_EXTERNAL_NET_NAME`    |
-| Volume & Project Paths | `DEFAULT_DOCKER_PROJECT_PATH` 외 10개 마운트 경로                                                 |
-| Gateway (Traefik)      | `HTTP_PORT`, `HTTPS_PORT`, `TRAEFIK_*` (8개)                                                      |
-| Identity & Access      | `KEYCLOAK_*`, `OAUTH2_*`, `GRAFANA_PROXY_CLIENT_ID`, `KAFBAT_OAUTH_CLIENT_ID`                     |
-| PostgreSQL / Patroni   | `POSTGRES_*`, `HAPROXY_*`, `PATRONI_*`, `SUPABASE_*` (32개)                                       |
-| NoSQL & Cache          | `VALKEY_*`, `REDIS_*`, `MONGODB_*`, `COUCHDB_*`, `CASSANDRA_*`, `INFLUXDB_*`, `NEO4J_*`, `ETCD_*` |
-| Message Brokers        | `KAFKA_*`                                                                           |
-| Object Storage         | `MINIO_*`, `SEAWEEDFS_*`                                                                          |
-| Observability          | `PROMETHEUS_*`, `GRAFANA_*`, `LOKI_*`, `TEMPO_*`, `ALLOY_*`, `PYROSCOPE_*`                        |
-| Search & Analytics     | `ES_*`, `OPENSEARCH_*`                                                                            |
-| Automation & AI        | `AIRFLOW_*`, `N8N_*`, `TERRAKUBE_*`, `LOCUST_*`, `OLLAMA_*`, `QDRANT_*`                           |
-| Security & Tooling     | `VAULT_*`, `SONARQUBE_*`, `STALWART_*`, `SYNCTHING_*`, `REGISTRY_*`                               |
-| Management             | `REDIS_INSIGHT_*`, `DOZZLE_*`, `OPEN_NOTEBOOK_*`, `SURREALDB_*`         |
-| Lab                    | `LAB_ALLOWED_CIDRS`                                                                               |
-
-### 점검 주기
-
-분기 1회 또는 서비스 추가/제거 시. 점검 후 이 문서의 "감사 기준일"과 요약 표를 업데이트한다.
+승인된 `--sync-metadata`는 공개 스키마와 메타데이터를 정렬하면서 기존 값과
+미등록 항목을 보존한다. 실행 후 `--sync-metadata-check`, Git ignore 여부와 0600
+권한을 확인한다. 서비스 추가·제거 또는 공개 스키마 변경 시 다시 점검한다.
 
 ## Runbook Handoff
 
-N/A — 이 가이드에 대응하는 runbook이 없습니다.
+값 생성·회전·런타임 재시작은 이 키 비교의 범위가 아니다. [Secret 관리 안내](../../../../../secrets/README.md)와 해당 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
 
 ## Traceability
 
@@ -144,6 +56,7 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Related Documents
 
+- [Public environment schema](../../../../../.env.example)
+- [Metadata synchronization owner](../../../../../scripts/operations/gen-secrets.sh)
 - [Secrets Key Comparison](../0010-sensitive-env-vars-comparison/guide.md)
-- [secrets/README.md](../../../../../secrets/README.md)
-- [Stage Authoring Matrix](../../../../../.agents/governance/stage-authoring-matrix.md)
+- [Secret management](../../../../../secrets/README.md)

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 `quay.io/coreos/etcd:v3.7.1` tag, HAProxy `haproxy:3.4.4`, Spilo/Patroni `ghcr.io/zalando/spilo-17:4.0-p3`, init job `postgres:18.6-alpine`, postgres exporters `prometheuscommunity/postgres-exporter:v0.20.1`, Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml) tag, HAProxy [haproxy image declaration](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml), init job [postgres image declaration](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml), Docker Secret 기반 credential 구성이다.
 
 ## Policy Scope
 
@@ -48,7 +48,7 @@ N/A - no currently approved exceptions.
 ## Verification
 
 - Compare this policy with [PostgreSQL cluster guide](guide.md), [PostgreSQL cluster runbook](runbook.md), and [infra README](../../../../../infra/04-data/relational/postgresql-cluster/README.md) after compose changes.
-- Run `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` before approving service-name, image, route, secret, port, or volume documentation updates.
+- Run `docker compose --profile postgres-ha config --quiet` before approving service-name, image, route, secret, port, or volume documentation updates.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
 
 ## Review Cadence
@@ -62,6 +62,8 @@ N/A - no currently approved exceptions.
 - Subject peers: [Guide](guide.md) (`GDE-0031`), [Runbook](runbook.md) (`RUN-0031`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

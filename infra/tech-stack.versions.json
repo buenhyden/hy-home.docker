@@ -1,10 +1,10 @@
 {
   "policy_id": "OPS-TECH-STACK-VERSIONS-001",
-  "effective_date": "2026-05-26",
+  "effective_date": "2026-09-19",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
   "source_of_truth": "Docker Compose image declarations",
-  "description": "Curated registry for important Docker runtime images. This file is a drift gate, not a deployment manifest.",
+  "description": "Curated drift projection for HOME runtime and maintained operational tools. Compose/Dockerfile declarations remain runtime authority; this registry covers selected Compose image declarations, not all services, build arguments or deployment state. Full service disposition is maintained in the dated research inventory.",
   "entries": [
     {
       "component": "Traefik",
@@ -202,6 +202,126 @@
       ],
       "compose_files": [
         "infra/11-laboratory/open-notebook/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "OpenBao",
+      "tier": "03-security",
+      "images": [
+        "openbao/openbao:2.6.2"
+      ],
+      "compose_files": [
+        "infra/03-security/openbao/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "ComfyUI",
+      "tier": "08-ai",
+      "images": [
+        "yanwk/comfyui-boot:cu126-slim"
+      ],
+      "compose_files": [
+        "infra/08-ai/comfyui/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Renovate",
+      "tier": "09-tooling",
+      "images": [
+        "renovate/renovate:44.103.2-full"
+      ],
+      "compose_files": [
+        "infra/09-tooling/renovate/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "OpenTofu",
+      "tier": "09-tooling",
+      "images": [
+        "hy-home/opentofu:1.12.6-local"
+      ],
+      "compose_files": [
+        "infra/09-tooling/opentofu/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Mailpit",
+      "tier": "10-communication",
+      "images": [
+        "axllent/mailpit:v1.31.1"
+      ],
+      "compose_files": [
+        "infra/10-communication/mailpit/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Qdrant",
+      "tier": "04-data",
+      "images": [
+        "qdrant/qdrant:v1.19.1-unprivileged"
+      ],
+      "compose_files": [
+        "infra/04-data/specialized/qdrant/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Pyroscope",
+      "tier": "06-observability",
+      "images": [
+        "grafana/pyroscope:2.3.1"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Alertmanager",
+      "tier": "06-observability",
+      "images": [
+        "prom/alertmanager:v0.34.1"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Node Exporter",
+      "tier": "06-observability",
+      "images": [
+        "quay.io/prometheus/node-exporter:v1.12.1"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "cAdvisor",
+      "tier": "06-observability",
+      "images": [
+        "gcr.io/cadvisor/cadvisor:v0.55.1"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Pushgateway",
+      "tier": "06-observability",
+      "images": [
+        "prom/pushgateway:v1.11.3"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Valkey Exporter",
+      "tier": "02-auth",
+      "images": [
+        "oliver006/redis_exporter:v1.91.1-alpine"
+      ],
+      "compose_files": [
+        "infra/02-auth/oauth2-proxy/docker-compose.yml"
       ]
     }
   ]

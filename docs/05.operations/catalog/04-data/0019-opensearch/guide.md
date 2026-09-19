@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -16,9 +16,11 @@ created: "2026-05-10"
 
 ## Usage
 
+`opensearch-node2` is the second cluster node; it belongs to the optional clustered topology and is not required for the single-node HOME baseline.
+
 ### Overview
 
-이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. compose 파일 하나가 두 topology를 담는다. `data` profile은 `opensearch`와 `opensearch-dashboards`를, `data-cluster` profile은 `opensearch-node1`부터 `opensearch-node3`까지와 dashboards를 선택하며, cluster topology는 별도로 검증한다.
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. compose 파일 하나가 두 topology를 담는다. `opensearch` profile은 `opensearch`와 `opensearch-dashboards`를, `opensearch-cluster` profile은 `opensearch-node1`부터 `opensearch-node3`까지와 dashboards를 선택하며, cluster topology는 별도로 검증한다.
 
 ### Usage Type
 
@@ -33,7 +35,7 @@ created: "2026-05-10"
 
 ### Purpose
 
-- `data` profile의 primary stack과 `data-cluster` profile의 three-node topology를 구분한다.
+- `opensearch` profile의 primary stack과 `opensearch-cluster` profile의 three-node topology를 구분한다.
 - HTTPS, Docker Secrets, Traefik route, Dashboards route를 이해한다.
 - index 작업 전 policy/runbook handoff를 확인한다.
 
@@ -85,6 +87,8 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0019`), [Runbook](runbook.md) (`RUN-0019`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)

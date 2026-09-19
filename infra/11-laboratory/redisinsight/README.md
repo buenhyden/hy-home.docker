@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 created: "2026-03-26"
 ---
 
@@ -73,7 +73,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Image | `redis/redisinsight:3.8.0` | Current compose tag |
+| Image | [declared runtime image](../../tech-stack.versions.json) | Current compose tag |
 | Port | `5540` (Internal) | Managed by Traefik |
 | Storage | `redisinsight-data` | Persistent volume for connections |
 
@@ -107,3 +107,5 @@ labels:
 - **Policy**: RedisInsight operations policy (`docs/05.operations/catalog/11-laboratory/0076-redisinsight/policy.md`)
 - **Runbook**: RedisInsight recovery runbook (`docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md`)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

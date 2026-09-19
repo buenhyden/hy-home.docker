@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -47,42 +47,42 @@ created: "2026-05-17"
 1. Render the current compose configuration.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config
+   docker compose --profile valkey-cluster config --quiet
    ```
 
 2. Check service status.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
+   docker compose --profile valkey-cluster ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
    ```
 
 3. Inspect relevant logs if a service is unhealthy. Do not copy secret values into evidence.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-init valkey-cluster-exporter
+   docker compose --profile valkey-cluster logs valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-init valkey-cluster-exporter
    ```
 
 4. Check cluster state from inside the node boundary without printing the secret.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data exec valkey-node-0 sh -c 'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password | tr -d "\n"); valkey-cli -a "$VALKEY_PASSWORD" -p "${PORT:-6379}" cluster info | grep "^cluster_state:"'
+   docker compose --profile valkey-cluster exec valkey-node-0 sh -c 'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password | tr -d "\n"); valkey-cli -a "$VALKEY_PASSWORD" -p "${PORT:-6379}" cluster info | grep "^cluster_state:"'
    ```
 
 5. Re-run the init job only when cluster creation or idempotent init verification is explicitly required.
 
    ```bash
-   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data run --rm valkey-cluster-init
+   docker compose --profile valkey-cluster run --rm valkey-cluster-init
    ```
 
 ### Verification Steps
 
-- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config`
-- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps`
+- `docker compose --profile valkey-cluster config --quiet`
+- `docker compose --profile valkey-cluster ps`
 - Expected result: compose renders, six node services and exporter are present, and cluster state evidence is recorded without exposing the secret.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs ...`
+- **Logs**: `docker compose --profile valkey-cluster logs ...`
 - **Health**: compose `ps` status for six nodes and exporter
 - **Cluster status**: `cluster info` and `cluster nodes` summaries captured from inside a node container
 - **Evidence to Capture**: command names, timestamps, service status summary, cluster-state summary, init-job outcome if run, and skipped destructive actions
@@ -120,6 +120,10 @@ Escalate to the owning operator when compose render fails, required secrets are 
 - Subject peers: [Guide](guide.md) (`GDE-0022`), [Policy](policy.md) (`POL-0022`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

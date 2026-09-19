@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-20"
 ---
 
@@ -55,8 +55,8 @@ valkey-cluster/
 | Field | Evidence |
 | --- | --- |
 | Purpose | Valkey Distributed Cluster service leaf in `04-data`; services: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, plus 2 more; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
-| Config files | `docker-compose.yml`, `config`, `config/valkey.conf` |
-| Config values | env keys: `PORT`, `NODE_NAME`; profiles: `data`, `service` |
+| Config files | `docker-compose.yml`, `config --quiet`, `config/valkey.conf` |
+| Config values | env keys: `PORT`, `NODE_NAME`; profiles: `valkey-cluster`, `service` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `valkey0-data:/data:rw`, `./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro`, `./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro`, `valkey1-data:/data:rw`, `valkey2-data:/data:rw`, `valkey3-data:/data:rw`, `valkey4-data:/data:rw`, `valkey5-data:/data:rw`, plus 7 more |
@@ -66,7 +66,7 @@ valkey-cluster/
 | Healthcheck | Compose healthcheck declared for `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, plus 2 more; not declared for `valkey-cluster-init` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0022-valkey-cluster/guide.md`), Policy (`docs/05.operations/catalog/04-data/0022-valkey-cluster/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0022-valkey-cluster/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -85,7 +85,7 @@ valkey-cluster/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For cluster connectivity errors: verify all cluster nodes can reach each other on the gossip port and confirm `cluster-enabled yes` in the config.
 - For replication errors: check node roles with `cluster nodes` command and verify the replica count matches the configuration.
@@ -102,7 +102,7 @@ valkey-cluster/
 
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |
-| Image      | valkey/valkey| v9.1.0-alpine             |
+| Image      | valkey/valkey| declared version             |
 | Interface  | valkey-cli   | Cluster protocol          |
 | Clustering | 3P + 3R      | 6 nodes architecture      |
 
@@ -110,7 +110,7 @@ valkey-cluster/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data up -d` | 클러스터 전체 노드 시작 |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps` | 노드별 상태 및 헬스체크 확인 |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs valkey-node-0 valkey-cluster-init valkey-cluster-exporter` | 주요 노드, 초기화, exporter 로그 확인 |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data run --rm valkey-cluster-init` | 클러스터 초기화 job 재실행 |
+| `docker compose --profile valkey-cluster up -d` | 클러스터 전체 노드 시작 |
+| `docker compose --profile valkey-cluster ps` | 노드별 상태 및 헬스체크 확인 |
+| `docker compose --profile valkey-cluster logs valkey-node-0 valkey-cluster-init valkey-cluster-exporter` | 주요 노드, 초기화, exporter 로그 확인 |
+| `docker compose --profile valkey-cluster run --rm valkey-cluster-init` | 클러스터 초기화 job 재실행 |

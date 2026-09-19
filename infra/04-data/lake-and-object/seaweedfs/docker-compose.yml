@@ -8,6 +8,7 @@ volumes:
 services:
   seaweedfs-master:
     profiles:
+      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
     extends:
@@ -42,6 +43,7 @@ services:
 
   seaweedfs-volume:
     profiles:
+      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
     extends:
@@ -73,6 +75,7 @@ services:
 
   seaweedfs-filer:
     profiles:
+      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
     extends:

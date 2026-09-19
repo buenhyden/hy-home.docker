@@ -1,10 +1,10 @@
 ---
-title: "Mail Operations Policy"
-version: "1.0.0"
+title: "Stalwart Mail Operations Policy"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0070"
 parent_ids:
@@ -12,54 +12,43 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Mail Operations Policy
+# Stalwart Mail Operations Policy
 
 ## Overview
 
-이 문서는 `10-communication` 티어의 메일 서비스 운영 정책을 정의합니다. 시스템 가용성, 데이터 보존, 보안 통제 기준 및 검증 방법을 포함합니다.
+실제 메일 송수신 서비스 Stalwart의 선택적 운영, 접근 제어, 데이터 보존 기준을 정의한다. 개발용 Mailpit 운영은 POL-0084가 소유한다.
 
 ## Policy Scope
 
-메일 서버(Stalwart)의 보안 설정, 계정 관리, 데이터 보존 경계 및 개발용 트랩(MailHog)의 운영 범위를 규정합니다.
-
-- **Systems**: Stalwart, MailHog
-- **Agents**: Docker Operator, AI Agent
-- **Environments**: Optional production promotion path (Stalwart), development mail trapping (MailHog)
+- `infra/10-communication/stalwart/docker-compose.yml`의 `stalwart` 서비스와 `mail-server` profile.
+- 실제 메일 도메인, 메일함 데이터, 프로토콜 TLS·인증 및 관리 UI.
 
 ## Controls
 
-- **Required**:
-  - 모든 발신 도메인에 대해 SPF, DKIM, DMARC 레코드를 DNS에 유지해야 함.
-  - SMTP Submission(587), SMTPS(465), IMAPS(993) 연결은 운영 승격 전에 TLS evidence를 확보해야 함.
-  - 관리자 패스워드는 Docker Secrets를 통해 관리해야 함.
-  - Stalwart Admin/JMAP UI와 MailHog UI는 Traefik `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 미들웨어 체인으로 보호해야 함.
-  - `infra_net` static IP는 authoritative mapping `172.19.0.228`(Stalwart), `172.19.0.229`(MailHog)를 사용해야 함.
-- **Allowed**:
-  - 개발 환경에서의 MailHog를 통한 자유로운 메일 캡처 및 테스트.
-  - 운영 승격 전에는 `communication` profile을 선택하지 않은 상태로 static hardening 검증만 수행.
-- **Disallowed**:
-  - 인증되지 않은 릴레이(Open Relay) 설정은 엄격히 금지됨.
-  - 서비스 로컬 standalone compose render를 root readiness evidence로 사용하는 행위.
-
-### Persistence & Backups
-
-- **Data Retention**: Stalwart의 메일 데이터는 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`가 바인드된 `stalwart-data` 볼륨에 보존됩니다.
-- **Backup Schedule**: 현재 compose에는 백업 스케줄이 선언되어 있지 않다. 운영 승격 전 백업/복구 방식과 evidence를 별도 승인해야 한다.
-- **MailHog Data**: MailHog는 인메모리 저장소를 사용하므로 별도의 데이터 보존 정책을 두지 않습니다.
+- 기본 HOME/DEV 기동에 실제 메일 서버를 포함하지 않는다. `mail-server`는 송수신 책임자와 운영 준비 증거를 확보한 뒤 선택한다.
+- MX/SPF/DKIM/DMARC, TLS, 인증된 submission, host 노출 포트를 검증하며 open relay를 허용하지 않는다.
+- 관리자 비밀은 Docker Secret 참조로 주입하고 원문을 문서·로그에 남기지 않는다.
+- 관리 UI의 SSO와 메일 프로토콜의 인증·TLS를 별도로 검증한다.
+- `stalwart-data`는 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`에 보존한다. 현재 Compose는 백업 스케줄이나 검증된 복원을 제공하지 않으므로 운영 전 별도 증거가 필요하다.
+- 서비스 로컬 standalone render를 루트 network/secret/template 맥락의 검증으로 대체하지 않는다.
+- 개발 메일은 [Mailpit 정책](../0084-mailpit/policy.md)을 따른다. 테스트 데이터를 실제 배달 경로로 보내지 않는다.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+현재 승인된 예외는 없다. 공개 배달, 데이터 보존 또는 인증 경계 변경은 소유자와 작업 기록을 통해 관리한다.
 
 ## Verification
 
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
-- 운영 승격 시 DNS(MX/SPF/DKIM/DMARC), TLS, host port 개방, Docker Secret evidence를 별도로 기록한다.
+```bash
+docker compose --env-file .env.example --profile mail-server config --services
+bash scripts/hardening/check-all-hardening.sh 10-communication
+```
+
+DNS·TLS·인증·host 포트·복구 증거는 실제 운영 시험에서 별도 수집한다. 정적 구성 통과는 송수신 readiness를 의미하지 않는다.
 
 ## Review Cadence
 
-- Quarterly (분기별 보안 및 운영 정책 검토)
+분기별 및 DNS, 인증서, 메일 서버 이미지·저장소·포트 변경 시 검토한다.
 
 ## Traceability
 
@@ -68,6 +57,8 @@ N/A — 현재 승인된 예외 없음.
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml): 서비스·profile·포트·데이터 선언 원본.
+- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
+- [Mailpit 개발 트랩 가이드](../0084-mailpit/guide.md), [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md).
+- [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
+- [Mailpit 공식 기능 문서](https://mailpit.axllent.org/docs/).

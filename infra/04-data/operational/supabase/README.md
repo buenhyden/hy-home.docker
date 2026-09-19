@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -53,7 +53,7 @@ supabase/
 | --- | --- |
 | Purpose | Supabase Stack service leaf in `04-data`; services: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, plus 7 more; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/supabase/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `data` |
+| Config values | profiles: `supabase` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/supabase/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro`, `${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage`, `${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions`, `${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql`, `${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql`, `${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql`, `${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql`, `${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data`, plus 8 more |
@@ -63,13 +63,13 @@ supabase/
 | Healthcheck | Compose healthcheck declared for `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, plus 5 more |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0029-supabase/guide.md`), Policy (`docs/05.operations/catalog/04-data/0029-supabase/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0029-supabase/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
 1. **환경 로드**: `.env.example`을 기준으로 non-secret key surface를 확인합니다.
 2. **Secret 준비**: 위 `Secret refs`의 Docker Secret 파일 경로가 준비되었는지 확인합니다. 값은 문서, 로그, commit에 기록하지 않습니다.
-3. **서비스 가동**: 승인된 운영 절차에서 `data` profile을 포함해 전체 스택을 기동합니다.
+3. **서비스 가동**: 승인된 운영 절차에서 `supabase` profile을 포함해 전체 스택을 기동합니다.
 4. **접근 주소**: Kong Gateway(`http://localhost:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}`, `https://localhost:${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}`)를 기준으로 확인합니다. 현재 compose는 Studio의 직접 host port를 publish하지 않습니다.
 
 ## Tech Stack
@@ -90,7 +90,7 @@ supabase/
 | :--- | :---: | :--- |
 | `JWT_SECRET` | Yes | Docker Secret file via `supabase_jwt_secret` |
 | `POSTGRES_PASSWORD` | Yes | Docker Secret file via `supabase_db_password` |
-| `SUPABASE_PUBLIC_URL` | Yes | 플랫폼 외부 노출 URL |
+| `SUPABASE_PUBLIC_URL` | Leaf template only | upstream leaf 예시 값이며 root `.env` 입력으로 전달되지 않음 |
 
 ## Validation
 
@@ -99,7 +99,7 @@ supabase/
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config` to confirm Supabase service, secret, and database references render.
+- Start with `docker compose --profile supabase config --quiet` to confirm Supabase service, secret, and database references render.
 - Check Supabase service logs and the linked runbook before changing JWT, database, or dashboard settings.
 
 ## Related Documents
@@ -111,3 +111,5 @@ supabase/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

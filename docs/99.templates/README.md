@@ -164,6 +164,24 @@ for every entry state, edge, and terminal state.
 Full Git-history allocation validation belongs to the full document-contract
 profile. Changed validation uses the persisted Registry allocation state.
 
+#### Pinned Requirement Allocation Recovery
+
+The ordinary trusted-baseline loader remains strict. The current metadata gate
+may recover only the recorded REQ-0012.FR stable-identity restoration through a
+tracked current Task's `requirement_allocation_recovery_decisions` field, whose
+exact value grammar is in the frontmatter schema. The decision pins the requested
+comparison base, defect commit, its valid parent, old/corrupt/repaired allocation
+sets, and the repaired Requirement content hash. Recovery verifies their Git
+ancestry, regular bounded sources, unchanged defect-to-base Requirement content,
+and an exact current declaration-only repair. All unaffected allocations still
+pass the ordinary strict loader. Historical issuance stays `[1, 2, 3, 4]`; the
+current transition reserves withdrawn number 3 and retains stable number 4.
+
+Missing, duplicate, untracked, malformed, stale or mismatched evidence fails
+closed. There is no alternate-base search, history rewrite, generic waiver, or
+implicit permission to reuse an identity. Once the repaired commit is the
+comparison base, strict loading succeeds without consulting recovery evidence.
+
 ### Template Rules
 
 - Copy the source registered by `template_id`/template role.

@@ -1,10 +1,10 @@
 ---
 title: "Tooling Tier Architecture Description"
-version: "1.0.0"
+version: "2.0.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -21,20 +21,20 @@ created: "2026-03-26"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, MinIO, Valkey, InfluxDB 같은 data tier backend와 연동한다.
+`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, MinIO, Valkey 같은 data tier backend와 연동한다.
 
 ## System Boundaries
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
 
 - **Owns**:
-  - IaC 자동화 플랫폼 (`Terrakube`)
+  - IaC CLI helper (`OpenTofu`)와 자동화 플랫폼 (`Terrakube`)
   - 정적 코드 분석 엔진 (`SonarQube`)
-  - 분산 부하 테스트 시스템 (`Locust`)
+  - 분산 부하 테스트 시스템 (`Locust`)과 명시적 부하 테스트 작업 (`k6`)
   - 사설 패키지/이미지 스토리지 (`Registry`)
-  - P2P 데이터 동기화 서비스 (`Syncthing`)
+  - 수동 의존성 업데이트 작업 (`Renovate`)
 - **Consumes**:
-  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, MinIO, Valkey, InfluxDB)
+  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, MinIO, Valkey)
   - 공통 인증 서비스 (`02-auth` / Keycloak)
   - 네트워크 리소스 (`infra_net`)
 - **Does Not Own**:
@@ -49,9 +49,9 @@ created: "2026-03-26"
 
 품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
 
-- **Scalability**: Locust 워커 및 Terrakube 실행기의 필요 시 유동적 스케일링 지원.
-- **Security**: SonarQube/Terrakube/Syncthing 같은 공개 관리 UI에 gateway+SSO 체인 적용.
-- **Reliability**: 상태 정보(Terraform state)를 MinIO에 보관하여 노드 장애 시에도 연속성 보장.
+- **Scalability**: Locust 워커와 Terrakube 실행 용량은 승인된 구성 변경으로 조정한다. 현재 고정 Compose 서비스가 자동 확장을 구현하거나 검증했다는 뜻은 아니다.
+- **Security**: SonarQube/Terrakube 같은 공개 관리 UI에 gateway+SSO 체인 적용.
+- **Reliability**: IaC state/object persistence를 선언된 backend에 보관한다. 동일 호스트의 MinIO와 PostgreSQL은 독립 장애 도메인이 아니므로 호스트 장애 시 연속성을 보장하지 않는다. 백업과 격리 복구 검증은 별도 운영 증거가 필요하다.
 - **Operability**: 중앙 집중식 대시보드 및 API를 통한 통합 제어 환경 제공.
 
 ## Components
@@ -62,7 +62,7 @@ created: "2026-03-26"
 
 시스템은 '관리형 도구(Managed Tools)'와 '실행형 도구(Execution Tools)'로 나뉜다.
 
-1. **Management**: SonarQube, Terrakube API 등은 지속적으로 구동되며 중앙 상태를 관리한다.
+1. **Management**: SonarQube, Terrakube API 등은 해당 profile을 선택한 환경에서 중앙 상태를 관리한다. HOME 상시 기동 대상으로 자동 포함하지 않는다.
 2. **Execution**: Terrakube Worker, Locust Worker 등은 작업 발생 시 리소스를 점유하며 실제 연산을 수행한다.
 
 ## Data Flow
@@ -71,14 +71,14 @@ created: "2026-03-26"
 
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
-- **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / Terraform Script → Terrakube Plan → Deployment.
-- **Storage Strategy**: Terrakube state/object data는 MinIO 호환 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 Syncthing은 현재 bind mount 기반 local persistence를 사용한다.
+- **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / IaC Configuration → OpenTofu 또는 Terrakube Plan → 승인된 Apply.
+- **Storage Strategy**: Terrakube state/object data는 MinIO 호환 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 OpenTofu workspace는 현재 bind mount 기반 local persistence를 사용한다. Syncthing runtime은 제거되었으며 파일 동기화 경로를 소유하지 않는다.
 - **Data Boundaries**: 각 도구는 별도의 데이터베이스 또는 스키마를 사용하여 데이터 간섭을 방지한다.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose v3.8+ 기반의 컨테이너 오케스트레이션.
-- **Deployment Model**: root `docker-compose.yml`은 09-tooling compose 파일을 모두 무조건 include하며, `tooling` 프로필과 서비스별 역할 프로필(`iac`, `sast`, `testing`, `registry`, `sync`) 중 선택한 것이 기동 대상을 결정한다. 역할 프로필은 계층의 부분집합만 선택하므로, `locust-worker`처럼 `tooling`에만 속한 서비스는 역할 프로필로 기동되지 않는다.
+- **Runtime / Platform**: 현재 root Compose include 및 profile 계약을 사용하는 Docker Compose.
+- **Deployment Model**: root `docker-compose.yml`은 09-tooling compose 파일을 모두 무조건 include하며, `tooling` 프로필과 서비스별 역할 프로필(`iac`, `sast`, `testing`, `registry`, `dependency-update`) 중 선택한 것이 기동 대상을 결정한다. `dependency-update`는 Renovate 수동 작업만 선택하고 `testing`은 Locust master와 k6를 선택한다. 역할 프로필은 계층의 부분집합만 선택하므로, `locust-worker`처럼 `tooling`에만 속한 서비스는 역할 프로필로 기동되지 않는다.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability
@@ -88,6 +88,9 @@ created: "2026-03-26"
 ## Related Documents
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
-- **Spec**: [010-tooling/spec.md](0009-tooling-architecture.md)
-- **Plan**: 2026-03-26-09-tooling-standardization.md
+- [Current convergence Spec](../../03.specs/0180-home-dev-convergence/spec.md)
+- [OpenTofu operations](../../05.operations/catalog/09-tooling/0082-opentofu/guide.md)
+- [Terraform migration handoff](../../05.operations/catalog/09-tooling/0068-terraform/guide.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -25,7 +25,7 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 이 정책은 current `infra/06-observability/alertmanager` compose와
 `config/config.yml`에 선언된 Alertmanager 운영 기준을 다룬다.
 
-- **Systems**: compose service `alertmanager`, container `infra-alertmanager`, image `prom/alertmanager:v0.34.0`, config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
+- **Systems**: compose service `alertmanager`, container `infra-alertmanager`, image [prom/alertmanager image declaration](../../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -76,7 +76,7 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-low|image: prom/alertmanager:v0.34.0|smtp_username|smtp_password|slack_webhook|alertmanager.middlewares|/-/ready' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-low|image: prom/alertmanager:|smtp_username|smtp_password|slack_webhook|alertmanager.middlewares|/-/ready' infra/06-observability/docker-compose.yml`
 - Alert routing config:
   `rg -n 'group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - Repository contracts:
@@ -94,6 +94,8 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 - Subject peers: [Guide](guide.md) (`GDE-0039`), [Runbook](runbook.md) (`RUN-0039`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

@@ -16,9 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: OpenSearch primary stack readiness, HTTPS health checks, and `data-cluster` topology evidence.
+> Scope: OpenSearch primary stack readiness, HTTPS health checks, and `opensearch-cluster` topology evidence.
 
-이 런북은 OpenSearch primary stack(`data` profile) 또는 three-node topology(`data-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; three-node topology는 `opensearch-node1..3` service names를 사용한다.
+이 런북은 OpenSearch primary stack(`opensearch` profile) 또는 three-node topology(`opensearch-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; three-node topology는 `opensearch-node1..3` service names를 사용한다.
 
 ### Purpose
 
@@ -30,13 +30,13 @@ created: "2026-05-17"
 
 - primary `opensearch` healthcheck fails
 - Dashboards cannot connect to OpenSearch
-- `data-cluster` topology has unhealthy node or shard allocation issues
+- `opensearch-cluster` topology has unhealthy node or shard allocation issues
 
 ## Procedure
 
 ### Checklist
 
-- [ ] `data` 단독인지 `data-cluster`까지 선택했는지 기록했다.
+- [ ] `data` 단독인지 `opensearch-cluster`까지 선택했는지 기록했다.
 - [ ] admin password is read securely and not persisted.
 - [ ] index or shard mutation requires owner approval.
 
@@ -64,7 +64,7 @@ created: "2026-05-17"
    docker logs opensearch-dashboards --tail 100
    ```
 
-4. cluster 구성은 같은 compose 파일의 `data-cluster` profile로 확인한다.
+4. cluster 구성은 같은 compose 파일의 `opensearch-cluster` profile로 확인한다.
 
    ```bash
    HYHOME_COMPOSE_PROFILES='data data-cluster' \

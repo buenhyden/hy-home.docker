@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2025-11-24"
 ---
 
@@ -41,7 +41,7 @@ created: "2025-11-24"
 ```text
 locust/
 ├── locustfile.py       # 기본 테스트 스크립트 (시나리오 정의)
-├── Dockerfile          # Locust 2.44.4 base image
+├── Dockerfile          # Pinned Locust base image
 ├── docker-compose.yml  # Master/Worker 오케스트레이션 정의
 └── README.md           # This file
 ```
@@ -105,3 +105,7 @@ locust/
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+
+Build source authority: [Dockerfile](Dockerfile).

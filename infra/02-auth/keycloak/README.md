@@ -1,14 +1,16 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
 # Keycloak IAM
+
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다. 로컬 빌드의 기준 이미지는 [Dockerfile](Dockerfile)에서 확인합니다.
 
 > Central Identity and Access Management provider for `hy-home.docker`.
 
@@ -17,8 +19,7 @@ created: "2025-11-12"
 Keycloak은 중앙 IdP다. 사용자 인증, 세션, OIDC/SAML token 발행과
 Airflow Authorization Services를 제공한다.
 
-Runtime image:
-`quay.io/keycloak/keycloak:26.7.3-1`
+Runtime image: [Keycloak Compose declaration](docker-compose.yml).
 
 Canonical realm:
 `hy-home.realm`
@@ -58,7 +59,7 @@ keycloak/
 | Field | Evidence |
 | --- | --- |
 | Service | `keycloak` |
-| Image | `quay.io/keycloak/keycloak:26.7.3-1` |
+| Image | [Compose declaration](docker-compose.yml) |
 | Profiles | `core`, `auth`, `dev` |
 | Database | `mng-pg` |
 | Network | `infra_net` |
@@ -97,14 +98,15 @@ MENU
 LIST
 ```
 
-Provider update from 0.8.2 to 0.9.0 requires existing permission repair in
-non-team installations via `create-permissions`.
+Provider upgrades from 0.8.2 to 0.9.0 require permission repair; see the [upstream migration note](https://airflow.apache.org/docs/apache-airflow-providers-keycloak/stable/changelog.html). <!-- runtime-version-exception: migration — identifies the provider release requiring existing permission repair -->
+For non-team installations, rerun `create-permissions` without `--teams`; provider installation alone does not update stored permissions.
 
 ## Kafbat Identity Contract
 
 Kafbat uses Keycloak `groups` claim.
 
 Current application mappings:
+
 - `/admins`
 - `/users`
 
@@ -132,6 +134,7 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 ```
 
 Runtime:
+
 - readiness
 - OIDC discovery
 - application redirect/client settings

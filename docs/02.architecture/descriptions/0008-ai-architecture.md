@@ -96,3 +96,5 @@ created: "2026-03-26"
 - **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
 - **Spec**: [009-ai/spec.md](0008-ai-architecture.md)
 - **ADR**: [0008-ollama-openwebui-local-ai.md](../decisions/0008-ollama-openwebui-local-ai.md)
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.

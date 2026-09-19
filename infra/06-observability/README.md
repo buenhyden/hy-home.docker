@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2025-11-12"
 ---
 
@@ -87,17 +87,19 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 ## Tech Stack
 
+Runtime image pins are declared in [Compose](docker-compose.yml). The [version registry](../tech-stack.versions.json) is a curated projection.
+
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Metrics    | Prometheus                     | v3.14.0                   |
-| Logs       | Loki                           | v3.7.3-custom, MinIO bucket `loki-bucket` |
-| Tracing    | Tempo                          | v3.0.2-custom, MinIO bucket `tempo-bucket` |
-| Profiling  | Pyroscope                      | v2.1.0                    |
-| Collector  | Grafana Alloy                  | v1.19.2                   |
-| UI         | Grafana                        | v13.1.0                   |
-| Alerting   | Alertmanager                   | v0.33.0                   |
-| Batch metrics | Pushgateway                 | v1.11.3                   |
-| Container metrics | cAdvisor                | v0.55.1                   |
+| Metrics    | Prometheus                     | Declared in Compose                   |
+| Logs       | Loki                           | Declared in Compose, MinIO bucket `loki-bucket` |
+| Tracing    | Tempo                          | Declared in Compose, MinIO bucket `tempo-bucket` |
+| Profiling  | Pyroscope                      | Declared in Compose                    |
+| Collector  | Grafana Alloy                  | Declared in Compose                   |
+| UI         | Grafana                        | Declared in Compose                   |
+| Alerting   | Alertmanager                   | Declared in Compose                   |
+| Batch metrics | Pushgateway                 | Declared in Compose                   |
+| Container metrics | cAdvisor                | Declared in Compose                   |
 
 ## Service Matrix
 

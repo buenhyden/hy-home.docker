@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "1.0.1"
+version: "2.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai` 또는 `dev` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
+이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
 ### Usage Type
 
@@ -40,11 +40,11 @@ created: "2026-05-10"
 ### Prerequisites
 
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
-- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` profile을 선택해야 한다.
+- root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai`, `ai-llm` 또는 `ollama` profile을 선택해야 한다.
 - `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
 - 기본 포트/엔드포인트:
-  - API: `${OLLAMA_PORT:-11434}`
+  - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
   - Exporter: `${OLLAMA_EXPORTER_PORT}` from `.env` / `.env.example` (`11435` in the repository baseline; compose fallback is `8000` when unset)
 
 ### Step-by-step Instructions
@@ -56,7 +56,7 @@ created: "2026-05-10"
 nvidia-smi
 
 # Ollama API health via host port
-curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
+curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags
 
 # 컨테이너 내부 GPU 인식 확인
 docker compose exec ollama nvidia-smi
@@ -75,7 +75,7 @@ docker compose exec ollama ollama list
 ### 3. Inference API Check
 
 ```bash
-curl http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
+curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
   "model": "llama3",
   "prompt": "Hello from hy-home"
 }'
@@ -105,6 +105,8 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 ## Common Checks
 
+- 직접 API는 호스트 loopback에서만 접근한다. Open WebUI와 exporter는 `ollama` 서비스 DNS로 통신하며, 원격 접근은 인증된 gateway 경로를 사용한다. 기존 LAN 직접 API 소비자는 설정 적용 전에 전환해야 한다.
+
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec ollama ollama list`
@@ -120,6 +122,10 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - Subject peers: [Policy](policy.md) (`POL-0056`), [Runbook](runbook.md) (`RUN-0056`)
 
 ## Related Documents
+
+- [Ollama server configuration](https://docs.ollama.com/faq#how-do-i-configure-ollama-server): `OLLAMA_HOST`로 컨테이너 listener 주소와 포트를 함께 지정한다.
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

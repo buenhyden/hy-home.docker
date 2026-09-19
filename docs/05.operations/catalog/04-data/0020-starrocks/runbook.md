@@ -45,7 +45,7 @@ created: "2026-05-17"
 1. Compose file과 repo-local 문서 계약을 확인한다.
 
    ```bash
-   test -f infra/04-data/analytics/warehouses/docker-compose.yml
+   test -f infra/04-data/analytics/starrocks/docker-compose.yml
    python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
@@ -112,6 +112,8 @@ Escalate when FE metadata appears inconsistent, BE registration repeatedly fails
 - Subject peers: [Guide](guide.md) (`GDE-0020`), [Policy](policy.md) (`POL-0020`)
 
 ## Related Documents
+
+- [Official upstream operational documentation](https://docs.starrocks.io/docs/administration/management/Backup_and_restore/)
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)

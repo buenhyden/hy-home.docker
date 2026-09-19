@@ -1,14 +1,16 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
 # Tempo Distributed Tracing
+
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다. 로컬 빌드의 기준 이미지는 [Dockerfile](Dockerfile)에서 확인합니다.
 
 ## Overview
 
@@ -47,11 +49,13 @@ tempo/
 
 ## Tech Stack
 
-| Category | Technology | Version | Role |
+Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+
+| Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
-| Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | v3.0.2-custom | Distributed Tracing Backend |
-| Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | latest | S3-Compatible Object Store |
-| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.19.2 | OTLP Receiver & Forwarder |
+| Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | Declared in Compose | Distributed Tracing Backend |
+| Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | [Compose](../../04-data/lake-and-object/minio/docker-compose.yml) | S3-Compatible Object Store |
+| Ingestion | [Grafana Alloy](../alloy/README.md) | Declared in Compose | OTLP Receiver & Forwarder |
 
 ## Available Scripts
 
@@ -99,7 +103,7 @@ tempo/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image `hy/tempo:3.0.2-custom` |
+| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image from [Compose](../docker-compose.yml) |
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
 | Compose linkage | Declared in `../docker-compose.yml`, which the root file includes unconditionally; `tempo` resolves under the `obs` and `dev` profiles |

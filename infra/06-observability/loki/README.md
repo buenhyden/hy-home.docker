@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2026-01-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-`infra/06-observability/loki` contains the Loki implementation for the `06-observability` tier. Loki runs as compose service `loki`, container `infra-loki`, image `hy/loki:3.7.3-custom`, stores working data in `loki-data`, and uses MinIO S3 bucket `loki-bucket` for log chunks and indexes. The custom image keeps Loki's upstream binary and a small entrypoint that exports `MINIO_APP_USER_PASSWORD` from Docker Secret `minio_app_user_password` before starting Loki with `-config.expand-env=true`.
+`infra/06-observability/loki` contains the Loki implementation for the `06-observability` tier. Loki runs as compose service `loki`, container `infra-loki`, image [declared runtime image](../../tech-stack.versions.json), stores working data in `loki-data`, and uses MinIO S3 bucket `loki-bucket` for log chunks and indexes. The custom image keeps Loki's upstream binary and a small entrypoint that exports `MINIO_APP_USER_PASSWORD` from Docker Secret `minio_app_user_password` before starting Loki with `-config.expand-env=true`.
 
 ## Audience
 
@@ -45,7 +45,7 @@ loki/
 ├── config/
 │   └── loki-config.yaml   # Loki config with MinIO, retention, compactor, and ruler settings
 ├── docker-entrypoint.sh   # Exports MINIO_APP_USER_PASSWORD from Docker Secret
-├── Dockerfile             # Builds hy/loki:3.7.3-custom from upstream Loki plus entrypoint
+├── Dockerfile             # Builds declared runtime image from upstream Loki plus entrypoint
 └── README.md              # This file
 ```
 
@@ -57,7 +57,7 @@ loki/
 | Compose service | `loki` in `infra/06-observability/docker-compose.yml` |
 | Compose linkage | Declared in `infra/06-observability/docker-compose.yml` |
 | Container | `infra-loki` |
-| Image | `hy/loki:3.7.3-custom` |
+| Image | [declared runtime image](../../tech-stack.versions.json) |
 | Runtime user | `10001:10001` |
 | Config files | `config/loki-config.yaml`, `Dockerfile`, `docker-entrypoint.sh` |
 | Config values | MinIO S3 endpoint `http://minio:9000`, bucket `loki-bucket`, retention `168h`, compactor interval `10m` |
@@ -130,3 +130,7 @@ loki/
 - Loki policy (`docs/05.operations/catalog/06-observability/0043-loki/policy.md`)
 - Loki runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`)
 - [Documentation index](../../../docs/README.md)
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+
+Build source authority: [Dockerfile](Dockerfile).

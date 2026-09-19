@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
@@ -73,3 +73,5 @@ analytics/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

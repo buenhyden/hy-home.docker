@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 created: "2026-03-27"
 ---
 
@@ -72,5 +72,7 @@ cache-and-kv/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data up -d` | 클러스터 전체 노드 시작 |
-| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps` | 노드별 상태 확인 |
+| `docker compose --profile valkey-cluster up -d` | 클러스터 전체 노드 시작 |
+| `docker compose --profile valkey-cluster ps` | 노드별 상태 확인 |
+
+Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

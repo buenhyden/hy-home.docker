@@ -1196,6 +1196,7 @@ def collect_records_at_ref(
             "--",
             "docs",
             "archive",
+            "infra",
             ".agents",
             ".claude/provider.md",
             ".codex/provider.md",
@@ -1212,6 +1213,7 @@ def collect_records_at_ref(
             and (
                 path.as_posix() in TARGET_MARKDOWN_FILES
                 or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+                or (path.as_posix().startswith("infra/") and path.name == "README.md")
             )
             and path.as_posix() not in excluded
         },

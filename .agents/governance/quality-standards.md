@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-19"
 ---
 
 # Agent Quality and Security Standards
@@ -156,10 +156,15 @@ exposes `--profile changed`, `--profile full`, and `--explain` routes and contai
 no duplicated child-command inventory. These routes do not
 upload SARIF, verify remote branch protection, install CI-only dependencies, or
 declare protected-branch readiness. The `repo-contracts` gate also blocks
-stage-document runtime version drift for implementation-pinned images and
-components, so docs-only changes that mention service versions must keep those
-literals aligned with current compose declarations and
-`infra/tech-stack.versions.json`.
+unjustified runtime-pin duplication in current operational, architecture and
+infrastructure README bodies. Compose and Dockerfile declarations own exact
+runtime pins; `infra/tech-stack.versions.json` is a curated machine-readable projection,
+not a second authored authority. Narrative documents link the relevant sources.
+Necessary compatibility, advisory, workaround, migration or historical literals
+must state their concrete reason through the Stage 99 exception contract. Current
+implementation claims remain subject to drift checks; historical and migration
+boundaries are not rewritten to match a newer pin. Document frontmatter versions
+are independent. The registered metadata validator owns executable enforcement.
 
 Local and hosted QA use the same public entrypoint and suite manifest, while
 execution-context ownership determines which leaves can run. A local `full`

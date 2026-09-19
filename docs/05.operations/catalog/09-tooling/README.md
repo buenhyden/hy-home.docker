@@ -39,9 +39,12 @@ subject tree.
 | [Performance testing](0064-performance-testing/guide.md) | [Guide](0064-performance-testing/guide.md), [Policy](0064-performance-testing/policy.md), [Runbook](0064-performance-testing/runbook.md) |
 | [Registry](0065-registry/guide.md) | [Guide](0065-registry/guide.md), [Policy](0065-registry/policy.md), [Runbook](0065-registry/runbook.md) |
 | [SonarQube](0066-sonarqube/guide.md) | [Guide](0066-sonarqube/guide.md), [Policy](0066-sonarqube/policy.md), [Runbook](0066-sonarqube/runbook.md) |
-| [Syncthing](0067-syncthing/guide.md) | [Guide](0067-syncthing/guide.md), [Policy](0067-syncthing/policy.md), [Runbook](0067-syncthing/runbook.md) |
 | [Terraform](0068-terraform/guide.md) | [Guide](0068-terraform/guide.md), [Policy](0068-terraform/policy.md), [Runbook](0068-terraform/runbook.md) |
 | [Terrakube](0069-terrakube/guide.md) | [Guide](0069-terrakube/guide.md), [Policy](0069-terrakube/policy.md), [Runbook](0069-terrakube/runbook.md) |
+
+| [OpenTofu](0082-opentofu/guide.md) | [Guide](0082-opentofu/guide.md), [Policy](0082-opentofu/policy.md), [Runbook](0082-opentofu/runbook.md) |
+
+| [Renovate](0083-renovate/guide.md) | [Guide](0083-renovate/guide.md), [Policy](0083-renovate/policy.md), [Runbook](0083-renovate/runbook.md) |
 
 ## How to Work in This Area
 

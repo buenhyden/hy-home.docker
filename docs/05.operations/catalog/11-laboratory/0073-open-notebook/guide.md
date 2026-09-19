@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -82,6 +82,8 @@ Open Notebook UI에 접속해 개인/로컬 노트북 작업을 수행하고, �
 - Subject peers: [Policy](policy.md) (`POL-0073`), [Runbook](runbook.md) (`RUN-0073`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

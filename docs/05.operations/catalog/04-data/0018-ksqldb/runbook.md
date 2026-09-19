@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-19"
 layer: "operations"
 artifact_id: "RUN-0018"
 parent_ids:
@@ -113,6 +113,8 @@ Escalate when Kafka/Schema Registry is unavailable, query replay is required, co
 - Subject peers: [Guide](guide.md) (`GDE-0018`), [Policy](policy.md) (`POL-0018`)
 
 ## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)
