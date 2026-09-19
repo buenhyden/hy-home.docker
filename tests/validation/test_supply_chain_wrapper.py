@@ -101,6 +101,33 @@ def load_checker():
 
 
 class SupplyChainWrapperContractTests(unittest.TestCase):
+    def secure_output_fixture(
+        self, temporary: str
+    ) -> tuple[pathlib.Path, pathlib.Path]:
+        base = pathlib.Path(temporary) / "base"
+        base.mkdir(mode=0o700)
+        current = base
+        for part in HANDOFF_RELATIVE.parts:
+            current = current / part
+            current.mkdir(mode=0o700)
+        return base, current
+
+    def test_group_writable_fixture_ancestor_is_still_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base, output = self.secure_output_fixture(temporary)
+            output.parent.chmod(0o770)
+            verdict = output / "verification-verdict.baseline.json"
+            verdict.write_text("preserve on unsafe input\n")
+            result = self.run_wrapper_library(
+                f"source {shlex.quote(str(WRAPPER))}\n"
+                f"BASE_DIR={shlex.quote(str(base))}\n"
+                f"OUTPUT_DIR={shlex.quote(str(output))}\n"
+                "invalidate_consumer_verdicts\n"
+            )
+            self.assertEqual(10, result.returncode, result.stderr)
+            self.assertIn("output-ancestor-writable", result.stderr)
+            self.assertEqual("preserve on unsafe input\n", verdict.read_text())
+
     def run_wrapper_library(self, script: str) -> subprocess.CompletedProcess[str]:
         environment = os.environ | {"HYHOME_SUPPLY_CHAIN_LIBRARY_ONLY": "1"}
         return subprocess.run(
@@ -663,12 +690,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
 
     def test_invalidate_consumer_verdicts_removes_only_exact_paths(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            base = pathlib.Path(temporary) / "base"
-            output = (
-                base
-                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
-            )
-            output.mkdir(parents=True)
+            base, output = self.secure_output_fixture(temporary)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
             unrelated = output / "unrelated.json"
@@ -686,12 +708,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
 
     def test_failed_advisory_leaves_no_stale_consumer_verdicts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            base = pathlib.Path(temporary) / "base"
-            output = (
-                base
-                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
-            )
-            output.mkdir(parents=True)
+            base, output = self.secure_output_fixture(temporary)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
             result = self.run_wrapper_library(
@@ -709,12 +726,7 @@ class SupplyChainWrapperContractTests(unittest.TestCase):
         self,
     ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            base = pathlib.Path(temporary) / "base"
-            output = (
-                base
-                / "_workspace/repo-support/task-2026-07-19-security-supply-chain-remediation/supply-chain"
-            )
-            output.mkdir(parents=True)
+            base, output = self.secure_output_fixture(temporary)
             for role in ("baseline", "candidate"):
                 (output / f"verification-verdict.{role}.json").write_text("stale\n")
             result = self.run_wrapper_library(

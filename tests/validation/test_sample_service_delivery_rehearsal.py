@@ -116,6 +116,70 @@ RECORD_KEYS = {
 class DeliveryRehearsalContractTests(unittest.TestCase):
     maxDiff = None
 
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory(prefix="delivery-public-contract-")
+        self.addCleanup(directory.cleanup)
+        self.fixture_root = Path(directory.name)
+        # Public declarations are exact copies; permissions are fixture-owned.
+        # Checkout modes depend on the caller's umask and are not evidence modes.
+        for source in (
+            SCRIPT,
+            BASELINE,
+            CANDIDATE,
+            PAIR_MANIFEST,
+            COMPOSE,
+            OVERRIDE,
+            POLICY,
+            READINESS,
+            RECOVERY,
+        ):
+            target = self.fixture_root / source.relative_to(ROOT)
+            self.secure_directories(target.parent, self.fixture_root)
+            self.copy_secure_input(source, target)
+
+    def secure_directories(self, directory: Path, root: Path) -> None:
+        directory.relative_to(root)
+        for part in reversed((directory, *directory.parents)):
+            if part == root or root in part.parents:
+                part.mkdir(exist_ok=True, mode=0o700)
+                part.chmod(0o700)
+
+    def copy_secure_input(self, source: Path, target: Path) -> None:
+        shutil.copy2(source, target)
+        target.chmod(0o600)
+
+    def isolated_public_text(self, value: str) -> str:
+        return value.replace(str(ROOT), str(self.fixture_root))
+
+    def test_isolated_pair_still_rejects_group_write_and_symlink(self) -> None:
+        pair = self.fixture_root / PAIR_MANIFEST.relative_to(ROOT)
+        for unsafe in ("group-write", "symlink"):
+            with self.subTest(unsafe=unsafe):
+                if unsafe == "group-write":
+                    pair.chmod(0o660)
+                else:
+                    target = pair.with_suffix(".target")
+                    pair.rename(target)
+                    pair.symlink_to(target.name)
+                result = self.run_cli(
+                    "preflight",
+                    "--task-id",
+                    "2026-07-19-dre",
+                    "--baseline-verdict",
+                    str(BASELINE.relative_to(ROOT)),
+                    "--candidate-verdict",
+                    str(CANDIDATE.relative_to(ROOT)),
+                )
+                self.assertEqual(10, result.returncode, result.stdout + result.stderr)
+                expected = (
+                    "pair-manifest-input-unsafe"
+                    if unsafe == "group-write"
+                    else "pair-manifest-missing"
+                )
+                self.assertIn(expected, result.stderr)
+                if unsafe == "group-write":
+                    pair.chmod(0o600)
+
     def run_cli(
         self,
         *args: str,
@@ -127,9 +191,15 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
         if env:
             merged.update(env)
         return subprocess.run(
-            ["bash", str(SCRIPT), *args],
-            cwd=ROOT,
-            env=merged,
+            [
+                "bash",
+                str(self.fixture_root / SCRIPT.relative_to(ROOT)),
+                *[self.isolated_public_text(arg) for arg in args],
+            ],
+            cwd=self.fixture_root,
+            env={
+                key: self.isolated_public_text(value) for key, value in merged.items()
+            },
             text=True,
             capture_output=True,
             check=False,
@@ -150,10 +220,12 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             [
                 "bash",
                 "-c",
-                f"source {SCRIPT!s}\n{body}",
+                self.isolated_public_text(f"source {SCRIPT!s}\n{body}"),
             ],
-            cwd=ROOT,
-            env=merged,
+            cwd=self.fixture_root,
+            env={
+                key: self.isolated_public_text(value) for key, value in merged.items()
+            },
             text=True,
             capture_output=True,
             check=False,
@@ -647,8 +719,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 pair = root / "verification-verdict.pair.json"
                 runtime_marker = root / "runtime-called"
                 record = root / "rehearsal-record.json"
-                shutil.copy2(BASELINE, baseline)
-                shutil.copy2(CANDIDATE, candidate)
+                self.copy_secure_input(BASELINE, baseline)
+                self.copy_secure_input(CANDIDATE, candidate)
                 if mutate is not None:
                     manifest = json.loads(PAIR_MANIFEST.read_text(encoding="utf-8"))
                     mutate(manifest)
@@ -656,6 +728,8 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                         json.dumps(manifest, sort_keys=True) + "\n",
                         encoding="utf-8",
                     )
+                if pair.exists():
+                    pair.chmod(0o600)
                 result = self.run_sourced(
                     textwrap.dedent(
                         f"""\
@@ -697,6 +771,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             pair_path.write_text(
                 json.dumps(pair, sort_keys=True) + "\n", encoding="utf-8"
             )
+            pair_path.chmod(0o600)
             result = self.run_sourced(
                 textwrap.dedent(
                     f"""\
@@ -746,7 +821,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                     "override.yml": OVERRIDE,
                 }
                 for name, source in inputs.items():
-                    shutil.copy2(source, root / name)
+                    self.copy_secure_input(source, root / name)
                 result = self.run_sourced(
                     textwrap.dedent(
                         f"""\
@@ -788,9 +863,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             candidate_input = root / "verification-verdict.candidate.json"
             pair_input = root / "verification-verdict.pair.json"
             record = root / "rehearsal-record.json"
-            shutil.copy2(BASELINE, baseline_input)
-            shutil.copy2(CANDIDATE, candidate_input)
-            shutil.copy2(PAIR_MANIFEST, pair_input)
+            self.copy_secure_input(BASELINE, baseline_input)
+            self.copy_secure_input(CANDIDATE, candidate_input)
+            self.copy_secure_input(PAIR_MANIFEST, pair_input)
             result = self.run_sourced(
                 textwrap.dedent(
                     f"""\
@@ -1422,9 +1497,9 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
             baseline_input = root / "verification-verdict.baseline.json"
             candidate_input = root / "verification-verdict.candidate.json"
             pair_input = root / "verification-verdict.pair.json"
-            shutil.copy2(BASELINE, baseline_input)
-            shutil.copy2(CANDIDATE, candidate_input)
-            shutil.copy2(PAIR_MANIFEST, pair_input)
+            self.copy_secure_input(BASELINE, baseline_input)
+            self.copy_secure_input(CANDIDATE, candidate_input)
+            self.copy_secure_input(PAIR_MANIFEST, pair_input)
             snapshot_body = textwrap.dedent(
                 f"""\
                 BASELINE_VERDICT_PATH={baseline_input!s}
@@ -1504,7 +1579,7 @@ class DeliveryRehearsalContractTests(unittest.TestCase):
                 / "task-2026-07-19-deployment-release-engineering-remediation"
                 / "delivery/rehearsal-record.json"
             )
-            record.parent.mkdir(parents=True)
+            self.secure_directories(record.parent, root)
             historical = b'{"historical":true,"schema_version":3}\n'
             record.write_bytes(historical)
             record.chmod(0o600)
