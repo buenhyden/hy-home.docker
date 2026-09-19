@@ -1,6 +1,6 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,7 +20,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 OAuth2 Proxy를 `ForwardAuth` 표준으로 운영하는 방법을 설명한다. 시크릿 엔트리포인트 주입, non-root 실행, 도메인 파라미터화, 세션 정책 점검 절차를 포함한다.
+이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 현재 실측으로 완료된 OIDC 로그인은 OpenBao native OIDC뿐이다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
 
 ### Usage Type
 
@@ -35,7 +35,8 @@ created: "2026-05-10"
 ### Purpose
 
 - 인증 프록시를 표준 하드닝 상태로 유지한다.
-- 신규 서비스의 SSO 연동 시 회귀를 줄인다.
+- 신규 서비스의 gateway SSO 연동 시 issuer, callback, cookie, session 회귀를 줄인다.
+- OAuth2 Proxy session logout과 Keycloak SSO logout을 구분한다.
 
 ### Prerequisites
 
@@ -47,6 +48,32 @@ created: "2026-05-10"
   공유 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
   전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
+
+### Tracked Configuration Snapshot
+
+| Item | Tracked value | Source |
+| --- | --- | --- |
+| Provider | `keycloak-oidc` | `config/oauth2-proxy.cfg` |
+| Client ID | `home-proxy-client` from `OAUTH2_PROXY_CLIENT_ID` | `.env.example`, compose env |
+| Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` | compose env |
+| Redirect URL | `https://auth.${DEFAULT_URL}/oauth2/callback` | compose env |
+| Cookie domain | `.${DEFAULT_URL}`; public default domain is `hy.home.arpa` | compose env |
+| Cookie name | `__Secure-sso-cookie` | config file |
+| Cookie lifetime | refresh `1h`, expire `12h` | config file |
+| Session store | `redis` protocol against Valkey | compose env and official session-storage docs |
+| Session backend | `mng-valkey` by default; `dedicated-valkey` only adds `oauth2-proxy-valkey` and its exporter | compose env/profile |
+| Provider CA | `/etc/ssl/certs/rootCA.pem`, `ssl_insecure_skip_verify=false` | compose env/config file |
+| Callback route | `Host(auth.${DEFAULT_URL}) && PathPrefix(/oauth2)` | Traefik labels |
+
+### Cookie, Token, and Session Distinctions
+
+OAuth2 Proxy uses a browser cookie to track the user. With `session_store_type=redis`, the browser cookie is a short ticket while encrypted session data is stored in Redis/Valkey. Access, ID and refresh tokens may live in the backend session data; they are not the same as the browser cookie. Rotating `oauth2_proxy_cookie_secret` invalidates existing proxy cookies. Rotating the Keycloak client secret affects token redemption. Rotating Valkey credentials affects session lookup. Treat these as separate incidents.
+
+The tracked config requests `openid email profile offline_access groups`, uses PKCE `S256`, passes authorization/access-token headers, and enables `set_xauthrequest`. That means downstream services may receive identity/token headers when routed through ForwardAuth. A downstream service must still define what it trusts; gateway SSO alone is not native application RBAC.
+
+### Logout Boundary
+
+OAuth2 Proxy official endpoint docs say `/oauth2/sign_out` clears OAuth2 Proxy cookies only. The user can still be logged in at Keycloak and may immediately re-login. Keycloak SSO logout requires redirecting to the provider end-session endpoint with an allowed `rd` destination and matching whitelist settings. The current tracked config sets `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`, but it does not prove that every service's logout button calls a Keycloak end-session redirect. Do not blanket-claim that current logout ends Keycloak SSO.
 
 ### Step-by-step Instructions
 
@@ -68,9 +95,12 @@ created: "2026-05-10"
 
 ### Common Pitfalls
 
-- `DEFAULT_URL`과 Keycloak realm/callback 도메인 불일치
+- `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
+- `ssl_insecure_skip_verify=false` 상태에서 root CA mount가 깨져 discovery/JWKS fetch가 실패하는 경우
 - 세션 비밀 변경 후 기존 쿠키 재사용으로 인한 인증 실패
-- `/ping` 헬스체크 통과 전 트래픽 유입
+- `/ping`은 process health이고 `/ready`는 Redis 등 backend 연결까지 본다는 차이를 놓치는 경우
+- `/oauth2/sign_out`을 Keycloak SSO 종료로 오해하는 경우
+- `trusted_ips` 또는 `trusted_proxy_ips`를 넓게 두고 forwarded header spoofing 위험을 검토하지 않는 경우
 
 ## Common Checks
 
@@ -89,6 +119,11 @@ created: "2026-05-10"
 - Subject peers: [Policy](policy.md) (`POL-0015`), [Runbook](runbook.md) (`RUN-0015`)
 
 ## Related Documents
+
+- [Official OAuth2 Proxy Keycloak OIDC provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)
+- [Official OAuth2 Proxy configuration overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [Official OAuth2 Proxy session storage](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/)
+- [Official OAuth2 Proxy endpoints](https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/)
 
 - Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 

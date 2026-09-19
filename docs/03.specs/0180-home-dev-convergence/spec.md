@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -74,7 +74,8 @@ Evidence contains names, paths, counts, classifications and statuses only.
 Do not render real environment values into output. Do not run broad profile
 deployment, reboot, secret rotation, volume deletion or remote mutation without
 the corresponding concrete approval. Preserve existing local values and unknown
-private metadata. A failed or unexecuted check is never recorded as PASS.
+private metadata except the later owner-approved exact-key pruning recorded in
+Task 0002. A failed or unexecuted check is never recorded as PASS.
 
 ## Acceptance Contract
 
@@ -103,7 +104,8 @@ private metadata. A failed or unexecuted check is never recorded as PASS.
 - [AD-0031 Home and Development Host](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Plan](plan.md)
 - [Initial execution](tasks/tsk-0001-home-dev-convergence.md)
-- [Current Task](tasks/tsk-0002-openbao-access-and-env-convergence.md)
+- [OpenBao and environment convergence](tasks/tsk-0002-openbao-access-and-env-convergence.md)
+- [Current Task](tasks/tsk-0003-keycloak-oidc-operations-research.md)
 
 ## Open Questions
 

@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -26,6 +26,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Traefik authentication middleware
 - Kafbat UI
 - Apache Airflow
+- OpenBao
 - 신규 OIDC-capable internal applications
 
 ## Controls
@@ -35,11 +36,12 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
   하나를 주 인증 경로로 명시한다.
-- 현재 Native OIDC 서비스는 Airflow와 Kafbat UI다.
-- Airflow/Kafbat Traefik router는 `gateway-standard-chain@file`만 사용한다.
+- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao다.
+- Airflow/Kafbat/OpenBao Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
-- OIDC client secret은 Docker Secret으로 주입한다.
+- Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
+  OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.
 - token/refresh token/id token 원문을 문서, incident, PR, task evidence에 기록하지 않는다.
 - local mkcert CA는 기존 public CA trust를 보존한 상태로 추가한다.
 - Airflow provider update 시 Keycloak permission migration 요구사항을 확인한다.
@@ -47,7 +49,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 
 ### Disallowed
 
-- Airflow/Kafbat에 Native OIDC와 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
+- Airflow/Kafbat/OpenBao에 Native OIDC와 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
 - `rootCA-key.pem` 배포/공유
 - secret/token 원문 기록
 - 과거 OAuth callback URL 또는 authorization code 재사용
@@ -64,19 +66,22 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
 bash scripts/hardening/check-all-hardening.sh 02-auth
+bash scripts/hardening/check-all-hardening.sh 03-security
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/hardening/check-all-hardening.sh 07-workflow
 ```
 
 추가 검증:
 
-- Airflow/Kafbat router = gateway-only
+- Airflow/Kafbat/OpenBao router = gateway-only
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
-- client secret Docker Secret mapping
+- Compose client secret Docker Secret mapping
+- OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../03-security/0085-openbao/runbook.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 
 ## Review Cadence
