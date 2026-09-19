@@ -6,6 +6,7 @@ services:
     profiles:
       - core
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med

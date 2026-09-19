@@ -32,7 +32,13 @@ services:
     image: confluentinc/cp-kafka:8.3.2
     profiles:
       - messaging
-      - dev
+      - messaging-broker
+      - messaging-cluster
+      - messaging-schema
+      - messaging-connect
+      - messaging-rest
+      - messaging-admin
+      - ksql
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -86,8 +92,12 @@ services:
 
   schema-registry:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-schema
+      - messaging-connect
+      - messaging-rest
+      - messaging-admin
+      - ksql
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -143,8 +153,9 @@ services:
 
   kafka-connect:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-connect
+      - messaging-admin
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -239,8 +250,8 @@ services:
 
   kafka-rest-proxy:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-rest
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -294,8 +305,8 @@ services:
 
   kafbat-ui:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-admin
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -399,8 +410,9 @@ services:
 
   kafka-exporter:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-broker
+      - messaging-cluster
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -433,8 +445,9 @@ services:
 
   kafka-init:
     profiles:
-      - 'messaging'
-      - dev
+      - messaging
+      - messaging-broker
+      - messaging-cluster
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low

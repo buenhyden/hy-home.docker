@@ -5,9 +5,7 @@ x-pg-common-env: &pg-common-env
   SCOPE: 'pg-ha'
   PATRONI_NAMESPACE: /service/
   ETCD3_HOSTS: >-
-    etcd-1:${ETCD_CLIENT_PORT:-2379},
-    etcd-2:${ETCD_CLIENT_PORT:-2379},
-    etcd-3:${ETCD_CLIENT_PORT:-2379}
+    etcd-1:${ETCD_CLIENT_PORT:-2379}, etcd-2:${ETCD_CLIENT_PORT:-2379}, etcd-3:${ETCD_CLIENT_PORT:-2379}
   PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
   PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
   PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
@@ -55,8 +53,8 @@ volumes:
 services:
   etcd-1:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -94,8 +92,8 @@ services:
 
   etcd-2:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -133,8 +131,8 @@ services:
 
   etcd-3:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -172,8 +170,8 @@ services:
 
   pg-router:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -232,8 +230,8 @@ services:
 
   pg-cluster-init:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -285,15 +283,15 @@ services:
 
   pg-0:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
     hostname: pg-0
-    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
       PATRONI_NAME: pg-0
@@ -329,15 +327,15 @@ services:
 
   pg-1:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
     hostname: pg-1
-    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
       PATRONI_NAME: pg-1
@@ -373,15 +371,15 @@ services:
 
   pg-2:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
     hostname: pg-2
-    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
       PATRONI_NAME: pg-2
@@ -417,8 +415,8 @@ services:
 
   pg-0-exporter:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -433,7 +431,7 @@ services:
       - patroni_exporter_password
     environment:
       PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
-    entrypoint: [/bin/sh, -c]
+    entrypoint: [ /bin/sh, -c ]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
@@ -443,11 +441,7 @@ services:
       pg-0:
         condition: service_healthy
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -460,8 +454,8 @@ services:
 
   pg-1-exporter:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -476,7 +470,7 @@ services:
       - patroni_exporter_password
     environment:
       PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
-    entrypoint: [/bin/sh, -c]
+    entrypoint: [ /bin/sh, -c ]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
@@ -486,11 +480,7 @@ services:
       pg-1:
         condition: service_healthy
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 15s
       timeout: 30s
       retries: 5
@@ -503,8 +493,8 @@ services:
 
   pg-2-exporter:
     profiles:
-      - data
       - service
+      - postgres-ha
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -519,7 +509,7 @@ services:
       - patroni_exporter_password
     environment:
       PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
-    entrypoint: [/bin/sh, -c]
+    entrypoint: [ /bin/sh, -c ]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
@@ -529,11 +519,7 @@ services:
       pg-2:
         condition: service_healthy
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 15s
       timeout: 30s
       retries: 5

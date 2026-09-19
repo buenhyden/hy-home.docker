@@ -56,8 +56,8 @@ volumes:
 services:
   n8n:
     profiles:
-      - 'workflow'
-      - dev
+      - workflow
+      - workflow-n8n
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -112,7 +112,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.80
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1']
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -120,8 +120,8 @@ services:
 
   n8n-worker:
     profiles:
-      - 'workflow'
-      - dev
+      - workflow
+      - workflow-n8n
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -155,11 +155,7 @@ services:
         ipv4_address: 172.19.0.81
     command: worker
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://127.0.0.1:${N8N_BROKER_PORT:-5679}/healthz || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://127.0.0.1:${N8N_BROKER_PORT:-5679}/healthz || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 10
@@ -169,8 +165,8 @@ services:
 
   n8n-task-runner:
     profiles:
-      - 'workflow'
-      - dev
+      - workflow
+      - workflow-n8n
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -193,11 +189,7 @@ services:
     secrets:
       - n8n_runner_auth_token
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -207,8 +199,8 @@ services:
 
   n8n-task-runner-worker:
     profiles:
-      - 'workflow'
-      - dev
+      - workflow
+      - workflow-n8n
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -230,11 +222,7 @@ services:
     volumes:
       - n8n-task-runner-worker-data:/home/node/.n8n:rw
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -260,17 +248,12 @@ services:
     volumes:
       - n8n-valkey-data:/data:rw
     command: >
-      sh -c '
-      valkey-server
-      --requirepass "$$(cat /run/secrets/n8n_valkey_password)"
-      --appendonly yes
-      --port 6379
-      '
+      sh -c ' valkey-server --requirepass "$$(cat /run/secrets/n8n_valkey_password)" --appendonly yes --port 6379 '
     expose:
       - '${VALKEY_PORT:-6379}'
       - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
-      test: ['CMD-SHELL', 'valkey-cli -a $$(cat /run/secrets/n8n_valkey_password) ping | grep PONG']
+      test: [ 'CMD-SHELL', 'valkey-cli -a $$(cat /run/secrets/n8n_valkey_password) ping | grep PONG' ]
       interval: 15s
       timeout: 30s
       retries: 5

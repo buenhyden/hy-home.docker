@@ -50,7 +50,10 @@ services:
   prometheus:
     profiles:
       - obs
-      - dev
+      - obs-core
+      - local
+      - alerting
+      - batch-metrics
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -94,7 +97,7 @@ services:
   loki:
     profiles:
       - obs
-      - dev
+      - logs
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -137,7 +140,7 @@ services:
   tempo:
     profiles:
       - obs
-      - dev
+      - tracing
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -180,7 +183,11 @@ services:
   alloy:
     profiles:
       - obs
-      - dev
+      - obs-core
+      - local
+      - logs
+      - tracing
+      - profiling
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -231,7 +238,13 @@ services:
   grafana:
     profiles:
       - obs
-      - dev
+      - obs-core
+      - local
+      - logs
+      - tracing
+      - profiling
+      - alerting
+      - batch-metrics
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
@@ -328,7 +341,8 @@ services:
   cadvisor:
     profiles:
       - obs
-      - dev
+      - obs-core
+      - local
     extends:
       file: ../common-optimizations.yml
       service: template-host-observer-med
@@ -375,7 +389,7 @@ services:
   pyroscope:
     profiles:
       - obs
-      - dev
+      - profiling
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -410,7 +424,7 @@ services:
   alertmanager:
     profiles:
       - obs
-      - dev
+      - alerting
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
@@ -455,7 +469,7 @@ services:
   pushgateway:
     profiles:
       - obs
-      - dev
+      - batch-metrics
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low

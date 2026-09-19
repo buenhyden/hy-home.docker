@@ -49,8 +49,8 @@ volumes:
 services:
   comfyui:
     profiles:
-      - 'ai'
-      - dev
+      - ai
+      - ai-image
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

@@ -14,7 +14,8 @@ services:
     profiles:
       - storage
       - obs
-      - dev
+      - logs
+      - tracing
       - nginx
     extends:
       file: ../../../common-optimizations.yml
@@ -60,7 +61,8 @@ services:
     profiles:
       - storage
       - obs
-      - dev
+      - logs
+      - tracing
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low

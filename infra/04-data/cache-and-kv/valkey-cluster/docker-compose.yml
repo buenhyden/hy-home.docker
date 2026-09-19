@@ -3,8 +3,8 @@ x-tier-label: &tier-label
 
 x-valkey-node-base: &valkey-node-base
   profiles:
-    - data
     - service
+    - valkey-cluster
   extends:
     file: ../../../common-optimizations.yml
     service: template-stateful-med
@@ -15,12 +15,14 @@ x-valkey-node-base: &valkey-node-base
     - /run
   secrets:
     - service_valkey_password
-  entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+  entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-start.sh' ]
   healthcheck:
     test:
       [
         'CMD-SHELL',
-        "V_PASS=$$(cat /run/secrets/service_valkey_password | tr -d '\n'); valkey-cli -a $$V_PASS -p $$PORT ping | grep PONG",
+        "V_PASS=$$(cat /run/secrets/service_valkey_password | tr -d '
+
+          '); valkey-cli -a $$V_PASS -p $$PORT ping | grep PONG"
       ]
     interval: 15s
     timeout: 10s
@@ -28,7 +30,6 @@ x-valkey-node-base: &valkey-node-base
     start_period: 20s
   labels:
     <<: *tier-label
-
 
 volumes:
   valkey0-data:
@@ -187,7 +188,7 @@ services:
     restart: 'no'
     image: valkey/valkey:9.1.2-alpine
     container_name: valkey-cluster-init
-    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-cluster-init.sh']
+    entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-cluster-init.sh' ]
     volumes:
       - ./scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
     secrets:
@@ -233,11 +234,7 @@ services:
     secrets:
       - service_valkey_password
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3

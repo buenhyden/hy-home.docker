@@ -21,7 +21,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
     profiles:
-      - data
+      - influxdb
     image: influxdb:3.11.4-core
     container_name: influxdb
     hostname: influxdb

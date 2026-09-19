@@ -18,7 +18,7 @@ volumes:
 services:
   cassandra-exporter:
     profiles:
-      - 'data'
+      - cassandra
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -45,7 +45,7 @@ services:
 
   cassandra-node1:
     profiles:
-      - 'data'
+      - cassandra
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high

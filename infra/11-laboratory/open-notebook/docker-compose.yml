@@ -19,6 +19,7 @@ services:
   surrealdb:
     profiles:
       - admin
+      - notebook
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
@@ -37,7 +38,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.122
     healthcheck:
-      test: ["CMD", "/usr/local/bin/surreal", "isready", "--conn", "http://127.0.0.1:8000"]
+      test: [ "CMD", "/usr/local/bin/surreal", "isready", "--conn", "http://127.0.0.1:8000" ]
       interval: 10s
       timeout: 5s
       retries: 12
@@ -48,6 +49,7 @@ services:
   open_notebook:
     profiles:
       - admin
+      - notebook
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -79,7 +81,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "test -d /app/data"]
+      test: [ "CMD-SHELL", "test -d /app/data" ]
       interval: 30s
       timeout: 5s
       retries: 5

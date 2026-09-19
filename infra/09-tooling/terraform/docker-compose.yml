@@ -1,12 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: tooling
 
-
 services:
   terraform:
     profiles:
-      - 'tooling'
-      - iac
+      - terraform-legacy
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -21,7 +19,7 @@ services:
       - $HOME/.aws:/root/.aws:ro
       - $HOME/.azure:/root/.azure:ro
     working_dir: /workspace
-    entrypoint: ['terraform']
+    entrypoint: [ 'terraform' ]
     networks:
       infra_net:
         ipv4_address: 172.19.0.120

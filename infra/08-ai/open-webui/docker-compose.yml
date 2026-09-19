@@ -12,7 +12,8 @@ volumes:
 services:
   open-webui:
     profiles:
-      - 'ai'
+      - ai
+      - ai-llm
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

@@ -18,7 +18,9 @@ services:
   mng-valkey:
     profiles:
       - mng
+      - core
       - dev
+      - local
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -34,22 +36,13 @@ services:
     secrets:
       - mng_valkey_password
     command: >
-      sh -c '
-      exec valkey-server
-      --requirepass "$$(cat /run/secrets/mng_valkey_password)"
-      --appendonly yes
-      --port 6379
-      '
+      sh -c ' exec valkey-server --requirepass "$$(cat /run/secrets/mng_valkey_password)" --appendonly yes --port 6379 '
     ports:
       - ${VALKEY_MNG_HOST_POST-26379}:${VALKEY_PORT:-6379}
     expose:
       - '${VALKEY_PORT:-6379}'
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG',
-        ]
+      test: [ 'CMD-SHELL', 'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG' ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -63,7 +56,7 @@ services:
   mng-valkey-exporter:
     profiles:
       - mng
-      - dev
+      - local
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -84,11 +77,7 @@ services:
     secrets:
       - mng_valkey_password
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -104,7 +93,9 @@ services:
   mng-pg:
     profiles:
       - mng
+      - core
       - dev
+      - local
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
@@ -126,7 +117,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -140,7 +131,9 @@ services:
   mng-pg-init:
     profiles:
       - mng
+      - core
       - dev
+      - local
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -209,7 +202,7 @@ services:
   mng-pg-exporter:
     profiles:
       - mng
-      - dev
+      - local
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -238,11 +231,7 @@ services:
       <<: *tier-label
       traefik.enable: 'false'
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 15s
       timeout: 10s
       retries: 5

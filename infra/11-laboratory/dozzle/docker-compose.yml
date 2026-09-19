@@ -13,8 +13,7 @@ services:
   dozzle:
     profiles:
       - admin
-      - dev
-      - mng
+      - admin-logs
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

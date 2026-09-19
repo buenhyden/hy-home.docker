@@ -12,7 +12,6 @@ volumes:
 services:
   neo4j:
     profiles:
-      - data
       - graph
     cap_drop:
       - ALL
@@ -55,7 +54,7 @@ services:
       # 선택: APOC 등 플러그인 없으면 비워둠
       # NEO4J_PLUGINS: '[]'
 
-    entrypoint: ['/bin/sh', '/startup/neo4j-entrypoint-with-secrets.sh']
+    entrypoint: [ '/bin/sh', '/startup/neo4j-entrypoint-with-secrets.sh' ]
     volumes:
       - neo4j-data:/data:rw
       - ./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro
@@ -77,11 +76,7 @@ services:
       traefik.http.services.neo4j.loadbalancer.server.port: ${NEO4J_HTTP_PORT:-7474}
       traefik.http.routers.neo4j.middlewares: gateway-standard-chain@file
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "cypher-shell -a bolt://localhost:7687 -u neo4j -p \"$(tr -d '\\n' < /run/secrets/neo4j_password)\" 'RETURN 1;' >/dev/null 2>&1 || exit 1",
-        ]
+      test: [ 'CMD-SHELL', "cypher-shell -a bolt://localhost:7687 -u neo4j -p \"$(tr -d '\\n' < /run/secrets/neo4j_password)\" 'RETURN 1;' >/dev/null 2>&1 || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5

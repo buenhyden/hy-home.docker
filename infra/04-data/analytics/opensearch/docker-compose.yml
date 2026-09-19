@@ -21,7 +21,7 @@ volumes:
 services:
   opensearch:
     profiles:
-      - 'data'
+      - opensearch
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-high
@@ -81,8 +81,8 @@ services:
 
   opensearch-dashboards:
     profiles:
-      - 'data'
-      - data-cluster
+      - opensearch
+      - opensearch-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -142,7 +142,7 @@ services:
 
   opensearch-node1:
     profiles:
-      - data-cluster
+      - opensearch-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
@@ -225,7 +225,7 @@ services:
   # #######################################################
   opensearch-node2:
     profiles:
-      - data-cluster
+      - opensearch-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
@@ -279,7 +279,7 @@ services:
   # #######################################################
   opensearch-node3:
     profiles:
-      - data-cluster
+      - opensearch-cluster
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high

@@ -12,7 +12,7 @@ volumes:
 services:
   stalwart:
     profiles:
-      - 'communication'
+      - mail-server
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

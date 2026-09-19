@@ -28,8 +28,8 @@ x-airflow-common-env: &airflow-common-env
 
 x-airflow-common: &airflow-common
   profiles:
-    - 'workflow'
-    - dev
+    - workflow
+    - workflow-airflow
   build:
     context: ../../..
     dockerfile: infra/07-workflow/airflow/Dockerfile

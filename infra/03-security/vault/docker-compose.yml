@@ -27,6 +27,7 @@ services:
       - core
       - security
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -62,11 +63,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.9
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q -O- "http://127.0.0.1:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q -O- "http://127.0.0.1:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1' ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -85,6 +82,7 @@ services:
       - core
       - security
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -112,7 +110,7 @@ services:
       - agent
       - -config=/vault/config/vault-agent.hcl
     healthcheck:
-      test: ['CMD-SHELL', "pgrep -f 'vault agent' > /dev/null || exit 1"]
+      test: [ 'CMD-SHELL', "pgrep -f 'vault agent' > /dev/null || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5

@@ -7,7 +7,7 @@ volumes:
 services:
   studio:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -39,7 +39,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -47,7 +47,7 @@ services:
 
   kong:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -77,7 +77,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -85,7 +85,7 @@ services:
 
   auth:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -113,7 +113,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -121,7 +121,7 @@ services:
 
   rest:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -147,7 +147,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -155,7 +155,7 @@ services:
 
   realtime:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -182,7 +182,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -190,7 +190,7 @@ services:
 
   storage:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -223,7 +223,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -231,7 +231,7 @@ services:
 
   imgproxy:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -248,7 +248,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -256,7 +256,7 @@ services:
 
   meta:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -280,7 +280,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -288,7 +288,7 @@ services:
 
   functions:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-high
@@ -316,7 +316,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -324,7 +324,7 @@ services:
 
   analytics:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-high
@@ -348,7 +348,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -356,7 +356,7 @@ services:
 
   db:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-high
@@ -389,7 +389,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U postgres || exit 1']
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U postgres || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -397,7 +397,7 @@ services:
 
   vector:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -407,14 +407,14 @@ services:
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/logs/vector.yml:/etc/vector/vector.yml:ro
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro
-    command: ['--config', '/etc/vector/vector.yml']
+    command: [ '--config', '/etc/vector/vector.yml' ]
     networks:
       infra_net:
         ipv4_address: 172.19.0.190
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -422,7 +422,7 @@ services:
 
   supavisor:
     profiles:
-      - 'data'
+      - supabase
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -456,7 +456,7 @@ services:
     labels:
       <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 3

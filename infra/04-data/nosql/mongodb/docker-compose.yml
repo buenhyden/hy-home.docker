@@ -10,7 +10,7 @@ volumes:
 services:
   mongo-key-generator:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -34,7 +34,7 @@ services:
 
   mongodb-rep1:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -69,7 +69,7 @@ services:
 
   mongodb-rep2:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -104,7 +104,7 @@ services:
 
   mongodb-arbiter:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -128,7 +128,7 @@ services:
 
   mongo-init:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -159,7 +159,7 @@ services:
 
   mongo-express:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -201,7 +201,7 @@ services:
 
   mongodb-exporter:
     profiles:
-      - 'data'
+      - mongodb
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low

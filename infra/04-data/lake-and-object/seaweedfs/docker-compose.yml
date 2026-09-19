@@ -8,7 +8,7 @@ volumes:
 services:
   seaweedfs-master:
     profiles:
-      - 'data'
+      - seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -25,11 +25,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.140
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status || exit 1' ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -45,7 +41,7 @@ services:
 
   seaweedfs-volume:
     profiles:
-      - 'data'
+      - seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -65,11 +61,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.141
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}/status || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}/status || exit 1' ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -79,7 +71,7 @@ services:
 
   seaweedfs-filer:
     profiles:
-      - 'data'
+      - seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -107,11 +99,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.142
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${SEAWEEDFS_FILER_HTTP_PORT:-8888}/ || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_FILER_HTTP_PORT:-8888}/ || exit 1' ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -119,7 +107,7 @@ services:
 
   seaweedfs-s3:
     profiles:
-      - 'data'
+      - seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -143,11 +131,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.143
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${SEAWEEDFS_S3_HTTP_PORT:-8333}/ || exit 1',
-        ]
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_S3_HTTP_PORT:-8333}/ || exit 1' ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -155,7 +139,7 @@ services:
 
   seaweedfs-mount:
     profiles:
-      - 'data'
+      - seaweedfs
     extends:
       file: ../../../common-optimizations.yml
       service: template-host-observer-med
