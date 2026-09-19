@@ -29,6 +29,9 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.230
     labels:
       <<: *tier-label
       traefik.enable: 'true'
