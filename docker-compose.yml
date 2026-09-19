@@ -236,6 +236,7 @@ include:
   - infra/04-data/relational/postgresql-cluster/docker-compose.yml
   - infra/04-data/specialized/neo4j/docker-compose.yml
   - infra/04-data/specialized/qdrant/docker-compose.yml
+  - infra/04-data/specialized/surrealdb/docker-compose.yml
   # 05-messaging
   - infra/05-messaging/kafka/docker-compose.yml
   # 06-observability
@@ -253,11 +254,9 @@ include:
   - infra/09-tooling/registry/docker-compose.yml
   - infra/09-tooling/sonarqube/docker-compose.yml
   - infra/09-tooling/opentofu/docker-compose.yml
-  - infra/09-tooling/terraform/docker-compose.yml # migration only
   - infra/09-tooling/terrakube/docker-compose.yml
   # 10-communication  
   - infra/10-communication/mailpit/docker-compose.yml
-  - infra/10-communication/mailhog/docker-compose.yml # migration only
   - infra/10-communication/stalwart/docker-compose.yml
   # 11-laboratory
   - infra/11-laboratory/dozzle/docker-compose.yml

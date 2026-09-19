@@ -27,6 +27,7 @@ services:
       - core
       - security
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -42,13 +43,7 @@ services:
       BAO_API_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
       BAO_CLUSTER_ADDR: 'https://openbao:${OPENBAO_CLUSTER_PORT:-8201}'
       BAO_LOCAL_CONFIG: >-
-        {"ui":true,"disable_mlock":true,
-        "storage":{"raft":{"path":"/openbao/data","node_id":"openbao-node1"}},
-        "listener":[{"tcp":{"address":"0.0.0.0:${OPENBAO_PORT:-8200}",
-        "cluster_address":"0.0.0.0:${OPENBAO_CLUSTER_PORT:-8201}","tls_disable":true}}],
-        "api_addr":"http://openbao:${OPENBAO_PORT:-8200}",
-        "cluster_addr":"https://openbao:${OPENBAO_CLUSTER_PORT:-8201}",
-        "telemetry":{"disable_hostname":true,"prometheus_retention_time":"30s"}}
+        {"ui":true,"disable_mlock":true, "storage":{"raft":{"path":"/openbao/data","node_id":"openbao-node1"}}, "listener":[{"tcp":{"address":"0.0.0.0:${OPENBAO_PORT:-8200}", "cluster_address":"0.0.0.0:${OPENBAO_CLUSTER_PORT:-8201}","tls_disable":true}}], "api_addr":"http://openbao:${OPENBAO_PORT:-8200}", "cluster_addr":"https://openbao:${OPENBAO_CLUSTER_PORT:-8201}", "telemetry":{"disable_hostname":true,"prometheus_retention_time":"30s"}}
     volumes:
       - openbao-data:/openbao/data:rw
     command:
@@ -58,11 +53,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.17
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'bao status >/dev/null 2>&1; rc=$$?; [ "$$rc" -eq 0 ] || [ "$$rc" -eq 2 ]',
-        ]
+      test: [ 'CMD-SHELL', 'bao status >/dev/null 2>&1; rc=$$?; [ "$$rc" -eq 0 ] || [ "$$rc" -eq 2 ]' ]
       interval: 15s
       timeout: 10s
       retries: 10
@@ -81,6 +72,7 @@ services:
       - core
       - security
       - dev
+      - local
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -103,7 +95,7 @@ services:
       - agent
       - -config=/vault/config/vault-agent.hcl
     healthcheck:
-      test: ['CMD-SHELL', 'test -s /vault/agent/token']
+      test: [ 'CMD-SHELL', 'test -s /vault/agent/token' ]
       interval: 30s
       timeout: 10s
       retries: 5

@@ -16,7 +16,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: axllent/mailpit
+    image: axllent/mailpit:v1.31.1
     container_name: mailpit
     restart: unless-stopped
     volumes:

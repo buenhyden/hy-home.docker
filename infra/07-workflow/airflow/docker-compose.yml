@@ -256,7 +256,7 @@ services:
   airflow-init:
     profiles:
       - workflow
-      - dev
+      - workflow-airflow
     container_name: airflow-init
     extends:
       file: ../../common-optimizations.yml
@@ -368,7 +368,7 @@ services:
   flower:
     profiles:
       - workflow
-      - dev
+      - workflow-airflow
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -467,8 +467,8 @@ services:
         required: false
   airflow-statsd-exporter:
     profiles:
-      - 'workflow'
-      - dev
+      - workflow
+      - workflow-airflow
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

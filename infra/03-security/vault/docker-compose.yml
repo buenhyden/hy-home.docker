@@ -24,10 +24,7 @@ volumes:
 services:
   vault:
     profiles:
-      - core
-      - security
-      - dev
-      - local
+      - vault-legacy
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -79,10 +76,7 @@ services:
 
   vault-agent:
     profiles:
-      - core
-      - security
-      - dev
-      - local
+      - vault-legacy
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
