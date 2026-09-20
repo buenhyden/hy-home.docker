@@ -105,6 +105,129 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.module = load_contract_module()
 
+    def test_quality_workflow_revalidates_edited_pull_request_titles(self) -> None:
+        expected = ["opened", "synchronize", "reopened", "edited"]
+        workflow = next(
+            workflow
+            for workflow in self.module.load_workflows(ROOT)
+            if workflow.path == ".github/workflows/ci-quality.yml"
+        )
+        document = self.load_contract_document(ROOT)
+
+        self.assertEqual(expected, workflow.data["on"]["pull_request"]["types"])
+        self.assertEqual(
+            expected,
+            document["workflows"][".github/workflows/ci-quality.yml"]["triggers"][
+                "pull_request"
+            ]["types"],
+        )
+
+    def test_quality_workflow_concurrency_separates_event_types(self) -> None:
+        expected_group = (
+            "${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}"
+        )
+        workflow = next(
+            workflow
+            for workflow in self.module.load_workflows(ROOT)
+            if workflow.path == ".github/workflows/ci-quality.yml"
+        )
+        document = self.load_contract_document(ROOT)
+        contract = document["workflows"][".github/workflows/ci-quality.yml"]
+
+        self.assertEqual(expected_group, workflow.data["concurrency"]["group"])
+        self.assertIs(True, workflow.data["concurrency"]["cancel-in-progress"])
+        self.assertEqual(expected_group, contract["concurrency"]["group"])
+        self.assertIs(True, contract["concurrency"]["cancel-in-progress"])
+
+    def test_public_plans_run_precommit_before_expensive_gates_without_loss(
+        self,
+    ) -> None:
+        expected_gate_ids = frozenset(
+            {
+                "leaf.agent-governance-regressions",
+                "leaf.agent-output-eval-fixture-gate",
+                "leaf.agent-output-eval-fixture-regressions",
+                "leaf.ci-gate-adapter-regressions",
+                "leaf.ci-gate-contract-regressions",
+                "leaf.ci-gate-runner-regressions",
+                "leaf.ci-precommit-regressions",
+                "leaf.compose-baseline-regressions",
+                "leaf.compose-validation",
+                "leaf.dependency-vulnerability-audit",
+                "leaf.docs-traceability",
+                "leaf.document-governance-library-regressions",
+                "leaf.document-lifecycle-regressions",
+                "leaf.frontend-build",
+                "leaf.frontend-lint",
+                "leaf.frontend-quality",
+                "leaf.frontend-typecheck",
+                "leaf.git-flow-contract",
+                "leaf.infrastructure-hardening",
+                "leaf.local-agent-governance-contract",
+                "leaf.local-diff-hygiene",
+                "leaf.local-document-corpus-lifecycle",
+                "leaf.local-document-corpus-lifecycle-tests",
+                "leaf.local-document-metadata-tests",
+                "leaf.local-hook-rule-tests",
+                "leaf.local-provider-surface-drift",
+                "leaf.local-script-manifest",
+                "leaf.local-shell-syntax",
+                "leaf.local-tech-stack-version-drift",
+                "leaf.operations-catalog",
+                "leaf.postgres-logical-upgrade-config",
+                "leaf.pre-commit",
+                "leaf.provider-governance-regressions",
+                "leaf.quickwin-baseline",
+                "leaf.repo-contracts-control-plane-regressions",
+                "leaf.repo-document-metadata",
+                "leaf.repo-metadata-base",
+                "leaf.repository-integrity-regressions",
+                "leaf.storybook-coverage",
+                "leaf.supply-chain-deterministic-policy",
+                "leaf.supply-chain-fixture-policy",
+                "leaf.template-security-baseline",
+                "leaf.workflow-contract",
+                "leaf.workflow-contract-regressions",
+                "leaf.zizmor",
+                "setup.frontend-node-dependencies",
+                "setup.storybook-playwright",
+            }
+        )
+        expensive_gate_ids = (
+            "leaf.dependency-vulnerability-audit",
+            "setup.frontend-node-dependencies",
+            "leaf.frontend-lint",
+            "leaf.frontend-typecheck",
+            "leaf.frontend-build",
+            "leaf.frontend-quality",
+            "setup.storybook-playwright",
+            "leaf.storybook-coverage",
+            "leaf.zizmor",
+        )
+        document = self.load_contract_document(ROOT)
+        public = gate_contract.parse_public_gate_contract(document)
+        registry = self.module.load_workflow_contract(ROOT).gate_registry
+
+        for profile, changed_paths in (
+            ("changed", (".github/workflows/ci-quality.yml",)),
+            ("full", ()),
+        ):
+            with self.subTest(profile=profile):
+                suites = gate_contract.select_public_suites(
+                    public, profile, changed_paths
+                )
+                roots = gate_contract.public_root_gate_ids(
+                    public,
+                    suites,
+                    changed_paths=changed_paths if profile == "changed" else None,
+                )
+                planned = gate_contract.expand_public_gate_ids(registry, roots)
+                positions = {gate_id: index for index, gate_id in enumerate(planned)}
+
+                self.assertEqual(expected_gate_ids, frozenset(planned))
+                for gate_id in expensive_gate_ids:
+                    self.assertLess(positions["leaf.pre-commit"], positions[gate_id])
+
     def test_storybook_shell_accepts_typed_full_route_direct_and_held(self) -> None:
         script = ROOT / "scripts/validation/check-storybook-contract.sh"
         env = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
@@ -1643,6 +1766,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "    branches: [main]\n"
             "  pull_request:\n"
             "    branches: [main]\n"
+            "    types: [opened, synchronize, reopened, edited]\n"
             "  workflow_dispatch:\n"
         )
         malicious_trigger = (

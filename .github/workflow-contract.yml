@@ -13,6 +13,12 @@
         "pull_request": {
           "branches": [
             "main"
+          ],
+          "types": [
+            "opened",
+            "synchronize",
+            "reopened",
+            "edited"
           ]
         },
         "workflow_dispatch": null
@@ -21,7 +27,7 @@
         "contents": "read"
       },
       "concurrency": {
-        "group": "${{ github.workflow }}-${{ github.ref }}",
+        "group": "${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}",
         "cancel-in-progress": true
       },
       "jobs": {
@@ -1040,12 +1046,12 @@
         "leaf.local-script-manifest",
         "leaf.local-tech-stack-version-drift",
         "local.workflow-harness",
+        "leaf.pre-commit",
         "ci.dependency-vulnerability-audit",
         "ci.git-flow-contract",
         "ci.frontend-quality",
         "ci.storybook-coverage",
         "ci.zizmor",
-        "leaf.pre-commit",
         "leaf.repository-integrity-regressions"
       ]
     },
