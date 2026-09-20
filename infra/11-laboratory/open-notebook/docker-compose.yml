@@ -8,12 +8,6 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MANAGEMENT_DIR}/open-notebook/data
-  surrealdb-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_MANAGEMENT_DIR}/surrealdb/data
 
 services:
   open_notebook:
