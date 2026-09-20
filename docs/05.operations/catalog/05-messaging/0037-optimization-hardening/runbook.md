@@ -72,7 +72,6 @@ ownership drift and escalate to the messaging owner.
 - [Kafka runbook](../0036-kafka/runbook.md)
 - [Hardening policy](policy.md)
 
-
 ## Related Documents
 
 - [Kafka runbook](../0036-kafka/runbook.md)

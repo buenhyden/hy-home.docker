@@ -95,7 +95,6 @@ reason to improvise a replacement.
 - [MinIO client mirror](https://github.com/minio/mc/blob/master/README.md)
 - [Policy](policy.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

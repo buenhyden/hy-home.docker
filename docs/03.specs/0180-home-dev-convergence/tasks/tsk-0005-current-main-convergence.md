@@ -1,6 +1,6 @@
 ---
 title: "Current Main Home and Development Convergence"
-version: "0.4.3"
+version: "0.4.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -226,11 +226,15 @@ APPROVED with no Critical, Important or Minor findings in that reviewed snapshot
 The local changed runner used its no-PR-base `check-active` substitution
 (selected 449, violations 0), while the local full gate used
 `check-contracts`; neither exercised the PR-range changed-body heading ratchet.
-The required hosted `validation-changed` check failed on committed metadata
-coverage.
-Two commits are pushed and draft PR 169 is open. The 24-document heading-only
-correction packet is independently reviewed and green locally, but not yet
-committed or pushed; no merge or runtime action occurred.
+The first required hosted `validation-changed` check failed on committed metadata
+coverage. That 24-document heading-only correction is independently reviewed,
+green, committed and pushed. Draft PR 169 now has three commits at
+`0eaa445a7a9820a8dd6289adacd7b900543443b0`. Its next hosted run passed metadata
+and lifecycle, then failed the later all-files pre-commit leaf when 35 unique formatting targets were found: 11 EOF targets plus 6 trailing-
+whitespace targets with one overlap (16 unique), and 19 additional Markdownlint
+targets, and the Gatus Dockerfile triggered DL4006.
+Those exact local corrections are frozen, green and independently approved but
+are not yet committed or pushed; no merge or runtime action occurred.
 
 The canonical current inventory is the
 [140-service, 20-field matrix](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md).
@@ -249,13 +253,13 @@ This Task records execution evidence and does not duplicate those policy surface
 | E — documentation | Storage, databases/messaging, applications, platform and root/architecture correction packets are frozen. Exact current README, Guide/Policy/Runbook, source-authority, lifecycle, auth, recovery and onboarding statements replaced the initial shallow pass. | **APPROVED** in every E subdomain: storage plus README integration, databases, applications, platform and root. Earlier correction-required and pending labels are superseded by their final reviews. |
 | F — environment/secrets | Public schema remains 247 keys and now contains 94 IDs; SEC-002 is a staged manual OpenBao metrics contract. The scanner covers copied build inputs, lexical tracked symlinks and normalized runtime paths. | **APPROVED**. Reviewer reran 30 focused tests. Deployed main private metadata remains 93 IDs; no credential was issued or synchronized. |
 | R — lifecycle | Final counts are HOME 37, DEV 9, OPTIONAL 47, LAB 45, MIGRATE 2 and REMOVE 0. The only classification change from the provisional set is locust-worker from OPTIONAL to DEV. | **APPROVED**. All 140 judgments and ten overlap decisions were source checked. Four currently running non-HOME containers remain a transition gap. |
-| G — integration/delivery | All four earlier whole-branch findings are corrected and independently approved. Required hosted `validation-changed` run 35474733788 / job 105981909050 failed with 25 rows across 24 files because the local pre-PR `check-active`/`check-contracts` routes did not exercise the PR-range changed-body ratchet. The heading-only correction packet now passes storage 17/0, messaging/AD 7/0 and combined explicit-base 282/0 with zero legacy exceptions/overrides; operations catalog and all links also pass. | **DRAFT PR 169 — CORRECTION SPEC/QUALITY APPROVED AND LOCALLY GREEN**. Existing PR head remains `4ed7724ce83605fe5d8d1e553a52f367f45757cc`. The 24-document packet fixes all 25 finding rows structurally, preserves non-heading bytes and changes no config or validator. Only this final Task delta, correction commit/push and current-head hosted CI remain pending. |
+| G — integration/delivery | All four earlier whole-branch findings are corrected and independently approved. The first hosted run exposed 25 metadata rows across 24 files; the pushed heading correction resolved them. Run 35476114948 / job 105985535619 then passed hosted metadata 282/0 and lifecycle before all-files pre-commit found 35 unique formatting targets: 11 EOF targets plus 6 trailing-whitespace targets with one overlap (16 unique), and 19 additional Markdownlint targets, and found Gatus DL4006. The exact 36-path local packet is green: formatting is semantic-whitespace-only and idempotent, Gatus hadolint is GREEN, 12 Gatus tests pass, explicit-base metadata is 285/0 and links are 920/8,950/0. | **DRAFT PR 169 — CURRENT LOCAL CORRECTION SPEC/QUALITY/SECURITY APPROVED**. PR head `0eaa445a7a9820a8dd6289adacd7b900543443b0` has three commits. The PR-head hosted result is failed. The new 36-path correction and this Task delta are not committed or pushed; a hosted rerun containing them remains pending. |
 
 ### Actual baseline and current source matrix
 
 | Surface | Actual evidence | Interpretation |
 | --- | --- | --- |
-| Git baseline | Baseline `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b`; branch `codex/home-dev-convergence-followup`; pushed commits `8919696e8a65f47ccd830e577d80c781b810cbd3` and `4ed7724ce83605fe5d8d1e553a52f367f45757cc` | Draft PR 169 head is `4ed7724ce83605fe5d8d1e553a52f367f45757cc`; not merged |
+| Git baseline | Baseline `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b`; branch `codex/home-dev-convergence-followup`; three pushed commits through `0eaa445a7a9820a8dd6289adacd7b900543443b0` | Draft PR 169 head is `0eaa445a7a9820a8dd6289adacd7b900543443b0`; not merged |
 | Compose inventory at entry | 42 tracked root-included Compose sources, 140 unique services, 64 declared profiles and 261 profile-service memberships | Historical entry measurement, preserved for comparison |
 | Current static Compose validation | Entry run: 65 registered selection cases, 293 aggregate selected-service checks and HOME 37; exit 0; later focused port corrections passed seven tests | The entry result retains its historical scope; current omitted-host dual-stack and IPv4-mapped IPv6 overlap semantics are established by the later correction/review |
 | Current lifecycle | HOME 37, DEV 9, OPTIONAL 47, LAB 45, MIGRATE 2, REMOVE 0 | Canonical current judgment in m0021; no automatic activation or deletion |
@@ -283,7 +287,7 @@ This Task records execution evidence and does not duplicate those policy surface
 | SECURITY | Current docs and source distinguish OpenBao HOME from Vault MIGRATE custody and native OIDC from proxy-only services; hardening/static checks passed in their recorded scope. | Live authorization, target health, credential issuance and current enforcement remain unverified. |
 | NETWORK | Source joins cover declared networks, ports and the corrected static-address map. HOME port checks now cover omitted-host dual-stack and IPv4-mapped IPv6 overlap semantics; seven focused tests pass. | Static port closure does not prove complete live isolation or future rootless compatibility. |
 | DATA | E records per-state-owner backup/recovery boundaries, including Grafana's source-derived default SQLite state and storage engine procedures. | No new backup consistency, isolated restore, cold start or reboot rehearsal was executed. |
-| CI | Earlier four-finding corrections remain approved. Hosted PR metadata failed 25/24 and reproduced with the explicit base; the structure-only correction now passes combined explicit-base metadata 282/0, catalog and links and is independently SPEC/QUALITY APPROVED. | Corrected worktree is not yet committed or pushed, so PR-head CI remains failed/pending rerun. No validator relaxation was used. |
+| CI | Earlier four-finding corrections remain approved. The pushed structure-only repair resolved the 25/24 metadata failure; the next hosted run passed metadata 282/0 and lifecycle before all-files pre-commit found the formatter/Gatus issues. The exact follow-up is locally green and independently SPEC/QUALITY/SECURITY APPROVED. | The PR-head hosted result is failed; the 36-path follow-up is not committed or pushed, so its hosted rerun remains pending. No validator relaxation was used. |
 
 ### Current documentation coverage
 
@@ -369,11 +373,15 @@ or growth acceptance.
 | Entrypoint mode correction | exact isolated-worktree `chmod g-w` changed Open WebUI/Gatus entrypoints from 0775 to 0755; focused 2/2 and integrated 50/50 PASS | Git index stayed 100755, original files stayed 0755/0555, and no source/index bytes changed |
 | Local pre-PR changed check | exit 0; `/tmp/convergence-final-changed-gate-modefixed.log`; metadata `check-active` selected 449, violations 0 | No PR-base context caused the deliberate active-corpus substitution; changed-body heading ratchet was not exercised |
 | Local pre-PR full check | exit 0; `/tmp/convergence-final-full-gate.log`; `check-contracts` passed | Contract validation does not apply the PR-range changed-body heading ratchet; no runtime deployment acceptance |
-| Hosted required `validation-changed` | run 35474733788 / job 105981909050: **FAIL**; 25 findings in 24 files | Current pushed PR head; superseded only after correction push and hosted rerun |
+| First hosted required `validation-changed` | run 35474733788 / job 105981909050: **FAIL**; 25 findings in 24 files | Historical pushed-head failure; superseded by the pushed heading correction |
 | Host committed-range reproduction | exit 1; selected 282, violations 25, legacy 0, overrides 0; `/tmp/convergence-hosted-metadata-repro.log` | Explicit baseline confirms repository defect, not runner failure |
+| Corrected-head hosted run | run 35476114948 / job 105985535619: metadata selected 282/0 and lifecycle PASS; overall **FAIL** after 21m38s at all-files pre-commit | 35 unique formatting targets: 11 EOF targets plus 6 trailing-whitespace targets with one overlap (16 unique), and 19 additional Markdownlint targets, plus Gatus Dockerfile DL4006; `/tmp/convergence-hosted-corrected-head-failure.log` |
+| All-files inspection and Markdown correction | 35 unique formatting targets: 11 EOF targets plus 6 trailing-whitespace targets with one overlap (16 unique), and 19 additional Markdownlint targets; pinned markdownlint-cli2 0.22.1 plus cached checks are idempotent on the second pass; whitespace-insensitive diff exit 0 | 17 prior-PR paths and 18 baseline-unchanged paths; semantic content preserved; `/tmp/convergence-hosted-lint-inspection.txt` |
+| Gatus Dockerfile correction | official hadolint 2.14.0 checksum verified; DL4006 RED exit 1 to GREEN exit 0; 12 Gatus tests PASS | Builder change is limited to the `ash -eo pipefail` shell correction and two lines; no runtime action |
+| Current explicit-base metadata | exit 0; selected 285, violations 0, legacy 0, overrides 0 | Includes the frozen local correction packet; not yet pushed |
 | Storage heading correction | explicit-base selected 17, violations 0 | Heading-only; non-heading bytes preserved |
 | Messaging/AD heading correction | explicit-base selected 7, violations 0 | Heading-only; non-heading bytes preserved |
-| Combined corrected PR range | exit 0; selected 282, violations 0, legacy 0, overrides 0; `/tmp/convergence-pr-range-metadata-after-heading-fix.log` | Corrected local worktree; not yet pushed |
+| Combined corrected PR range | exit 0; selected 282, violations 0, legacy 0, overrides 0; `/tmp/convergence-pr-range-metadata-after-heading-fix.log` | Historical heading packet; subsequently pushed at `0eaa445a7a9820a8dd6289adacd7b900543443b0` |
 | Corrected integration checks | operations catalog PASS; all-links 920 documents / 8,950 links / 0 failures | Catalog log: `/tmp/convergence-operations-catalog-after-heading-fix.log` |
 | Task-only metadata/link/diff checks | metadata selected 1, violations 0; all-links 920 documents / 8,950 links / 0 failures; exact diff check PASS | Task consolidation only; registered gate results are recorded in separate rows |
 
@@ -428,8 +436,30 @@ bytes and does not change config or relax the validator. Storage explicit-base
 metadata passes 17/0; messaging/AD passes 7/0; the combined PR range passes
 282/0 with zero legacy exceptions and overrides. Operations catalog and all
 links pass. Independent correction review is SPEC/QUALITY APPROVED with no
-findings. This final Task delta, correction commit/push and current-head hosted
-CI remain pending.
+findings. That repair was committed and pushed as the third PR commit. Hosted run
+35476114948 / job 105985535619 then passed metadata 282/0 and lifecycle before
+its all-files pre-commit leaf failed: the formatter set contained 35 unique targets: 11 EOF targets plus 6 trailing-
+whitespace targets with one overlap (16 unique), and 19 additional Markdownlint
+targets, and the Gatus Dockerfile
+triggered DL4006. This later result does not
+invalidate the narrower local changed/full checks; it establishes that they did
+not execute the required all-files leaf.
+
+The exact follow-up contains those 35 formatting-hook outputs plus the Gatus
+Dockerfile correction. Pinned markdownlint-cli2 0.22.1 and cached EOF/trailing-
+whitespace checks are clean and idempotent on a second pass; whitespace-
+insensitive diff exits 0, raw diff check exits 0, links pass 920/8,950/0 and
+explicit-base metadata passes 285/0 with zero legacy exceptions/overrides.
+MIG-0004 is the current sealed archive artifact and retains its required single
+LF; frozen MIG-0001 through MIG-0003 were not changed. GDE-0086's fenced block
+is indented under step 2 so its rendered list remains steps 1–6. Official
+hadolint 2.14.0 was checksum verified and changed Gatus DL4006 from RED exit 1
+to GREEN exit 0; 12 Gatus tests pass. Independent review approves the 35-file
+formatter packet for SPEC/QUALITY/SECURITY and the Gatus correction for
+QUALITY/SECURITY, with no findings. This Task delta, the new local correction commit, a separately approved push
+and a hosted rerun containing that correction remain pending; the current PR-head
+hosted result is failed.
+
 ## Review Evidence
 
 The planning packet is approved. Independent final reviews approve A, B, C, D,
@@ -462,10 +492,13 @@ The review loop exposed and corrected several evidence failures:
   merge/main and their own authorization.
 
 The pre-PR reviewed snapshot was SPEC/QUALITY/SECURITY APPROVED with no
-findings. The 24-document correction packet is independently SPEC/QUALITY
-APPROVED with no findings and passes explicit-base checks locally. The pushed PR
-head still carries the failed hosted result until the correction and this final
-Task delta are committed/pushed and current-head CI reruns.
+findings. The 24-document metadata correction is independently SPEC/QUALITY
+APPROVED and pushed. Its hosted rerun passed metadata and lifecycle, then exposed
+the later all-files pre-commit findings. The exact 35-file formatting-hook packet is
+independently SPEC/QUALITY/SECURITY APPROVED, including its whitespace-only diff,
+GDE-0086 rendering and MIG-0004 line ending. The Gatus correction is independently
+QUALITY/SECURITY APPROVED. The local correction remains uncommitted and unpushed. The current PR-head
+hosted result is failed, and a rerun containing the correction has not occurred.
 
 Repository quality standards make the 90% domain-code coverage target N/A for
 this documentation, policy, infrastructure configuration and validation-script
@@ -479,10 +512,10 @@ rationale and the concrete test counts.
 | Delivery field | Current value | Evidence boundary |
 | --- | --- | --- |
 | Local pre-PR changed/full checks | **PASS WITH LIMITED SCOPE** | Changed used `check-active` (449/0) without PR-base context; full used `check-contracts`; neither exercised the PR-range changed-body heading ratchet |
-| Hosted required `validation-changed` | **FAIL — CORRECTION IN PROGRESS** | Run 35474733788 / job 105981909050; 25 findings / 24 files, reproduced locally |
-| Independent review | **PRE-PR SNAPSHOT APPROVED; CORRECTION SPEC/QUALITY APPROVED** | No correction findings; final Task delta and hosted corrected-head result remain pending |
-| Logical commit(s) | **TWO COMMITS PUSHED; CORRECTION PACKET UNCOMMITTED** | Implementation `8919696e8a65f47ccd830e577d80c781b810cbd3`; evidence `4ed7724ce83605fe5d8d1e553a52f367f45757cc`; correction identity remains Git/PR evidence after commit |
-| Push / PR | **DRAFT PR 169 OPEN; CORRECTED HEAD NOT PUSHED** | [PR 169](https://github.com/buenhyden/hy-home.docker/pull/169), head `4ed7724ce83605fe5d8d1e553a52f367f45757cc`; no merge |
+| Hosted required `validation-changed` | **FAIL — LATER ALL-FILES CORRECTION PREPARED** | First failure was fixed and pushed. Run 35476114948 / job 105985535619 passed metadata 282/0 and lifecycle, then failed all-files pre-commit with 35 unique formatting targets: 11 EOF targets plus 6 trailing-whitespace targets with one overlap (16 unique), and 19 additional Markdownlint targets, plus Gatus DL4006 |
+| Independent review | **PRE-PR, METADATA, FORMATTER AND GATUS PACKETS APPROVED** | Formatter: SPEC/QUALITY/SECURITY; Gatus: QUALITY/SECURITY; no findings. This Task factual delta and a hosted run containing the local packet remain pending |
+| Logical commit(s) | **THREE COMMITS PUSHED; NEW CORRECTION PACKET UNCOMMITTED** | Implementation `8919696e8a65f47ccd830e577d80c781b810cbd3`; evidence `4ed7724ce83605fe5d8d1e553a52f367f45757cc`; current pushed head `0eaa445a7a9820a8dd6289adacd7b900543443b0`; the 36-path local packet has no commit identity yet |
+| Push / PR | **DRAFT PR 169 OPEN; NEW LOCAL PACKET NOT PUSHED** | [PR 169](https://github.com/buenhyden/hy-home.docker/pull/169), three-commit head `0eaa445a7a9820a8dd6289adacd7b900543443b0`; no merge. Prior approval covered that push, not the new 36-path payload |
 | Remote governance readback | **READ-ONLY COMPLETE** | `validation-changed` required from app 15368 with strict=true; approvals 0, code-owner reviews false, enforce-admins false; effective `/rules/branches/main` empty; CODEOWNERS routes to `@buenhyden` only |
 | Hook/message preflight | **PASS** | Normal pre-commit hook passed for the implementation commit; explicit Commitizen validation passed; global ECC `core.hooksPath` has no commit-msg hook and no setting changed |
 | Merge / deployment | **PENDING and unauthorized here** | No merge, private synchronization or runtime rollout |
@@ -496,8 +529,9 @@ This Task begins from `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` on
 309 changed pathnames because renames contribute multiple pathnames. Its normal
 pre-commit hook and explicit Commitizen validation passed. Evidence commit
 `4ed7724ce83605fe5d8d1e553a52f367f45757cc` records the three
-Spec/Plan/Task paths. Both commits are pushed to
-`codex/home-dev-convergence-followup`.
+Spec/Plan/Task paths. The reviewed 24-document metadata correction was committed
+and pushed as the third commit; current PR head is
+`0eaa445a7a9820a8dd6289adacd7b900543443b0`.
 
 The first push request was rejected because the 306-file tracked payload targeted
 the unverified `https://github.com/buenhyden/hy-home.docker.git` without
@@ -505,10 +539,13 @@ explicit trusted-user egress approval. The user then explicitly approved that
 same target and branch, so the push proceeded and
 [PR 169](https://github.com/buenhyden/hy-home.docker/pull/169) was created at
 head `4ed7724ce83605fe5d8d1e553a52f367f45757cc`. Required CI failed as
-recorded above. The 24-document heading-only correction is implemented, locally
-green and independently SPEC/QUALITY APPROVED with non-heading bytes preserved,
-but it is not yet committed or pushed. The PR remains draft. No merge,
-repository-setting change or runtime action occurred.
+recorded above. The 24-document heading-only correction was independently
+SPEC/QUALITY APPROVED, committed and pushed at current head
+`0eaa445a7a9820a8dd6289adacd7b900543443b0`. Its hosted run passed metadata and
+lifecycle before the later all-files pre-commit failure. The exact 35-file
+formatting plus Gatus correction is locally green and independently approved but
+has no commit or push yet. The PR remains draft. No merge, repository-setting
+change or runtime action occurred.
 Historical PR evidence in Tasks 0001–0004 retains only its dated scope.
 
 ## Rulings
@@ -539,7 +576,7 @@ Historical PR evidence in Tasks 0001–0004 retains only its dated scope.
 | Preserve no-removal lifecycle result | All 140 judgments lack sufficient deletion evidence | Unknown optional/LAB data or consumers may exist | Preserve data/config until explicit evidence supports retirement |
 | Keep profile selection distinct from access control | Official Compose semantics and current policy | A union may expose an unintended service | Enforce membership/ports and review security separately |
 | Keep E corrections bounded and independently reviewed | Initial broad pass missed semantic and coverage defects | Cross-domain fixes can create new contradictions | Freeze exact scopes, perform same-scope rereview, then integrate |
-| Treat snapshot approval, local correction and pushed-head CI separately | Pre-PR review approved its snapshot; hosted committed-range metadata failed; local heading-only correction is now approved/green but unpushed | Local evidence does not change the pushed PR status | Commit/push the reviewed packet, then require current-head hosted CI before merge consideration |
+| Treat snapshot approval, local correction and pushed-head CI separately | Pre-PR review approved its snapshot; the pushed metadata correction cleared hosted metadata/lifecycle; the later all-files packet is approved/green but unpushed | Local evidence does not change the pushed PR status | Commit and obtain separate push approval for the new payload, then require current-head hosted CI before merge consideration |
 | Require explicit-base changed-body metadata evidence | Local changed substituted `check-active` (449/0) and local full used `check-contracts`; hosted/reproduced PR range found 25 rows in 24 documents; corrected explicit-base range passes 282/0 | Omitting the base can produce a valid but narrower PASS | Preserve the explicit baseline in correction evidence and do not relax heading contracts |
 | Align standard Compose filename discovery across canonical owners | Corrected descriptor covers Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}`, including `infra/compose.yaml`; six prose contracts align | A future source family could diverge across owners | Keep shared discovery and zero-depth regressions; update code and authority docs together |
 | Record declared replicas beside per-container Resources | Approved derived cell records Locust worker replicas 2 beside per-container limits and preserves R-authored cells | Readers could still multiply or reinterpret limits as measured use | Keep explicit replicas separate from per-container limits and make no calculated capacity/runtime claim |
@@ -559,10 +596,11 @@ Historical PR evidence in Tasks 0001–0004 retains only its dated scope.
 
 ## Deferred Items
 
-- PR 169 is draft at `4ed7724ce83605fe5d8d1e553a52f367f45757cc`.
-  The reviewed 24-document heading-only correction packet is locally green but
-  uncommitted/unpushed. Its commit identity, push and current-head hosted CI
-  remain required before any merge consideration.
+- PR 169 is draft at `0eaa445a7a9820a8dd6289adacd7b900543443b0`.
+  The exact 35-file formatting-hook plus Gatus Dockerfile packet is locally green and
+  independently approved but uncommitted/unpushed. Its commit identity, separate
+  push approval and a hosted rerun containing the correction remain required before any merge
+  consideration.
 - Broad HOME cold start, reboot recovery, sustained/peak CPU/RAM/GPU, growth and
   isolated stateful restore rehearsals remain unverified.
 - OpenBao recovery custody and SEC-002 provisioning/runtime acceptance require

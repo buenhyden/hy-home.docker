@@ -100,7 +100,6 @@ documentation task.
 - [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
 - [Policy](policy.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

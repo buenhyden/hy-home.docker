@@ -66,7 +66,6 @@ A static pass is configuration evidence only; runtime and restore remain separat
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Kafka guide](../0036-kafka/guide.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

@@ -90,7 +90,6 @@ lifecycle change and at least annually while retained.
 - [Backup policy](../0021-backup-and-restore/policy.md)
 - [Runbook](runbook.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

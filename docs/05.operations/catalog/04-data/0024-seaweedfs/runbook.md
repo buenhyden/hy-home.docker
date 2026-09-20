@@ -94,7 +94,6 @@ volume-only restore.
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [Policy](policy.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

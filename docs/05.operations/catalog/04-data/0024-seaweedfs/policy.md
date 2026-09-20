@@ -87,7 +87,6 @@ lifecycle change and at least annually while retained.
 - [Security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [Runbook](runbook.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

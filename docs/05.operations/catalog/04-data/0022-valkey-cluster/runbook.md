@@ -101,7 +101,6 @@ without secret values and escalate to the data owner.
 - [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)
 - [Policy](policy.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

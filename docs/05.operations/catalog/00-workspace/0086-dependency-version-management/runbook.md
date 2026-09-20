@@ -25,10 +25,10 @@ in output. This procedure does not run the networked Renovate update job.
 1. Identify changed Compose/Dockerfile pins, build arguments and manager ownership.
 2. Preview and validate the derived projection without writes:
 
-```bash
-bash scripts/operations/sync-tech-stack-versions.sh --dry-run
-bash scripts/operations/sync-tech-stack-versions.sh --check
-```
+   ```bash
+   bash scripts/operations/sync-tech-stack-versions.sh --dry-run
+   bash scripts/operations/sync-tech-stack-versions.sh --check
+   ```
 
 3. If source changes are intentional, run the same script without an option to
    add, update or remove derived registry entries atomically, then inspect that

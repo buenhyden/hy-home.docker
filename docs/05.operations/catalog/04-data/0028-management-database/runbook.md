@@ -98,7 +98,6 @@ No recovery described here was executed by the documentation correction task.
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Policy](policy.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

@@ -443,7 +443,6 @@ public env/secret, version/update, README, Stage 05 and validator/test paths bef
 mutation. Runtime deployment, migration, credential change, data deletion and
 backup execution remain outside this research decision.
 
-
 ## Required Follow-up Before Deletion
 
 - Confirm the service is absent from application configuration, scripts, and

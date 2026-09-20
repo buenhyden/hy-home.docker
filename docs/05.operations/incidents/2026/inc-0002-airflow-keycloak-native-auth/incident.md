@@ -36,6 +36,7 @@ authorization 검증이 남아 있다.
 ## Coordination
 
 관련 시스템:
+
 - Airflow 3.3.1
 - Keycloak
 - OAuth2 Proxy
@@ -43,6 +44,7 @@ authorization 검증이 남아 있다.
 - `apache-airflow-providers-keycloak` 0.8.2 -> 0.9.0
 
 관련 Runbook:
+
 - `RUN-0050`
 - `RUN-0014`
 
@@ -78,6 +80,7 @@ authorization 검증이 남아 있다.
 ## Current Status
 
 정상:
+
 - `/`
 - `/ui/config`
 - `/ui/auth/me`
@@ -86,6 +89,7 @@ authorization 검증이 남아 있다.
 - `/api/v2/importErrors`
 
 추가 검증:
+
 - `/api/v2/pools`
 - `/ui/dags`
 - `/api/v2/assets/events`

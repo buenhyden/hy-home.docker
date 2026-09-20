@@ -96,7 +96,6 @@ lifecycle change and at least annually while retained.
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Runbook](runbook.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

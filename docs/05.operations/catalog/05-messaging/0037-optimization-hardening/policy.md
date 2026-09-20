@@ -85,7 +85,6 @@ lifecycle change and at least annually while retained.
 - [Kafka security](https://kafka.apache.org/documentation/#security)
 - [Hardening runbook](runbook.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)

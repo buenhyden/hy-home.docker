@@ -80,6 +80,7 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 - The mounted `rootCA.pem` is a public certificate, not a private key. It must be
   readable by UID 0 (0644); verify certificate-only content before changing mode.
   The entrypoint combines it with public CA roots without disabling TLS checks.
+
 ### Historical transition record
 
 Task 0004 records the completed native-OIDC migration and acceptance evidence;

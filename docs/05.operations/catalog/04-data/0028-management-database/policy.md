@@ -89,7 +89,6 @@ lifecycle change and at least annually while retained.
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Runbook](runbook.md)
 
-
 ## Related Documents
 
 - [Domain catalog](../README.md)
