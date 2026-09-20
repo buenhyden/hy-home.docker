@@ -58,13 +58,21 @@ changing an unrelated Dockerfile.
 5. Keep `validation-changed` and `validation-full` separate. The first is the
    required pull-request gate; the second runs on main pushes or manual dispatch
    and uploads SARIF with additional permissions. Shared setup is not evidence
-   of duplication. The workflow/ref concurrency key intentionally cancels stale
-   lint work, consistent with [GitHub's concurrency guidance](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency).
+   of duplication. The workflow/event/ref concurrency key cancels stale runs
+   within each event/ref group while keeping push and manual runs separate. This
+   follows [GitHub's concurrency guidance](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency).
 6. Treat simplification as a proposal until an inventory proves that a trigger,
    permission, gate node, or consumer is unused. Title-dependent validation
    needs an `edited`-event assessment because a title edit without a commit can
    leave an earlier green run in place. Do not alter events, required checks,
    permissions, or remote rulesets from this guide.
+
+For CI Quality Gates, the approved 2026-09-20 follow-up adds `edited` to the
+pull-request trigger because `PR_TITLE` is a gate input, keys concurrency by
+workflow, ref, and event to keep manual diagnostics from cancelling main-push
+validation, and runs the existing pre-commit leaf before expensive leaves. It
+preserves the gate set, job identities, `SKIP` ownership, and changed/full
+separation. Hosted verification remains required.
 
 The 2026-09-20 PR #169 incident and the resulting Hadolint alignment are
 recorded in [SPEC-0180 Task 0006](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md).

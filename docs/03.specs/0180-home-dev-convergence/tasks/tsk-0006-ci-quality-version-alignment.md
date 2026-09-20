@@ -1,6 +1,6 @@
 ---
 title: "CI Quality Version Alignment and Workflow Audit"
-version: "0.1.1"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -20,9 +20,12 @@ created: "2026-09-20"
 
 Analyze the PR #169 hosted Hadolint failure, align the Docker-image executable
 with the declared pre-commit release, and record an evidence-led GitHub Actions
-CI/CD review. This Task covers tracked CI configuration and documentation only.
-It does not authorize a merge, deployment, GitHub setting change, credential
-change, or workflow deletion.
+CI/CD review. The owner's later delivery authorization approves the tracked
+implementation, local commits, push, approved cleanup, and main synchronization
+for the three selected follow-ups: pull-request title edits, fail-fast
+pre-commit leaf ordering, and manual-dispatch concurrency isolation. It does
+not authorize deployment, credential change, remote protection changes, or
+workflow deletion.
 
 ## Inputs
 
@@ -75,6 +78,42 @@ change, or workflow deletion.
 - These tests validate the tracked repair and release-tag selection. They do not
   prove a GitHub-hosted container execution or immutable image bytes.
 
+### Authorized follow-up delivery
+
+- The owner authorized delivery after the initial audit: implement and validate
+  three tracked CI changes, commit and push the branch, clean the approved
+  development worktree, and synchronize local `main` after the integrated
+  result is available.
+- The authorized implementation scope is limited to: triggering title-dependent
+  validation when a pull-request title is edited; ordering the existing
+  deterministic pre-commit leaf before expensive leaves while preserving its
+  gate membership and `SKIP` ownership; and separating manual-dispatch
+  concurrency from main-push concurrency. The implementation owner records
+  exact workflow, contract, test, and gate outcomes below when complete.
+- The audit's conditional deletion, remote workflow, branch-protection, cache,
+  digest, and update-manager recommendations remain proposals. This delivery
+  authorization does not adopt them.
+- The three approved tracked changes are implemented locally: `edited` joins
+  the PR trigger; the concurrency group includes `github.event_name`; and the
+  existing pre-commit leaf runs before dependency audit, frontend, Storybook,
+  and Zizmor leaves without changing the executable/setup gate set.
+
+### Remote QA workflow hygiene receipt
+
+- Under the owner's approved cleanup scope, the two retired QA workflow
+  registrations were disabled after a before-state readback: ID `350504656`
+  (`governance-audit-tools.yml`) changed from `active` to
+  `disabled_manually` at `2026-09-20T10:13:40+09:00`; ID `350527175`
+  (`governance-apply-candidate.yml`) changed from `active` to
+  `disabled_manually` at `2026-09-20T10:13:54+09:00`.
+- Historical run records remain unchanged: `33917875736` for the first workflow
+  and `33922214372`, `33921844852`, and `33921337522` for the second. Recovery
+  is `gh workflow enable <ID> --repo buenhyden/hy-home.docker`, followed by a
+  state readback. Commit `ec6d52b2` is historical retirement provenance; the
+  authenticated before/after state readback above is the disable receipt.
+- No Greeting, Stale, branch-protection, other workflow, or tracked-file change
+  was made by this remote hygiene action.
+
 ### Workflow inventory and disposition
 
 | Surface | Current role | Disposition | Evidence boundary |
@@ -102,12 +141,13 @@ separate from Zizmor because the two cover different security concerns.
 | Priority | Candidate | Status and rationale | Risk / required proof |
 | --- | --- | --- | --- |
 | P0 | Pair the Hadolint Docker-image tag with hook `rev` | Implemented in the isolated branch with anti-drift regression | Run focused/local gates and wait for hosted execution of this revision |
-| P1 | Order the existing deterministic pre-commit leaf before expensive CI leaves | Proposed; main full gate started at 00:32:19, pre-commit started at 00:51:25, and Hadolint failed at 00:53:00: failure surfaced 20m41s after gate start, with pre-commit taking about 95 seconds | Preserve the same gate set, status context, and `SKIP` ownership; add an ordering regression before changing the registry |
+| P1 | Order the existing deterministic pre-commit leaf before expensive CI leaves | Implemented locally with ordering regression | Preserve the same gate set, status context, and `SKIP` ownership |
 | P1 | Design optional pre-commit update ownership | Proposed; Renovate currently excludes pre-commit while Dependabot owns only npm | Do not enable a manager alone: it must atomically maintain paired revision/tag (and any later digest) or the regression must block its update |
-| P1 | Assess `pull_request.edited` for title validation | Proposed; `PR_TITLE` reaches the gate, while an edited title may not produce a new run | Confirm title validation impact; change workflow, contract, and tests together |
-| P1 | Review remote protection enforcement and two orphaned active remote workflow registrations | Proposed; `enforce_admins=false`, and `governance-audit-tools.yml` (ID 350504656) plus `governance-apply-candidate.yml` (ID 350527175) are absent from the default branch | `state: active` does not prove executable/current use; require provenance, owner approval, and fresh authenticated read-back before disabling |
+| P1 | Add `pull_request.edited` for title validation | Implemented locally with trigger regression | Workflow, contract, and required check identity remain aligned |
+| P1 | Retire two approved orphaned remote QA workflow registrations | Implemented: IDs `350504656` and `350527175` are `disabled_manually`; historical runs are preserved | Re-enable only with `gh workflow enable <ID> --repo buenhyden/hy-home.docker` and verify state |
+| P1 | Review remote protection enforcement | Deferred; `enforce_admins=false` remains a remote policy question | Fresh authenticated read-back and explicit policy approval are required |
 | P2 | Consider a Hadolint digest pin and paired update ownership | Proposed; v2.14.0 tag aligns release selection but remains mutable | Define digest rotation, tag/revision synchronization, and manager/manual ownership first |
-| P2 | Keep changed/full jobs separate; clarify manual-dispatch concurrency if needed | Retain; manual dispatch on main can share a concurrency group with a push | Decide whether independent manual diagnostics justify event-qualified grouping |
+| P2 | Keep changed/full jobs separate; isolate manual-dispatch concurrency | Implemented locally with concurrency regression | Job separation is preserved; event-qualified grouping changes only the concurrency boundary |
 | P2 | Review greetings/stale cadence and retention | Proposed; labeler is cheap/path-based, greetings and daily stale handling need owner/consumer evidence | Avoid silently removing external-contributor or maintenance controls |
 
 ## Verification Evidence
@@ -119,7 +159,12 @@ separate from Zizmor because the two cover different security concerns.
 | Focused paired-version regression | PASS (1/1) | RED before entry addition; GREEN for paired v2.14.0 selectors |
 | CI-routing / workflow-contract tests | PASS (29/29; 43/43) | Isolated local repair evidence |
 | Config, diff, Ruff, local Hadolint, and GHCR manifest checks | PASS | Local Hadolint 2.14.0 checked 13 Dockerfiles; manifest was inspected only, not run |
-| Hosted `validation-changed` at repair head | Pending | Required before any merge consideration; no rerun is claimed |
+| Selected follow-up workflow tests | PASS (3/3) | RED for missing edited type, old concurrency key, and ordering; GREEN after implementation |
+| Workflow-contract module | PASS (46/46) | Two expected trigger-fixture updates accompany the new PR type |
+| Gate contract / workflow validator | PASS (18/18; 5 workflows, 7 jobs, 8 actions) | Gate set and workflow contract remain valid |
+| Ruff, yamllint, JSON parse, diff checks | PASS | Local tracked implementation validation |
+| Actionlint | Not run | Absent from PATH and the pinned local validation tools; no install attempted; registered workflow validator is the local static workflow authority |
+| Hosted `validation-changed` at delivery head | Pending | Required before synchronization evidence can be final; no rerun is claimed |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- |
@@ -145,13 +190,19 @@ separate from Zizmor because the two cover different security concerns.
   `4255f4469958184a7c7126808f5068a46cecf335`
   (`fix(ci): Align Hadolint hook and image versions`) contains the paired hook
   selector and regression only.
-- The three documentation paths are ready for the separate conventional
-  documentation commit; its identity is not yet recorded.
-- No push, merge, workflow deletion, or remote GitHub setting change is
-  recorded by this Task.
+- Documentation commit `878842cff13c2f55d4ae253a7cb75977c193eff1`
+  (`docs(ci): Record workflow audit and version alignment`) records the initial
+  audit and Task routing.
+- Authorized follow-up implementation commit
+  `86620cb6ef3324e35a7a203e5c70b9478bee51b0`
+  (`fix(ci): Revalidate and fail fast in quality workflows`) implements the
+  edited trigger, event-qualified concurrency, and fail-fast leaf ordering.
+- The authenticated before/after readback in this Task records the approved
+  disable for IDs `350504656` and `350527175`. Historical `ec6d52b2` is
+  retirement provenance only; no push, merge, or protection change is recorded
+  by this Task at this point.
 - The implementation and documentation remain isolated on
-  `codex/ci-version-alignment` until review and a separately authorized delivery
-  decision.
+  `codex/ci-version-alignment` pending final review, checks, and delivery.
 
 ## Rulings
 
@@ -163,8 +214,8 @@ separate from Zizmor because the two cover different security concerns.
 
 ## Deferred Items
 
-- Hosted rerun, PR state, merge, and protection read-back are outside this local
-  repair scope.
-- Title-event coverage, an atomic pre-commit update-owner design, digest
-  maintenance, caching, remote workflow cleanup, and non-gating workflow
-  retention each need a scoped follow-up.
+- Hosted validation remains pending until the authorized push. Remote protection
+  changes and any additional remote workflow cleanup beyond the completed
+  exact-two disable remain deferred.
+- Atomic pre-commit update ownership, digest maintenance, caching, and
+  non-gating workflow retention each need a separate scoped follow-up.
