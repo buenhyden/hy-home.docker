@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -121,7 +121,8 @@ Task 0002. A failed or unexecuted check is never recorded as PASS.
 - [OpenBao and environment convergence](tasks/tsk-0002-openbao-access-and-env-convergence.md)
 - [Auth research](tasks/tsk-0003-keycloak-oidc-operations-research.md)
 - [Native OIDC migration evidence](tasks/tsk-0004-native-oidc-service-migration.md)
-- [Current Task](tasks/tsk-0005-current-main-convergence.md)
+- [Prior current-main convergence evidence](tasks/tsk-0005-current-main-convergence.md)
+- [Current Task](tasks/tsk-0006-ci-quality-version-alignment.md)
 
 ## Open Questions
 

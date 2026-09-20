@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -30,6 +30,46 @@ created: "2026-06-04"
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
 9. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
 10. Run the validation commands listed in the runbook before declaring completion.
+
+### CI quality-gate version alignment
+
+When a hosted quality gate disagrees with a local result, identify the
+executable selected by the tracked workflow before suppressing a diagnostic or
+changing an unrelated Dockerfile.
+
+1. Read `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
+   `.pre-commit-config.yaml`, and the failed job log. Record the event,
+   revision, job, hook, image or binary reference, and rule identifier. A local
+   command proves only the executable it used.
+2. Compare a pre-commit repository `rev` with its hook manifest. The Hadolint
+   `hadolint-docker` hook at upstream `v2.14.0` is a `docker_image` hook whose
+   entry is the untagged `ghcr.io/hadolint/hadolint hadolint`; the hook revision
+   therefore does not select a container image version. Pin the entry to the
+   same release as the repository revision, and use a focused regression to
+   reject one-sided changes. The upstream [v2.14.0 hook manifest](https://raw.githubusercontent.com/hadolint/hadolint/v2.14.0/.pre-commit-hooks.yaml)
+   is the authority for that behavior.
+3. A release tag aligns the selected Hadolint version but does not freeze image
+   bytes. Consider an immutable digest only through a separately reviewed
+   maintenance path that states how the paired revision, tag, digest and update
+   owner will be kept current.
+4. Run the focused regression and workflow-contract check, then the smallest
+   applicable local gate. A hosted result remains pending until GitHub Actions
+   runs the changed revision; a successful local reproduction is not a rerun.
+5. Keep `validation-changed` and `validation-full` separate. The first is the
+   required pull-request gate; the second runs on main pushes or manual dispatch
+   and uploads SARIF with additional permissions. Shared setup is not evidence
+   of duplication. The workflow/ref concurrency key intentionally cancels stale
+   lint work, consistent with [GitHub's concurrency guidance](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency).
+6. Treat simplification as a proposal until an inventory proves that a trigger,
+   permission, gate node, or consumer is unused. Title-dependent validation
+   needs an `edited`-event assessment because a title edit without a commit can
+   leave an earlier green run in place. Do not alter events, required checks,
+   permissions, or remote rulesets from this guide.
+
+The 2026-09-20 PR #169 incident and the resulting Hadolint alignment are
+recorded in [SPEC-0180 Task 0006](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md).
+It distinguishes the failed hosted revision from local evidence and from future
+GitHub Actions consolidation proposals.
 
 ### Audience and Prerequisites
 
