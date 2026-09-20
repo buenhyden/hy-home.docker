@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `infra/04-data/operational/supabase`의 data profile stack 운영 기준을 정의한다. 핵심 통제는 Kong 중심의 공개 접근, Docker Secrets 기반 credential 관리, `${DEFAULT_DATA_DIR}/supabase/...` runtime mount 관리, 그리고 guide/policy/runbook 간 현재 구현 정합성 유지이다.
+이 정책은 `infra/04-data/operational/supabase`의 exact `supabase` profile stack 운영 기준을 정의한다. 핵심 통제는 Kong 중심 공개 접근, Docker Secrets, `${DEFAULT_DATA_DIR}/supabase/...` runtime mounts와 database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
 
 ## Policy Scope
 
@@ -38,6 +38,9 @@ created: "2026-05-17"
   - Documentation must state that Studio has no direct host port in the current compose file.
   - Runtime mounts under `${DEFAULT_DATA_DIR}/supabase/...` must be treated as implementation state and kept in sync with infra README and operations docs.
   - JWT, anon, service-role, dashboard, SMTP, database, vault, and crypto key values must never be written into documentation or evidence.
+  - A backup set must include PostgreSQL globals/roles, schema and data; Storage metadata plus object files; mounted Kong/functions/pooler configuration; and protected Auth/JWT/SMTP/provider settings with versions, checksums, retention and restore evidence.
+  - Restore rehearsal must use a fresh isolated stack. Restore roles/schema/data in dependency order, reconcile Storage objects with metadata, apply configuration/secrets separately, and verify Auth, REST, Realtime, Storage, Functions and pooler paths.
+  - The update guide's configuration backup is not a database or Storage backup. Upgrade/removal requires a coherent restore-tested set, compatibility review, capacity check and explicit approval.
 - **Allowed**:
   - Metadata-only compose validation with `docker compose ... config --quiet`.
   - Read-only service health/log checks that do not expose secret values.
@@ -56,8 +59,7 @@ Exceptions require explicit owner or user approval and must record scope, comman
 ## Verification
 
 - Run `docker compose --profile supabase config --quiet` after changing compose-facing documentation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
+- Run `python3 scripts/validation/check-document-links.py --mode all` after policy, guide, runbook, README, or link updates.
 - Search updated docs for direct Studio host-port assumptions, old Compose CLI spelling, template copyright remnants, and secret material before committing.
 
 ## Review Cadence
@@ -73,7 +75,11 @@ Review on any change to Supabase compose services, ports, profiles, networks, se
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Compose implementation: infra/04-data/operational/supabase/docker-compose.yml](../../../../../infra/04-data/operational/supabase/docker-compose.yml)
+
+- [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
+- [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
+- [Supabase source and licenses](https://github.com/supabase/supabase)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

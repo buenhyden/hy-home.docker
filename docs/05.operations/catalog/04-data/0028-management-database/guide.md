@@ -4,106 +4,104 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
 - "POL-0028"
+implementation_services:
+  infra/04-data/operational/mng-db/docker-compose.yml:
+  - 'mng-pg'
+  - 'mng-pg-exporter'
+  - 'mng-pg-init'
+  - 'mng-valkey'
+  - 'mng-valkey-exporter'
 created: "2026-05-10"
 ---
 
 # Management Database Usage Guide
 
-> Use this guide to understand and verify the current `mng-db` implementation.
-
----
-
 ## Usage
 
-### Overview
+The management database is a five-service HOME dependency for authentication,
+workflow and tooling. `mng-pg` stores the `n8n`, `keycloak`, `airflow`,
+`terrakube`, `sonarqube`, `postgres`, and configured application databases.
+`mng-valkey` is the shared Airflow/n8n broker/cache. Grafana is not wired to
+management PostgreSQL in current Compose; it owns `grafana-data` and uses its
+current default database configuration.
 
-`mng-db`는 플랫폼 관리 서비스가 공유하는 PostgreSQL/Valkey 운영 데이터 계층이다. 현재 구현은 `infra/04-data/operational/mng-db/docker-compose.yml`의 `mng` 및 `dev` profile로 선언되며, Keycloak, n8n, Airflow, Terrakube, SonarQube, 기본 service DB를 위한 PostgreSQL role/database와 Valkey cache를 제공한다.
+### Current implementation
 
-### Usage Type
+[`infra/04-data/operational/mng-db/docker-compose.yml`](../../../../../infra/04-data/operational/mng-db/docker-compose.yml)
+defines `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, and
+`mng-valkey-exporter`. Profiles `mng`, `core`, `dev`, and `local` select both
+engines and init; exporters are selected by `mng` and `dev`.
 
-`system-guide | operational-reference`
+PostgreSQL owns `mng-pg-data` at `${DEFAULT_MANAGEMENT_DIR}/pg` and uses the
+`mng_db_password` secret. The init job also reads service-specific database
+password secrets and creates roles/databases idempotently. Valkey owns
+`mng-valkey-data` at `${DEFAULT_MANAGEMENT_DIR}/valkey`, enables AOF, and reads
+`mng_valkey_password`. Both use `infra_net`; PostgreSQL and Valkey host bindings
+come from root environment keys. Health checks and resources come from shared
+templates.
 
-### Target Audience
+### Images, configuration and resource controls
 
-- Operator
-- Developer
-- SRE
-- AI Agent
+The Compose file is authoritative for pinned upstream PostgreSQL, Valkey and the
+two exporter image families; repository Renovate may propose updates and the
+version projection is derived. PostgreSQL uses `POSTGRES_PASSWORD_FILE`,
+`POSTGRES_USER`, `POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME` and `POSTGRES_PORT`;
+init adds `SERVICE_POSTGRES_USERNAME` and `SERVICE_POSTGRES_DB`. Root port keys
+control host bindings. `mng-pg` extends `template-stateful-db-med`, `mng-valkey`
+`template-stateful-low`, init `template-job-low`, and exporters
+`template-infra-readonly-low`; engine/exporter health checks are declared. Current
+consumers connect over `infra_net`; init creates roles/databases after PostgreSQL
+health, while exporters observe the engines.
 
-### Purpose
+### Static preflight
 
-이 가이드는 `mng-db`의 현재 compose 구조, 네트워크 경계, 초기화 job, 일반 점검 절차를 이해하고 상위 관리 서비스와의 연결을 검토할 수 있게 한다.
+```bash
+docker compose --env-file .env.example --profile mng config --quiet
+docker compose --env-file .env.example --profile mng config --services
+```
 
-### Prerequisites
+Run from the repository root. Do not render or start the leaf file alone. Do not
+rerun init, rotate credentials, query HOME databases or change broker queues
+without an approved runtime task.
 
-- Repository checkout at the project root.
-- Docker Compose access on the local or approved infrastructure host.
-- Docker Secret files referenced by the compose file are prepared; secret values must not be copied into docs, logs, or commits.
-- Service data paths referenced through `DEFAULT_MANAGEMENT_DIR` are available to the runtime host.
+### Backup, recovery and upgrades
 
-### Step-by-step Instructions
+PostgreSQL requires a logical dump of global roles plus every database. Valkey
+requires one complete AOF set/manifest and an RDB checkpoint; an incident owner
+must decide whether stale queued work is safe to replay. [RUN-0028](runbook.md)
+defines isolated restore order and application validation.
 
-1. 현재 compose surface를 확인한다.
+PostgreSQL major upgrades use logical dump/restore or another separately approved
+upstream method. Minor image and Valkey changes still require release notes,
+backup and rollback. Never attach a new major PostgreSQL image to the existing
+`PGDATA` or copy live database files.
 
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config --services
-   ```
+### Official references
 
-   Expected services: `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`.
-
-2. 네트워크 경계를 확인한다.
-
-   - `mng-pg` and `mng-valkey`: `infra_net`, `k3d-hyhome`
-   - `mng-pg-init`, `mng-pg-exporter`, `mng-valkey-exporter`: `infra_net`
-   - The legacy shared-network name is not part of the current implementation.
-
-3. PostgreSQL 초기화 범위를 확인한다.
-
-   `mng-pg-init` applies `pg/init-scripts/init_users_dbs.sql` and maintains logical databases for `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and the service DB declared by `SERVICE_POSTGRES_DB` with the corresponding service role.
-
-4. 일반 상태를 확인한다.
-
-   ```bash
-   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps mng-pg mng-valkey mng-pg-exporter mng-valkey-exporter
-   ```
-
-### Common Pitfalls
-
-- Treating `mng-db` as the HA PostgreSQL cluster. HA production data belongs to `infra/04-data/relational/postgresql-cluster/`.
-- Referencing legacy shared-network names; the current `mng-db` compose uses `infra_net` and `k3d-hyhome`.
-- Writing secret values, generated passwords, or token material into documentation while describing `/run/secrets/` usage.
-- Running the init job without first confirming the compose render and linked policy/runbook context.
+- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
+- [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)
+- [PostgreSQL upgrading](https://www.postgresql.org/docs/current/upgrading.html)
+- [PostgreSQL license](https://www.postgresql.org/about/licence/)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config`
-- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps`
-- Search the paired guide/policy/runbook for legacy network names or old Compose CLI spelling before committing.
-- Expected result: compose renders, documented services match the compose file, and stale network or command references are absent.
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
-[recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [Management Database Operations Policy](policy.md) (`POL-0028`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0028`), [Runbook](runbook.md) (`RUN-0028`)
+- Artifact: `GDE-0028`; governing policy: `POL-0028`.
+- Runtime authority: `infra/04-data/operational/mng-db/docker-compose.yml`.
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://www.postgresql.org/docs/current/backup.html)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
 - [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/operational/mng-db/README.md)
+- [Health and recovery runbook](runbook.md)
+- [Backup policy](../0021-backup-and-restore/policy.md)

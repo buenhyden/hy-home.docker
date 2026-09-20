@@ -98,9 +98,12 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+Keep Traefik profiles unselected while Nginx owns 80/443. Restore `nginx.conf`
+from the last reviewed Git commit and certificates from their private owner,
+validate the root `nginx` profile with healthy MinIO, run `nginx -t`, and verify
+`/ping`, `/oauth2/`, `/keycloak/`, `/minio/`, and `/minio-console/`. tmpfs contents
+are disposable. The full isolated recovery was documented but not executed during
+the 2026-09-20 correction.
 
 ## Escalation
 
@@ -116,7 +119,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 - [Official upstream operational documentation](https://nginx.org/en/docs/beginners_guide.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

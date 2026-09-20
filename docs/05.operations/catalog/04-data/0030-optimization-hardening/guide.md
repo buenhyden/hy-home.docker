@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -16,81 +16,58 @@ created: "2026-05-17"
 
 ## Usage
 
-### Overview
+This subject verifies static controls across the data tier: root profile validity,
+explicit persistence ownership, secrets, health checks, resources, network
+boundaries and recovery ownership. It does not authorize service activation,
+data access, cleanup, migration or tuning.
 
-이 문서는 `04-data` 계층의 즉시 하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. `supabase` healthcheck 보강, `valkey` 시크릿 경로 정합화, `seaweedfs` compose 정합화, `ksql` 라벨 정규화 절차를 제공한다.
+### Root validation
 
-### Usage Type
+Run from the repository root because leaf files depend on root-owned networks,
+secrets and shared templates. Select representative current profiles rather than
+rendering a leaf file directly:
 
-`system-guide | how-to`
+```bash
+docker compose --env-file .env.example --profile mng config --quiet
+docker compose --env-file .env.example --profile valkey-cluster config --quiet
+docker compose --env-file .env.example --profile seaweedfs config --quiet
+docker compose --env-file .env.example --profile storage config --quiet
+bash scripts/hardening/check-all-hardening.sh 04-data
+```
 
-### Target Audience
+Inspect the rendered services without printing substituted private values. Verify
+classification/profile alignment, unique writable volumes, `infra_net`, secret
+files, health checks, CPU/memory limits, intended port publication and an
+engine-specific backup/restore owner.
 
-- Data Platform Operator
-- DevOps Engineer
-- Service Developer
+### Interpretation
 
-### Purpose
+A static pass proves parse and policy conformance only. It does not prove runtime
+health, storage capacity, backup completeness, recovery time, encryption at rest,
+application compatibility or same-host availability. Record those as unverified
+until a scoped runtime test or isolated rehearsal supplies evidence.
 
-- 04-data 구성 회귀를 예방하기 위한 기본 하드닝 절차를 표준화한다.
-- 카탈로그 확장 전에 필요한 최소 안정성 계약을 확보한다.
+### Correction workflow
 
-### Prerequisites
-
-- Docker / Docker Compose 실행 환경
-- `infra/04-data` 디렉터리 쓰기 권한
-- `scripts/` 검증 스크립트 실행 권한
-
-### Step-by-step Instructions
-
-1. 변경 전 구성 점검
-   - `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
-   - `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config`
-   - `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
-   - `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
-2. Supabase healthcheck 계약 적용
-   - 핵심 서비스(`studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `analytics`, `db`, `vector`, `supavisor`)에 healthcheck가 있는지 확인한다.
-3. Valkey exporter 시크릿 경로 확인
-   - `/run/secrets/service_valkey_password` 사용 여부 점검
-4. SeaweedFS expose 정합성 확인
-   - `]`가 포함된 malformed 포트 토큰이 없는지 점검
-5. ksql tier 라벨 확인
-   - `hy-home.tier: data` 적용 여부 확인
-6. 하드닝/추적성 검증 실행
-   - `bash scripts/hardening/check-all-hardening.sh 04-data`
-   - `bash scripts/validation/check-template-security-baseline.sh`
-   - `python3 scripts/validation/check-document-links.py --mode traceability`
-
-### Common Pitfalls
-
-- `service_healthy` 의존 서비스를 정의하면서 healthcheck를 누락하는 실수
-- exporter 시크릿 파일 경로를 서비스 계약과 다르게 유지하는 실수
-- compose 오타(토큰/브래킷)로 정적 검증 실패를 유발하는 실수
+Fix the owning leaf Compose source or shared template inside an approved task,
+re-render the same root profiles, rerun the scoped hardening check and inspect the
+exact diff. Use the engine runbook for recovery; do not apply a generic data-copy
+or cleanup command.
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
-- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config`
-- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
-- `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
-- `bash scripts/hardening/check-all-hardening.sh 04-data`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [04-Data Optimization Hardening Operations Policy](policy.md) (`POL-0030`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0030`), [Runbook](runbook.md) (`RUN-0030`)
+- Artifact: `GDE-0030`; governing policy: `POL-0030`.
+- Runtime authority: `root Compose plus scripts/hardening/check-all-hardening.sh`.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
+- [Hardening policy](policy.md)
+- [Hardening runbook](runbook.md)
+- [Backup policy](../0021-backup-and-restore/policy.md)
+- [Storage exhaustion runbook](../0035-storage-exhaustion/runbook.md)

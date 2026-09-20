@@ -1,63 +1,92 @@
 ---
-title: "Stalwart Mail Usage Guide"
-version: "1.0.1"
+title: "Stalwart Mail Server Guide"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0070"
 parent_ids:
 - "POL-0070"
+implementation_services:
+  infra/10-communication/stalwart/docker-compose.yml:
+  - stalwart
 created: "2026-05-10"
 ---
 
-# Stalwart Mail Usage Guide
+# Stalwart Mail Server Guide
 
 ## Usage
 
-### Overview
+### Purpose and classification
 
-`0070-mail`은 선택형 실제 메일 서버 Stalwart를 소유한다. `mail-server` profile로만 선택하며 HOME 또는 DEV의 기본 SMTP 목적지가 아니다. 개발용 캡처는 별도 [Mailpit subject 0084](../0084-mailpit/guide.md)가 소유한다.
+Stalwart is the OPTIONAL real mail server. It is selected only by `mail-server`
+and is distinct from DEV-only Mailpit capture. Source declares SMTP, submission,
+SMTPS, IMAPS, and ManageSieve host ports plus a Traefik management UI route; it
+does not prove DNS, relay reputation, inbound delivery, mailbox auth, or backup readiness.
 
-### Prerequisites
+### Current implementation
 
-저장소 루트에서 실행한다. 실제 송수신을 시작하기 전에 도메인 DNS(MX/SPF/DKIM/DMARC), TLS 인증서, host 포트, `stalwart_password` 참조, 데이터 백업·복구 계획을 확인한다. 개인 메일함·비밀·인증서 원문은 검증 자료로 읽지 않는다.
+- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml)
+  owns ports, route, secret, certificate mount, healthcheck, and data volume.
+- `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` is mounted at `/opt/stalwart` and
+  contains runtime configuration plus mailbox/storage data selected through the
+  Stalwart UI. The tracked repository does not reveal the configured data/blob/
+  search/in-memory backends; inspect them through an approved admin session before backup.
+- `${DEFAULT_CERT_DIR}` is mounted read-only at `/opt/stalwart/certs`.
+  `stalwart_password` seeds the admin password. The Traefik middleware protects
+  the web UI only; SMTP/IMAP authentication and TLS are Stalwart listener controls.
+- The SMTP socket probe is process reachability, not delivery/auth/TLS readiness.
+- The image is dual-licensed upstream under AGPL-3.0 or the Stalwart Enterprise
+  License. No tracked license key proves Enterprise features; do not rely on them.
 
-### Step-by-step Instructions
+### Normal use and prerequisites
 
-1. 루트 include와 profile 선택을 정적으로 확인한다.
+1. Validate `docker compose --profile mail-server config --quiet` from the root.
+2. Before activation, verify domain ownership, A/AAAA/MX, reverse DNS, SPF, DKIM,
+   DMARC, TLS certificates, listener authentication, relay policy, abuse controls,
+   host firewall, storage backend, and recovery owner.
+3. Start only `stalwart`. Verify the management UI separately from authenticated
+   submission/IMAP and inbound/outbound test delivery. Use synthetic mail and
+   never record bodies or credentials in evidence.
+4. Record actual configured storage backends and retention. Do not assume the
+   bind directory is a Maildir or a particular database solely from Compose.
 
-   ```bash
-   docker compose --env-file .env.example --profile mail-server config --services
-   bash scripts/hardening/check-all-hardening.sh 10-communication
-   ```
+### Backup and upgrade
 
-2. [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml)의 host-port 변수와 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` 영속 경로를 확인한다. 관리 UI는 `https://mail.${DEFAULT_URL}`이며 Traefik SSO 체인을 사용한다.
-3. 운영 전환을 승인받은 환경에서 SMTP Submission 또는 SMTPS와 IMAPS의 TLS·인증을 검증한다. Compose는 SMTP, Submission, SMTPS, IMAPS, ManageSieve 포트를 호스트에 게시하므로 관리 UI SSO가 메일 프로토콜 인증을 대신하지 않는다.
-4. 실행 중인 서비스 상태 점검은 `docker compose --profile mail-server ps stalwart`로 시작한다. SMTP TCP healthcheck만으로 외부 배달, DNS 또는 TLS 성공을 주장하지 않는다.
-5. 애플리케이션 개발 테스트는 [Mailpit 가이드](../0084-mailpit/guide.md)의 내부 `mailpit` SMTP 또는 loopback 바인딩을 사용한다. Stalwart를 개발 트랩으로 사용하지 않는다.
+Use a version-supported Stalwart CLI snapshot/export for configuration objects
+when available, plus the native backup method for each configured data/blob/
+search backend. If the deployment uses only the local bind-backed stores and no
+online-consistent export exists, stop Stalwart and copy the complete `/opt/stalwart`
+tree with metadata. Preserve certificate/private-key custody and DNS/DKIM records
+separately. Restore on an isolated hostname with outbound SMTP blocked, verify
+accounts/mailbox counts and synthetic retrieval, then approve cutover.
+
+Before upgrade, take and test that backup, read release/storage/license notes,
+pin a compatible image, and validate all listeners. No delivery, backup, restore,
+or upgrade was executed by this documentation task.
 
 ## Common Checks
 
-- 루트 profile 구성과 communication 하드닝 검증 통과.
-- 실제 운영 readiness는 DNS, TLS, 인증, 승인된 송수신 시험, 복원 검증을 별도로 기록.
-- 이미지 버전은 Compose를 참조하며 문서에 현재 pin을 복제하지 않는다.
+- `docker compose --profile mail-server config --quiet`
+- `docker compose --profile mail-server config --services`
+- `bash scripts/hardening/check-all-hardening.sh 10-communication`
 
 ## Runbook Handoff
 
-UI·SMTP·IMAP 연결 실패나 배달 문제가 발생하면 [Stalwart 런북](runbook.md)을 따른다. 개발 캡처 실패는 [Mailpit 런북](../0084-mailpit/runbook.md)으로 인계한다.
+Use the [runbook](runbook.md) for listener failures, data recovery, or upgrades.
 
 ## Traceability
 
-- Declared parent: [Mail Operations Policy](policy.md) (`POL-0070`)
-- Governing authority: [Communication Tier Architecture Description](../../../../02.architecture/descriptions/0010-communication-architecture.md) (`AD-0010`)
-- Subject peers: [Policy](policy.md) (`POL-0070`), [Runbook](runbook.md) (`RUN-0070`)
+- [Policy](policy.md) (`POL-0070`)
+- [Runbook](runbook.md) (`RUN-0070`)
+- [Communication architecture](../../../../02.architecture/descriptions/0010-communication-architecture.md)
 
 ## Related Documents
 
-- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml): 서비스·profile·포트·데이터 선언 원본.
-- [Curated version projection](../../../../../infra/tech-stack.versions.json): 선언 drift 확인.
-- [Mailpit 개발 트랩 가이드](../0084-mailpit/guide.md), [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md).
-- [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
-- [Mailpit 공식 기능 문서](https://mailpit.axllent.org/docs/).
+- [Stalwart Docker deployment](https://stalw.art/docs/install/platform/docker/)
+- [Stalwart storage model](https://stalw.art/docs/storage/)
+- [Stalwart TLS](https://stalw.art/docs/server/tls/)
+- [Stalwart CLI snapshot](https://stalw.art/docs/management/cli/)
+- [Stalwart licensing](https://github.com/stalwartlabs/stalwart/blob/main/README.md#license)

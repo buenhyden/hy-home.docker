@@ -56,6 +56,8 @@ graph TD
     ForwardApp["ForwardAuth-protected Service"]
     Airflow["Airflow (Native Keycloak Auth Manager)"]
     Kafbat["Kafbat UI (Native OAuth2/OIDC)"]
+    OpenWebUI["Open WebUI (Native OIDC)"]
+    Gatus["Gatus (Native OIDC)"]
     OpenBao["OpenBao (Native OIDC + Bao policy)"]
     PostgreSQL["PostgreSQL (Identity DB)"]
     Valkey["Valkey (OAuth2 Proxy Session Cache)"]
@@ -72,6 +74,12 @@ graph TD
 
     Gateway --> Kafbat
     Kafbat -->|OIDC| Keycloak
+
+    Gateway --> OpenWebUI
+    OpenWebUI -->|OIDC| Keycloak
+
+    Gateway --> Gatus
+    Gatus -->|OIDC| Keycloak
 
     Gateway --> OpenBao
     OpenBao -->|OIDC| Keycloak
@@ -101,6 +109,8 @@ After login: Proxy session cookie -> repeat original request
 
 - Apache Airflow
 - Kafbat UI
+- Open WebUI
+- Gatus
 - OpenBao (owner-approved native OIDC; operator login verified)
 
 흐름:
@@ -123,7 +133,7 @@ flow와 application authorization을 수행한다.
 
 - **IAM Engine**: Keycloak
 - **Gateway SSO**: OAuth2 Proxy
-- **Native OIDC**: Airflow, Kafbat UI, OpenBao
+- **Native OIDC**: Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao
 - **Session Manager**: Valkey for OAuth2 Proxy
 - **Storage**: PostgreSQL for Keycloak realm/user/client state
 
@@ -135,7 +145,7 @@ flow와 application authorization을 수행한다.
 ForwardAuth 대상 서비스는 OAuth2 Proxy `/oauth2/auth` 검사를 거쳐 Keycloak
 OIDC와 Valkey session을 사용한다.
 
-Native OIDC 대상인 Airflow, Kafbat UI, OpenBao는 OAuth2 Proxy를 거치지 않고
+Native OIDC 대상인 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao는 OAuth2 Proxy를 거치지 않고
 애플리케이션이 Keycloak과 직접 OIDC flow를 수행한다. Airflow는 추가로
 Keycloak Authorization Services를 사용해 resource authorization을 평가한다.
 
@@ -204,4 +214,4 @@ role·policy는 별도 객체다. 실제 로그인 검증은
 - **Operations**: [OAuth2 Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
 - **Operations**: [Application authentication integration](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

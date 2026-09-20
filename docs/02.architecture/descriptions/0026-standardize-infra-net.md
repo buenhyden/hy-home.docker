@@ -1,10 +1,10 @@
 ---
 title: "infra_net Architecture Description"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -41,8 +41,10 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.3-6 | Authentication / Keycloak and OAuth2 Proxy |
 | 172.19.0.7 | Tooling registry |
 | 172.19.0.8 | InfluxDB |
-| 172.19.0.9-10 | Vault and Vault Agent |
+| 172.19.0.9-10 | Legacy Vault and Vault Agent |
 | 172.19.0.11-16 | PostgreSQL and management database core |
+| 172.19.0.17-18 | OpenBao and OpenBao Agent |
+| 172.19.0.19 | cAdvisor |
 | 172.19.0.20-28 | Observability stack |
 | 172.19.0.29, 39 | MinIO and bucket job |
 | 172.19.0.30-38 | Kafka stack |
@@ -52,7 +54,6 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.70-71 | OpenSearch |
 | 172.19.0.80-85 | n8n workflow |
 | 172.19.0.90-100 | Airflow workflow |
-| 172.19.0.120 | Terraform |
 | 172.19.0.121 | RedisInsight |
 | 172.19.0.122-123 | Open Notebook services |
 | 172.19.0.130-132 | ksqlDB stack |
@@ -61,10 +62,16 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.160-163 | CouchDB |
 | 172.19.0.170-175 | MongoDB |
 | 172.19.0.179-191 | Supabase |
-| 172.19.0.200 | RabbitMQ |
 | 172.19.0.201, 211 | Ollama and exporter |
 | 172.19.0.202 | Qdrant |
-| 172.19.0.220-229 | Laboratory, tooling, and mail services |
+| 172.19.0.203 | ComfyUI |
+| 172.19.0.221 | Dozzle |
+| 172.19.0.223 | SonarQube |
+| 172.19.0.224 | OpenTofu |
+| 172.19.0.225-227 | Terrakube API, UI, and executor |
+| 172.19.0.228 | Stalwart |
+| 172.19.0.230 | Mailpit |
+| 172.19.0.231 | Gatus |
 | 172.19.0.250, 253 | Locust |
 | 172.19.0.251 | Open WebUI |
 
@@ -106,4 +113,4 @@ tracked Compose configuration.
 - [IP address management policy](../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md)
 - [IP address management runbook](../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

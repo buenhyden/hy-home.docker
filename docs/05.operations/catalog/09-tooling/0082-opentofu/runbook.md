@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Runbook"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -16,40 +16,79 @@ created: "2026-09-19"
 
 ## When to Use
 
-Use for `opentofu` readiness checks and approved targeted deployment or recovery. Work from the repository root. Confirm configuration commit, image source, existing data location and a protected backup before runtime changes.
+Use for a reviewed plan, lock failure, protected state backup/recovery, or
+runtime/provider upgrade. Work from the repository root. Commands that access a
+backend/provider require the authorization named below.
 
 ## Procedure
 
-1. Validate the selected profile with the existing Compose validator; never print a private rendered model.
-2. Run this bounded read-only check:
+1. Record configuration commit, exact workspace directory, selected OpenTofu
+   workspace, backend, account, command class, and rollback owner. Confirm no
+   other writer is active.
+2. Run static checks without provider authority:
 
-```bash
-docker compose --profile iac config --services
-```
+   ```bash
+   docker compose --profile iac config --quiet
+   docker compose --profile iac run --rm opentofu version
+   ```
 
-1. This command verifies selection only. After authorizing the exact workspace, run init/validate and a reviewed plan using the operational account; inspect resources locally and record counts, not plan payloads.
-2. If deployment is approved, name only these services and verify initialization jobs and daemon readiness separately. Stop on an unexpected mount or failed check; do not broaden to the whole stack.
+3. For an authorized plan, initialize the exact workspace, select the intended
+   OpenTofu workspace, and run validation before creating a saved plan. Store the
+   plan outside Git with restrictive permissions. Record only its digest and
+   resource action counts.
+4. Stop before `apply`. A reviewer must bind the saved plan digest, account, and
+   expected changes to explicit apply approval. Never substitute `-auto-approve`
+   for this boundary.
 
-[Implementation](../../../../../infra/09-tooling/opentofu/docker-compose.yml) and [version projection](../../../../../infra/tech-stack.versions.json) own runtime pins.
+### State backup and recovery
+
+1. Determine local or remote backend and prove no active writer/lock owner.
+2. For local state, copy the state and its backup files to a protected directory
+   with mode `0600`. For remote state, prefer the backend's atomic/versioned
+   snapshot. If using `tofu state pull`, redirect directly to a protected file;
+   do not display it.
+3. Verify checksum, backend/workspace identity, and protected retention. A file
+   existing is not restore proof.
+4. Restore first against an isolated backend with external provider/network
+   access disabled. Compare lineage, serial, and `state list` privately.
+5. `tofu state push` is a last-resort separately approved write. Preserve the
+   current remote snapshot first and do not use `-force` to bypass lineage or
+   serial protection unless the approval names that exact loss-acceptance case.
+
+### Lock and upgrade recovery
+
+- For a lock error, identify the holder and wait/stop the writer. Use
+  `force-unlock` only for the operator's own abandoned lock ID.
+- Before upgrading, take the state backup above, read intervening upgrade notes,
+  rebuild the local image, initialize without changing backend settings, and
+  compare a non-applied plan. Roll back the image/build if compatibility fails;
+  roll back state only from the tested backup when the upgrade changed state.
 
 ## Evidence
 
-Record date, configuration commit, service names, exit statuses and sanitized health/resource results in the current Task. Do not capture secret values, raw environment, state, token files or message/database contents. No runtime validation is claimed by this document.
+Record exits, version, configuration/plan digests, backend/workspace identifiers,
+sanitized action counts, lock owner decision, and final disposition. Never record
+state, plan body, credentials, or provider responses containing secrets.
 
 ## Rollback or Recovery
 
-Preserve encrypted state backups and lock ownership. Reverting a configuration commit does not revert remote resources; recovery requires a separately reviewed plan. Never force-unlock another active operator.
+Reverting Git or the image does not revert remote resources. Resource rollback
+requires a new reviewed plan. State restore and upgrade rehearsal are currently
+**planned but unexecuted** in this repository.
 
 ## Escalation
 
-Stop and contact @buenhyden when credentials, destructive storage changes, remote mutations or unavailable backups prevent safe progress.
+Stop on an unknown backend/workspace, missing protected backup, active lock
+owner, lineage/serial mismatch, destructive plan, or credential/account ambiguity.
 
 ## Traceability
 
-- Governing architecture: [AD-0009](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md)
+- [Guide](guide.md) (`GDE-0082`)
+- [Policy](policy.md) (`POL-0082`)
+- [OpenTofu Compose](../../../../../infra/09-tooling/opentofu/docker-compose.yml)
 
 ## Related Documents
 
+- [OpenTofu state locking](https://opentofu.org/docs/language/state/locking/)
+- [OpenTofu upgrading](https://opentofu.org/docs/intro/upgrading/)
 - [Operations index](../../../README.md)
-- [Upstream documentation](https://opentofu.org/docs/cli/commands/plan/)

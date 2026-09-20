@@ -3,325 +3,1830 @@
   "effective_date": "2026-09-19",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
-  "source_of_truth": "Docker Compose image declarations",
-  "description": "Curated drift projection for HOME runtime and maintained operational tools. Compose/Dockerfile declarations remain runtime authority; this registry covers selected Compose image declarations, not all services, build arguments or deployment state. Full service disposition is maintained in the dated research inventory.",
+  "source_of_truth": "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} service image declarations",
+  "local_repository_prefixes": [
+    "hy/",
+    "hyhome/",
+    "hy-home/"
+  ],
+  "description": "Derived Compose-only projection for tracked infrastructure service images. Compose declarations remain runtime authority; Dockerfile FROM/ARG and inline build sources remain separate upstream build inputs owned by their Renovate managers.",
   "entries": [
     {
       "component": "Traefik",
       "tier": "01-gateway",
+      "classification": "external",
+      "repository_classifications": {
+        "traefik": "external"
+      },
       "images": [
         "traefik:v3.7.13"
       ],
       "compose_files": [
         "infra/01-gateway/traefik/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/01-gateway/traefik/docker-compose.yml",
+          "images": [
+            "traefik:v3.7.13"
+          ]
+        }
       ]
     },
     {
       "component": "Keycloak",
       "tier": "02-auth",
+      "classification": "external",
+      "repository_classifications": {
+        "quay.io/keycloak/keycloak": "external"
+      },
       "images": [
         "quay.io/keycloak/keycloak:26.7.4-0"
       ],
       "compose_files": [
         "infra/02-auth/keycloak/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/02-auth/keycloak/docker-compose.yml",
+          "images": [
+            "quay.io/keycloak/keycloak:26.7.4-0"
+          ]
+        }
       ]
     },
     {
       "component": "Vault",
       "tier": "03-security",
+      "classification": "external",
+      "repository_classifications": {
+        "hashicorp/vault": "external"
+      },
       "images": [
         "hashicorp/vault:2.1.1"
       ],
       "compose_files": [
         "infra/03-security/vault/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/03-security/vault/docker-compose.yml",
+          "images": [
+            "hashicorp/vault:2.1.1"
+          ]
+        }
       ]
     },
     {
       "component": "PostgreSQL",
       "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "ghcr.io/zalando/spilo-17": "external",
+        "postgres": "external",
+        "supabase/postgres": "external"
+      },
       "images": [
-        "postgres:18.6-alpine",
         "ghcr.io/zalando/spilo-17:4.0-p3",
+        "postgres:18.6-alpine",
         "supabase/postgres:17.6.1.173"
       ],
       "compose_files": [
         "infra/04-data/operational/mng-db/docker-compose.yml",
-        "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
-        "infra/04-data/operational/supabase/docker-compose.yml"
+        "infra/04-data/operational/supabase/docker-compose.yml",
+        "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+          "images": [
+            "ghcr.io/zalando/spilo-17:4.0-p3"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/operational/mng-db/docker-compose.yml",
+          "images": [
+            "postgres:18.6-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+          "images": [
+            "postgres:18.6-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/postgres:17.6.1.173"
+          ]
+        }
       ]
     },
     {
       "component": "Valkey",
       "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "valkey/valkey": "external"
+      },
       "images": [
         "valkey/valkey:9.1.2-alpine"
       ],
       "compose_files": [
+        "infra/02-auth/oauth2-proxy/docker-compose.yml",
         "infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml",
         "infra/04-data/operational/mng-db/docker-compose.yml",
         "infra/07-workflow/airflow/docker-compose.yml",
         "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.2-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.2-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/operational/mng-db/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.2-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.2-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "valkey/valkey:9.1.2-alpine"
+          ]
+        }
       ]
     },
     {
       "component": "Kafka",
       "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-kafka": "external"
+      },
       "images": [
         "confluentinc/cp-kafka:8.3.2"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-kafka:8.3.2"
+          ]
+        }
       ]
     },
     {
       "component": "Kafbat UI",
       "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "kafbat/kafka-ui": "external"
+      },
       "images": [
         "kafbat/kafka-ui:v1.5.0"
       ],
       "compose_files": [
         "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "kafbat/kafka-ui:v1.5.0"
+          ]
+        }
       ]
     },
     {
       "component": "Prometheus",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "prom/prometheus": "external"
+      },
       "images": [
         "prom/prometheus:v3.14.0"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "prom/prometheus:v3.14.0"
+          ]
+        }
       ]
     },
     {
       "component": "Grafana",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "grafana/grafana": "external"
+      },
       "images": [
         "grafana/grafana:13.2.2"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "grafana/grafana:13.2.2"
+          ]
+        }
       ]
     },
     {
       "component": "Loki",
       "tier": "06-observability",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy/loki": "local-custom"
+      },
       "images": [
         "hy/loki:3.7.3-custom"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "hy/loki:3.7.3-custom"
+          ]
+        }
       ]
     },
     {
       "component": "Tempo",
       "tier": "06-observability",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy/tempo": "local-custom"
+      },
       "images": [
         "hy/tempo:3.0.2-custom"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "hy/tempo:3.0.2-custom"
+          ]
+        }
       ]
     },
     {
       "component": "Alloy",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "grafana/alloy": "external"
+      },
       "images": [
         "grafana/alloy:v1.19.2"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "grafana/alloy:v1.19.2"
+          ]
+        }
       ]
     },
     {
       "component": "Airflow",
       "tier": "07-workflow",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/airflow": "local-custom"
+      },
       "images": [
         "hy-home/airflow:3.3.1-keycloak"
       ],
       "compose_files": [
         "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "images": [
+            "hy-home/airflow:3.3.1-keycloak"
+          ]
+        }
       ]
     },
     {
       "component": "n8n",
       "tier": "07-workflow",
+      "classification": "mixed",
+      "repository_classifications": {
+        "hyhome/n8n": "local-custom",
+        "n8nio/runners": "external"
+      },
       "images": [
         "hyhome/n8n:2.29.5-local",
         "n8nio/runners:2.39.7"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "hyhome/n8n:2.29.5-local"
+          ]
+        },
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "n8nio/runners:2.39.7"
+          ]
+        }
       ]
     },
     {
       "component": "Ollama",
       "tier": "08-ai",
+      "classification": "external",
+      "repository_classifications": {
+        "ollama/ollama": "external"
+      },
       "images": [
         "ollama/ollama:0.34.2"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/08-ai/ollama/docker-compose.yml",
+          "images": [
+            "ollama/ollama:0.34.2"
+          ]
+        }
       ]
     },
     {
       "component": "Open WebUI",
       "tier": "08-ai",
+      "classification": "external",
+      "repository_classifications": {
+        "ghcr.io/open-webui/open-webui": "external"
+      },
       "images": [
         "ghcr.io/open-webui/open-webui:v0.11.3-cuda"
       ],
       "compose_files": [
         "infra/08-ai/open-webui/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
+          "images": [
+            "ghcr.io/open-webui/open-webui:v0.11.3-cuda"
+          ]
+        }
       ]
     },
     {
       "component": "Dozzle",
       "tier": "11-laboratory",
+      "classification": "external",
+      "repository_classifications": {
+        "amir20/dozzle": "external"
+      },
       "images": [
         "amir20/dozzle:v11.1.0"
       ],
       "compose_files": [
         "infra/11-laboratory/dozzle/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/11-laboratory/dozzle/docker-compose.yml",
+          "images": [
+            "amir20/dozzle:v11.1.0"
+          ]
+        }
       ]
     },
     {
       "component": "RedisInsight",
       "tier": "11-laboratory",
+      "classification": "external",
+      "repository_classifications": {
+        "redis/redisinsight": "external"
+      },
       "images": [
         "redis/redisinsight:3.8.0"
       ],
       "compose_files": [
         "infra/11-laboratory/redisinsight/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/11-laboratory/redisinsight/docker-compose.yml",
+          "images": [
+            "redis/redisinsight:3.8.0"
+          ]
+        }
       ]
     },
     {
       "component": "Open Notebook",
       "tier": "11-laboratory",
+      "classification": "external",
+      "repository_classifications": {
+        "lfnovo/open_notebook": "external"
+      },
       "images": [
         "lfnovo/open_notebook:v1-latest-single"
       ],
       "compose_files": [
         "infra/11-laboratory/open-notebook/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/11-laboratory/open-notebook/docker-compose.yml",
+          "images": [
+            "lfnovo/open_notebook:v1-latest-single"
+          ]
+        }
       ]
     },
     {
       "component": "OpenBao",
       "tier": "03-security",
+      "classification": "external",
+      "repository_classifications": {
+        "openbao/openbao": "external"
+      },
       "images": [
         "openbao/openbao:2.6.2"
       ],
       "compose_files": [
         "infra/03-security/openbao/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/03-security/openbao/docker-compose.yml",
+          "images": [
+            "openbao/openbao:2.6.2"
+          ]
+        }
       ]
     },
     {
       "component": "ComfyUI",
       "tier": "08-ai",
+      "classification": "external",
+      "repository_classifications": {
+        "yanwk/comfyui-boot": "external"
+      },
       "images": [
         "yanwk/comfyui-boot:cu126-slim"
       ],
       "compose_files": [
         "infra/08-ai/comfyui/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/08-ai/comfyui/docker-compose.yml",
+          "images": [
+            "yanwk/comfyui-boot:cu126-slim"
+          ]
+        }
       ]
     },
     {
       "component": "Renovate",
       "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "renovate/renovate": "external"
+      },
       "images": [
         "renovate/renovate:44.103.2-full"
       ],
       "compose_files": [
         "infra/09-tooling/renovate/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/renovate/docker-compose.yml",
+          "images": [
+            "renovate/renovate:44.103.2-full"
+          ]
+        }
       ]
     },
     {
       "component": "OpenTofu",
       "tier": "09-tooling",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/opentofu": "local-custom"
+      },
       "images": [
         "hy-home/opentofu:1.12.6-local"
       ],
       "compose_files": [
         "infra/09-tooling/opentofu/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/opentofu/docker-compose.yml",
+          "images": [
+            "hy-home/opentofu:1.12.6-local"
+          ]
+        }
       ]
     },
     {
       "component": "Mailpit",
       "tier": "10-communication",
+      "classification": "external",
+      "repository_classifications": {
+        "axllent/mailpit": "external"
+      },
       "images": [
         "axllent/mailpit:v1.31.1"
       ],
       "compose_files": [
         "infra/10-communication/mailpit/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/10-communication/mailpit/docker-compose.yml",
+          "images": [
+            "axllent/mailpit:v1.31.1"
+          ]
+        }
       ]
     },
     {
       "component": "Qdrant",
       "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "qdrant/qdrant": "external"
+      },
       "images": [
         "qdrant/qdrant:v1.19.1-unprivileged"
       ],
       "compose_files": [
         "infra/04-data/specialized/qdrant/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/specialized/qdrant/docker-compose.yml",
+          "images": [
+            "qdrant/qdrant:v1.19.1-unprivileged"
+          ]
+        }
       ]
     },
     {
       "component": "Pyroscope",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "grafana/pyroscope": "external"
+      },
       "images": [
         "grafana/pyroscope:2.3.1"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "grafana/pyroscope:2.3.1"
+          ]
+        }
       ]
     },
     {
       "component": "Alertmanager",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "prom/alertmanager": "external"
+      },
       "images": [
         "prom/alertmanager:v0.34.1"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "prom/alertmanager:v0.34.1"
+          ]
+        }
       ]
     },
     {
       "component": "Node Exporter",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "quay.io/prometheus/node-exporter": "external"
+      },
       "images": [
         "quay.io/prometheus/node-exporter:v1.12.1"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "quay.io/prometheus/node-exporter:v1.12.1"
+          ]
+        }
       ]
     },
     {
       "component": "cAdvisor",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "gcr.io/cadvisor/cadvisor": "external"
+      },
       "images": [
         "gcr.io/cadvisor/cadvisor:v0.55.1"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "gcr.io/cadvisor/cadvisor:v0.55.1"
+          ]
+        }
       ]
     },
     {
       "component": "Pushgateway",
       "tier": "06-observability",
+      "classification": "external",
+      "repository_classifications": {
+        "prom/pushgateway": "external"
+      },
       "images": [
         "prom/pushgateway:v1.11.3"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "prom/pushgateway:v1.11.3"
+          ]
+        }
       ]
     },
     {
       "component": "Valkey Exporter",
       "tier": "02-auth",
+      "classification": "external",
+      "repository_classifications": {
+        "oliver006/redis_exporter": "external"
+      },
       "images": [
         "oliver006/redis_exporter:v1.91.1-alpine"
       ],
       "compose_files": [
-        "infra/02-auth/oauth2-proxy/docker-compose.yml"
+        "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        "infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml",
+        "infra/04-data/operational/mng-db/docker-compose.yml",
+        "infra/07-workflow/airflow/docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/operational/mng-db/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: alpine",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "alpine": "external"
+      },
+      "images": [
+        "alpine:3.24.2"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/mongodb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/mongodb/docker-compose.yml",
+          "images": [
+            "alpine:3.24.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: azbuilder/api-server",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "azbuilder/api-server": "external"
+      },
+      "images": [
+        "azbuilder/api-server:2.33.2"
+      ],
+      "compose_files": [
+        "infra/09-tooling/terrakube/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/terrakube/docker-compose.yml",
+          "images": [
+            "azbuilder/api-server:2.33.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: azbuilder/executor",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "azbuilder/executor": "external"
+      },
+      "images": [
+        "azbuilder/executor:2.33.2"
+      ],
+      "compose_files": [
+        "infra/09-tooling/terrakube/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/terrakube/docker-compose.yml",
+          "images": [
+            "azbuilder/executor:2.33.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: azbuilder/terrakube-ui",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "azbuilder/terrakube-ui": "external"
+      },
+      "images": [
+        "azbuilder/terrakube-ui:2.33.2"
+      ],
+      "compose_files": [
+        "infra/09-tooling/terrakube/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/terrakube/docker-compose.yml",
+          "images": [
+            "azbuilder/terrakube-ui:2.33.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: bitnami/cassandra-exporter",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "bitnami/cassandra-exporter": "external"
+      },
+      "images": [
+        "bitnami/cassandra-exporter:2.3.11"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/cassandra/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/cassandra/docker-compose.yml",
+          "images": [
+            "bitnami/cassandra-exporter:2.3.11"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: cassandra",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "cassandra": "external"
+      },
+      "images": [
+        "cassandra:5.0.9"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/cassandra/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/cassandra/docker-compose.yml",
+          "images": [
+            "cassandra:5.0.9"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: chrislusf/seaweedfs",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "chrislusf/seaweedfs": "external"
+      },
+      "images": [
+        "chrislusf/seaweedfs:4.47"
+      ],
+      "compose_files": [
+        "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml",
+          "images": [
+            "chrislusf/seaweedfs:4.47"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/cp-kafka-connect",
+      "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-kafka-connect": "external"
+      },
+      "images": [
+        "confluentinc/cp-kafka-connect:8.3.2"
+      ],
+      "compose_files": [
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-kafka-connect:8.3.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/cp-kafka-rest",
+      "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-kafka-rest": "external"
+      },
+      "images": [
+        "confluentinc/cp-kafka-rest:8.3.2"
+      ],
+      "compose_files": [
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-kafka-rest:8.3.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/cp-ksqldb-cli",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-ksqldb-cli": "external"
+      },
+      "images": [
+        "confluentinc/cp-ksqldb-cli:8.0.8"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/ksql/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-ksqldb-cli:8.0.8"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/cp-ksqldb-server",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-ksqldb-server": "external"
+      },
+      "images": [
+        "confluentinc/cp-ksqldb-server:8.3.2"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/ksql/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-ksqldb-server:8.3.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/cp-schema-registry",
+      "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/cp-schema-registry": "external"
+      },
+      "images": [
+        "confluentinc/cp-schema-registry:8.3.2"
+      ],
+      "compose_files": [
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "confluentinc/cp-schema-registry:8.3.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: confluentinc/ksqldb-examples",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "confluentinc/ksqldb-examples": "external"
+      },
+      "images": [
+        "confluentinc/ksqldb-examples:8.0.8"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/ksql/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
+          "images": [
+            "confluentinc/ksqldb-examples:8.0.8"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: couchdb",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "couchdb": "external"
+      },
+      "images": [
+        "couchdb:3.5.2"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/couchdb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/couchdb/docker-compose.yml",
+          "images": [
+            "couchdb:3.5.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: curlimages/curl",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "curlimages/curl": "external"
+      },
+      "images": [
+        "curlimages/curl:8.22.0"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/couchdb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/couchdb/docker-compose.yml",
+          "images": [
+            "curlimages/curl:8.22.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: danielqsj/kafka-exporter",
+      "tier": "05-messaging",
+      "classification": "external",
+      "repository_classifications": {
+        "danielqsj/kafka-exporter": "external"
+      },
+      "images": [
+        "danielqsj/kafka-exporter:v1.10.0"
+      ],
+      "compose_files": [
+        "infra/05-messaging/kafka/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "danielqsj/kafka-exporter:v1.10.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: darthsim/imgproxy",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "darthsim/imgproxy": "external"
+      },
+      "images": [
+        "darthsim/imgproxy:v4.0.15"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "darthsim/imgproxy:v4.0.15"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: haproxy",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "haproxy": "external"
+      },
+      "images": [
+        "haproxy:3.4.4"
+      ],
+      "compose_files": [
+        "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+          "images": [
+            "haproxy:3.4.4"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: hy/gatus",
+      "tier": "06-observability",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy/gatus": "local-custom"
+      },
+      "images": [
+        "hy/gatus:local"
+      ],
+      "compose_files": [
+        "infra/06-observability/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
+          "images": [
+            "hy/gatus:local"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: influxdb",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "influxdb": "external"
+      },
+      "images": [
+        "influxdb:3.11.4-core"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/influxdb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/influxdb/docker-compose.yml",
+          "images": [
+            "influxdb:3.11.4-core"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: kong",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "kong": "external"
+      },
+      "images": [
+        "kong:3.9.3"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "kong:3.9.3"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: lucabecker42/ollama-exporter",
+      "tier": "08-ai",
+      "classification": "external",
+      "repository_classifications": {
+        "lucabecker42/ollama-exporter": "external"
+      },
+      "images": [
+        "lucabecker42/ollama-exporter:1.0.3"
+      ],
+      "compose_files": [
+        "infra/08-ai/ollama/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/08-ai/ollama/docker-compose.yml",
+          "images": [
+            "lucabecker42/ollama-exporter:1.0.3"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: mongo",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "mongo": "external"
+      },
+      "images": [
+        "mongo:8.3.11-noble"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/mongodb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/mongodb/docker-compose.yml",
+          "images": [
+            "mongo:8.3.11-noble"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: mongo-express",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "mongo-express": "external"
+      },
+      "images": [
+        "mongo-express:1-18-alpine3.19"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/mongodb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/mongodb/docker-compose.yml",
+          "images": [
+            "mongo-express:1-18-alpine3.19"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: neo4j",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "neo4j": "external"
+      },
+      "images": [
+        "neo4j:5.26.30-community"
+      ],
+      "compose_files": [
+        "infra/04-data/specialized/neo4j/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/specialized/neo4j/docker-compose.yml",
+          "images": [
+            "neo4j:5.26.30-community"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: nginx",
+      "tier": "01-gateway",
+      "classification": "external",
+      "repository_classifications": {
+        "nginx": "external"
+      },
+      "images": [
+        "nginx:alpine"
+      ],
+      "compose_files": [
+        "infra/01-gateway/nginx/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/01-gateway/nginx/docker-compose.yml",
+          "images": [
+            "nginx:alpine"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: opensearchproject/opensearch-dashboards",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "opensearchproject/opensearch-dashboards": "external"
+      },
+      "images": [
+        "opensearchproject/opensearch-dashboards:3.8.0"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/opensearch/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/opensearch/docker-compose.yml",
+          "images": [
+            "opensearchproject/opensearch-dashboards:3.8.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: percona/mongodb_exporter",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "percona/mongodb_exporter": "external"
+      },
+      "images": [
+        "percona/mongodb_exporter:2.37"
+      ],
+      "compose_files": [
+        "infra/04-data/nosql/mongodb/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/nosql/mongodb/docker-compose.yml",
+          "images": [
+            "percona/mongodb_exporter:2.37"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: postgrest/postgrest",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "postgrest/postgrest": "external"
+      },
+      "images": [
+        "postgrest/postgrest:v16.3"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "postgrest/postgrest:v16.3"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: prom/statsd-exporter",
+      "tier": "07-workflow",
+      "classification": "external",
+      "repository_classifications": {
+        "prom/statsd-exporter": "external"
+      },
+      "images": [
+        "prom/statsd-exporter:v0.31.0"
+      ],
+      "compose_files": [
+        "infra/07-workflow/airflow/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+          "images": [
+            "prom/statsd-exporter:v0.31.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: prometheuscommunity/postgres-exporter",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "prometheuscommunity/postgres-exporter": "external"
+      },
+      "images": [
+        "prometheuscommunity/postgres-exporter:v0.20.1"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/mng-db/docker-compose.yml",
+        "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/mng-db/docker-compose.yml",
+          "images": [
+            "prometheuscommunity/postgres-exporter:v0.20.1"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+          "images": [
+            "prometheuscommunity/postgres-exporter:v0.20.1"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: quay.io/coreos/etcd",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "quay.io/coreos/etcd": "external"
+      },
+      "images": [
+        "quay.io/coreos/etcd:v3.7.1"
+      ],
+      "compose_files": [
+        "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+          "images": [
+            "quay.io/coreos/etcd:v3.7.1"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: quay.io/minio/minio",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "quay.io/minio/minio": "external"
+      },
+      "images": [
+        "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
+      ],
+      "compose_files": [
+        "infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml",
+        "infra/04-data/lake-and-object/minio/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml",
+          "images": [
+            "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/lake-and-object/minio/docker-compose.yml",
+          "images": [
+            "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: registry",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "registry": "external"
+      },
+      "images": [
+        "registry:3"
+      ],
+      "compose_files": [
+        "infra/09-tooling/registry/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/registry/docker-compose.yml",
+          "images": [
+            "registry:3"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: sonarqube",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "sonarqube": "external"
+      },
+      "images": [
+        "sonarqube:26.9.0.129388-community"
+      ],
+      "compose_files": [
+        "infra/09-tooling/sonarqube/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/sonarqube/docker-compose.yml",
+          "images": [
+            "sonarqube:26.9.0.129388-community"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: stalwartlabs/stalwart",
+      "tier": "10-communication",
+      "classification": "external",
+      "repository_classifications": {
+        "stalwartlabs/stalwart": "external"
+      },
+      "images": [
+        "stalwartlabs/stalwart:v0.16.22"
+      ],
+      "compose_files": [
+        "infra/10-communication/stalwart/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+          "images": [
+            "stalwartlabs/stalwart:v0.16.22"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: starrocks/be-ubuntu",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "starrocks/be-ubuntu": "external"
+      },
+      "images": [
+        "starrocks/be-ubuntu:4.1.4"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/starrocks/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/starrocks/docker-compose.yml",
+          "images": [
+            "starrocks/be-ubuntu:4.1.4"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: starrocks/fe-ubuntu",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "starrocks/fe-ubuntu": "external"
+      },
+      "images": [
+        "starrocks/fe-ubuntu:4.1.4"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/starrocks/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/starrocks/docker-compose.yml",
+          "images": [
+            "starrocks/fe-ubuntu:4.1.4"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/edge-runtime",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/edge-runtime": "external"
+      },
+      "images": [
+        "supabase/edge-runtime:v1.76.2"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/edge-runtime:v1.76.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/gotrue",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/gotrue": "external"
+      },
+      "images": [
+        "supabase/gotrue:v2.197.0"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/gotrue:v2.197.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/logflare",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/logflare": "external"
+      },
+      "images": [
+        "supabase/logflare:1.50.12"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/logflare:1.50.12"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/postgres-meta",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/postgres-meta": "external"
+      },
+      "images": [
+        "supabase/postgres-meta:v0.99.0"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/postgres-meta:v0.99.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/realtime",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/realtime": "external"
+      },
+      "images": [
+        "supabase/realtime:v2.137.2"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/realtime:v2.137.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/storage-api",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/storage-api": "external"
+      },
+      "images": [
+        "supabase/storage-api:v1.79.2"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/storage-api:v1.79.2"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/studio",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/studio": "external"
+      },
+      "images": [
+        "supabase/studio:2026.09.14-sha-4dd8a95"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/studio:2026.09.14-sha-4dd8a95"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: supabase/supavisor",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "supabase/supavisor": "external"
+      },
+      "images": [
+        "supabase/supavisor:2.9.13"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "supabase/supavisor:2.9.13"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: timberio/vector",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "timberio/vector": "external"
+      },
+      "images": [
+        "timberio/vector:0.58.0-alpine"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
+          "images": [
+            "timberio/vector:0.58.0-alpine"
+          ]
+        }
       ]
     }
   ]

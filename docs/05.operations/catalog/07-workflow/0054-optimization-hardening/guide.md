@@ -52,7 +52,7 @@ created: "2026-05-17"
 2. Gateway/SSO 경계 정렬
    - Airflow, Flower, n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. Health 기반 의존성 강화
-   - `dedicated-valkey` profile을 선택한 Airflow가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
+   - `dedicated-valkey` profile은 `airflow-valkey`를 기동한다. 실제 사용은 `AIRFLOW_VALKEY_HOST=airflow-valkey`와 matching secret selector를 함께 설정했는지 확인한다.
    - 선택하지 않은 경우 shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
@@ -94,7 +94,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

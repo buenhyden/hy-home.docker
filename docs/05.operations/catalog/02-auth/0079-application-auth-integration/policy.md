@@ -112,7 +112,7 @@ bash scripts/hardening/check-all-hardening.sh 08-ai
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Keycloak Guide](../0014-keycloak/guide.md)
 - [OAuth2 Proxy Guide](../0015-oauth2-proxy/guide.md)

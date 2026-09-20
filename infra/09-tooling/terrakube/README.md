@@ -58,7 +58,7 @@ terrakube/
 | --- | --- |
 | Purpose | Terrakube IaC Automation Platform service leaf in `09-tooling`; services: `terrakube-api`, `terrakube-ui`, `terrakube-executor`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terrakube/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `ApiDataSourceType`, `DatasourceHostname`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType`, plus 43 more; profiles: `tooling`, `iac` |
+| Config values | env keys: `ApiDataSourceType`, `DatasourceHostname`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType`, plus 43 more; profiles: `iac` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terrakube/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock` |
@@ -90,7 +90,7 @@ terrakube/
 
 ## Usage Instructions
 
-After the stack is enabled with the `tooling` or `iac` profile, use these routed endpoints:
+After the stack is enabled with the `iac` profile, use these routed endpoints:
 
 - API: `https://terrakube-api.${DEFAULT_URL}`
 - UI: `https://terrakube-ui.${DEFAULT_URL}`
@@ -118,4 +118,4 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 - [Root infra README](../../README.md)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

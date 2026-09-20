@@ -7,6 +7,8 @@ RUN apk add --no-cache \
     patch \
     wget
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 RUN wget -q \
       -O /tmp/gatus-source.tar.gz \
       https://github.com/TwiN/gatus/archive/ed1107b41a30e22047eecfb6dbc3be5e39829d5a.tar.gz \

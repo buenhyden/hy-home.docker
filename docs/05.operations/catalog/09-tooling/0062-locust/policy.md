@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -14,81 +14,66 @@ created: "2026-05-17"
 
 # Locust Operations Policy
 
-> Locust 기반 성능 테스트 인프라의 운영 안정성 및 거버넌스 지침입니다.
-
----
-
 ## Overview
 
-이 문서는 로드 테스팅 수행 시 발생할 수 있는 부작용(운영 서비스 영향 등)을 방지하고, 성능 데이터의 신뢰성을 보장하기 위한 운영 정책을 정의합니다.
-
-### Policy Goals
-
-- **가용성 보존**: 대규모 테스트 중 Gateway 등 인프라 코어의 무결성 유지.
-- **지표 무결성**: Locust가 기록하는 요청 통계의 일관성 및 정확성 확보.
-- **비용 최적화**: 테스트 미수행 시 워커 노드의 유휴 자원 최소화.
+Locust is an explicit `testing` capability. It is never part of HOME or broad
+tooling startup. The policy protects test targets and prevents unreviewed load,
+credential capture, or misleading performance evidence.
 
 ## Policy Scope
 
-This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
-
-### Target Audience
-
-- Operator
-- Performance Engineer
-- SRE
+The `locust-master` and `locust-worker` services, the bind-backed scenario
+directory, target authorization, result handling, scaling, and image upgrades.
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
-
-### Operational Standards
-
-#### 1. 테스트 실행 거버넌스 (Governance)
-
-- **사전 승인**: 초당 5,000 요청 이상의 부하 테스트는 정기 유지보수 윈도우(02:00 ~ 04:00)에 수행하는 것을 권장함.
-- **정의된 시나리오**: 모든 테스트는 Git에 관리되는 `locustfile.py`를 통해서만 수행해야 함.
-
-#### 2. 리소스 스케일링 정책 (Scaling)
-
-- 테스트 종료 후 즉시 워커 노드를 기본값(`replicas: 2`)으로 축소해야 함.
-- CPU/Memory 임계치(`template-infra-med`) 초과 시, 추가 수직 스케일링을 배포 설정에 반영해야 함.
-
-#### 3. 데이터 보존 및 보안 (Data & Security)
-
-- **지표 보존**: Locust 결과와 테스트 evidence의 보존은 관련 Task/Incident 정책을 따른다.
-- **접근 통제**: 외부 부하 생성(External Load) 시, 반드시 인증 토큰 및 레이트 리밋 설정을 적용하여 무단 접근을 방지함.
-
-### Security Controls
-
-- **Secret Management**: Test target credential은 compose에 추가하지 않고 별도 승인된 secret owner를 따른다.
-- **Endpoint Protection**: 현재 compose에는 Locust Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
+- **Activation:** select only the `testing` profile and name the Locust services.
+  Every run records target owner, duration, user/spawn limits, worker count,
+  abort SLI, and stop owner. There is no repository-defined generic RPS threshold
+  or maintenance window.
+- **Authorization:** target credentials use an approved secret channel and may
+  not be embedded in `locustfile.py`, Compose, logs, or retained raw results.
+- **Data:** scenarios and results remain in the `locust-data` host path. Retain
+  sanitized aggregates under the owning Task/incident; do not retain payloads or
+  identifiers without an explicit evidence need.
+- **Resources:** worker scaling is explicit and bounded by the approved test.
+  Stop workers and master after the run; never add restart behavior that replays
+  load after a host restart.
+- **Backup:** copy the scenario/result directory only while the test is stopped.
+  Repository-tracked scenarios are restored from Git; untracked result recovery
+  must be rehearsed in a separate directory before overwrite.
+- **Upgrade:** review Locust/Python dependency release notes, rebuild from the
+  tracked Dockerfile, and run a small approved canary before restoring the
+  normal test envelope.
+- **Removal:** remove the service only after scenario ownership, retained
+  evidence, and all consumers are accounted for. Deleting the host directory is
+  a separate destructive action.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+Any deviation must name target, blast radius, expiry, stop condition, and
+recovery owner. An exception cannot waive target authorization or secret handling.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
-- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
+Static Compose and hardening checks prove configuration only. Runtime evidence
+must include worker registration, target SLI, sanitized results, and final stopped
+state.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review when profiles, Dockerfile dependencies, scenario storage, target network,
+or scaling behavior changes.
 
 ## Traceability
 
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0062`), [Runbook](runbook.md) (`RUN-0062`)
+- [Guide](guide.md) (`GDE-0062`)
+- [Runbook](runbook.md) (`RUN-0062`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [Locust Compose source](../../../../../infra/09-tooling/locust/docker-compose.yml)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
+- [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)

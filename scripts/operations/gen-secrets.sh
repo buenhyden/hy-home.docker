@@ -677,7 +677,7 @@ def snapshot(path):
     safe_path(path.relative_to(root))
     if not path.exists():
         return None, None
-    info = path.stat()
+    info = path.lstat()
     if not stat.S_ISREG(info.st_mode):
         raise ValueError("metadata target must be regular")
     return path.read_bytes(), (info.st_dev, info.st_ino, info.st_mtime_ns, info.st_mode)
@@ -708,7 +708,8 @@ def main():
         public = source.read_bytes().decode("utf-8")
         current = (before or b"").decode("utf-8")
         after = planner(public, current, prune).encode("utf-8")
-        if after != before:
+        current_mode = stat.S_IMODE(identity[3]) if identity else None
+        if after != before or current_mode != 0o600:
             plans.append((target, before, identity, after))
     print("METADATA files_changed=" + str(len(plans)) + " values=preserved secret_files=untouched")
     if check_only:
@@ -721,8 +722,7 @@ def main():
         for target, before, identity, after in plans:
             if snapshot(target) != (before, identity):
                 raise ValueError("metadata changed before replacement")
-            mode = stat.S_IMODE(identity[3]) if identity else 0o600
-            replace(target, after, mode)
+            replace(target, after, 0o600)
             completed.append((target, before, identity, after))
     except Exception:
         for target, before, identity, after in reversed(completed):

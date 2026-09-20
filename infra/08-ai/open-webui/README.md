@@ -30,7 +30,7 @@ Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local L
 
 - `docker-compose.yml`: Interface & RAG backend orchestration.
 - RAG configuration: Embedding model and Vector DB connectivity.
-- Traefik routing and SSO integration labels.
+- Traefik routing and native OIDC configuration.
 
 ### Out of Scope
 
@@ -75,6 +75,14 @@ open-webui/
 - Start with `bash scripts/hardening/check-all-hardening.sh 08-ai` to confirm Open WebUI hardening contracts.
 - Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
 - Check Open WebUI logs and the linked runbook before changing RAG, auth, or model endpoint settings.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `ai`, `ai-llm`.
+- Source authority: this package Compose and its selected image/build inputs; `infra/tech-stack.versions.json` is a derived projection.
+- Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d open-webui`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/08-ai/0057-open-webui/`; IDs `GDE-0057`, `POL-0057`, `RUN-0057`.
+- The subject runbook's isolated recovery is planned and unexecuted. Preserve model/content provenance and never use a live filesystem copy as restore evidence.
 
 ## Related Documents
 
@@ -121,4 +129,4 @@ one-key configuration updates and recovery.
 - Changes to `docker-compose.yml` may affect SSO authentication flows.
 - Updating `RAG_EMBEDDING_MODEL` requires re-indexing of existing documents.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

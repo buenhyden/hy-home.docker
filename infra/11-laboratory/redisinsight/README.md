@@ -41,7 +41,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 | --- | --- |
 | Purpose | Laboratory RedisInsight service leaf in `11-laboratory`; services: `redisinsight`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `admin`, `dev` |
+| Config values | profiles: `admin`, `admin-data` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
@@ -108,4 +108,4 @@ labels:
 - **Runbook**: RedisInsight recovery runbook (`docs/05.operations/catalog/11-laboratory/0076-redisinsight/runbook.md`)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

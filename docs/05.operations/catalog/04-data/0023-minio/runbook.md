@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0023"
 parent_ids:
@@ -12,118 +12,89 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# MinIO Object Storage Health Runbook
-
-> Scope: health checks, bucket bootstrap verification, evidence capture, and escalation for root-active MinIO.
-
----
-
-## Overview
-
-이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. `storage-cluster` profile의 cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
-
-### Purpose
-
-`minio`와 `minio-create-buckets` 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
+# MinIO Object Storage Health and Recovery Runbook
 
 ## When to Use
 
-- `minio` is missing, unhealthy, or unavailable through the Traefik route.
-- `minio-create-buckets` failed or bucket bootstrap needs verification.
-- Object storage docs or compose references changed and need local verification evidence.
-- Storage exhaustion is suspected and non-destructive evidence is needed before escalation.
+Use for approved static diagnosis, backup planning or isolated recovery of this
+exact subject. Live writes, restore, cutover, cleanup and credential changes need
+a separately approved task.
 
 ## Procedure
 
-### Checklist
+Run from the repository root:
 
-- [ ] Confirm this is a health/status verification task, not bucket deletion, credential rotation, or volume restore.
-- [ ] Confirm Docker Secret files exist without printing their values.
-- [ ] Confirm `${DEFAULT_DATA_DIR}/minio/data-1` is the approved runtime data location.
-- [ ] Confirm the `storage-cluster` compose is out of scope unless explicitly named in the task.
+```bash
+docker compose --env-file .env.example --profile storage config --quiet
+docker compose --env-file .env.example --profile storage config --services
+```
 
-### Steps
+Confirm `minio`, `minio-create-buckets`, `minio-data`, `infra_net`, the four
+secret references, health check and standard gateway chain. A LAB review may
+render `storage-cluster`, but must not start it or reuse HOME paths.
 
-1. Render the current root-active compose configuration.
+### Planned backup procedure
 
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config
-   ```
+1. Obtain a maintenance window and record source image, endpoint, bucket list,
+   policies, IAM identities, versioning/object-lock settings and client owners.
+2. Prevent bucket-policy/IAM changes during capture. For a point-in-time boundary,
+   pause writers or record the accepted object-change window.
+3. Use an approved S3-aware mirror/replication tool to copy every object and all
+   versions required by policy to a separate encrypted destination. Do not copy
+   the active `/data` tree.
+4. Export or record bucket policies and IAM configuration without secret values.
+   Record objects, bytes, failed transfers and sampled checksums per bucket.
+5. Hash the manifest, protect it with the backup, and retain source credentials
+   separately.
 
-2. Check service status.
+### Planned isolated restore
 
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps minio minio-create-buckets
-   ```
-
-3. Inspect logs if a service is unhealthy. Do not copy secret values into evidence.
-
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage logs minio minio-create-buckets
-   ```
-
-4. Check liveness from inside the compose network boundary.
-
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage exec minio curl -f "http://localhost:${MINIO_PORT:-9000}/minio/health/live"
-   ```
-
-5. Re-run bucket bootstrap only when explicitly required and after confirming secrets are ready.
-
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage run --rm minio-create-buckets
-   ```
-
-### Verification Steps
-
-- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`
-- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps`
-- Expected result: compose renders, `minio` is present, bootstrap job state is recorded, and no secret values are captured.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage logs ...`
-- **Health**: MinIO `/minio/health/live` endpoint
-- **Routes**: Traefik labels for `minio.${DEFAULT_URL}` and `minio-console.${DEFAULT_URL}`
-- **Evidence to Capture**: command names, timestamps, service status summary, liveness result, bootstrap result if run, and skipped destructive actions
-
-### Safe Rollback or Recovery Procedure
-
-1. For documentation-only changes, revert the last documentation diff and rerun validation.
-2. For bucket bootstrap failure, preserve logs and escalate; do not delete buckets or rotate credentials from this runbook.
-3. For suspected secret exposure, stop copying output and escalate under `## Escalation`.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop using commands that reveal secret-bearing output when exposure risk appears.
-- **Eval Re-run**: Re-run linked validation scripts after documentation remediation.
+1. Provision an empty, network-isolated, compatible MinIO target with disposable
+   root credentials. Do not point it at HOME or LAB data directories.
+2. Recreate required application identity from protected custody, then buckets,
+   versioning/retention and policies. Keep `loki-bucket`, `tempo-bucket` and
+   `doc-intel-assets` private; reproduce public `cdn-bucket` only after exposure
+   review.
+3. Mirror objects and required versions from the backup. Compare bucket/object
+   counts, bytes, version metadata and sampled checksums with the manifest.
+4. With disposable clients, prove list/get/put/delete behavior and policy denial.
+   Validate representative Loki and Tempo reads against the isolated endpoint
+   without connecting production writers.
+5. Record recovery point, elapsed time and incompatibilities. A separately
+   approved cutover takes a final delta, pauses writers, switches clients and
+   retains rollback.
 
 ## Evidence
 
-- Record the compose command executed, service status, liveness result, bootstrap outcome if applicable, and any destructive action that was intentionally skipped.
-- Attach failed validation output or service symptoms to the related task or incident evidence without copying secret values.
+Record source revision/version, scope, timestamps, manifest/checksum summary,
+commands and exit status, validation result, observed recovery point/time and all
+unverified gaps. Exclude secrets, raw payloads and private resolved paths.
 
 ## Rollback or Recovery
 
-N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If bucket deletion, volume restore, `storage-cluster` recovery, or credential rotation is required, stop and escalate with captured evidence.
+A failed cutover returns clients to the unchanged original S3 endpoint after
+validation; the object backup and isolated target remain retained. Cutover occurs only after owner approval,
+final consistency capture, application validation and a retained rollback window.
 
 ## Escalation
 
-Escalate to the owning operator when compose render fails, required secrets are missing, service health remains failed after documented checks, bucket bootstrap fails, secret exposure risk appears, or destructive object/credential/storage changes are required.
+Stop on missing versions, policy drift, checksum mismatch, unexpected public
+access, client incompatibility or pressure to import raw data directories. The
+archived upstream status is an escalation trigger for migration planning, not a
+reason to improvise a replacement.
 
 ## Traceability
 
-- Declared parent: [MinIO Object Storage Usage Guide](guide.md) (`GDE-0023`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0023`), [Policy](policy.md) (`POL-0023`)
+- Runtime sources: [HOME MinIO Compose](../../../../../infra/04-data/lake-and-object/minio/docker-compose.yml) and [LAB cluster Compose](../../../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml).
+- Artifact: `RUN-0023`; parent guide: `GDE-0023`.
+- Procedures are planned unless a dated verification record explicitly says they ran.
+
+### References
+
+- [MinIO community repository](https://github.com/minio/minio)
+- [MinIO client mirror](https://github.com/minio/mc/blob/master/README.md)
+- [Policy](policy.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
-- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)
+- [Domain catalog](../README.md)

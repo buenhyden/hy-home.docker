@@ -17,8 +17,8 @@ created: "2025-11-12"
 The `02-auth` tier provides the security foundation for the `hy-home.docker`
 ecosystem. Keycloak is the central Identity Provider. OAuth2 Proxy provides
 Gateway ForwardAuth for services without suitable built-in OIDC, while approved
-applications such as Airflow and Kafbat UI authenticate directly against
-Keycloak using application-native OIDC.
+applications such as Airflow, Kafbat UI, Open WebUI, Gatus, and OpenBao
+authenticate directly against Keycloak using application-native OIDC.
 
 ## Audience
 
@@ -77,6 +77,9 @@ Browser -> Traefik -> Application -> Keycloak
 
 - Airflow
 - Kafbat UI
+- Open WebUI
+- Gatus
+- OpenBao
 
 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 
@@ -95,7 +98,7 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 | --- | --- | --- |
 | IAM | Keycloak | Central OIDC/SAML IdP |
 | ForwardAuth | OAuth2 Proxy | Gateway authentication |
-| Native OIDC | Airflow, Kafbat UI | Direct Keycloak clients |
+| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Direct Keycloak clients |
 | Database | PostgreSQL | Identity persistence |
 | Session | Valkey | OAuth2 Proxy session |
 | Gateway | Traefik | TLS/routing/middleware |
@@ -140,4 +143,4 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 - [Application Authentication Integration Guide](../../docs/README.md)
 - [Documentation index](../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../tech-stack.versions.json) provides drift verification.

@@ -52,6 +52,7 @@ evidence, rollback or recovery, and escalation boundaries.
 
 ## Related Documents
 
+- Runtime pins are owned by [observability Compose](../../../../infra/06-observability/docker-compose.yml) and selected Dockerfiles; the [derived Compose image projection](../../../../infra/tech-stack.versions.json) verifies drift.
 - [Operations index](../../README.md)
 - [Observability infrastructure](../../../../infra/06-observability/README.md)
 - [Guides index](../../README.md)

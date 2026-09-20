@@ -1,14 +1,18 @@
 ---
 title: "Locust Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
 - "POL-0062"
+implementation_services:
+  infra/09-tooling/locust/docker-compose.yml:
+  - locust-master
+  - locust-worker
 created: "2026-05-10"
 ---
 
@@ -16,79 +20,83 @@ created: "2026-05-10"
 
 ## Usage
 
-### Overview
+### Purpose and classification
 
-이 문서는 `infra/09-tooling/locust`의 현재 Locust master/worker 부하 테스트 구성을 설명한다. 현재 compose는 `locust-master`, `locust-worker`를 빌드하고 `locust-data:/mnt/locust:rw` 볼륨을 사용한다.
+Locust is a DEV-only distributed load generator. It is retained for Python-based
+scenarios that need a coordinating web UI and one or more workers. Both
+`locust-master` and `locust-worker` belong only to the `testing` profile; broad
+`tooling` selection does not start either service. A test run is an external
+effect on the named target and requires target-owner approval, limits, and a
+stop condition.
 
-### Usage Type
+### Implementation and data flow
 
-`system-guide | performance-guide | troubleshooting-guide`
+- Source: [Locust Compose](../../../../../infra/09-tooling/locust/docker-compose.yml)
+  and its sibling Dockerfile. The Dockerfile/build declaration owns the runtime
+  source; the derived image projection is navigation, not build authority.
+- Root selection: `docker compose --profile testing ...` from the repository
+  root. The root project supplies `infra_net`; do not use the leaf as a
+  standalone project.
+- Flow: operator/browser -> host port `${LOCUST_HOST_PORT:-18089}` -> master UI;
+  worker -> `locust-master` over `infra_net`; master and worker read the shared
+  `locust-data` bind-backed volume at `/mnt/locust`.
+- Dependency: the worker waits for the master's HTTP healthcheck. Target services
+  are deliberately not Compose dependencies and must already be approved and
+  reachable.
+- Health: the master probes its UI; the worker checks its process. Health does
+  not prove that the target is safe or that a test result is valid.
+- Resources: both services inherit `template-infra-med`. Compose declares two
+  `locust-worker` replicas. An approved test may override that default with
+  `--scale locust-worker=N` while still targeting both Locust services.
 
-### Target Audience
+The scenario directory can contain target URLs, credentials, payloads, and test
+results. Keep credentials in an approved secret channel, exclude them from
+scenario files and evidence, and sanitize request/response data before retention.
 
-- QA Engineer
-- Performance Engineer
-- SRE
+### Normal use
 
-### Purpose
+1. Record the target, test owner, maximum users/spawn rate/duration, abort SLI,
+   and worker count.
+2. From the repository root run `docker compose --profile testing config --quiet`
+   and confirm the selected services with `docker compose --profile testing config --services`.
+3. Review the scenario in the host directory behind `locust-data`. Confirm that
+   it cannot modify production data unless that exact effect was approved.
+4. Under runtime approval, start only `locust-master` and `locust-worker`, then
+   use the host-bound UI. Stop the run immediately when the target abort SLI is
+   crossed.
+5. Preserve configuration commit, scenario digest, sanitized aggregate results,
+   and final stopped state. Raw request bodies, cookies, tokens, and personal
+   data are not evidence.
 
-분산 Locust 실행 시 실제 서비스명, 선택한 profile 경계, UI 접근 포트, worker 복제본 기준을 현재 compose와 일치하게 안내한다. `locust-master`는 `tooling`과 `testing`, `locust-worker`는 `tooling`이 선택한다.
+### Persistence, backup, and upgrade
 
-### Prerequisites
-
-- root [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/09-tooling/locust/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. `locust-master`는 `tooling`과 `testing`에, `locust-worker`는 `tooling`에만 속한다.
-- Root `infra_net` context가 제공되는지 확인.
-- 테스트 시나리오 작성을 위한 Python/Locust 문법 이해.
-
-### Step-by-step Instructions
-
-1. 테스트 시나리오는 `infra/09-tooling/locust/locustfile.py` 기준으로 작성한다.
-
-   ```python
-   from locust import HttpUser, task, between
-
-   class BenchmarkUser(HttpUser):
-       wait_time = between(1, 2)
-
-       @task
-       def test_endpoint(self):
-           self.client.get("/api/v1/health")
-   ```
-
-2. 실행 전 정적 기준선을 확인한다.
-   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-   - `python3 scripts/validation/run-ci-gate.py --profile changed`
-3. 실행이 승인된 환경에서 root compose와 leaf compose를 함께 렌더링해 `infra_net`이 해석되는지 확인한다.
-4. 승인된 테스트 윈도우에서 `locust-master`와 `locust-worker`를 기동한다. worker 확장이 필요하면 `locust-worker`만 scale 대상이다.
-5. UI는 host port `http://localhost:${LOCUST_HOST_PORT:-18089}` 경계에서 확인한다.
-6. Users, spawn rate, target host를 입력하고 테스트 중 target SLI와 Locust 요청 통계를 기록한다.
-
-### Common Pitfalls
-
-- service-local compose 파일만 단독으로 렌더링하면 root `infra_net` context가 없어 실패할 수 있다.
-- 현재 compose에는 Traefik Locust route가 없다. UI 접근은 host port mapping 기준이다.
-- `locust-worker`는 `locust-master` health 이후 연결되므로 master healthcheck 실패를 먼저 확인한다.
+Locust has no application database. The bind-backed scenario/result directory is
+the only local persistent scope. Back it up as ordinary files only while no test
+is writing to it; Git-tracked scenarios remain source authority. Before a Locust
+or dependency upgrade, validate the scenario syntax in an isolated run, execute
+a small approved canary, then compare worker registration and aggregate metrics.
+No backup, restore, or load execution was performed by this documentation task.
 
 ## Common Checks
 
+- `docker compose --profile testing config --quiet`
+- `docker compose --profile testing config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
-- 실행 승인 시 rendered service list에 `locust-master`, `locust-worker`가 포함되는지 확인한다.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Use the [runbook](runbook.md) to stop load, diagnose worker loss, recover scenario
+files, or perform an approved upgrade canary.
 
 ## Traceability
 
-- Declared parent: [Locust Operations Policy](policy.md) (`POL-0062`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0062`), [Runbook](runbook.md) (`RUN-0062`)
+- [Policy](policy.md) (`POL-0062`)
+- [Runbook](runbook.md) (`RUN-0062`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [Locust distributed load generation](https://docs.locust.io/en/stable/running-distributed.html)
+- [Locust running without the web UI](https://docs.locust.io/en/stable/running-without-web-ui.html)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
 - [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)

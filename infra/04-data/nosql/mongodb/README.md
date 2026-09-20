@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -44,7 +44,7 @@ MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 
 
 | Category   | Technology                 | Notes                      |
 | :--------- | :------------------------- | :------------------------- |
-| Engine     | `mongo:8.3.9-noble`       | Core Database Engine       |
+| Engine     | Compose-declared MongoDB image | Core Database Engine     |
 | Management | `mongo-express:1-18-alpine3.19` | Web-based GUI Admin |
 | Monitoring | `percona/mongodb_exporter:2.37` | Prometheus Metrics |
 | Security   | Internal KeyFile Auth      | Replica Set Synchronization|
@@ -63,7 +63,7 @@ mongodb/
 | --- | --- |
 | Purpose | MongoDB Replica Set service leaf in `04-data`; unconditional root include, profile-selected; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD_FILE`, `ME_CONFIG_MONGODB_ENABLE_ADMIN`, `ME_CONFIG_MONGODB_AUTH_DATABASE`, `ME_CONFIG_MONGODB_ADMINUSERNAME`, `ME_CONFIG_MONGODB_ADMINPASSWORD_FILE`, `ME_CONFIG_MONGODB_SERVER`, `ME_CONFIG_MONGODB_REPLICA_SET`, plus 2 more; profiles: `mongodb`, `obs` |
+| Config values | env keys are Compose-owned; exact profile for all seven services: `mongodb` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `mongo-key:/data/configdb:rw`, `mongodb1-data:/data/db:rw`, `mongo-key:/data/configdb:ro`, `mongodb2-data:/data/db:rw`, `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` |
@@ -103,6 +103,8 @@ mongodb/
 
 ## Validation
 
+Classification is `LAB`; `MyReplicaSet` has two data-bearing members and an arbiter on one host. Recovery uses authenticated `mongodump --oplog` from a data-bearing member and `mongorestore --oplogReplay` into a fresh compatible replica set; the arbiter is not a data backup. Owning artifacts are `GDE-0027`, `POL-0027`, and `RUN-0027`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking MongoDB documentation ready.
 
@@ -121,4 +123,4 @@ mongodb/
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

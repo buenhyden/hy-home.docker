@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0017"
 parent_ids:
@@ -27,6 +27,12 @@ created: "2026-05-17"
 
 ## Controls
 
+- **Activation**: use root-project selection `docker compose --profile influxdb config --quiet`; starting or restarting `influxdb` is a separately approved runtime action.
+- **Network and authorization**: keep the service on `infra_net` behind the declared TLS router and gateway middleware. A `401` proves an authentication challenge, not successful authorization. Provisioning or rotating a token is outside this document.
+- **Retention and backup**: define database retention before enabling a consumer. A recovery point must preserve the documented local-object-store order: snapshots, database Parquet files, WAL, catalog log, then catalog checkpoint. Store it outside the live data path and record whether encryption at rest is configured; none is proven here.
+- **Resources**: retain the inherited 1 CPU/512 MiB ceiling until measured ingest, compaction, query latency, disk growth, and restore duration justify a reviewed change.
+- **Upgrade and migration**: review release notes and rehearse the candidate image against a copied recovery point. Do not substitute InfluxDB 2 backup/restore commands or Enterprise-only commands for this Core deployment.
+- **Removal**: removal requires a confirmed lack of consumers, an owner decision for both bind-backed volumes, an export or retained recovery point, and separate approval for deletion.
 - **Required**: operations use `docker-compose.yml`, operator-selected database name, port `8181`, and `/api/v3/write_lp` for line-protocol writes.
 - **Required**: token creation/provisioning and authenticated write acceptance require separate runtime approval; this source-only change does not select or enable an offline admin token file.
 - **Required**: retention or cleanup changes require database-scoped evidence and separate runtime approval.
@@ -41,7 +47,7 @@ Long retention or manual data cleanup requires owner approval and evidence showi
 
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
 - Confirm operator-selected database name, port `8181`, and `/api/v3/write_lp` agree across source and active docs without claiming token provisioning.
-- `python3 scripts/validation/check-document-links.py --mode alignment`
+- `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
@@ -56,6 +62,9 @@ Long retention or manual data cleanup requires owner approval and evidence showi
 - Subject peers: [Guide](guide.md) (`GDE-0017`), [Runbook](runbook.md) (`RUN-0017`)
 
 ## Related Documents
+
+- [InfluxDB 3 Core backup and restore](https://docs.influxdata.com/influxdb3/core/admin/backup-restore/)
+- [Compose implementation](../../../../../infra/04-data/analytics/influxdb/docker-compose.yml)
 
 - [Operations policies index](../../../README.md)
 - [Usage guide](guide.md)

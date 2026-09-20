@@ -4,11 +4,26 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
 - "POL-0029"
+implementation_services:
+  infra/04-data/operational/supabase/docker-compose.yml:
+  - 'analytics'
+  - 'auth'
+  - 'db'
+  - 'functions'
+  - 'imgproxy'
+  - 'kong'
+  - 'meta'
+  - 'realtime'
+  - 'rest'
+  - 'storage'
+  - 'studio'
+  - 'supavisor'
+  - 'vector'
 created: "2026-05-10"
 ---
 
@@ -22,7 +37,22 @@ created: "2026-05-10"
 
 ### Overview
 
-`supabase`는 `infra/04-data/operational/supabase/docker-compose.yml`에 선언된 `supabase` profile 기반의 통합 백엔드 플랫폼이다. 현재 구현은 PostgreSQL, Kong Gateway, Auth, REST, Realtime, Storage, Studio, Edge Functions, analytics/logging, pooler를 `infra_net` 안에서 구성하고, 외부 접근은 compose에 선언된 Kong 및 일부 관리 포트를 통해 제한한다.
+`supabase`는 [Compose 구현](../../../../../infra/04-data/operational/supabase/docker-compose.yml)에 선언된 exact `supabase` profile 기반의 `OPTIONAL` 통합 백엔드 플랫폼이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를 `infra_net`에서 구성한다. 이 서비스들은 하나의 recovery unit이며 database dump만으로 Storage objects, mounted functions/config, JWT/provider settings를 복구할 수 없다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | OPTIONAL integrated backend for applications that need PostgreSQL, Auth, APIs, Realtime, objects, functions and pooling. |
+| Source / updater | [Compose](../../../../../infra/04-data/operational/supabase/docker-compose.yml) owns 13 image declarations; coordinated upstream compatibility review is required. |
+| Services / profile | 13 mapped services in frontmatter; exact `supabase`. |
+| Flow / dependency | Kong fronts API paths; PostgreSQL is the metadata/data core; Storage couples metadata to object files; Supavisor pools database traffic. |
+| Exposure / persistence | Kong/analytics/PostgreSQL/pooler host ports are source-declared; Studio has no direct port; `${DEFAULT_DATA_DIR}/supabase` owns data/config. |
+| Environment / secrets | Compose owns public configuration keys; database, JWT, anon/service, dashboard, SMTP, vault, crypto and analytics credentials are Docker Secrets. |
+| Health / resources | per-service healthchecks and dependency graph; each service uses its Compose-declared shared template, so aggregate capacity must be reviewed. |
+| Security | Kong boundary, secret mounts, JWT/provider consistency, and no credential material in generated evidence. |
+| Backup / upgrade | PostgreSQL + Storage + config/functions + Auth/secret references form one recovery set; upstream update config backup alone is insufficient. |
+| License / edition | The self-hosted stack combines components with repository-documented licenses; review the exact component/image set before redistribution or managed-service use. |
 
 ### Usage Type
 
@@ -74,12 +104,15 @@ created: "2026-05-10"
 
    Supabase runtime files are mounted from `${DEFAULT_DATA_DIR}/supabase/...`, including Kong config, storage, functions, database init SQL, logs, and pooler config. Update implementation docs and operations docs together when these mounts change.
 
+5. recovery inventory는 PostgreSQL roles/schema/data, Storage metadata와 object files, mounted Kong/functions/pooler configuration, Auth/JWT/SMTP/provider settings를 별도 protected artifacts로 기록한다. 빈 격리 stack에서 이들을 coherent set으로 복원한 뒤에만 recoverable로 판정한다.
+
 ### Common Pitfalls
 
 - Assuming Studio is available through a direct local host port; the current compose file does not publish one.
 - Bypassing Kong for public API access without an approved implementation change.
 - Writing `supabase_anon_key`, `supabase_service_key`, JWT secrets, dashboard credentials, SMTP passwords, or database passwords into docs or evidence.
 - Treating generated Kong or database config as documentation-only state; it is runtime configuration mounted from `${DEFAULT_DATA_DIR}`.
+- Using the self-hosted update config backup as a database or Storage backup; upstream documents that update backup as configuration-only.
 
 ## Common Checks
 
@@ -101,9 +134,12 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
+- [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
+- [Supabase source and licenses](https://github.com/supabase/supabase)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infrastructure service README](../../../../../infra/04-data/operational/supabase/README.md)
+- [Compose implementation: infra/04-data/operational/supabase/docker-compose.yml](../../../../../infra/04-data/operational/supabase/docker-compose.yml)

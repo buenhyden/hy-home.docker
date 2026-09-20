@@ -47,7 +47,7 @@ created: "2026-05-17"
 1. 현재 service 상태와 최근 로그를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps prometheus
+   docker compose --profile obs ps prometheus
    docker logs --tail=200 infra-prometheus
    docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
    ```
@@ -56,8 +56,14 @@ created: "2026-05-17"
 
    ```bash
    docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml
+   docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
    ```
+
+   The second command deliberately quotes the shell program so `/bin/sh`
+   inside the container expands the rule-file glob. If the config check stops
+   because staged `/run/secrets/openbao_token` is not provisioned, record that
+   prerequisite separately; the rule check remains valid syntax evidence and
+   does not prove the credential or scrape target is ready.
 
 3. Scrape target 장애는 Prometheus `Targets` page에서 failing job을 확인하고, Prometheus container에서 target endpoint를 직접 확인한다.
 
@@ -76,14 +82,14 @@ created: "2026-05-17"
 5. Reload 후에도 service가 unhealthy하거나 runtime state가 회복되지 않으면 profile 포함 compose 명령으로 restart한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart prometheus
+   docker compose --profile obs restart prometheus
    ```
 
 6. TSDB corruption, compaction failure, WAL 관련 로그가 보이면 삭제 조치를 하지 말고 evidence를 수집한다.
 
    ```bash
    docker logs --tail=500 infra-prometheus | grep -Ei 'tsdb|wal|compact|corrupt|block'
-   docker compose -f infra/06-observability/docker-compose.yml config | grep -n 'prometheus-data'
+   rg -n 'prometheus-data|/prometheus|web.enable-(lifecycle|admin-api)' infra/06-observability/docker-compose.yml
    ```
 
    이 런북은 WAL 삭제나 TSDB file mutation을 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있는 조치는 별도 incident/task approval과 backup evidence가 필요하다.
@@ -118,6 +124,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Prometheus TSDB restore is claimed.
+
+1. Record image/config/rule digests, TSDB time bounds, target/rule baseline, retention flags, and backup checksums. Quiesce Prometheus and take an approved stopped consistent copy or storage snapshot of `prometheus-data`; the admin snapshot API is unavailable in current source.
+2. Restore to a new path in a separate project/network with alert delivery and remote-write clients disabled or redirected to test endpoints.
+3. Start Prometheus, verify WAL replay/readiness, historical/current bounded queries, target labels, rule health, controlled Alertmanager delivery, and remote-write receiver behavior where used.
+4. On mismatch, stop the isolated service and preserve logs/checksums. Return to untouched backup; production TSDB replacement requires separate approval.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -141,7 +156,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

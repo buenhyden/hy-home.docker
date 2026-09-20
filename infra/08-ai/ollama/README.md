@@ -83,6 +83,14 @@ ollama/
 - For API errors: check `docker logs --tail=200 ollama` and confirm the API port binding matches client configuration.
 - For GPU errors: verify the NVIDIA container toolkit is installed and the GPU is accessible inside the container.
 
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `ai`, `ai-llm`, `ollama`.
+- Source authority: this package Compose and its selected image/build inputs; `infra/tech-stack.versions.json` is a derived projection.
+- Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d ollama ollama-exporter`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/08-ai/0056-ollama/`; IDs `GDE-0056`, `POL-0056`, `RUN-0056`.
+- The subject runbook's isolated recovery is planned and unexecuted. Preserve model/content provenance and never use a live filesystem copy as restore evidence.
+
 ## Related Documents
 
 - **Guide**: Ollama usage guide (`docs/05.operations/catalog/08-ai/0056-ollama/guide.md`)
@@ -113,4 +121,4 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 }'
 ```
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -24,8 +24,12 @@ separately approved concrete target.
 
 ## Boundaries and Inputs
 
-Baseline is main at `d1e6ded52808b02392c52472d5416518a3b959d6`, fetched on
-2026-09-19 with an initially clean worktree. Inputs are tracked implementation,
+The current comparison baseline is main at
+`dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` on 2026-09-20. The original
+`d1e6ded52808b02392c52472d5416518a3b959d6` baseline remains historical evidence
+in Task 0001. Implementation uses the isolated
+`codex/home-dev-convergence-followup` worktree; this follow-up closes measured
+gaps instead of repeating already delivered changes. Inputs are tracked implementation,
 rendered safe Compose summaries, executable checks, authorized read-only host
 observations and official upstream references, in that order. The existing
 SPEC-0179 proposal is independent and is not adopted by this change.
@@ -55,12 +59,22 @@ Each retained component has implementation navigation and operational ownership.
 
 ## Technical Approach
 
-Measure actual service/profile/config/version inventories, research official
-contracts, classify services HOME/DEV/OPTIONAL/LAB/REMOVE/MIGRATE, then update
-Stage 99 guidance before downstream documents. Extend existing validator and
+Compare the nine acceptance criteria and original W1–W9 work units against
+current main before implementation. Preserve completed OpenBao and native OIDC
+acceptance in Tasks 0002–0004; their exact authorization is not a blanket new
+rollout approval. Refresh actual service/profile/config/version inventories and
+official evidence, classify services HOME/DEV/OPTIONAL/LAB/REMOVE/MIGRATE, and
+update Stage 99 only where a demonstrated contract gap requires it before
+authoring dependent documents. Extend existing validator and
 synchronization owners with regression tests; do not add competing validators.
 Prefer single-node HOME dependencies, explicit optional capabilities and manual
 maintenance jobs. Introduce a home selector only if evidence justifies it.
+
+The current Plan assigns bounded A–G/R work units with explicit file ownership and
+interfaces. Each implementation unit receives specification and quality/security
+review, correction and scoped re-review. Task 0005 owns the acceptance matrix,
+execution ledger, check outcomes and rulings; temporary coordination files are
+not an additional authority.
 
 ## Interfaces and Data
 
@@ -106,12 +120,15 @@ Task 0002. A failed or unexecuted check is never recorded as PASS.
 - [Initial execution](tasks/tsk-0001-home-dev-convergence.md)
 - [OpenBao and environment convergence](tasks/tsk-0002-openbao-access-and-env-convergence.md)
 - [Auth research](tasks/tsk-0003-keycloak-oidc-operations-research.md)
-- [Current Task](tasks/tsk-0004-native-oidc-service-migration.md)
+- [Native OIDC migration evidence](tasks/tsk-0004-native-oidc-service-migration.md)
+- [Current Task](tasks/tsk-0005-current-main-convergence.md)
 
 ## Open Questions
 
 Actual HOME application consumers, measured host resources and existing data
-determine final service disposition. Runtime approval will name targets and
+determine final service disposition. A point-in-time host observation cannot
+establish steady/peak consumption, disk growth, reboot recovery or restoration.
+These remain explicit evidence gaps. Runtime approval will name targets and
 recovery after a validated configuration is available.
 
 The owner clarified that AI and workflow services must remain always-on HOME

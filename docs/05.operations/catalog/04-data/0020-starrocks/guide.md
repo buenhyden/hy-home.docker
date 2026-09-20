@@ -4,11 +4,15 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0020"
 parent_ids:
 - "POL-0020"
+implementation_services:
+  infra/04-data/analytics/starrocks/docker-compose.yml:
+  - 'starrocks-be'
+  - 'starrocks-fe'
 created: "2026-05-10"
 ---
 
@@ -18,7 +22,18 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/analytics/warehouses`의 StarRocks 사용 가이드다. 현재 compose는 `starrocks-fe`와 `starrocks-be` 단일 pair를 제공하고, BE는 FE에 `ALTER SYSTEM ADD BACKEND "starrocks-be:9050"` 명령으로 등록된다.
+이 문서는 `infra/04-data/analytics/starrocks`의 StarRocks 사용 가이드다. `starrocks` profile은 on-demand OPTIONAL analytical-database experiment로 단일 FE/BE pair를 제공하고, BE 시작 전에 FE에 `starrocks-be:9050`을 등록한다. 같은 호스트의 pair는 HA가 아니다.
+
+### Current implementation
+
+| Field | Current contract |
+| --- | --- |
+| Source and updater | [Compose](../../../../../infra/04-data/analytics/starrocks/docker-compose.yml) owns `starrocks-fe` and `starrocks-be`; Renovate proposes image updates. |
+| Exposure and flow | FE publishes MySQL `9030` and HTTP `8030`; BE publishes HTTP `8040` on the host. Both join `infra_net`; no gateway or TLS boundary is declared. |
+| Persistence | `starrocks-fe-data` stores FE metadata and `starrocks-be-data` stores BE data below `${DEFAULT_DATA_DIR}/starrocks`. Both are required for coherent recovery. |
+| Auth and security | Compose supplies no Docker Secret and health checks connect as native `root` without a password. Treat the stack as isolated LAB/OPTIONAL use until credentials and exposure are reviewed. Both services run as root with `no-new-privileges`; the DB-high template supplies 2 CPUs/2 GiB each. |
+| Backup and restore | Use StarRocks `BACKUP`/`RESTORE` with a configured remote repository and least-privilege `REPOSITORY` plus `EXPORT` grants. Restore asynchronously into an isolated compatible cluster and database before cutover. |
+| Upgrade and licence | Review the StarRocks upgrade path and compatibility notes for FE metadata and BE data. StarRocks is Apache-2.0; no enterprise-only backup command is assumed. |
 
 ### Usage Type
 
@@ -72,7 +87,7 @@ created: "2026-05-10"
 ## Common Checks
 
 - `test -f infra/04-data/analytics/starrocks/docker-compose.yml`
-- `python3 scripts/validation/check-document-links.py --mode alignment`
+- `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff
@@ -87,11 +102,14 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://docs.starrocks.io/docs/administration/management/Backup_and_restore/)
+- [StarRocks backup and restore statements](https://docs.starrocks.io/docs/sql-reference/sql-statements/backup_restore/)
+- [StarRocks authentication and authorization](https://docs.starrocks.io/docs/best_practices/authentication_authorization/)
+- [StarRocks source and licence](https://github.com/StarRocks/starrocks)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/analytics/starrocks/README.md)
+- [Compose implementation: infra/04-data/analytics/starrocks/docker-compose.yml](../../../../../infra/04-data/analytics/starrocks/docker-compose.yml)

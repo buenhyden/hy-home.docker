@@ -27,7 +27,7 @@ Lifecycle: **DEV maintenance job**. Operational controls and recovery belong to 
 
 ## Tech Stack
 
-Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a curated projection, not a deployment manifest.
+Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a derived Compose image projection, not a deployment manifest.
 
 ## Configuration
 
@@ -35,7 +35,7 @@ Profiles: `dependency-update`. Root Compose includes this definition; inclusion 
 
 ## Validation
 
-From the repository root, select the documented profile and run `scripts/validation/validate-docker-compose.sh`. Use the owning Runbook for runtime checks; config validation does not prove a successful maintenance run or SMTP capture.
+From the repository root, select the documented profile and run `scripts/validation/validate-docker-compose.sh`. Use the owning Runbook for runtime checks; config validation does not prove a successful maintenance run or remote repository update.
 
 ## How to Work in This Area
 

@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
 - "POL-0041"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - grafana
 created: "2026-05-10"
 ---
 
@@ -49,7 +52,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Datasource provisioning boundary를 확인한다.
@@ -89,9 +92,18 @@ created: "2026-05-10"
 - **Role mapping drift**: `/admins` and `/editors` mapping is controlled by `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`.
 - **Dashboard edit lock**: provider `editable: false` keeps provisioned dashboards code-owned.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `grafana` is the `HOME` observability UI selected by multiple observability profiles; [Compose](../../../../../infra/06-observability/docker-compose.yml) and provisioning files are authoritative.
+- **State flow**: current source sets no `GF_DATABASE_*` external database variables, so Grafana uses its default SQLite database in `grafana-data:/var/lib/grafana` together with plugins and runtime state. Datasources/dashboards are provisioned read-only from tracked files.
+- **Secrets/auth/dependencies**: `grafana_admin_password` and `grafana_client_secret` feed admin bootstrap and native Keycloak OAuth. Anonymous Viewer access is explicitly enabled by current source. Traefik, Keycloak, root CA, datasources, and `infra_net` are dependencies; evaluate anonymous access separately from OAuth administration.
+- **Resources/normal use**: Compose limits are source values, not measured headroom. Render from root, verify `/api/health`, OAuth login, anonymous permissions, datasource health, and provisioned dashboard load.
+- **Lifecycle**: stop Grafana before copying SQLite/`grafana-data`; preserve provisioning and matching secrets. Review plugin/schema compatibility, upgrade one pinned version, and verify users/teams/dashboards/alerts/datasources/OAuth before resuming.
+- **Upstream/license**: follow official [installation/database default](https://grafana.com/docs/grafana/latest/setup-grafana/installation/), [backup](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/), and [upgrade](https://grafana.com/docs/grafana/latest/upgrade-guide/when-to-upgrade/) guidance. Grafana OSS is AGPL-3.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana`
+- `docker compose --profile obs ps grafana`
 - `docker logs --tail=100 infra-grafana`
 - `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
@@ -109,7 +121,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

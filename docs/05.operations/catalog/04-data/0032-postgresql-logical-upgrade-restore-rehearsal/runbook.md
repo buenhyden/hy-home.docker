@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0032"
 parent_ids: []
@@ -15,7 +15,7 @@ created: "2026-07-22"
 
 ## Overview
 
-이 런북은 repository-owned synthetic fixture를 PostgreSQL 17.6에서 custom-format logical backup으로 캡처하고 PostgreSQL 18.4 isolated target에 복원한 뒤 metadata-only oracle을 비교하는 로컬 rehearsal 절차다. 이 결과는 rollback boundary evidence이며 production recovery, live Supabase/Spilo data, physical backup, PITR, HA, retention, remote storage 또는 조직 RTO/RPO를 증명하지 않는다.
+이 런북은 repository-owned synthetic fixture를 source PostgreSQL image에서 custom-format logical backup으로 캡처하고 target-major isolated image에 복원한 뒤 metadata-only oracle을 비교하는 로컬 rehearsal 절차다. 이 결과는 rollback boundary evidence이며 production recovery, live Supabase/Spilo data, physical backup, PITR, HA, retention, remote storage 또는 조직 RTO/RPO를 증명하지 않는다.
 
 이 문서는 `infra/04-data/relational`의 새 service를 설명하지 않는다. 실제 구현은 repository operation entrypoint와 `examples/operations/postgres-logical-upgrade/`에 있는 reusable non-service harness다.
 
@@ -29,7 +29,7 @@ created: "2026-07-22"
 
 | Trigger | Prerequisites | Safety conditions |
 | --- | --- | --- |
-| PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | Synthetic SQL only; exact 17.6/18.4 image pins; no host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, password, or dump evidence |
+| PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | Synthetic SQL only; source/target image pins are owned by the linked harness source; no host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, password, or dump evidence |
 
 Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다. 이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
 
@@ -76,7 +76,7 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - Spec 125
 - Infrastructure Plan

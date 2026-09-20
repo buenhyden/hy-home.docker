@@ -1,145 +1,104 @@
 ---
-title: "Operations: Terrakube Policy Usage Guide"
-version: "1.0.0"
+title: "Terrakube Usage Guide"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
 - "POL-0069"
+implementation_services:
+  infra/09-tooling/terrakube/docker-compose.yml:
+  - terrakube-api
+  - terrakube-executor
+  - terrakube-ui
 created: "2026-05-10"
 ---
 
-# Operations: Terrakube Policy Usage Guide
+# Terrakube Usage Guide
 
 ## Usage
 
-### Overview
+### Purpose and classification
 
-이 가이드는 Operations: Terrakube Policy Usage Guide의 사용 맥락, 전제 조건, 일반 점검, runbook handoff 기준을 설명한다.
+Terrakube is an on-demand DEV IaC automation/control plane. The API, UI, and
+executor belong only to `iac`; broad `tooling` and HOME do not start them. It is
+retained for reviewed collaborative runs and private module/registry workflows.
+The tracked topology has one replica of each component and single-host external
+dependencies; it does not provide or claim high availability.
 
-<!-- [ID:09-tooling:terrakube] -->
+### Implementation and data flow
 
-### Usage Type
+- [Terrakube Compose](../../../../../infra/09-tooling/terrakube/docker-compose.yml)
+  owns services, profiles, images, secrets, healthchecks, routes, and executor
+  Docker socket access. The derived image projection does not own runtime pins.
+- Browser -> Traefik -> `terrakube-ui`; UI -> `terrakube-api`; API dispatches to
+  `terrakube-executor`. The existing routes apply gateway ForwardAuth while UI/API
+  settings also use Keycloak/Dex-style OIDC. Both layers must be tested; static
+  configuration does not prove native login or role mapping.
+- PostgreSQL (`mng-pg`) holds Terrakube metadata. MinIO bucket `tfstate` holds
+  state and outputs. Management Valkey coordinates work. These are dependencies,
+  not services declared in the Terrakube leaf.
+- Secrets are `terrakube_db_password`, `minio_app_user_password`,
+  `terrakube_valkey_password`, `terrakube_pat_secret`, and
+  `terrakube_internal_secret`; values never enter evidence.
+- The executor mounts `/var/run/docker.sock` read-write. This is host-equivalent
+  execution authority and requires the same trust as local Docker administration.
+- Health endpoints prove component process readiness only. They do not prove DB,
+  object-state, VCS, OIDC, or executor end-to-end acceptance.
 
-`system-guide | how-to`
+### Normal use
 
-### Target Audience
+1. Identify organization/workspace, VCS repository/ref, provider credentials,
+   expected resources, state key, and approval boundary.
+2. From the root run `docker compose --profile iac config --quiet` and confirm
+   all three Terrakube services plus the separately selected dependencies.
+3. Verify PostgreSQL, MinIO `tfstate`, Valkey, Keycloak, and gateway readiness
+   without printing credentials or state.
+4. Start only the Terrakube services after dependency and Docker-socket authority
+   review. Verify UI login, API authorization, executor registration, and a
+   non-applying plan separately.
+5. Applying or destroying infrastructure is a separate remote mutation approval.
 
-- Operators
-- Developers
-- Contributors
-- AI Agents
+### State, backup, and upgrade
 
-### Purpose
+Recovery needs a consistent set: Terrakube PostgreSQL database, MinIO `tfstate`
+objects/versions, relevant Keycloak client/role configuration, tracked Compose,
+and secret metadata/custody. Valkey is coordination state and must be empty or
+consistent with a quiesced control plane. Stop new runs and quiesce API/executor
+before coordinated database/object snapshots. Restore only in an isolated
+environment with provider and webhook egress disabled, then verify DB/state-key
+referential consistency and a non-applying plan. Do not infer recoverability from
+one MinIO copy or one DB dump.
 
-- Operations: Terrakube Policy Usage Guide의 운영 사용 맥락을 빠르게 파악한다.
-- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
-- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
-
-### Prerequisites
-
-- Repository checkout 접근 가능
-- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
-- 필요한 경우 Docker/Docker Compose 명령 실행 권한
-
-### Step-by-step Instructions
-
-1. 이 문서의 overview와 usage context를 확인한다.
-2. 관련 service, configuration, 또는 documentation target을 식별한다.
-3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
-4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
-
-### Implementation Context (KR)
-
-이 문서는 `docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
-
-### Overview
-
-Terrakube is an open-source alternative to Terraform Cloud, providing a centralized control plane for Infrastructure as Code (IaC). It manages workspaces, variables, team access, and private modules.
-
-### Getting Started
-
-#### 1. Initial Login
-
-Access the UI at `https://terrakube-ui.${DEFAULT_URL}`. Authentication is integrated with Keycloak; use your engineering credentials.
-
-#### 2. Organizations and Workspaces
-
-- **Organizations**: High-level groups (e.g., `prod`, `dev`, `shared`).
-- **Workspaces**: Individual projects mapped to a specific Git repository and set of variables.
-
-### Feature Breakdown
-
-#### Private Module Registry
-
-Terrakube allows you to host internal Terraform modules.
-
-- To publish: Tag your module repository (e.g., `terraform-aws-s3-v1.0.0`).
-- To consume: Reference the module using the Terrakube API URL in your `.tf` code.
-
-#### Variable Management
-
-- **Environment Variables**: For provider credentials (AWS_ACCESS_KEY, etc.).
-- **Terraform Variables**: For specific infrastructure parameters.
-- **Sensitive Variables**: Marked as "Sensitive" are stored encrypted and never displayed in logs.
-
-#### UI-Driven Workflows
-
-- **Plan**: Trigger a `terraform plan` to view proposed changes in the UI logs.
-- **Apply**: Manual or automatic approval of plans to execute changes.
-
-### Integration Details
-
-#### Remote State (MinIO)
-
-Terrakube automatically manages its own internal state storage in the `tfstate` bucket of MinIO. Manual configuration of the `s3` backend in your `.tf` files is not required when running through the platform.
-
-#### Executor Model
-
-The `terrakube-executor` spins up ephemeral Docker containers for every job. It requires access to `/var/run/docker.sock` on the host to manage these child containers.
-
-### Troubleshooting
-
-#### Executor Timeout
-
-If a job is stuck in "Pending" status, verify that the `terrakube-executor` container is healthy:
-
-```bash
-docker logs --tail=200 terrakube-executor
-```
-
-#### SSO Failures
-
-If OIDC logout occurs frequently, check the token expiration settings in the `hy-home.realm` of Keycloak.
+Before upgrade, take that coordinated backup, read Terrakube release/migration
+notes, test against restored copies, and roll forward one component set together.
+Image rollback without database/state rollback is unsafe after migrations.
+Backup/restore and upgrade rehearsal remain unexecuted in this documentation task.
 
 ## Common Checks
 
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
-- Runtime approval 후 service가 실행 중이면 `docker compose ps terrakube-api terrakube-executor`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
+Use the [runbook](runbook.md) for failed runs, coordinated backup/restore, OIDC
+diagnosis, or upgrades.
 
 ## Traceability
 
-- Declared parent: [Terrakube Operations Policy](policy.md) (`POL-0069`)
-- Governing authority: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Policy](policy.md) (`POL-0069`), [Runbook](runbook.md) (`RUN-0069`)
+- [Policy](policy.md) (`POL-0069`)
+- [Runbook](runbook.md) (`RUN-0069`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
+- [Terrakube architecture](https://docs.terrakube.io/architecture)
+- [Terrakube Amazon-compatible storage](https://docs.terrakube.io/getting-started/deployment/storage-backend/amazon-cloud-storage)
+- [Terrakube project and Apache-2.0 license](https://github.com/terrakube-io/terrakube)
+- [Derived Compose image projection](../../../../../infra/tech-stack.versions.json)
 - [Operations index](../../../README.md)
-- [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)

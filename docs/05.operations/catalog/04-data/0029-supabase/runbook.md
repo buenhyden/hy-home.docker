@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0029"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 Supabase stack이 기동되지 않거나 Kong/API 접근, Auth, REST, Realtime, Storage, DB, pooler 상태를 즉시 확인해야 할 때 사용한다. 파괴적 DB 복구, storage 삭제, credential rotation 실행 절차는 이 런북의 범위가 아니다.
+이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 아래 database/storage/config 복원은 이번 문서 변경에서 실행하지 않았다.
 
 ### Purpose
 
@@ -95,6 +95,15 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 2. For unhealthy services after the documented checks, preserve logs and escalate; do not delete database or storage volumes from this runbook.
 3. For suspected secret exposure, stop copying output, preserve minimal context, and escalate under `## Escalation`.
 
+### Planned Isolated Restore Rehearsal
+
+1. 사전 승인 후 Compose image declarations, PostgreSQL version/extensions, roles and databases, Storage buckets/object counts, mounted config/functions, Auth providers, JWT issuer expectations와 free capacity를 inventory한다. secret values는 manifest에 넣지 않는다.
+2. PostgreSQL globals/roles, schema and data를 protected logical artifacts로 export하고 checksum한다. Storage metadata tables와 `${DEFAULT_DATA_DIR}/supabase/storage` object files는 같은 recovery point로 보존한다. Kong, functions, pooler, DB init and analytics/vector config는 별도 configuration artifact로 보존한다.
+3. JWT, anon/service-role keys, SMTP/provider credentials, database passwords, vault and crypto keys는 backup data와 분리된 approved secret store에서 동일 identifier/version으로 참조한다.
+4. production network, ports and volumes를 공유하지 않는 compatible empty stack을 별도 test credentials로 준비한다. roles/globals, schema, data 순서로 PostgreSQL을 복원하고 Storage objects와 metadata를 함께 배치한 후 mounted configuration을 적용한다.
+5. Kong API, Auth signup/login policy, REST read, Realtime subscription, Storage object read, Function invocation, Studio metadata, analytics ingestion과 Supavisor connection을 synthetic data로 확인한다. object-count/metadata mismatch나 missing key가 있으면 승격하지 않는다.
+6. 실패 시 isolated stack과 전용 volumes를 폐기한다. production cutover, DNS/route switch, secret rotation은 별도 승인 절차이며 source stack은 변경하지 않는다.
+
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
@@ -109,7 +118,7 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 
 ## Rollback or Recovery
 
-N/A — no verified destructive rollback or data recovery procedure is documented in this runbook. If database restore, storage recovery, JWT rotation, or credential reset is required, stop and escalate with captured evidence.
+데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이 변경에서는 backup/restore, storage mutation, JWT rotation이나 credential reset을 실행하지 않았다.
 
 ## Escalation
 
@@ -122,6 +131,12 @@ Escalate to the owning operator when compose render fails, required secrets or m
 - Subject peers: [Guide](guide.md) (`GDE-0029`), [Policy](policy.md) (`POL-0029`)
 
 ## Related Documents
+
+- [Compose implementation: infra/04-data/operational/supabase/docker-compose.yml](../../../../../infra/04-data/operational/supabase/docker-compose.yml)
+
+- [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
+- [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
+- [Supabase source and licenses](https://github.com/supabase/supabase)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

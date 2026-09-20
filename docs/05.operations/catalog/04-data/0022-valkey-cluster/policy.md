@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -14,69 +14,82 @@ created: "2026-05-17"
 
 # Valkey Cluster Operations Policy
 
-> This policy governs the current Valkey cluster services under `04-data/cache-and-kv`.
-
----
-
 ## Overview
 
-이 정책은 `infra/04-data/cache-and-kv/valkey-cluster`의 6-node Valkey cluster, init job, exporter 운영 통제를 정의한다. 정책 기준은 현재 compose와 `infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf`, `infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh`, `infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh`에 실제로 선언된 service, network, secret, persistence surface다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-- **Systems**: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`
-- **Configs**: `docker-compose.yml`, [valkey.conf](../../../../../infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf), [valkey-start.sh](../../../../../infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh), [valkey-cluster-init.sh](../../../../../infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh)
-- **Networks**: `infra_net`
-- **Profiles**: `data`, `service`
-- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or cache/kv runtime boundaries
+This policy governs the LAB-only `valkey-cluster` profile. It does not authorize
+promotion to HOME or replacement of `mng-valkey`.
 
 ## Controls
 
-- **Required**:
-  - Authentication and node-to-node `masterauth` use Docker Secret `service_valkey_password`.
-  - The six data volumes are bound under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`.
-  - Cluster initialization uses `valkey-cluster-init`; destructive re-initialization is not allowed as a documentation-only operation.
-  - Compose-facing documentation must list the current service set and image family [valkey/valkey image declaration](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
-  - Persistence controls must match current config evidence: RDB snapshots and AOF are enabled.
-- **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config --quiet`.
-  - Read-only status, cluster-info, and exporter metric checks that do not print secret values.
-  - Approved node/config changes when guide, policy, runbook, infra README, and task evidence are updated together.
-- **Disallowed**:
-  - Recording secret values, generated passwords, tokens, or certificate material in documentation or task evidence.
-  - Referencing old service names or a single `valkey-cluster` container as a command target.
-  - Claiming `maxmemory-policy` or other runtime controls are enabled unless the current config declares them.
-  - Deleting data volumes, forcing cluster recreation, or restoring RDB/AOF files without explicit owner approval and incident/task evidence.
+- Select the stack only through the root Compose project and the exact
+  `valkey-cluster` profile. Leaf rendering is unsupported.
+- Keep all six data volumes separate. Never point two nodes at one directory or
+  reuse live `nodes.conf` identity in a recovery target.
+- Keep `service_valkey_password` in Docker secret custody. Do not place its value
+  in Compose, Markdown, shell history or evidence.
+- Treat published client and cluster-bus ports as trusted-network exposure. The
+  current source declares authentication but no TLS.
+- Record the client, dataset, retention and capacity hypothesis before activation.
+  Three replicas on one host are a topology exercise, not host availability.
+- Preserve shared health checks, resource limits and the `infra_net` boundary.
+
+### Data protection
+
+RDB and AOF protect against different failure modes. A backup must preserve a
+coordinated point across the primaries, the entire AOF set/manifest where present,
+and a manifest of engine version, slot map, files, sizes and hashes. Store it on a
+separate encrypted destination. Retain daily recovery sets for 30 days and weekly sets for 90 days on the
+separate destination. The planning objective is RPO 24 hours and RTO 8 hours;
+both remain unverified until an isolated rehearsal. Shared resource-template
+limits are mandatory and promotion/removal requires measured demand, data-owner
+decision and verified export/restore.
+
+A restore must not attach backup files to the live cluster. It creates fresh
+identity on an isolated compatible target, restores complete persistence sets,
+and validates `cluster_state`, slot coverage, replicas, key counts and
+application reads. Production cutover or data destruction requires approval.
+
+### Change and upgrade policy
+
+Pin changes require official release-note review, client and persistence
+compatibility review, a fresh backup, isolated restore evidence and a rollback
+artifact. Membership changes, resharding and credential rotation are runtime
+changes and require a named task.
 
 ## Exceptions
 
-Exceptions require explicit owner or user approval and must record scope, affected services, commands, secret-safety considerations, validation output, and rollback/escalation state in related task or incident evidence.
+The LAB cluster may be absent when no named cluster client exists. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- Run `docker compose --profile valkey-cluster config --quiet` after changing compose-facing documentation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
-- Search updated docs for stale service names, direct password variable examples, stale image tags, unsupported runtime controls, and single-container assumptions before committing.
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-Review on any change to Valkey compose services, image tags, ports, profiles, networks, secret refs, persistence config, init script behavior, exporter behavior, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
-
----
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0022`), [Runbook](runbook.md) (`RUN-0022`)
+- Runtime source: [Valkey Cluster Compose](../../../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
+- Artifact: `POL-0022`; parent: `AD-0004`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+### References
+
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)
+- [Backup policy](../0021-backup-and-restore/policy.md)
+- [Runbook](runbook.md)
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://valkey.io/topics/cluster-tutorial/)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
+- [Domain catalog](../README.md)

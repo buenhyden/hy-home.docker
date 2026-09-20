@@ -5,7 +5,6 @@ x-tier-label: &tier-label
 services:
   terrakube-api:
     profiles:
-      - 'tooling'
       - iac
     extends:
       file: ../../common-optimizations.yml
@@ -63,7 +62,6 @@ services:
 
   terrakube-ui:
     profiles:
-      - 'tooling'
       - iac
     extends:
       file: ../../common-optimizations.yml
@@ -100,7 +98,6 @@ services:
 
   terrakube-executor:
     profiles:
-      - 'tooling'
       - iac
     extends:
       file: ../../common-optimizations.yml

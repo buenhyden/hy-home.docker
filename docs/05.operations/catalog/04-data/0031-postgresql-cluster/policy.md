@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -31,11 +31,14 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Documentation must identify the cluster as an unconditional root include whose services resolve only under the `data` or `service` profile, and must not describe it as part of the `core` surface.
+- **Required**: Documentation must identify the cluster as an unconditional root include whose services resolve only under the exact `postgres-ha` profile, and must not describe it as part of the `core` surface.
 - **Required**: Application connection guidance must use `pg-router` write/read endpoints, not direct writes to `pg-0`, `pg-1`, or `pg-2`.
 - **Required**: Credential guidance must reference Docker Secret mounts and secret-aware entrypoints; secret values must never be copied into docs or evidence.
 - **Required**: HAProxy stats guidance must use the declared Traefik route `pg-haproxy.${DEFAULT_URL}` and `pg_haproxy_stats_password`.
 - **Required**: Service/init guidance must describe `pg-cluster-init` as the compose job that syncs exporter role, service role, and service database through `init_users_dbs.sql`.
+- **Required**: Logical backup includes cluster globals/roles/privileges plus every in-scope database schema/data dump, extensions/ownership evidence, versions, checksums, retention and a tested restore record. Passwords remain separate protected secrets.
+- **Required**: Restore rehearsal uses an empty isolated compatible cluster, restores globals before databases, verifies owners/ACLs/extensions/sequences/data and routes tests through `pg-router`; Patroni/etcd state is rebuilt, not restored as logical data.
+- **Required**: Capacity, WAL/dump space, compatibility and rollback evidence are reviewed before upgrade or removal. Use the linked `RUN-0032` rehearsal rather than inventing a physical restore.
 - **Allowed**: Read-only `patronictl list`, `pg_isready`, HAProxy config validation, compose config rendering, logs, and exporter metrics checks for evidence capture.
 - **Allowed**: Documentation-only corrections that keep image tags, service names, profiles, ports, networks, secrets, and links aligned with compose.
 - **Disallowed**: DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, volume replacement, credential rotation, or database mutation steps presented as approved policy without separate owner approval and verified runbook evidence.
@@ -49,7 +52,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [PostgreSQL cluster guide](guide.md), [PostgreSQL cluster runbook](runbook.md), and [infra README](../../../../../infra/04-data/relational/postgresql-cluster/README.md) after compose changes.
 - Run `docker compose --profile postgres-ha config --quiet` before approving service-name, image, route, secret, port, or volume documentation updates.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
+- Run `python3 scripts/validation/check-document-links.py --mode all` after policy or linked operations document updates.
 
 ## Review Cadence
 
@@ -63,7 +66,9 @@ N/A - no currently approved exceptions.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
+- [PostgreSQL license](https://www.postgresql.org/about/licence/)
+- [Logical upgrade restore rehearsal](../0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md) (`RUN-0032`)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

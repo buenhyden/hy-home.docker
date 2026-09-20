@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -14,67 +14,88 @@ created: "2026-05-17"
 
 # Kafka Operations Policy
 
-> Governance, topic safety, secret boundary, and reliability standards for Kafka.
-
 ## Overview
 
-이 문서는 `05-messaging` Kafka 운영 정책을 정의한다. `messaging`/`dev` profile의 단일 broker Kafka, `messaging-cluster` profile이 더하는 3 broker 구성, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter에 대한 필수 통제 기준을 포함한다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-이 정책은 Kafka broker, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter와 Kafka topic 변경 절차를 제어한다.
-
-- **Systems**: `messaging`/`dev` profile의 `kafka-1` 단일 broker, `messaging-cluster` profile이 더하는 `kafka-2`/`kafka-3` 3 broker 구성, Schema Registry, Kafka Connect, Kafka REST Proxy, Kafbat UI, Kafka Exporter
-- **Agents**: AI Infrastructure Agent, CI/CD Deployer
-- **Environments**: Local, Development, Production-like validation
+Kafka-family services remain OPTIONAL. A named producer/consumer and approved
+capacity, retention, security and recovery plan are required before activation.
+Controls for removed broker families do not apply to the current implementation.
 
 ## Controls
 
-- **Required**:
-  - Root-included messaging compose는 `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`를 통과해야 한다.
-  - Kafka 관리 route는 `gateway-standard-chain@file`를 유지하고 Kafbat UI route는 `sso-errors@file,sso-auth@file`를 포함해야 한다.
-  - Kafbat UI OAuth client secret은 `kafbat_client_secret` Docker Secret으로만 주입한다.
-  - `kafka-init`가 선언한 `infra-events`, `application-logs` 토픽 변경은 compose diff와 검증 evidence를 남긴다.
-  - `messaging-cluster` profile로 3 broker를 선택한 상태에서 production-like 토픽을 추가할 때는 replication factor와 ISR 기준을 정책 검토 evidence에 명시한다.
-- **Allowed**:
-  - `messaging`/`dev` profile만 선택한 단일 broker 토픽은 development-only로 `replication-factor=1`을 사용할 수 있다.
-  - Schema Registry compatibility 변경은 영향 범위, consumer 호환성, rollback/escalation 기준이 task evidence에 기록된 경우 허용한다.
-- **Disallowed**:
-  - 현재 compose에 선언되지 않은 전역 `retention.ms` 값을 current truth로 문서화하는 것
-  - secret 값을 문서, 로그, task evidence, PR 본문에 기록하는 것
-  - delete topic, partition reassignment, retention 축소 같은 데이터 영향 작업을 승인/evidence 없이 실행하는 것
+- Select exact root profiles; never operate the leaf file as a separate Compose
+  project. Treat `messaging-cluster` as same-host LAB topology.
+- Keep broker and Connect volumes distinct and preserve `infra_net`, health checks
+  and shared resource limits.
+- Current broker, controller and host listeners are PLAINTEXT. Do not claim
+  transport confidentiality or client authentication. Restrict exposure and plan
+  broker TLS/SASL as a separate architectural change before sensitive workloads.
+- Kafbat must retain native OIDC/RBAC, local CA trust and
+  `kafbat_client_secret`. Its route uses only the standard gateway chain; do not
+  substitute forwarding-header authentication.
+- Topic creation/deletion, partition increase, retention reduction, consumer
+  offset movement and connector changes require explicit change scope and rollback.
+- The bootstrap topics request replication factor 3 and therefore require three
+  healthy brokers. A one-broker selection must not run that initialization as if
+  it were valid.
 
-### AI Agent Policy
+### Data protection
 
-- **Automated Topic Creation**: 자동 생성은 `kafka-init` compose 선언 또는 승인된 task evidence로만 허용한다.
-- **Health Guardrails**: 복제 오류 발생 시 AI Agent는 destructive topic mutation을 수행하지 않고 runbook evidence capture와 escalation을 우선한다.
+Recovery scope includes topic records/configuration, consumer offsets, KRaft
+metadata, Schema Registry history and IDs, Connect definitions and internal
+config/offset/status topics. Prefer producer replay or approved cross-cluster
+replication to a separate compatible target. A raw live copy of broker log dirs is
+not a backup. Store manifests and artifacts on an encrypted distinct destination.
+
+For selected workloads, set workload-specific data retention and RPO/RTO; the
+planning recovery-artifact retention is daily 30 days and weekly 90 days. Until
+then, the planning ceiling is RPO 24 hours and RTO 8 hours and is unverified.
+Shared resource-template limits remain mandatory. Removal requires producer,
+consumer, topic, schema, offset and connector inventory plus replay/restore proof. A restore must be
+rehearsed in isolation and prove schema compatibility, end offsets, record counts
+or checksums, consumer positions and paused-then-resumed connector behavior.
+
+### Upgrade and license policy
+
+Review Apache Kafka protocol/storage compatibility, Confluent component
+compatibility and license/edition terms, Kafbat release/security notes and client
+support before a pin change. Preserve rollback and current recovery artifacts.
+Do not assume Cluster Linking or other commercial/edition-specific capability is
+available.
 
 ## Exceptions
 
-- 단기 성능 테스트용 토픽 또는 dev-only topic은 owner, 만료 기준, cleanup 책임을 task evidence에 기록한 경우 예외로 허용한다.
-- 데이터 손실 가능성이 있는 topic mutation은 Messaging Operator 승인과 incident/task evidence가 필요하다.
+The optional stack may be absent; no listener-security exception is implied. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-- `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list`
-- `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --under-replicated-partitions`
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-- Quarterly 또는 Kafka compose, topic policy, Schema Registry, Kafbat UI route 변경 시 검토.
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0036`), [Runbook](runbook.md) (`RUN-0036`)
+- Runtime source: [Kafka Compose](../../../../../infra/05-messaging/kafka/docker-compose.yml).
+- Artifact: `POL-0036`; parent: `AD-0005`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+### References
+
+- [Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
+- [Runbook](runbook.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [Domain catalog](../README.md)

@@ -27,7 +27,7 @@ Lifecycle: **DEV**. Operational controls and recovery belong to `OPS-0084` throu
 
 ## Tech Stack
 
-Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a curated projection, not a deployment manifest.
+Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a derived Compose image projection, not a deployment manifest.
 
 ## Configuration
 

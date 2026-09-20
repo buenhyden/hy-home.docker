@@ -66,6 +66,13 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
     middleware, image version을 runtime에서 변경하는 행위
   - expiry 없는 무기한 silence를 생성하는 행위
 
+### Lifecycle and data controls
+
+- Keep Alertmanager `HOME`; require gateway auth, secret-file rendering, least-privilege receivers, and redacted logs/evidence.
+- Preserve the config template, matching secret references, and a consistent stopped copy/snapshot of `alertmanager-data` before upgrades. Do not live-copy notification state.
+- Rehearse on isolated storage with test-only receivers; verify config load, silences, inhibition/grouping, notification-log continuity, and one controlled delivery.
+- Removal requires Prometheus routing migration, receiver revocation, retained silence evidence, and explicit approval before deleting state.
+
 ## Exceptions
 
 - 보안 사고 또는 대규모 장애 대응 중 임시 route/receiver 조정이 필요하면
@@ -95,7 +102,7 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

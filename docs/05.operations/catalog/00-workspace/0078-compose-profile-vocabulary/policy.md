@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -21,7 +21,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 
 ## Policy Scope
 
-- **Systems**: root가 include하는 추적된 `infra/**/docker-compose*.yml` 및 `.yaml`.
+- **Systems**: root가 include하는 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}`.
 - **Agents**: Infra/DevOps/Operations 기여자와 검토자.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업.
 
@@ -54,7 +54,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
-| `ksql` | capability | Kafka 기반 스트림 SQL과 데이터 생성 작업 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | load or synthetic data generation | current |
+| `ksql` | automation | 명시적 스트림 SQL 실험 도구; datagen 컨테이너는 readiness 확인 후 대기 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | 현재 자동 데이터 생성 없음; 생성 명령 추가 시 synthetic data 부수 효과 검토 | current |
 | `legacy-vault` | lifecycle | 기존 Vault 마이그레이션 전용; HOME 제외 | `vault`, `vault-agent` | No | normal service startup | MIGRATE |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `minio`, `minio-create-buckets`, `loki`, `alloy`, `grafana` | No | initialization: minio-create-buckets | current |
@@ -92,8 +92,8 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3` | No | normal service startup | current |
 | `supabase` | capability | 자체 호스팅 앱 backend 전체 구성 | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | normal service startup | current |
 | `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
-| `testing` | automation | 명시적 부하 생성; 대상·제한 확인 후 실행 | `k6`, `locust-master` | No | load or synthetic data generation | current |
-| `tooling` | domain | 개발 도구 묶음; IaC 작업 부작용 검토 필요 | `locust-master`, `locust-worker`, `registry`, `sonarqube`, `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution; load or synthetic data generation | current |
+| `testing` | automation | 명시적 부하 생성; 대상·제한 확인 후 실행 | `k6`, `locust-master`, `locust-worker` | No | load or synthetic data generation | current |
+| `tooling` | domain | 일반 개발 도구 묶음 | `registry`, `sonarqube` | No | normal service startup | current |
 | `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `minio`, `minio-create-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: minio-create-buckets | current |
 | `valkey-cluster` | topology | Valkey sharding 실험 구성 | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` | No | initialization: valkey-cluster-init | current |
 | `workflow` | domain | HOME Airflow·n8n·worker·runner | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`, `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` | No | initialization: airflow-init | current |
@@ -117,7 +117,11 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 
 ### HOME activation
 
-`core mng ai workflow obs-core obs-host availability logs alerting storage`는 HOME
+| Named selection | Profiles | Forbidden categories |
+| --- | --- | --- |
+| HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage` | `automation`, `lifecycle`, `topology` |
+
+HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
 broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으로 HOME 앱이 충족되지는
 않는다. 새 HOME profile은 추가하지 않는다. OpenBao bootstrap/unseal/Agent 인증,
@@ -136,8 +140,10 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | seaweedfs-mount | master·volume·filer 폐포 포함; FUSE host mount 권한과 해제 계획 확인 |
 | legacy-vault with HOME | 정상 HOME에서 제외; 보존된 상태의 migration 승인 후에만 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
-| testing or ksql | 부하·샘플 데이터 생성 가능; 대상과 실행량을 명시 |
-| iac or tooling | OpenTofu/Terrakube가 포함됨; 명령·대상·credential·apply 승인 확인 |
+| testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
+| ksql | 현재 datagen 명령은 readiness 확인 후 대기하며 자동 생성하지 않음; 생성 명령 추가 시 대상·실행량을 명시 |
+| iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
+| tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
 
 ## Exceptions
@@ -155,9 +161,10 @@ python3 scripts/validation/check-operations-catalog.py
 
 첫 명령은 실제 profile 렌더링과 port 중복을 검사한다. 두 번째는 추적된 Compose
 이름과 표의 정확한 집합 일치, category/purpose, 중복 행, root include 도달성 및
-명시적 서비스 profile을 검사한다. 숫자 Services 열을 추가한다면 실제 선언 수와
-일치해야 한다. 은퇴한 snapshot은 검증 입력이 아니다. 함께 선택할 조합도 별도로
-렌더링하고 필수 종속성·부수 효과·runtime readiness를 확인한다.
+명시적 서비스 profile, HOME 안전 category와 필수 dependency 폐포를 검사한다.
+숫자 Services 열을 추가한다면 실제 선언 수와 일치해야 한다. 은퇴한 snapshot은
+검증 입력이 아니다. 첫 명령의 기본 모드는 HOME 조합도 함께 렌더링하여 profile
+사이에만 나타나는 host port 충돌을 같은 검사로 확인한다.
 
 ## Review Cadence
 

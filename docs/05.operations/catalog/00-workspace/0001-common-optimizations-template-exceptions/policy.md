@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0001"
 parent_ids: []
@@ -24,7 +24,7 @@ created: "2026-06-04"
 - `common-optimizations.yml` 템플릿 계열(`template-*`)의 제어항목 예외 관리
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
 
-- **Systems**: `infra/**/docker-compose*.yml` (root 통합 compose 해석 기준)
+- **Systems**: Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` (root 통합 Compose 해석 기준)
 - **Agents**: Infra/DevOps/Operations 역할 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
@@ -74,6 +74,6 @@ created: "2026-06-04"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides Compose-image drift verification.
 
 - [Operations index](../../../README.md)

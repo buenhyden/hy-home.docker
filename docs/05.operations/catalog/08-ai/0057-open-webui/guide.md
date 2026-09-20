@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
 - "POL-0057"
+implementation_services:
+  infra/08-ai/open-webui/docker-compose.yml:
+  - open-webui
 created: "2026-05-10"
 ---
 
@@ -99,6 +102,16 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 - **VRAM OOM**: 동시 인덱싱/추론 증가로 응답 지연 또는 실패.
 - **SSO 문제**: 인증 미들웨어/리디렉션 설정 불일치로 접근 실패.
 
+### Source-backed operating contract
+
+- **Purpose/classification**: `open-webui` is an owner-confirmed `HOME` chat/RAG interface.
+- **Profiles/source**: `ai`/`ai-llm` select the service. [Compose](../../../../../infra/08-ai/open-webui/docker-compose.yml), its selected image, and startup environment are authoritative.
+- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama and Qdrant over `infra_net`. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
+- **State/secrets**: `open-webui:/app/backend/data` contains the default SQLite database, uploads, chat/user state, and application data. Preserve `openwebui_oidc_client_secret`, session/auth secrets declared by Compose, the root CA, and the corresponding Qdrant snapshot owned by [RUN-0034](../../04-data/0034-qdrant/runbook.md). Never expose values in rendered config or logs.
+- **Resources/security**: Compose values are source limits, not measured headroom. Keep the UI behind native OIDC and the gateway standard chain; do not enable local password/signup paths as an incident workaround.
+- **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`; verify health, OIDC login, Ollama model listing, and a controlled RAG query. Stop Open WebUI before a consistent SQLite/data-volume backup. For upgrades, preserve the volume and matching secrets, review upstream migrations, update one version boundary, then verify identities/chats/uploads/OIDC and coordinate Qdrant recovery separately.
+- **Upstream/license**: follow official [environment configuration](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [updates/backups](https://docs.openwebui.com/getting-started/updating/), and [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) guidance. Verify the license terms of the pinned Open WebUI release before redistribution or modified deployment.
+
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -117,7 +130,9 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Open WebUI Compose](../../../../../infra/08-ai/open-webui/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

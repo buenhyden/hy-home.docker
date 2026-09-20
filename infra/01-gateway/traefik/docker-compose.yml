@@ -48,7 +48,7 @@ services:
       k3d-hyhome:
         ipv4_address: 172.18.0.2
       # openclaw_default:
-      #   ipv4_address: 172.20.0.5      
+      #   ipv4_address: 172.20.0.5
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password

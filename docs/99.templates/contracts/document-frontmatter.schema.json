@@ -20,6 +20,7 @@
     "layer": {"type": "string", "minLength": 1},
     "artifact_id": {"type": "string", "minLength": 1},
     "parent_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
+    "implementation_services": {"$ref": "#/$defs/implementationServices"},
     "supersedes": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
     "superseded_by": {"type": ["string", "null"]},
     "created": {"type": "string", "format": "date"},
@@ -67,6 +68,23 @@
     "tools": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
   },
   "$defs": {
+    "implementationServices": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^infra/(?:[a-z0-9][a-z0-9._-]*/)+docker-compose(?:[.-][a-z0-9][a-z0-9._-]*)?\\.ya?ml$"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$"
+        }
+      }
+    },
     "requirementAllocationRecoveryDecisions": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["comparison_base_commit", "defect_commit", "valid_predecessor_commit", "requirement_path", "allocation_name", "predecessor_current_issued", "corrupt_declared", "repaired_current_issued", "repaired_reserved_history", "disposition", "repaired_requirement_sha256"], "properties": {"comparison_base_commit": {"const": "d1e6ded52808b02392c52472d5416518a3b959d6"}, "defect_commit": {"const": "70aaeffb84e8f6bc537241615d4743b79ccac079"}, "valid_predecessor_commit": {"const": "b66da447f68993dd9bddfd100bdd4c4b90d19be4"}, "requirement_path": {"const": "docs/01.requirements/0012-laboratory.md"}, "allocation_name": {"const": "REQ-0012.FR"}, "predecessor_current_issued": {"const": [1, 2, 3, 4]}, "corrupt_declared": {"const": [1, 2, 3]}, "repaired_current_issued": {"const": [1, 2, 4]}, "repaired_reserved_history": {"const": [3]}, "disposition": {"const": "stable-identity-restoration"}, "repaired_requirement_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}},
     "identityRecovery": {
       "type": "object",

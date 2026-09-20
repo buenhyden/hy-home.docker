@@ -51,7 +51,10 @@ created: "2026-05-17"
    - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
    - `infra/08-ai/*/docker-compose.yml` 파일은 `infra_net`과 root include context에 의존하므로 service-local 단독 `docker compose config` 대상으로 사용하지 않는다.
 2. Gateway/SSO 경계 정렬
-   - Ollama/Open WebUI 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+   - Ollama proxy route는
+     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
+     Open WebUI는 `gateway-standard-chain@file`만 사용하고
+     `home-openwebui` native OIDC가 authentication을 소유한다.
 3. Ollama 리소스 보호 적용
    - `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 확인/조정한다.
 4. Open WebUI stateful 일관성 확인
@@ -69,7 +72,8 @@ created: "2026-05-17"
 
 ### Common Pitfalls
 
-- middleware 체인을 일부 라우터에만 적용하는 실수
+- Ollama proxy chain을 Open WebUI native-OIDC route에 복제하거나, 반대로
+  Ollama에서 proxy auth를 누락하는 실수
 - Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
 - Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
 - exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
@@ -93,7 +97,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

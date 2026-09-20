@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0020"
 parent_ids:
@@ -36,7 +36,7 @@ created: "2026-05-17"
 
 ### Checklist
 
-- [ ] compose config renders for warehouses stack.
+- [ ] root Compose renders the exact `starrocks` profile.
 - [ ] FE and BE logs are preserved before restart.
 - [ ] load retry or metadata changes have owner approval.
 
@@ -46,7 +46,7 @@ created: "2026-05-17"
 
    ```bash
    test -f infra/04-data/analytics/starrocks/docker-compose.yml
-   python3 scripts/validation/check-document-links.py --mode alignment
+   python3 scripts/validation/check-document-links.py --mode all
    ```
 
 2. FE/BE health evidence를 확인한다.
@@ -59,15 +59,10 @@ created: "2026-05-17"
 3. Logs를 확인한다.
 
    ```bash
-   docker logs starrocks-fe --tail 100
-   docker logs starrocks-be --tail 100
+   docker compose --profile starrocks logs --tail 100 starrocks-fe starrocks-be
    ```
 
-4. Restart is allowed only after evidence capture.
-
-   ```bash
-   docker restart starrocks-be
-   ```
+4. Restart is a runtime mutation. If separately approved, use the root project and exact service: `docker compose --profile starrocks restart starrocks-be`.
 
 ### Verification Steps
 
@@ -81,10 +76,16 @@ created: "2026-05-17"
 - **Metrics**: N/A - no separate exporter is declared in current compose.
 - **Evidence**: FE/BE SQL status, logs summary, compose command class
 
-### Safe Rollback or Recovery Procedure
+### Planned isolated backup and restore
 
-- N/A - no verified FE metadata or data rollback procedure is documented here.
-- Metadata restore, backend drop/add, and destructive cleanup must escalate.
+This procedure is documented from upstream behavior and **was not executed in this task**.
+
+1. Record databases/tables/partitions, FE/BE health, source version, repository name and storage class, backup role, encryption state, free space, and an approval that covers the remote repository operation.
+2. Create or select a remote StarRocks repository with credentials supplied outside documentation. Grant only `REPOSITORY` at system scope and `EXPORT` on the intended objects. Submit a named `BACKUP`, wait for `SHOW BACKUP` success, and record the snapshot timestamp; do not copy live bind paths as a shortcut.
+3. Provision a fresh isolated FE/BE pair on a compatible version with empty volumes and no shared host publications. Register the repository and restore into a new database or renamed tables using the recorded snapshot timestamp and a replication count suitable for the one-BE rehearsal.
+4. Wait for `SHOW RESTORE` success. Compare database/table inventory, row counts, representative queries, materialized views/UDFs that were in scope, FE/BE health, and checksums where the workload provides them.
+5. If an asynchronous job fails or validation differs, cancel only the isolated job if needed, discard the fresh volumes, and retry. Do not drop/re-register the active backend or overwrite the active database.
+6. Cutover, backend membership changes, or cleanup require separate approval. Until this succeeds, restore capability remains unverified.
 
 ### Agent Operations (If Applicable)
 
@@ -99,7 +100,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-N/A - no verified generic rollback procedure can restore StarRocks metadata or table data from this runbook. Use owner-approved backup or service-specific recovery evidence.
+Keep the source FE/BE pair and repository snapshot unchanged through validation. Rollback from a failed rehearsal is disposal of the isolated pair; rollback after an approved cutover must name the retained source or a second verified snapshot.
 
 ## Escalation
 
@@ -113,7 +114,9 @@ Escalate when FE metadata appears inconsistent, BE registration repeatedly fails
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://docs.starrocks.io/docs/administration/management/Backup_and_restore/)
+- [StarRocks backup and restore statements](https://docs.starrocks.io/docs/sql-reference/sql-statements/backup_restore/)
+- [StarRocks RESTORE reference and privileges](https://docs.starrocks.io/docs/sql-reference/sql-statements/backup_restore/RESTORE/)
+- [Compose implementation](../../../../../infra/04-data/analytics/starrocks/docker-compose.yml)
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)

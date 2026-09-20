@@ -63,6 +63,15 @@ health. Gatus's local session has a one-hour TTL in the active config; Keycloak
 logout alone does not prove that local session has been revoked. Do not claim
 cross-application single logout without a separate observed test.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Gatus SQLite restore is claimed.
+
+1. Record image/patch/config digests, database schema/history counts, endpoint inventory, and checksums. Quiesce checks, stop Gatus, then create a SQLite-consistent backup of the entire `gatus-data` set with config and secret references.
+2. Restore to a new path in a separate project/network with test endpoint credentials, test Keycloak client, and no production route.
+3. Start Gatus and verify migration/readiness, history counts, representative endpoint states, native OIDC/root-CA validation, session expiry behavior, and metrics scraping.
+4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production state/client/route replacement requires separate approval.
+
 ## Evidence
 
 Record date, commit, service name, exit codes and sanitized health/probe outcomes in the current Task. Source validation alone does not establish runtime readiness or restored history.
@@ -84,7 +93,7 @@ Stop and contact @buenhyden for missing backups, authentication failures, unknow
 
 ## Related Documents
 
-- Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../../../infra/tech-stack.versions.json) verifies drift.
+- Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) verifies drift.
 
 - [Operations index](../../../README.md)
 - [Official Gatus configuration, storage and authentication](https://github.com/TwiN/gatus)

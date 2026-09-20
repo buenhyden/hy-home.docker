@@ -39,6 +39,9 @@ created: "2026-05-17"
   - 업스트림 서버는 `max_fails`, `fail_timeout` 정책을 명시해야 한다.
   - `proxy_next_upstream` 정책을 명시해야 한다.
   - 정적 자산 확장자 기반 캐시 정책(`expires`, `Cache-Control`)을 유지해야 한다.
+  - `nginx`를 host ports 80/443을 점유하는 Traefik profile과 함께 선택하지 않는다.
+  - Git config와 private certificate backup authority를 구분한다. tmpfs는 복구
+    대상이 아니며 private key를 repository/evidence에 복사하지 않는다.
 - **Allowed**:
   - 서비스 특성(대용량 업로드/다운로드)에 따른 location 단위 timeout override
 - **Disallowed**:
@@ -62,6 +65,13 @@ created: "2026-05-17"
 - Nginx runtime lint such as `docker compose exec nginx nginx -t` is valid only after an approved Nginx context with root `infra_net` and backend dependencies is running.
 - Standalone `infra/01-gateway/nginx/docker-compose.yml` compose rendering is not readiness evidence.
 
+### Recovery and Upgrade Controls
+
+Rollback restores a reviewed config commit and matching private certificate set,
+then validates all four special paths with the real MinIO/auth dependencies.
+Image upgrades require `nginx -t`, representative route acceptance, and a prior
+image declaration that can be restored with the same config.
+
 ## Review Cadence
 
 - 월 1회 정기 점검
@@ -76,7 +86,7 @@ created: "2026-05-17"
 
 - [Official upstream operational documentation](https://nginx.org/en/docs/beginners_guide.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

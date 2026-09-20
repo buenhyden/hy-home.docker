@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -106,7 +106,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
   - worker autoscale 기준 정의 및 운영 표준화
 - **n8n**:
   - workflow versioning/Git backup 표준화
-  - credential store Vault 연계 강화
+  - credential store OpenBao 연계 강화
 Tracked infra artifact가 없는 신규 workflow service는 active workflow architecture scope에서 제외한다.
 
 ## Traceability
@@ -122,4 +122,4 @@ Tracked infra artifact가 없는 신규 workflow service는 active workflow arch
 - **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

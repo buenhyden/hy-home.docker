@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -33,6 +33,11 @@ created: "2026-05-17"
 - **Required**: Cluster cookie guidance must reference `/run/secrets/couchdb_cookie`; legacy shared-secret environment variables are not the current compose control.
 - **Required**: Health and membership checks must use the CouchDB HTTP API and container-local secret reads, not copied password values.
 - **Required**: External access guidance must stay behind Traefik `websecure` routing; direct host port exposure is not declared in compose.
+- **Required**: All services use the exact `couchdb` profile, and the three same-host nodes must not be represented as host-level HA.
+- **Required**: A recoverable set includes database/shard files or replication targets, system databases, `_dbs` metadata, security objects, configuration, cluster membership, Erlang cookie custody, checksums, retention, and a tested restore record.
+- **Required**: Restore rehearsal uses a fresh isolated cluster with compatible version/topology. Database replication is preferred; file restore follows upstream ordering with indexes before database files and never copies live files.
+- **Required**: Capacity and compaction headroom are reviewed before retention changes; upgrades follow upstream sequencing and require a restore-tested backup.
+- **Required**: Removal requires confirmed consumer shutdown, retained replication/file backup evidence with expiry/owner, and separate approval before node or volume deletion.
 - **Allowed**: Read-only `_up`, `_membership`, `_scheduler/docs`, and logs checks for evidence capture.
 - **Allowed**: Documentation-only corrections that preserve the 3-node cluster-init model and sticky routing.
 - **Disallowed**: Manual node rejoin, compaction, or cluster surgery guidance without current evidence and runbook escalation.
@@ -46,7 +51,7 @@ N/A - no currently approved exceptions.
 
 - Compare this policy with [CouchDB guide](guide.md), [CouchDB runbook](runbook.md), and [infra README](../../../../../infra/04-data/nosql/couchdb/README.md) after compose changes.
 - Run `docker compose --profile couchdb config --quiet` before approving service-name, port, Traefik, secret, or cluster-init documentation updates.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after policy or linked operations document updates.
+- Run `python3 scripts/validation/check-document-links.py --mode all` after policy or linked operations document updates.
 
 ## Review Cadence
 
@@ -60,7 +65,9 @@ N/A - no currently approved exceptions.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
+- [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
+- [CouchDB database security](https://docs.couchdb.org/en/stable/api/database/security.html)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

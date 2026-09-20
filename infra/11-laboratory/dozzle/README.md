@@ -52,7 +52,7 @@ dozzle/
 | --- | --- |
 | Purpose | Dozzle service leaf in `11-laboratory`; services: `dozzle`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dozzle/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `admin`, `dev` |
+| Config values | profiles: `admin`, `admin-logs` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dozzle/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `dozzle-data:/data`, `dozzle-data` |
@@ -73,7 +73,7 @@ dozzle/
 
 ## Tech Stack
 
-Runtime image pins are declared in [Compose](docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+Runtime image pins are declared in [Compose](docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a derived Compose image projection.
 
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |

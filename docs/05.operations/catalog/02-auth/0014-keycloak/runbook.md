@@ -88,9 +88,14 @@ created: "2026-05-17"
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 직전 정상 커밋으로 `infra/02-auth/keycloak/docker-compose.yml` 복원
-- [ ] `docker compose --profile auth up -d keycloak`
-- [ ] readiness 및 로그인 플로우 재검증
+- [ ] 쓰기 중단 시점을 기록하고 Keycloak을 중지한 뒤 database owner가 검증한
+      `mng-pg` Keycloak database 백업을 새 격리 database로 복원한다.
+- [ ] 복구 시점과 일치하는 image/config declaration 및 secret references로
+      격리 Keycloak을 연결한다. 운영 database 위에 import하지 않는다.
+- [ ] realm/client/user 수, 관리자 로그인, issuer/discovery, OAuth2 Proxy,
+      대표 native OIDC client를 확인하고 기존 token/session을 재사용하지 않는다.
+- [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
+      기존 환경을 변경하지 않은 채 database owner에게 인계한다.
 
 ### Agent Operations (If Applicable)
 
@@ -107,9 +112,10 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+Realm export는 database backup을 대신하지 않는다. 공식 절차는 일관성을 위해
+모든 Keycloak node를 중지한 export를 권장한다. 업그레이드 rollback에는 이전
+image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구 절차는 계획된
+절차이며 2026-09-20 문서 교정 중 실행되지 않았다.
 
 ## Escalation
 
@@ -128,8 +134,10 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Official Keycloak reverse proxy guide](https://www.keycloak.org/server/reverseproxy)
 - [Official Keycloak health checks](https://www.keycloak.org/observability/health)
 - [Official Keycloak OIDC application guide](https://www.keycloak.org/securing-apps/oidc-layers)
+- [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
+- [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

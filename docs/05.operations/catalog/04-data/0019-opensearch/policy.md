@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -27,6 +27,12 @@ created: "2026-05-17"
 
 ## Controls
 
+- **Activation**: use `docker compose --profile opensearch config --quiet` for the primary or `docker compose --profile opensearch-cluster config --quiet` for the LAB topology. Record which topology is selected.
+- **Security**: preserve TLS, certificates, the security plugin, secret-backed users, and gateway middleware. Never snapshot `.opendistro_security` as the only security backup; preserve reviewed security configuration separately and restrict its credentials.
+- **Retention and backup**: define index/ISM retention before ingest. Register a repository outside the live data volumes, require completed snapshot state, encrypt and restrict the repository according to its storage class, and rehearse isolated restore.
+- **Resources**: do not co-select the LAB cluster without accounting for the per-node 2 CPU/2 GiB limit, Dashboards, disk, and JVM overhead. Promotion requires measured shard and restore capacity.
+- **Upgrade**: validate the supported version path, plugin/build compatibility, Dashboards compatibility, certificates, and snapshot restore before changing the source pin. Do not downgrade indices written by a newer incompatible version.
+- **Removal**: confirm consumers and index retention, retain a verified snapshot plus security configuration, then obtain approval before deleting any primary or cluster data volume.
 - **Required**: OpenSearch API checks must use HTTPS and secret-backed admin authentication.
 - **Required**: primary stack operations must target `opensearch`; cluster-variant operations must explicitly target `opensearch-node1..3`.
 - **Required**: secret values and generated internal user material must not be copied into docs or command history.
@@ -53,6 +59,12 @@ Temporary index settings, cluster variant experiments, or security config change
 - Subject peers: [Guide](guide.md) (`GDE-0019`), [Runbook](runbook.md) (`RUN-0019`)
 
 ## Related Documents
+
+- [Compose implementation: infra/04-data/analytics/opensearch/docker-compose.yml](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)
+- [Custom image source: infra/04-data/analytics/opensearch/Dockerfile](../../../../../infra/04-data/analytics/opensearch/Dockerfile)
+
+- [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
+- [Compose implementation](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)
 
 - [Operations policies index](../../../README.md)
 - [Usage guide](guide.md)

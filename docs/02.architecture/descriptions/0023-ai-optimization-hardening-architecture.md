@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -126,4 +126,4 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 - **Operation**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/policy.md)
 - **Runbook**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/catalog/08-ai/0058-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

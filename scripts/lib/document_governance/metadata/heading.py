@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import collections
+import functools
 import hashlib
 import ipaddress
-import json
 import pathlib
 import posixpath
 import re
 import subprocess
 from collections.abc import Mapping
+
+from markdown_it import MarkdownIt
 
 from scripts.lib.document_governance.frontmatter import (
     parse_frontmatter_text as _parse_frontmatter_text,
@@ -43,7 +45,10 @@ from scripts.lib.document_governance.metadata.profile import (
     matching_template_roles,
     registered_generated_owner,
 )
-from scripts.lib.document_governance.operations_catalog import read_bounded_regular
+from scripts.lib.document_governance.operations_catalog import (
+    _compose_mapping,
+    read_bounded_regular,
+)
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     RegistryError,
@@ -817,40 +822,146 @@ _RUNTIME_EXCEPTION = re.compile(
     r"(?:migration|compatibility|advisory|workaround|history)\s*—\s*(.*?)\s*-->"
 )
 _RUNTIME_PATCH = re.compile(
-    r"(?<![\w.])v?\d+\.\d+(?:\.\d+)+(?:[-+._][\w.-]+)?(?![\w.])"
+    r"(?<![\w.])v?\d+\.\d+(?:\.\d+)+(?:[-+._][\w.-]+)?(?!\w|\.\d)"
 )
 _RUNTIME_VERSION_LABEL = re.compile(
-    r"\b(?:version|image|tag|runtime)\b|버전|이미지|태그|런타임", re.I
+    r"\b(?:version|image|tag|runtime|provider|upgrade|release)\b|"
+    r"버전|이미지|태그|런타임|업그레이드|릴리스",
+    re.I,
 )
 _DOCUMENT_VERSION_LABEL = re.compile(
     r"^\s*(?:[-*]\s*)?(?:(?:document|documentation)\s+(?:version|revision)|문서\s*버전)"
     r"\s*[:=]?\s*`?v?\d+(?:\.\d+){1,3}`?\s*$",
     re.I,
 )
+_CALENDAR_DATE_LABEL = re.compile(
+    r"\b(?:date|dated|updated|reviewed)\b|날짜|기준일|검토일", re.I
+)
+_DOTTED_CALENDAR_DATE = re.compile(r"(?<!\d)(?:19|20)\d{2}\.\d{1,2}\.\d{1,2}(?!\d)")
+_RUNTIME_COMPOSE_SOURCE = re.compile(
+    r"(?:^|.*/)(?:docker-)?compose(?:[.-][^/]*)?\.ya?ml$"
+)
+
+
+def _runtime_tracked_sources(root: pathlib.Path) -> tuple[pathlib.Path, ...]:
+    """Return active authored pin sources without consulting private state."""
+
+    held_root = re.fullmatch(r"/proc/self/fd/(0|[1-9][0-9]*)", root.as_posix())
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(root),
+            "ls-files",
+            "-z",
+            "--",
+            ":(top,glob)compose*.yml",
+            ":(top,glob)compose*.yaml",
+            ":(top,glob)docker-compose*.yml",
+            ":(top,glob)docker-compose*.yaml",
+            "infra",
+        ],
+        pass_fds=(int(held_root[1]),) if held_root else (),
+        capture_output=True,
+        check=False,
+        timeout=10,
+    )
+    if result.returncode != 0 or len(result.stdout) > 1024 * 1024:
+        raise ValueError("tracked runtime-source discovery failed")
+    try:
+        names = result.stdout.decode("utf-8").split("\0")
+    except UnicodeError as error:
+        raise ValueError("tracked runtime-source discovery failed") from error
+    sources = []
+    for name in names:
+        if not name:
+            continue
+        path = pathlib.Path(name)
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError("invalid tracked runtime-source path")
+        normalized = path.as_posix()
+        if _RUNTIME_COMPOSE_SOURCE.fullmatch(normalized) or (
+            normalized.startswith("infra/")
+            and (
+                path.name == "Dockerfile"
+                or path.name.startswith("Dockerfile.")
+                or path.name.endswith(".Dockerfile")
+            )
+        ):
+            sources.append(path)
+    return tuple(sorted(set(sources)))
+
+
+def _runtime_authored_image(value: object) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("invalid authored runtime image")
+    image = value.strip()
+    default = re.compile(r"\$\{[A-Za-z_][A-Za-z0-9_]*(?::-|-)\s*([^{}$\s]+)\}")
+    while default.search(image):
+        image = default.sub(lambda match: match[1], image)
+    if "$" in image or any(character.isspace() for character in image):
+        raise ValueError("ambiguous authored runtime image")
+    return image
+
+
+def _runtime_compose_entry(source: pathlib.Path, root: pathlib.Path):
+    document = _compose_mapping(root, pathlib.PurePosixPath(source.as_posix()))
+    services = document.get("services", {})
+    if not isinstance(services, Mapping):
+        raise ValueError("invalid Compose services")
+    images = []
+    for service in services.values():
+        if not isinstance(service, Mapping):
+            raise ValueError("invalid Compose service")
+        if "image" in service:
+            images.append(_runtime_authored_image(service["image"]))
+        build = service.get("build")
+        if isinstance(build, Mapping) and "dockerfile_inline" in build:
+            inline = build["dockerfile_inline"]
+            if not isinstance(inline, str) or len(inline.encode("utf-8")) > 256 * 1024:
+                raise ValueError("invalid inline Dockerfile source")
+            images.extend(_runtime_dockerfile_images(inline))
+    if not images:
+        return ()
+    return (
+        {
+            "component": re.sub(r"^\d+-", "", source.parent.name),
+            "images": sorted(set(images)),
+            "compose_files": [source.as_posix()],
+            "direct_source": True,
+        },
+    )
+
+
+def _runtime_version_entries_uncached(
+    root: pathlib.Path = ROOT,
+) -> tuple[dict[str, object], ...]:
+    entries = []
+    for source in _runtime_tracked_sources(root):
+        if _RUNTIME_COMPOSE_SOURCE.fullmatch(source.as_posix()):
+            entries.extend(_runtime_compose_entry(source, root))
+        else:
+            entries.extend(_runtime_build_entry(source, root))
+    if not entries:
+        raise ValueError("missing authored runtime sources")
+    return tuple(entries)
+
+
+@functools.lru_cache(maxsize=4)
+def _runtime_repository_entries(root_text: str) -> tuple[dict[str, object], ...]:
+    return _runtime_version_entries_uncached(pathlib.Path(root_text))
 
 
 def _runtime_version_entries(
     root: pathlib.Path = ROOT,
 ) -> tuple[dict[str, object], ...]:
-    document = json.loads(
-        read_bounded_regular(
-            root,
-            pathlib.Path("infra/tech-stack.versions.json"),
-            max_bytes=1024 * 1024,
-        ).decode("utf-8")
-    )
-    entries = document.get("entries") if isinstance(document, dict) else None
-    if not isinstance(entries, list) or not entries:
-        raise ValueError("missing runtime entries")
-    for entry in entries:
-        if not isinstance(entry, dict) or not isinstance(entry.get("component"), str):
-            raise ValueError("invalid runtime component")
-        for key in ("images", "compose_files"):
-            if not isinstance(entry.get(key), list) or not all(
-                isinstance(value, str) and value for value in entry[key]
-            ):
-                raise ValueError("invalid runtime sources")
-    return tuple(entries)
+    try:
+        is_repository_root = root.resolve() == ROOT.resolve()
+    except OSError:
+        is_repository_root = False
+    if is_repository_root:
+        return _runtime_repository_entries(root.as_posix())
+    return _runtime_version_entries_uncached(root)
 
 
 def _runtime_image_parts(entry: Mapping[str, object]) -> tuple[tuple[str, str], ...]:
@@ -884,14 +995,19 @@ def _runtime_owned_document(path: pathlib.Path, entry: Mapping[str, object]) -> 
 
 
 def _runtime_authority_link(path: pathlib.Path, body: str, entries) -> bool:
-    targets = (
-        {"infra/tech-stack.versions.json"}
-        if all(not entry.get("direct_source") for entry in entries)
-        else set()
+    targets = {
+        "infra/tech-stack.versions.json",
+        *(source for entry in entries for source in entry["compose_files"]),
+    }
+    links = (
+        token.attrGet("href")
+        for block in MarkdownIt("commonmark").parse(body)
+        for token in block.children or ()
+        if token.type == "link_open"
     )
-    targets.update(source for entry in entries for source in entry["compose_files"])
-    visible = re.sub(r"<!--.*?-->", "", body, flags=re.S)
-    for target in re.findall(r"\[[^\]\n]+\]\((<?[^\s)]+>?)\)", visible):
+    for target in links:
+        if not target:
+            continue
         target = target.strip("<>").split("#", 1)[0]
         if ":" in target or "?" in target:
             continue
@@ -932,20 +1048,32 @@ def _runtime_literal_line(line: str, entries, *, owned_context: bool = True) -> 
         and reason_tokens - placeholders
     ):
         return False
+    if not _RUNTIME_PATCH.search(line):
+        return False
     for entry in entries:
         for _, tag in _runtime_image_parts(entry):
-            if tag and re.search(r"(?<![\w.-])" + re.escape(tag) + r"(?![\w.-])", line):
+            if (
+                tag
+                and _RUNTIME_PATCH.search(tag)
+                and re.search(r"(?<![\w.-])" + re.escape(tag) + r"(?![\w.-])", line)
+            ):
                 return True
-        if _RUNTIME_PATCH.search(line) and (
-            _runtime_mentions(line, entry)
-            or (owned_context and _RUNTIME_VERSION_LABEL.search(line))
+    prose = (
+        _DOTTED_CALENDAR_DATE.sub("", line)
+        if _CALENDAR_DATE_LABEL.search(line)
+        else line
+    )
+    for entry in entries:
+        if _RUNTIME_PATCH.search(prose) and (
+            owned_context
+            or _runtime_mentions(prose, entry)
+            or _RUNTIME_VERSION_LABEL.search(prose)
         ):
             return True
     return False
 
 
-def _runtime_build_entry(source: pathlib.Path, root: pathlib.Path):
-    body = read_bounded_regular(root, source, max_bytes=256 * 1024).decode("utf-8")
+def _runtime_dockerfile_images(body: str) -> list[str]:
     images = re.findall(r"^\s*FROM\s+(?:--platform=\S+\s+)?([^\s]+)", body, re.I | re.M)
     stages = set(
         name.casefold()
@@ -974,6 +1102,12 @@ def _runtime_build_entry(source: pathlib.Path, root: pathlib.Path):
     ]
     if any("$" in image for image in external):
         raise ValueError("unresolved Dockerfile image source")
+    return external
+
+
+def _runtime_build_entry(source: pathlib.Path, root: pathlib.Path):
+    body = read_bounded_regular(root, source, max_bytes=256 * 1024).decode("utf-8")
+    external = _runtime_dockerfile_images(body)
     return (
         (
             {
@@ -1025,13 +1159,18 @@ def _runtime_version_findings(
 ) -> list[Finding]:
     path = record.path.as_posix()
     in_scope = (
-        (path.startswith("infra/") and record.path.name == "README.md")
+        (record.path.name == "README.md" and not path.startswith("docs/98.archive/"))
         or (
             path.startswith("docs/05.operations/")
             and record.path.name in {"guide.md", "policy.md", "runbook.md"}
         )
         or (
-            path.startswith("docs/02.architecture/descriptions/")
+            path.startswith(
+                (
+                    "docs/02.architecture/descriptions/",
+                    "docs/02.architecture/decisions/",
+                )
+            )
             and record.path.suffix == ".md"
         )
     )
@@ -1039,12 +1178,22 @@ def _runtime_version_findings(
         return []
     body = re.sub(r"\A---\r?\n.*?\r?\n---(?:\r?\n|$)", "", text, count=1, flags=re.S)
     try:
+        all_entries = _runtime_version_entries(root)
+        body_lines = body.splitlines()
+        candidate_lines = tuple(
+            line for line in body_lines if _RUNTIME_PATCH.search(line)
+        )
+        candidate_text = "\n".join(candidate_lines)
+        contextual_literal = any(
+            _RUNTIME_VERSION_LABEL.search(line) for line in candidate_lines
+        )
         entries = tuple(
             entry
-            for entry in _runtime_version_entries(root)
+            for entry in all_entries
             if (
                 _runtime_owned_document(record.path, entry)
-                or _runtime_mentions(body, entry)
+                or (candidate_text and _runtime_mentions(candidate_text, entry))
+                or (contextual_literal and _runtime_mentions(body, entry))
             )
         )
         entries += _runtime_direct_build_entries(record.path, root)
@@ -1053,24 +1202,35 @@ def _runtime_version_findings(
             _finding(
                 record,
                 "runtime-version-source-invalid",
-                "runtime registry or direct build source cannot be validated",
+                "authored Compose/Dockerfile runtime source cannot be validated",
             )
         ]
     if not entries:
         return []
     findings = []
+    authority_entries = tuple(
+        entry
+        for entry in entries
+        if _runtime_owned_document(record.path, entry)
+        or any(
+            _runtime_mentions(line, entry)
+            and _runtime_literal_line(line, (entry,), owned_context=False)
+            for line in candidate_lines
+        )
+    )
     if any(
-        not _runtime_authority_link(record.path, body, (entry,)) for entry in entries
+        not _runtime_authority_link(record.path, body, (entry,))
+        for entry in authority_entries
     ):
         findings.append(
             _finding(
                 record,
                 "runtime-version-source-missing",
-                "runtime documentation must link each Compose/Dockerfile source or its curated registry entry",
+                "runtime documentation must link the relevant authored Compose/Dockerfile source or canonical projection",
             )
         )
     owned = any(_runtime_owned_document(record.path, entry) for entry in entries)
-    for line in body.splitlines():
+    for line in candidate_lines:
         if _runtime_literal_line(line, entries, owned_context=owned):
             findings.append(
                 _finding(

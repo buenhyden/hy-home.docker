@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.1.1"
+version: "1.2.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace로, 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결하는 저장소입니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 `infra/**/docker-compose*.yml` 파일을 `include`로 통합해 단일 진입점 역할을 수행합니다.
+`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace로, 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결하는 저장소입니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 수행합니다.
 
 이 저장소의 핵심 목적은 다음 세 가지입니다. 첫째, 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 만드는 것. 둘째, 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보하는 것. 셋째, AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지하는 것입니다.
 
@@ -84,7 +84,7 @@ hy-home.docker/
 | Documentation | Markdown + stage-based docs | `docs/01`~`docs/05`, `docs/90`, `docs/98`, `docs/99` |
 | Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
-| Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | 주요 Docker image 선언과 Compose source of truth 동기화 |
+| Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | Compose image 선언에서 파생한 기계 판독 projection의 drift 검사. 런타임 pin 원본은 Compose/Dockerfile 선언 |
 
 ## Current Infrastructure Snapshot
 
@@ -92,10 +92,9 @@ hy-home.docker/
 
 | Area | Current Evidence | Notes |
 | --- | --- | --- |
-| `infra/` Compose files | 41 | `docker-compose*.yml` 40개와 `docker-compose*.yaml` 1개. 루트가 41개를 모두 주석 없이 include함 |
-| `infra/` Compose service directories | 40 | service README 누락 0개 |
-| Root `include:` entries | 41 | 파일 목록은 기동 대상을 결정하지 않음. 선택한 profile이 결정하며 정의는 POL-0078이 소유함 |
-| Root Compose secret declarations | 70 | 루트 `docker-compose.yml`의 최상위 `secrets:` 키 개수. 선언된 secret 파일 누락 0개 |
+| `infra/` Compose files / root includes | 42 / 42 | 2026-09-20 current-source inventory. include는 파일 도달성을, service profile은 활성화를 소유함 |
+| Compose service identities | 140 | Compose path와 service 이름의 쌍. HOME/DEV/OPTIONAL/LAB/MIGRATE 분류와 근거는 current inventory가 보유함 |
+| Root Compose secret declarations | 69 | 루트 `docker-compose.yml`의 최상위 `secrets:` 키 개수. 등록된 70개 secret file path와 구분하며, 선언된 파일 누락은 0개 |
 | Parent-repo tracked README files | 185 | `git ls-files '*README.md'` 기준의 tracked README inventory |
 | README refresh contract | path-appropriate template coverage | `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
 
@@ -140,7 +139,7 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 bash scripts/validation/validate-docker-compose.sh
 ```
 
-이 검증은 선언된 모든 profile을 하나씩 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 한 profile이 선택하는 두 서비스가 같은 host port를 공개하지 않는지 확인합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
+기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 
@@ -150,13 +149,21 @@ python3 scripts/validation/run-ci-gate.py --profile full
 
 이 검증은 docs taxonomy, required README, template inventory, GitHub Actions YAML, duplicate workflow step, script reference, runtime agent/function catalog, Docker image tag policy, tech-stack version drift를 함께 확인합니다.
 
-### 6. 코어 인프라 실행
+### 6. 코어 bootstrap과 HOME 선택
 
 ```bash
 docker compose --profile core up -d
 ```
 
-기본 코어 계층을 올린 뒤, 필요에 따라 `data`, `obs`, `workflow`, `ai`, `tooling` 같은 프로필을 추가로 활성화할 수 있습니다.
+`core`는 bootstrap selection일 뿐 HOME 전체가 아닙니다. 현재 HOME 후보는
+`core mng ai workflow storage obs-core obs-host availability logs alerting`의
+명시적 결합이며, 37개 HOME service identity를 선택합니다. 이 명령은 배포 승인이나
+용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
+[문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
+(POL-0078)가 소유합니다. Canonical path는
+`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`입니다. `tooling`은 registry와 SonarQube, `testing`은 k6와 Locust,
+`iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
+`dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
 ### 7. 주요 진입 문서 확인
 
@@ -262,7 +269,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
 3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/templates/common/readme-repository.template.md` 같은 승인된 템플릿과 [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)을 기준으로 삼습니다.
-4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
+4. Docker image runtime pin을 바꿀 때는 해당 Compose/Dockerfile 선언을 먼저 바꾸고, [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) 파생 projection과 동기화 검사를 함께 점검합니다. Dockerfile `FROM`/`ARG` pin은 Compose image projection과 별도 authority입니다.
 5. GitHub workflow를 바꿀 때는 [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)와 [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 

@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
 - "POL-0014"
+implementation_services:
+  infra/02-auth/keycloak/docker-compose.yml:
+  - keycloak
 created: "2026-05-10"
 ---
 
@@ -16,9 +19,13 @@ created: "2026-05-10"
 
 ## Usage
 
+### Implementation Sources
+
+- [infra/02-auth/keycloak/docker-compose.yml](../../../../../infra/02-auth/keycloak/docker-compose.yml)
+
 ### Overview
 
-이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 현재 실측으로 완료된 OIDC 로그인은 OpenBao native OIDC뿐이다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
+이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 현재 실측으로 완료된 OIDC 로그인은 OpenBao native OIDC뿐이다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
 
 ### Usage Type
 
@@ -99,6 +106,21 @@ Official Keycloak hostname docs state that hostname is security-sensitive becaus
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+### Data Protection and Upgrade
+
+Keycloak의 권위 상태는 외부 `mng-pg` PostgreSQL 데이터베이스에 있다. realm
+export는 검토 가능한 설정 이관 자료지만 트랜잭션 시점 복구를 대신하지 않는다.
+공식 export/import는 모든 노드를 중지한 상태를 권장하고, override import와
+startup import의 동작도 다르므로 실행 중인 단일 컨테이너 export를 일관된
+백업으로 기록하지 않는다. 복구 세트에는 PostgreSQL 백업, 동일 Keycloak 이미지
+선언, realm/export 보조 자료, secret owner가 별도 보관한 자격 증명이 포함된다.
+
+업그레이드는 공식 upgrading guide와 migration notes를 검토하고, 먼저 PostgreSQL
+백업을 검증한 뒤 격리 복제본에서 schema migration, readiness, 관리자 로그인,
+OAuth2 Proxy 및 대표 native OIDC client를 확인한다. rollback은 이전 이미지와
+업그레이드 전 데이터베이스를 함께 복원해야 하며 새 schema에 이전 이미지만
+연결하지 않는다. 이 백업·복구 rehearsal은 2026-09-20 문서 교정 중 실행되지 않았다.
+
 ## Traceability
 
 - Declared parent: [02-Auth Keycloak Operations Policy](policy.md) (`POL-0014`)
@@ -112,8 +134,10 @@ Official Keycloak hostname docs state that hostname is security-sensitive becaus
 - [Official Keycloak reverse proxy guide](https://www.keycloak.org/server/reverseproxy)
 - [Official Keycloak health checks](https://www.keycloak.org/observability/health)
 - [Official Keycloak OIDC application guide](https://www.keycloak.org/securing-apps/oidc-layers)
+- [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
+- [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

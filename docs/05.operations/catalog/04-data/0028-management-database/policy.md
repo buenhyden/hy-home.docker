@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -14,68 +14,81 @@ created: "2026-05-17"
 
 # Management Database Operations Policy
 
-> This policy governs current `mng-db` operations and implementation-aligned controls.
-
----
-
 ## Overview
 
-이 정책은 `infra/04-data/operational/mng-db`의 PostgreSQL, Valkey, init job, exporter 운영 기준을 정의한다. 정책 목적은 플랫폼 관리 메타데이터를 안전하게 유지하고, 문서와 compose의 서비스/네트워크/secret 경계가 서로 어긋나지 않도록 하는 것이다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-- **Systems**: `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`
-- **Configs**: `infra/04-data/operational/mng-db/docker-compose.yml`, `pg/init-scripts/init_users_dbs.sql`
-- **Networks**: `infra_net`; `k3d-hyhome` only for `mng-pg` and `mng-valkey`
-- **Environments**: local, dev, and approved infrastructure hosts using the `mng` or `dev` compose profile
-- **Agents**: AI agents reviewing or updating operations docs, compose references, or validation evidence
+The five `mng-db` services are HOME. They are shared dependencies, so database,
+role, broker or credential changes require consumer-aware maintenance and
+rollback.
 
 ## Controls
 
-- **Required**:
-  - Passwords and service credentials are injected through Docker Secrets under `/run/secrets/`.
-  - Compose references must use the current service set: `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`.
-  - `mng-pg-init` is the approved database/role synchronization path for `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and the declared service DB.
-  - Documentation changes that alter service, network, secret, or runbook behavior must update the paired guide, policy, runbook, and relevant README links.
-- **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config`.
-  - Read-only service status checks and exporter metric availability checks.
-  - Re-running `mng-pg-init` after compose render, secret readiness, and policy/runbook context are confirmed.
-- **Disallowed**:
-  - Referencing or creating legacy shared-network names for this stack.
-  - Recording secret values, generated passwords, tokens, or certificate material in documentation or task evidence.
-  - Treating this non-HA management database as the HA relational PostgreSQL cluster.
-  - Adding external direct exposure beyond the host ports declared in the compose file without an approved implementation change and updated operations docs.
+- Operate through the root project with `mng`, `core`, `dev`, or `local`; do not
+  run the leaf Compose file independently.
+- Keep PostgreSQL and Valkey on separate bind-backed volumes and preserve
+  `infra_net`, health checks, secret files and shared resource limits.
+- Keep `mng_db_password`, `mng_valkey_password` and service database credentials
+  in Docker secret custody. Dumps and evidence must not contain plaintext values.
+- Treat `mng-pg-init` as idempotent provisioning, not restore. Review its complete
+  role/database list before rerun.
+- Treat Valkey as workflow broker state, not a disposable cache. Restoring stale
+  queues can duplicate or reorder work.
+
+### Backup and restore
+
+Capture PostgreSQL globals and each current database with logical tools to a
+separate encrypted destination. Capture Valkey's complete AOF set and manifest
+plus an RDB checkpoint at a documented quiesced point. Retain PostgreSQL daily sets for 30 days and weekly sets for 90 days; retain
+Valkey broker sets daily for 7 days. Planning objectives are RPO 24 hours and RTO
+4 hours; no HOME rehearsal proves them. Shared resource-template limits remain
+mandatory. Removal or consolidation requires every consumer, schema, credential
+and queue to be migrated and rollback-tested.
+
+Restore PostgreSQL globals before databases on a fresh isolated compatible
+cluster. Treat every dump as untrusted executable SQL, restrict restore rights,
+and validate roles, schemas, row counts and named consumer health. Restore Valkey
+only after workflow owners approve queue replay semantics. Production cutover or
+data replacement requires separate approval.
+
+### Upgrade policy
+
+Review official release notes, extension/client compatibility and rollback for
+every pin change. A PostgreSQL major upgrade requires isolated logical
+restore/rehearsal; direct `PGDATA` reuse is prohibited. Preserve the prior volume
+until acceptance and rollback expiry.
 
 ## Exceptions
 
-Exceptions require explicit user or owner approval and must record the reason, scope, commands, verification result, and rollback/escalation state in the related task or incident evidence.
+No cache-only exception applies to workflow queue state. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- Run `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config` after changing compose-facing documentation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
-- Search updated docs for legacy network names, old Compose CLI spelling, or secret values before committing.
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-Review on any change to `mng-db` compose services, networks, profiles, ports, secret refs, initialization SQL, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
-
----
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0028`), [Runbook](runbook.md) (`RUN-0028`)
+- Artifact: `POL-0028`; parent: `AD-0004`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+### References
+
+- [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html)
+- [pg_restore security and options](https://www.postgresql.org/docs/current/app-pgrestore.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Runbook](runbook.md)
 
 ## Related Documents
 
-- [Official upstream operational documentation](https://www.postgresql.org/docs/current/backup.html)
-
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/operational/mng-db/README.md)
+- [Domain catalog](../README.md)

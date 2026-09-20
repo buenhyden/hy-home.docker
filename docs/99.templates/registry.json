@@ -45,6 +45,7 @@
       "layer",
       "artifact_id",
       "parent_ids",
+      "implementation_services",
       "supersedes",
       "superseded_by",
       "created",
@@ -666,6 +667,7 @@
         "created"
       ],
       "optional_frontmatter": [
+        "implementation_services",
         "supersedes",
         "superseded_by",
         "reviewed_at",

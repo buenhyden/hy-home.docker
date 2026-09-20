@@ -5,6 +5,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import errno
+import json
 import os
 import pathlib
 import posixpath
@@ -693,11 +694,99 @@ COMPOSE_ROOT = pathlib.PurePosixPath("docker-compose.yml")
 PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
     "docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md"
 )
-_INFRA_COMPOSE_FILE = re.compile(r"infra/.+/docker-compose[^/]*\.ya?ml")
+_COMPOSE_FILE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml")
 # A profile row is a table row whose first cell is exactly one backticked name.
 # The mutually exclusive pairs table never matches, because its first cells
 # carry more than a single name.
 _PROFILE_ROW = re.compile(r"\| `(?P<name>[A-Za-z0-9][A-Za-z0-9_.-]*)` \|(?P<rest>.*)\|")
+_PROFILE_MEMBER = re.compile(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`")
+_PROFILE_CATEGORIES = frozenset(
+    {"baseline", "domain", "capability", "role", "topology", "lifecycle", "automation"}
+)
+_HOME_FORBIDDEN_CATEGORIES = frozenset({"automation", "lifecycle", "topology"})
+_HOME_FORBIDDEN_SERVICE_CATEGORIES = frozenset({"automation", "lifecycle"})
+_REQUIRED_HOME_PROFILES = frozenset(
+    {
+        "core",
+        "mng",
+        "ai",
+        "workflow",
+        "obs-core",
+        "obs-host",
+        "availability",
+        "logs",
+        "alerting",
+        "storage",
+    }
+)
+_FIXED_PROFILE_CATEGORIES = {
+    "core": "baseline",
+    "local": "baseline",
+    "dev": "baseline",
+    "dependency-update": "automation",
+    "testing": "automation",
+    "iac": "automation",
+    "ksql": "automation",
+    "legacy-vault": "lifecycle",
+    "couchdb": "topology",
+    "dedicated-valkey": "topology",
+    "messaging-cluster": "topology",
+    "mongodb": "topology",
+    "nginx": "topology",
+    "opensearch": "topology",
+    "opensearch-cluster": "topology",
+    "postgres-ha": "topology",
+    "storage-cluster": "topology",
+    "valkey-cluster": "topology",
+}
+
+
+@dataclasses.dataclass(frozen=True)
+class _ProfilePolicyRow:
+    category: str
+    members: frozenset[str] | None
+    count: int | None
+    line_number: int
+
+
+def _is_infra_compose_file(path: str | pathlib.PurePosixPath) -> bool:
+    candidate = pathlib.PurePosixPath(path)
+    return (
+        not candidate.is_absolute()
+        and ".." not in candidate.parts
+        and len(candidate.parts) >= 2
+        and candidate.parts[0] == "infra"
+        and _COMPOSE_FILE_NAME.fullmatch(candidate.name) is not None
+    )
+
+
+def _parse_backticked_names(value: str) -> tuple[tuple[str, ...], str | None]:
+    if not value:
+        return (), "is empty"
+    names = tuple(_PROFILE_MEMBER.findall(value))
+    if value != ", ".join(f"`{name}`" for name in names):
+        return names, "is malformed"
+    duplicate = next(
+        (name for index, name in enumerate(names) if name in names[:index]), None
+    )
+    if duplicate is not None:
+        return names, f"duplicates {duplicate}"
+    return names, None
+
+
+def _required_compose_dependencies(service: object) -> frozenset[str]:
+    if not isinstance(service, Mapping):
+        return frozenset()
+    depends_on = service.get("depends_on")
+    if isinstance(depends_on, Mapping):
+        return frozenset(
+            str(name)
+            for name, condition in depends_on.items()
+            if not (
+                isinstance(condition, Mapping) and condition.get("required") is False
+            )
+        )
+    return frozenset(_string_items(depends_on))
 
 
 class _ComposeLoader(yaml.SafeLoader):
@@ -753,21 +842,12 @@ def _include_paths(include: object) -> set[str]:
 def validate_compose_profile_vocabulary(
     root: pathlib.Path,
 ) -> tuple[CatalogFinding, ...]:
-    """Hold POL-0078 and the root include list to the tracked Compose files.
-
-    Both state a fact the Compose files settle: the root file includes every
-    Compose file under infra/, and the policy's tables name every declared
-    profile with the number of services declaring it. The generated coverage
-    snapshot that used to be compared against them is retired, so the
-    comparison reads the Compose files directly. Only table rows are read,
-    never prose, because locating an enumeration inside a sentence is the
-    operation that kept producing wrong predicates.
-    """
+    """Hold POL-0078 profile membership and HOME selection to Compose."""
 
     compose_files = tuple(
         path
         for path in _tracked_paths(root, MAX_TRACKED_FILES)
-        if _INFRA_COMPOSE_FILE.fullmatch(path.as_posix())
+        if _is_infra_compose_file(path)
     )
     tracked = {path.as_posix() for path in compose_files}
     included = _include_paths(_compose_mapping(root, COMPOSE_ROOT).get("include"))
@@ -787,12 +867,14 @@ def validate_compose_profile_vocabulary(
         for path in sorted(included - tracked)
     ]
 
-    declared: Counter[str] = Counter()
+    declared: dict[str, frozenset[str]] = {}
+    service_definitions: dict[str, object] = {}
     for path in compose_files:
         services = _compose_mapping(root, path).get("services")
         items = services.items() if isinstance(services, Mapping) else ()
         for name, service in items:
-            profiles = set(
+            service_name = str(name)
+            profiles = frozenset(
                 _string_items(
                     service.get("profiles") if isinstance(service, Mapping) else None
                 )
@@ -802,35 +884,72 @@ def validate_compose_profile_vocabulary(
                     _finding(
                         "compose-service-profile-missing",
                         path,
-                        f"service {name} declares no profile, "
+                        f"service {service_name} declares no profile, "
                         "so it starts when none is selected",
                     )
                 )
-            declared.update(profiles)
+            service_definitions = {**service_definitions, service_name: service}
+            for profile in profiles:
+                declared = {
+                    **declared,
+                    profile: declared.get(profile, frozenset()) | {service_name},
+                }
 
-    rows: dict[str, tuple[int | None, int]] = {}
+    rows: dict[str, _ProfilePolicyRow] = {}
     policy_text = _read_text(root, PROFILE_VOCABULARY_POLICY)
     header: list[str] = []
-    categories = {
-        "baseline",
-        "domain",
-        "capability",
-        "role",
-        "topology",
-        "lifecycle",
-        "automation",
-    }
+    home_profiles: tuple[str, ...] | None = None
+    home_forbidden: tuple[str, ...] | None = None
     for line_number, line in enumerate(policy_text.splitlines(), 1):
         stripped = line.strip()
         if not stripped.startswith("|"):
             header = []
             continue
         cells = [cell.strip() for cell in stripped.strip("|").split("|")]
-        if cells and cells[0].lower() == "profile":
+        first = cells[0].lower() if cells else ""
+        if first in {"profile", "named selection"}:
             header = [cell.lower() for cell in cells]
+            if first == "profile" and "selected services" not in header:
+                findings.append(
+                    _finding(
+                        "compose-profile-vocabulary-drift",
+                        f"{PROFILE_VOCABULARY_POLICY}:{line_number}",
+                        "profile table has no Selected services column",
+                    )
+                )
+            continue
+        if first == "home" and header and header[0] == "named selection":
+            location = f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
+            fields = dict(zip(header, cells, strict=False))
+            if len(cells) != len(header):
+                findings.append(
+                    _finding(
+                        "compose-profile-vocabulary-drift",
+                        location,
+                        "HOME row does not match its table header",
+                    )
+                )
+            home_profiles, profiles_error = _parse_backticked_names(
+                fields.get("profiles", "")
+            )
+            home_forbidden, categories_error = _parse_backticked_names(
+                fields.get("forbidden categories", "")
+            )
+            for field, error in (
+                ("Profiles", profiles_error),
+                ("Forbidden categories", categories_error),
+            ):
+                if error is not None:
+                    findings.append(
+                        _finding(
+                            "compose-profile-vocabulary-drift",
+                            location,
+                            f"HOME {field} {error}",
+                        )
+                    )
             continue
         match = _PROFILE_ROW.fullmatch(stripped)
-        if match is None:
+        if match is None or not header or header[0] != "profile":
             continue
         name, location = match["name"], f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
         if name in rows:
@@ -838,7 +957,8 @@ def validate_compose_profile_vocabulary(
                 _finding(
                     "compose-profile-vocabulary-drift",
                     location,
-                    f"profile {name} has more than one row; the first is line {rows[name][1]}",
+                    f"profile {name} has more than one row; "
+                    f"the first is line {rows[name].line_number}",
                 )
             )
             continue
@@ -847,10 +967,26 @@ def validate_compose_profile_vocabulary(
         if len(cells) != len(header):
             messages.append(f"profile {name} row does not match its table header")
         fields = dict(zip(header, cells, strict=False))
-        if fields.get("category", "") not in categories:
+        category = fields.get("category", "")
+        if category not in _PROFILE_CATEGORIES:
             messages.append(f"profile {name} row has no valid category")
         if not fields.get("purpose", "").strip():
             messages.append(f"profile {name} row has no purpose")
+        members: frozenset[str] | None = None
+        if "selected services" in header:
+            member_names, member_error = _parse_backticked_names(
+                fields.get("selected services", "")
+            )
+            if member_error is not None:
+                if member_error == "is empty":
+                    messages.append(f"profile {name} has empty Selected services")
+                elif member_error == "is malformed":
+                    messages.append(f"profile {name} has malformed Selected services")
+                else:
+                    detail = member_error.replace("duplicates ", "duplicates service ")
+                    messages.append(f"profile {name} Selected services {detail}")
+            if member_error is None or member_error.startswith("duplicates "):
+                members = frozenset(member_names)
         count_key = next((key for key in ("서비스", "services") if key in header), None)
         if count_key is not None:
             raw_count = fields.get(count_key, "")
@@ -859,7 +995,15 @@ def validate_compose_profile_vocabulary(
                 messages.append(f"profile {name} row has no integer service count")
             else:
                 count = int(raw_count)
-        rows[name] = (count, line_number)
+        rows = {
+            **rows,
+            name: _ProfilePolicyRow(
+                category=category,
+                members=members,
+                count=count,
+                line_number=line_number,
+            ),
+        }
         findings.extend(
             _finding("compose-profile-vocabulary-drift", location, message)
             for message in messages
@@ -869,24 +1013,170 @@ def validate_compose_profile_vocabulary(
             _finding(
                 "compose-profile-vocabulary-drift",
                 PROFILE_VOCABULARY_POLICY,
-                f"profile {name} is declared by {declared[name]} service(s) "
+                f"profile {name} is declared by {len(declared[name])} service(s) "
                 "and has no row",
             )
         )
-    for name, (count, line_number) in sorted(rows.items()):
-        location = f"{PROFILE_VOCABULARY_POLICY}:{line_number}"
+    for name in sorted(declared):
+        if name.casefold() == "home":
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    PROFILE_VOCABULARY_POLICY,
+                    f"profile {name} uses reserved HOME name; "
+                    "HOME is a named selection, not a Compose profile",
+                )
+            )
+    for name, row in sorted(rows.items()):
+        location = f"{PROFILE_VOCABULARY_POLICY}:{row.line_number}"
         if name not in declared:
             message = (
                 f"profile {name} has a row and no tracked Compose service declares it"
             )
-        elif count is not None and count >= 0 and count != declared[name]:
-            message = (
-                f"profile {name} row counts {count} service(s); "
-                f"Compose declares {declared[name]}"
+            findings.append(
+                _finding("compose-profile-vocabulary-drift", location, message)
             )
-        else:
             continue
-        findings.append(_finding("compose-profile-vocabulary-drift", location, message))
+        if (
+            row.count is not None
+            and row.count >= 0
+            and row.count != len(declared[name])
+        ):
+            message = (
+                f"profile {name} row counts {row.count} service(s); "
+                f"Compose declares {len(declared[name])}"
+            )
+            findings.append(
+                _finding("compose-profile-vocabulary-drift", location, message)
+            )
+        if row.members is None:
+            continue
+        missing = declared[name] - row.members
+        extra = row.members - declared[name]
+        for label, members in (
+            ("missing from policy", missing),
+            ("unknown or extra", extra),
+        ):
+            if members:
+                findings.append(
+                    _finding(
+                        "compose-profile-vocabulary-drift",
+                        location,
+                        f"profile {name} Selected services {label}: "
+                        + ", ".join(sorted(members)),
+                    )
+                )
+
+    for name, expected in _FIXED_PROFILE_CATEGORIES.items():
+        row = rows.get(name)
+        if row is not None and row.category != expected:
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    f"{PROFILE_VOCABULARY_POLICY}:{row.line_number}",
+                    f"profile {name} must use safety category {expected}, "
+                    f"found {row.category or '<empty>'}",
+                )
+            )
+
+    tooling = declared.get("tooling", frozenset())
+    for profile, row in sorted(rows.items()):
+        if row.category not in _HOME_FORBIDDEN_SERVICE_CATEGORIES:
+            continue
+        overlap = tooling & declared.get(profile, frozenset())
+        if overlap:
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    PROFILE_VOCABULARY_POLICY,
+                    f"tooling overlaps automation/lifecycle profile {profile}: "
+                    + ", ".join(sorted(overlap)),
+                )
+            )
+
+    if home_profiles is None or home_forbidden is None:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "named selection table has no valid HOME row",
+            )
+        )
+        return tuple(findings)
+    if frozenset(home_forbidden) != _HOME_FORBIDDEN_CATEGORIES:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "HOME Forbidden categories must be automation, lifecycle, topology",
+            )
+        )
+    missing_required = _REQUIRED_HOME_PROFILES - frozenset(home_profiles)
+    if missing_required:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "HOME is missing required profiles: "
+                + ", ".join(sorted(missing_required)),
+            )
+        )
+    unknown_home = frozenset(home_profiles) - declared.keys()
+    if unknown_home:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "HOME names unknown profiles: " + ", ".join(sorted(unknown_home)),
+            )
+        )
+    forbidden_profiles = frozenset(
+        name
+        for name in home_profiles
+        if name in rows and rows[name].category in _HOME_FORBIDDEN_CATEGORIES
+    )
+    if forbidden_profiles:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "HOME includes forbidden profiles: "
+                + ", ".join(sorted(forbidden_profiles)),
+            )
+        )
+    home_services = frozenset().union(
+        *(declared.get(name, frozenset()) for name in home_profiles)
+    )
+    forbidden_services = frozenset().union(
+        *(
+            declared.get(name, frozenset())
+            for name, row in rows.items()
+            if row.category in _HOME_FORBIDDEN_SERVICE_CATEGORIES
+        )
+    )
+    unsafe_overlap = home_services & forbidden_services
+    if unsafe_overlap:
+        findings.append(
+            _finding(
+                "compose-profile-vocabulary-drift",
+                PROFILE_VOCABULARY_POLICY,
+                "HOME services overlap forbidden profile services: "
+                + ", ".join(sorted(unsafe_overlap)),
+            )
+        )
+    for service_name in sorted(home_services):
+        for dependency in sorted(
+            _required_compose_dependencies(service_definitions.get(service_name))
+            - home_services
+        ):
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    PROFILE_VOCABULARY_POLICY,
+                    f"HOME service {service_name} has required dependency "
+                    f"{dependency} outside HOME",
+                )
+            )
     return tuple(findings)
 
 
@@ -1633,3 +1923,540 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                                 )
                             )
     return tuple(sorted(set(findings)))
+
+
+# Current service inventory is a joined source projection, not another authority.
+SERVICE_INVENTORY_PATH = pathlib.PurePosixPath(
+    "docs/90.references/research/0002-agentic-engineering-research-pack/"
+    "m0021-local-docker-service-consolidation.md"
+)
+SERVICE_INVENTORY_COLUMNS = (
+    "Domain",
+    "Component",
+    "Compose path",
+    "Service",
+    "Profiles",
+    "Runtime classification",
+    "Consumer",
+    "Dependencies",
+    "Network",
+    "Ports",
+    "Persistence",
+    "Env",
+    "Secret metadata",
+    "Resources",
+    "Security",
+    "Backup",
+    "Operations docs",
+    "Runtime version authority",
+    "Update owner",
+    "Disposition",
+)
+_INVENTORY_START = "<!-- current-service-inventory:start -->"
+_INVENTORY_END = "<!-- current-service-inventory:end -->"
+_INVENTORY_CLASSES = frozenset({"HOME", "DEV", "OPTIONAL", "LAB", "REMOVE", "MIGRATE"})
+
+
+def _service_inventory_rows(text: str) -> list[dict[str, str]]:
+    if text.count(_INVENTORY_START) != 1 or text.count(_INVENTORY_END) != 1:
+        raise OperationsAuthorityError(
+            "service-inventory-shape", "current inventory requires one bounded table"
+        )
+    section = text.split(_INVENTORY_START, 1)[1].split(_INVENTORY_END, 1)[0]
+    lines = [line for line in section.splitlines() if line.startswith("|")]
+    cells = [
+        [cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines
+    ]
+    if len(cells) < 2 or tuple(cells[0]) != SERVICE_INVENTORY_COLUMNS:
+        raise OperationsAuthorityError(
+            "service-inventory-shape",
+            "current inventory requires all twenty named columns",
+        )
+    if any(len(row) != len(SERVICE_INVENTORY_COLUMNS) for row in cells[2:]):
+        raise OperationsAuthorityError(
+            "service-inventory-shape", "inventory row has wrong column count"
+        )
+    return [dict(zip(SERVICE_INVENTORY_COLUMNS, row, strict=True)) for row in cells[2:]]
+
+
+def _inventory_cell(value: object) -> str:
+    # Source expressions stay portable; never interpolate private instance values.
+    if value in (None, {}, [], ()):
+        return "none"
+    return json.dumps(
+        value, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+    ).replace("|", "&#124;")
+
+
+def _inventory_link(path: pathlib.PurePosixPath, label: str | None = None) -> str:
+    relative = posixpath.relpath(str(path), str(SERVICE_INVENTORY_PATH.parent))
+    return f"[{label or path.as_posix()}]({relative})"
+
+
+def _inventory_sources(
+    root: pathlib.Path, paths: tuple[pathlib.PurePosixPath, ...]
+) -> dict[tuple[str, str], Mapping[str, object]]:
+    return {
+        (str(path), str(name)): service
+        for path in paths
+        if _is_infra_compose_file(path)
+        for name, service in _compose_mapping(root, path).get("services", {}).items()
+        if isinstance(service, Mapping)
+    }
+
+
+def _inventory_inherited(
+    root: pathlib.Path,
+    path: pathlib.PurePosixPath,
+    service: Mapping[str, object],
+    tracked: frozenset[pathlib.PurePosixPath],
+    chain: tuple[tuple[str, str], ...] = (),
+) -> Mapping[str, object]:
+    """Resolve scalar template defaults only; do not impersonate Compose rendering.
+
+    Inventory topology/env/mount cells describe leaf source declarations. Resource
+    scalars and security controls additionally identify inherited declarations.
+    These fields do not require private environment or Docker daemon access.
+    """
+    extends = service.get("extends")
+    if not isinstance(extends, Mapping):
+        return service
+    target = _safe_relative(
+        posixpath.normpath(str(path.parent / str(extends.get("file", path.name)))),
+        "extends source",
+    )
+    name = str(extends.get("service", ""))
+    identity = (str(target), name)
+    if target not in tracked or identity in chain or len(chain) >= 16:
+        raise OperationsAuthorityError(
+            "service-inventory-source", "untracked or cyclic extends source"
+        )
+    base = _compose_mapping(root, target).get("services", {}).get(name)
+    if not isinstance(base, Mapping):
+        raise OperationsAuthorityError(
+            "service-inventory-source", "missing inherited service"
+        )
+    inherited = _inventory_inherited(root, target, base, tracked, (*chain, identity))
+    return {**inherited, **service}
+
+
+def _inventory_source_links(text: str, guide: pathlib.PurePosixPath) -> frozenset[str]:
+    links = (
+        token.attrGet("href")
+        for block in MarkdownIt("commonmark").parse(text)
+        for token in block.children or ()
+        if token.type == "link_open"
+    )
+    return frozenset(
+        posixpath.normpath(str(guide.parent / href.split("#", 1)[0]))
+        for href in links
+        if href and not re.match(r"[a-z]+://", href)
+    )
+
+
+def _inventory_bindings(
+    root: pathlib.Path,
+    paths: tuple[pathlib.PurePosixPath, ...],
+    services: Mapping[tuple[str, str], object],
+) -> tuple[dict[tuple[str, str], pathlib.PurePosixPath], list[CatalogFinding]]:
+    owners: dict[tuple[str, str], pathlib.PurePosixPath] = {}
+    findings: list[CatalogFinding] = []
+    tracked = frozenset(paths)
+    for guide in paths:
+        if not (
+            str(guide).startswith("docs/05.operations/catalog/")
+            and guide.name == "guide.md"
+        ):
+            continue
+        text = _read_text(root, guide)
+        metadata = _frontmatter(text, guide)
+        bindings = metadata.get("implementation_services")
+        if bindings is None:
+            continue
+        if not isinstance(bindings, Mapping) or not bindings:
+            findings.append(
+                _finding(
+                    "service-operations-owner",
+                    guide,
+                    "implementation_services must be a nonempty mapping",
+                )
+            )
+            continue
+        for compose, names in bindings.items():
+            if (
+                not isinstance(compose, str)
+                or not _is_infra_compose_file(compose)
+                or pathlib.PurePosixPath(compose) not in tracked
+            ):
+                findings.append(
+                    _finding(
+                        "service-operations-removed",
+                        guide,
+                        "binding source is not tracked current Compose",
+                    )
+                )
+                continue
+            links = _inventory_source_links(text, guide)
+            if compose not in links or not (root / compose).is_file():
+                findings.append(
+                    _finding(
+                        "service-guide-source",
+                        guide,
+                        f"Guide must link its existing Compose source: {compose}",
+                    )
+                )
+            if (
+                not isinstance(names, list)
+                or not names
+                or any(not isinstance(name, str) or not name for name in names)
+            ):
+                findings.append(
+                    _finding(
+                        "service-operations-owner",
+                        guide,
+                        "binding service list must be nonempty names",
+                    )
+                )
+                continue
+            for name in names:
+                identity = (compose, name)
+                if identity not in services:
+                    findings.append(
+                        _finding(
+                            "service-operations-removed",
+                            guide,
+                            f"current Guide binds removed service {compose}#{name}",
+                        )
+                    )
+                elif identity in owners:
+                    findings.append(
+                        _finding(
+                            "service-operations-duplicate",
+                            guide,
+                            f"duplicate Guide binding for {compose}#{name}",
+                        )
+                    )
+                else:
+                    owners[identity] = guide
+        for filename, kind in _ROLE_FILE.items():
+            member = guide.parent / filename
+            try:
+                frontmatter = _frontmatter(_read_text(root, member), member)
+                valid = frontmatter.get(
+                    "type"
+                ) == f"operation/{kind}" and frontmatter.get("status") in {
+                    "active",
+                    "draft",
+                }
+            except OperationsAuthorityError:
+                valid = False
+            if member not in tracked or not valid:
+                findings.append(
+                    _finding(
+                        "service-operations-owner",
+                        member,
+                        "service ownership requires a current Guide/Policy/Runbook triplet",
+                    )
+                )
+    for compose, name in sorted(set(services) - set(owners)):
+        findings.append(
+            _finding(
+                "service-operations-missing",
+                compose,
+                f"service {name} has no current Guide binding",
+            )
+        )
+    return owners, findings
+
+
+def _inventory_version_authority(
+    path: pathlib.PurePosixPath,
+    service: Mapping[str, object],
+    tracked: frozenset[pathlib.PurePosixPath],
+) -> str:
+    authority = [_inventory_link(path)]
+    build = service.get("build")
+    if isinstance(build, str):
+        build = {"context": build}
+    if isinstance(build, Mapping) and "dockerfile_inline" in build:
+        authority.append("inline Dockerfile in Compose")
+    elif isinstance(build, Mapping):
+        context = posixpath.normpath(str(path.parent / str(build.get("context", "."))))
+        dockerfile_value = str(build.get("dockerfile", "Dockerfile"))
+        default = re.fullmatch(
+            r"\$\{[A-Za-z_][A-Za-z_0-9]*:?-([^}]+)\}", dockerfile_value
+        )
+        if default:
+            authority.append(
+                "Dockerfile selector=" + dockerfile_value + " (declared default below)"
+            )
+            dockerfile_value = default.group(1)
+        dockerfile = _safe_relative(
+            posixpath.normpath(context + "/" + dockerfile_value), "build Dockerfile"
+        )
+        if dockerfile not in tracked:
+            raise OperationsAuthorityError(
+                "service-inventory-source",
+                f"untracked build Dockerfile for {path}",
+            )
+        authority.append(_inventory_link(dockerfile))
+    return "; ".join(authority)
+
+
+def _inventory_persistence(
+    root: pathlib.Path, path: pathlib.PurePosixPath, service: Mapping[str, object]
+) -> str:
+    source = _compose_mapping(root, path)
+    volumes = service.get("volumes", [])
+    declared_volumes = source.get("volumes", {})
+    referenced = {
+        str(item.get("source", ""))
+        if isinstance(item, Mapping)
+        else next(
+            (
+                str(name)
+                for name in declared_volumes
+                if str(item).startswith(str(name) + ":")
+            ),
+            "",
+        )
+        for item in volumes
+    }
+    mounts = {
+        "mounts": volumes,
+        "volume_sources": {
+            name: value
+            for name, value in declared_volumes.items()
+            if name in referenced
+        },
+    }
+    return _inventory_cell(mounts)
+
+
+def _inventory_projection(
+    root: pathlib.Path,
+    identity: tuple[str, str],
+    service: Mapping[str, object],
+    owners: Mapping[tuple[str, str], pathlib.PurePosixPath],
+    tracked: frozenset[pathlib.PurePosixPath],
+) -> dict[str, str]:
+    compose, name = identity
+    path = pathlib.PurePosixPath(compose)
+    inherited = _inventory_inherited(root, path, service, tracked)
+    template = service.get("extends", {})
+    security_keys = (
+        "user",
+        "privileged",
+        "read_only",
+        "security_opt",
+        "cap_add",
+        "cap_drop",
+        "network_mode",
+        "pid",
+        "devices",
+        "gpus",
+    )
+    security = {key: service[key] for key in security_keys if key in service}
+    inherited_security = {
+        key: inherited[key]
+        for key in security_keys
+        if key not in service and key in inherited
+    }
+    resources = {
+        key: inherited[key]
+        for key in ("cpus", "mem_limit", "mem_reservation", "pids_limit", "shm_size")
+        if key in inherited
+    }
+    deploy = inherited.get("deploy")
+    if isinstance(deploy, Mapping):
+        resources["deploy"] = {
+            **(
+                deploy.get("resources", {})
+                if isinstance(deploy.get("resources", {}), Mapping)
+                else {}
+            ),
+            **({"replicas": deploy["replicas"]} if "replicas" in deploy else {}),
+        }
+    environment = service.get("environment", {})
+    env_keys = sorted(
+        environment
+        if isinstance(environment, Mapping)
+        else [str(item).split("=", 1)[0] for item in environment]
+    )
+    secrets = sorted(
+        str(item.get("source", "")) if isinstance(item, Mapping) else str(item)
+        for item in service.get("secrets", [])
+    )
+    guide = owners.get(identity)
+    security["authentication_env_keys"] = [
+        key for key in env_keys if re.search(r"AUTH|OIDC|SSO|COOKIE", key)
+    ]
+    labels = service.get("labels", {})
+    if isinstance(labels, Mapping):
+        security["router_middlewares"] = {
+            key: value
+            for key, value in labels.items()
+            if str(key).endswith(".middlewares")
+        }
+    operations = (
+        "; ".join(
+            _inventory_link(guide.parent / member, member.removesuffix(".md"))
+            for member in _ROLE_FILE
+        )
+        if guide
+        else "unowned"
+    )
+    return {
+        "Domain": path.parts[1],
+        "Component": path.parent.name if len(path.parts) > 3 else name,
+        "Compose path": compose,
+        "Service": name,
+        "Profiles": _inventory_cell(sorted(service.get("profiles", []))),
+        "Dependencies": _inventory_cell(service.get("depends_on", {})),
+        "Network": _inventory_cell(
+            service.get("networks", service.get("network_mode", "default"))
+        ),
+        "Ports": _inventory_cell(
+            {
+                "published": service.get("ports", []),
+                "exposed": service.get("expose", []),
+            }
+        ),
+        "Persistence": _inventory_persistence(root, path, service),
+        "Env": _inventory_cell(env_keys),
+        "Secret metadata": _inventory_cell(secrets),
+        "Resources": _inventory_cell(resources),
+        "Security": "leaf="
+        + _inventory_cell(security)
+        + "; inherited-defaults="
+        + _inventory_cell(inherited_security)
+        + "; extends="
+        + _inventory_cell(template)
+        + "; runtime unverified; "
+        + (
+            _inventory_link(guide.parent / "policy.md", "Policy")
+            if guide
+            else "unowned"
+        ),
+        "Operations docs": operations,
+        "Runtime version authority": _inventory_version_authority(
+            path, service, tracked
+        ),
+        "Update owner": "Renovate; "
+        + _inventory_link(pathlib.PurePosixPath("renovate.json5"))
+        + "; POL-0086",
+    }
+
+
+def _inventory_consumer(
+    row: Mapping[str, str], services: Mapping[tuple[str, str], Mapping[str, object]]
+) -> str:
+    names = sorted(
+        name
+        for (_, name), service in services.items()
+        if row["Service"] in service.get("depends_on", {})
+    )
+    declared = "declared reverse edges=" + (",".join(names) or "none")
+    value = row["Consumer"]
+    if re.search(r"declared reverse edges=[^;]+", value):
+        return re.sub(r"declared reverse edges=[^;]+", declared, value)
+    return value + "; " + declared
+
+
+def render_service_inventory(root: pathlib.Path) -> str:
+    """Return a refreshed table, preserving authored evidence and disposition."""
+    paths = _tracked_paths(root, MAX_TRACKED_FILES)
+    services = _inventory_sources(root, paths)
+    owners, _ = _inventory_bindings(root, paths, services)
+    rows = _service_inventory_rows(_read_text(root, SERVICE_INVENTORY_PATH))
+    identities = [(row["Compose path"], row["Service"]) for row in rows]
+    if len(set(identities)) != len(identities) or set(identities) != set(services):
+        raise OperationsAuthorityError(
+            "service-inventory-membership",
+            "author missing/extra/duplicate service rows before rendering",
+        )
+    output = [
+        _INVENTORY_START,
+        "| " + " | ".join(SERVICE_INVENTORY_COLUMNS) + " |",
+        "| " + " | ".join("---" for _ in SERVICE_INVENTORY_COLUMNS) + " |",
+    ]
+    for row in rows:
+        identity = (row["Compose path"], row["Service"])
+        projected = {
+            **row,
+            **_inventory_projection(
+                root, identity, services[identity], owners, frozenset(paths)
+            ),
+        }
+        projected = {**projected, "Consumer": _inventory_consumer(row, services)}
+        output.append(
+            "| "
+            + " | ".join(projected[column] for column in SERVICE_INVENTORY_COLUMNS)
+            + " |"
+        )
+    return "\n".join((*output, _INVENTORY_END)) + "\n"
+
+
+def validate_service_inventory(root: pathlib.Path) -> tuple[CatalogFinding, ...]:
+    paths = _tracked_paths(root, MAX_TRACKED_FILES)
+    services = _inventory_sources(root, paths)
+    owners, findings = _inventory_bindings(root, paths, services)
+    try:
+        rows = _service_inventory_rows(_read_text(root, SERVICE_INVENTORY_PATH))
+    except OperationsAuthorityError as error:
+        return tuple(
+            (*findings, _finding(error.code, SERVICE_INVENTORY_PATH, str(error)))
+        )
+    identities = [(row["Compose path"], row["Service"]) for row in rows]
+    for identity, count in Counter(identities).items():
+        if count > 1:
+            findings.append(
+                _finding(
+                    "service-inventory-duplicate",
+                    SERVICE_INVENTORY_PATH,
+                    f"duplicate service identity {identity}",
+                )
+            )
+    for identity in sorted(set(services) ^ set(identities)):
+        findings.append(
+            _finding(
+                "service-inventory-membership",
+                SERVICE_INVENTORY_PATH,
+                f"missing or extra service {identity}",
+            )
+        )
+    for row in rows:
+        identity = (row["Compose path"], row["Service"])
+        for column in SERVICE_INVENTORY_COLUMNS:
+            if not row[column]:
+                findings.append(
+                    _finding(
+                        "service-inventory-field",
+                        SERVICE_INVENTORY_PATH,
+                        f"{identity}: missing {column}",
+                    )
+                )
+        if row["Runtime classification"] not in _INVENTORY_CLASSES:
+            findings.append(
+                _finding(
+                    "service-inventory-classification",
+                    SERVICE_INVENTORY_PATH,
+                    f"{identity}: invalid classification",
+                )
+            )
+        if identity not in services:
+            continue
+        expected = _inventory_projection(
+            root, identity, services[identity], owners, frozenset(paths)
+        )
+        expected = {**expected, "Consumer": _inventory_consumer(row, services)}
+        for column, value in expected.items():
+            if row[column] != value:
+                findings.append(
+                    _finding(
+                        "service-inventory-drift",
+                        SERVICE_INVENTORY_PATH,
+                        f"{identity}: stale {column}",
+                    )
+                )
+    return tuple(findings)

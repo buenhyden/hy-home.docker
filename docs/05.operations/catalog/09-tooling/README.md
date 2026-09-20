@@ -16,7 +16,9 @@ layer: "operations"
 
 This domain co-locates each current tooling guide, policy, and runbook under
 its stable four-digit subject identity. Role membership follows the current
-subject tree.
+subject tree. `tooling` selects Registry and SonarQube only; `testing` selects
+k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
+`dependency-update` selects Renovate. These services are outside HOME.
 
 ## Audience
 

@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0043"
 parent_ids:
 - "POL-0043"
+implementation_services:
+  infra/06-observability/docker-compose.yml:
+  - loki
 created: "2026-05-10"
 ---
 
@@ -87,9 +90,18 @@ created: "2026-05-10"
 - **Alloy assumption**: Loki가 healthy여도 Alloy `loki.write`가 실패하면 Grafana에서 logs가 비어 보일 수 있다.
 - **Direct access assumption**: 외부 UI route는 `https://loki.${DEFAULT_URL}`로 보호되고, 내부 compose network에서는 `loki:3100`를 사용한다.
 
+### Source-backed operating contract
+
+- **Purpose/classification/source**: `loki` is the `HOME` log store selected by `obs`/`logs`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Loki config](../../../../../infra/06-observability/loki/config/loki-config.yaml) are authoritative.
+- **Flow/state**: Alloy pushes logs; Loki stores TSDB schema-v13 blocks/index in MinIO bucket `loki-bucket`, while `loki-data:/loki` holds local working/cache/ruler state. Retention is 168h and compactor working files are local.
+- **Secrets/dependencies/security**: `MINIO_APP_USERNAME` plus `minio_app_user_password` access MinIO. MinIO, Alloy, Grafana, Traefik, and `infra_net` are dependencies. Gateway protection and tenant/header rules must remain consistent; do not print object-store credentials.
+- **Resources/normal use**: source limits are not headroom. Render from root, validate config, verify readiness, ingest a labeled test log, query it, and monitor compactor/object-store errors.
+- **Lifecycle**: coordinate a consistent MinIO bucket backup with the storage owner and preserve local recovery-relevant state/config. Stop or quiesce ingestion for a point-in-time set, upgrade through supported schema/version transitions, then verify old/new queries and retention.
+- **Upstream/license**: follow official [Loki storage](https://grafana.com/docs/loki/latest/configure/storage/), [retention](https://grafana.com/docs/loki/latest/operations/storage/retention/), and [upgrade](https://grafana.com/docs/loki/latest/setup/upgrade/) guidance. Loki is AGPL-3.0 licensed.
+
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki`
+- `docker compose --profile obs ps loki`
 - `docker logs --tail=100 infra-loki`
 - `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`
 - `rg -n 'loki.source.docker|loki.write|http://loki:3100/loki/api/v1/push' infra/06-observability/alloy/config/config.alloy`
@@ -107,7 +119,9 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Observability Compose](../../../../../infra/06-observability/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

@@ -34,7 +34,7 @@ Security owner, 기존 Vault 소비자 담당자와 인프라 운영자.
 
 ## Tech Stack
 
-현재 pin은 [Vault Compose](docker-compose.yml)와 [curated projection](../../tech-stack.versions.json)을 참조한다. 대상 서비스의 선언은 [OpenBao Compose](../openbao/docker-compose.yml)다.
+현재 pin은 [Vault Compose](docker-compose.yml)와 [derived Compose image projection](../../tech-stack.versions.json)을 참조한다. 대상 서비스의 선언은 [OpenBao Compose](../openbao/docker-compose.yml)다.
 
 ## Configuration
 

@@ -8,54 +8,40 @@ updated: "2026-09-04"
 created: "2026-05-15"
 ---
 
-# Lake & Object Storage (04-data/lake-and-object)
-
-> 데이터 레이크 및 오브젝트 스토리지 서비스 / Data Lake and Object Storage Services
+# Lake and object storage
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 데이터 레이크 및 오브젝트 스토리지 서비스를 위한 구성을 포함합니다. 비정형 데이터, 파일, 백업 아카이브를 위한 대용량 스토리지 계층입니다.
+This area documents the repository's lake and object-storage packages.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- 인프라를 배포하고 관리하는 **Operators**
-- 스토리지 서비스를 연동하는 **Developers**
-- 자동화된 운영 작업을 수행하는 **AI Agents**
+It is intended for operators and maintainers of the object-storage tier.
 
 ## Scope
 
-### In Scope
-
-- MinIO S3 호환 오브젝트 스토리지 구성
-- SeaweedFS 분산 파일 시스템 구성
-- 버킷 정책, 접근 제어, 시크릿 마운트
-
-### Out of Scope
-
-- 애플리케이션 레벨 데이터 모델링
-- 백업 정책 정의 (04-data operations catalog (`docs/05.operations/catalog/04-data/README.md`) 담당)
+It covers the retained HOME store and the optional filer/S3 experiment.
 
 ## Structure
 
-```text
-lake-and-object/
-├── minio/        # MinIO S3-compatible object storage
-├── seaweedfs/    # SeaweedFS distributed file system
-└── README.md     # This file
-```
+### Packages and relationship
+
+- [`minio`](minio/README.md) is the retained HOME S3-compatible store. Current
+  bootstrap creates Loki, Tempo, CDN and document-intelligence buckets.
+- [`seaweedfs`](seaweedfs/README.md) is OPTIONAL for a named filer/S3 experiment.
+  Its master, volume, filer and mount semantics differ from MinIO.
+
+Do not run both as interchangeable defaults or point them at each other's data.
+MinIO migration requires S3/client, policy, object-metadata, recovery and rollback
+proof; SeaweedFS is not preselected as the target.
 
 ## How to Work in This Area
 
-1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
-2. Review [minio/README.md](./minio/README.md) or [seaweedfs/README.md](./seaweedfs/README.md) before changing a service.
-3. Keep backup and retention rules in operations policy documents instead of duplicating them here.
-4. After adding, moving, or removing a storage service, update this index and the linked operations README files.
+Use root Compose profiles and preserve distinct storage paths, secrets and network
+boundaries.
 
 ## Related Documents
 
-- [infra/04-data/README.md](../README.md)
-- 04-data operations catalog (`docs/05.operations/catalog/04-data/README.md`)
-- `secrets/storage/`
-- [Documentation index](../../../docs/README.md)
+Use the [documentation entry point](../../../docs/README.md) to locate
+Stage 05 subjects `04-data/0023-minio`, `04-data/0024-seaweedfs`, and backup policy
+POL-0021.

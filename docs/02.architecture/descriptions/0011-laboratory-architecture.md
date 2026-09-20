@@ -1,105 +1,92 @@
 ---
 title: "11-laboratory Architecture Description"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
 - "REQ-0012"
 created: "2026-03-26"
 ---
+
 # 11-laboratory Architecture Description
 
 ## Context and Stakeholders
 
-이 문서는 `11-laboratory` 계층의 참조 아키텍처와 품질 속성을 정의한다. 시스템의 관리 및 관측을 위한 비침습적(Non-intrusive) 관리 레이어로 설계되었다.
-
-### Stakeholders and Concerns
-
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
-
-`11-laboratory` owns the unified management interface and diagnostic tools for the infrastructure. It provides a human-centric layer over the automated systems.
+The laboratory tier contains optional operator and knowledge-work tools. It is
+outside HOME and must not affect core traffic when absent. Its broad visibility
+into Docker, Redis/Valkey, provider APIs, and notebook content makes it an admin
+security boundary rather than a harmless dashboard layer.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
-
-- **Owns**: Data UI (RedisInsight), Log UI (Dozzle), Open Notebook and local SurrealDB laboratory datastore.
-- **Consumes**: Docker Engine API, Redis/Valkey network endpoints, Traefik gateway and SSO middleware.
-- **Does Not Own**: Business application UIs, hardware-level hypervisors.
-- **Non-goals**: Replacing CLI-based troubleshooting for advanced operators.
-
-## Quality Attributes
-
-### Quality Scenarios
-
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
-
-- **Performance**: High (Lightweight container images).
-- **Security**: Mandatory SSO (Keycloak) for all web interfaces.
-- **Reliability**: No direct impact on core traffic if management tier fails.
+- **Dozzle:** `admin`/`admin-logs`; reads Docker logs through a read-only socket,
+  stores settings under `/data`, and uses both native OIDC configuration and the
+  tracked gateway controls. A read-only socket does not restrict Docker API reads.
+- **RedisInsight:** `admin`/`admin-data`; stores local connections/settings under
+  `/data` and manages external Redis/Valkey targets. Target data remains owned by
+  each target service. Current Compose does not declare `RI_ENCRYPTION_KEY`.
+- **Open Notebook:** `admin`/`notebook`; stores local app data under `/app/data`,
+  connects to separately owned SurrealDB, and uses password/encryption-key Docker
+  Secrets. Provider/API egress is a distinct authorization boundary.
+- **SurrealDB:** owned by `infra/04-data/specialized/surrealdb`, selected by
+  `admin`, `notebook`, or `surrealdb`, and persists Open Notebook records under
+  `/mydata`.
+- **Non-goals:** this tier does not own primary Redis/Valkey backups, copied Docker
+  logs, production notebook workloads, or Metabase. No current Metabase service is
+  declared in this tier.
 
 ## Components
 
-### Viewpoints and Views
-
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
-
 ```mermaid
-graph TD
-    subgraph "Access Layer"
-        User[Admin/Developer]
-        TF[Traefik Proxy]
-    end
-
-    subgraph "11-laboratory (Management)"
-        RI[RedisInsight]
-        Doz[Dozzle]
-        ON[Open Notebook]
-        SDB[SurrealDB]
-    end
-
-    subgraph "Core Infrastructure"
-        DockerPool[Docker Engine]
-        RedisPool[Valkey/Redis Cluster]
-        Auth[Traefik SSO Middleware]
-    end
-
-    User --> TF
-    TF -- "gateway+allowlist+SSO" --> RI
-    TF -- "gateway+allowlist+SSO" --> Doz
-    TF -- "gateway+allowlist+SSO" --> ON
-
-    Doz -.-> DockerPool
-    RI -.-> RedisPool
-    ON -.-> SDB
-    Dash -.-> TF
+flowchart LR
+  Admin --> Gateway
+  Gateway --> Dozzle --> DockerAPI[Docker API/logs]
+  Gateway --> RedisInsight --> Targets[Redis/Valkey targets]
+  Gateway --> Notebook[Open Notebook]
+  Notebook --> SurrealDB[(SurrealDB /mydata)]
+  Notebook --> Providers[approved model/provider APIs]
 ```
 
 ## Data Flow
 
-### Data and Control Flows
-
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
-
-`11-laboratory` does not own primary application data. It consumes Docker Engine, Valkey/Redis, and dashboard metadata endpoints for management visibility. The exception is Open Notebook local laboratory state, which is stored under the `open-notebook` service boundary with its SurrealDB dependency and remains outside production workload data ownership.
+Dozzle requests Docker log streams, RedisInsight opens operator-defined target
+connections, and Open Notebook sends approved provider requests while persisting
+application records in SurrealDB. These flows are independent; selecting one
+narrow profile must not grant another tool's target or API access.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose.
-- **Deployment Model**: the root file includes every laboratory Compose file unconditionally and the selected profile decides what resolves. Dozzle, RedisInsight, Open Notebook, and SurrealDB are selected by `admin` and `dev`.
+The root project includes the three laboratory leaves and the separate SurrealDB
+leaf. `admin` selects all four services; narrower profiles are `admin-logs`,
+`admin-data`, and `notebook`. There is no `dev` profile for these services.
+
+## Quality Attributes
+
+- **Security:** preserve gateway/allowlist/authentication controls, protect local
+  settings databases, and never expose provider credentials, target passwords,
+  logs, notebook content, or encryption keys in evidence.
+- **Recoverability:** Dozzle settings can be restored without a production Docker
+  socket. RedisInsight local settings and each target database recover separately.
+  Open Notebook recovery requires app data, SurrealDB data, and the matching
+  encryption key at one recovery point; loss of the key can make provider secrets
+  unreadable.
+- **Isolation:** restore rehearsals block provider egress, production Docker API,
+  and production data targets until sanitized acceptance passes.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+- [Dozzle operations](../../05.operations/catalog/11-laboratory/0072-dozzle/guide.md)
+- [Open Notebook operations](../../05.operations/catalog/11-laboratory/0073-open-notebook/guide.md)
+- [RedisInsight operations](../../05.operations/catalog/11-laboratory/0076-redisinsight/guide.md)
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
-- **Spec**: [../../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
-- **ADR**: [../decisions/0011-laboratory-services.md](../decisions/0011-laboratory-services.md)
+- [Laboratory requirement](../../01.requirements/0012-laboratory.md)
+- [Laboratory decision](../decisions/0011-laboratory-services.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the
+[derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

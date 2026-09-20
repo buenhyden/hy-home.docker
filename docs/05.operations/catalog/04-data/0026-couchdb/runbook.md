@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: Triage CouchDB 3-node cluster health, cluster-init results, membership, and Traefik route assumptions.
 
-이 런북은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 수동 재조인, 데이터베이스 compaction, shard 변경, cookie 교체는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
+이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 fresh CouchDB cluster의 격리 복원 rehearsal 계약을 제공한다. 이번 문서 변경에서 데이터 명령은 실행하지 않았다.
 
 ### Purpose
 
@@ -94,14 +94,23 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
 2. Runtime recovery in this runbook is limited to compose `up -d` for the declared CouchDB services after evidence capture.
-3. N/A — no verified manual rejoin, compaction rollback, shard relocation, or data restore procedure is documented yet.
+3. 실패한 격리 cluster와 그 전용 storage를 폐기한다. source cluster와 tracked volumes는 변경하지 않는다.
+
+### Planned Isolated Restore Rehearsal
+
+1. 사전 승인 후 source version, `/_membership`, `/_all_dbs`, shard placement, per-database `_security`, document-count invariants, configuration과 system database 범위를 기록한다. admin password와 Erlang cookie 값은 evidence에서 제외한다.
+2. preferred path는 database replication이다. 승인된 fresh target으로 application databases와 필요한 system databases를 복제하고 completion/error state를 기록한다.
+3. file backup을 선택한 경우 source를 일관되게 quiesce한 뒤 config, cluster metadata including `_dbs`, shard/database files, indexes, `_users`, `_replicator`, `_global_changes`를 checksum과 함께 보존한다. running `.couch` files를 복사하지 않는다.
+4. production network/volumes를 공유하지 않는 호환 버전의 빈 3-node target을 준비한다. 별도 test admin/cookie를 사용하고 동일한 node count/shard assumptions를 명시한다.
+5. file restore에서는 upstream 순서대로 index files를 database files보다 먼저 배치하고, config/metadata/data ownership을 검증한 뒤 target만 시작한다. replication path에서는 security objects와 system database scope를 별도로 확인한다.
+6. `/_up`, `/_membership`, `/_all_dbs`, shard maps, per-database document counts, representative reads, `_security`, replication scheduler를 검증한다. 불일치가 있으면 target을 승격하지 않고 폐기한다.
 
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
+- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 
@@ -111,7 +120,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 ## Rollback or Recovery
 
-N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If cluster surgery, compaction, shard movement, cookie replacement, or data restore is required, preserve evidence and escalate.
+데이터 복구는 위 planned isolated rehearsal로만 검증한다. production cutover, membership 변경, cookie rotation은 별도 승인 사항이며 이 변경에서는 실행하지 않았다.
 
 ## Escalation
 
@@ -125,7 +134,11 @@ Escalate to the owning operator when membership does not show the expected three
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Compose implementation: infra/04-data/nosql/couchdb/docker-compose.yml](../../../../../infra/04-data/nosql/couchdb/docker-compose.yml)
+
+- [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
+- [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
+- [CouchDB database security](https://docs.couchdb.org/en/stable/api/database/security.html)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

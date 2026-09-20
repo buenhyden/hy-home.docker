@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -50,6 +50,40 @@ The standard default policy supplies token self-renewal. Agent tokens have a
 The Agent deletes the SecretID file after reading it. Existing Docker Secret
 consumers continue using their current files; rendered outputs do not switch
 application mounts automatically.
+
+### Prometheus Metrics Credential
+
+Use this procedure only after approval names the OpenBao policy/token change and
+the Prometheus recreation as exact targets.
+
+1. Confirm OpenBao is initialized and unsealed, the reviewed
+   `prometheus.hcl` contains only `read` on `sys/metrics`, an authorized
+   administrator is available, and rollback uses the current configuration
+   commit. Do not use the renderer AppRole, a renderer sink token, a human
+   operator token or a root token as the Prometheus credential.
+2. Apply the policy and issue a new orphan service token without the default
+   policy. Give it a finite TTL within the effective system maximum, record its
+   expiry and accessor in protected custody, and deliver only the token value
+   directly to `secrets/security/openbao_token.txt` at mode `0600`. Do not
+   print it, pass it as an argument or stage it in another file.
+3. Through protected input, verify the new token can read `sys/metrics` and
+   is denied on an unrelated secret path and administrative path. Record only
+   boolean allow/deny results and effective TTL, never the token or raw response.
+4. Validate Compose and Prometheus configuration before the approved recreation.
+   Recreate only Prometheus, confirm the configuration load/reload succeeded,
+   then require the `openbao` target to report `UP` without recording raw
+   target responses or logs.
+5. Rotate by creating and validating a replacement first, atomically replacing
+   the `0600` file, recreating only Prometheus, confirming the new target, and
+   revoking the previous token by accessor. Never restore the legacy Vault root
+   token grant or scrape job.
+
+If policy application, token validation, configuration loading or target health
+fails, keep the previous source/runtime configuration available, revoke the new
+token by accessor, and remove its local file only within the approved credential
+disposition. Recreate only Prometheus from the reviewed rollback commit. A
+source rollback must not reintroduce `vault_token`; leave OpenBao metrics
+disabled until the dedicated credential path can be repaired.
 
 Before an Agent restart, an authorized operator must deliver a fresh SecretID
 through a protected channel. Stop only the Agent while placing RoleID/SecretID
@@ -153,7 +187,16 @@ Record date, configuration commit, service names, exit statuses and sanitized he
 
 ## Rollback or Recovery
 
-Capture a protected Raft snapshot through the approved backup process and rehearse restoration on isolated storage.
+Capture a protected Raft snapshot with the non-root operator identity, record its
+checksum, cluster ID, image declaration, seal configuration and custody receipt,
+then rehearse restoration on a new data volume with network egress and consumers
+disabled. Start the supported image against only the restored volume, complete the
+threshold unseal ceremony, and verify cluster ID, mounts, policies, auth methods,
+Agent authentication/rendering and denial tests without disclosing secret values.
+Destroy the isolated copy after evidence acceptance; never restore over live Raft
+data. This isolated restore remains planned and was not executed during the
+2026-09-20 correction.
+
 A snapshot contains token state at capture time: restoring a snapshot taken before
 root revocation can restore that credential state. Recheck and revoke restored
 bootstrap/recovery tokens during isolated recovery validation; take routine

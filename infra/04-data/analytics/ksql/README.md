@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -54,7 +54,7 @@ ksql/
 | --- | --- |
 | Purpose | ksqlDB service leaf in `04-data`; services: `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `KSQL_CONFIG_DIR`, `KSQL_BOOTSTRAP_SERVERS`, `KSQL_HOST_NAME`, `KSQL_LISTENERS`, `KSQL_CACHE_MAX_BYTES_BUFFERING`, `KSQL_KSQL_SCHEMA_REGISTRY_URL`, `KSQL_PRODUCER_INTERCEPTOR_CLASSES`, `KSQL_CONSUMER_INTERCEPTOR_CLASSES`, plus 8 more; profiles: `data`, `ksql` |
+| Config values | env keys are Compose-owned; exact profile for all three services: `ksql` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `ksqldb-data-volume:/var/lib/ksql:rw`, `ksqldb-data-volume` |
@@ -81,12 +81,14 @@ ksql/
 
 ## Validation
 
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect ksqlDB.
+Classification is `OPTIONAL`. Recovery depends on Kafka command/source/sink/internal topics, Schema Registry subjects, SQL/UDF definitions, and offsets; the local volume alone is insufficient. The CLI entry point is `docker compose --profile ksql run --rm --entrypoint ksql ksqldb-cli http://ksqldb-server:8088`. Owning artifacts are `GDE-0018`, `POL-0018`, and `RUN-0018`.
+
+- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect ksqlDB.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with repository validators and `docker logs ksqldb-server` for runtime evidence. Service-local compose config requires root network context or a local validation overlay.
+- Start with repository validators and `docker compose --profile ksql logs --tail=120 ksqldb-server` for runtime evidence.
 - Check ksqlDB logs for broker connectivity or stream startup errors before changing Compose settings.
 
 ## Related Documents
@@ -100,4 +102,4 @@ ksql/
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

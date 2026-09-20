@@ -49,8 +49,9 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
   - Service는 `template-stateful-med`, image [grafana/grafana image declaration](../../../../../infra/06-observability/docker-compose.yml),
     read-only provisioning/dashboard mounts, persistent `grafana-data`
     volume을 유지한다.
-  - Grafana route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
-    middleware chain을 유지한다.
+  - Grafana route는 TLS와 `gateway-standard-chain@file`을 유지하고,
+    authentication/authorization은 Grafana Generic OAuth와 Keycloak role
+    mapping이 소유한다. Proxy `sso-auth@file`을 중복 적용하지 않는다.
 - **Allowed**:
   - 새 dashboard는 unique `uid`를 가진 JSON 파일로 추가한다.
   - 새 datasource는 provisioning YAML과 연결 dashboard 변경을 같은
@@ -66,6 +67,13 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
   - 승인 없이 route, role mapping, secret reference, provisioning mount,
     dashboard provider lock, image version을 runtime에서 변경하는 행위
 
+### Lifecycle and data controls
+
+- Keep Grafana `HOME`; preserve native Keycloak OAuth, gateway routing, explicit anonymous Viewer scope, and secret-file handling. Do not infer an external PostgreSQL database from other services.
+- Treat `grafana-data` SQLite/runtime state, provisioning, plugins, and matching OAuth/admin secrets as one recovery set. Stop writes before a copy or use an upstream SQLite-consistent method.
+- Rehearse on isolated storage/project with no production route. Verify schema startup, identities/teams, dashboards/alerts, datasource health, OAuth, and anonymous authorization boundaries.
+- Plugin/image upgrades need compatibility and rollback evidence. Removal requires dashboard/alert export, client revocation, route shutdown, retained audit evidence, and explicit state-deletion approval.
+
 ## Exceptions
 
 - Dashboard provider lock, datasource UID, role mapping, secret reference,
@@ -76,7 +84,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-med|image: grafana/grafana:|grafana_admin_password|grafana_client_secret|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-med|image: grafana/grafana:|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml`
 - Provisioning boundary:
   `rg -n 'editable: false|uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning`
 - Dashboard count:
@@ -97,7 +105,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

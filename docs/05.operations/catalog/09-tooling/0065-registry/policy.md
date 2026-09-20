@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -16,50 +16,59 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `hy-home.docker` 도커 레지스트리 운영 정책을 정의한다. 이미지의 생명주기 관리, 보안 통제 기준, 그리고 저장 용량 최적화 방법을 규정한다.
+The Registry is an OPTIONAL artifact store. The current tracked endpoint lacks native
+TLS/auth and therefore may serve only an explicitly confined trusted network.
 
 ## Policy Scope
 
-- `infra/09-tooling/registry` 내에서 구동되는 서비스.
-- 저장소 내 모든 컨테이너 이미지 및 OCI 아티팩트.
-
-- **Systems**: Internal Docker Registry v2.
-- **Agents**: CI/CD Pipelines, Internal Developers.
-- **Environments**: Production (On-premise).
+Activation, exposure, image provenance/digests, filesystem retention, backup,
+garbage collection, upgrade, and removal.
 
 ## Controls
 
-- **Required**:
-  - 삭제 API를 켜는 `REGISTRY_STORAGE_DELETE_ENABLED`는 현재
-    `infra/09-tooling/registry/docker-compose.yml`에 설정되어 있지 않으므로
-    삭제와 garbage collection은 비활성 기본값이다. 이를 켜려면 compose 변경과
-    같은 논리 변경에서 이 control을 갱신한다.
-  - 이미지 푸시 전 태그 컨벤션 준수 (`registry:<port>/<project>/<image>:<tag>`).
-- **Allowed**:
-  - `insecure-registries`를 통한 내부 망 접근.
-- **Disallowed**:
-  - 외부 공인 IP를 통한 레지스트리 직접 노출 금지.
+- **Activation:** use `registry` or general `tooling`; it is excluded from HOME.
+- **Exposure/auth:** do not assume firewall or daemon restrictions. Before
+  sensitive use or broader access, implement and validate TLS plus authentication
+  or a trusted authenticated reverse proxy. Insecure registry client settings are
+  permitted only for the bounded DEV network and are not a production control.
+- **Artifacts:** retain source authority and digest for each required image.
+  Mutable tags are not recovery evidence.
+- **Data/retention:** `/var/lib/registry` content and digest inventory are one
+  recovery unit. Define retention before enabling delete; deletion is currently off.
+- **Backup/restore:** stop or make the registry read-only, snapshot the full
+  filesystem, and rehearse isolated catalog/tag/digest pulls before relying on it.
+- **Garbage collection:** requires explicit destructive approval and a stopped or
+  read-only registry. Never run GC while uploads can occur.
+- **Resources:** monitor the `${DEFAULT_REGISTRY_DIR}` filesystem and leave enough
+  capacity for backup/restore and upgrade testing; no invented threshold is policy.
+- **Upgrade:** validate storage compatibility and push/pull by digest on a restored
+  copy before changing the active image.
+- **Removal:** classify every required artifact as reproducible or backed up and
+  verify the successor before deleting storage.
 
 ## Exceptions
 
-- 대용량 데이터셋(이미지 외) 저장은 MinIO를 우선 활용하며, 레지스트리 저장 허용 시 별도 승인 필요.
+No exception permits untrusted plaintext credential transport, GC with writers,
+or deleting the only copy of an artifact.
 
 ## Verification
 
-- `docker-compose.yml` 환경 변수 설정값 정기 점검.
-- `${DEFAULT_REGISTRY_DIR}` 디스크 사용량 임계치(90%) 알림 모니터링.
+`/v2/` health is insufficient. Runtime acceptance includes network boundary,
+TLS/auth where required, push, pull, and digest equality.
 
 ## Review Cadence
 
-- Quarterly
+Review when exposure, authentication, storage, deletion, image, or artifact
+retention changes.
 
 ## Traceability
 
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0065`), [Runbook](runbook.md) (`RUN-0065`)
+- [Guide](guide.md) (`GDE-0065`)
+- [Runbook](runbook.md) (`RUN-0065`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [Registry Compose source](../../../../../infra/09-tooling/registry/docker-compose.yml)
+- [CNCF Distribution deployment](https://distribution.github.io/distribution/about/deploying/)
+- [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)

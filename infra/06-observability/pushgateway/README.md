@@ -59,8 +59,8 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 From the repository root, start or restart Pushgateway through the observability profile:
 
 ```bash
-docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d pushgateway
-docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pushgateway
+docker compose --profile obs up -d pushgateway
+docker compose --profile obs restart pushgateway
 ```
 
 ### Pushing Metrics
@@ -92,12 +92,20 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For push errors: validate the push URL format (`http://pushgateway:9091/metrics/job/<job>`) and confirm network connectivity from the pushing service.
 - For stale metrics: use the Pushgateway UI or runbook DELETE commands to remove stale job groups.
 - For persistence requirements: treat `--persistence.file` as a runtime configuration change and update the policy, runbook, and Compose evidence before enabling it.
 - For scrape errors: verify the Pushgateway scrape job is defined in `prometheus.yml`; if it is absent, record an implementation gap instead of treating Pushgateway as down.
+
+### Convergence contract
+
+- Classification: **OPTIONAL**. Exact profiles: `obs`, `batch-metrics`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pushgateway`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0046-pushgateway/`; IDs `GDE-0046`, `POL-0046`, `RUN-0046`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 

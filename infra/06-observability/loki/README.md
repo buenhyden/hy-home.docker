@@ -78,9 +78,9 @@ loki/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d loki` | Start Loki from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart loki` | Restart Loki after approved config or secret-reference changes |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs logs -f loki` | Tail Loki logs from the repository root |
+| `docker compose --profile obs up -d loki` | Start Loki from the repository root |
+| `docker compose --profile obs restart loki` | Restart Loki after approved config or secret-reference changes |
+| `docker compose --profile obs logs -f loki` | Tail Loki logs from the repository root |
 
 ## Configuration
 
@@ -110,17 +110,25 @@ loki/
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking infrastructure documentation ready.
-- Verify readiness with `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps loki` and `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`.
+- Verify readiness with `docker compose --profile obs ps loki` and `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`.
 - Verify storage and retention config with `rg -n 'bucketnames: loki-bucket|retention_enabled: true|retention_period: 168h|compaction_interval: 10m' infra/06-observability/loki/config/loki-config.yaml`.
 - Verify ingestion wiring with `rg -n 'loki.source.docker|loki.write|http://loki:3100/loki/api/v1/push' infra/06-observability/alloy/config/config.alloy`.
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For missing logs, verify Alloy `loki.write` status and Grafana datasource `Loki`.
 - For storage failures, inspect redacted Loki log symptoms for MinIO, bucket, retention, compactor, or credential errors.
 - For query latency, review label cardinality and avoid promoting high-cardinality fields to labels.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `logs`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d loki`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0043-loki/`; IDs `GDE-0043`, `POL-0043`, `RUN-0043`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
@@ -131,6 +139,6 @@ loki/
 - Loki runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
 
 Build source authority: [Dockerfile](Dockerfile).

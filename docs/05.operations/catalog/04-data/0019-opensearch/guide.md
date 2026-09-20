@@ -4,11 +4,18 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
 - "POL-0019"
+implementation_services:
+  infra/04-data/analytics/opensearch/docker-compose.yml:
+  - 'opensearch'
+  - 'opensearch-dashboards'
+  - 'opensearch-node1'
+  - 'opensearch-node2'
+  - 'opensearch-node3'
 created: "2026-05-10"
 ---
 
@@ -21,6 +28,18 @@ created: "2026-05-10"
 ### Overview
 
 이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. compose 파일 하나가 두 topology를 담는다. `opensearch` profile은 `opensearch`와 `opensearch-dashboards`를, `opensearch-cluster` profile은 `opensearch-node1`부터 `opensearch-node3`까지와 dashboards를 선택하며, cluster topology는 별도로 검증한다.
+
+### Current implementation
+
+| Field | Primary / cluster contract |
+| --- | --- |
+| Classification | `opensearch` is OPTIONAL; the three same-host nodes and shared Dashboards path are LAB. Same-host node count is not host HA. |
+| Source and updater | [Compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml) and its [Dockerfile](../../../../../infra/04-data/analytics/opensearch/Dockerfile) own the engine build; Compose owns Dashboards; Renovate owns update proposals. |
+| Network and exposure | All services join `infra_net`. Primary API and Dashboards use TLS backends through Traefik and `gateway-standard-chain@file`; the cluster variant also publishes Performance Analyzer port `9600` from node1. |
+| Persistence | Primary uses bind-backed `opensearch-data`; Dashboards uses `opensearch-dashboards-data`; cluster nodes use `opensearch-data1..3`. Certificates and security configuration are separate read-only mounts. |
+| Credentials | Admin, Dashboards, exporter, cookie, and OAuth client secrets are declared as applicable. Health uses the admin secret without printing it. |
+| Health and resources | Engine health requires yellow or better; Dashboards accepts `200` or `401`. Primary inherits 2 CPUs/2 GiB; each cluster node also inherits 2 CPUs/2 GiB, so selection is resource-heavy. |
+| Backup and upgrade | Use the snapshot API with a registered repository; exclude the security index and preserve security configuration separately. Restore to a compatible isolated topology, then apply security config deliberately. Review the documented upgrade path before changing engine/Dashboards versions. |
 
 ### Usage Type
 
@@ -88,9 +107,14 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
+- [OpenSearch upgrade guidance](https://docs.opensearch.org/latest/install-and-configure/upgrade-opensearch/index/)
+- [OpenSearch source and Apache-2.0 licence](https://github.com/opensearch-project/OpenSearch)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/analytics/opensearch/README.md)
+- [Compose implementation: infra/04-data/analytics/opensearch/docker-compose.yml](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml)

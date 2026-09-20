@@ -4,113 +4,100 @@ version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
 - "POL-0024"
+implementation_services:
+  infra/04-data/lake-and-object/seaweedfs/docker-compose.yml:
+  - 'seaweedfs-filer'
+  - 'seaweedfs-master'
+  - 'seaweedfs-mount'
+  - 'seaweedfs-s3'
+  - 'seaweedfs-volume'
 created: "2026-05-10"
 ---
 
 # SeaweedFS Usage Guide
 
-> Use this guide to understand and verify the current SeaweedFS data-profile stack.
-
----
-
 ## Usage
 
-### Overview
+SeaweedFS is an OPTIONAL master/volume/filer/S3 topology with no proven current
+client. It is retained for a named file/object-storage experiment and is not the
+HOME MinIO replacement. The FUSE mount is a separate privileged selector.
 
-SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. `seaweedfs` profile은 master, volume, filer, S3 서버를 선택한다. `seaweedfs-mount` profile은 privileged mount와 master·volume·filer 의존성을 선택하며 S3는 포함하지 않는다. 전체 표면을 확인할 때는 두 profile을 함께 선택한다. 모든 서비스는 `infra_net`을 사용하며 이미지 선언은 해당 Compose 파일이 소유한다.
+### Current implementation
 
-### Usage Type
+[`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)
+defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`
+and `seaweedfs-mount`. Profiles `seaweedfs` and `storage-seaweedfs` select the
+master, volume, filer and S3 services; `seaweedfs-mount` selects the core services
+plus the privileged mount.
 
-`system-guide | operational-reference`
+`seaweedfs-master-data` and `seaweedfs-volume-data` are Docker-managed volumes.
+Filer metadata is not a separate persistent volume in current source. Services
+join `infra_net`; S3 routes through the standard gateway chain. No secret,
+authentication, transport encryption or mounted `security.toml` is declared.
+The mount adds `SYS_ADMIN` and `/dev/fuse`, so it is never implied by ordinary S3
+selection.
 
-### Target Audience
+### Images, configuration and resource controls
 
-- Operator
-- Developer
-- SRE
-- AI Agent
+The Compose file owns the pinned `chrislusf/seaweedfs` image; repository Renovate
+may propose updates and the version projection is derived. Root
+`SEAWEEDFS_*_HTTP_PORT` and `SEAWEEDFS_*_GRPC_PORT` keys control the declared
+listeners; no credential environment key is present. Master/filer extend
+`template-stateful-med`, volume `template-stateful-high`, S3
+`template-infra-med`, and mount `template-host-observer-med`; every service except
+the mount declares health checks. Flow is master → volume, filer → master/volume,
+then S3 or FUSE → filer.
 
-### Purpose
+### Static preflight
 
-이 가이드는 SeaweedFS의 현재 service set, exposed internal ports, Traefik routes, mount behavior, 일반 확인 절차를 설명한다. 검증되지 않은 metadata restore나 reshard 절차를 usage guide에 섞지 않도록 한다.
+```bash
+docker compose --env-file .env.example --profile seaweedfs config --quiet
+docker compose --env-file .env.example --profile seaweedfs config --services
+docker compose --env-file .env.example --profile seaweedfs-mount config --quiet
+```
 
-### Prerequisites
+Run from the repository root. Activation requires a named client, capacity and
+security review, especially for the unauthenticated S3 endpoint and FUSE access.
 
-- Repository checkout at the project root.
-- Docker Compose access on the local or approved infrastructure host.
-- Approved runtime volumes for `seaweedfs-master-data` and `seaweedfs-volume-data`.
-- Host/runtime approval for `seaweedfs-mount`, which runs privileged with `SYS_ADMIN`.
+### Recovery and lifecycle
 
-### Step-by-step Instructions
+A usable recovery set coordinates volume data, filer metadata and the master
+topology inventory at one accepted write boundary. The local master volume may be
+quiesced for rollback evidence, but upstream does not define it as a portable
+restore artifact. The official backup page describes
+`weed backup` for volume data and `fs.meta.save`/`fs.meta.load` for filer metadata,
+and recommends a same-version target; it also describes its procedures as limited.
+[RUN-0024](runbook.md) therefore requires an isolated rehearsal and records that
+complete recovery remains unverified.
 
-1. 현재 compose service set을 확인한다.
+Upgrade or MinIO-migration work needs a separate spec, official release review,
+S3/file semantic tests, export/restore proof and rollback. SeaweedFS is Apache-2.0
+licensed; mounted clients and images retain their own license obligations.
 
-   ```bash
-   docker compose --env-file .env.example --profile seaweedfs config --services
-   ```
+### Official references
 
-   Expected services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`. Mount selection is separate:
-
-   ```bash
-   docker compose --env-file .env.example --profile seaweedfs-mount config --services
-   ```
-
-   Expected mount selection: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-mount`.
-
-2. 접근 경로를 확인한다.
-
-   - Master UI: `https://seaweedfs.${DEFAULT_URL}` through Traefik
-   - Filer/CDN route: `https://cdn.${DEFAULT_URL}` through Traefik
-   - S3 route: `https://s3.${DEFAULT_URL}` through Traefik
-   - Internal ports: master `9333/19333`, volume `8085/18085`, filer `8888/18888`, S3 `8333`
-
-3. 일반 상태를 확인한다.
-
-   ```bash
-   docker compose --profile seaweedfs --profile seaweedfs-mount ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
-   ```
-
-4. Mount service boundary를 확인한다.
-
-   `seaweedfs-mount` uses the SeaweedFS mount command with `privileged: true` and `SYS_ADMIN`. Treat mount behavior as host-impacting and follow the runbook before restarting it.
-
-### Common Pitfalls
-
-- Referring to old SeaweedFS image versions. The current compose image is `chrislusf/seaweedfs:4.47`.
-- Assuming SeaweedFS security config is mounted into the current compose. Only
-  `config/security.toml.example` remains as a future scaffold; the current
-  service definitions do not mount or use it. Activation is a separate approved runtime change.
-- Treating `seaweedfs-mount` as a normal read-only service. It has elevated host-facing privileges.
-- Running unverified master metadata restore or reshard commands from documentation without owner approval.
+- [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
+- [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
+- [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
 ## Common Checks
 
-- `docker compose --profile seaweedfs config --quiet`
-- `docker compose --profile seaweedfs ps`
-- Search paired guide/policy/runbook and infra README for stale image versions, single-container log commands, unmounted config claims, or destructive recovery commands.
-- Expected result: compose renders, documented services match the compose file, and mount privilege is explicitly acknowledged.
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
-[recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [SeaweedFS Operations Policy](policy.md) (`POL-0024`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0024`), [Runbook](runbook.md) (`RUN-0024`)
+- Artifact: `GDE-0024`; governing policy: `POL-0024`.
+- Runtime authority: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
 - [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
+- [Health and recovery runbook](runbook.md)
+- [Backup policy](../0021-backup-and-restore/policy.md)

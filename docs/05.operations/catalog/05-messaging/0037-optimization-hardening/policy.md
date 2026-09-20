@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -16,79 +16,75 @@ created: "2026-05-10"
 
 ## Overview
 
-이 문서는 `05-messaging` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 제어, 관리 경로 보호, 이미지 태그 통제, CI 기준선 검증, 카탈로그 확장 승인 조건을 필수 통제로 규정한다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-- `infra/05-messaging/kafka/docker-compose.yml`
-- `scripts/hardening/check-all-hardening.sh 05-messaging`
-
-- **Systems**: Kafka/Kafbat/Schema Registry/Kafka Connect/Kafka REST/RabbitMQ
-- **Agents**: Infra/DevOps/Operations agents
-- **Environments**: Local, Dev, Stage, Production-like
+This policy applies to the current optional Kafka-family source and its static
+hardening contract. It does not authorize activation or security migration.
 
 ## Controls
 
-- **Required**:
-  - 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
-  - 관리 UI 라우터(`kafka-ui`, `rabbitmq`)는 SSO 체인을 포함해야 한다.
-  - Kafka UI 이미지는 고정 태그를 사용해야 하며 부동 태그를 금지한다.
-  - 메시징 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
-  - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지해야 한다.
-- **Allowed**:
-  - `messaging-option` 프로필 기반 RabbitMQ 선택 활성화
-  - 카탈로그 확장 항목의 단계적 도입(DLQ/재처리/quorum queue)
-- **Disallowed**:
-  - 무검증 라우터 middleware 변경
-  - 부동 태그 이미지 도입
-  - 카탈로그/정책 미연계 확장 실행
+Every messaging change must preserve root Compose validity, explicit profiles,
+health checks, resource limits, persistence ownership, `infra_net`, secret files
+and an actionable recovery owner. The only current broker family is Kafka.
 
-### Catalog Expansion Approval Gates
+### Security policy
 
-- **Kafka 확장 승인 조건**:
-  - 토픽 거버넌스(보존/compaction/파티션 기준) 문서화
-  - DLQ + 재처리 파이프라인 표준 운영 절차 확보
-- **RabbitMQ 확장 승인 조건**:
-  - quorum queue 적용 범위 및 예외 명시
-  - dead-letter/retry 정책 + 소비자 재시도 기준 합의
-- **Gateway 연계 승인 조건**:
-  - 보안 헤더/접근 정책 템플릿 적용 계획 수립
-  - 운영 자동화 경로의 접근 제어 영향 평가 완료
+- PLAINTEXT Kafka listeners are a documented gap and must not carry sensitive or
+  untrusted traffic. TLS/SASL requires an architectural change and client rollout.
+- Kafbat authenticates natively with OIDC and group RBAC. Its secret remains a
+  Docker secret, its local CA remains mounted read-only, and its route uses the
+  standard gateway chain. Forward-auth header trust is prohibited for this route.
+- Administrative endpoints and host-published listeners remain within the named
+  trusted boundary. Evidence must omit tokens, client secrets and record payloads.
+- Topic/bootstrap changes require three-broker compatibility where replication
+  factor 3 is declared.
 
-### AI Agent Policy
+### Reliability and recovery policy
 
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
-- **Log / Trace Retention**: `06-observability` 정책 준수
-- **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
+Same-host replication is not host availability. New workloads must define
+retention, partitions, replication, capacity, producer/consumer ownership,
+RPO/RTO and replay source. Recovery must cover data, topic configs, offsets,
+schemas, Connect state and KRaft identity and must be rehearsed on an isolated
+cluster before promotion.
+
+### Validation contract
+
+Use the exact root-profile `config --quiet` commands in [GDE-0037](guide.md) for
+`messaging` and `messaging-cluster`, then the scoped `05-messaging` hardening
+script. Static passes
+are configuration evidence only. Runtime startup, OIDC login, load or failover
+requires explicit approval and a captured rollback.
 
 ## Exceptions
 
-- 긴급 장애 대응 시 일시적으로 middleware 완화가 필요할 수 있다.
-- 단, 조치 후 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
+Documented one-shot job exceptions do not waive data/security controls. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-- 월 1회 정기 검토
-- 메시징 컴포넌트 주요 버전 변경/보안 이슈 발생 시 수시 검토
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Messaging Architecture Description](../../../../02.architecture/descriptions/0005-messaging-architecture.md) (`AD-0005`)
-- Subject peers: [Guide](guide.md) (`GDE-0037`), [Runbook](runbook.md) (`RUN-0037`)
+- Artifact: `POL-0037`; parent: `AD-0005`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+### References
+
+- [Kafka policy](../0036-kafka/policy.md)
+- [Kafka security](https://kafka.apache.org/documentation/#security)
+- [Hardening runbook](runbook.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [Domain catalog](../README.md)

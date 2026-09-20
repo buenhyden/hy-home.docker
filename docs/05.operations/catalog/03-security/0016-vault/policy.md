@@ -47,6 +47,16 @@ bash scripts/hardening/check-all-hardening.sh 03-security
 
 정적 검증과 실제 Vault 데이터·unseal·OpenBao 소비자 검증을 별도 증거로 기록한다.
 
+### Backup and Migration Controls
+
+- Preserve authenticated Raft snapshots and unseal/recovery shares under separate
+  custodians. A healthy API is not backup evidence.
+- Rehearse restore on isolated storage before migration or upgrade. Never run
+  `operator init` over existing data or attach Vault and OpenBao to one data path.
+- Keep the legacy source read-only or quiesced until every migrated consumer and
+  rollback boundary is accepted. New writes after a cutover require a specific
+  reconciliation plan; blind reverse copy is prohibited.
+
 ## Review Cadence
 
 매월 및 소비자 전환, 저장소·인증 설정 변경 시 검토한다.

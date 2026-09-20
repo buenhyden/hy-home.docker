@@ -33,7 +33,7 @@ Open WebUI 서비스 운영 전반:
 ## Controls
 
 - **Required**:
-  - 외부 노출 경로는 반드시 SSO 미들웨어(`sso-auth@file`)를 통과해야 한다.
+- 현재 구현은 `home-openwebui` Keycloak client의 native OIDC를 사용한다. Traefik router는 TLS와 `gateway-standard-chain@file`만 적용하며 `sso-auth@file`은 적용하지 않는다. 로컬 비밀번호 로그인, signup, email account merge, OAuth role/group management와 group creation은 Compose에서 비활성화한다.
   - `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 변경은 사전 영향도 검토를 수행해야 한다.
   - 인덱싱 실패/지연, 연결 실패 로그를 운영 증적으로 보관해야 한다.
   - `ai` profile 선택으로 AI 서비스를 기동하는 것은 runtime 승인 후 수행해야 한다.
@@ -44,6 +44,14 @@ Open WebUI 서비스 운영 전반:
   - 승인 없는 SSO 우회/비활성화.
   - 검증 없이 프로덕션 임베딩 모델 변경.
   - 출처 불명 모델/문서 처리 파이프라인 적용.
+
+### Lifecycle and data controls
+
+- Open WebUI remains `HOME`; native Keycloak OIDC and `gateway-standard-chain@file` are required. Do not add `sso-auth@file` or enable password/signup/email-merge/role-management fallbacks without a reviewed auth design.
+- SQLite/application data, uploads, the exact auth/OIDC secret set, and the Qdrant state for RAG form a coordinated recovery boundary. Qdrant backup/restore remains owned by `RUN-0034`; never infer vector recovery from a WebUI volume copy.
+- Stop writes before copying SQLite or the data volume. Restore to isolated storage/project first and verify identities, chats, uploads, OIDC, model access, and controlled RAG retrieval before any production replacement.
+- Upgrade only with a prior recoverable copy, migration review, pinned image identity, and rollback evidence. Source resource limits do not prove spare capacity.
+- Removal requires exported user/content evidence, coordinated Qdrant retention, revoked OIDC client/secrets, disabled routes, and explicit approval before persistent deletion.
 
 ## Exceptions
 
@@ -73,7 +81,7 @@ Open WebUI 서비스 운영 전반:
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

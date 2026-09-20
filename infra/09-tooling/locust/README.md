@@ -48,11 +48,13 @@ locust/
 
 ## Available Scripts
 
+Run these commands from the repository root and start or scale services only with runtime approval.
+
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
-| `docker compose --profile tooling up -d`                   | Locust 인프라 전체(Master/Worker) 시작 |
-| `docker compose up --scale locust-worker=N -d`             | 워커 노드 수 확장 (N개 지정)     |
-| `docker compose logs -f locust-master`                     | 마스터 노드 로그 실시간 확인     |
+| `docker compose --profile testing up -d locust-master locust-worker` | 승인된 Locust Master/Worker 시작 |
+| `docker compose --profile testing up -d --scale locust-worker=N locust-master locust-worker` | 승인된 테스트의 워커 수 확장 |
+| `docker compose --profile testing logs --tail=200 locust-master` | 실행 중인 마스터 로그 확인 |
 
 ## Configuration
 
@@ -67,7 +69,7 @@ locust/
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Locust.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must include root `infra_net` context because the root file includes this leaf unconditionally and the `tooling` and `testing` profiles decide whether its services resolve.
+- Runtime rendering must include root `infra_net` context because the root file includes this leaf unconditionally and only the `testing` profile resolves both services.
 
 ## Troubleshooting
 
@@ -87,7 +89,7 @@ locust/
 | --- | --- |
 | Purpose | 🦗 Locust Load Testing Infrastructure service leaf in `09-tooling`; services: `locust-master`, `locust-worker`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `tooling`, `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
+| Config values | profiles: `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `locust-data:/mnt/locust:rw`, `locust-data` |
@@ -106,6 +108,6 @@ locust/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
 
 Build source authority: [Dockerfile](Dockerfile).

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0017"
 parent_ids:
@@ -46,14 +46,14 @@ created: "2026-05-17"
 
    ```bash
    test -f infra/04-data/analytics/influxdb/docker-compose.yml
-   python3 scripts/validation/check-document-links.py --mode alignment
+   python3 scripts/validation/check-document-links.py --mode all
    ```
 
-2. Runtime container 상태를 확인한다.
+2. After separate runtime-read approval, inspect the root-project service state and logs without rendering secrets.
 
    ```bash
-   docker ps --filter name=influxdb
-   docker logs influxdb --tail 100
+   docker compose --profile influxdb ps influxdb
+   docker compose --profile influxdb logs --tail 100 influxdb
    ```
 
 3. Token provisioning은 이 source-only runbook 범위 밖임을 확인한다. Operator/named token creation과 authenticated write acceptance에는 separate runtime approval이 필요하다.
@@ -77,11 +77,16 @@ created: "2026-05-17"
 - **Metrics**: N/A - no metrics endpoint is declared in the InfluxDB compose.
 - **Evidence**: compose file selected, health response code, token-provisioning escalation state, volume pressure summary
 
-### Safe Rollback or Recovery Procedure
+### Planned isolated backup and restore
 
-- N/A - no verified data rollback procedure is documented for InfluxDB cleanup in this repository.
-- Restarting `influxdb` is allowed only after preserving logs and selected compose evidence.
-- Data deletion or retention changes must escalate unless backup/owner approval exists.
+This procedure is documented from upstream guidance and **has not been executed in this task**.
+
+1. Record `node0`, the source image compatibility boundary, database list, data/plugin bind paths, available space, owners, and an approved destination outside the live volume. Quiesce writers or schedule downtime; a live recursive copy is not an accepted backup.
+2. After runtime/data approval, stop or drain writes and copy the `node0` object-store content in the upstream order: `snapshots/`, `dbs/`, `wal/`, `catalog/`, then `_catalog_checkpoint`. Exclude regenerated `table-snapshots/`. Preserve ownership, modes, a manifest, and checksums.
+3. Create a fresh isolated target with the same node ID and a compatible InfluxDB 3 Core image. Restore into an empty data directory; never overlay the active bind path.
+4. Start only the isolated target. Confirm readiness, enumerate expected databases/tables, compare representative time ranges and row counts, test an authenticated query with a separately supplied credential, and retain logs plus checksum evidence.
+5. On any catalog/WAL error or validation mismatch, stop the target, discard the failed isolated target, and retry from an untouched recovery copy. Do not repair or replace the live volume in place.
+6. Cutover, restart, retention changes, or deletion require a separate approval naming the target and rollback window. Until a rehearsal records success, restoration remains unverified.
 
 ### Agent Operations (If Applicable)
 
@@ -97,7 +102,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-N/A - no verified rollback procedure can restore deleted InfluxDB data from this runbook. Use backup evidence and owner-approved recovery if data mutation is required.
+Keep the original service and bind paths unchanged during rehearsal. A failed restore rolls back by destroying only the isolated target and returning to the unchanged source; it does not authorize copying files into the live path.
 
 ## Escalation
 
@@ -110,6 +115,9 @@ Escalate when token provisioning or authenticated write acceptance is needed, he
 - Subject peers: [Guide](guide.md) (`GDE-0017`), [Policy](policy.md) (`POL-0017`)
 
 ## Related Documents
+
+- [InfluxDB 3 Core backup and restore](https://docs.influxdata.com/influxdb3/core/admin/backup-restore/)
+- [Compose implementation](../../../../../infra/04-data/analytics/influxdb/docker-compose.yml)
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)

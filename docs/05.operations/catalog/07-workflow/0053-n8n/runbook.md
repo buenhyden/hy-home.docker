@@ -88,6 +88,16 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful n8n restore evidence is claimed here.
+
+1. Record image digests, version, profile/env names, workflow/execution counts, active executions, broker choice, and backup checksums. Disable schedules, webhooks, and inbound producers; drain or explicitly reconcile in-flight executions.
+2. Ask the PostgreSQL owner for a consistent backup of database `n8n`. Preserve the exact `n8n_encryption_key`, DB and runner secret references, selected broker secret, `n8n-data`, task-runner data, `custom/`, and any configured binary-data store. Do not use Valkey AOF as the authoritative workflow backup.
+3. Restore into a separate Compose project/network with routes and outbound actions disabled. Restore PostgreSQL first, then the same encryption key and artifacts; select one broker with a matching host/secret pair.
+4. Start DB/broker, n8n main, runners, then workers. Verify schema startup, credential decryption without printing values, worker/runner registration, a side-effect-free manual workflow, and a controlled webhook against the isolated route.
+5. If verification fails, stop the isolated project, retain logs/checksums, and return to untouched backups. A production route or data replacement is a separate approved action.
+
 ## Evidence
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
@@ -96,7 +106,7 @@ created: "2026-05-17"
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- The isolated restore above remains unexecuted; dated evidence is required before marking it rehearsed.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -111,7 +121,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

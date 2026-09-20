@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -14,69 +14,79 @@ created: "2026-05-17"
 
 # SeaweedFS Operations Policy
 
-> This policy governs the current SeaweedFS services under `04-data/lake-and-object`.
-
----
-
 ## Overview
 
-이 정책은 SeaweedFS data-profile stack의 master, volume, filer, S3 gateway, mount service 운영 통제를 정의한다. 정책 기준은 현재 compose에 실제로 선언된 image, route, healthcheck, volume, mount privilege, and network surface다.
+This policy binds current source configuration to data protection, security,
+resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-- **Systems**: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`
-- **Configs**: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`;
-  `config/security.toml.example` remains as a future scaffold and is not
-  mounted by current compose. Activation is a separate approved runtime change.
-- **Profiles**: `data`
-- **Networks**: `infra_net`
-- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or file/object-storage runtime boundaries
+SeaweedFS remains OPTIONAL. Selection requires a named workload; replacement of
+MinIO requires a separate migration decision and recovery evidence.
 
 ## Controls
 
-- **Required**:
-  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.47` and the current five-service set.
-  - Health checks are documented for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`; `seaweedfs-mount` has no compose healthcheck.
-  - `seaweedfs-mount` privileged/SYS_ADMIN behavior must be treated as host-impacting.
-  - Public access must use the declared Traefik routes: `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`.
-- **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config --quiet`.
-  - Read-only service health/log checks.
-  - Mount container restart only after capturing evidence and confirming host-impacting scope.
-- **Disallowed**:
-  - Claiming SeaweedFS authentication is active unless a reviewed security
-    config is created, mounted, and used by the compose file through a separate approved runtime change.
-  - Running destructive master metadata restore, volume deletion, unmount, or reshard operations as documentation-only actions.
-  - Treating the S3 gateway as credential-protected by the current compose unless credential config is explicitly added and documented.
-  - Recording private data, tokens, or credentials in documentation or task evidence.
+- Use `seaweedfs` or `storage-seaweedfs` for the core/S3 topology. Use
+  `seaweedfs-mount` only when FUSE and its host capabilities are explicitly
+  approved.
+- Preserve distinct master and volume state. Do not treat the master, volume or
+  filer metadata as independently recoverable.
+- Keep services on `infra_net` and the S3 route on the standard gateway chain.
+  Current source declares no internal authentication, TLS or mounted security
+  configuration; do not describe it as hardened.
+- Record the client, data semantics, capacity, retention and security boundary
+  before activation. Same-host services do not provide host availability.
+
+### Backup and restore
+
+Pause or fence writers for a coordinated recovery point. Capture volume data with
+an engine-aware method, export filer metadata, and capture master/topology state
+only from a stopped/quiesced source. Store manifests and artifacts on a separate
+encrypted destination. When selected for retained data, keep daily sets for 30 days and weekly sets for
+90 days. The planning objective is RPO 24 hours and RTO 8 hours; no rehearsal
+proves it. Shared resource limits remain mandatory; removal requires client and
+data inventory plus verified export/restore.
+
+Restore on a same-version, empty isolated target with fresh master identity.
+Recreate the recorded topology, restore volume data and filer metadata as one set,
+then use volume consistency checks,
+filer traversal and S3/file client tests. Production cutover, deletion or state
+reuse requires separate approval.
+
+### Change policy
+
+Image updates require official release and license review plus isolated restore
+proof. Authentication/TLS enablement, FUSE host access and MinIO migration are
+architectural changes, not routine operations.
 
 ## Exceptions
 
-Exceptions require explicit owner or user approval and must record scope, affected services, commands, host-impact considerations, validation output, and rollback/escalation state in related task or incident evidence.
+The optional stack remains absent without a named client; FUSE needs separate approval. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+storage copies or same-host availability claims.
 
 ## Verification
 
-- Run `docker compose --profile seaweedfs config --quiet` after changing compose-facing documentation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy, guide, runbook, README, or link updates.
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` when the change is part of implementation-vs-doc drift remediation.
-- Search updated docs for stale image versions, unmounted security config claims, single-container log commands, and destructive recovery commands before committing.
+Verify root configuration and scoped static policy checks, then require an
+isolated compatible restore with application-level acceptance before promotion or
+cutover. Record unverified runtime properties explicitly.
 
 ## Review Cadence
 
-Review on any change to SeaweedFS compose services, image tag, routes, ports, profile, network, volume declarations, mount privilege, security config usage, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
-
----
+Review after profile, image, volume, credential, consumer, retention or upstream
+lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](guide.md) (`GDE-0024`), [Runbook](runbook.md) (`RUN-0024`)
+- Runtime source: [SeaweedFS Compose](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
+- Artifact: `POL-0024`; parent: `AD-0004`.
+- Runtime authority remains the linked Compose/source files; exact pins stay there.
+
+### References
+
+- [Data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
+- [Security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
+- [Runbook](runbook.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
+- [Domain catalog](../README.md)

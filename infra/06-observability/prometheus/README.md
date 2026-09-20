@@ -87,17 +87,25 @@ infra/06-observability/prometheus/
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
 - Validate Prometheus config with `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`.
-- Validate alert rules with `docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules/*.yml`.
+- Validate alert rules with `docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`; the container shell expands the container-only path before `promtool` receives existing files.
 - Verify scrape targets are UP by checking the Prometheus UI Targets page after `prometheus.yml` changes.
 - Confirm alert rules load correctly by checking `docker logs --tail=200 infra-prometheus` after config or rule changes.
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For scrape errors: validate `prometheus.yml` scrape configs and confirm target endpoints are reachable from the Prometheus container.
 - For alert rule errors: check YAML syntax in rule files and verify the `rule_files` paths are correctly mounted.
 - For storage issues: confirm the Prometheus data volume is mounted and has sufficient disk space.
+
+### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `alerting`, `batch-metrics`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d prometheus`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0045-prometheus/`; IDs `GDE-0045`, `POL-0045`, `RUN-0045`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 

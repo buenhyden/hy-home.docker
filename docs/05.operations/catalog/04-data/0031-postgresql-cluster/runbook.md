@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: Triage optional PostgreSQL HA cluster health, etcd quorum symptoms, HAProxy routing, Patroni leadership, init job state, and exporter readiness without destructive data actions.
 
-이 런북은 `postgresql-cluster` 선택 스택의 etcd, Patroni/Spilo, HAProxy, init job, exporter 상태 이상을 현재 compose 기준으로 점검하는 절차다. DCS destructive recovery, forced cluster bootstrap, leadership mutation, backup restore, volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
+이 런북은 현재 compose 기준 health triage와, [RUN-0032](../0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md)에 위임한 logical backup의 격리 복원 계약을 제공한다. 이번 문서 변경에서 database 명령은 실행하지 않았다.
 
 ### Purpose
 
@@ -35,7 +35,7 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 ### Checklist
 
-- [ ] 루트 compose의 `include:` 목록에 PostgreSQL cluster 파일이 있는지 확인하고, 이번 런타임에서 선택한 profile(`data`, `service`)을 기록한다.
+- [ ] 루트 compose의 `include:` 목록과 exact `postgres-ha` profile을 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, database mutation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 credential, SQL payload, application data는 기록하지 않는다.
@@ -103,24 +103,33 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
 2. Runtime recovery in this runbook is limited to compose `up -d` for stopped declared services after evidence capture.
-3. N/A — no verified DCS reset, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, or volume rollback procedure is documented yet.
+3. 실패한 격리 cluster와 전용 volumes를 폐기한다. source cluster, DCS와 tracked volumes는 변경하지 않는다.
+
+### Planned Isolated Logical Restore
+
+1. 사전 승인 후 source PostgreSQL/extension versions, databases, roles, ownership/ACLs, tablespaces, row-count invariants, Patroni topology와 free capacity를 기록한다. credential values는 기록하지 않는다.
+2. primary write endpoint에서 protected credential handling으로 `pg_dumpall --globals-only`를 실행하고, 각 in-scope database를 custom/directory format으로 dump한다. manifests/checksums와 tool/server versions를 함께 보존한다.
+3. production network/ports/volumes를 공유하지 않는 compatible empty `postgres-ha` target을 별도 secrets로 구성한다. Patroni/etcd membership은 새로 bootstrap하며 source DCS files나 live PGDATA를 복사하지 않는다.
+4. globals/roles를 먼저 복원하고 databases, extensions/schema/data, ownership/ACLs 순으로 적재한다. 자세한 명령과 acceptance evidence는 `RUN-0032`를 따른다.
+5. `patronictl list`, write/read routing through `pg-router`, roles/ACLs, extensions, schemas, sequences, row-count invariants와 representative transactions를 검증한다.
+6. 실패하면 target을 승격하지 않고 폐기한다. production cutover, route change, secret rotation과 DCS mutation은 별도 승인 사항이다.
 
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/run-ci-gate.py --profile changed` and `python3 scripts/validation/check-document-links.py --mode alignment` after documentation changes.
+- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 
 - Capture command names, pass/fail status, service states, image tags, sanitized logs, and leadership/routing summary.
 - Do not capture secret values, SQL payloads, database row contents, or credential-backed connection strings.
-- Record which profiles were selected for the runtime session; the root file includes the cluster compose file unconditionally and the `data` and `service` profiles decide whether its services resolve.
+- Record that `postgres-ha` was selected; the root file includes the cluster compose file unconditionally.
 
 ## Rollback or Recovery
 
-N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If DCS reset, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, or volume replacement is required, preserve evidence and escalate.
+Logical recovery는 위 contract와 `RUN-0032`에서만 검증한다. 이 변경에서는 backup/restore, DCS reset, leadership mutation, credential rotation이나 volume replacement를 실행하지 않았다.
 
 ## Escalation
 
@@ -134,7 +143,11 @@ Escalate to the owning operator when no leader can be identified, etcd quorum sy
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Compose implementation: infra/04-data/relational/postgresql-cluster/docker-compose.yml](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml)
+
+- [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
+- [PostgreSQL license](https://www.postgresql.org/about/licence/)
+- [Logical upgrade restore rehearsal](../0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md) (`RUN-0032`)
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

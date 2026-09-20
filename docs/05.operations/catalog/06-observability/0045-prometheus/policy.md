@@ -55,9 +55,17 @@ config, and alert-rule surfaces.
     `/etc/prometheus/alert_rules/recording_rules.yml`.
   - Alert rules must include `expr`, `for` when applicable, `labels.severity`,
     and actionable `annotations`.
-  - `opensearch_exporter_password` and `vault_token` are Docker Secret file
+  - `opensearch_exporter_password` and `openbao_token` are Docker Secret file
     references only; their values must not appear in docs, logs, or task
     evidence.
+  - `SEC-001` / `vault_token` is legacy Vault migration custody only.
+    Active Prometheus neither declares nor mounts it; preserve any existing
+    private value until separately approved migration closeout, revocation, and
+    file disposition.
+  - `SEC-002` / `openbao_token` is a manual least-privilege OpenBao
+    `prometheus`-policy credential contract. Source declaration does not prove
+    a token was issued, loaded by the running container, or produced an UP
+    scrape target.
   - Prometheus route must keep
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
   - TSDB retention changes must be paired with
@@ -83,6 +91,13 @@ config, and alert-rule surfaces.
   - Declaring retention behavior that is not backed by compose/config and the
     retention policy
 
+### Lifecycle and data controls
+
+- Keep Prometheus `HOME`; retain gateway auth, least-privilege scrape secrets, validated rules, and the declared local TSDB boundary.
+- Back up `prometheus-data` only with an approved consistent stopped copy/snapshot under current source. Do not call `/api/v1/admin/tsdb/snapshot` unless `--web.enable-admin-api` is separately reviewed and enabled.
+- Rehearse against isolated TSDB storage and no production remote-write/alerts. Verify WAL replay, historical/current queries, target labels, rule evaluation, Alertmanager delivery, and any remote-write receiver clients.
+- Resource/retention changes require measured disk growth, query/scrape pressure, and rollback thresholds. Removal requires scraper/client migration and explicit TSDB-retention/deletion approval.
+
 ## Exceptions
 
 - Scrape interval, retention, secret reference, route, or rule-loading
@@ -93,9 +108,9 @@ config, and alert-rule surfaces.
 ## Verification
 
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|vault_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
 - Prometheus config:
-  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/vault_token' infra/06-observability/prometheus/config/prometheus.yml`
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 

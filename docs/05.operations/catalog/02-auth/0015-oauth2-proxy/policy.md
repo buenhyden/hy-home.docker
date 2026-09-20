@@ -70,6 +70,16 @@ created: "2026-05-17"
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
 
+### Session and Upgrade Controls
+
+- Cookie, client, and Valkey credential values remain under their secret owners.
+  Rotation must declare whether all active sessions will be invalidated.
+- Session-store contents are short-lived authentication state, not a durable
+  business-data backup target. Prefer fail-closed behavior and reauthentication
+  after store loss; never weaken cookie security to preserve sessions.
+- Upgrade only after an isolated OIDC/PKCE/ForwardAuth/logout test. Preserve the
+  prior image declaration and record the session invalidation plan.
+
 ## Review Cadence
 
 - 월 1회 정기 점검
@@ -82,7 +92,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

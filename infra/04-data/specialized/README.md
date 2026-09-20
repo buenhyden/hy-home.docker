@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2026-05-15"
 ---
 
@@ -48,6 +48,12 @@ specialized/
 
 ## How to Work in This Area
 
+| Package | Classification | Exact profiles | Stage 05 subject |
+| --- | --- | --- | --- |
+| [Neo4j](neo4j/README.md) | `OPTIONAL` | `graph` | `0033-neo4j` |
+| [Qdrant](qdrant/README.md) | `HOME` | `ai`, `ai-llm`, `qdrant` | `0034-qdrant` |
+| [SurrealDB](surrealdb/README.md) | `OPTIONAL` | `surrealdb`, `notebook`, `admin` | `0080-surrealdb` |
+
 1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
 2. Review [neo4j/README.md](./neo4j/README.md) or [qdrant/README.md](./qdrant/README.md) before changing a service.
 3. Keep vector search, graph modeling, and application logic decisions in specs or application docs, not this infra index.
@@ -56,9 +62,7 @@ specialized/
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)
-- Operations Guides (`docs/05.operations/catalog/04-data/README.md`)
-- Operations Policies (`docs/05.operations/catalog/04-data/README.md`)
-- Operations Runbooks (`docs/05.operations/catalog/04-data/README.md`)
+- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

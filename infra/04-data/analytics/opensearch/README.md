@@ -4,7 +4,7 @@ version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2025-11-12"
 ---
 
@@ -82,9 +82,11 @@ opensearch/
 
 ## Validation
 
-- Run `python3 scripts/validation/check-document-links.py --mode alignment` after README or Compose reference changes that affect OpenSearch.
+The `opensearch` single-node topology is `OPTIONAL`; the same-host `opensearch-cluster` topology is `LAB`. Snapshot restore uses a configured repository and a fresh compatible topology; exclude the security index and preserve/reapply protected security configuration separately. Owning artifacts are `GDE-0019`, `POL-0019`, and `RUN-0019`.
+
+- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- The `opensearch-cluster` profile in `docker-compose.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example --profile opensearch-cluster config --services`.
+- The `opensearch-cluster` profile includes node and dashboard healthchecks; from the repository root use `docker compose --profile opensearch-cluster config --quiet`, then compare the declared services with this Compose source.
 
 ## Troubleshooting
 
@@ -102,6 +104,6 @@ opensearch/
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.
 
 Build source authority: [Dockerfile](Dockerfile).

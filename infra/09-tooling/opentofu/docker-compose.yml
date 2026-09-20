@@ -4,7 +4,6 @@ x-tier-label: &tier-label
 services:
   opentofu:
     profiles:
-      - 'tooling'
       - iac
     extends:
       file: ../../common-optimizations.yml

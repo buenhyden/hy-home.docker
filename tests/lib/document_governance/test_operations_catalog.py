@@ -770,6 +770,18 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         "docs/05.operations/catalog/00-workspace/"
         "0078-compose-profile-vocabulary/policy.md"
     )
+    REQUIRED_HOME = (
+        "core",
+        "mng",
+        "ai",
+        "workflow",
+        "obs-core",
+        "obs-host",
+        "availability",
+        "logs",
+        "alerting",
+        "storage",
+    )
 
     def _repo(
         self,
@@ -779,30 +791,63 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             "infra/b/docker-compose.cluster.yaml",
         ),
         services_b: str = "  z:\n    profiles: [beta]\n",
-        header: str = "| Profile | Category | Purpose | 서비스 |",
+        services_a: str = (
+            "  x:\n    profiles: [alpha, dev]\n  y:\n    profiles: [alpha]\n"
+        ),
+        header: str = "| Profile | Category | Purpose | Selected services | 서비스 |",
         rows: tuple[str, ...] = (
-            "| `alpha` | domain | a | 2 |",
-            "| `dev` | domain | a | 1 |",
-            "| `beta` | domain | b | 1 |",
+            "| `alpha` | domain | a | `x`, `y` | 2 |",
+            "| `dev` | baseline | a | `x` | 1 |",
+            "| `beta` | domain | b | `z` | 1 |",
         ),
     ) -> pathlib.Path:
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         root = pathlib.Path(directory.name)
+        home_base_profiles = tuple(
+            profile for profile in self.REQUIRED_HOME if profile != "dev"
+        )
+        required_categories = {
+            "core": "baseline",
+            "mng": "role",
+            "ai": "domain",
+            "workflow": "domain",
+            "obs-core": "capability",
+            "obs-host": "capability",
+            "availability": "capability",
+            "logs": "capability",
+            "alerting": "capability",
+            "storage": "role",
+        }
+        count_cell = " | 1" if "서비스" in header or "Services" in header else ""
+        required_rows = tuple(
+            f"| `{profile}` | {required_categories[profile]} | HOME fixture | "
+            f"`home-base`{count_cell} |"
+            for profile in home_base_profiles
+        )
         files = {
             "docker-compose.yml": "include:\n"
             + "".join(f"  - {item}\n" for item in include),
             "infra/a/docker-compose.yml": (
                 "services:\n"
-                "  x:\n    profiles: [alpha, dev]\n"
-                "  y:\n    profiles: [alpha]\n"
+                + services_a
+                + "  home-base:\n    profiles: ["
+                + ", ".join(home_base_profiles)
+                + "]\n"
             ),
             "infra/b/docker-compose.cluster.yaml": "services:\n" + services_b,
             self.POLICY: "\n".join(
                 (
                     header,
-                    "| --- | --- | --- | ---: |",
+                    "| --- | --- | --- | --- | ---: |",
                     *rows,
+                    *required_rows,
+                    "",
+                    "| Named selection | Profiles | Forbidden categories |",
+                    "| --- | --- | --- |",
+                    "| HOME | "
+                    + ", ".join(f"`{profile}`" for profile in self.REQUIRED_HOME)
+                    + " | `automation`, `lifecycle`, `topology` |",
                     "",
                     "| 쌍 | 충돌 | 근거 |",
                     "| --- | --- | --- |",
@@ -825,33 +870,51 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             for finding in validate_compose_profile_vocabulary(root)
         ]
 
+    def _set_home_profiles(self, root: pathlib.Path, profiles: tuple[str, ...]) -> None:
+        policy = root / self.POLICY
+        current = ", ".join(f"`{profile}`" for profile in self.REQUIRED_HOME)
+        replacement = ", ".join(f"`{profile}`" for profile in profiles)
+        text = policy.read_text(encoding="utf-8")
+        self.assertIn(f"| HOME | {current} |", text)
+        policy.write_text(
+            text.replace(
+                f"| HOME | {current} |",
+                f"| HOME | {replacement} |",
+                1,
+            ),
+            encoding="utf-8",
+        )
+
     def test_current_repository_tables_and_include_list_match_compose(self) -> None:
         self.assertEqual((), validate_compose_profile_vocabulary(ROOT))
 
     def test_semantic_table_has_no_manual_counts(self) -> None:
         root = self._repo(
-            header="| Profile | Category | Purpose |",
+            header="| Profile | Category | Purpose | Selected services |",
             rows=(
-                "| `alpha` | domain | alpha services |",
-                "| `dev` | baseline | development selection |",
-                "| `beta` | capability | beta services |",
+                "| `alpha` | domain | alpha services | `x`, `y` |",
+                "| `dev` | baseline | development selection | `x` |",
+                "| `beta` | capability | beta services | `z` |",
             ),
         )
         self.assertEqual([], self._findings(root))
 
     def test_semantic_columns_are_required(self) -> None:
         for row, message in (
-            ("| `alpha` | invalid | alpha services |", "no valid category"),
-            ("| `alpha` | domain | |", "no purpose"),
-            ("| `alpha` | domain,baseline | alpha services |", "no valid category"),
+            ("| `alpha` | invalid | alpha services | `x`, `y` |", "no valid category"),
+            ("| `alpha` | domain | | `x`, `y` |", "no purpose"),
+            (
+                "| `alpha` | domain,baseline | alpha services | `x`, `y` |",
+                "no valid category",
+            ),
         ):
             with self.subTest(row=row):
                 root = self._repo(
-                    header="| Profile | Category | Purpose |",
+                    header="| Profile | Category | Purpose | Selected services |",
                     rows=(
                         row,
-                        "| `dev` | baseline | development |",
-                        "| `beta` | capability | beta services |",
+                        "| `dev` | baseline | development | `x` |",
+                        "| `beta` | capability | beta services | `z` |",
                     ),
                 )
                 self.assertTrue(
@@ -877,10 +940,10 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_row_that_no_service_declares_is_rejected(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | domain | a | 2 |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta` | domain | b | 1 |",
-                "| `retired` | domain | none | 3 |",
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `retired` | domain | none | `retired-service` | 3 |",
             )
         )
         self.assertEqual(
@@ -897,9 +960,9 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_service_count_that_differs_from_compose_is_rejected(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | domain | a | 3 |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta` | domain | b | 1 |",
+                "| `alpha` | domain | a | `x`, `y` | 3 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
             )
         )
         self.assertEqual(
@@ -932,6 +995,84 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             self._findings(root),
         )
 
+    def test_standard_compose_file_missing_from_root_include_is_rejected(
+        self,
+    ) -> None:
+        root = self._repo()
+        standard = root / "infra/c/compose.yaml"
+        standard.parent.mkdir()
+        standard.write_text("services: {}\n", encoding="utf-8")
+        subprocess.run(["git", "add", "infra/c/compose.yaml"], cwd=root, check=True)
+        self.assertIn(
+            (
+                "compose-include-drift",
+                "docker-compose.yml",
+                "infra/c/compose.yaml is tracked and not included",
+            ),
+            self._findings(root),
+        )
+
+    def test_zero_depth_standard_compose_missing_from_root_include_is_rejected(
+        self,
+    ) -> None:
+        root = self._repo()
+        standard = root / "infra/compose.yaml"
+        standard.write_text("services: {}\n", encoding="utf-8")
+        subprocess.run(["git", "add", "infra/compose.yaml"], cwd=root, check=True)
+        self.assertIn(
+            (
+                "compose-include-drift",
+                "docker-compose.yml",
+                "infra/compose.yaml is tracked and not included",
+            ),
+            self._findings(root),
+        )
+
+    def test_standard_compose_file_profiles_are_in_vocabulary_scope(self) -> None:
+        root = self._repo()
+        standard = root / "infra/c/compose.yaml"
+        standard.parent.mkdir()
+        standard.write_text(
+            "services:\n  standard:\n    profiles: [unregistered]\n",
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "add", "infra/c/compose.yaml"], cwd=root, check=True)
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8") + "  - infra/c/compose.yaml\n",
+            encoding="utf-8",
+        )
+        self.assertTrue(
+            any(
+                finding[0] == "compose-profile-vocabulary-drift"
+                and "profile unregistered" in finding[2]
+                for finding in self._findings(root)
+            )
+        )
+
+    def test_zero_depth_standard_compose_profiles_are_in_vocabulary_scope(
+        self,
+    ) -> None:
+        root = self._repo()
+        standard = root / "infra/compose.yaml"
+        standard.write_text(
+            "services:\n  standard:\n    profiles: [unregistered]\n",
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "add", "infra/compose.yaml"], cwd=root, check=True)
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8") + "  - infra/compose.yaml\n",
+            encoding="utf-8",
+        )
+        self.assertTrue(
+            any(
+                finding[0] == "compose-profile-vocabulary-drift"
+                and "profile unregistered" in finding[2]
+                for finding in self._findings(root)
+            )
+        )
+
     def test_include_entry_that_is_not_a_tracked_compose_file_is_rejected(
         self,
     ) -> None:
@@ -962,10 +1103,10 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_duplicate_row_is_rejected_even_when_the_first_row_matches(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | domain | a | 2 |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta` | domain | b | 1 |",
-                "| `alpha` | domain | again | 9 |",
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `alpha` | domain | again | `wrong` | 9 |",
             )
         )
         self.assertEqual(
@@ -982,9 +1123,9 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_row_without_an_integer_count_is_rejected(self) -> None:
         root = self._repo(
             rows=(
-                "| `alpha` | domain | a | two |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta` | domain | b | 1 |",
+                "| `alpha` | domain | a | `x`, `y` | two |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
             )
         )
         self.assertEqual(
@@ -1002,9 +1143,9 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         # "²".isdigit() is true and int("²") raises, which aborted the leaf.
         root = self._repo(
             rows=(
-                "| `alpha` | domain | a | ² |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta` | domain | b | 1 |",
+                "| `alpha` | domain | a | `x`, `y` | ² |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
             )
         )
         self.assertEqual(
@@ -1045,9 +1186,9 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
         root = self._repo(
             services_b="  z:\n    profiles: [beta_two]\n",
             rows=(
-                "| `alpha` | domain | a | 2 |",
-                "| `dev` | domain | a | 1 |",
-                "| `beta_two` | domain | b | 1 |",
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta_two` | domain | b | `z` | 1 |",
             ),
         )
         self.assertEqual([], self._findings(root))
@@ -1064,6 +1205,581 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             ],
             self._findings(root),
         )
+
+    def test_same_count_membership_swap_reports_missing_and_unknown_services(
+        self,
+    ) -> None:
+        root = self._repo(
+            rows=(
+                "| `alpha` | domain | a | `x`, `z` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+            )
+        )
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertIn(
+            "profile alpha Selected services missing from policy: y", messages
+        )
+        self.assertIn("profile alpha Selected services unknown or extra: z", messages)
+
+    def test_cross_profile_move_reports_both_rows(self) -> None:
+        root = self._repo(
+            services_a=(
+                "  x:\n    profiles: [beta, dev]\n  y:\n    profiles: [alpha]\n"
+            ),
+            services_b="  z:\n    profiles: [beta]\n",
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+            ),
+        )
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertIn("profile alpha Selected services unknown or extra: x", messages)
+        self.assertIn("profile beta Selected services missing from policy: x", messages)
+
+    def test_duplicate_empty_and_malformed_selected_services_are_rejected(self) -> None:
+        for selected, message in (
+            ("`x`, `x`, `y`", "duplicates service x"),
+            ("", "has empty Selected services"),
+            ("`x`, y", "has malformed Selected services"),
+        ):
+            with self.subTest(selected=selected):
+                root = self._repo(
+                    rows=(
+                        f"| `alpha` | domain | a | {selected} | 2 |",
+                        "| `dev` | baseline | a | `x` | 1 |",
+                        "| `beta` | domain | b | `z` | 1 |",
+                    )
+                )
+                self.assertTrue(
+                    any(message in finding[2] for finding in self._findings(root))
+                )
+
+    def test_selected_services_column_is_required_by_exact_name(self) -> None:
+        for header in (
+            "| Profile | Category | Purpose | 서비스 |",
+            "| Profile | Category | Purpose | Selected service | 서비스 |",
+        ):
+            with self.subTest(header=header):
+                root = self._repo(header=header)
+                self.assertTrue(
+                    any(
+                        "table has no Selected services column" in finding[2]
+                        for finding in self._findings(root)
+                    )
+                )
+
+    def test_fixed_safety_category_relabels_are_rejected(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n"
+                "  tofu:\n    profiles: [iac]\n"
+                "  vault:\n    profiles: [legacy-vault]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `iac` | domain | iac | `tofu` | 1 |",
+                "| `legacy-vault` | capability | vault | `vault` | 1 |",
+            ),
+        )
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertIn(
+            "profile iac must use safety category automation, found domain", messages
+        )
+        self.assertIn(
+            "profile legacy-vault must use safety category lifecycle, found capability",
+            messages,
+        )
+
+    def test_home_rejects_forbidden_profiles_and_dependency_escape(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n"
+                "  runner:\n    profiles: [testing]\n"
+                "  home-app:\n    profiles: [app]\n"
+                "    depends_on: [outside]\n"
+                "  outside:\n    profiles: [optional]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `testing` | automation | load | `runner` | 1 |",
+                "| `app` | domain | home | `home-app` | 1 |",
+                "| `optional` | capability | optional | `outside` | 1 |",
+            ),
+        )
+        self._set_home_profiles(root, (*self.REQUIRED_HOME, "testing", "app"))
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertTrue(
+            any("HOME includes forbidden" in message for message in messages)
+        )
+        self.assertTrue(
+            any("required dependency outside" in message for message in messages)
+        )
+
+    def test_home_rejects_topology_profile_and_unsafe_service_overlap(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n"
+                "  shared:\n    profiles: [app, testing]\n"
+                "  cluster:\n    profiles: [couchdb]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `app` | domain | home | `shared` | 1 |",
+                "| `testing` | automation | load | `shared` | 1 |",
+                "| `couchdb` | topology | cluster | `cluster` | 1 |",
+            ),
+        )
+        self._set_home_profiles(root, (*self.REQUIRED_HOME, "app", "couchdb"))
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertTrue(
+            any("HOME includes forbidden" in message for message in messages)
+        )
+        self.assertTrue(
+            any("HOME services overlap forbidden" in message for message in messages)
+        )
+
+    def test_home_allows_base_service_shared_with_unselected_topology(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n  shared:\n    profiles: [app, couchdb]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `app` | domain | home | `shared` | 1 |",
+                "| `couchdb` | topology | cluster | `shared` | 1 |",
+            ),
+        )
+        self._set_home_profiles(root, (*self.REQUIRED_HOME, "app"))
+        self.assertEqual([], self._findings(root))
+
+    def test_home_requires_the_current_spec_profile_set(self) -> None:
+        cases = (
+            (("core",), "ai"),
+            (
+                tuple(
+                    profile for profile in self.REQUIRED_HOME if profile != "storage"
+                ),
+                "storage",
+            ),
+        )
+        for profiles, missing in cases:
+            with self.subTest(profiles=profiles):
+                root = self._repo()
+                self._set_home_profiles(root, profiles)
+                self.assertTrue(
+                    any(
+                        "HOME is missing required profiles" in finding[2]
+                        and missing in finding[2]
+                        for finding in self._findings(root)
+                    )
+                )
+
+    def test_compose_profile_name_home_is_reserved_case_insensitively(self) -> None:
+        for reserved in ("home", "HOME", "HoMe"):
+            with self.subTest(reserved=reserved):
+                root = self._repo(
+                    services_b=(
+                        "  z:\n    profiles: [beta]\n"
+                        f"  reserved:\n    profiles: [{reserved}]\n"
+                    ),
+                    rows=(
+                        "| `alpha` | domain | a | `x`, `y` | 2 |",
+                        "| `dev` | baseline | a | `x` | 1 |",
+                        "| `beta` | domain | b | `z` | 1 |",
+                        f"| `{reserved}` | domain | reserved | `reserved` | 1 |",
+                    ),
+                )
+                self.assertTrue(
+                    any(
+                        f"profile {reserved} uses reserved HOME name" in finding[2]
+                        for finding in self._findings(root)
+                    )
+                )
+
+    def test_ksql_is_automation_and_cannot_join_home_or_tooling(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n"
+                "  ksql-service:\n    profiles: [ksql, tooling]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `ksql` | automation | stream tooling | `ksql-service` | 1 |",
+                "| `tooling` | domain | tools | `ksql-service` | 1 |",
+            ),
+        )
+        self._set_home_profiles(root, (*self.REQUIRED_HOME, "ksql"))
+        messages = [message for _, _, message in self._findings(root)]
+        self.assertTrue(
+            any(
+                "HOME includes forbidden profiles: ksql" in message
+                for message in messages
+            )
+        )
+        self.assertTrue(
+            any(
+                "tooling overlaps automation/lifecycle profile ksql" in message
+                for message in messages
+            )
+        )
+
+    def test_tooling_is_disjoint_from_automation_profiles(self) -> None:
+        root = self._repo(
+            services_b=(
+                "  z:\n    profiles: [beta]\n"
+                "  runner:\n    profiles: [tooling, testing]\n"
+            ),
+            rows=(
+                "| `alpha` | domain | a | `x`, `y` | 2 |",
+                "| `dev` | baseline | a | `x` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `tooling` | domain | tools | `runner` | 1 |",
+                "| `testing` | automation | load | `runner` | 1 |",
+            ),
+        )
+        self.assertTrue(
+            any(
+                "tooling overlaps automation/lifecycle profile testing: runner"
+                in finding[2]
+                for finding in self._findings(root)
+            )
+        )
+
+
+class ServiceInventoryTests(unittest.TestCase):
+    def _repo(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = pathlib.Path(temporary.name)
+        self.compose = "infra/04-data/example/docker-compose.yml"
+        self.subject = "docs/05.operations/catalog/04-data/0001-example"
+        files = {
+            self.compose: """services:
+  database:
+    profiles: [core]
+    image: example/database:1.2.3
+    extends: {file: ../../common-optimizations.yml, service: base}
+    environment: {DATABASE_PASSWORD_FILE: /run/secrets/db_password}
+    secrets: [db_password]
+    networks: [infra_net]
+    ports: ['127.0.0.1:${DB_PORT:-5432}:5432']
+    volumes: ['db-data:/data']
+  exporter:
+    profiles: [core]
+    image: example/exporter:1.0.0
+    depends_on: [database]
+    networks: [infra_net]
+volumes:
+  db-data:
+    driver_opts: {device: '${DEFAULT_DATA_DIR}/database'}
+""",
+            "infra/common-optimizations.yml": """services:
+  base:
+    cpus: '0.50'
+    mem_limit: 256m
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+""",
+            self.subject + "/guide.md": """---
+type: operation/guide
+status: active
+implementation_services:
+  infra/04-data/example/docker-compose.yml: [database, exporter]
+---
+[Compose](../../../../../infra/04-data/example/docker-compose.yml)
+""",
+            self.subject
+            + "/policy.md": "---\ntype: operation/policy\nstatus: active\n---\n",
+            self.subject
+            + "/runbook.md": "---\ntype: operation/runbook\nstatus: active\n---\n",
+            "renovate.json5": "{}\n",
+        }
+        for name, value in files.items():
+            target = root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(value)
+        self.paths = tuple(pathlib.PurePosixPath(name) for name in files)
+        patcher = mock.patch.object(
+            operations_catalog, "_tracked_paths", return_value=self.paths
+        )
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        rows = []
+        for service in ("database", "exporter"):
+            rows.append(
+                {
+                    "Compose path": self.compose,
+                    "Service": service,
+                    "Runtime classification": "HOME",
+                    "Consumer": "Owner-required HOME; runtime activity unverified",
+                    "Security": "Policy review; runtime security unverified",
+                    "Backup": "Required: database state and configuration; isolated restore unverified",
+                    "Disposition": "retain; required HOME dependency",
+                }
+            )
+        self.inventory = root / operations_catalog.SERVICE_INVENTORY_PATH
+        self.inventory.parent.mkdir(parents=True, exist_ok=True)
+        self._write_rows(rows)
+        self.inventory.write_text(operations_catalog.render_service_inventory(root))
+        return root
+
+    def _write_rows(self, rows):
+        columns = operations_catalog.SERVICE_INVENTORY_COLUMNS
+        text = "<!-- current-service-inventory:start -->\n"
+        text += "| " + " | ".join(columns) + " |\n"
+        text += "| " + " | ".join("---" for _ in columns) + " |\n"
+        for row in rows:
+            text += (
+                "| "
+                + " | ".join(row.get(column, "pending") for column in columns)
+                + " |\n"
+            )
+        text += "<!-- current-service-inventory:end -->\n"
+        self.inventory.write_text(text)
+
+    def _change(self, column, value, index=0):
+        rows = operations_catalog._service_inventory_rows(self.inventory.read_text())
+        updated = [
+            {**row, column: value} if i == index else row for i, row in enumerate(rows)
+        ]
+        self._write_rows(updated)
+
+    def _codes(self, root):
+        return {
+            item.code for item in operations_catalog.validate_service_inventory(root)
+        }
+
+    def test_shared_operations_subject_and_source_projection_are_valid(self):
+        root = self._repo()
+        self.assertEqual(set(), self._codes(root))
+        rows = operations_catalog._service_inventory_rows(self.inventory.read_text())
+        database = next(row for row in rows if row["Service"] == "database")
+        self.assertIn("DATABASE_PASSWORD_FILE", database["Env"])
+        self.assertNotIn("/run/secrets", database["Env"])
+        self.assertIn("db_password", database["Secret metadata"])
+        self.assertIn("0.50", database["Resources"])
+        self.assertIn("256m", database["Resources"])
+        self.assertIn("${DEFAULT_DATA_DIR}", database["Persistence"])
+        self.assertNotIn(str(root), self.inventory.read_text())
+        self.assertNotIn("1.2.3", database["Runtime version authority"])
+
+    def test_current_derived_cells_cannot_drift(self):
+        root = self._repo()
+        original = self.inventory.read_text()
+        for field in (
+            "Compose path",
+            "Profiles",
+            "Dependencies",
+            "Network",
+            "Ports",
+            "Persistence",
+            "Env",
+            "Secret metadata",
+            "Resources",
+            "Operations docs",
+            "Runtime version authority",
+            "Update owner",
+        ):
+            with self.subTest(field=field):
+                self.inventory.write_text(original)
+                self._change(field, "wrong")
+                self.assertTrue(self._codes(root))
+
+    def test_missing_extra_and_duplicate_service_rows_are_rejected(self):
+        root = self._repo()
+        rows = operations_catalog._service_inventory_rows(self.inventory.read_text())
+        for changed in (
+            rows[:-1],
+            [*rows, {**rows[0], "Service": "removed"}],
+            [*rows, rows[0]],
+        ):
+            with self.subTest(rows=len(changed)):
+                self._write_rows(changed)
+                self.assertTrue(self._codes(root))
+
+    def test_every_required_field_is_nonempty(self):
+        root = self._repo()
+        original = self.inventory.read_text()
+        for field in operations_catalog.SERVICE_INVENTORY_COLUMNS:
+            with self.subTest(field=field):
+                self.inventory.write_text(original)
+                self._change(field, "")
+                self.assertIn("service-inventory-field", self._codes(root))
+
+    def test_broken_triplet_and_missing_guide_source_are_rejected(self):
+        root = self._repo()
+        policy = root / self.subject / "policy.md"
+        original = policy.read_text()
+        policy.unlink()
+        self.assertIn("service-operations-owner", self._codes(root))
+        policy.write_text(original)
+        guide = root / self.subject / "guide.md"
+        guide.write_text(guide.read_text().split("[Compose]")[0])
+        self.assertIn("service-guide-source", self._codes(root))
+
+    def test_removed_service_current_guide_and_unowned_addition_are_rejected(self):
+        root = self._repo()
+        path = root / self.compose
+        original = path.read_text()
+        path.write_text(original.replace("  exporter:", "  replacement:"))
+        codes = self._codes(root)
+        self.assertIn("service-operations-removed", codes)
+        self.assertIn("service-operations-missing", codes)
+
+    def test_standard_compose_file_service_requires_operations_owner(self):
+        root = self._repo()
+        standard = pathlib.PurePosixPath("infra/04-data/example/compose.yaml")
+        (root / standard).write_text(
+            "services:\n"
+            "  standard:\n"
+            "    profiles: [core]\n"
+            "    image: example/standard:1.0.0\n",
+            encoding="utf-8",
+        )
+        with mock.patch.object(
+            operations_catalog,
+            "_tracked_paths",
+            return_value=(*self.paths, standard),
+        ):
+            self.assertIn("service-operations-missing", self._codes(root))
+
+    def test_zero_depth_standard_compose_service_requires_operations_owner(self):
+        root = self._repo()
+        standard = pathlib.PurePosixPath("infra/compose.yaml")
+        (root / standard).write_text(
+            "services:\n"
+            "  standard:\n"
+            "    profiles: [core]\n"
+            "    image: example/standard:1.0.0\n",
+            encoding="utf-8",
+        )
+        with mock.patch.object(
+            operations_catalog,
+            "_tracked_paths",
+            return_value=(*self.paths, standard),
+        ):
+            self.assertIn("service-operations-missing", self._codes(root))
+
+    def test_duplicate_service_ownership_is_rejected(self):
+        root = self._repo()
+        duplicate = "docs/05.operations/catalog/04-data/0002-duplicate/guide.md"
+        path = root / duplicate
+        path.parent.mkdir(parents=True)
+        path.write_text((root / self.subject / "guide.md").read_text())
+        with mock.patch.object(
+            operations_catalog,
+            "_tracked_paths",
+            return_value=(*self.paths, pathlib.PurePosixPath(duplicate)),
+        ):
+            self.assertIn("service-operations-duplicate", self._codes(root))
+
+    def test_resource_template_change_invalidates_projection(self):
+        root = self._repo()
+        path = root / "infra/common-optimizations.yml"
+        path.write_text(path.read_text().replace("256m", "512m"))
+        self.assertIn("service-inventory-drift", self._codes(root))
+
+    def test_declared_replicas_are_projected_and_invalidate_inventory(self):
+        root = self._repo()
+        compose = root / self.compose
+        model = yaml.safe_load(compose.read_text())
+        model["services"]["database"]["deploy"] = {
+            "replicas": 2,
+            "resources": {"limits": {"cpus": "0.75"}},
+        }
+        compose.write_text(yaml.safe_dump(model))
+        self.inventory.write_text(operations_catalog.render_service_inventory(root))
+        row = next(
+            row
+            for row in operations_catalog._service_inventory_rows(
+                self.inventory.read_text()
+            )
+            if row["Service"] == "database"
+        )
+        self.assertIn('"replicas":2', row["Resources"])
+
+        model["services"]["database"]["deploy"]["replicas"] = 3
+        compose.write_text(yaml.safe_dump(model))
+        self.assertIn("service-inventory-drift", self._codes(root))
+
+    def test_private_environment_and_secret_values_are_never_opened(self):
+        root = self._repo()
+        (root / ".env").write_text("MUST_NOT_APPEAR=private-value-marker\n")
+        self.assertNotIn(
+            "private-value-marker", operations_catalog.render_service_inventory(root)
+        )
+        self.assertEqual(set(), self._codes(root))
+
+    def test_build_authority_supports_inline_string_and_public_default_selector(self):
+        root = self._repo()
+        compose = root / self.compose
+        original = compose.read_text()
+        dockerfile = pathlib.PurePosixPath("infra/04-data/example/Dockerfile")
+        (root / dockerfile).write_text("FROM example/base:2.3.4\n")
+        for build in (
+            {"context": ".", "dockerfile_inline": "FROM example/base:2.3.4"},
+            ".",
+            {"context": ".", "dockerfile": "${BUILD_FILE:-Dockerfile}"},
+        ):
+            with self.subTest(build=build):
+                model = yaml.safe_load(original)
+                model["services"]["database"]["build"] = build
+                compose.write_text(yaml.safe_dump(model))
+                with mock.patch.object(
+                    operations_catalog,
+                    "_tracked_paths",
+                    return_value=(*self.paths, dockerfile),
+                ):
+                    rendered = operations_catalog.render_service_inventory(root)
+                row = next(
+                    row
+                    for row in operations_catalog._service_inventory_rows(rendered)
+                    if row["Service"] == "database"
+                )
+                self.assertNotIn("2.3.4", row["Runtime version authority"])
+                if isinstance(build, dict) and "dockerfile_inline" in build:
+                    self.assertIn("inline Dockerfile", row["Runtime version authority"])
+                else:
+                    self.assertIn(
+                        "example/Dockerfile", row["Runtime version authority"]
+                    )
+
+    def test_reverse_edges_refresh_without_replacing_authored_consumer_evidence(self):
+        root = self._repo()
+        self._change("Consumer", "Owner-required HOME; declared reverse edges=exporter")
+        compose = root / self.compose
+        compose.write_text(
+            compose.read_text().replace("depends_on: [database]", "depends_on: []")
+        )
+        rendered = operations_catalog.render_service_inventory(root)
+        row = next(
+            row
+            for row in operations_catalog._service_inventory_rows(rendered)
+            if row["Service"] == "database"
+        )
+        self.assertEqual(
+            "Owner-required HOME; declared reverse edges=none", row["Consumer"]
+        )
+
+    def test_guide_source_link_must_be_real_markdown_not_a_code_example(self):
+        root = self._repo()
+        guide = root / self.subject / "guide.md"
+        text = guide.read_text()
+        prefix, link = text.split("[Compose]", 1)
+        guide.write_text(prefix + "```markdown\n[Compose]" + link + "```\n")
+        self.assertIn("service-guide-source", self._codes(root))
 
 
 if __name__ == "__main__":

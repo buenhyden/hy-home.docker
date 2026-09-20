@@ -4,11 +4,14 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
 - "POL-0034"
+implementation_services:
+  infra/04-data/specialized/qdrant/docker-compose.yml:
+  - 'qdrant'
 created: "2026-05-10"
 ---
 
@@ -18,7 +21,21 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 `infra/04-data/specialized/qdrant/docker-compose.yml` 기준으로 Qdrant vector database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 [qdrant/qdrant image declaration](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml), 단일 `qdrant` 서비스, `ai`/`data`/`dev` 프로파일, `infra_net`, REST route, gRPC TCP route, `/readyz` healthcheck를 사용한다.
+이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `infra_net`, REST route, gRPC TCP route와 `/readyz` healthcheck를 사용한다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | HOME vector storage for AI/RAG consumers under `ai` and `ai-llm`; `qdrant` supports direct selection. |
+| Source / updater | [Compose](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml) owns the image source; compatibility review owns snapshot/version changes. |
+| Services / profiles | Single `qdrant`; exact `ai`, `ai-llm`, `qdrant`. |
+| Flow / exposure | REST through Traefik HTTPS and gRPC through Traefik TCP; no host publication. |
+| Persistence / environment | `qdrant-data:/qdrant/storage`, snapshots under `/qdrant/storage/snapshots`; service ports/path are Compose environment keys. |
+| Secrets / security | No API-key secret is declared; authentication requirements require an implementation change. |
+| Health / resources | `/readyz`; `template-stateful-med`. |
+| Backup / upgrade | snapshot restore to same minor or next minor target with approximately 2x disk; verify collections/aliases/counts before promotion. |
+| License / edition | Qdrant source is Apache-2.0; managed-cloud features are outside this self-hosted single-node contract. |
 
 ### Usage Type
 
@@ -45,7 +62,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 1. root-active compose 구성을 렌더링한다.
 
    ```bash
-   docker compose --profile qdrant config --quiet qdrant
+   docker compose --profile qdrant config --quiet
    ```
 
 2. 서비스 상태를 확인한다.
@@ -73,10 +90,11 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 - 현재 compose는 host port publish가 아니라 Traefik REST/TCP route와 internal expose를 사용한다.
 - Qdrant API-key secret은 현재 선언되어 있지 않다. 인증이 필요한 요구사항은 compose와 operations 문서를 함께 변경해야 한다.
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
+- snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
 
 ## Common Checks
 
-- `docker compose --profile qdrant config --quiet qdrant`
+- `docker compose --profile qdrant config --quiet`
 - `docker compose ps qdrant`
 - `curl -fsS "https://qdrant.${DEFAULT_URL}/readyz"`
 - `curl -fsS "https://qdrant.${DEFAULT_URL}/collections"`
@@ -93,7 +111,9 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
+- [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
+- [Qdrant source and license](https://github.com/qdrant/qdrant)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

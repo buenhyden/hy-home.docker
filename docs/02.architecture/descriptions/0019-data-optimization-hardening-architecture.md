@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -75,4 +75,4 @@ Requirement와 ADR을 통해 도입한다.
 - [Data hardening policy](../../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)
 - [Data hardening runbook](../../05.operations/catalog/04-data/0030-optimization-hardening/runbook.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, `dedicated-valkey` profile을 선택하면 `airflow-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
+이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. `dedicated-valkey` profile은 전용 broker를 기동할 뿐이며, `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`을 전용 pair로 바꾼 환경만 `airflow-valkey`를 사용한다.
 
 > Scope: Apache Airflow (07-workflow)
 
@@ -114,6 +114,16 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Airflow restore evidence is claimed by this document.
+
+1. Record image digests, profile/env names (not values), Airflow version, migration level, DAG inventory, running/queued task inventory, and checksums of the backup artifacts. Pause schedules and inbound producers, then wait for or explicitly reconcile tasks.
+2. Ask the PostgreSQL owner to create a consistent logical backup of database `airflow`. Preserve `airflow-dags`, `airflow-plugins`, `airflow-config`, required `airflow-logs`, and the exact `airflow_fernet_key`, JWT secret, Keycloak client secret, DB secret, and selected broker secret references under the approved secret process. Do not depend on a live Valkey copy for exact recovery.
+3. Create a separate Compose project and isolated network with restored copies and no production routes, schedules, webhooks, or external executors. Restore PostgreSQL first, then the same Fernet key and mounted artifacts; configure the broker host/secret pair consistently.
+4. Start dependencies, run the supported Airflow DB check/migration, then start processor/scheduler/API/worker. Verify DAG parsing, DB health, Connections decryption without printing values, worker ping, native Keycloak login, task-log access, and a side-effect-free canary DAG.
+5. On any mismatch, stop the isolated project, retain logs/checksums, and return to the untouched source backup. Production replacement or DNS/route changes require a separate approved change.
+
 ## Evidence
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
@@ -122,7 +132,7 @@ created: "2026-05-17"
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- The isolated restore above remains unexecuted; capture dated outputs and artifact checksums before changing that status.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
@@ -137,7 +147,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

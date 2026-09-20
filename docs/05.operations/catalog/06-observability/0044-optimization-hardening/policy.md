@@ -34,7 +34,11 @@ created: "2026-05-10"
 ## Controls
 
 - **Required**:
-  - 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - Native OIDC routers `grafana`/`gatus`는
+    `gateway-standard-chain@file`만 적용하고 application login/role mapping을
+    유지한다.
+  - Proxy-protected observability routers는
+    `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
   - `depends_on`은 핵심 백엔드에 대해 `service_healthy`를 우선 사용한다.
   - host observer(cAdvisor)는 healthcheck를 필수로 가진다.
   - Pyroscope는 `obs`와 `dev` profile 어느 쪽으로 선택되든 route, service port,
@@ -70,6 +74,13 @@ created: "2026-05-10"
   - 신규 서비스 온보딩 템플릿 표준화
   - 파이프라인 모듈 경계와 소유권 명시
 
+### Lifecycle and data controls
+
+- Keep both exporters `HOME`; host PID, privileged mode, device and host mounts require security review for every scope expansion.
+- Keep node-exporter internal and cAdvisor gateway protected. Neither service may receive unrelated secrets or writable host mounts.
+- No durable exporter backup exists; recovery is recreation from tracked Compose followed by Prometheus target and series-continuity verification.
+- Resource/cardinality changes need measured scrape and host impact. Removal requires rule/dashboard dependency review and an accepted observability-gap record.
+
 ## Exceptions
 
 - 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
@@ -95,7 +106,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

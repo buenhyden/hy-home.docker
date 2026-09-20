@@ -4,107 +4,112 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0023"
 parent_ids:
 - "POL-0023"
+implementation_services:
+  infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml:
+  - 'minio1'
+  - 'minio2'
+  - 'minio3'
+  - 'minio4'
+  infra/04-data/lake-and-object/minio/docker-compose.yml:
+  - 'minio'
+  - 'minio-create-buckets'
 created: "2026-05-10"
 ---
 
 # MinIO Object Storage Usage Guide
 
-> Use this guide to understand and verify the root-active MinIO object storage implementation.
-
----
-
 ## Usage
 
-`minio1`, `minio2`, `minio3` and `minio4` belong to the optional distributed topology. HOME uses the separate `minio` service; do not activate both topologies as one deployment.
+MinIO is retained as the HOME S3-compatible store because the root bootstrap
+creates `loki-bucket`, `tempo-bucket`, `cdn-bucket`, and `doc-intel-assets`, and
+current Loki/Tempo configuration names its endpoint. The four-node
+`storage-cluster` topology is LAB on one host. SeaweedFS is OPTIONAL and is not an
+automatic replacement.
 
-### Overview
+The upstream community repository was archived and made read-only on 2026-04-25;
+its README says the community server is no longer maintained and distributed as
+source. Preserve the current data while a separate migration evaluation measures
+S3/client compatibility. AIStor documentation is not evidence that the retained
+community image has the same lifecycle or license terms.
 
-MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S3-compatible object storage다. 루트는 이 leaf의 두 compose 파일을 모두 include한다. `storage` profile은 단일 `minio` service와 bucket/bootstrap job `minio-create-buckets`를, `storage-cluster` profile은 `docker-compose.cluster.yaml`의 4노드 토폴로지를 선택하며, 두 topology를 동시에 선택하는 profile은 없다.
+### Current implementation
 
-### Usage Type
+[`infra/04-data/lake-and-object/minio/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/minio/docker-compose.yml) defines HOME `minio` and one-shot `minio-create-buckets`;
+[`docker-compose.cluster.yaml`](../../../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml)
+defines only the four LAB members. Profiles `storage`,
+`obs`, `logs`, `tracing`, and `nginx` select the single node. The root project also
+includes the LAB cluster file; `storage-cluster` selects `minio1` through `minio4`.
 
-`system-guide | operational-reference`
+The HOME service owns `minio-data` at `${DEFAULT_DATA_DIR}/minio/data-1`. LAB nodes
+use separate `data1` through `data4` paths. Root and application identities come
+from `minio_root_username`, `minio_root_password`, `minio_app_username`, and
+`minio_app_user_password` secrets. `infra_net` carries service traffic; Traefik
+routes the API and console through `gateway-standard-chain@file`. Gateway TLS does
+not prove service-to-service TLS or storage encryption. The bootstrap grants
+public read to `cdn-bucket`; treat that as intentional exposure requiring review.
 
-### Target Audience
+### Images, configuration and resource controls
 
-- Operator
-- Developer
-- SRE
-- AI Agent
+The Compose sources are authoritative for the pinned `quay.io/minio/minio` image;
+repository Renovate may propose updates and the version projection is derived.
+`MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`,
+`MINIO_PROMETHEUS_AUTH_TYPE`, and `MINIO_API_ROOT_ACCESS` are the declared service
+keys; the bootstrap consumes the root/application secrets through `mc` commands.
+HOME MinIO extends `template-stateful-db-med` and its bootstrap
+`template-job-low`; both have completion/health controls. S3 clients reach MinIO
+through `infra_net` or the gateway, while the bootstrap configures buckets/users
+through the internal endpoint.
 
-### Purpose
+### Static preflight
 
-이 가이드는 현재 MinIO service set, Traefik entrypoint, initialized buckets, secret boundary, 일반 확인 절차를 설명한다. 단일 compose(`storage`)와 `storage-cluster` profile이 선택하는 cluster compose를 혼동하지 않도록 한다.
+From the repository root:
 
-### Prerequisites
+```bash
+docker compose --env-file .env.example --profile storage config --quiet
+docker compose --env-file .env.example --profile storage config --services
+docker compose --env-file .env.example --profile storage-cluster config --quiet
+```
 
-- Repository checkout at the project root.
-- Docker Compose access on the local or approved infrastructure host.
-- Docker Secret files for `minio_root_username`, `minio_root_password`, `minio_app_username`, and `minio_app_user_password`.
-- Runtime data directory `${DEFAULT_DATA_DIR}/minio/data-1`.
+Do not render the leaf file alone. Shared secrets, network, labels and templates
+are root-owned. Starting services or changing buckets is a separate runtime task.
 
-### Step-by-step Instructions
+### Data protection and lifecycle
 
-1. 현재 root-active compose service set을 확인한다.
+Use object-aware mirror/replication to a separate encrypted destination. Capture
+bucket inventory, versioning/object-lock state, policies and IAM configuration in
+addition to objects; never raw-copy active `/data`. [RUN-0023](runbook.md) defines
+an isolated restore and application checks for Loki, Tempo and approved object
+clients.
 
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config --services
-   ```
+Before an image change or replacement, inventory clients and S3 features, export
+all objects/configuration, test the candidate with representative workloads, and
+prepare cutover and rollback. No migration target is selected by this guide.
 
-   Expected services: `minio`, `minio-create-buckets`.
+### Official references
 
-2. 접근 경로를 확인한다.
-
-   - Internal API: `http://minio:${MINIO_PORT:-9000}`
-   - Internal console: `http://minio:${MINIO_CONSOLE_PORT:-9001}`
-   - External API: `https://minio.${DEFAULT_URL}` through Traefik
-   - External console: `https://minio-console.${DEFAULT_URL}` through Traefik
-
-3. 자동 bucket bootstrap 범위를 확인한다.
-
-   `minio-create-buckets` creates `tempo-bucket`, `loki-bucket`, `cdn-bucket`, and `doc-intel-assets`; it also sets anonymous public read only for `cdn-bucket`.
-
-4. 일반 상태를 확인한다.
-
-   ```bash
-   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps minio minio-create-buckets
-   ```
-
-### Common Pitfalls
-
-- Treating the `storage-cluster` topology as part of the `storage` surface. Both files are included by the root; the profile is what separates them, and evidence must name the profile it used.
-- Using root credentials for application integration. Use the app user created by `minio-create-buckets` and avoid recording secret values.
-- Assuming host ports are published directly. The current root-active compose uses Traefik labels and does not declare direct host ports.
-- Documenting secret values or command output that includes credentials.
+- [MinIO community repository, status and AGPL license](https://github.com/minio/minio)
+- [MinIO client mirror documentation](https://github.com/minio/mc/blob/master/README.md)
+- [MinIO bucket replication documentation](https://github.com/minio/minio/blob/master/docs/bucket/replication/README.md)
+- [MinIO security checklist](https://docs.min.io/community/minio-object-store/operations/checklists/security.html)
 
 ## Common Checks
 
-- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`
-- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps`
-- Search paired guide/policy/runbook and infra README for cluster-node assumptions, direct host-port assumptions, direct secret values, or old command forms.
-- Expected result: compose renders, the documented services match what the selected profile resolves, and any `storage-cluster` reference is marked with that profile rather than with an include state.
-
-## Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
-[recovery runbook](runbook.md)을 따른다.
+Confirm exact root profiles, services, health/resource controls, writable-state
+ownership, secret references, exposure and the engine-specific recovery boundary.
+A static pass is configuration evidence only; runtime and restore remain separate.
 
 ## Traceability
 
-- Declared parent: [MinIO Object Storage Operations Policy](policy.md) (`POL-0023`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](policy.md) (`POL-0023`), [Runbook](runbook.md) (`RUN-0023`)
+- Artifact: `GDE-0023`; governing policy: `POL-0023`.
+- Runtime authority: `infra/04-data/lake-and-object/minio/docker-compose.yml`.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
 - [Operations policy](policy.md)
-- [Recovery runbook](runbook.md)
-- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)
+- [Health and recovery runbook](runbook.md)
+- [Backup policy](../0021-backup-and-restore/policy.md)

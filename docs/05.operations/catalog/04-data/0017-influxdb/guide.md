@@ -4,11 +4,14 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0017"
 parent_ids:
 - "POL-0017"
+implementation_services:
+  infra/04-data/analytics/influxdb/docker-compose.yml:
+  - 'influxdb'
 created: "2026-05-10"
 ---
 
@@ -19,6 +22,18 @@ created: "2026-05-10"
 ### Overview
 
 이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 사용 가이드다. 현재 구현은 InfluxDB 3 Core 단일 compose이며 database와 HTTP line-protocol endpoint/schema source contract를 정의한다.
+
+### Current implementation
+
+| Field | Current contract |
+| --- | --- |
+| Classification and consumer | OPTIONAL, on-demand time-series experiment. No named production workload or measured capacity is confirmed. |
+| Compose ownership | Root project includes [the InfluxDB Compose fragment](../../../../../infra/04-data/analytics/influxdb/docker-compose.yml); profile `influxdb`; service `influxdb`. Compose owns the runtime image and Renovate owns update proposals. |
+| Data flow and exposure | Clients on `infra_net` write/query HTTP on container port `8181`; Traefik publishes `influxdb.${DEFAULT_URL}` through `gateway-standard-chain@file`. There is no direct host port. |
+| Persistence | Bind-backed named volumes `influxdb-data` and `influxdb-plugins` map below `${DEFAULT_DATA_DIR}/influxdb`. The server uses local object storage with node ID `node0`. |
+| Configuration and credentials | The command declares the data and plugin directories. The leaf service mounts no Docker Secret and does not provision a token; any authenticated write therefore needs separately managed runtime credentials. |
+| Health and resources | `/` accepts `200`, `204`, or `401`; `template-stateful-med` supplies 1 CPU, 512 MiB, restart policy, log rotation, dropped capabilities, and `no-new-privileges`. |
+| Recovery and upgrade | InfluxDB 3 Core has no built-in backup command. Use its documented ordered local-object-store copy only during an approved quiet/downtime window, restore to a fresh compatible instance, and validate before cutover. Review Core release notes before changing the Compose pin. |
 
 ### Usage Type
 
@@ -72,7 +87,7 @@ created: "2026-05-10"
 
 - `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
 - `/api/v3/write_lp`, operator-selected database name, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
-- `python3 scripts/validation/check-document-links.py --mode alignment`
+- `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Runbook Handoff
@@ -87,7 +102,12 @@ created: "2026-05-10"
 
 ## Related Documents
 
+- [InfluxDB 3 Core backup and restore](https://docs.influxdata.com/influxdb3/core/admin/backup-restore/)
+- [InfluxDB 3 Core installation and upgrade context](https://docs.influxdata.com/influxdb3/core/install/)
+- [InfluxDB 3 Core source and licence](https://github.com/influxdata/influxdb)
+
 - [Operations guides index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/analytics/influxdb/README.md)
+- [Compose implementation: infra/04-data/analytics/influxdb/docker-compose.yml](../../../../../infra/04-data/analytics/influxdb/docker-compose.yml)

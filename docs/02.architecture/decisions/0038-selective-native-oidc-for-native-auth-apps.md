@@ -47,6 +47,7 @@ Browser -> Traefik -> Application -> Keycloak
 자체 OIDC/RBAC를 제공하는 승인된 서비스에 사용한다.
 
 현재 승인:
+
 - Apache Airflow
 - Kafbat UI
 
@@ -66,9 +67,11 @@ OAuth2 Proxy `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 ### ForwardAuth-only
 
 장점:
+
 - gateway 정책이 단순하다.
 
 단점:
+
 - Native OIDC 앱에서 double-auth 발생
 - application-level RBAC와 gateway auth 책임 중복
 - Airflow에서 실제 Bearer/JWT 충돌이 관찰됨
@@ -76,9 +79,11 @@ OAuth2 Proxy `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 ### Native OIDC-only
 
 장점:
+
 - 각 application authorization model을 직접 사용할 수 있다.
 
 단점:
+
 - OIDC가 없는 서비스에는 적용할 수 없다.
 - 서비스별 Keycloak client 관리 비용이 증가한다.
 

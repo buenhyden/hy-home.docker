@@ -4,11 +4,24 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
 - "POL-0031"
+implementation_services:
+  infra/04-data/relational/postgresql-cluster/docker-compose.yml:
+  - 'etcd-1'
+  - 'etcd-2'
+  - 'etcd-3'
+  - 'pg-0'
+  - 'pg-0-exporter'
+  - 'pg-1'
+  - 'pg-1-exporter'
+  - 'pg-2'
+  - 'pg-2-exporter'
+  - 'pg-cluster-init'
+  - 'pg-router'
 created: "2026-05-10"
 ---
 
@@ -18,7 +31,22 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`에 정의된 PostgreSQL HA cluster 사용 기준을 설명한다. 루트 compose는 `postgresql-cluster` 파일을 무조건 include하며 `data` 또는 `service` profile을 선택할 때만 기동된다. 선택 시 etcd 3노드, Spilo/Patroni PostgreSQL 3노드, `pg-router`, `pg-cluster-init`, per-node postgres exporter가 `data`/`service` 프로파일에서 동작한다.
+이 문서는 [PostgreSQL cluster Compose 구현](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | LAB rehearsal of PostgreSQL leadership/routing and logical upgrade recovery; not a confirmed HOME database. |
+| Source / updater | [Compose](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml), entrypoint, HAProxy template and init SQL own runtime sources; coordinated review owns upgrades. |
+| Services / profile | 3 etcd, router, init, 3 PostgreSQL, 3 exporters; exact `postgres-ha`. |
+| Flow / dependency | etcd holds Patroni DCS state; HAProxy routes primary writes/replica reads; init creates service/exporter roles and database. |
+| Exposure / persistence | write/read ports and stats route are source-declared; separate bind-backed etcd/PGDATA volumes. |
+| Environment / secrets | Patroni/service identifiers are environment keys; HAProxy, superuser, replication, exporter and service passwords are Docker Secrets. |
+| Health / resources | etcd health, `patronictl list`, HAProxy checks, exporters; services use Compose-declared templates and require aggregate LAB capacity. |
+| Security | secret-aware Spilo entrypoint and routed client connections; same-host members are not off-host DR. |
+| Backup / upgrade | globals plus per-database logical dumps; restore into a fresh DCS/cluster and use `RUN-0032` before upgrade/removal. |
+| License / edition | PostgreSQL uses the PostgreSQL License; Spilo, Patroni, etcd, HAProxy and exporter remain separately licensed dependencies. |
 
 ### Usage Type
 
@@ -36,7 +64,7 @@ created: "2026-05-10"
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. etcd, pg-router, pg-0부터 pg-2, exporter까지 열한 개 서비스가 모두 `postgres-ha`와 `service`에 속한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 cluster 파일을 include하며, 열한 서비스의 exact profile은 `postgres-ha`다.
 - `DEFAULT_DATA_DIR`, `POSTGRES_DEFAULT_DB`, Patroni usernames, service DB/user variables, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
@@ -78,6 +106,7 @@ created: "2026-05-10"
 - 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
 - Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/patroni_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
+- logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
 ## Common Checks
 
@@ -98,9 +127,12 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
+- [PostgreSQL license](https://www.postgresql.org/about/licence/)
+- [Logical upgrade restore rehearsal](../0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md) (`RUN-0032`)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/relational/postgresql-cluster/README.md)
+- [Compose implementation: infra/04-data/relational/postgresql-cluster/docker-compose.yml](../../../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml)

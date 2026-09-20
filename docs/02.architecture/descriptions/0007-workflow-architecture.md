@@ -16,8 +16,10 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-`07-workflow`는 Apache Airflow와 n8n을 함께 운영하는 workflow orchestration 계층이다.
-`dedicated-valkey` profile 선택 여부로 broker 경계를 분리한다.
+`07-workflow`는 Apache Airflow와 n8n을 함께 운영하는 owner-confirmed always-on HOME workflow orchestration 계층이다.
+`dedicated-valkey` profile은 전용 broker pair를 기동한다. 실제 broker
+경계는 Airflow/n8n 각각의 host/secret environment pair가 선택하며, profile
+선택만으로 기본 `mng-valkey` 연결은 바뀌지 않는다.
 
 - **Airflow**: code-first DAG orchestration.
   Web/API authentication은 Keycloak Auth Manager를 통한 application-native
@@ -83,10 +85,15 @@ n8n은 queue mode로 실행되고 공개 UI는 gateway ForwardAuth 정책을 따
 
 - `mng-valkey`
 
-`dedicated-valkey` profile:
+`dedicated-valkey` profile이 기동하는 OPTIONAL services:
 
 - `airflow-valkey`
 - `n8n-valkey`
+
+Airflow는 `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`, n8n은
+`N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET`을 matching pair로 바꿔야 전용
+broker를 사용한다. 코어 services는 `HOME`, 두 broker/exporter pairs는
+`OPTIONAL`이다.
 
 ## Data Flow
 
@@ -113,6 +120,10 @@ Airflow internal JWT는 Keycloak access token과 별개다.
 - worker -> task execution
 - task metadata -> PostgreSQL
 
+PostgreSQL metadata와 application encryption key가 durable recovery
+authority다. Valkey queue는 in-flight coordination이며 정확한 workflow
+복구 기록이 아니다.
+
 ## Deployment View
 
 Airflow compose:
@@ -135,4 +146,4 @@ Airflow auth:
 - **Airflow Operations**: [Guide](../../05.operations/catalog/07-workflow/0050-airflow/guide.md)
 - **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

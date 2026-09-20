@@ -63,8 +63,8 @@ secrets:
     file: ./secrets/auth/dozzle_client_secret.txt
 
   # ── Security ───────────────────────────────────────
-  vault_token:
-    file: ./secrets/security/vault_token.txt
+  openbao_token:
+    file: ./secrets/security/openbao_token.txt
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
     file: ./secrets/observability/grafana_admin_password.txt

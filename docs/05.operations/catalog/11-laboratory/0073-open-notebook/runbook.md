@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
@@ -14,88 +14,69 @@ created: "2026-05-17"
 
 # Open Notebook Recovery Runbook
 
-관련 구성요소의 현재 선언은 [버전 레지스트리](../../../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
-
-## Overview
-
-> Scope: root-active Open Notebook and SurrealDB service evidence, route hardening, secret-file boundary, and non-destructive diagnosis.
-
-이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret-file 주입 오류, 데이터 볼륨 경계 문제를 진단하고 복구 범위를 판단하는 절차를 정의한다.
-
-### Purpose
-
-Open Notebook 관리/실험 작업 환경의 가용성을 확인하되, secret 값 출력, 데이터 볼륨 삭제, credential storage 재초기화 같은 파괴적 조치를 승인 없는 복구 절차로 수행하지 않는다.
-
 ## When to Use
 
-- `https://open-notebook.${DEFAULT_URL}` 접속이 실패할 때.
-- `open_notebook` 또는 `surrealdb` 컨테이너가 unhealthy/restarting 상태일 때.
-- login, credential storage, encryption key, SurrealDB health 오류가 의심될 때.
-- hardening check에서 Open Notebook route, secret-file, dependency, healthcheck drift가 감지될 때.
+Use for app/DB readiness failure, unreadable provider keys, missing notebook
+content, API exposure concern, backup/restore, or an approved upgrade.
 
 ## Procedure
 
-### Checklist
+1. Validate and inspect from the root:
 
-- [ ] root `admin` profile에서 `open_notebook`과 `surrealdb`가 포함되는지 기록한다.
-- [ ] `open_notebook_password`, `open_notebook_encryption_key`, `surreal_db_password` secret 파일 존재 여부만 확인한다.
-- [ ] `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE` key 이름과 값 존재 여부를 확인하되 secret 값은 출력하지 않는다.
-- [ ] host-bound API/DB ports 노출이 target environment에서 승인된 상태인지 기록한다.
+   ```bash
+   docker compose --profile notebook config --quiet
+   docker compose --profile notebook ps surrealdb open_notebook
+   docker compose --profile notebook logs --tail=200 surrealdb open_notebook
+   ```
 
-### Steps
+2. Separate app password, encryption key, DB credential, database, app-data,
+   gateway/UI, API, and provider symptoms. Never print key values or content.
+3. If provider keys became unreadable, stop writes and confirm the encryption-key
+   secret identity/custody. Do not overwrite/re-save keys with a replacement key.
+4. Restart database first, verify readiness, then restart only the app. Keep
+   provider/model egress disabled until content and credential checks pass.
 
-1. root-active admin profile을 확인한다: `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`.
-2. tier hardening을 확인한다: `bash scripts/hardening/check-all-hardening.sh 11-laboratory`.
-3. 실행 중이면 상태와 로그를 기록한다: `docker ps --format '{{.Names}}\t{{.Status}}'`, `docker logs --tail 100 open_notebook`, `docker logs --tail 100 surrealdb`.
-4. route drift가 있으면 Open Notebook route chain을 `gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file`로 복구한다.
-5. dependency drift가 있으면 `depends_on.surrealdb.condition: service_healthy`와 `surrealdb` healthcheck를 복구한다.
-6. secret-file drift가 있으면 `OPEN_NOTEBOOK_PASSWORD_FILE`과 `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE` 경계를 복구한다.
-7. credential storage, encryption key rotation, volume reset, host-port exposure changes가 필요하면 중단하고 `## Escalation`으로 이동한다.
+### Backup and isolated restore
 
-### Verification Steps
+1. Block app writes or stop `open_notebook` while keeping SurrealDB available for
+   a consistent logical export. Export the configured namespace/database to a
+   protected SurrealQL file without putting the password on the command line.
+2. Stop remaining writers, copy `/app/data`, and record export/app-data checksums,
+   source commit, namespace/database, and protected key/credential receipt.
+3. Import into isolated SurrealDB; mount a copied app-data directory; supply the
+   same encryption key privately. Disable external provider/network calls.
+4. Verify notebook/source/settings counts, credential decryptability as a boolean,
+   and one synthetic notebook. Promote only after review.
 
-- `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
-- 활성화된 runtime에서 UI login과 notebook save evidence를 secret 값 없이 기록한다.
+### Upgrade
 
-### Observability and Evidence Sources
-
-- **Logs**: `docker logs --tail 100 open_notebook`, `docker logs --tail 100 surrealdb`
-- **Static config**: [Open Notebook compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml)
-- **Runtime signals**: container status, SurrealDB health, Traefik route response
-
-### Safe Rollback or Recovery Procedure
-
-N/A — no verified image rollback, encryption-key rollback, credential storage reset, or data-volume restore procedure is documented for autonomous execution.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: stop if secret values, notebook private content, or credential storage values may be exposed.
-- **Eval Re-run**: hardening, root profile validation, doc traceability.
+Repeat the backup, inspect release/migration/security notes, test the target image
+against restored copies, and verify content plus credential decryption. On failure,
+stop target and restore prior image and both data scopes.
 
 ## Evidence
 
-- Record command names, validation results, service states, redacted log snippets, and whether escalation was required.
-- Do not record secret values, notebook private content, encryption keys, or credential storage contents.
+Record exits, source commit, export/app-data checksums, counts, auth/decryption
+booleans, API boundary, and final state. Never record content or secret values.
 
 ## Rollback or Recovery
 
-If encryption key changes, credential storage reset, data volume restore/delete, host firewall changes, or direct port exposure changes are required, stop and escalate.
+Backup/restore and upgrade rehearsal are **planned but unexecuted**. Loss of the
+encryption key is not repaired by database restore alone.
 
 ## Escalation
 
-Escalate to the owning operator when verification fails, secret exposure risk appears, host-bound API/DB exposure needs change, destructive data actions are required, or Open Notebook content governance is implicated.
+Stop on missing/mismatched encryption key, DB export failure, unexpected API
+exposure, sensitive content leak, migration error, or unknown provider activity.
 
 ## Traceability
 
-- Declared parent: [Open Notebook Usage Guide](guide.md) (`GDE-0073`)
-- Governing authority: [11-laboratory Architecture Description](../../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](guide.md) (`GDE-0073`), [Policy](policy.md) (`POL-0073`)
+- [Guide](guide.md) (`GDE-0073`)
+- [Policy](policy.md) (`POL-0073`)
+- [Open Notebook Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml)
+- [SurrealDB Compose](../../../../../infra/04-data/specialized/surrealdb/docker-compose.yml)
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Operations policy](policy.md)
+- [SurrealDB export](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/export)
+- [Open Notebook security](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)

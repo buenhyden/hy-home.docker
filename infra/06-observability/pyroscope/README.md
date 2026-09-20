@@ -58,8 +58,8 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs up -d pyroscope` | Start Pyroscope service from the repository root |
-| `docker compose -f infra/06-observability/docker-compose.yml --profile obs restart pyroscope` | Apply configuration changes from the repository root |
+| `docker compose --profile obs up -d pyroscope` | Start Pyroscope service from the repository root |
+| `docker compose --profile obs restart pyroscope` | Apply configuration changes from the repository root |
 
 ## Configuration
 
@@ -82,12 +82,20 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 ## Troubleshooting
 
-- Start with `docker compose -f infra/06-observability/docker-compose.yml --profile obs config` to confirm network, volume, secret, and label references render correctly.
+- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For ingestion errors: confirm Alloy's Pyroscope exporter endpoint matches the Pyroscope container's push API.
 - For missing profiles: verify service name labels in Alloy's profiling configuration match expected Pyroscope app names.
 - For storage issues: confirm the Pyroscope data volume is mounted and has sufficient disk space.
 - For retention, storage backend, ingestion limit, or profile data deletion: stop and use the linked runbook escalation path before taking data-loss-risk action.
+
+### Convergence contract
+
+- Classification: **OPTIONAL**. Exact profiles: `obs`, `profiling`.
+- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0047-pyroscope/`; IDs `GDE-0047`, `POL-0047`, `RUN-0047`.
+- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 

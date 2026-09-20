@@ -9,6 +9,14 @@ layer: "operations"
 artifact_id: "GDE-0053"
 parent_ids:
 - "POL-0053"
+implementation_services:
+  infra/07-workflow/n8n/docker-compose.yml:
+  - n8n
+  - n8n-task-runner
+  - n8n-task-runner-worker
+  - n8n-valkey
+  - n8n-valkey-exporter
+  - n8n-worker
 created: "2026-05-10"
 ---
 
@@ -18,7 +26,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode 구성이며, `dedicated-valkey` profile을 선택하면 dedicated `n8n-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
+이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode 구성이다. `dedicated-valkey` profile은 dedicated `n8n-valkey`를 기동하지만, 실제 broker는 `N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET` pair가 선택하며 기본값은 공유 `mng-valkey`다.
 
 ### Usage Type
 
@@ -53,7 +61,7 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - **n8n Main**: 사용자 인터페이스(UI), API 서버, 워크플로우 엔진.
 - **n8n Worker**: 대규모 비동기 작업 처리를 담당하는 작업 실행기.
 - **n8n Task Runners**: `n8n-task-runner`와 `n8n-task-runner-worker`가 외부 runner 모드에서 broker endpoint에 연결한다.
-- **Valkey Broker**: compose 파일은 `infra/07-workflow/n8n/docker-compose.yml` 하나이며, `dedicated-valkey` profile을 선택하면 `n8n-valkey`와 `n8n-valkey-exporter`가 기동하고 선택하지 않으면 `${N8N_VALKEY_HOST:-mng-valkey}` 기본값이 공유 `mng-valkey`로 해석된다.
+- **Valkey Broker**: compose 파일은 `infra/07-workflow/n8n/docker-compose.yml` 하나다. `dedicated-valkey` profile은 `n8n-valkey`와 exporter를 기동할 뿐이다. `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_password}`가 실제 broker를 선택하며 두 값을 matching pair로 바꾸지 않으면 공유 `mng-valkey`가 유지된다.
 - **Metadata DB**: 워크플로우 레시피 및 사용자 자격 증명(`Credentials`)을 저장하는 PostgreSQL 데이터베이스.
 
 #### 2. Access and Integration
@@ -94,6 +102,17 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - webhook을 외부에 노출하면서 gateway allowlist, SSO, rate-limit 경계를 검토하지 않는 경우.
 - service-local compose를 root network/secrets context 없이 단독 readiness evidence로 사용하는 경우.
 
+### Source-backed operating contract
+
+- **Purpose/classification**: `n8n`, worker, task runner, and init are owner-confirmed `HOME` automation services. `n8n-valkey` and its exporter are an `OPTIONAL` dedicated broker pair.
+- **Profiles/source**: core services use `workflow`/`workflow-n8n`; the pair uses `dedicated-valkey`. [Compose](../../../../../infra/07-workflow/n8n/docker-compose.yml) and its selected Dockerfiles are authoritative.
+- **State flow**: PostgreSQL database `n8n` on `mng-pg` is durable workflow/execution metadata; `n8n-data`, runner data, and `custom/` hold local application, binary, and extension artifacts; Valkey carries queue coordination. Queue state is not a complete recoverable workflow history.
+- **Secrets/environment**: preserve `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, and the selected broker password. `N8N_VALKEY_HOST` and `N8N_VALKEY_SECRET` must be switched together; the profile alone leaves defaults on `mng-valkey`/`mng_valkey_password`.
+- **Dependencies/security**: PostgreSQL, selected Valkey, Traefik/OAuth2 Proxy/Keycloak, Qdrant where a workflow uses it, root CA, and `infra_net` must be ready. Task runners stay internal and use the auth token; the UI uses the gateway auth chain.
+- **Persistence/resources**: recover PostgreSQL and matching encryption key together with local data, custom nodes, and externally stored binary artifacts. Compose limits are source declarations, not measured headroom.
+- **Normal use/lifecycle**: render from root with `docker compose --profile workflow config --quiet`. Before backup or update, disable schedules/webhooks and external producers, drain/reconcile executions, back up PostgreSQL and artifacts consistently, upgrade with the upstream sequence, then verify credentials, a manual workflow, queue workers, webhooks, and task runners before resuming.
+- **Upstream/license**: follow the official [queue mode](https://docs.n8n.io/deploy/host-n8n/configure-n8n/scaling/enable-queue-mode/), [encryption key](https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/configuration-examples/set-a-custom-encryption-key/), [backup/restore](https://docs.n8n.io/deploy/host-n8n/keep-n8n-running/backup-and-restore/), and [update](https://docs.n8n.io/deploy/host-n8n/keep-n8n-running/update-n8n/) guidance. n8n uses its Sustainable Use License/fair-code terms; verify use against the pinned release.
+
 ## Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
@@ -112,7 +131,9 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [n8n Compose](../../../../../infra/07-workflow/n8n/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

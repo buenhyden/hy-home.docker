@@ -4,11 +4,20 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
 - "POL-0027"
+implementation_services:
+  infra/04-data/nosql/mongodb/docker-compose.yml:
+  - 'mongo-express'
+  - 'mongo-init'
+  - 'mongo-key-generator'
+  - 'mongodb-arbiter'
+  - 'mongodb-exporter'
+  - 'mongodb-rep1'
+  - 'mongodb-rep2'
 created: "2026-05-10"
 ---
 
@@ -18,7 +27,22 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `infra/04-data/nosql/mongodb/docker-compose.yml`에 정의된 MongoDB replica set 사용 기준을 설명한다. 루트 compose는 MongoDB 파일을 무조건 include하며 `data` 또는 `obs` profile을 선택할 때만 기동된다. 선택 시 `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`가 `data`/`obs` 프로파일과 `infra_net`에서 동작한다.
+이 문서는 [MongoDB Compose 구현](../../../../../infra/04-data/nosql/mongodb/docker-compose.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 `infra_net`에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | No confirmed HOME consumer; LAB replica-set and document-database evaluation. |
+| Source / updater | [Compose](../../../../../infra/04-data/nosql/mongodb/docker-compose.yml) owns image sources; dependency automation proposals require compatibility review. |
+| Services / profile | Key generator, two data members, arbiter, init, UI, exporter; exact `mongodb`. |
+| Flow / dependency | `mongo-init` creates `MyReplicaSet`; clients address both data members; arbiter votes without data. |
+| Exposure / persistence | Mongo Express via Traefik; members internal; data/key named volumes. |
+| Environment / secrets | Root/UI usernames are environment identifiers; root/UI passwords are Docker Secrets; keyfile is generated into `mongo-key`. |
+| Health / resources | member healthchecks, `rs.status()`, init/exporter logs; data members extend `template-stateful-high`. |
+| Security | internal keyfile authentication plus secret-backed root/UI passwords; same-host topology is not DR. |
+| Backup / upgrade | `mongodump --oplog` and isolated `--oplogReplay`; require tool/server compatibility and restore evidence before upgrade/removal. |
+| License / edition | MongoDB Community is governed by SSPL terms; this topology claims no Enterprise backup or management capability. |
 
 ### Usage Type
 
@@ -36,7 +60,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 `infra/04-data/nosql/mongodb/docker-compose.yml`를 무조건 include하므로, 기동 여부는 선택한 profile이 결정한다. 복제 노드와 exporter는 `mongodb`와 `obs`에, `mongodb-arbiter`와 `mongo-express`는 `data`에만 속한다.
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)는 MongoDB 파일을 include하며 모든 서비스의 정확한 profile은 `mongodb`다.
 - `MONGODB_ROOT_USERNAME`, `MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME`, `mongodb_root_password`, `mongo_express_basicauth_password`가 준비되어 있어야 한다.
 - replica set 이름은 compose command에 고정된 `MyReplicaSet` 기준이다. 현재 구현에는 별도 replica-set-name 환경 변수가 없다.
 
@@ -73,6 +97,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
 - keyfile은 `mongo-key-generator`가 `mongo-key` named volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
 - `mongodb-rep1`과 `mongodb-rep2`에만 compose healthcheck가 있다. `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
+- replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
 ## Common Checks
 
@@ -92,9 +117,12 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
+- [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
+- [MongoDB Community licensing](https://www.mongodb.com/legal/licensing/community-edition)
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)
 - [Recovery runbook](runbook.md)
 - [Infra README](../../../../../infra/04-data/nosql/mongodb/README.md)
+- [Compose implementation: infra/04-data/nosql/mongodb/docker-compose.yml](../../../../../infra/04-data/nosql/mongodb/docker-compose.yml)

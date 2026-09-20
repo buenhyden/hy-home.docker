@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 created: "2026-03-27"
 ---
 
@@ -110,6 +110,8 @@ postgresql-cluster/
 
 ## Validation
 
+Classification is `LAB`; etcd and Patroni members share one host, so the topology is not host-level disaster recovery. Logical recovery restores `pg_dumpall --globals-only` roles/privileges before per-database dumps into a fresh compatible cluster, rebuilds DCS state, and follows `RUN-0032`. Owning artifacts are `GDE-0031`, `POL-0031`, and `RUN-0031`.
+
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect PostgreSQL cluster services.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking PostgreSQL cluster documentation ready.
 
@@ -129,4 +131,4 @@ postgresql-cluster/
 ---
 Copyright (c) 2026. Licensed under the MIT License.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

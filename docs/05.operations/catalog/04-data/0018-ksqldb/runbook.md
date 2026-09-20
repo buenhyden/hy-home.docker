@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "RUN-0018"
 parent_ids:
@@ -46,20 +46,20 @@ created: "2026-05-17"
 
    ```bash
    test -f infra/04-data/analytics/ksql/docker-compose.yml
-   python3 scripts/validation/check-document-links.py --mode alignment
+   python3 scripts/validation/check-document-links.py --mode all
    ```
 
 2. Server logs and readiness를 확인한다.
 
    ```bash
-   docker logs ksqldb-server --tail 100
+   docker compose --profile ksql logs --tail 100 ksqldb-server
    curl -fsS http://ksqldb-server:8088/info
    ```
 
 3. CLI가 필요한 경우 `ksql` profile로 접속한다.
 
    ```bash
-   docker run --rm --network infra_net confluentinc/cp-ksqldb-cli:8.0.7 ksql http://ksqldb-server:8088
+   docker compose --profile ksql run --rm --entrypoint ksql ksqldb-cli http://ksqldb-server:8088
    ```
 
 4. Query mutation은 evidence 확보 후 수행한다.
@@ -81,10 +81,16 @@ created: "2026-05-17"
 - **Metrics**: Kafka consumer lag if the messaging stack exposes it
 - **Evidence**: query ID, source/sink topics, command class, dependency status
 
-### Safe Rollback or Recovery Procedure
+### Planned isolated recovery
 
-- N/A - no verified generic query rollback is documented for all ksqlDB workloads.
-- Reprocessing or offset replay must be approved per topic/query and recorded separately.
+This procedure is source-backed and **was not executed in this task**.
+
+1. Record the service ID, persistent queries, streams/tables/types, UDFs, connectors, source/sink/internal topics, Schema Registry subjects, and Kafka recovery point. Pause query and topic mutations under a named approval.
+2. Preserve SQL definitions and the ksqlDB command topic together with the Kafka and Schema Registry recovery artifacts. Do not treat `ksqldb-data-volume` as the authoritative backup.
+3. Build a fresh isolated Kafka/Schema Registry/ksqlDB target on compatible versions and a non-conflicting network/service ID. Restore Kafka and schemas through their owning runbooks, then replay the reviewed SQL definitions or supported command-topic path.
+4. Use the current `ksqldb-cli` Compose service to compare `SHOW QUERIES`, streams, tables, schemas, offsets, and representative query results. Validate that no experimental datagen input was introduced.
+5. If replay, schema, or result validation fails, discard the isolated stack and retry from untouched artifacts. Never reset offsets or delete internal topics to force success.
+6. Production cutover, offset changes, or destructive topic cleanup need separate approval. Recovery remains unverified until a full isolated rehearsal succeeds.
 
 ### Agent Operations (If Applicable)
 
@@ -100,7 +106,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-N/A - no verified workload-independent rollback procedure exists for ksqlDB query state. Escalate for replay, offset changes, or destructive topic changes.
+Rollback means leaving the existing Kafka/ksqlDB stack unchanged and discarding the isolated candidate. An in-place binary rollback is allowed only when the upstream version path and command-topic format remain compatible.
 
 ## Escalation
 
@@ -114,7 +120,11 @@ Escalate when Kafka/Schema Registry is unavailable, query replay is required, co
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- [ksqlDB architecture and command topic](https://docs.confluent.io/platform/current/ksqldb/operate-and-deploy/how-it-works.html)
+- [ksqlDB upgrade guidance](https://docs.confluent.io/platform/current/ksqldb/upgrading.html)
+- [Compose implementation](../../../../../infra/04-data/analytics/ksql/docker-compose.yml)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations runbooks index](../../../README.md)
 - [Usage guide](guide.md)

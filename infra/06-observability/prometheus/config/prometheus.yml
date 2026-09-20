@@ -275,16 +275,6 @@ scrape_configs:
         labels:
           domain: "workflow"
 
-  - job_name: "vault"
-    metrics_path: /v1/sys/metrics
-    params:
-      format: ["prometheus"]
-    scheme: http
-    bearer_token_file: /run/secrets/vault_token
-    static_configs:
-      - targets:
-          - "vault:8200"
-
   - job_name: "openbao"
     metrics_path: /v1/sys/metrics
     params:

@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -16,36 +16,51 @@ created: "2026-09-19"
 
 ## Overview
 
-HOME image workflow UI, explicitly required always-on by the owner.
+ComfyUI is the always-on HOME image-workflow interface.
 
 ## Policy Scope
 
-`infra/08-ai/comfyui` and services `comfyui` under profiles `ai / ai-image`.
+Keep `comfyui` as an always-on HOME capability under `ai` and `ai-image`.
+Compose owns service selection, gateway labels, GPU request, resources and mounts.
 
 ## Controls
 
-Use authenticated gateway ingress and loopback direct access. The current image exception is owned in image-tag-policy.exceptions.json. Review custom-node code before installation. The 4 GiB container budget and shared GPU need measured inference tests; always-on does not authorize concurrent heavy Ollama and image workloads.
+- Keep gateway authentication and loopback-only direct publication. Exposure or gateway changes require an approved exception with scope, expiry and rollback.
+- Treat custom nodes as third-party executable code. Review provenance, revision, dependencies and license before install or update; keep an inventory sufficient to reproduce the known-good node set.
+- Preserve `user`, `input` and `output` as user data. Preserve model source/checksum and custom-node revision inventory. Hugging Face and Torch caches are rebuildable, but do not delete them while diagnosing without an approved recovery plan.
+- Back up persistent user data before migration and restore only to isolated storage first. A static Compose check does not establish a backup, GPU capacity, restart recovery or restore.
+- Review upstream release notes and image compatibility before upgrade. Hold the prior image and data inventory until health and an approved representative workflow succeed; the current image tag is a source declaration, not a tested upgrade claim.
 
-[Implementation](../../../../../infra/08-ai/comfyui/docker-compose.yml) and [version projection](../../../../../infra/tech-stack.versions.json) own runtime pins.
+### Lifecycle and data controls
+
+- ComfyUI remains owner-confirmed `HOME`. Route auth, loopback binding, GPU access, and source resource limits must remain explicit; limits are not measured headroom.
+- Back up workflows/user settings, inputs/outputs required for recovery, custom-node revision inventory, and exact model provenance as one release set. Treat caches as disposable only when every artifact is reproducible.
+- Pause queue intake and wait for or cancel active jobs before backup, restore, image upgrade, custom-node change, or model migration. Do not install executable nodes directly into the live recovery set.
+- Restore/rehearse on isolated mounts/project with no public route and verify health, GPU, required nodes, model checksums/licenses, and a representative workflow before replacement.
+- Removal requires user-data disposition, artifact provenance export, route shutdown, credential revocation, and explicit approval before deleting mounts.
 
 ## Exceptions
 
-Owner @buenhyden must record scope, risk, expiry and exit condition before any deviation. Static configuration is not evidence of live backup or recovery.
+Exceptions require owner, scope, risk, expiry and recovery condition.
 
 ## Verification
 
-Compose/profile validation and the [runbook](runbook.md) provide separate static and runtime evidence. Stop on unexpected service, mount, authentication or readiness state.
+Use source and metadata checks before deployment. Runtime starts, model downloads,
+workflow runs, GPU utilization and restores need a separately approved target and
+sanitized evidence. Escalate missing backup/provenance, unexpected port exposure,
+or an unreviewed custom node.
 
 ## Review Cadence
 
-Review monthly and before image, persistence, authentication or exposure changes.
+Review monthly and before an image, custom-node, persistent-data, exposure or GPU policy change.
 
 ## Traceability
 
 - Governing architecture: [AD-0008](../../../../02.architecture/descriptions/0008-ai-architecture.md)
-- [Guide](guide.md), [Policy](policy.md), [Runbook](runbook.md)
+- Subject peers: [Guide](guide.md) and [Runbook](runbook.md)
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
-- [Upstream documentation](https://docs.comfy.org/installation/system_requirements)
+- [Guide](guide.md), [Runbook](runbook.md)
+- Runtime pins are owned by [ComfyUI Compose](../../../../../infra/08-ai/comfyui/docker-compose.yml); its declared image is selected instead of the local Dockerfile, and the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) verifies drift.
+- [Central backup policy](../../04-data/0021-backup-and-restore/policy.md)

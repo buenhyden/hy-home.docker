@@ -45,6 +45,13 @@ created: "2026-05-17"
   - high-cardinality label, unbounded tenant/user/request/build identifiers, secret-bearing label or metric payload.
   - 현재 Compose에 선언되지 않은 persistence option, route relaxation, image change, or scrape-job behavior를 문서에서 구현 완료로 표현하는 행위.
 
+### Lifecycle and data controls
+
+- Keep Pushgateway `OPTIONAL`; starting it for a batch window or finding a preexisting running container does not reclassify it as `HOME`.
+- Current metrics are volatile. Require grouping-key ownership, stale-series deletion, authenticated gateway access, and producer-side truth; no persistence or exact restore may be claimed.
+- Upgrade/restart plans must accept metric loss and arrange controlled repush of current observations. Resource changes require observed series/cardinality evidence.
+- Removal requires producer migration/disablement, Prometheus scrape cleanup, stale-group deletion, and route shutdown; there is no service data volume to delete.
+
 ## Exceptions
 
 예외는 운영 owner가 승인해야 하며, 승인 사유, label cardinality boundary, cleanup 절차, rollback 기준, 관련 task or incident evidence를 남겨야 한다. Emergency cleanup은 runbook 절차로 수행하고 사후에 evidence를 보강한다.
@@ -68,7 +75,7 @@ Quarterly, and on material change to image version, Docker profile, route middle
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

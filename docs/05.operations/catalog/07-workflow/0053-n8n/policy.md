@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 n8n 서비스의 안정적인 운영을 위한 정책과 통제 항목을 정의한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue-mode 구성을 기준으로 하며, `dedicated-valkey` profile을 선택하면 `n8n-valkey`를, 선택하지 않으면 공유 `mng-valkey`를 broker로 사용한다.
+이 문서는 n8n 서비스의 안정적인 운영을 위한 정책과 통제 항목을 정의한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue-mode 구성을 기준으로 한다. `dedicated-valkey` profile은 `n8n-valkey`를 기동하지만, 실제 broker는 `N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET` pair가 선택하며 기본값은 공유 `mng-valkey`다.
 
 ## Policy Scope
 
@@ -39,6 +39,14 @@ created: "2026-05-17"
   - plaintext credential, token, workflow secret 원문 문서화.
   - 승인 없는 gateway/SSO middleware 완화.
   - root network/secrets context 없이 service-local compose 단독 `config` 결과를 CI evidence로 주장.
+
+### Lifecycle and data controls
+
+- Core n8n services remain `HOME`; the dedicated Valkey pair remains `OPTIONAL`. A broker cutover requires matching `N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET`, drained or reconciled executions, and rollback evidence.
+- PostgreSQL, `n8n_encryption_key`, local application/binary data, custom nodes, and required external binary stores form one recovery contract. Never restore credential rows with a different encryption key.
+- Pause schedules, webhooks, and producers before consistent backup, restore, update, or migration. Preserve task-runner auth and keep runners off public routes.
+- Rehearse with a separate project/network and no outbound workflow side effects. Verify credential decryption without disclosure, worker registration, task-runner auth, one manual workflow, and one controlled webhook before resuming production inputs.
+- Treat Compose resources as configured limits only. Removal requires exported workflow/credential evidence, retained recoverable artifacts, revoked OAuth/webhook clients and secrets, and explicit data-deletion approval.
 
 ## Exceptions
 
@@ -63,7 +71,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

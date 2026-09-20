@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-20"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -14,78 +14,59 @@ created: "2026-05-17"
 
 # SonarQube Operations Policy
 
-<!-- [ID:09-tooling:sonarqube] -->
-> Governance for code quality, security standards, and SonarQube lifecycle.
-
 ## Overview
 
-This policy defines the operational standards for the SonarQube service. It ensures that code quality scanning is consistent across all platform components and that the infrastructure remains healthy and high-performing.
+This policy governs the tracked SonarQube Community Build deployment without
+assuming paid-edition features, native Keycloak integration, or a universal CI gate.
 
 ## Policy Scope
 
-- **Governance**: Quality gate enforcement, branch analysis rules.
-- **Maintenance**: Plug-in life-cycle, database optimization.
-- **Reporting**: Security hotspots and vulnerability tracking.
+Activation, gateway/application auth, tokens, database/index/log data, resource
+limits, backup/restore, upgrades, and removal.
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
-
-### Operational Standards
-
-#### 1. Quality Gate Enforcement
-
-- All platform-level projects **MUST** pass the "Sonar way" Quality Gate before merging into `main`.
-- Critical issues and high-severity security vulnerabilities **MUST** be remediated or officially "Acknowledged" with a technical rationale.
-- Test coverage requirements: Minimum 90% for new code (mandatory).
-
-#### 2. Routine Maintenance
-
-| Frequency | Task | Owner |
-| :--- | :--- | :--- |
-| **Weekly** | Log rotation check (`ce.log`, `web.log`). | Operators |
-| **Monthly** | Database index maintenance (Postgres). | DBAs |
-| **Quarterly** | Plug-in compatibility audit (SonarLint). | Platform Team |
-
-#### 3. Backup and Persistence
-
-- **Data**: All persistent configuration is stored in the `mng-db` cluster.
-- **Indexing**: ElasticSearch indexes are located at `/opt/sonarqube/data/es7`.
-- **Note**: Only the SQL database needs regular backups. ElasticSearch indexes can be rebuilt from the DB.
-
-### Monitoring Strategy
-
-- **Health Check**: `http://sonarqube:9000/api/system/health`.
-- **Key Metrics**:
-  - `sonar.web-jvm.max_heap_size`
-  - `sonar.search-jvm.max_heap_size`
-  - Number of pending Background Tasks.
+- **Activation:** use `sast` or general `tooling`; keep it outside HOME.
+- **Authentication:** gateway ForwardAuth protects entry, while SonarQube owns
+  application users, groups, permissions, and tokens. Native delegated auth is
+  absent until configured and tested. IdP deactivation does not by itself revoke
+  existing SonarQube tokens; revoke them in SonarQube.
+- **Tokens:** issue minimum-scope expiring tokens, store them in approved CI secret
+  owners, and rotate/revoke without logging values.
+- **Data:** PostgreSQL is authoritative. Local search indexes are rebuildable;
+  logs follow incident/evidence retention. Do not treat the data volume alone as backup.
+- **Backup/restore:** use database-native backup, verify it, and rehearse isolated
+  restore plus reindex. Capture tracked config and external plugin inventory.
+- **Resources:** respect the tracked heap and stateful-high limits. Change them
+  only from measured queue/heap/index evidence and host capacity.
+- **Upgrade:** review edition/version compatibility, DB/host requirements, and
+  plugin compatibility; test on restored data. Rollback image and DB together.
+- **Removal:** preserve or explicitly dispose of projects, settings, issues,
+  users, tokens, and backup evidence before deleting the database/schema or volumes.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+Paid features, native SAML/OIDC provisioning, or broader quality-gate mandates
+require their owning requirement/policy and cannot be inferred here.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
-- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
+Health is partial. Runtime acceptance includes DB access, gateway plus app
+authorization, background task completion, representative analysis, and backup/
+restore evidence where claimed.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review on release, DB/plugin/auth/token, resource, or retention changes.
 
 ## Traceability
 
-- Declared parent: [Tooling Tier Architecture Description](../../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](guide.md) (`GDE-0066`), [Runbook](runbook.md) (`RUN-0066`)
+- [Guide](guide.md) (`GDE-0066`)
+- [Runbook](runbook.md) (`RUN-0066`)
+- [Tooling architecture](../../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
-
-- [Operations index](../../../README.md)
-- [Usage guide](guide.md)
-- [Recovery runbook](runbook.md)
+- [SonarQube Compose source](../../../../../infra/09-tooling/sonarqube/docker-compose.yml)
+- [Community Build authentication](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
+- [Managing SonarQube tokens](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

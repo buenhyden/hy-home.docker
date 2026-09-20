@@ -8,110 +8,53 @@ updated: "2026-09-19"
 created: "2025-12-06"
 ---
 
-<!-- [ID:04-data:seaweedfs] -->
 # SeaweedFS
-
-> Distributed file/object storage with master, volume, filer, S3, and mount services.
 
 ## Overview
 
-SeaweedFS provides a distributed file and object storage surface for `hy-home.docker`. The current compose path is `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`, with server selection through `seaweedfs` or `storage-seaweedfs`. The separate `seaweedfs-mount` profile selects the privileged mount plus master, volume and filer dependencies; it does not select S3.
+This package defines the repository's optional SeaweedFS surface.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Infrastructure Operators
-- Developers using filer or S3 interfaces
-- SREs
-- AI Agents
+It is intended for operators and maintainers evaluating SeaweedFS.
 
 ## Scope
 
-### In Scope
-
-- SeaweedFS master, volume, filer, S3, and mount services
-- Traefik routes for master UI, CDN/filer, and S3 gateway
-- Runtime volumes and mount privilege boundary
-- Links to canonical guide, policy, and runbook
-
-### Out of Scope
-
-- Secret values, private file contents, or credential material
-- Runtime activation of SeaweedFS security configuration; only
-  `config/security.toml.example` remains as a future scaffold and it is not
-  mounted by the current compose file. Enabling it is a separate approved runtime change
-- Unapproved metadata restore, volume deletion, forced unmount, or reshard operations
+[`docker-compose.yml`](docker-compose.yml) defines `seaweedfs-master`,
+`seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, and `seaweedfs-mount`.
+Profiles `seaweedfs` and `storage-seaweedfs` select core plus S3;
+`seaweedfs-mount` additionally selects the privileged FUSE mount.
 
 ## Structure
 
-```text
-seaweedfs/
-├── config/              # Future security scaffold; current compose does not mount it
-├── docker-compose.yml   # Current SeaweedFS data-profile stack
-└── README.md            # This file
-```
-
-## Service Readiness
-
-| Field | Evidence |
-| --- | --- |
-| Purpose | SeaweedFS service leaf in `04-data`; services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount` |
-| Config files | `docker-compose.yml`, `config/security.toml.example` |
-| Config values | server profiles: `seaweedfs`, `storage-seaweedfs`; mount profile: `seaweedfs-mount`; image: [Compose declaration](docker-compose.yml) |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
-| Networks | `infra_net`; static IPs `172.19.0.140` through `172.19.0.144` |
-| Volumes | `seaweedfs-master-data:/data:rw`, `seaweedfs-volume-data:/data:rw` |
-| Ports | Master `9333/19333`, volume `8085/18085`, filer `8888/18888`, S3 `8333`; direct host `ports` not declared |
-| Labels | `hy-home.tier`, Traefik route `seaweedfs.${DEFAULT_URL}`, Traefik route `cdn.${DEFAULT_URL}`, Traefik route `s3.${DEFAULT_URL}` |
-| Secret refs | Not declared |
-| Healthcheck | Compose healthcheck declared for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`; not declared for `seaweedfs-mount` |
-| Privilege boundary | `seaweedfs-mount` runs `privileged: true` with `SYS_ADMIN` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md`), Policy (`docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md`) |
-| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose --profile seaweedfs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
+Master and volume state use `seaweedfs-master-data` and
+`seaweedfs-volume-data`. Services join `infra_net`; the S3 route uses the standard
+gateway chain. Current source declares no secret, internal authentication/TLS or
+mounted security configuration. The mount adds `SYS_ADMIN` and `/dev/fuse` and
+therefore needs explicit host-capability approval. Master, volume, filer and S3
+expose only their declared internal HTTP/gRPC ports; no host `ports` mapping is
+declared. Each core/S3 service has an HTTP health check, while the privileged mount
+has no health check. Commands/configuration are inline; `security.toml.example` is
+not mounted.
 
 ## How to Work in This Area
 
-1. Review the linked operations guide, policy, and runbook before changing SeaweedFS configuration.
-2. Treat `seaweedfs-mount` changes as host-impacting because of `privileged` and `SYS_ADMIN`.
-3. Do not claim SeaweedFS authentication is active unless a reviewed security
-   config is created, mounted, and used by the compose file through a separate approved runtime change.
-4. After compose, route, or mount changes, run the validation commands listed below.
+```bash
+docker compose --env-file .env.example --profile seaweedfs config --quiet
+docker compose --env-file .env.example --profile seaweedfs config --services
+docker compose --env-file .env.example --profile seaweedfs-mount config --quiet
+```
 
-## Runtime Surface
-
-| Surface | Current Evidence |
-| --- | --- |
-| Image | `chrislusf/seaweedfs:4.47` |
-| Master route | `https://seaweedfs.${DEFAULT_URL}` |
-| Filer/CDN route | `https://cdn.${DEFAULT_URL}` |
-| S3 route | `https://s3.${DEFAULT_URL}` |
-| Mount target | `/mnt/seaweedfs` inside `seaweedfs-mount` command |
-| Volume limit | `-volumeSizeLimitMB=1024` on master |
-
-## Validation
-
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Validate this service with `docker compose --profile seaweedfs config --quiet`.
-- Verify status with `docker compose --profile seaweedfs --profile seaweedfs-mount ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount`.
-
-## Troubleshooting
-
-- Start with compose render and service status before changing configuration.
-- Check individual service logs; there is no single `seaweedfs` container.
-- For mount issues, follow the linked runbook and preserve evidence before restarting `seaweedfs-mount`.
-- For metadata or volume corruption, stop changes and escalate rather than restoring, deleting, resharding, or force-unmounting from README guidance.
+SeaweedFS remains OPTIONAL and is not an automatic MinIO replacement. Recovery
+must coordinate engine-aware volume backup, filer metadata and quiesced
+master/topology state at one point, then validate on a same-version isolated
+target. The official backup page describes limitations, so recovery remains
+unverified until rehearsal.
 
 ## Related Documents
 
-- **Guide**: Technical Guide (`docs/05.operations/catalog/04-data/0024-seaweedfs/guide.md`)
-- **Policy**: Operations Policy (`docs/05.operations/catalog/04-data/0024-seaweedfs/policy.md`)
-- **Runbook**: Recovery Runbook (`docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md`)
-- [Documentation index](../../../../docs/README.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.
+Use the [documentation entry point](../../../../docs/README.md) to locate Stage 05
+subject `04-data/0024-seaweedfs` and POL-0021. Official sources:
+[data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup),
+[security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration), and
+[license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).

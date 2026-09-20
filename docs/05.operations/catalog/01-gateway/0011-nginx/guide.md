@@ -9,6 +9,9 @@ layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
 - "POL-0011"
+implementation_services:
+  infra/01-gateway/nginx/docker-compose.yml:
+  - nginx
 created: "2026-05-10"
 ---
 
@@ -16,9 +19,13 @@ created: "2026-05-10"
 
 ## Usage
 
+### Implementation Sources
+
+- [infra/01-gateway/nginx/docker-compose.yml](../../../../../infra/01-gateway/nginx/docker-compose.yml)
+
 ### Overview
 
-이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
+이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. Nginx의 lifecycle class는 **OPTIONAL** alternative gateway다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
 
 ### Usage Type
 
@@ -41,6 +48,11 @@ created: "2026-05-10"
 - `infra/01-gateway/nginx` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
+
+Nginx is selected only by `nginx`, publishes host ports 80/443, depends on a
+healthy `minio`, and mounts its config and `${DEFAULT_CERT_DIR}` read-only. It is
+an alternative listener to Traefik: because both claim the same host ports, do
+not select `nginx` with `core`, `dev`, or `local` on one host.
 
 ### Step-by-step Instructions
 
@@ -71,6 +83,15 @@ created: "2026-05-10"
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](runbook.md)을 따른다.
 
+### Configuration Recovery and Upgrade
+
+Restore `nginx.conf` from Git and certificates from their private owner. Validate
+the root `nginx` profile with its MinIO dependency, lint the config in the approved
+runtime, then verify `/ping` and every special path before restoring 80/443
+traffic. Cache/log/PID tmpfs needs no backup. Upgrade only after config lint and a
+canary of OAuth2, Keycloak, MinIO API, and MinIO console paths. This recovery is
+planned and was not executed during this correction.
+
 ## Traceability
 
 - Declared parent: [01-Gateway Nginx Operations Policy](policy.md) (`POL-0011`)
@@ -81,7 +102,7 @@ created: "2026-05-10"
 
 - [Official upstream operational documentation](https://nginx.org/en/docs/beginners_guide.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Operations policy](policy.md)

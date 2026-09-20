@@ -34,7 +34,7 @@ created: "2025-11-12"
 1. 개발 SMTP는 Mailpit을 사용하고 외부 배달 경로와 분리한다.
 2. Stalwart는 DNS·TLS·인증·포트·백업 복구 준비를 확인한 뒤 선택한다.
 3. 루트 Compose의 network·secret·공통 template 맥락을 유지해 검증한다.
-4. 이미지와 포트 기본값은 [Stalwart Compose](stalwart/docker-compose.yml), [Mailpit Compose](mailpit/docker-compose.yml)를 참조한다. [Curated version projection](../tech-stack.versions.json)은 drift 검증 자료다.
+4. 이미지와 포트 기본값은 [Stalwart Compose](stalwart/docker-compose.yml), [Mailpit Compose](mailpit/docker-compose.yml)를 참조한다. [Derived Compose image projection](../tech-stack.versions.json)은 drift 검증 자료다.
 
 ## Configuration
 

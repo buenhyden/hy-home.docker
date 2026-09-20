@@ -46,7 +46,7 @@ created: "2026-05-17"
 1. 현재 service 상태, 최근 로그, healthcheck를 캡처한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana
+   docker compose --profile obs ps grafana
    docker logs --tail=200 infra-grafana
    docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
    ```
@@ -54,7 +54,7 @@ created: "2026-05-17"
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
    ```
 
 3. OAuth or role mapping failure이면 role mapping과 OAuth endpoint references만 확인한다.
@@ -91,7 +91,7 @@ created: "2026-05-17"
 7. Config와 Secret ID 경계가 정책과 일치하지만 runtime state가 회복되지 않으면 Grafana를 재시작한다.
 
    ```bash
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana
+   docker compose --profile obs restart grafana
    docker logs --tail=100 infra-grafana
    docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
    ```
@@ -100,7 +100,7 @@ created: "2026-05-17"
 
    ```bash
    git diff -- infra/06-observability/grafana/provisioning infra/06-observability/grafana/dashboards infra/06-observability/docker-compose.yml
-   docker compose -f infra/06-observability/docker-compose.yml --profile obs restart grafana
+   docker compose --profile obs restart grafana
    docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
    ```
 
@@ -108,7 +108,7 @@ created: "2026-05-17"
 
 ### Verification Steps
 
-- [ ] `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps grafana`에서 `grafana` service가 running이다.
+- [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
 - [ ] `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
 - [ ] Provisioned datasource identities remain unchanged: UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`, and Pyroscope datasource type `grafana-pyroscope-datasource`.
 - [ ] Dashboard providers remain `editable: false`, and tracked dashboard JSON count is expected.
@@ -137,6 +137,15 @@ created: "2026-05-17"
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Planned isolated restore rehearsal
+
+Status: **planned and not executed**. No successful Grafana SQLite restore is claimed.
+
+1. Record image/plugin/schema identities and object counts, quiesce users/alerts, stop Grafana, then snapshot all of `grafana-data` consistently with provisioning and secret references.
+2. Restore into a separate project/network with a test route and test Keycloak client; keep production datasources read-only or replace them with test endpoints.
+3. Start Grafana and verify SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth, and the configured anonymous Viewer boundary.
+4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production state/client/route replacement is separately approved.
+
 ## Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
@@ -160,7 +169,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, role mapp
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)

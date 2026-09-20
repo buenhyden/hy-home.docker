@@ -94,7 +94,7 @@ created: "2026-03-25"
 
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml --profile obs ps`
+- `docker compose --profile obs ps`
 - `rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml`
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `bash scripts/validation/validate-docker-compose.sh`
@@ -110,7 +110,7 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../../../infra/tech-stack.versions.json) provides drift verification.
 
 - [Operations index](../../../README.md)
 - [Prometheus guide](../0045-prometheus/guide.md)

@@ -21,11 +21,11 @@ auth:
         redirect-uri: https://kafbat-ui.hy.home.arpa/login/oauth2/code/keycloak
         authorization-grant-type: authorization_code
         issuer-uri: https://keycloak.hy.home.arpa/realms/hy-home.realm
-        user-name-attribute: preferred_username        
+        user-name-attribute: preferred_username
         custom-params:
           type: oauth
-          roles-field: groups        
-        
+          roles-field: groups
+
         # authorization-uri: https://keycloak.hy.home.arpa/realms/hy-home.realm/protocol/openid-connect/auth
         # token-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/token
         # jwk-set-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/certs

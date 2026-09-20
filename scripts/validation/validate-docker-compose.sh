@@ -11,8 +11,8 @@ Usage: bash scripts/validation/validate-docker-compose.sh [--preflight]
 Modes:
   default      CI-safe structural validation. May create temporary .env and
                dummy secret files, then remove files it created. Renders every
-               declared profile one at a time and fails when one profile
-               selects two services that publish the same host port.
+               declared profile and the named HOME selection, and fails when a
+               selection publishes the same host port from multiple services.
   --preflight  Real local prerequisite check. Does not create .env, secret
                files, cert files, or dummy data.
 
@@ -139,9 +139,12 @@ resolve_validate_selections() {
   if [ -n "${HYHOME_COMPOSE_PROFILES:-}" ]; then
     SELECTION_MODE="named"
     VALIDATE_SELECTIONS=("$HYHOME_COMPOSE_PROFILES")
+    HOME_SELECTION=""
   else
     SELECTION_MODE="every-declared"
     mapfile -t VALIDATE_SELECTIONS < <(docker compose config --profiles | sed '/^[[:space:]]*$/d')
+    HOME_SELECTION="$(resolve_home_selection)"
+    VALIDATE_SELECTIONS+=("$HOME_SELECTION")
   fi
 
   if [ "${#VALIDATE_SELECTIONS[@]}" -eq 0 ]; then
@@ -150,26 +153,95 @@ resolve_validate_selections() {
   fi
 }
 
+resolve_home_selection() {
+  python3 - "$BASE_DIR/docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md" <<'PY'
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+header = ()
+home_rows = []
+for line in path.read_text(encoding="utf-8").splitlines():
+    stripped = line.strip()
+    if not stripped.startswith("|"):
+        header = ()
+        continue
+    cells = tuple(cell.strip() for cell in stripped.strip("|").split("|"))
+    if cells and cells[0].lower() == "named selection":
+        header = tuple(cell.lower() for cell in cells)
+        continue
+    if header and cells and cells[0] == "HOME":
+        fields = dict(zip(header, cells, strict=False))
+        home_rows.append(fields.get("profiles", ""))
+
+if len(home_rows) != 1:
+    raise SystemExit("POL-0078 must define exactly one HOME named selection")
+raw = home_rows[0]
+names = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", raw)
+if not names or raw != ", ".join(f"`{name}`" for name in names):
+    raise SystemExit("POL-0078 HOME Profiles cell is malformed")
+print(" ".join(names))
+PY
+}
+
 # Every service a single profile selects must publish a distinct host port.
 # Compose only reports a collision at `up`, so the check is static here.
 report_port_collisions() {
   docker compose "${PROFILE_ARGS[@]}" config --format json |
     python3 -c '
-import collections, json, sys
+import collections, ipaddress, json, sys
 
 model = json.load(sys.stdin)
 bindings = collections.defaultdict(list)
+invalid = []
 for name, body in (model.get("services") or {}).items():
     for port in (body.get("ports") or []):
         published = port.get("published")
         if published:
-            key = (port.get("host_ip", "0.0.0.0"), str(published), port.get("protocol", "tcp"))
-            bindings[key].append(name)
+            raw_host = port.get("host_ip")
+            protocol = str(port.get("protocol") or "tcp").lower()
+            hosts = (
+                ("0.0.0.0", "::")
+                if raw_host is None or raw_host == ""
+                else (str(raw_host),)
+            )
+            for host in hosts:
+                try:
+                    address = ipaddress.ip_address(host)
+                    address = getattr(address, "ipv4_mapped", None) or address
+                except ValueError:
+                    invalid.append((name, host, str(published), protocol))
+                    continue
+                bindings[(str(published), protocol)].append((address, name))
 
-collisions = {key: names for key, names in bindings.items() if len(names) > 1}
-for (host, published, protocol), names in sorted(collisions.items()):
-    print(f"{host}:{published}/{protocol} <- {", ".join(sorted(names))}")
-sys.exit(1 if collisions else 0)
+
+def display(address):
+    return f"[{address}]" if address.version == 6 else str(address)
+
+
+collisions = []
+for (published, protocol), entries in sorted(bindings.items()):
+    entries = sorted(
+        entries, key=lambda item: (item[0].version, item[0].packed, item[1])
+    )
+    for index, (left, left_name) in enumerate(entries):
+        for right, right_name in entries[index + 1 :]:
+            if left.version != right.version:
+                continue
+            if not (left.is_unspecified or right.is_unspecified or left == right):
+                continue
+            hosts = sorted({display(left), display(right)})
+            label = hosts[0] if len(hosts) == 1 else " overlaps ".join(hosts)
+            collisions.append(
+                (published, protocol, label, tuple(sorted((left_name, right_name))))
+            )
+
+for name, host, published, protocol in sorted(invalid):
+    print(f"invalid host IP {host!r} for {name}: {published}/{protocol}")
+for published, protocol, host, names in collisions:
+    print(f"{host}:{published}/{protocol} <- {", ".join(names)}")
+sys.exit(1 if invalid or collisions else 0)
 '
 }
 
@@ -285,9 +357,13 @@ SERVICE_TOTAL=0
 
 for selection in "${VALIDATE_SELECTIONS[@]}"; do
   profile_args_from "$selection"
+  selection_label="$selection"
+  if [ -n "$HOME_SELECTION" ] && [ "$selection" = "$HOME_SELECTION" ]; then
+    selection_label="HOME"
+  fi
 
   if ! docker compose "${PROFILE_ARGS[@]}" config >/dev/null; then
-    echo "FAIL: $selection: Compose configuration did not render."
+    echo "FAIL: $selection_label: Compose configuration did not render."
     VALIDATION_FAILED=1
     continue
   fi
@@ -300,20 +376,20 @@ for selection in "${VALIDATE_SELECTIONS[@]}"; do
   )"
 
   if [ "$selection_count" -eq 0 ]; then
-    echo "FAIL: $selection: resolved service count is 0."
+    echo "FAIL: $selection_label: resolved service count is 0."
     VALIDATION_FAILED=1
     continue
   fi
 
   if ! collisions="$(report_port_collisions)"; then
-    echo "FAIL: $selection: two selected services publish the same host port."
+    echo "FAIL: $selection_label: two selected services publish the same host port."
     printf '  %s\n' "$collisions"
     VALIDATION_FAILED=1
     continue
   fi
 
   SERVICE_TOTAL=$((SERVICE_TOTAL + selection_count))
-  echo "[OK] $selection: services=$selection_count"
+  echo "[OK] $selection_label: services=$selection_count"
 done
 
 if [ "$VALIDATION_FAILED" -ne 0 ]; then

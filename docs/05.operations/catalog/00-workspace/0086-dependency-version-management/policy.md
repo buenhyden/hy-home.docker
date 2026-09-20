@@ -21,7 +21,7 @@ HOME/DEV host. A version update does not authorize deployment or data migration.
 
 ## Policy Scope
 
-Compose, Dockerfile and inline build sources, the curated registry, Renovate,
+Compose, Dockerfile and inline build sources, the derived registry, Renovate,
 Dependabot and runtime-version references in current implementation/operations docs.
 
 ## Controls
@@ -34,12 +34,18 @@ Dependabot and runtime-version references in current implementation/operations d
 | Storybook npm | Dependabot | only configured project directory; no Renovate npm overlap |
 | OpenTofu provider/module dependencies | operator-reviewed workspace owner | no tracked provider/module manifests currently exist in the tooling packages; enable a scoped manager with the first such manifest |
 | Python validation tools and pre-commit hooks | maintainer review | pinned requirements/hook revisions; these are outside the currently enabled automatic managers |
-| Curated image registry | synchronization script | generated proposal from source, fail on ambiguity or missing source |
+| Derived Compose image registry | synchronization script | every tracked infrastructure Compose repository exactly once, with explicit local/custom classification and exact per-file source groups |
 | Narrative docs | human/agent review and existing metadata validator | authority links; justified exact-literal exceptions only |
 
-Regular patch/minor updates follow the configured soak window and groups. Major
+Regular patch/minor updates follow the configured seven-day soak window when the
+datasource supplies a release timestamp. `timestamp-optional` prevents registries
+without timestamps from waiting forever; those updates retain the Monday schedule
+and mandatory manual review, so no seven-day age is claimed for them. Major
 updates stay separate. Security alerts bypass normal waiting and receive explicit
-review; urgency does not bypass migration or rollback evidence. This fast path applies to vulnerability alerts the configured manager actually receives; it does not establish container-image CVE scanning or installed-image vulnerability coverage. Do not enable
+review; urgency does not bypass migration or rollback evidence. This fast path
+applies to vulnerability alerts the configured manager actually receives; it does
+not establish container-image CVE scanning or installed-image vulnerability
+coverage. Do not enable
 infra automerge or broaden self-host allowedCommands. Config syntax must pass the
 official strict validator with separate repository/global modes.
 
@@ -59,8 +65,10 @@ exception; changing a tag is not evidence of GPU or data-format compatibility.
 
 ## Verification
 
-Existing synchronization `--check` is the registry drift gate. Validate Compose,
-modified build sources, document contracts and official Renovate config independently.
+Existing synchronization `--check` is the registry drift gate. It rejects added,
+removed or duplicate repositories and source/classification drift; write mode
+reconciles the derived entries atomically. Validate Compose, modified build sources,
+document contracts and official Renovate config independently.
 Never accept registry output as proof of runtime health or backup/restore.
 
 ## Review Cadence
