@@ -21,6 +21,25 @@ QA_CI_TOOLS = ROOT / "scripts/operations/use-qa-ci-tools.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
+    def test_hadolint_docker_image_matches_hook_revision(self) -> None:
+        document = yaml.safe_load(
+            (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
+        )
+        repositories = [
+            repository
+            for repository in document["repos"]
+            if repository["repo"] == "https://github.com/hadolint/hadolint"
+        ]
+        self.assertEqual(1, len(repositories))
+        repository = repositories[0]
+        hooks = [
+            hook for hook in repository["hooks"] if hook["id"] == "hadolint-docker"
+        ]
+        self.assertEqual(1, len(hooks))
+
+        expected = "ghcr.io/hadolint/hadolint:{} hadolint".format(repository["rev"])
+        self.assertEqual(expected, hooks[0].get("entry"))
+
     def test_public_hooks_admit_every_tracked_path_and_root_tool_owner(self) -> None:
         document = yaml.safe_load(
             (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
