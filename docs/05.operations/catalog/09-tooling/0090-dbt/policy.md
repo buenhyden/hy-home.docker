@@ -2,7 +2,7 @@
 title: "dbt Operations Policy"
 version: "1.0.0"
 type: "operation/policy"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -56,5 +56,6 @@ Review on dbt or adapter upgrade, new sources, and grant changes.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/09-tooling/dbt/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [dbt Compose source](../../../../../infra/09-tooling/dbt/docker-compose.yml)
 - [Management database policy](../../04-data/0028-management-database/policy.md)

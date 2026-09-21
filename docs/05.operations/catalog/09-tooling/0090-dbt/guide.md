@@ -2,7 +2,7 @@
 title: "dbt Usage Guide"
 version: "1.0.0"
 type: "operation/guide"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -72,5 +72,6 @@ target-schema recovery.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/09-tooling/dbt/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [dbt command reference](https://docs.getdbt.com/reference/dbt-commands)
 - [dbt Postgres setup](https://docs.getdbt.com/docs/core/connect-data-platform/postgres-setup)

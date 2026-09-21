@@ -2,7 +2,7 @@
 title: "MLflow Usage Guide"
 version: "1.0.0"
 type: "operation/guide"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -91,6 +91,7 @@ restore and upgrade.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [MLflow self-hosting network security](https://mlflow.org/docs/latest/self-hosting/security/network)
 - [MLflow SSO and the OIDC plugin](https://mlflow.org/docs/latest/self-hosting/security/sso)
 - [MLflow tracking server architecture and artifact proxy](https://mlflow.org/docs/latest/self-hosting/architecture/tracking-server)

@@ -2,7 +2,7 @@
 title: "dbt Recovery Runbook"
 version: "1.0.0"
 type: "operation/runbook"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -68,4 +68,5 @@ the database.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/09-tooling/dbt/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [Management database runbook](../../04-data/0028-management-database/runbook.md)

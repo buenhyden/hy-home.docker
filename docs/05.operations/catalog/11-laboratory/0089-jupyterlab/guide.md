@@ -2,7 +2,7 @@
 title: "JupyterLab Usage Guide"
 version: "1.0.0"
 type: "operation/guide"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -81,5 +81,6 @@ Use the [runbook](runbook.md) for token, start, kernel and restore problems.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
 - [Jupyter Docker Stacks common options](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html)

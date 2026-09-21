@@ -2,7 +2,7 @@
 title: "JupyterLab Recovery Runbook"
 version: "1.0.0"
 type: "operation/runbook"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -70,4 +70,5 @@ without JupyterHub, or a request to disable the token.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [MLflow runbook](../0088-mlflow/runbook.md)

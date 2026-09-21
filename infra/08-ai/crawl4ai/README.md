@@ -2,7 +2,7 @@
 title: "AI Crawl4AI Crawler"
 version: "1.0.0"
 type: "common/package-readme"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 created: "2026-09-21"

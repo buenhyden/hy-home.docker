@@ -2,7 +2,7 @@
 title: "Crawl4AI Operations Policy"
 version: "1.0.0"
 type: "operation/policy"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"

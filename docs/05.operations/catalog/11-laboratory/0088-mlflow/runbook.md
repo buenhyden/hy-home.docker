@@ -2,7 +2,7 @@
 title: "MLflow Recovery Runbook"
 version: "1.0.0"
 type: "operation/runbook"
-status: "active"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"
@@ -87,5 +87,6 @@ remove gateway SSO.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [Management database runbook](../../04-data/0028-management-database/runbook.md)
 - [MinIO runbook](../../04-data/0023-minio/runbook.md)
