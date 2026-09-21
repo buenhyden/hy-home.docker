@@ -96,4 +96,3 @@ prometheus.remote_write "local_prom" {
     url = "http://prometheus:9090/api/v1/write"
   }
 }
-
