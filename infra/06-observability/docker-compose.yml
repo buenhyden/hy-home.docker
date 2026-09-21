@@ -197,6 +197,13 @@ services:
       service: template-infra-med
     image: grafana/alloy:v1.19.2
     container_name: infra-alloy
+    # The image runs as root, but its state directory (and the bind-backed
+    # alloy-data volume) belongs to the image's alloy user (UID 473, mode 770).
+    # With every capability dropped, root cannot write there, so run as alloy
+    # and add the host docker group for the read-only Docker socket.
+    user: '473:473'
+    group_add:
+      - '${DOCKER_GID:-989}'
     tmpfs:
       - /tmp
       - /run

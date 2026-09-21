@@ -178,7 +178,8 @@ PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 
 `172.19.0.0/16`은 `infra_net`의 모든 컨테이너가 Traefik 경유 요청에서 SSO를
 우회하게 했고, 확인된 소비자(Gatus·exporter는 서비스를 직접 호출)가 없어
 2026-09-21 변경에서 제거했다. `trusted_proxy_ips`는 forwarded header를 보낼 수 있는
-proxy 범위를 정하는 별개 설정이며 인증 생략이 아니다. Traefik 진입점에는
+proxy 범위를 정하는 별개 설정이며 인증 생략이 아니다. 현재 Traefik의 고정 주소
+`172.19.0.2/32`만 신뢰한다(미설정 시 모든 주소를 신뢰한다는 경고가 있었음). Traefik 진입점에는
 `forwardedHeaders` 신뢰가 없어 외부 client가 보낸 `X-Forwarded-For`를 덮어쓴다.
 같은 날 host loopback과 LAN 주소에서 무인증 GET으로 SSO 보호 route(Alloy)를 요청해
 두 경로 모두 `401`을 확인했다. 이는 한 route의 상태 코드 관측이며 전체 route의
