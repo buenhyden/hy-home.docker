@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 created: "2026-03-26"
 ---
 
@@ -13,14 +13,16 @@ created: "2026-03-26"
 ## Overview
 
 This tier contains optional administrative tools. The root project includes the
-three leaves, while profiles select services:
+five leaves, while profiles select services:
 
 | Service | Profiles | Authority and risk |
 | --- | --- | --- |
 | `dozzle` | `admin`, `admin-logs` | Docker logs; read-only socket still grants powerful Docker API visibility |
 | `redisinsight` | `admin`, `admin-data` | local connection/settings database; target Redis/Valkey data remains external |
-| `open_notebook` | `admin`, `notebook` | application data/provider credentials plus encryption-key custody |
-| `surrealdb` | `admin`, `notebook`, `surrealdb` | separate owner at `infra/04-data/specialized/surrealdb/`; Open Notebook database |
+| `open_notebook` | `notebook` | application data/provider credentials plus encryption-key custody; app password and admin CIDR, no shared SSO |
+| `surrealdb` | `notebook`, `surrealdb` | co-located Open Notebook database under `open-notebook/surrealdb/` |
+| `mlflow`, `mlflow-db-provision`, `mlflow-artifact-provision` | `mlops`, `data-science` | tracking database on `mng-pg` and bucket-scoped MinIO artifacts; SDK path on `infra_net` is unauthenticated |
+| `jupyterlab` | `data-science` | single-user code execution with a mandatory server token; not JupyterHub |
 
 There is no `dev` profile for these services. Dozzle and RedisInsight can run
 without Open Notebook. Selecting `notebook` brings both Open Notebook and its
@@ -33,8 +35,9 @@ documentation agents responsible for optional admin-tool boundaries.
 
 ## Scope
 
-This tier owns the Dozzle, RedisInsight, and Open Notebook service declarations
-and their UI access/persistence contracts. SurrealDB remains owned by `04-data`.
+This tier owns the Dozzle, RedisInsight, Open Notebook (with its co-located
+SurrealDB), MLflow and JupyterLab declarations and their access/persistence
+contracts. `admin` selects only Dozzle and RedisInsight.
 It does not own target Redis/Valkey data, copied Docker logs, provider accounts,
 production notebook workloads, or Metabase.
 

@@ -9,8 +9,16 @@
     "docker-compose",
     "dockerfile",
     "github-actions",
-    "custom.regex"
+    "custom.regex",
+    "pip_requirements"
   ],
+
+  "pip_requirements": {
+    "description": "Only image-local Python pins under infra/ belong to Renovate; scripts/ CI requirements keep their existing manual ownership",
+    "managerFilePatterns": [
+      "/^infra\\/.+\\/requirements\\.txt$/"
+    ]
+  },
 
   "ignorePaths": [
     "docs/98.archive/**",
@@ -85,6 +93,22 @@
         "docker-compose",
         "dockerfile",
         "custom.regex"
+      ],
+      "automerge": false
+    },
+
+    {
+      "description": "Image-local Python pins: major updates need Dashboard approval; never automerge",
+      "matchManagers": [
+        "pip_requirements"
+      ],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Never automerge image-local Python pins",
+      "matchManagers": [
+        "pip_requirements"
       ],
       "automerge": false
     },

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-21"
 layer: "operations"
 ---
 
@@ -47,6 +47,7 @@ k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
 | [OpenTofu](0082-opentofu/guide.md) | [Guide](0082-opentofu/guide.md), [Policy](0082-opentofu/policy.md), [Runbook](0082-opentofu/runbook.md) |
 
 | [Renovate](0083-renovate/guide.md) | [Guide](0083-renovate/guide.md), [Policy](0083-renovate/policy.md), [Runbook](0083-renovate/runbook.md) |
+| [dbt](0090-dbt/guide.md) | [Guide](0090-dbt/guide.md), [Policy](0090-dbt/policy.md), [Runbook](0090-dbt/runbook.md) |
 
 ## How to Work in This Area
 

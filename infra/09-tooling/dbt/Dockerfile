@@ -1,11 +1,9 @@
 FROM python:3.12-slim-bookworm
 
-ARG DBT_CORE_VERSION=1.11.15
-ARG DBT_POSTGRES_VERSION=1.11.0
+# Pins live in requirements.txt, the single file Renovate updates.
+COPY requirements.txt /tmp/requirements.txt
 
-RUN pip install --no-cache-dir \
-    "dbt-core==${DBT_CORE_VERSION}" \
-    "dbt-postgres==${DBT_POSTGRES_VERSION}"
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 WORKDIR /workspace
 

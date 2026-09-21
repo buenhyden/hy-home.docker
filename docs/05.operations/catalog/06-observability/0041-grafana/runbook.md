@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -143,7 +143,7 @@ Status: **planned and not executed**. No successful Grafana SQLite restore is cl
 
 1. Record image/plugin/schema identities and object counts, quiesce users/alerts, stop Grafana, then snapshot all of `grafana-data` consistently with provisioning and secret references.
 2. Restore into a separate project/network with a test route and test Keycloak client; keep production datasources read-only or replace them with test endpoints.
-3. Start Grafana and verify SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth, and the configured anonymous Viewer boundary.
+3. Start Grafana and verify SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth, and that anonymous requests are refused.
 4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production state/client/route replacement is separately approved.
 
 ## Evidence

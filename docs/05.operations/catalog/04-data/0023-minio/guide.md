@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "GDE-0023"
 parent_ids:
@@ -27,7 +27,10 @@ created: "2026-05-10"
 
 MinIO is retained as the HOME S3-compatible store because the root bootstrap
 creates `loki-bucket`, `tempo-bucket`, `cdn-bucket`, and `doc-intel-assets`, and
-current Loki/Tempo configuration names its endpoint. The four-node
+current Loki/Tempo configuration names its endpoint. The `mlflow-artifacts`
+bucket and its bucket-scoped user are created by the MLflow-owned
+`mlflow-artifact-provision` job, not by the shared bootstrap; `mlops` and
+`data-science` select `minio` itself for dependency closure. The four-node
 `storage-cluster` topology is LAB on one host. SeaweedFS is OPTIONAL and is not an
 automatic replacement.
 

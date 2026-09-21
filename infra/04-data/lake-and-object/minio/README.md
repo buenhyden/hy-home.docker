@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 created: "2025-11-12"
 ---
 
@@ -22,6 +22,8 @@ It is intended for operators and maintainers of MinIO-backed object storage.
 
 [`docker-compose.yml`](docker-compose.yml) defines HOME `minio` and
 `minio-create-buckets` for `storage`, `obs`, `logs`, `tracing`, and `nginx`.
+`mlops` and `data-science` select `minio` only; the MLflow bucket and its
+bucket-scoped user come from the MLflow-owned `mlflow-artifact-provision` job.
 [`docker-compose.cluster.yaml`](docker-compose.cluster.yaml) defines LAB
 `minio1`–`minio4` for `storage-cluster`. The root project includes both sources.
 

@@ -203,8 +203,11 @@ services:
     command:
       - 'run'
       - '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}'
+      # Overriding the image command drops its default storage path; keep
+      # positions and remote-write WAL on the alloy-data volume.
+      - '--storage.path=/var/lib/alloy/data'
       - '/etc/alloy/config.alloy'
-    volumes:      
+    volumes:
       - ./alloy/config/${ALLOY_CONFIG_FILE:-config.alloy}:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -265,7 +268,7 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USERNAME}
       GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
       GF_USERS_ALLOW_SIGN_UP: 'false'
-      GF_USERS_AUTO_ASSIGN_ORG_ROLE: 'Editor'
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: 'Viewer'
       GF_AUTH_GENERIC_OAUTH_ENABLED: 'true'
       GF_AUTH_GENERIC_OAUTH_NAME: 'Keycloak'
       GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: 'true'
@@ -275,7 +278,9 @@ services:
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GRAFANA_PROXY_CLIENT_ID}
       GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/grafana_client_secret
       GF_AUTH_GENERIC_OAUTH_SCOPES: 'openid profile email offline_access groups'
-      GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: 'true'
+      # Verify Keycloak with the local root CA (same trust as OAuth2 Proxy).
+      GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: 'false'
+      GF_AUTH_GENERIC_OAUTH_TLS_CLIENT_CA: /etc/grafana/rootCA.pem
       GF_DATAPROXY_TIMEOUT: 300
       GF_DATAPROXY_KEEP_ALIVE_SECONDS: 300
       # 전체 서버 읽기 타임아웃
@@ -288,7 +293,9 @@ services:
       # 권한 매핑 (Role Mapping) - 핵심
       # Keycloak의 'groups' 정보를 읽어서 Grafana 권한(Admin/Editor/Viewer)으로 변환
       # 로직: groups 배열에 '/admins'이 있으면 'Admin', 아니면 'Viewer' 부여
-      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(groups[*], '/admins') && 'Admin' || contains(groups[*], '/editors') && 'Editor' || 'Viewer'
+      # No catch-all role: with strict mode a realm user outside these groups is
+      # denied instead of silently becoming Viewer.
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: contains(groups[*], '/admins') && 'Admin' || contains(groups[*], '/editors') && 'Editor' || contains(groups[*], '/viewers') && 'Viewer'
       GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT: 'true'
       # (옵션) '/admin' 그룹 유저에게 Grafana 전체 서버 관리자(Super Admin) 권한까지 부여하려면 true
       GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN: 'true'
@@ -299,14 +306,16 @@ services:
       GF_AUTH_GENERIC_OAUTH_USE_PKCE: 'true'
       # S256 방식을 명시적으로 지정 (필요 시)
       GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD: 'S256'
-      # [추가] Anonymous Viewer 접근 활성화: Kiali 등 내부 서비스의 API 헬스체크 허용
-      # 브라우저 접근은 GF_AUTH_OAUTH_AUTO_LOGIN=true 로 Keycloak OAuth 유지됨
-      GF_AUTH_ANONYMOUS_ENABLED: 'true'
-      GF_AUTH_ANONYMOUS_ORG_ROLE: 'Viewer'
+      # Anonymous Viewer (formerly enabled for Kiali/internal API checks) let any
+      # client that reached the route read every dashboard. /api/health needs no
+      # session; a caller needing more (e.g. Kiali dashboard lookup) must use a
+      # Grafana service-account token, not anonymous access.
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana:rw
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/grafana/rootCA.pem:ro
     secrets:
       - grafana_admin_password
       - grafana_client_secret
@@ -607,12 +616,11 @@ services:
       file: ../common-optimizations.yml
       service: template-host-observer-med
 
-    image: nvcr.io/nvidia/k8s/dcgm-exporter:${DCGM_EXPORTER_TAG}
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4
     container_name: dcgm-exporter
 
-    cap_add:
-      - SYS_ADMIN
-
+    # SYS_ADMIN is needed only for DCP profiling fields, which consumer
+    # Pascal GPUs do not support; keep the default capability set dropped.
     deploy:
       resources:
         reservations:

@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 created: "2025-11-12"
 ---
 
@@ -22,10 +22,19 @@ It is intended for operators and maintainers of Kafka and its companion services
 
 [`docker-compose.yml`](docker-compose.yml) defines `kafka-1`, `kafka-2`,
 `kafka-3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`,
-`kafka-exporter`, and `kafka-init`. Root selectors include `messaging`,
-`messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`,
-`messaging-rest`, `messaging-admin`, and `ksql`; brokers 2 and 3 belong only to
-`messaging-cluster`.
+`kafka-exporter`, `kafka-init` and `debezium-db-provision`. Root selectors include
+`messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`,
+`messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql` and `cdc`; brokers 2
+and 3 belong only to `messaging-cluster`. `cdc` selects the broker, Schema Registry,
+Connect and the CDC source provisioning job.
+
+Connect is built from [`Dockerfile.connect`](Dockerfile.connect) with the Debezium
+PostgreSQL plugin. [`connect/render-connect-secrets.sh`](connect/render-connect-secrets.sh)
+renders the `FileConfigProvider` input from the `debezium_postgres_password`
+secret on every start, restricted by `allowed.paths`. The connector definition
+([`postgres-connector.json`](connect/debezium/postgres-connector.json)) and feature SQL
+([`provisioning/mng-pg.sql`](connect/debezium/provisioning/mng-pg.sql)) live under `connect/debezium/`; the JSON is
+not registered automatically.
 
 ## Structure
 

@@ -1,72 +1,60 @@
-# Shared configuration for all environments
-x-base-config: &base-config
-  ports:
-    - "11235:11235" # Gunicorn port
-  env_file:
-    # API keys (create from .llm.env.example); optional so a fresh clone runs.
-    - path: .llm.env
-      required: false
-  environment:
-    # Auth token passthrough from the host shell (overwrites .llm.env).
-    - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN:-}
-    # Uncomment to set default environment variables (will overwrite .llm.env)
-    # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-    # - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
-    # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-    # - GROQ_API_KEY=${GROQ_API_KEY:-}
-    # - TOGETHER_API_KEY=${TOGETHER_API_KEY:-}
-    # - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
-    # - GEMINI_API_KEY=${GEMINI_API_KEY:-}
-    # - LLM_PROVIDER=${LLM_PROVIDER:-}  # Optional: Override default provider (e.g., "anthropic/claude-3-opus")
-    # Chromium needs shared memory but the host /dev/shm bind was a shared,
-    # writable mount; use a private sized tmpfs instead.
-  shm_size: "1gb"
-  # Least privilege: drop all capabilities, forbid privilege escalation, cap PIDs.
-  cap_drop:
-    - ALL
-  security_opt:
-    - no-new-privileges:true
-  # Read-only root filesystem; only these paths are writable (tmpfs).
-  read_only: true
-  tmpfs:
-    - /tmp
-    - /var/lib/redis:uid=999,gid=999,mode=0700
-    - /var/lib/crawl4ai/outputs:uid=999,gid=999,mode=0700
-    - /home/appuser/.crawl4ai:uid=999,gid=999,mode=0700
-    # Keep the baked Playwright browser under ~/.cache/ms-playwright visible.
-    - /home/appuser/.cache/url_seeder:uid=999,gid=999,mode=0700
-    - /home/appuser/.gunicorn:uid=999,gid=999,mode=0700
-  deploy:
-    resources:
-      limits:
-        memory: 4G
-        # PID cap; expressed here (not as pids_limit) so the file stays valid
-        # on Compose v5+, which rejects pids_limit alongside a limits block.
-        pids: 512
-      reservations:
-        memory: 1G
-  restart: unless-stopped
-  healthcheck:
-    test: [ "CMD", "curl", "-f", "http://localhost:11235/health" ]
-    interval: 30s
-    timeout: 10s
-    retries: 3
-    start_period: 40s
-  user: "appuser"
+x-tier-label: &tier-label
+  hy-home.tier: ai
+
+# Crawl4AI fetches arbitrary URLs, so it is an SSRF-capable service. It runs on
+# its own egress network and never joins infra_net: internal databases, secret
+# stores and admin APIs are not reachable from the crawler. A consumer that
+# needs it (for example Open Notebook's CRAWL4AI_API_URL) must join
+# crawl4ai_net explicitly in the same reviewed change.
+networks:
+  crawl4ai_net:
+    name: crawl4ai_net
+    driver: bridge
 
 services:
   crawl4ai:
-    # 1. Default: Pull multi-platform test image from Docker Hub
-    # 2. Override with local image via: IMAGE=local-test docker compose up
-    image: ${IMAGE:-unclecode/crawl4ai:${TAG:-latest}}
-
-    # Local build config (used with --build)
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        INSTALL_TYPE: ${INSTALL_TYPE:-default}
-        ENABLE_GPU: ${ENABLE_GPU:-false}
-
-    # Inherit shared config
-    <<: *base-config
+    profiles:
+      - crawl4ai
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    image: unclecode/crawl4ai:0.9.3
+    container_name: crawl4ai
+    user: appuser
+    # Chromium needs more memory and processes than the high template allows.
+    mem_limit: 4g
+    pids_limit: 512
+    shm_size: 1gb
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/lib/redis:uid=999,gid=999,mode=0700
+      - /var/lib/crawl4ai/outputs:uid=999,gid=999,mode=0700
+      - /home/appuser/.crawl4ai:uid=999,gid=999,mode=0700
+      - /home/appuser/.cache/url_seeder:uid=999,gid=999,mode=0700
+      - /home/appuser/.gunicorn:uid=999,gid=999,mode=0700
+    secrets:
+      - crawl4ai_api_token
+    # Since 0.9.0 the server binds beyond loopback only with a token, and then
+    # requires `Authorization: Bearer` on every endpoint except GET /health.
+    command:
+      - /bin/bash
+      - -ec
+      - |
+        CRAWL4AI_API_TOKEN="$$(tr -d '\r\n' </run/secrets/crawl4ai_api_token)"
+        [ "$${#CRAWL4AI_API_TOKEN}" -ge 16 ] || { echo 'crawl4ai: crawl4ai_api_token must be at least 16 characters' >&2; exit 64; }
+        export CRAWL4AI_API_TOKEN
+        exec bash entrypoint.sh
+    expose:
+      - '11235'
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:11235/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - crawl4ai_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'

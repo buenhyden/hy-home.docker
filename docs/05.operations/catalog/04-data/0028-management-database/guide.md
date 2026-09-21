@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -38,8 +38,22 @@ defines `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, and
 engines and init; exporters are selected by `mng` and `dev`.
 
 PostgreSQL owns `mng-pg-data` at `${DEFAULT_MANAGEMENT_DIR}/pg` and uses the
-`mng_db_password` secret. The init job also reads service-specific database
-password secrets and creates roles/databases idempotently. Valkey owns
+`mng_db_password` secret. The base init job reads only the base
+service-specific database password secrets and creates those roles/databases
+idempotently. Optional capabilities provision their own objects in separate
+feature jobs (`mlflow-db-provision`, `dbt-db-provision`,
+`debezium-db-provision`) that share the input-validating
+[runner](../../../../../infra/04-data/operational/mng-db/pg/provision/run-feature-provision.sh)
+but keep their SQL and grants in their own packages. `mlops`, `data-science`,
+`analytics-engineering` and `cdc` also select `mng-pg` and `mng-pg-init` for
+dependency closure; the base job never reads their credentials, so `core`,
+`mng`, `dev` and `local` start without them.
+
+The declared command sets `wal_level=logical`, `max_replication_slots`,
+`max_wal_senders` and `max_slot_wal_keep_size` for CDC. A running instance keeps
+its previous settings until an approved recreate, which restarts every consumer
+of the management database. Logical WAL adds a small amount of WAL volume; slots
+are created only by a registered CDC connector. Valkey owns
 `mng-valkey-data` at `${DEFAULT_MANAGEMENT_DIR}/valkey`, enables AOF, and reads
 `mng_valkey_password`. Both use `infra_net`; PostgreSQL and Valkey host bindings
 come from root environment keys. Health checks and resources come from shared

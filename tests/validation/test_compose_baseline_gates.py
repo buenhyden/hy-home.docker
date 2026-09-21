@@ -837,5 +837,691 @@ class OllamaPortContractTests(unittest.TestCase):
         )
 
 
+MNG_DB_COMPOSE = "infra/04-data/operational/mng-db/docker-compose.yml"
+PG_CLUSTER_COMPOSE = "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+PROVISION_RUNNER = (
+    "infra/04-data/operational/mng-db/pg/provision/run-feature-provision.sh"
+)
+# Feature-owned mng-pg provisioning jobs: (compose file, job, SQL file, profiles).
+FEATURE_JOBS = (
+    (
+        "infra/11-laboratory/mlflow/docker-compose.yml",
+        "mlflow-db-provision",
+        "infra/11-laboratory/mlflow/provisioning/mng-pg.sql",
+        {"mlops", "data-science"},
+    ),
+    (
+        "infra/09-tooling/dbt/docker-compose.yml",
+        "dbt-db-provision",
+        "infra/09-tooling/dbt/provisioning/mng-pg.sql",
+        {"analytics-engineering"},
+    ),
+    (
+        "infra/05-messaging/kafka/docker-compose.yml",
+        "debezium-db-provision",
+        "infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql",
+        {"cdc"},
+    ),
+)
+FEATURE_SECRETS = {
+    "mlflow_db_password",
+    "dbt_db_password",
+    "debezium_postgres_password",
+    "mlflow_s3_password",
+}
+
+
+def _compose_service(path: str, name: str) -> dict:
+    import yaml
+
+    return yaml.safe_load((ROOT / path).read_text(encoding="utf-8"))["services"][name]
+
+
+def _runner_text(service: dict) -> str:
+    parts = []
+    for key in ("entrypoint", "command"):
+        value = service.get(key) or []
+        parts.extend([value] if isinstance(value, str) else value)
+    return "\n".join(parts)
+
+
+def _psql_variables(sql: str) -> set[str]:
+    # :'name' and :name interpolations; :{?name} is a definedness test.
+    return set(re.findall(r"(?<![:\w]):'?([a-z_][a-z0-9_]*)'?(?![\w(])", sql)) - {
+        "gset",
+        "gexec",
+    }
+
+
+def _default(value: str) -> str:
+    match = re.fullmatch(r"\$\{[A-Z_]+:-(.*)\}", value)
+    return _default(match.group(1)) if match else value
+
+
+class FeatureProvisioningContractTests(unittest.TestCase):
+    """Base DB bootstrap and feature provisioning stay separate and complete."""
+
+    def test_base_init_passes_every_psql_variable_its_sql_reads(self) -> None:
+        # Regression: SQL appended to init_users_dbs.sql read :'mlflow_db_password'
+        # while mng-pg-init never passed -v mlflow_db_password (syntax error).
+        for compose, job, sql in (
+            (
+                MNG_DB_COMPOSE,
+                "mng-pg-init",
+                "infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql",
+            ),
+            (
+                PG_CLUSTER_COMPOSE,
+                "pg-cluster-init",
+                "infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql",
+            ),
+        ):
+            with self.subTest(job=job):
+                runner = _runner_text(_compose_service(compose, job))
+                passed = set(re.findall(r"-v ([a-z_][a-z0-9_]*)=", runner))
+                used = _psql_variables((ROOT / sql).read_text(encoding="utf-8"))
+                used -= {"service_postgres_conninfo"}  # produced by \gset
+                self.assertEqual(set(), used - passed)
+
+    def test_base_init_never_requires_feature_credentials(self) -> None:
+        for compose, job in (
+            (MNG_DB_COMPOSE, "mng-pg-init"),
+            (PG_CLUSTER_COMPOSE, "pg-cluster-init"),
+        ):
+            with self.subTest(job=job):
+                service = _compose_service(compose, job)
+                # Feature profiles may select the base job for dependency
+                # closure; it must still never read feature credentials.
+                self.assertEqual(
+                    set(), set(service.get("secrets", [])) & FEATURE_SECRETS
+                )
+                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium")
+
+    def test_feature_jobs_supply_every_input_without_argv_secrets(self) -> None:
+        for compose, job, sql_path, profiles in FEATURE_JOBS:
+            with self.subTest(job=job):
+                service = _compose_service(compose, job)
+                env = service["environment"]
+                self.assertEqual(profiles, set(service["profiles"]))
+                self.assertEqual(
+                    ["/bin/sh", "/provision/run-feature-provision.sh"],
+                    service["entrypoint"],
+                )
+                self.assertNotIn("command", service)
+                secret_pairs = dict(
+                    pair.split("=", 1) for pair in env["PROVISION_SECRETS"].split()
+                )
+                for file in secret_pairs.values():
+                    self.assertIn(
+                        file.removeprefix("/run/secrets/"), service["secrets"]
+                    )
+                self.assertIn("mng_postgres_password", service["secrets"])
+                for name in env["PROVISION_IDENTIFIERS"].split():
+                    self.assertIn(name, env)
+                sql = (ROOT / sql_path).read_text(encoding="utf-8")
+                wanted = set(re.findall(r"\\getenv [a-z_]+ ([A-Z_]+)", sql))
+                self.assertTrue(wanted)
+                self.assertEqual(set(), wanted - set(env) - set(secret_pairs))
+                mounts = {m.split(":")[1]: m.split(":")[0] for m in service["volumes"]}
+                runner = (ROOT / compose).parent / mounts[
+                    "/provision/run-feature-provision.sh"
+                ]
+                self.assertEqual((ROOT / PROVISION_RUNNER).resolve(), runner.resolve())
+                self.assertEqual(
+                    (ROOT / sql_path).resolve(),
+                    (
+                        (ROOT / compose).parent / mounts["/provision/mng-pg.sql"]
+                    ).resolve(),
+                )
+                self.assertEqual(
+                    "service_completed_successfully",
+                    service["depends_on"]["mng-pg-init"]["condition"],
+                )
+
+    def test_debezium_connector_matches_provisioned_names_and_allowed_path(
+        self,
+    ) -> None:
+        connector = json.loads(
+            (
+                ROOT
+                / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
+            ).read_text(encoding="utf-8")
+        )
+        env = _compose_service(
+            "infra/05-messaging/kafka/docker-compose.yml", "debezium-db-provision"
+        )["environment"]
+        self.assertEqual(env["DEBEZIUM_DB_USER"], connector["database.user"])
+        self.assertEqual(
+            _default(env["DEBEZIUM_DB_NAME"]), connector["database.dbname"]
+        )
+        self.assertEqual(
+            {env["DEBEZIUM_SCHEMA"], env["DEBEZIUM_HEARTBEAT_SCHEMA"]},
+            set(connector["schema.include.list"].split(",")),
+        )
+        self.assertIn(
+            env["DEBEZIUM_HEARTBEAT_SCHEMA"] + ".heartbeat",
+            connector["heartbeat.action.query"],
+        )
+        self.assertEqual(env["DEBEZIUM_PUBLICATION"], connector["publication.name"])
+        self.assertEqual("disabled", connector["publication.autocreate.mode"])
+        example = (ROOT / ".env.example").read_text(encoding="utf-8")
+        self.assertIn(f'SERVICE_POSTGRES_DB="{connector["database.dbname"]}"', example)
+        worker = _compose_service(
+            "infra/05-messaging/kafka/docker-compose.yml", "kafka-connect"
+        )
+        allowed = worker["environment"][
+            "CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS"
+        ]
+        match = re.fullmatch(
+            r"\$\{file:([^:]+):password\}", connector["database.password"]
+        )
+        self.assertIsNotNone(match)
+        assert match is not None
+        self.assertEqual(allowed, str(Path(match.group(1)).parent))
+        renderer = (
+            ROOT / "infra/05-messaging/kafka/connect/render-connect-secrets.sh"
+        ).read_text()
+        self.assertIn(f"dir={allowed}\n", renderer)
+        self.assertIn("debezium_postgres_password", worker["secrets"])
+
+    def test_properties_escaping_matches_java_properties_rules(self) -> None:
+        # Execute the renderer's escaping lines, then parse like Properties.load.
+        script = (
+            ROOT / "infra/05-messaging/kafka/connect/render-connect-secrets.sh"
+        ).read_text()
+        escaping = "\n".join(
+            line
+            for line in script.splitlines()
+            if line.strip().startswith(
+                ('value="${value//', 'if [[ "$value" == [[:blank:]')
+            )
+        )
+        self.assertEqual(2, len(escaping.splitlines()))
+        for raw in (
+            "plain",
+            r"back\slash",
+            " leading",
+            "\tleading-tab",
+            "\fleading-ff",
+            "a=b:c#!",
+            "tail\\",
+        ):
+            with self.subTest(raw=raw):
+                out = subprocess.run(
+                    [
+                        "bash",
+                        "-c",
+                        f'value="$1"\n{escaping}\nprintf "%s" "$value"',
+                        "_",
+                        raw,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+                # java.util.Properties: skip unescaped leading blanks, then unescape.
+                parsed, index = [], 0
+                while index < len(out) and out[index] in " \t\f":
+                    index += 1
+                while index < len(out):
+                    char = out[index]
+                    if char == "\\" and index + 1 < len(out):
+                        parsed.append(out[index + 1])
+                        index += 2
+                        continue
+                    parsed.append(char)
+                    index += 1
+                self.assertEqual(raw, "".join(parsed))
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_PG_REHEARSAL") == "1",
+    "set HYHOME_PG_REHEARSAL=1 to run the disposable PostgreSQL rehearsal (needs Docker)",
+)
+class FeatureProvisioningRehearsalTests(unittest.TestCase):
+    """Run base init and feature SQL against a throwaway PostgreSQL 18 server.
+
+    The server has no published port, joins an internal network created for
+    this test, receives synthetic credentials only and is removed afterwards.
+    """
+
+    IMAGE = "postgres:18.6-alpine"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tag = f"hyrehearsal{os.getpid()}"
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.tmp.cleanup)
+        cls.secrets = Path(cls.tmp.name)
+        subprocess.run(
+            ["docker", "network", "create", "--internal", cls.tag],
+            check=True,
+            capture_output=True,
+        )
+        cls.addClassCleanup(
+            subprocess.run, ["docker", "network", "rm", cls.tag], capture_output=True
+        )
+        cls.addClassCleanup(
+            subprocess.run, ["docker", "rm", "-f", f"{cls.tag}-db"], capture_output=True
+        )
+        subprocess.run(
+            [
+                "docker",
+                "run",
+                "-d",
+                "--name",
+                f"{cls.tag}-db",
+                "--network",
+                cls.tag,
+                "-e",
+                "POSTGRES_USER=admin",
+                "-e",
+                "POSTGRES_PASSWORD=synthetic-admin",
+                "-e",
+                "POSTGRES_DB=postgres",
+                cls.IMAGE,
+                "postgres",
+                "-c",
+                "wal_level=logical",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        for _ in range(60):
+            ready = subprocess.run(
+                [
+                    "docker",
+                    "exec",
+                    f"{cls.tag}-db",
+                    "pg_isready",
+                    "-h",
+                    "127.0.0.1",
+                    "-U",
+                    "admin",
+                ],
+                capture_output=True,
+                check=False,
+            )
+            if ready.returncode == 0:
+                break
+            subprocess.run(["sleep", "1"], check=True)
+        cls.write_secret("mng_postgres_password", "synthetic-admin")
+        for name, value in {
+            "n8n_db_password": "a",
+            "keycloak_db_password": "b",
+            "airflow_db_password": "c",
+            "terrakube_db_password": "d",
+            "sonarqube_db_password": "e",
+            "service_postgres_password": "f",
+            "mlflow_db_password": "ml'quote\\slash pw",
+            "dbt_db_password": "dbt-synthetic",
+            "debezium_postgres_password": "dbz-synthetic",
+        }.items():
+            cls.write_secret(name, value)
+        cls.base_init()
+
+    @classmethod
+    def write_secret(cls, name: str, value: str) -> None:
+        path = cls.secrets / name
+        path.write_text(value, encoding="utf-8")
+        path.chmod(0o644)
+
+    @classmethod
+    def base_init(cls) -> None:
+        runner = _runner_text(_compose_service(MNG_DB_COMPOSE, "mng-pg-init"))
+        args = re.findall(r"-v ([a-z0-9_]+)=\"\$\$([A-Z0-9_]+)\"", runner)
+        values = {
+            "N8N_DB_PASSWORD": "a",
+            "KEYCLOAK_DB_PASSWORD": "b",
+            "AIRFLOW_DB_PASSWORD": "c",
+            "TERRAKUBE_DB_PASSWORD": "d",
+            "SONARQUBE_DB_PASSWORD": "e",
+            "SERVICE_POSTGRES_USERNAME": "app_user",
+            "SERVICE_DB_PASSWORD": "f",
+            "SERVICE_POSTGRES_DB": "app_db",
+        }
+        command = [
+            "psql",
+            "-X",
+            "-h",
+            f"{cls.tag}-db",
+            "-U",
+            "admin",
+            "-d",
+            "postgres",
+            "-v",
+            "ON_ERROR_STOP=1",
+        ]
+        for variable, env_name in args:
+            command += ["-v", f"{variable}={values[env_name]}"]
+        command += ["-f", "/work/init.sql"]
+        result = cls.docker_run(
+            command,
+            {"PGPASSWORD": "synthetic-admin"},
+            extra=[
+                "-v",
+                f"{ROOT / 'infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql'}:/work/init.sql:ro",
+            ],
+        )
+        assert result.returncode == 0, result.stderr
+
+    @classmethod
+    def docker_run(cls, command: list[str], env: dict[str, str], extra: list[str] = ()):  # type: ignore[assignment]
+        argv = [
+            "docker",
+            "run",
+            "--rm",
+            "--network",
+            cls.tag,
+            "-v",
+            f"{cls.secrets}:/run/secrets:ro",
+        ]
+        for key, value in env.items():
+            argv += ["-e", f"{key}={value}"]
+        argv += [*extra, cls.IMAGE, *command]
+        return subprocess.run(
+            argv, capture_output=True, text=True, timeout=180, check=False
+        )
+
+    def provision(self, job: str, **overrides: str):
+        compose, sql_path = next(
+            (source, sql) for source, name, sql, _ in FEATURE_JOBS if name == job
+        )
+        service = _compose_service(compose, job)
+        env = {
+            key: _default(str(value)) for key, value in service["environment"].items()
+        }
+        env.update(
+            PGHOST=f"{self.tag}-db",
+            PGPORT="5432",
+            PGUSER="admin",
+            PGDATABASE="postgres",
+        )
+        env.update(overrides)
+        return self.docker_run(
+            ["/bin/sh", "/provision/run-feature-provision.sh"],
+            env,
+            extra=[
+                "-v",
+                f"{ROOT / PROVISION_RUNNER}:/provision/run-feature-provision.sh:ro",
+                "-v",
+                f"{ROOT / sql_path}:/provision/mng-pg.sql:ro",
+            ],
+        )
+
+    def sql(
+        self,
+        query: str,
+        database: str = "postgres",
+        user: str = "admin",
+        password: str = "synthetic-admin",
+    ) -> subprocess.CompletedProcess:
+        return self.docker_run(
+            [
+                "psql",
+                "-X",
+                "-At",
+                "-h",
+                f"{self.tag}-db",
+                "-U",
+                user,
+                "-d",
+                database,
+                "-v",
+                "ON_ERROR_STOP=1",
+                "-c",
+                query,
+            ],
+            {"PGPASSWORD": password},
+        )
+
+    def test_1_fresh_provisioning_and_idempotent_rerun(self) -> None:
+        self.sql(
+            "CREATE TABLE public.orders(id int primary key)", "app_db", "app_user", "f"
+        )
+        for _ in range(2):
+            for job in (
+                "mlflow-db-provision",
+                "dbt-db-provision",
+                "debezium-db-provision",
+            ):
+                with self.subTest(job=job):
+                    result = self.provision(job)
+                    self.assertEqual(0, result.returncode, result.stderr)
+        roles = self.sql(
+            "SELECT string_agg(rolname||':'||rolsuper||rolreplication||rolcreatedb, ',' ORDER BY rolname)"
+            " FROM pg_roles WHERE rolname IN ('mlflow','dbt','debezium')"
+        ).stdout.strip()
+        self.assertEqual(
+            "dbt:falsefalsefalse,debezium:falsetruefalse,mlflow:falsefalsefalse", roles
+        )
+        # The feature role logs in with a password containing quote/backslash.
+        self.assertEqual(
+            "mlflow",
+            self.sql(
+                "SELECT current_user", "mlflow", "mlflow", "ml'quote\\slash pw"
+            ).stdout.strip(),
+        )
+        self.assertEqual(
+            0,
+            self.sql(
+                "CREATE TABLE t(i int)", "mlflow", "mlflow", "ml'quote\\slash pw"
+            ).returncode,
+        )
+        # Other logins lost PUBLIC CONNECT on the MLflow database.
+        self.assertNotEqual(
+            0, self.sql("SELECT 1", "mlflow", "app_user", "f").returncode
+        )
+        # dbt reads the source, writes only its target schema.
+        self.assertEqual(
+            0,
+            self.sql(
+                "SELECT count(*) FROM public.orders", "app_db", "dbt", "dbt-synthetic"
+            ).returncode,
+        )
+        self.assertEqual(
+            0,
+            self.sql(
+                "CREATE VIEW analytics.v AS SELECT 1 AS x",
+                "app_db",
+                "dbt",
+                "dbt-synthetic",
+            ).returncode,
+        )
+        self.assertNotEqual(
+            0,
+            self.sql(
+                "CREATE TABLE public.x(i int)", "app_db", "dbt", "dbt-synthetic"
+            ).returncode,
+        )
+        # Tables created later by the owner are readable through default privileges.
+        self.sql(
+            "CREATE TABLE public.later(id int primary key)", "app_db", "app_user", "f"
+        )
+        self.assertEqual(
+            0,
+            self.sql(
+                "SELECT count(*) FROM public.later",
+                "app_db",
+                "debezium",
+                "dbz-synthetic",
+            ).returncode,
+        )
+        self.assertNotEqual(
+            0,
+            self.sql(
+                "INSERT INTO public.orders VALUES (1)",
+                "app_db",
+                "debezium",
+                "dbz-synthetic",
+            ).returncode,
+        )
+        publication = self.sql(
+            "SELECT count(*) FROM pg_publication_tables WHERE pubname='hyhome_app_publication'"
+            " AND tablename IN ('orders','later','heartbeat')",
+            "app_db",
+        ).stdout.strip()
+        self.assertEqual("3", publication)
+        # The heartbeat action query succeeds; other schemas stay read-only.
+        heartbeat = json.loads(
+            (
+                ROOT
+                / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
+            ).read_text()
+        )["heartbeat.action.query"]
+        self.assertEqual(
+            0, self.sql(heartbeat, "app_db", "debezium", "dbz-synthetic").returncode
+        )
+        # A service role this job did not create is never altered.
+        result = self.provision("dbt-db-provision", DBT_DB_USER="app_user")
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(
+            "1", self.sql("SELECT 1", "app_db", "app_user", "f").stdout.strip()
+        )
+
+    def test_2_invalid_inputs_fail_before_any_change(self) -> None:
+        cases = {
+            "bad identifier": dict(MLFLOW_DB_USER="Robert'); DROP"),
+            "multi-line identifier": dict(MLFLOW_DB_USER="ml_new\nx"),
+            "missing secret file": dict(
+                PROVISION_SECRETS="MLFLOW_DB_PASSWORD=/run/secrets/absent"
+            ),
+            "empty secret": dict(
+                PROVISION_SECRETS="MLFLOW_DB_PASSWORD=/run/secrets/empty"
+            ),
+            "multi-line secret": dict(
+                PROVISION_SECRETS="MLFLOW_DB_PASSWORD=/run/secrets/twolines"
+            ),
+        }
+        self.write_secret("empty", "")
+        self.write_secret("twolines", "one\ntwo")
+        for label, override in cases.items():
+            with self.subTest(case=label):
+                inputs = {
+                    "MLFLOW_DB_USER": "ml_new",
+                    "MLFLOW_DB_NAME": "ml_new",
+                    **override,
+                }
+                result = self.provision("mlflow-db-provision", **inputs)
+                self.assertEqual(64, result.returncode, result.stderr)
+        self.assertEqual(
+            "0",
+            self.sql(
+                "SELECT count(*) FROM pg_roles WHERE rolname IN ('ml_new','Robert')"
+            ).stdout.strip(),
+        )
+
+    def test_3_non_default_names_and_foreign_owner_refusal(self) -> None:
+        result = self.provision(
+            "mlflow-db-provision", MLFLOW_DB_USER="ml_x", MLFLOW_DB_NAME="ml_store"
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(
+            "ml_x",
+            self.sql(
+                "SELECT pg_get_userbyid(datdba) FROM pg_database WHERE datname='ml_store'"
+            ).stdout.strip(),
+        )
+        # An existing database owned by someone else is never taken over.
+        self.sql("CREATE DATABASE foreign_ml OWNER app_user")
+        result = self.provision(
+            "mlflow-db-provision", MLFLOW_DB_USER="ml_y", MLFLOW_DB_NAME="foreign_ml"
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(
+            "0",
+            self.sql(
+                "SELECT count(*) FROM pg_roles WHERE rolname='ml_y'"
+            ).stdout.strip(),
+        )
+        # An administrator role is never demoted.
+        result = self.provision(
+            "mlflow-db-provision", MLFLOW_DB_USER="admin", MLFLOW_DB_NAME="ml_admin"
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(
+            "t",
+            self.sql(
+                "SELECT rolsuper FROM pg_roles WHERE rolname='admin'"
+            ).stdout.strip(),
+        )
+
+    def test_4_mid_run_failure_is_not_rolled_back_but_rerun_converges(self) -> None:
+        # Target DB check passes, source schema check fails after role/CONNECT
+        # were already committed: ON_ERROR_STOP stops without rollback.
+        result = self.provision(
+            "dbt-db-provision", DBT_DB_USER="dbt_mid", DBT_SOURCE_SCHEMA="missing_src"
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(
+            "1",
+            self.sql(
+                "SELECT count(*) FROM pg_roles WHERE rolname='dbt_mid'"
+            ).stdout.strip(),
+        )
+        self.sql("CREATE SCHEMA missing_src AUTHORIZATION app_user", "app_db")
+        result = self.provision(
+            "dbt-db-provision",
+            DBT_DB_USER="dbt_mid",
+            DBT_SOURCE_SCHEMA="missing_src",
+            DBT_SCHEMA="analytics_mid",
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_5_concurrent_runs_serialize(self) -> None:
+        procs = [
+            subprocess.Popen(
+                [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "--network",
+                    self.tag,
+                    "-v",
+                    f"{self.secrets}:/run/secrets:ro",
+                    "-v",
+                    f"{ROOT / PROVISION_RUNNER}:/provision/run-feature-provision.sh:ro",
+                    "-v",
+                    f"{ROOT / 'infra/11-laboratory/mlflow/provisioning/mng-pg.sql'}:/provision/mng-pg.sql:ro",
+                    "-e",
+                    f"PGHOST={self.tag}-db",
+                    "-e",
+                    "PGPORT=5432",
+                    "-e",
+                    "PGUSER=admin",
+                    "-e",
+                    "PGDATABASE=postgres",
+                    "-e",
+                    "PROVISION_ADMIN_PASSWORD_FILE=/run/secrets/mng_postgres_password",
+                    "-e",
+                    "PROVISION_SQL=/provision/mng-pg.sql",
+                    "-e",
+                    "PROVISION_IDENTIFIERS=MLFLOW_DB_USER MLFLOW_DB_NAME",
+                    "-e",
+                    "PROVISION_SECRETS=MLFLOW_DB_PASSWORD=/run/secrets/mlflow_db_password",
+                    "-e",
+                    "MLFLOW_DB_USER=ml_race",
+                    "-e",
+                    "MLFLOW_DB_NAME=ml_race",
+                    self.IMAGE,
+                    "/bin/sh",
+                    "/provision/run-feature-provision.sh",
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            for _ in range(3)
+        ]
+        codes = [proc.wait(timeout=180) for proc in procs]
+        self.assertEqual([0, 0, 0], codes)
+        self.assertEqual(
+            "1",
+            self.sql(
+                "SELECT count(*) FROM pg_database WHERE datname='ml_race'"
+            ).stdout.strip(),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -45,7 +45,7 @@ documented operating boundaries.
 | [`nosql/cassandra`](nosql/cassandra/README.md), [`couchdb`](nosql/couchdb/README.md), [`mongodb`](nosql/mongodb/README.md) | `cassandra`, `couchdb`, `mongodb` | LAB | Separate same-host datastore laboratories; no cross-engine volume or migration assumption |
 | [`specialized/qdrant`](specialized/qdrant/README.md) | `ai`, `ai-llm`, `qdrant` | HOME | Vector store for HOME AI; snapshot/isolated restore required |
 | [`specialized/neo4j`](specialized/neo4j/README.md) | `graph` | OPTIONAL | Graph workload only; distinct from Qdrant |
-| [`specialized/surrealdb`](specialized/surrealdb/README.md) | `surrealdb`, `admin`, `notebook` | OPTIONAL | Database and optional admin/notebook clients with separate auth/data scope |
+| SurrealDB (moved) | `surrealdb`, `notebook` | OPTIONAL | Co-located with its only consumer in [`11-laboratory/open-notebook`](../11-laboratory/open-notebook/surrealdb/README.md) since owner commit `3870f08ff`; data path unchanged |
 
 ## How to Work in This Area
 

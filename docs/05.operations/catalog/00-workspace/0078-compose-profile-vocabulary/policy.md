@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -42,12 +42,16 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ai-image` | capability | GPU 이미지 생성 | `comfyui` | No | normal service startup | current |
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
+| `analytics-engineering` | capability | dbt 변환 작업과 feature 소유 DB 권한 준비; 명시적 명령만 쓰기 수행 | `mng-pg`, `mng-pg-init`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |
+| `cdc` | capability | Debezium PostgreSQL CDC 원천 준비와 Connect worker | `mng-pg`, `mng-pg-init`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인 | current |
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
 | `couchdb` | topology | CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
+| `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler; 현재 소비자 없음 | `crawl4ai` | No | normal service startup | current |
+| `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `minio`, `mlflow-db-provision`, `mlflow-artifact-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, mlflow-artifact-provision | current |
 | `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
 | `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `prometheus`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init | current |
@@ -67,12 +71,14 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect` | No | normal service startup | current |
 | `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy` | No | normal service startup | current |
 | `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry` | No | normal service startup | current |
+| `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `minio`, `mlflow-db-provision`, `mlflow-artifact-provision`, `mlflow` | No | initialization: mlflow-db-provision, mlflow-artifact-provision | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter` | No | initialization: mng-pg-init | current |
 | `mongodb` | topology | MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` | No | initialization: mongo-key-generator, mongo-init | current |
 | `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `minio` | No | normal service startup | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `minio`, `minio-create-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: minio-create-buckets | current |
 | `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana` | No | normal service startup | current |
+| `obs-gpu` | capability | NVIDIA GPU 메트릭 exporter; GPU·driver·Container Toolkit 필요 | `dcgm-exporter` | No | normal service startup; 모든 GPU 예약 | current |
 | `obs-host` | capability | 호스트·컨테이너 자원 측정 | `node-exporter`, `cadvisor` | No | normal service startup | current |
 | `ollama` | capability | 로컬 모델 추론과 exporter | `ollama`, `ollama-exporter` | No | normal service startup | current |
 | `opensearch` | topology | 단일 OpenSearch와 dashboards | `opensearch`, `opensearch-dashboards` | No | normal service startup | current |
@@ -121,6 +127,13 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 | --- | --- | --- |
 | HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage` | `automation`, `lifecycle`, `topology` |
 
+소유자가 2026-09-21 현재 운영 중이라고 밝힌 명령은 `local`, `core`, `mng`, `ai`,
+`dev`, `workflow`, `obs`, `admin` 8개 profile 조합이다. 이는 관측된 운영 선택이며
+재실행·재시작·새 기능 활성화 승인이 아니다. 이 조합은 `mlops`, `data-science`,
+`analytics-engineering`, `cdc`, `obs-gpu`, `crawl4ai`, `notebook`을 선택하지 않고,
+2026-09-21 변경 전후 렌더링 서비스 이름 집합이 같다. 새 기능은 필요할 때 이
+조합에 profile을 명시적으로 추가한다.
+
 HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
 broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으로 HOME 앱이 충족되지는
@@ -145,6 +158,10 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
+| mlops / data-science / analytics-engineering / cdc | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 `minio`·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
+| cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
+| obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
+| crawl4ai | `infra_net`에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
 
 ## Exceptions
 

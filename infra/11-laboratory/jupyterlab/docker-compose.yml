@@ -10,28 +10,42 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-high
 
+    # The base tag is the Dockerfile ARG default, the single Renovate-owned pin.
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        JUPYTER_BASE_TAG: '2026-07-28'
 
     image: hy-home/jupyterlab:scipy-local
     container_name: jupyterlab
 
     environment:
+      # Internal SDK path; it bypasses the browser SSO route (see GDE-0089).
       MLFLOW_TRACKING_URI: 'http://mlflow:${MLFLOW_PORT:-5000}'
-
+      JUPYTER_PORT: '${JUPYTER_PORT:-8888}'
+    secrets:
+      - jupyter_token
+    # Jupyter Server reads JUPYTER_TOKEN; an empty token would leave kernels,
+    # terminals and the REST API open to every container on infra_net.
     command:
-      - start-notebook.py
-      - --ServerApp.ip=0.0.0.0
-      - --ServerApp.port=${JUPYTER_PORT:-8888}
-      - --ServerApp.root_dir=/home/jovyan/work
-      - --IdentityProvider.token=
-
+      - /bin/bash
+      - -ec
+      - |
+        JUPYTER_TOKEN="$$(tr -d '\r\n' </run/secrets/jupyter_token)"
+        [ "$${#JUPYTER_TOKEN}" -ge 16 ] || { echo 'jupyterlab: jupyter_token must be at least 16 characters' >&2; exit 64; }
+        export JUPYTER_TOKEN
+        exec start-notebook.py \
+          --ServerApp.ip=0.0.0.0 \
+          --ServerApp.port="$${JUPYTER_PORT}" \
+          --ServerApp.root_dir=/home/jovyan/work \
+          --ServerApp.trust_xheaders=True
     volumes:
-      - ${DEFAULT_DOCKER_PROJECT_PATH}/projects/data-science:/home/jovyan/work:rw
-
+      # Notebooks are user data: keep them outside the repository tree. The
+      # directory must exist and be owned by UID 1000 before first start.
+      - type: bind
+        source: ${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work
+        target: /home/jovyan/work
+        bind:
+          create_host_path: false
     expose:
       - '${JUPYTER_PORT:-8888}'
 
@@ -45,7 +59,7 @@ services:
         - CMD-SHELL
         - >
           wget -qO-
-          http://127.0.0.1:${JUPYTER_PORT:-8888}/api/status
+          http://127.0.0.1:${JUPYTER_PORT:-8888}/api
           >/dev/null 2>&1 || exit 1
 
       interval: 30s

@@ -123,9 +123,22 @@ def updater_contract_findings(
         "dockerfile",
         "github-actions",
         "custom.regex",
+        "pip_requirements",
     }
     if not isinstance(managers, list) or set(managers) != expected_managers:
         findings.append("Renovate manager ownership drift")
+    pip = renovate.get("pip_requirements")
+    if not isinstance(pip, dict) or pip.get("managerFilePatterns") != [
+        r"/^infra\/.+\/requirements\.txt$/"
+    ]:
+        findings.append("pip_requirements ownership must stay limited to infra images")
+    if not any(
+        isinstance(rule, dict)
+        and rule.get("matchManagers") == ["pip_requirements"]
+        and rule.get("automerge") is False
+        for rule in renovate.get("packageRules") or []
+    ):
+        findings.append("image-local Python pins must not automerge")
     if isinstance(managers, list) and "npm" in managers:
         findings.append("npm updater ownership overlaps Dependabot")
 
@@ -165,8 +178,10 @@ def updater_contract_findings(
         findings.append("normal updates must use the seven-day release age")
     if renovate.get("minimumReleaseAgeBehaviour") != "timestamp-optional":
         findings.append("unknown timestamps must use explicit manual review fallback")
+    # Owner commit 8d93673b2 replaced the natural-language schedule with the
+    # equivalent explicit cron (Monday 00:00-05:59 Asia/Seoul).
     if renovate.get("timezone") != "Asia/Seoul" or renovate.get("schedule") != [
-        "before 6am on monday"
+        "* 0-5 * * 1"
     ]:
         findings.append("Renovate schedule drift")
     alerts = renovate.get("vulnerabilityAlerts")

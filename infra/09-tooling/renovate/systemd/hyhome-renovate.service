@@ -31,12 +31,11 @@ ExecStartPre=/usr/bin/docker compose \
 # automatically so no manual cleanup is needed between runs.
 ExecStart=/usr/bin/docker compose \
     --profile dependency-update \
-    run --rm renovate
+    run --rm --no-deps renovate
 
-# Post-run: prune dangling images to avoid unbounded disk growth. The filter
-# restricts the prune to images with no tag (build layer debris only) and does
-# not touch tagged pinned images.
-ExecStartPost=/usr/bin/docker image prune --force --filter "dangling=true"
+# No post-run image prune: `docker image prune` is host-wide and would delete
+# other projects' dangling images. Superseded Renovate image tags are cleaned up
+# manually per RUN-0083.
 
 # Systemd marks the unit failed when ExecStart exits non-zero. No automatic
 # restart is desired because a failed Renovate run requires human review of
@@ -55,5 +54,5 @@ StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=hyhome-renovate
 
-[Install]
-WantedBy=multi-user.target
+# No [Install] section: only hyhome-renovate.timer is enabled. Enabling this
+# service directly would run Renovate at every boot.

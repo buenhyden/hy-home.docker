@@ -65,8 +65,6 @@ services:
       - obs
       - logs
       - tracing
-      - mlops
-      - data-science
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -91,7 +89,6 @@ services:
         mc mb myminio/loki-bucket --ignore-existing
         mc mb myminio/cdn-bucket --ignore-existing
         mc mb myminio/doc-intel-assets --ignore-existing
-        mc mb myminio/mlflow-artifacts --ignore-existing
         mc anonymous set public myminio/cdn-bucket || true
     depends_on:
       minio:

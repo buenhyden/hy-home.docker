@@ -26,7 +26,8 @@ services:
     container_name: open_notebook
     pull_policy: always
     ports:
-      - '${OPEN_NOTEBOOK_API_URL:-5055}:5055' # API (required!)
+      # Host-local API access only; browsers use the Traefik route on the web port.
+      - '127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055'
     expose:
       - ${OPEN_NOTEBOOK_WEB_URL:-8502}
     environment:
