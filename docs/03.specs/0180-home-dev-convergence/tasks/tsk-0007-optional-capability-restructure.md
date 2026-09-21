@@ -366,9 +366,9 @@ owner only for security fixes and is recorded, not changed.
 
 Later PRs followed the same pattern: #175–#178 were merged at their first
 commit, so each follow-up carried the fixes pushed after the previous one
-opened. #177 recorded the activation evidence, #178 fixed a final newline, and
-#180 repaired the Connect-secret escaping test (broken by the shellcheck-driven
-`case` rewrite) and the public secret-contract counts. The `claude/` branch
+opened. #177 recorded the activation evidence, #178 fixed a final newline,
+and #180 repaired the Connect-secret escaping test (broken by the
+shellcheck-driven `case` rewrite) and the public secret-contract counts. The `claude/` branch
 prefix is not an admitted type under the Git workflow policy, which contributed
 to red PR checks; #180 used `chore/validation-contract-repair`, passed
 `validation-changed` and was merged after its checks. Every merged branch was
