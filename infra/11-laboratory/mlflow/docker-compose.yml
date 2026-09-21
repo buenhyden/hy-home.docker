@@ -1,0 +1,101 @@
+x-tier-label: &tier-label
+  hy-home.tier: admin
+
+services:
+  mlflow:
+    profiles:
+      - mlops
+      - data-science
+
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: hy-home/mlflow:3.16.1-local
+    container_name: mlflow
+
+    environment:
+      MLFLOW_PORT: '${MLFLOW_PORT:-5000}'
+
+      MLFLOW_DB_HOST: mng-pg
+      MLFLOW_DB_PORT: '${POSTGRES_PORT:-5432}'
+      MLFLOW_DB_USER: '${MLFLOW_DB_USER:-mlflow}'
+      MLFLOW_DB_NAME: '${MLFLOW_DB_NAME:-mlflow}'
+
+      MLFLOW_ARTIFACT_BUCKET: '${MLFLOW_ARTIFACT_BUCKET:-mlflow-artifacts}'
+      MLFLOW_S3_ENDPOINT_URL: '${MLFLOW_S3_ENDPOINT_URL:-http://minio:9000}'
+      AWS_DEFAULT_REGION: '${MLFLOW_S3_REGION:-us-east-1}'
+
+    secrets:
+      - mlflow_db_password
+      - minio_app_username
+      - minio_app_user_password
+
+    entrypoint:
+      - /bin/sh
+      - -ec
+
+    command:
+      - |
+        DB_PASSWORD="$$(python -c \
+          'import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip(), safe=""))' \
+          </run/secrets/mlflow_db_password)"
+
+        export AWS_ACCESS_KEY_ID="$$(tr -d '\r\n' </run/secrets/minio_app_username)"
+        export AWS_SECRET_ACCESS_KEY="$$(tr -d '\r\n' </run/secrets/minio_app_user_password)"
+
+        exec mlflow server \
+          --host 0.0.0.0 \
+          --port "$${MLFLOW_PORT}" \
+          --backend-store-uri \
+            "postgresql+psycopg2://$${MLFLOW_DB_USER}:$${DB_PASSWORD}@$${MLFLOW_DB_HOST}:$${MLFLOW_DB_PORT}/$${MLFLOW_DB_NAME}" \
+          --artifacts-destination \
+            "s3://$${MLFLOW_ARTIFACT_BUCKET}" \
+          --allowed-hosts \
+            "mlflow,mlflow.${DEFAULT_URL},localhost,127.0.0.1"
+
+    expose:
+      - '${MLFLOW_PORT:-5000}'
+
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+
+      mng-pg-init:
+        condition: service_completed_successfully
+
+      minio:
+        condition: service_healthy
+
+      minio-create-buckets:
+        condition: service_completed_successfully
+
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >
+          import urllib.request; urllib.request.urlopen( 'http://127.0.0.1:5000/health', timeout=3)
+
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+    labels:
+      <<: *tier-label
+
+      traefik.enable: 'true'
+      traefik.http.routers.mlflow.rule: Host(`mlflow.${DEFAULT_URL}`)
+      traefik.http.routers.mlflow.entrypoints: websecure
+      traefik.http.routers.mlflow.tls: 'true'
+      traefik.http.routers.mlflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.mlflow.loadbalancer.server.port: ${MLFLOW_PORT:-5000}
+
+    networks:
+      - infra_net
