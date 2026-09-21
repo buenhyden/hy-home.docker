@@ -112,7 +112,8 @@ documentation task.
 
 ## Traceability
 
-- Runtime source: [Kafka Compose](../../../../../infra/05-messaging/kafka/docker-compose.yml).
+- Runtime source: [Kafka Compose](../../../../../infra/05-messaging/kafka/docker-compose.yml)
+  and the [Connect image Dockerfile](../../../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - Procedures are planned unless a dated verification record explicitly says they ran.
 
