@@ -583,7 +583,10 @@ check_11_laboratory() {
   fi
   check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
 
-  check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file" "open-notebook middleware chain mismatch"
+  # Owner decision b90b74837: Open Notebook relies on its own password plus the
+  # admin CIDR allowlist instead of shared SSO; see POL-0073.
+  check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file" "open-notebook middleware chain mismatch"
+  check_contains "$open_notebook_compose" "127.0.0.1:\${OPEN_NOTEBOOK_API_URL:-5055}:5055" "open-notebook API host port must stay loopback-bound"
   check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"

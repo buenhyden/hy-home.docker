@@ -23,13 +23,14 @@ http:
         address: "http://oauth2-proxy:4180/oauth2/auth"
         maxResponseBodySize: 65536
         trustForwardHeader: false
+        # Identity only. Forwarding Authorization/access/ID tokens to every
+        # upstream replayed the user's Keycloak token and collided with
+        # upstream bearer schemes (SonarQube, Terrakube). A consumer that needs
+        # a token gets its own middleware.
         authResponseHeaders:
           - "X-Auth-Request-User"
           - "X-Auth-Request-Email"
-          - "Authorization"
-          - "X-Auth-Request-Access-Token"
           - "X-Auth-Request-Preferred-Username"
-          - "X-Auth-Request-Id-Token"
 
     sso-errors:
       errors:

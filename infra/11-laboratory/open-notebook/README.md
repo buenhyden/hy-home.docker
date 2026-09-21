@@ -16,7 +16,7 @@ created: "2026-05-09"
 
 Open Notebook provides an admin/laboratory notebook interface for local knowledge workflows. The stack runs the `open_notebook` application and a dedicated `surrealdb` database backend for persistence, both interconnected via `infra_net`.
 
-Lifecycle: **OPTIONAL**. Root Compose includes this definition; explicit profiles (`admin`, `notebook`, `surrealdb`) control activation.
+Lifecycle: **OPTIONAL**. Root Compose includes this definition; explicit profiles (`notebook`, `surrealdb`) control activation.
 
 ## Audience
 
@@ -30,7 +30,7 @@ Lifecycle: **OPTIONAL**. Root Compose includes this definition; explicit profile
 
 - Docker Compose definitions for `open_notebook` and `surrealdb`.
 - Local persistent volumes under `${DEFAULT_MANAGEMENT_DIR}` (`open-notebook-data` and `surrealdb-data`).
-- Gateway exposure for Open Notebook through Traefik routing, SSO authentication, and admin IP allowlist.
+- Gateway exposure for Open Notebook through Traefik routing, the admin IP allowlist, and the application password.
 - Docker secret consumption for notebook password, encryption key, and database credentials.
 - Multi-stage build context for custom SurrealDB runtime (`surrealdb/Dockerfile`).
 
@@ -63,23 +63,23 @@ open-notebook/
 | --- | --- |
 | Purpose | Laboratory Open Notebook service leaf in `11-laboratory`; services: `open_notebook`, `surrealdb`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
 | Config files | `docker-compose.yml`, `surrealdb/Dockerfile`, `surrealdb/docker-entrypoint.sh` |
-| Config values | env keys: `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `OLLAMA_API_BASE`; profiles: `admin`, `notebook`, `surrealdb` |
+| Config values | env keys: `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `OLLAMA_API_BASE`; profiles: `notebook`, `surrealdb` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `open-notebook-data:/app/data`, `surrealdb-data:/mydata` |
-| Ports | Host-bound API port `${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik targets web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` via `expose`; SurrealDB internal port `8000` via `expose` |
+| Ports | Loopback-only API port `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik targets web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` via `expose`; SurrealDB internal port `8000` via `expose` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
 | Secret refs | names: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; mounts: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
 | Healthcheck | Compose healthcheck declared for `surrealdb` and `open_notebook` |
 | Operations | Guide (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md`), Policy (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md`), Runbook (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md`) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `notebook` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Validate the root-active laboratory profile with `HYHOME_COMPOSE_PROFILES="admin notebook" bash scripts/validation/validate-docker-compose.sh`.
-2. Start only when the `admin` or `notebook` profile is intentionally selected and host-bound API/DB ports are approved for the target environment.
-3. Access the Open Notebook UI at `https://open-notebook.${DEFAULT_URL}` through SSO authentication within the permitted CIDR network range.
+1. Validate the root-active laboratory profile with `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`.
+2. Start only when the `notebook` profile is intentionally selected; `admin` no longer selects Open Notebook or SurrealDB.
+3. Access the Open Notebook UI at `https://open-notebook.${DEFAULT_URL}` from the permitted CIDR range and sign in with the Open Notebook password; the route intentionally has no shared SSO middleware. The API host port answers on loopback only.
 4. Keep floating image usage reviewed through `infra/image-tag-policy.exceptions.json`.
 5. Keep credentials in Docker secrets and environment variables; do not commit plaintext values.
 
@@ -98,8 +98,8 @@ Runtime image pins are declared in [Compose](docker-compose.yml) and referenced 
 
 | Service | Profiles | Networks | Published Ports | Volumes | Secrets |
 | --- | --- | --- | --- | --- | --- |
-| `open_notebook` | `admin`, `notebook` | `infra_net` | `${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open-notebook-data:/app/data` | `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key` |
-| `surrealdb` | `admin`, `notebook`, `surrealdb` | `infra_net` | None (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
+| `open_notebook` | `notebook` | `infra_net` | `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open-notebook-data:/app/data` | `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key` |
+| `surrealdb` | `notebook`, `surrealdb` | `infra_net` | None (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
 
 ### Environment Variables
 
@@ -110,13 +110,13 @@ Runtime image pins are declared in [Compose](docker-compose.yml) and referenced 
 | `SURREALDB_DATABASE` | Yes | `open_notebook` | Database name within namespace |
 | `DEFAULT_URL` | Yes | `open_notebook` | Base domain for Traefik routing |
 | `DEFAULT_MANAGEMENT_DIR` | Yes | Global | Base host directory for persistent bind mounts |
-| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | Host port for API (default: 5055) |
+| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | Loopback host port for API (default: 5055) |
 | `OPEN_NOTEBOOK_WEB_URL` | No | `open_notebook` | Web UI internal port (default: 8502) |
 | `LAB_ALLOWED_CIDRS` | No | Traefik | IP allowlist for admin endpoints |
 
 ### Traefik Routing
 
-Open Notebook routes via Traefik on `websecure` with `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, `large-body@file`, `sso-errors@file`, and `sso-auth@file`.
+Open Notebook routes via Traefik on `websecure` with `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, and `large-body@file`. Shared SSO is intentionally absent (owner decision, commit `b90b74837`); access control is the CIDR allowlist plus the Open Notebook password.
 
 ### Database Compatibility
 
@@ -136,7 +136,7 @@ Open Notebook upstream only supports SurrealDB v2. SurrealDB v3 is incompatible 
 ## Validation
 
 - Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
-- Run `HYHOME_COMPOSE_PROFILES="admin notebook" bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
+- Run `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
 - Confirm persistence by checking `docker logs --tail=200 open-notebook` after config changes.
 - Verify SurrealDB readiness via healthcheck endpoint `http://127.0.0.1:8000`.
