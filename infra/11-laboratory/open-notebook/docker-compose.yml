@@ -8,6 +8,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MANAGEMENT_DIR}/open-notebook/data
+  surrealdb-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/surrealdb/data
 
 services:
   open_notebook:
@@ -74,3 +80,36 @@ services:
       traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file,sso-errors@file,sso-auth@file
       traefik.http.services.open-notebook.loadbalancer.server.port: ${OPEN_NOTEBOOK_WEB_URL:-8502}
+
+  surrealdb:
+    profiles:
+      - admin
+      - notebook
+      - surrealdb
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-med
+    build:
+      context: ./surrealdb
+      dockerfile: Dockerfile
+    environment:
+      SURREALDB_USERNAME: ${SURREALDB_USERNAME}
+    expose:
+      - '8000'
+    # ports:
+    #   - '127.0.0.1:${SURREALDB_HOST_PORT:-8000}:8000'
+    volumes:
+      - surrealdb-data:/mydata
+    labels:
+      <<: *tier-label
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.122
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/surreal", "is-ready", "--endpoint", "http://127.0.0.1:8000" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    secrets:
+      - surreal_db_password

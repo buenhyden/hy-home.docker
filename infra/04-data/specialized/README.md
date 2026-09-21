@@ -52,7 +52,6 @@ specialized/
 | --- | --- | --- | --- |
 | [Neo4j](neo4j/README.md) | `OPTIONAL` | `graph` | `0033-neo4j` |
 | [Qdrant](qdrant/README.md) | `HOME` | `ai`, `ai-llm`, `qdrant` | `0034-qdrant` |
-| [SurrealDB](surrealdb/README.md) | `OPTIONAL` | `surrealdb`, `notebook`, `admin` | `0080-surrealdb` |
 
 1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
 2. Review [neo4j/README.md](./neo4j/README.md) or [qdrant/README.md](./qdrant/README.md) before changing a service.

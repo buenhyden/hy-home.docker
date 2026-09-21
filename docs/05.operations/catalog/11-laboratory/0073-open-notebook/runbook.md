@@ -74,7 +74,7 @@ exposure, sensitive content leak, migration error, or unknown provider activity.
 - [Guide](guide.md) (`GDE-0073`)
 - [Policy](policy.md) (`POL-0073`)
 - [Open Notebook Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml)
-- [SurrealDB Compose](../../../../../infra/04-data/specialized/surrealdb/docker-compose.yml)
+- [SurrealDB Operations](../0080-surrealdb/guide.md) (`GDE-0080`)
 
 ## Related Documents
 

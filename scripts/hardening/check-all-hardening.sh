@@ -587,7 +587,7 @@ check_11_laboratory() {
   check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"
-  check_contains "infra/04-data/specialized/surrealdb/docker-compose.yml" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
+  check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
   check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.123" "open-notebook infra_net IP mismatch"
 
   if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
@@ -598,7 +598,7 @@ check_11_laboratory() {
   check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"
 
   check_service_healthcheck "$dozzle_compose" "dozzle"
-  check_service_healthcheck "infra/04-data/specialized/surrealdb/docker-compose.yml" "surrealdb"
+  check_service_healthcheck "$open_notebook_compose" "surrealdb"
   check_service_healthcheck "$open_notebook_compose" "open_notebook"
   check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }

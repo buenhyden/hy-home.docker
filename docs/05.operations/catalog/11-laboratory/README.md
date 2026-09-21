@@ -15,10 +15,10 @@ layer: "operations"
 ## Overview
 
 This domain co-locates the current Dozzle, Open Notebook,
-optimization-hardening and RedisInsight roles under stable four-digit subject
+optimization-hardening, RedisInsight, and SurrealDB roles under stable four-digit subject
 identities. Dozzle uses `admin`/`admin-logs`, RedisInsight uses
-`admin`/`admin-data`, and Open Notebook plus separately owned SurrealDB use
-`admin`/`notebook`. There is no current laboratory `dev` profile or Metabase
+`admin`/`admin-data`, and Open Notebook plus SurrealDB use
+`admin`/`notebook`/`surrealdb`. There is no current laboratory `dev` profile or Metabase
 service.
 
 ## Audience
@@ -40,6 +40,7 @@ service.
 | [Open Notebook](0073-open-notebook/guide.md) | [Guide](0073-open-notebook/guide.md), [Policy](0073-open-notebook/policy.md), [Runbook](0073-open-notebook/runbook.md) |
 | [Optimization hardening](0074-optimization-hardening/guide.md) | [Guide](0074-optimization-hardening/guide.md), [Policy](0074-optimization-hardening/policy.md), [Runbook](0074-optimization-hardening/runbook.md) |
 | [RedisInsight](0076-redisinsight/guide.md) | [Guide](0076-redisinsight/guide.md), [Policy](0076-redisinsight/policy.md), [Runbook](0076-redisinsight/runbook.md) |
+| [SurrealDB](0080-surrealdb/guide.md) | [Guide](0080-surrealdb/guide.md), [Policy](0080-surrealdb/policy.md), [Runbook](0080-surrealdb/runbook.md) |
 
 ## How to Work in This Area
 

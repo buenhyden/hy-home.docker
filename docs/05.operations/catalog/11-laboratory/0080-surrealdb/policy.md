@@ -4,11 +4,11 @@ version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
-- "AD-0004"
+- "AD-0011"
 created: "2026-09-19"
 ---
 
@@ -16,11 +16,11 @@ created: "2026-09-19"
 
 ## Overview
 
-This policy governs the `OPTIONAL` single-service SurrealDB deployment used by Open Notebook.
+This policy governs the `OPTIONAL` single-service SurrealDB deployment used by Open Notebook within the `11-laboratory` tier.
 
 ## Policy Scope
 
-- [Authored Compose source](../../../../../infra/04-data/specialized/surrealdb/docker-compose.yml), Dockerfile, and entrypoint
+- [Authored Compose source](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml), Dockerfile, and entrypoint
 - Service `surrealdb`; exact profiles `surrealdb`, `notebook`, `admin`
 - `surrealdb-data:/mydata`, loopback host mapping, `infra_net`
 - `surreal_db_password` and root/namespace/database authentication scope
@@ -29,6 +29,7 @@ This policy governs the `OPTIONAL` single-service SurrealDB deployment used by O
 ## Controls
 
 - **Required**: Host exposure remains loopback-only and application traffic remains on `infra_net`; broader publication requires an approved gateway change.
+- **Required**: SurrealDB is pinned to v2 for Open Notebook upstream compatibility. Major upgrades to SurrealDB v3 or higher are prohibited until Open Notebook officially validates support.
 - **Required**: Credentials use the Docker Secret. Documentation and evidence must not contain password values, credential-bearing URLs, raw records, or token material.
 - **Required**: Every backup identifies SurrealDB version, namespace, database, auth level, schema/data scope, export options, checksum/location, retention/expiry, and isolated restore result.
 - **Required**: Restore uses a fresh isolated compatible target and authorized root, namespace, or database credentials. Confirm `OPTION IMPORT` expectations before import.
@@ -53,7 +54,7 @@ Review monthly and before image, storage format, persistence, authentication, na
 
 ## Traceability
 
-- Governing architecture: [AD-0004](../../../../02.architecture/descriptions/0004-data-architecture.md)
+- Governing architecture: [AD-0011](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - Subject peers: [Guide](guide.md), [Runbook](runbook.md)
 
 ## Related Documents
@@ -65,4 +66,4 @@ Review monthly and before image, storage format, persistence, authentication, na
 - [SurrealDB licensing](https://surrealdb.com/license)
 - [Runtime version projection](../../../../../infra/tech-stack.versions.json)
 - [Operations index](../../../README.md)
-- [Infrastructure README](../../../../../infra/04-data/specialized/surrealdb/README.md)
+- [Infrastructure README](../../../../../infra/11-laboratory/open-notebook/README.md)

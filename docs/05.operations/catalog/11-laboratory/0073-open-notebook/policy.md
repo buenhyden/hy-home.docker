@@ -27,6 +27,8 @@ retention, backup/restore, floating image upgrades, and removal.
 ## Controls
 
 - Use `admin` or `notebook`; keep outside HOME.
+- Open Notebook upstream requires SurrealDB v2. Upgrades to SurrealDB v3 or higher
+  are prohibited until upstream Open Notebook explicitly supports and verifies v3.
 - Preserve gateway/CIDR controls and separately verify the published API boundary.
   Application password and SurrealDB auth remain required.
 - Keep provider keys in the app's encrypted store and protect

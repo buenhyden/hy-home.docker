@@ -51,8 +51,6 @@ four-digit subject identity. Role membership follows the current subject tree.
 | [Specialized — Qdrant](0034-qdrant/guide.md) | [Guide](0034-qdrant/guide.md), [Policy](0034-qdrant/policy.md), [Runbook](0034-qdrant/runbook.md) |
 | [Storage exhaustion](0035-storage-exhaustion/runbook.md) | [Runbook](0035-storage-exhaustion/runbook.md) |
 
-| [SurrealDB](0080-surrealdb/guide.md) | [Guide](0080-surrealdb/guide.md), [Policy](0080-surrealdb/policy.md), [Runbook](0080-surrealdb/runbook.md) |
-
 ## How to Work in This Area
 
 Use guides for routine context, policies for control boundaries, and runbooks

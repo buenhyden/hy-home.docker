@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -23,8 +23,8 @@ created: "2026-05-10"
 
 Open Notebook is an OPTIONAL admin/notebook knowledge workspace. The
 `open_notebook` service belongs to `admin` and `notebook`; it is excluded from
-HOME. Its `surrealdb` dependency is owned by the separate
-[SurrealDB Compose](../../../../../infra/04-data/specialized/surrealdb/docker-compose.yml),
+HOME. Its `surrealdb` dependency is co-located in the same
+[Open Notebook Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml),
 which shares those selectors and provides the persistent database.
 
 ### Current implementation and data
@@ -33,6 +33,8 @@ which shares those selectors and provides the persistent database.
   owns the app service, route, app-data volume, secrets, and healthcheck.
 - `/app/data` stores application files. SurrealDB `/mydata` stores notebooks,
   sources, model/provider settings, and encrypted provider credentials.
+- `open_notebook` upstream strictly requires SurrealDB v2; SurrealDB v3 is incompatible
+  and unsupported.
 - `open_notebook_password`, `open_notebook_encryption_key`, and
   `surreal_db_password` are Docker secrets. Upstream states that losing/changing
   the encryption key makes previously encrypted API keys unreadable; keep key
@@ -48,7 +50,8 @@ which shares those selectors and provides the persistent database.
 Validate `docker compose --profile notebook config --quiet`, verify both services,
 and start the database before the app. Use the application password plus gateway
 control; configure only approved model/provider endpoints and keys. Notebook
-content, source documents, embeddings, and provider keys are sensitive.
+content, source documents, embeddings, and provider keys are sensitive. Retain
+SurrealDB on v2; do not upgrade to v3.
 
 For backup, quiesce app writes, export the configured SurrealDB namespace/database
 with `surreal export`, copy `/app/data`, and retain the encryption key and DB
