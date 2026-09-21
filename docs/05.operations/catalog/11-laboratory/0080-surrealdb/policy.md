@@ -21,7 +21,7 @@ This policy governs the `OPTIONAL` single-service SurrealDB deployment used by O
 ## Policy Scope
 
 - [Authored Compose source](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml), Dockerfile, and entrypoint
-- Service `surrealdb`; exact profiles `surrealdb`, `notebook`, `admin`
+- Service `surrealdb`; exact profiles `surrealdb`, `notebook`
 - `surrealdb-data:/mydata`, loopback host mapping, `infra_net`
 - `surreal_db_password` and root/namespace/database authentication scope
 - Linked guide and runbook

@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "specs"
 artifact_id: "SPEC-0180"
 parent_ids:
@@ -122,7 +122,8 @@ Task 0002. A failed or unexecuted check is never recorded as PASS.
 - [Auth research](tasks/tsk-0003-keycloak-oidc-operations-research.md)
 - [Native OIDC migration evidence](tasks/tsk-0004-native-oidc-service-migration.md)
 - [Prior current-main convergence evidence](tasks/tsk-0005-current-main-convergence.md)
-- [Current Task](tasks/tsk-0006-ci-quality-version-alignment.md)
+- [CI quality alignment](tasks/tsk-0006-ci-quality-version-alignment.md)
+- [Current Task](tasks/tsk-0007-optional-capability-restructure.md)
 
 ## Open Questions
 

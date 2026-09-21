@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "specs"
 artifact_id: "SPEC-0180-PLAN-0001"
 parent_ids:
@@ -218,6 +218,22 @@ quality/security reviews cover both decisions and resulting diffs, followed by
 correction and scoped re-review. Persistent data, secret files and live services
 remain untouched; a repository decision cannot authorize runtime migration,
 credential rotation, volume deletion or rollout.
+
+### Task 9: Optional capability restructure (2026-09-21 follow-up)
+
+Base main `ea3a7480d567acefa038417a2620aff497a30b72`, isolated branch
+`claude/home-dev-restructure`. Scope: recover `validation-full`, then apply the
+domain-selective restructure chosen in
+[Task 0007](tasks/tsk-0007-optional-capability-restructure.md) over the
+keep-and-patch and full-separation alternatives. The shared base (management
+database, MinIO, Kafka Connect, gateway) keeps its data, identifiers and
+activation; MLflow, dbt and Debezium each own a provisioning job, SQL, grants,
+secret and Stage 05 triplet, sharing only an input-validating runner. Security
+corrections (SSO bypass, token forwarding, Grafana anonymous access) are separate
+logical commits. Task 0007 owns the before/after tree, file move table,
+dispositions, verification, rulings and the approval-gated activation list;
+activation, private secret synchronization, builds and CDC registration remain
+separately approved.
 
 ### Original work-unit correspondence
 

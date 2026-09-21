@@ -21,9 +21,9 @@ created: "2026-05-10"
 
 ### Purpose and classification
 
-Open Notebook is an OPTIONAL admin/notebook knowledge workspace. The
-`open_notebook` service belongs to `admin` and `notebook`; it is excluded from
-HOME. Its `surrealdb` dependency is co-located in the same
+Open Notebook is an OPTIONAL notebook knowledge workspace. The
+`open_notebook` service belongs only to `notebook`; owner commit `d5912ab03`
+removed it from the catch-all `admin` selector, and it is excluded from HOME. Its `surrealdb` dependency is co-located in the same
 [Open Notebook Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml),
 which shares those selectors and provides the persistent database.
 
@@ -39,9 +39,10 @@ which shares those selectors and provides the persistent database.
   `surreal_db_password` are Docker secrets. Upstream states that losing/changing
   the encryption key makes previously encrypted API keys unreadable; keep key
   custody separate from database backups.
-- The API host port is published without a bind address by current source, while
-  the UI route uses gateway ForwardAuth and an admin CIDR allowlist. Treat API
-  exposure separately from UI auth and verify the host firewall/bind before use.
+- The API host port is bound to `127.0.0.1` only; browsers reach the web port
+  through Traefik. The UI route uses the admin CIDR allowlist and the Open
+  Notebook password; shared SSO was removed by owner commit `b90b74837`, so no
+  gateway identity or group check applies to this route.
 - Directory health proves mount availability only, not DB, provider, model, or
   notebook function.
 

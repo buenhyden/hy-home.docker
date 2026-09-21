@@ -4,13 +4,14 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
 - "POL-0045"
 implementation_services:
   infra/06-observability/docker-compose.yml:
+  - dcgm-exporter
   - node-exporter
   - prometheus
 created: "2026-05-10"
@@ -129,6 +130,27 @@ graph TD
 - **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, MinIO, Qdrant, OpenSearch, etcd.
 - **Kubernetes/GitOps**: k3d NodePort targets for Argo CD, kube-state-metrics, Istio, and Argo Rollouts.
 - **Applications**: Keycloak, n8n, Airflow, Vault, Ollama exporter.
+
+#### GPU metrics (DCGM Exporter, opt-in `obs-gpu`)
+
+`dcgm-exporter` is selected only by `obs-gpu`; neither the eight-profile
+operating command nor HOME starts it. It reserves every NVIDIA GPU through the
+Compose device reservation, runs without extra capabilities (the `SYS_ADMIN`
+grant for DCP profiling fields was removed because the host GPU cannot provide
+them) and exposes `9400` on `infra_net` only. Both `prometheus.yml` and
+`prometheus.dev.yml` always scrape `dcgm-exporter:9400` with label
+`domain="gpu"`, so the target is simply down while the profile is off; no
+per-target down alert exists for it.
+
+The Grafana dashboard `Infrastructure/dcgm-exporter.json` and the
+`alert_rules.local.gpu.yml` rules (temperature, XID, framebuffer) read DCGM
+metrics only. A present dashboard or a silent rule is not evidence of
+collection. The 2026-09-21 read-only host check found one GeForce GTX 1060 6 GB,
+an installed NVIDIA driver, the `nvidia` Docker runtime and the NVIDIA Container
+Toolkit (exact versions are Task evidence, not a pin). DCGM targets data-center GPUs; on this consumer card some fields may be
+missing, so collection is **unverified** until an approved run shows
+`up{job="dcgm-exporter"} == 1` and non-empty `DCGM_FI_DEV_GPU_TEMP` and
+`DCGM_FI_DEV_FB_USED` series with the expected `gpu`/`modelName` labels.
 
 #### 2. Alerting Rule System
 

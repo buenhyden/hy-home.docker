@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-21"
 layer: "operations"
 ---
 
@@ -15,11 +15,12 @@ layer: "operations"
 ## Overview
 
 This domain co-locates the current Dozzle, Open Notebook,
-optimization-hardening, RedisInsight, and SurrealDB roles under stable four-digit subject
-identities. Dozzle uses `admin`/`admin-logs`, RedisInsight uses
-`admin`/`admin-data`, and Open Notebook plus SurrealDB use
-`admin`/`notebook`/`surrealdb`. There is no current laboratory `dev` profile or Metabase
-service.
+optimization-hardening, RedisInsight, SurrealDB, MLflow and JupyterLab roles under
+stable four-digit subject identities. Dozzle uses `admin`/`admin-logs`,
+RedisInsight uses `admin`/`admin-data`, Open Notebook plus SurrealDB use
+`notebook`/`surrealdb` (not `admin`), MLflow uses `mlops`/`data-science`, and
+JupyterLab uses `data-science`. There is no current laboratory `dev` profile or
+Metabase service.
 
 ## Audience
 
@@ -41,6 +42,8 @@ service.
 | [Optimization hardening](0074-optimization-hardening/guide.md) | [Guide](0074-optimization-hardening/guide.md), [Policy](0074-optimization-hardening/policy.md), [Runbook](0074-optimization-hardening/runbook.md) |
 | [RedisInsight](0076-redisinsight/guide.md) | [Guide](0076-redisinsight/guide.md), [Policy](0076-redisinsight/policy.md), [Runbook](0076-redisinsight/runbook.md) |
 | [SurrealDB](0080-surrealdb/guide.md) | [Guide](0080-surrealdb/guide.md), [Policy](0080-surrealdb/policy.md), [Runbook](0080-surrealdb/runbook.md) |
+| [MLflow](0088-mlflow/guide.md) | [Guide](0088-mlflow/guide.md), [Policy](0088-mlflow/policy.md), [Runbook](0088-mlflow/runbook.md) |
+| [JupyterLab](0089-jupyterlab/guide.md) | [Guide](0089-jupyterlab/guide.md), [Policy](0089-jupyterlab/policy.md), [Runbook](0089-jupyterlab/runbook.md) |
 
 ## How to Work in This Area
 

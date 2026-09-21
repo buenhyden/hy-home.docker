@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -30,10 +30,32 @@ docker compose --env-file .env.example --profile messaging config --services
 docker compose --env-file .env.example --profile messaging-cluster config --quiet
 ```
 
-Confirm the nine expected services, distinct broker/Connect volumes, `infra_net`,
+Confirm the ten expected services, distinct broker/Connect volumes, `infra_net`,
 health checks, Kafbat native OIDC secret/config, standard gateway chain and
 PLAINTEXT listeners. Confirm `kafka-init` replication factor 3 is paired with the
 three-broker selector before any runtime use.
+
+### CDC connector lifecycle
+
+1. Preconditions: `debezium-db-provision` exited `0`; `mng-pg` reports
+   `SHOW wal_level` = `logical`; Connect logs `debezium.properties rendered`;
+   the plugin class is listed by `GET /connector-plugins`.
+2. Registration is an approved runtime change. From a container on `infra_net`:
+   `PUT /connectors/hyhome-app-postgres/config` with the tracked JSON body.
+3. Verify each state separately: `GET .../status` shows connector and task
+   `RUNNING`; the log reports the snapshot completed; a test change in an
+   approved table appears on its `hyhome.app.*` topic.
+4. Lag: query `pg_replication_slots` for `hyhome_app_slot` (`active`,
+   `wal_status`, `pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn)`).
+   `wal_status = lost` means the slot was invalidated.
+5. Pause with `PUT .../pause` for maintenance; the slot keeps WAL while paused,
+   so bound the pause by the free disk and `max_slot_wal_keep_size`.
+6. Resynchronization (approved only): stop the connector, record the
+   downstream boundary, drop the slot and reset offsets together, re-register
+   with a new snapshot, and reconcile duplicates downstream. Never drop the
+   slot alone as a quick fix.
+7. Password rotation: replace the secret, re-run `debezium-db-provision`,
+   restart Connect (re-renders the properties file), then restart the connector.
 
 ### Planned backup or replication capture
 

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 created: "2025-11-12"
 ---
 
@@ -23,6 +23,7 @@ The current map is exact:
 | `testing` | `k6`, `locust-master`, `locust-worker` | explicit load-test jobs/services |
 | `iac` | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | explicit infrastructure tooling |
 | `dependency-update` | `renovate` | one-shot remote repository maintenance |
+| `analytics-engineering` | `dbt-db-provision`, `dbt` (plus `mng-pg`, `mng-pg-init`) | one-shot transformation job; `run`/`build` write the target schema |
 
 `tooling` does not select IaC or load generation. Terraform and Syncthing runtime
 were removed; OpenTofu is the current CLI engine. None of these services is part
@@ -62,6 +63,7 @@ documentation agents responsible for the tooling profile contract.
 ├── registry/    # OCI Distribution storage
 ├── sonarqube/   # code-quality/SAST service
 ├── renovate/    # dependency-update job
+├── dbt/         # analytics-engineering transformation job
 └── README.md
 ```
 

@@ -85,7 +85,12 @@ The repository ships two systemd unit files under
   window (`"* 0-5 * * 1"` in `Asia/Seoul` timezone) so the host trigger
   and the in-app schedule guard use the same maintenance window.
 - **Missed fires**: `Persistent=true` causes the timer to fire on the next
-  boot if the host was offline when the Monday trigger was due.
+  boot if the host was offline when the Monday trigger was due. That catch-up
+  run can fall outside the `renovate.json5` window; Renovate then updates the
+  Dependency Dashboard but does not open new branches until the window.
+- **Start dependency**: the timer declares no `Requires=` on the service and the
+  service has no `[Install]` section, so enabling or starting the timer, or a
+  reboot, never starts an immediate run by itself.
 - **Timezone**: `OnCalendar` uses the `Asia/Seoul` suffix (systemd ≥ 242,
   this host runs 255).
 
@@ -95,9 +100,11 @@ The repository ships two systemd unit files under
 Timer fires
   └─ ExecStartPre (1): assert renovate_token secret non-empty
   └─ ExecStartPre (2): docker compose pull --quiet renovate
-  └─ ExecStart:        docker compose --profile dependency-update run --rm renovate
-  └─ ExecStartPost:    docker image prune --force --filter "dangling=true"
+  └─ ExecStart:        docker compose --profile dependency-update run --rm --no-deps renovate
 ```
+
+No post-run prune runs: `docker image prune` is host-wide. Remove superseded
+Renovate image tags manually by exact reference.
 
 If any pre-flight check fails the run aborts before the container is
 created. The service does **not** auto-restart (`Restart=no`); a failed
@@ -105,22 +112,21 @@ run requires human log review before the next attempt.
 
 #### Installation
 
-Copy or symlink the unit files into the systemd user or system unit path
-and enable the timer. **System-level** installation (runs as `hyunyoun`
-under `[Service] User=`):
+Installing or replacing host units is a host change that needs its own
+approval. Copy reviewed files instead of symlinking them, so a checkout,
+branch switch or pull cannot silently change what systemd runs. The installed
+copies checked on 2026-09-21 were an older revision than this repository.
 
 ```bash
-# 1. Link units (do not copy; edits in the repo take effect on next reload)
-sudo ln -sf \
-  /home/hyunyoun/data/hy-home.docker/infra/09-tooling/renovate/systemd/hyhome-renovate.service \
-  /etc/systemd/system/hyhome-renovate.service
-sudo ln -sf \
-  /home/hyunyoun/data/hy-home.docker/infra/09-tooling/renovate/systemd/hyhome-renovate.timer \
-  /etc/systemd/system/hyhome-renovate.timer
+# 1. Compare, then copy the reviewed revision (approved host change only)
+diff /etc/systemd/system/hyhome-renovate.service infra/09-tooling/renovate/systemd/hyhome-renovate.service
+sudo install -m 0644 infra/09-tooling/renovate/systemd/hyhome-renovate.service /etc/systemd/system/
+sudo install -m 0644 infra/09-tooling/renovate/systemd/hyhome-renovate.timer /etc/systemd/system/
 
-# 2. Reload and enable
+# 2. Reload and enable only the timer
 sudo systemctl daemon-reload
-sudo systemctl enable --now hyhome-renovate.timer
+sudo systemctl enable hyhome-renovate.timer
+sudo systemctl start hyhome-renovate.timer
 ```
 
 #### Operational checks
@@ -136,8 +142,10 @@ journalctl -u hyhome-renovate.service --no-pager
 # Trigger manually (bypass timer, authorized runs only)
 sudo systemctl start hyhome-renovate.service
 
-# Disable scheduled runs without removing the unit
-sudo systemctl disable hyhome-renovate.timer
+# Stop and disable scheduled runs without removing the unit
+sudo systemctl disable --now hyhome-renovate.timer
+# Stop a run in progress (the container is removed by --rm)
+sudo systemctl stop hyhome-renovate.service
 ```
 
 > All live-run authorization and evidence rules in the policy and runbook

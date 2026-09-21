@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-21"
 layer: "operations"
 ---
 
@@ -38,6 +38,7 @@ procedures under their current four-digit subject directories.
 | [RAG workflow](0059-rag-workflow/guide.md) | [Guide](0059-rag-workflow/guide.md) |
 
 | [ComfyUI](0081-comfyui/guide.md) | [Guide](0081-comfyui/guide.md), [Policy](0081-comfyui/policy.md), [Runbook](0081-comfyui/runbook.md) |
+| [Crawl4AI](0091-crawl4ai/guide.md) | [Guide](0091-crawl4ai/guide.md), [Policy](0091-crawl4ai/policy.md), [Runbook](0091-crawl4ai/runbook.md) |
 
 ## How to Work in This Area
 

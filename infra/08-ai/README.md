@@ -4,7 +4,7 @@ version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 created: "2025-11-12"
 ---
 
@@ -46,6 +46,7 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 ├── ollama/             # Inference engine (Go-based)
 ├── open-webui/         # Web interface and RAG logic
 ├── comfyui/            # Image workflow UI
+├── crawl4ai/           # Opt-in isolated crawler (profile crawl4ai)
 └── README.md           # This file
 ```
 

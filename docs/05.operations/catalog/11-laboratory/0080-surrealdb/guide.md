@@ -21,7 +21,7 @@ created: "2026-09-19"
 
 ### Overview
 
-SurrealDB is an `OPTIONAL` database for Open Notebook pinned to SurrealDB v2 for upstream compatibility. [The Compose implementation](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml) defines one `surrealdb` service under exact `surrealdb`, `notebook`, and `admin` profiles. The custom Dockerfile and entrypoint own the server process, `surrealdb-data` persists `/mydata`, and `surreal_db_password` supplies root authentication without a literal in Compose.
+SurrealDB is an `OPTIONAL` database for Open Notebook pinned to SurrealDB v2 for upstream compatibility. [The Compose implementation](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml) defines one `surrealdb` service under exact `surrealdb` and `notebook` profiles; `admin` no longer selects it. The custom Dockerfile and entrypoint own the server process, `surrealdb-data` persists `/mydata`, and `surreal_db_password` supplies root authentication without a literal in Compose.
 
 ### Current implementation
 
@@ -29,7 +29,7 @@ SurrealDB is an `OPTIONAL` database for Open Notebook pinned to SurrealDB v2 for
 | --- | --- |
 | Consumer and data rationale | OPTIONAL persistent multi-model database for Open Notebook; pinned to SurrealDB v2 due to upstream compatibility constraints. |
 | Source / updater | [Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml), [Dockerfile](../../../../../infra/11-laboratory/open-notebook/surrealdb/Dockerfile), and entrypoint own the process; base image is pinned to SurrealDB v2. |
-| Services / profiles | Single `surrealdb`; exact `surrealdb`, `notebook`, `admin`. |
+| Services / profiles | Single `surrealdb`; exact `surrealdb`, `notebook`. |
 | Flow / exposure | Open Notebook connects on `infra_net`; host access is internal port 8000 via Compose exposure. |
 | Persistence / environment | bind-backed `surrealdb-data:/mydata`; host-port and path inputs are Compose-owned. |
 | Secrets / security | `surreal_db_password`; root/namespace/database auth scopes must match each operation. |

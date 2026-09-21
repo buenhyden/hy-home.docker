@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -42,6 +42,22 @@ Controls for removed broker families do not apply to the current implementation.
 - The bootstrap topics request replication factor 3 and therefore require three
   healthy brokers. A one-broker selection must not run that initialization as if
   it were valid.
+
+### Change data capture
+
+- CDC credentials, grants and publication belong to the `debezium-db-provision`
+  job. Never give the connector superuser, database ownership or write grants
+  beyond the `debezium_heartbeat` schema it owns for the heartbeat query.
+- Keep `FileConfigProvider` restricted by `allowed.paths` and the Connect REST
+  gateway route behind SSO. Treat direct `infra_net` access to port 8083 as a
+  recorded gap, not an authorization control.
+- Registering, reconfiguring, restarting with a new snapshot mode or deleting a
+  connector needs approval naming the connector and source database.
+- Replication slots and connector offsets are recovery state. Deleting a slot or
+  resetting offsets is a destructive resynchronization, never a routine fix; it
+  needs approval, a downstream duplicate/gap plan and a new snapshot.
+- Monitor slot lag against `max_slot_wal_keep_size`. An invalidated slot means
+  missed changes until a new snapshot completes.
 
 ### Data protection
 

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -42,8 +42,10 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
     `infra/06-observability/grafana/provisioning/datasources/datasource.yml`
     로 선언하고, dashboard references는 `Prometheus`, `Loki`, `Tempo`,
     `alertmanager`, `Pyroscope` 같은 provisioned UID와 맞춘다.
-  - Grafana role mapping은 Keycloak groups `/admins`, `/editors`와
-    `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`를 기준으로 한다.
+  - Grafana role mapping은 Keycloak groups `/admins`, `/editors`, `/viewers`와
+    `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`를 기준으로 한다. catch-all
+    `Viewer`를 두지 않으며 strict mode로 그 밖의 realm 사용자를 거부한다.
+  - 익명 접근은 비활성화하고 OAuth TLS는 로컬 root CA로 검증한다.
   - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret
     file reference로만 주입한다.
   - Service는 `template-stateful-med`, image [grafana/grafana image declaration](../../../../../infra/06-observability/docker-compose.yml),
@@ -69,7 +71,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 ### Lifecycle and data controls
 
-- Keep Grafana `HOME`; preserve native Keycloak OAuth, gateway routing, explicit anonymous Viewer scope, and secret-file handling. Do not infer an external PostgreSQL database from other services.
+- Keep Grafana `HOME`; preserve native Keycloak OAuth, gateway routing, disabled anonymous access, group-only role mapping, verified OAuth TLS, and secret-file handling. Do not infer an external PostgreSQL database from other services.
 - Treat `grafana-data` SQLite/runtime state, provisioning, plugins, and matching OAuth/admin secrets as one recovery set. Stop writes before a copy or use an upstream SQLite-consistent method.
 - Rehearse on isolated storage/project with no production route. Verify schema startup, identities/teams, dashboards/alerts, datasource health, OAuth, and anonymous authorization boundaries.
 - Plugin/image upgrades need compatibility and rollback evidence. Removal requires dashboard/alert export, client revocation, route shutdown, retained audit evidence, and explicit state-deletion approval.

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -34,7 +34,13 @@ rollback.
 - Keep `mng_db_password`, `mng_valkey_password` and service database credentials
   in Docker secret custody. Dumps and evidence must not contain plaintext values.
 - Treat `mng-pg-init` as idempotent provisioning, not restore. Review its complete
-  role/database list before rerun.
+  role/database list before rerun. It must not read optional-capability secrets
+  or run their DDL; those belong to feature provisioning jobs, which refuse
+  administrator role names and foreign-owned databases or schemas.
+- Every psql variable the init SQL reads must be passed by its runner; the
+  contract test in `tests/validation/test_compose_baseline_gates.py` enforces it.
+- Replication slots are CDC recovery state; do not drop them to reclaim space
+  without the CDC resynchronization approval in `POL-0036`.
 - Treat Valkey as workflow broker state, not a disposable cache. Restoring stale
   queues can duplicate or reorder work.
 
