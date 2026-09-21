@@ -60,5 +60,6 @@ Review on image or library change, auth change, new user, or JupyterHub decision
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [JupyterLab Compose source](../../../../../infra/11-laboratory/jupyterlab/docker-compose.yml)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)

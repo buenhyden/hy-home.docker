@@ -70,4 +70,5 @@ without JupyterHub, or a request to disable the token.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [MLflow runbook](../0088-mlflow/runbook.md)

@@ -69,6 +69,7 @@ and credential rotation.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [MLflow Compose source](../../../../../infra/11-laboratory/mlflow/docker-compose.yml)
 - [Management database policy](../../04-data/0028-management-database/policy.md)
 - [MinIO policy](../../04-data/0023-minio/policy.md)

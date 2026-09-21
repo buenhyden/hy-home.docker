@@ -72,5 +72,6 @@ target-schema recovery.
 
 ## Related Documents
 
+- [Image Dockerfile](../../../../../infra/09-tooling/dbt/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [dbt command reference](https://docs.getdbt.com/reference/dbt-commands)
 - [dbt Postgres setup](https://docs.getdbt.com/docs/core/connect-data-platform/postgres-setup)
