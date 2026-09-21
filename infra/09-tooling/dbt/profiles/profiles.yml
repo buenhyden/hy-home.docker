@@ -1,0 +1,16 @@
+hyhome:
+  target: dev
+
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_DB_HOST', 'mng-pg') }}"
+      port: "{{ env_var('DBT_DB_PORT', '5432') | int }}"
+
+      user: "{{ env_var('DBT_DB_USER', 'dbt') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+
+      dbname: "{{ env_var('DBT_DB_NAME', 'app_db') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'analytics') }}"
+
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"

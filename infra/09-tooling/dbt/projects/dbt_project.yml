@@ -1,0 +1,28 @@
+name: hyhome_analytics
+version: '1.0.0'
+
+profile: hyhome
+
+model-paths:
+  - models
+
+seed-paths:
+  - seeds
+
+snapshot-paths:
+  - snapshots
+
+test-paths:
+  - tests
+
+target-path: /tmp/dbt/target
+log-path: /tmp/dbt/logs
+packages-install-path: /tmp/dbt/packages
+
+clean-targets:
+  - /tmp/dbt/target
+  - /tmp/dbt/packages
+
+models:
+  hyhome_analytics:
+    +materialized: view

@@ -1,0 +1,57 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+services:
+  dbt:
+    profiles:
+      - analytics-engineering
+
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-med
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DBT_CORE_VERSION: '1.11.15'
+        DBT_POSTGRES_VERSION: '1.11.0'
+
+    image: hy-home/dbt-postgres:1.11-local
+    container_name: dbt
+
+    environment:
+      DBT_PROFILES_DIR: /config
+
+      DBT_DB_HOST: mng-pg
+      DBT_DB_PORT: '${POSTGRES_PORT:-5432}'
+      DBT_DB_USER: '${DBT_DB_USER:-dbt}'
+      DBT_DB_NAME: '${DBT_DB_NAME:-app_db}'
+      DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'
+      DBT_THREADS: '${DBT_THREADS:-4}'
+
+    secrets:
+      - dbt_db_password
+
+    volumes:
+      - ./profiles:/config:ro
+      - ./projects:/workspace:ro
+
+    tmpfs:
+      - /tmp
+
+    command:
+      - --version
+
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+
+      mng-pg-init:
+        condition: service_completed_successfully
+
+    networks:
+      - infra_net
+
+    labels:
+      <<: *tier-label
