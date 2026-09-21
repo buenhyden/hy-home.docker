@@ -101,7 +101,8 @@ lifecycle change and at least annually while retained.
 
 ## Traceability
 
-- Runtime source: [Kafka Compose](../../../../../infra/05-messaging/kafka/docker-compose.yml).
+- Runtime source: [Kafka Compose](../../../../../infra/05-messaging/kafka/docker-compose.yml)
+  and the [Connect image Dockerfile](../../../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `POL-0036`; parent: `AD-0005`.
 - Runtime authority remains the linked Compose/source files; exact pins stay there.
 

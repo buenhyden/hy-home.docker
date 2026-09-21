@@ -174,7 +174,8 @@ A static pass is configuration evidence only; runtime and restore remain separat
 ## Traceability
 
 - Artifact: `GDE-0036`; governing policy: `POL-0036`.
-- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`.
+- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml` and the
+  [Connect image Dockerfile](../../../../../infra/05-messaging/kafka/Dockerfile.connect).
 
 ## Related Documents
 

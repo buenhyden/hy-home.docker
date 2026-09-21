@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0007"
 parent_ids:
@@ -265,10 +265,11 @@ Commands ran in the isolated worktree on the branch head before commit.
 ### Activation evidence (2026-09-21/22, owner-approved)
 
 The owner approved the merge, the recreates, private preparation and the
-follow-up steps. Changes reached main through PRs #173–#176 (the owner merged
-each; `validation-changed` was red on #173, #175 and #176 for documentation or
-inventory reasons fixed in the next PR). Main checkout head at the end:
-`139372729`. Backup before the management DB restart:
+follow-up steps. Changes reached main through PRs #173–#178 and #180 (the owner
+merged #173–#178; `validation-changed` was red on #173, #175, #176 and #178 for
+documentation, inventory or test reasons fixed in the next PR). Main checkout
+head at the end: `882fc4a25`; hosted `validation-full` run `35636456028`
+passed there, replacing the failed run `35592775094` that opened this Task. Backup before the management DB restart:
 `/home/hyunyoun/storage/backups/mng-pg/<timestamp>-pre-logical-wal/pg_dumpall.sql`
 (2.3 MB, 8 databases, mode 0600).
 
@@ -363,6 +364,16 @@ violations) had not reached main. Once merged as `active`, returning them to
 propose image Python pins; this overlaps the Renovate `pip_requirements` version
 owner only for security fixes and is recorded, not changed.
 
+Later PRs followed the same pattern: #175–#178 were merged at their first
+commit, so each follow-up carried the fixes pushed after the previous one
+opened. #177 recorded the activation evidence, #178 fixed a final newline, and
+#180 repaired the Connect-secret escaping test (broken by the shellcheck-driven
+`case` rewrite) and the public secret-contract counts. The `claude/` branch
+prefix is not an admitted type under the Git workflow policy, which contributed
+to red PR checks; #180 used `chore/validation-contract-repair`, passed
+`validation-changed` and was merged after its checks. Every merged branch was
+verified patch-equivalent to main (`git cherry`) before deletion.
+
 ## Rulings
 
 | Decision | Basis | What could be wrong / cost |
@@ -378,7 +389,10 @@ owner only for security fixes and is recorded, not changed.
 
 ## Deferred Items
 
-Each item needs the named approval; nothing below was executed.
+Each item needs the named approval. Items 1–5 were executed under the owner
+approval of 2026-09-21 (see Activation evidence); items 6 and 7 remain open
+except the measured unauthenticated route boundaries and the MLflow restore
+rehearsal.
 
 1. **Merge/activation**: merging into the main checkout changes the watched
    Traefik dynamic middleware immediately (token headers) and bind-mounted files
