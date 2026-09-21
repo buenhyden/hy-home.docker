@@ -2,7 +2,7 @@
 title: "Crawl4AI Usage Guide"
 version: "1.0.0"
 type: "operation/guide"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"

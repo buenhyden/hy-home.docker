@@ -308,10 +308,12 @@ Intermediate commits are grouped by concern; only the branch head is gate-verifi
 PR #173 was merged by the owner at `6607b301b` (2026-09-21 23:13 KST) after the
 owner merged main into the branch (`cdf658965`), bringing Dependabot security PR
 #172 (`pyarrow==23.0.1`). That merge restored two non-existent JupyterLab pins
-(`polars==0.33.0`, `duckdb==0.10.5`), and `487da21d9` (new documents at `draft`
-plus Dockerfile links, fixing 25 `check-changed` violations) had not reached
-main. Follow-up branch `claude/home-dev-restructure-followup` carries both
-corrections and keeps `pyarrow==23.0.1`. Dependabot security updates now also
+(`polars==0.33.0`, `duckdb==0.10.5`), and `487da21d9` (Dockerfile links and
+`draft` status for the then-new documents, fixing 25 `check-changed`
+violations) had not reached main. Once merged as `active`, returning them to
+`draft` is an invalid lifecycle transition, so follow-up PR #174 keeps them
+`active`, adds the Dockerfile links, restores the published pins and keeps
+`pyarrow==23.0.1`. Dependabot security updates now also
 propose image Python pins; this overlaps the Renovate `pip_requirements` version
 owner only for security fixes and is recorded, not changed.
 

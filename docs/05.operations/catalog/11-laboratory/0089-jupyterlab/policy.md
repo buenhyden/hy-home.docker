@@ -2,7 +2,7 @@
 title: "JupyterLab Operations Policy"
 version: "1.0.0"
 type: "operation/policy"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-21"
 layer: "operations"

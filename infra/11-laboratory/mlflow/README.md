@@ -2,7 +2,7 @@
 title: "Laboratory MLflow Tracking Server"
 version: "1.0.0"
 type: "common/package-readme"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-21"
 created: "2026-09-21"
