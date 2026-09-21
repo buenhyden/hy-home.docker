@@ -262,6 +262,52 @@ Commands ran in the isolated worktree on the branch head before commit.
 | Ruff 0.15.12 format/check on changed tests (official container) | PASS | Host has no pip/uvx |
 | `run-ci-gate.py --profile full` at `f0737491d` | exit 1: 11 suites OK, 1 failure `test_automatic_pre_commit_sees_index_content_and_untracked_paths` (`exec: pre-commit: not found`) | Environment prerequisite absent locally; CI installs it. Earlier local runs also failed two file-mode tests caused by this worktree's umask 002 checkout (Git stores only the exec bit); normalizing the local modes cleared them. Hosted `validation-full` has not run on this branch |
 
+### Activation evidence (2026-09-21/22, owner-approved)
+
+The owner approved the merge, the recreates, private preparation and the
+follow-up steps. Changes reached main through PRs #173–#176 (the owner merged
+each; `validation-changed` was red on #173, #175 and #176 for documentation or
+inventory reasons fixed in the next PR). Main checkout head at the end:
+`139372729`. Backup before the management DB restart:
+`/home/hyunyoun/storage/backups/mng-pg/<timestamp>-pre-logical-wal/pg_dumpall.sql`
+(2.3 MB, 8 databases, mode 0600).
+
+| Step | Result | Evidence |
+| --- | --- | --- |
+| Gateway middleware (merge) | Applied on file watch | SSO routes 401 before and after; no Traefik errors |
+| `oauth2-proxy` recreate (`trusted_ips` removed, `trusted_proxy_ips` = Traefik) | Healthy | SSO routes 401 from host, LAN and inside `infra_net`; trust warning gone |
+| Grafana recreate | Healthy | Anonymous `/api/dashboards/home` and `/api/search` 200 → 401; `/api/health` 200; Keycloak verifies with the pinned CA; the realm has one human user, in `/admins` |
+| Alloy recreate | **Failed then fixed** | Root without capabilities could not create `/var/lib/alloy/data` (UID 473, 0770); crash loop about three minutes, rolled back by a temporary override, fixed by `user: 473:473` + docker group (#175); state now on the volume; one-time Loki "too far behind" rejections only |
+| Open Notebook recreate | Healthy | API host port `127.0.0.1:5055` only; LAN refused; UI via Traefik 307 |
+| Kafka Connect build + recreate | Healthy | Debezium PostgreSQL plugin listed; `debezium.properties` rendered 0600 `appuser` |
+| `mng-pg` recreate | Healthy | `wal_level=logical`, slots 4, senders 4, keep 2GB; Keycloak, Airflow, n8n and the other consumers healthy afterwards |
+| Private preparation | Done | `--sync-metadata`; six new secret files generated (16 characters); `.env`/`.env.example` key sets equal; `DCGM_EXPORTER_TAG` removed from `.env`; `DOCKER_GID` added |
+| MLflow first start | **Failed then fixed** | Provisioning exit 64 until five new secret files matched the existing 0644 class (capability-dropped root cannot read 0600); 512m OOM loop fixed by disabling server jobs, two workers, 1g (#176); proxy artifact round trip OK; MLflow MinIO user denied on `loki-bucket`/`tempo-bucket` |
+| JupyterLab first start | **Build failed then fixed** | Python 3.13 wheels/`boto3`–`s3fs` conflict fixed with dry-run-resolved pins (#176); gateway 401, kernel/terminal API 403 without token, 200 with token; notebook SDK run logged through MLflow without S3 credentials |
+| dbt | Pass after fix | Provisioning exit 0; `debug` needed git (#176); `compile` OK; `build --select hyhome_dbt_connectivity` PASS=2 |
+| CDC | Pass | Provisioning exit 0; connector registered (201), connector/task RUNNING, snapshot completed (0 source rows), streaming, heartbeat change events 5 → 13, slot lag under 1 MB |
+| `obs-gpu` | Pass with limit | 15 DCGM fields exported; Prometheus required a reload (SIGHUP) to load the scrape job and rules; `up=1`; labels include `gpu`, `modelName`; dashboard provisioned; `DCGM_FI_DEV_XID_ERRORS` is not exported on this GPU, so `GpuXidError` cannot fire |
+| Crawl4AI | Pass | `/health` 200; `/schema` 401 without and 200 with token; infra names unresolvable; unreachable from `infra_net` |
+| MLflow restore rehearsal | Pass | `pg_dump` restored into a disposable PostgreSQL: experiments/runs/metrics 2/2/1 = 2/2/1; bucket mirror 2/2 objects; scratch copy deleted |
+
+Not executed, with reason:
+
+- Authenticated SSO, logout, role-removal and non-member user tests need real
+  user credentials; only unauthenticated boundaries were measured.
+- Valkey outage test: stopping the shared broker interrupts HOME workflow
+  services; it needs a maintenance window.
+- Stalwart native OIDC and `allowed_groups`: need a Keycloak client and an
+  owner decision on group policy; the realm currently has only `/admins`.
+- Renovate host units: reinstalling under `/etc/systemd/system` needs sudo,
+  which requires the owner's password.
+- Reboot rehearsal and JupyterLab/CDC restore rehearsals.
+
+Residual risks: host disk use rose from 75% to 84% after the new images; most
+secret files are world-readable (0644/0664) because capability-dropped root
+containers read them; the private registry value cell for IAM-011 is empty
+(the root-owned secret file itself is intact); the CDC slot retains WAL while
+the connector is stopped, bounded by `max_slot_wal_keep_size`.
+
 ## Review Evidence
 
 - Stage 99 template review (read-only reviewer, all 40 sources): no template,
