@@ -204,6 +204,15 @@ secrets:
   web_scraper_chrome_path:
     file: ./secrets/tools/web_scraper_chrome_path.txt
 
+  mlflow_db_password:
+    file: ./secrets/db/postgres/mlflow_password.txt
+
+  dbt_db_password:
+    file: ./secrets/db/postgres/dbt_password.txt
+
+  debezium_postgres_password:
+    file: ./secrets/db/postgres/debezium_password.txt
+
 include:
   # Every file below is included unconditionally; Compose profiles decide what
   # starts. Selecting no profile resolves no service. The profile vocabulary is
@@ -258,6 +267,7 @@ include:
   - infra/09-tooling/opentofu/docker-compose.yml
   - infra/09-tooling/terrakube/docker-compose.yml
   - infra/09-tooling/renovate/docker-compose.yml
+  - infra/09-tooling/dbt/docker-compose.yml
   # 10-communication
   - infra/10-communication/mailpit/docker-compose.yml
   - infra/10-communication/stalwart/docker-compose.yml
@@ -265,3 +275,5 @@ include:
   - infra/11-laboratory/dozzle/docker-compose.yml
   - infra/11-laboratory/open-notebook/docker-compose.yml
   - infra/11-laboratory/redisinsight/docker-compose.yml
+  - infra/11-laboratory/mlflow/docker-compose.yml
+  - infra/11-laboratory/jupyterlab/docker-compose.yml
