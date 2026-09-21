@@ -70,6 +70,16 @@
 
   "packageRules": [
     {
+      "description": "인프라 주요 버전 변경은 Dashboard 승인 후 제안",
+      "matchManagers": [
+        "docker-compose",
+        "dockerfile",
+        "custom.regex"
+      ],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
       "description": "Never automerge infrastructure images",
       "matchManagers": [
         "docker-compose",
