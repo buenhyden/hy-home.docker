@@ -1,5 +1,10 @@
 FROM python:3.12-slim-bookworm
 
+# dbt debug checks for git and dbt deps needs it for git packages.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Pins live in requirements.txt, the single file Renovate updates.
 COPY requirements.txt /tmp/requirements.txt
 
