@@ -117,6 +117,19 @@ services:
       POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+
+      - -c
+      - max_replication_slots=${POSTGRES_MAX_REPLICATION_SLOTS:-4}
+
+      - -c
+      - max_wal_senders=${POSTGRES_MAX_WAL_SENDERS:-4}
+
+      - -c
+      - max_slot_wal_keep_size=${POSTGRES_MAX_SLOT_WAL_KEEP_SIZE:-2048MB}
     ports:
       - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     volumes:
@@ -143,6 +156,11 @@ services:
       - core
       - dev
       - local
+
+      - mlops
+      - data-science
+      - analytics-engineering
+      - cdc
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -172,6 +190,9 @@ services:
         TERRAKUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/terrakube_db_password)"
         SONARQUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/sonarqube_db_password)"
         SERVICE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/service_postgres_password)"
+        MLFLOW_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/mlflow_db_password)"
+        DBT_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/dbt_db_password)"
+        DEBEZIUM_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/debezium_postgres_password)"
 
         psql \
           -h "$$POSTGRES_HOSTNAME" \
@@ -201,6 +222,9 @@ services:
       - airflow_db_password
       - terrakube_db_password
       - sonarqube_db_password
+      - mlflow_db_password
+      - dbt_db_password
+      - debezium_postgres_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.15

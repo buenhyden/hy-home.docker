@@ -156,10 +156,15 @@ services:
       - messaging
       - messaging-connect
       - messaging-admin
+      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
-    image: confluentinc/cp-kafka-connect:8.3.2
+    #image: confluentinc/cp-kafka-connect:8.3.2
+    build:
+      context: .
+      dockerfile: Dockerfile.connect
+    image: hy-home/kafka-connect:8.3.2-debezium-3.6.3
     container_name: kafka-connect
     read_only: true
     tmpfs:
