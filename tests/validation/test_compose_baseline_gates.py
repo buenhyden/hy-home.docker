@@ -1029,14 +1029,16 @@ class FeatureProvisioningContractTests(unittest.TestCase):
         script = (
             ROOT / "infra/05-messaging/kafka/connect/render-connect-secrets.sh"
         ).read_text()
-        escaping = "\n".join(
-            line
-            for line in script.splitlines()
-            if line.strip().startswith(
-                ('value="${value//', 'if [[ "$value" == [[:blank:]')
-            )
+        lines = script.splitlines()
+        start = next(
+            n
+            for n, line in enumerate(lines)
+            if line.strip().startswith('value="${value//')
         )
-        self.assertEqual(2, len(escaping.splitlines()))
+        end = next(n for n in range(start, len(lines)) if lines[n].strip() == "esac")
+        # Execute the renderer's own escaping block: backslash, then leading blank.
+        escaping = "\n".join(lines[start : end + 1])
+        self.assertIn("case", escaping)
         for raw in (
             "plain",
             r"back\slash",
