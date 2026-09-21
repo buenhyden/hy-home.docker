@@ -204,8 +204,8 @@ services:
       - 'run'
       - '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}'
       - '/etc/alloy/config.alloy'
-    volumes:
-      - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
+    volumes:      
+      - ./alloy/config/${ALLOY_CONFIG_FILE:-config.alloy}:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - alloy-data:/var/lib/alloy:rw
