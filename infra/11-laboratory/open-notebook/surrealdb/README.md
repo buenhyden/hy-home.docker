@@ -66,6 +66,7 @@ Open Notebook upstream only supports SurrealDB v2. Upgrading this service to Sur
 ### Authentication & Entrypoint
 
 The entrypoint script reads authentication credentials directly from `/run/secrets/surreal_db_password` and starts SurrealDB with:
+
 - Internal listen endpoint: `0.0.0.0:8000`
 - User: `${SURREALDB_USERNAME}`
 - Storage engine: `surrealkv:/mydata/open_notebook.db`

@@ -96,7 +96,7 @@ The repository ships two systemd unit files under
 
 #### Service flow
 
-```
+```text
 Timer fires
   └─ ExecStartPre (1): assert renovate_token secret non-empty
   └─ ExecStartPre (2): docker compose pull --quiet renovate

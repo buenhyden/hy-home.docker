@@ -26,7 +26,9 @@ if [ -f "$secret" ] && [ -s "$secret" ]; then
   # java.util.Properties escaping: backslash first, then any leading blank
   # (space, tab or form feed), which Properties.load would otherwise strip.
   value="${value//\\/\\\\}"
-  if [[ "$value" == [[:blank:]$'\f']* ]]; then value="\\${value}"; fi
+  case "$value" in
+    [[:blank:]]* | $'\f'*) value="\\${value}" ;;
+  esac
   printf 'password=%s\n' "$value" >"$dir/debezium.properties.tmp"
   mv "$dir/debezium.properties.tmp" "$dir/debezium.properties"
   echo 'connect-secrets: debezium.properties rendered'

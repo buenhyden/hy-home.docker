@@ -25,7 +25,7 @@ Lifecycle: **DEV maintenance job**. Operational controls and recovery belong to 
 
 [Compose](docker-compose.yml) owns the service, mounts, network grants and entrypoint.
 
-```
+```text
 renovate/
 ├── config/
 │   └── config.js          # self-host command allowlist

@@ -306,8 +306,8 @@ Branch `claude/home-dev-restructure` from `ea3a7480d`; local only, not pushed.
 Intermediate commits are grouped by concern; only the branch head is gate-verified.
 
 PR #173 was merged by the owner at `6607b301b` (2026-09-21 23:13 KST) after the
-owner merged main into the branch (`cdf658965`), bringing Dependabot security PR
-#172 (`pyarrow==23.0.1`). That merge restored two non-existent JupyterLab pins
+owner merged main into the branch (`cdf658965`), bringing Dependabot security
+PR #172 (`pyarrow==23.0.1`). That merge restored two non-existent JupyterLab pins
 (`polars==0.33.0`, `duckdb==0.10.5`), and `487da21d9` (Dockerfile links and
 `draft` status for the then-new documents, fixing 25 `check-changed`
 violations) had not reached main. Once merged as `active`, returning them to
