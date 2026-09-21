@@ -8,7 +8,7 @@ hyhome:
       port: "{{ env_var('DBT_DB_PORT', '5432') | int }}"
 
       user: "{{ env_var('DBT_DB_USER', 'dbt') }}"
-      password: "{{ env_var('DBT_PASSWORD') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_PASSWORD') }}"
 
       dbname: "{{ env_var('DBT_DB_NAME', 'app_db') }}"
       schema: "{{ env_var('DBT_SCHEMA', 'analytics') }}"

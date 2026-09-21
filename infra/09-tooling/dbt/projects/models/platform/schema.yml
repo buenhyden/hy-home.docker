@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: hyhome_dbt_connectivity
+    description: Platform smoke view proving connection and target-schema write access.
+    columns:
+      - name: dbt_user
+        data_tests:
+          - not_null

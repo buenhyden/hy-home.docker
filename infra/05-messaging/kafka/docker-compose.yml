@@ -39,6 +39,7 @@ services:
       - messaging-rest
       - messaging-admin
       - ksql
+      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -98,6 +99,7 @@ services:
       - messaging-rest
       - messaging-admin
       - ksql
+      - cdc
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -160,7 +162,6 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
-    #image: confluentinc/cp-kafka-connect:8.3.2
     build:
       context: .
       dockerfile: Dockerfile.connect
@@ -213,16 +214,26 @@ services:
       CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
       CONNECT_CONFIG_PROVIDERS: file
       CONNECT_CONFIG_PROVIDERS_FILE_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
+      # KIP-993: connector configs may resolve files only from this directory.
+      CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS: /tmp/connect-secrets
 
+    command:
+      - /bin/bash
+      - /usr/local/bin/render-connect-secrets.sh
+    secrets:
+      - debezium_postgres_password
     volumes:
       - kafka-connect-data:/var/lib/kafka-connect:rw
+      - ./connect/render-connect-secrets.sh:/usr/local/bin/render-connect-secrets.sh:ro
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.kafka-connect.rule: Host(`kafka-connect.${DEFAULT_URL}`)
       traefik.http.routers.kafka-connect.entrypoints: websecure
       traefik.http.routers.kafka-connect.tls: 'true'
-      traefik.http.routers.kafka-connect.middlewares: gateway-standard-chain@file
+      # The REST API can create connectors that read provider-resolved
+      # credentials, so the gateway route requires SSO like other admin APIs.
+      traefik.http.routers.kafka-connect.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.kafka-connect.loadbalancer.server.port: ${KAFKA_CONNECT_PORT:-8083}
     healthcheck:
       test:
@@ -252,6 +263,53 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.34
+
+  # Feature-owned CDC source provisioning: dedicated replication role, read
+  # grants and the publication the connector consumes. Names must match
+  # connect/debezium/postgres-connector.json.
+  debezium-db-provision:
+    profiles:
+      - cdc
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: debezium-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: DEBEZIUM_DB_USER DEBEZIUM_DB_NAME DEBEZIUM_SCHEMA DEBEZIUM_HEARTBEAT_SCHEMA DEBEZIUM_PUBLICATION DEBEZIUM_SOURCE_OWNER
+      PROVISION_SECRETS: DEBEZIUM_DB_PASSWORD=/run/secrets/debezium_postgres_password
+      DEBEZIUM_DB_USER: debezium
+      # Must equal database.dbname in postgres-connector.json (contract test).
+      DEBEZIUM_DB_NAME: '${SERVICE_POSTGRES_DB:-app_db}'
+      DEBEZIUM_SCHEMA: public
+      DEBEZIUM_HEARTBEAT_SCHEMA: debezium_heartbeat
+      DEBEZIUM_PUBLICATION: hyhome_app_publication
+      DEBEZIUM_SOURCE_OWNER: '${SERVICE_POSTGRES_USERNAME:-app_user}'
+    volumes:
+      - ../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./connect/debezium/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - debezium_postgres_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      mng-pg-init:
+        condition: service_completed_successfully
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
 
   kafka-rest-proxy:
     profiles:

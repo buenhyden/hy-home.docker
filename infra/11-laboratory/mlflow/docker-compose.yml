@@ -2,100 +2,157 @@ x-tier-label: &tier-label
   hy-home.tier: admin
 
 services:
+  # Feature-owned tracking-store provisioning. The base mng-pg-init job never
+  # reads MLflow credentials, so core/mng/dev/local start without them.
+  mlflow-db-provision:
+    profiles:
+      - mlops
+      - data-science
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: mlflow-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: MLFLOW_DB_USER MLFLOW_DB_NAME
+      PROVISION_SECRETS: MLFLOW_DB_PASSWORD=/run/secrets/mlflow_db_password
+      MLFLOW_DB_USER: '${MLFLOW_DB_USER:-mlflow}'
+      MLFLOW_DB_NAME: '${MLFLOW_DB_NAME:-mlflow}'
+    volumes:
+      - ../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - mlflow_db_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      mng-pg-init:
+        condition: service_completed_successfully
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  # Feature-owned artifact bucket and bucket-scoped MinIO identity.
+  mlflow-artifact-provision:
+    profiles:
+      - mlops
+      - data-science
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: mlflow-artifact-provision
+    entrypoint:
+      - /bin/bash
+      - /provision/minio-artifacts.sh
+    environment:
+      MINIO_ENDPOINT: 'http://minio:${MINIO_PORT:-9000}'
+      MLFLOW_ARTIFACT_BUCKET: '${MLFLOW_ARTIFACT_BUCKET:-mlflow-artifacts}'
+      MLFLOW_S3_USER: '${MLFLOW_S3_USER:-mlflow-artifacts}'
+    volumes:
+      - ./provisioning/minio-artifacts.sh:/provision/minio-artifacts.sh:ro
+    secrets:
+      - minio_root_username
+      - minio_root_password
+      - mlflow_s3_password
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
   mlflow:
     profiles:
       - mlops
       - data-science
-
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-
     build:
       context: .
       dockerfile: Dockerfile
-
     image: hy-home/mlflow:3.16.1-local
     container_name: mlflow
-
     environment:
       MLFLOW_PORT: '${MLFLOW_PORT:-5000}'
-
       MLFLOW_DB_HOST: mng-pg
       MLFLOW_DB_PORT: '${POSTGRES_PORT:-5432}'
       MLFLOW_DB_USER: '${MLFLOW_DB_USER:-mlflow}'
       MLFLOW_DB_NAME: '${MLFLOW_DB_NAME:-mlflow}'
-
       MLFLOW_ARTIFACT_BUCKET: '${MLFLOW_ARTIFACT_BUCKET:-mlflow-artifacts}'
       MLFLOW_S3_ENDPOINT_URL: '${MLFLOW_S3_ENDPOINT_URL:-http://minio:9000}'
+      MLFLOW_S3_USER: '${MLFLOW_S3_USER:-mlflow-artifacts}'
       AWS_DEFAULT_REGION: '${MLFLOW_S3_REGION:-us-east-1}'
-
+      MLFLOW_ALLOWED_HOSTS: 'mlflow:*,mlflow.${DEFAULT_URL},localhost:*,127.0.0.1:*'
     secrets:
       - mlflow_db_password
-      - minio_app_username
-      - minio_app_user_password
-
+      - mlflow_s3_password
     entrypoint:
       - /bin/sh
       - -ec
-
+    # Passwords reach libpq (PGPASSWORD) and boto3 through the environment;
+    # neither the backend URI nor argv carries a credential.
     command:
       - |
-        DB_PASSWORD="$$(python -c \
-          'import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip(), safe=""))' \
-          </run/secrets/mlflow_db_password)"
-
-        export AWS_ACCESS_KEY_ID="$$(tr -d '\r\n' </run/secrets/minio_app_username)"
-        export AWS_SECRET_ACCESS_KEY="$$(tr -d '\r\n' </run/secrets/minio_app_user_password)"
+        PGPASSWORD="$$(tr -d '\r\n' </run/secrets/mlflow_db_password)"
+        AWS_SECRET_ACCESS_KEY="$$(tr -d '\r\n' </run/secrets/mlflow_s3_password)"
+        [ -n "$$PGPASSWORD" ] && [ -n "$$AWS_SECRET_ACCESS_KEY" ] || { echo 'mlflow: empty credential secret' >&2; exit 64; }
+        export PGPASSWORD AWS_SECRET_ACCESS_KEY
+        export AWS_ACCESS_KEY_ID="$$MLFLOW_S3_USER"
 
         exec mlflow server \
           --host 0.0.0.0 \
           --port "$${MLFLOW_PORT}" \
           --backend-store-uri \
-            "postgresql+psycopg2://$${MLFLOW_DB_USER}:$${DB_PASSWORD}@$${MLFLOW_DB_HOST}:$${MLFLOW_DB_PORT}/$${MLFLOW_DB_NAME}" \
-          --artifacts-destination \
-            "s3://$${MLFLOW_ARTIFACT_BUCKET}" \
-          --allowed-hosts \
-            "mlflow,mlflow.${DEFAULT_URL},localhost,127.0.0.1"
-
+            "postgresql+psycopg2://$${MLFLOW_DB_USER}@$${MLFLOW_DB_HOST}:$${MLFLOW_DB_PORT}/$${MLFLOW_DB_NAME}" \
+          --artifacts-destination "s3://$${MLFLOW_ARTIFACT_BUCKET}" \
+          --serve-artifacts \
+          --allowed-hosts "$${MLFLOW_ALLOWED_HOSTS}"
     expose:
       - '${MLFLOW_PORT:-5000}'
-
     depends_on:
       mng-pg:
         condition: service_healthy
-
-      mng-pg-init:
+      mlflow-db-provision:
         condition: service_completed_successfully
-
       minio:
         condition: service_healthy
-
-      minio-create-buckets:
+      mlflow-artifact-provision:
         condition: service_completed_successfully
-
     healthcheck:
       test:
         - CMD
         - python
         - -c
         - >
-          import urllib.request; urllib.request.urlopen( 'http://127.0.0.1:5000/health', timeout=3)
-
+          import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:${MLFLOW_PORT:-5000}/health', timeout=3)
       interval: 30s
       timeout: 5s
       retries: 5
       start_period: 20s
-
     labels:
       <<: *tier-label
-
       traefik.enable: 'true'
       traefik.http.routers.mlflow.rule: Host(`mlflow.${DEFAULT_URL}`)
       traefik.http.routers.mlflow.entrypoints: websecure
       traefik.http.routers.mlflow.tls: 'true'
       traefik.http.routers.mlflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.mlflow.loadbalancer.server.port: ${MLFLOW_PORT:-5000}
-
     networks:
       - infra_net

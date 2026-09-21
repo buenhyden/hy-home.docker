@@ -213,6 +213,12 @@ secrets:
   debezium_postgres_password:
     file: ./secrets/db/postgres/debezium_password.txt
 
+  mlflow_s3_password:
+    file: ./secrets/storage/mlflow_s3_password.txt
+
+  jupyter_token:
+    file: ./secrets/tools/jupyter_token.txt
+
 include:
   # Every file below is included unconditionally; Compose profiles decide what
   # starts. Selecting no profile resolves no service. The profile vocabulary is
@@ -259,6 +265,7 @@ include:
   - infra/08-ai/ollama/docker-compose.yml
   - infra/08-ai/open-webui/docker-compose.yml
   - infra/08-ai/comfyui/docker-compose.yml
+  - infra/08-ai/crawl4ai/docker-compose.yml
   # 09-tooling
   - infra/09-tooling/k6/docker-compose.yml
   - infra/09-tooling/locust/docker-compose.yml

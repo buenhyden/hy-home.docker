@@ -2,56 +2,87 @@ x-tier-label: &tier-label
   hy-home.tier: tooling
 
 services:
-  dbt:
+  # Feature-owned role, grants and target schema on the application database.
+  dbt-db-provision:
     profiles:
       - analytics-engineering
-
     extends:
       file: ../../common-optimizations.yml
-      service: template-job-med
-
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        DBT_CORE_VERSION: '1.11.15'
-        DBT_POSTGRES_VERSION: '1.11.0'
-
-    image: hy-home/dbt-postgres:1.11-local
-    container_name: dbt
-
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: dbt-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
     environment:
-      DBT_PROFILES_DIR: /config
-
-      DBT_DB_HOST: mng-pg
-      DBT_DB_PORT: '${POSTGRES_PORT:-5432}'
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: DBT_DB_USER DBT_DB_NAME DBT_SCHEMA DBT_SOURCE_SCHEMA DBT_SOURCE_OWNER
+      PROVISION_SECRETS: DBT_DB_PASSWORD=/run/secrets/dbt_db_password
       DBT_DB_USER: '${DBT_DB_USER:-dbt}'
-      DBT_DB_NAME: '${DBT_DB_NAME:-app_db}'
+      DBT_DB_NAME: '${DBT_DB_NAME:-${SERVICE_POSTGRES_DB:-app_db}}'
       DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'
-      DBT_THREADS: '${DBT_THREADS:-4}'
-
-    secrets:
-      - dbt_db_password
-
+      DBT_SOURCE_SCHEMA: '${DBT_SOURCE_SCHEMA:-public}'
+      DBT_SOURCE_OWNER: '${SERVICE_POSTGRES_USERNAME:-app_user}'
     volumes:
-      - ./profiles:/config:ro
-      - ./projects:/workspace:ro
-
-    tmpfs:
-      - /tmp
-
-    command:
-      - --version
-
+      - ../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - dbt_db_password
     depends_on:
       mng-pg:
         condition: service_healthy
-
       mng-pg-init:
         condition: service_completed_successfully
-
     networks:
       - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
 
+  # Command-line job, not a web service. The default `debug` only validates
+  # the profile and connection; `compile` renders SQL without writing to the
+  # database, while `run`, `build` and `--full-refresh` write to DBT_SCHEMA.
+  dbt:
+    profiles:
+      - analytics-engineering
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-med
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hy-home/dbt-postgres:1.11-local
+    container_name: dbt
+    environment:
+      DBT_PROFILES_DIR: /config
+      DBT_DB_HOST: mng-pg
+      DBT_DB_PORT: '${POSTGRES_PORT:-5432}'
+      DBT_DB_USER: '${DBT_DB_USER:-dbt}'
+      DBT_DB_NAME: '${DBT_DB_NAME:-${SERVICE_POSTGRES_DB:-app_db}}'
+      DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'
+      DBT_SOURCE_SCHEMA: '${DBT_SOURCE_SCHEMA:-public}'
+      DBT_THREADS: '${DBT_THREADS:-4}'
+    secrets:
+      - dbt_db_password
+    # Project and profiles are read-only; target/, logs/ and packages live on
+    # the job's /tmp tmpfs (see dbt_project.yml) and vanish with the container.
+    volumes:
+      - ./profiles:/config:ro
+      - ./projects:/workspace:ro
+    command:
+      - debug
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      dbt-db-provision:
+        condition: service_completed_successfully
+    networks:
+      - infra_net
     labels:
       <<: *tier-label

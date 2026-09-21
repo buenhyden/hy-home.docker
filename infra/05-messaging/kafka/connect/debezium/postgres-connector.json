@@ -5,13 +5,13 @@
     "database.hostname": "mng-pg",
     "database.port": "5432",
     "database.user": "debezium",
-    "database.password": "${file:/tmp/debezium.properties:password}",
+    "database.password": "${file:/tmp/connect-secrets/debezium.properties:password}",
     "database.dbname": "app_db",
     "topic.prefix": "hyhome.app",
     "slot.name": "hyhome_app_slot",
     "publication.name": "hyhome_app_publication",
     "publication.autocreate.mode": "disabled",
-    "schema.include.list": "public",
+    "schema.include.list": "public,debezium_heartbeat",
     "snapshot.mode": "initial",
     "schema.history.internal.kafka.bootstrap.servers": "kafka-1:19092",
     "schema.history.internal.kafka.topic": "schemahistory.hyhome.app",
@@ -20,5 +20,7 @@
     "key.converter.schema.registry.url": "http://schema-registry:8081",
     "value.converter.schema.registry.url": "http://schema-registry:8081",
     "topic.creation.default.replication.factor": "1",
-    "topic.creation.default.partitions": "3"
+    "topic.creation.default.partitions": "3",
+    "heartbeat.interval.ms": "60000",
+    "heartbeat.action.query": "INSERT INTO debezium_heartbeat.heartbeat (id, beat_at) VALUES (1, now()) ON CONFLICT (id) DO UPDATE SET beat_at = EXCLUDED.beat_at"
 }

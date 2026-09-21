@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-21"
 created: "2025-12-03"
 ---
 
@@ -23,6 +23,10 @@ It is intended for operators and maintainers of shared management state.
 [`docker-compose.yml`](docker-compose.yml) defines HOME `mng-pg`, `mng-pg-init`,
 `mng-pg-exporter`, `mng-valkey`, and `mng-valkey-exporter`. Profiles `mng`, `core`,
 `dev`, and `local` select both engines/init; exporters use `mng` and `dev`.
+`mlops`, `data-science`, `analytics-engineering` and `cdc` also select `mng-pg`
+and `mng-pg-init` for dependency closure only. The declared `mng-pg` command
+enables logical WAL (`wal_level=logical` plus slot, sender and retention caps) for
+CDC; a running instance keeps its old settings until an approved recreate.
 
 ## Structure
 
@@ -38,7 +42,13 @@ secrets; Valkey/exporter read `mng_valkey_password`. Both engines use `infra_net
 PostgreSQL uses `pg_isready`, Valkey uses authenticated `PING`, exporters use HTTP
 health checks, and init is completion-gated.
 [`pg/init-scripts/init_users_dbs.sql`](pg/init-scripts/init_users_dbs.sql) owns
-role/database initialization; engine configuration otherwise remains in Compose.
+base role/database initialization and never reads optional-capability secrets.
+[`pg/provision/run-feature-provision.sh`](pg/provision/run-feature-provision.sh)
+is the shared input handler for feature-owned jobs (`mlflow-db-provision`,
+`dbt-db-provision`, `debezium-db-provision`): it validates identifiers and secret
+files before connecting and passes secrets through the psql environment
+(`\getenv`), never argv. Each feature keeps its SQL and grants in its own package.
+Engine configuration otherwise remains in Compose.
 
 ## How to Work in This Area
 

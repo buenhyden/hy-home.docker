@@ -96,6 +96,12 @@ services:
       - core
       - dev
       - local
+      # Dependency closure for feature profiles; feature SQL and credentials
+      # live in each feature job, not here.
+      - mlops
+      - data-science
+      - analytics-engineering
+      - cdc
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
@@ -156,7 +162,8 @@ services:
       - core
       - dev
       - local
-
+      # Dependency closure for feature profiles; feature SQL and credentials
+      # live in each feature job, not here.
       - mlops
       - data-science
       - analytics-engineering
@@ -190,9 +197,6 @@ services:
         TERRAKUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/terrakube_db_password)"
         SONARQUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/sonarqube_db_password)"
         SERVICE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/service_postgres_password)"
-        MLFLOW_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/mlflow_db_password)"
-        DBT_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/dbt_db_password)"
-        DEBEZIUM_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/debezium_postgres_password)"
 
         psql \
           -h "$$POSTGRES_HOSTNAME" \
@@ -222,9 +226,6 @@ services:
       - airflow_db_password
       - terrakube_db_password
       - sonarqube_db_password
-      - mlflow_db_password
-      - dbt_db_password
-      - debezium_postgres_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.15

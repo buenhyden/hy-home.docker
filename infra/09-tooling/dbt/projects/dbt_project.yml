@@ -6,15 +6,8 @@ profile: hyhome
 model-paths:
   - models
 
-seed-paths:
-  - seeds
-
-snapshot-paths:
-  - snapshots
-
-test-paths:
-  - tests
-
+# The project mount is read-only; every generated artifact goes to the job's
+# /tmp tmpfs and disappears with the container.
 target-path: /tmp/dbt/target
 log-path: /tmp/dbt/logs
 packages-install-path: /tmp/dbt/packages
