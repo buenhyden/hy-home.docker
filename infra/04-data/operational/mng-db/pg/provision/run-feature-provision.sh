@@ -9,7 +9,7 @@
 #   PROVISION_ADMIN_PASSWORD_FILE       administrator password secret file
 #   PROVISION_SQL                       feature SQL file
 #   PROVISION_IDENTIFIERS               names of env vars holding SQL identifiers
-#   PROVISION_SECRETS                   NAME=/run/secrets/file pairs
+#   PROVISION_SECRETS                   NAME=<secret file path> pairs
 #
 # Secret values never appear on a command line: they are exported to the psql
 # process environment and read with \getenv. Every missing or malformed input
