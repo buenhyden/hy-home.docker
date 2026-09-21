@@ -1,0 +1,67 @@
+x-tier-label: &tier-label
+  hy-home.tier: admin
+
+services:
+  jupyterlab:
+    profiles:
+      - data-science
+
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        JUPYTER_BASE_TAG: '2026-07-28'
+
+    image: hy-home/jupyterlab:scipy-local
+    container_name: jupyterlab
+
+    environment:
+      MLFLOW_TRACKING_URI: 'http://mlflow:${MLFLOW_PORT:-5000}'
+
+    command:
+      - start-notebook.py
+      - --ServerApp.ip=0.0.0.0
+      - --ServerApp.port=${JUPYTER_PORT:-8888}
+      - --ServerApp.root_dir=/home/jovyan/work
+      - --IdentityProvider.token=
+
+    volumes:
+      - ${DEFAULT_DOCKER_PROJECT_PATH}/projects/data-science:/home/jovyan/work:rw
+
+    expose:
+      - '${JUPYTER_PORT:-8888}'
+
+    depends_on:
+      mlflow:
+        condition: service_healthy
+        required: false
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >
+          wget -qO-
+          http://127.0.0.1:${JUPYTER_PORT:-8888}/api/status
+          >/dev/null 2>&1 || exit 1
+
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+    labels:
+      <<: *tier-label
+
+      traefik.enable: 'true'
+      traefik.http.routers.jupyter.rule: Host(`jupyter.${DEFAULT_URL}`)
+      traefik.http.routers.jupyter.entrypoints: websecure
+      traefik.http.routers.jupyter.tls: 'true'
+      traefik.http.routers.jupyter.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.jupyter.loadbalancer.server.port: ${JUPYTER_PORT:-8888}
+
+    networks:
+      - infra_net
