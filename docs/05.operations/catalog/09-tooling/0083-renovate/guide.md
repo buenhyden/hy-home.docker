@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-21"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -68,6 +68,81 @@ Before an image upgrade, review Renovate release notes and migrations, validate
 both configs, run dry-run/discovery against a bounded repository set, then run a
 single authorized canary repository.
 
+### Scheduled Operation via systemd
+
+The repository ships two systemd unit files under
+`infra/09-tooling/renovate/`:
+
+| File | Purpose |
+|---|---|
+| [`hyhome-renovate.service`](../../../../../infra/09-tooling/renovate/systemd/hyhome-renovate.service) | oneshot service — runs the Renovate Compose job |
+| [`hyhome-renovate.timer`](../../../../../infra/09-tooling/renovate/systemd/hyhome-renovate.timer) | weekly timer — triggers the service unit |
+
+#### How the timer works
+
+- **Schedule**: Monday 00:00 KST with up to 60 minutes of random jitter
+  (`RandomizedDelaySec=3600`). This matches the `renovate.json5` schedule
+  window (`"* 0-5 * * 1"` in `Asia/Seoul` timezone) so the host trigger
+  and the in-app schedule guard use the same maintenance window.
+- **Missed fires**: `Persistent=true` causes the timer to fire on the next
+  boot if the host was offline when the Monday trigger was due.
+- **Timezone**: `OnCalendar` uses the `Asia/Seoul` suffix (systemd ≥ 242,
+  this host runs 255).
+
+#### Service flow
+
+```
+Timer fires
+  └─ ExecStartPre (1): assert renovate_token secret non-empty
+  └─ ExecStartPre (2): docker compose pull --quiet renovate
+  └─ ExecStart:        docker compose --profile dependency-update run --rm renovate
+  └─ ExecStartPost:    docker image prune --force --filter "dangling=true"
+```
+
+If any pre-flight check fails the run aborts before the container is
+created. The service does **not** auto-restart (`Restart=no`); a failed
+run requires human log review before the next attempt.
+
+#### Installation
+
+Copy or symlink the unit files into the systemd user or system unit path
+and enable the timer. **System-level** installation (runs as `hyunyoun`
+under `[Service] User=`):
+
+```bash
+# 1. Link units (do not copy; edits in the repo take effect on next reload)
+sudo ln -sf \
+  /home/hyunyoun/data/hy-home.docker/infra/09-tooling/renovate/systemd/hyhome-renovate.service \
+  /etc/systemd/system/hyhome-renovate.service
+sudo ln -sf \
+  /home/hyunyoun/data/hy-home.docker/infra/09-tooling/renovate/systemd/hyhome-renovate.timer \
+  /etc/systemd/system/hyhome-renovate.timer
+
+# 2. Reload and enable
+sudo systemctl daemon-reload
+sudo systemctl enable --now hyhome-renovate.timer
+```
+
+#### Operational checks
+
+```bash
+# Timer status and next trigger time
+systemctl status hyhome-renovate.timer
+systemctl list-timers hyhome-renovate.timer
+
+# Last run log (full output)
+journalctl -u hyhome-renovate.service --no-pager
+
+# Trigger manually (bypass timer, authorized runs only)
+sudo systemctl start hyhome-renovate.service
+
+# Disable scheduled runs without removing the unit
+sudo systemctl disable hyhome-renovate.timer
+```
+
+> All live-run authorization and evidence rules in the policy and runbook
+> apply equally to timer-triggered and manually triggered runs.
+
 ## Common Checks
 
 - Strict repository and self-host configuration validation.
@@ -82,6 +157,10 @@ single authorized canary repository.
 
 ## Related Documents
 
+- [hyhome-renovate.service](../../../../../infra/09-tooling/renovate/systemd/hyhome-renovate.service)
+- [hyhome-renovate.timer](../../../../../infra/09-tooling/renovate/systemd/hyhome-renovate.timer)
 - [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/)
 - [Renovate configuration validation](https://docs.renovatebot.com/config-validation/)
+- [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html)
+- [systemd.time(7) — OnCalendar](https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html)
 - [Operations index](../../../README.md)

@@ -45,13 +45,20 @@ services:
     command:
       - |
         set -eu
-        test -s /run/secrets/renovate_token
+        if ! test -s /run/secrets/renovate_token; then
+          echo "ERROR: /run/secrets/renovate_token is missing or empty" >&2
+          exit 1
+        fi
+
         RENOVATE_TOKEN="$$(cat /run/secrets/renovate_token)"
-        test -n "$$RENOVATE_TOKEN"
         export RENOVATE_TOKEN
 
-        python3 -c 'import yaml'
-        test -w /tmp/renovate
+        if ! test -w /tmp/renovate; then
+          echo "ERROR: /tmp/renovate is not writable" >&2
+          id >&2
+          ls -ld /tmp/renovate >&2
+          exit 1
+        fi
 
         exec renovate
     networks:

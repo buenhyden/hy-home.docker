@@ -1,0 +1,59 @@
+[Unit]
+Description=Renovate dependency-update job (hy-home Docker Compose)
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/09-tooling/0083-renovate/guide.md
+# Require Docker socket; do not start if Docker is not running.
+Requires=docker.socket
+After=docker.socket network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Run as the host user that owns the repository and has docker group membership.
+User=hyunyoun
+Group=hyunyoun
+
+WorkingDirectory=/home/hyunyoun/data/hy-home.docker
+
+# Pre-flight: confirm the secret file exists and is non-empty before Compose
+# creates the container. Compose itself performs a second check inside the
+# entrypoint (set -eu + test -s), so this is a fast-fail guard only.
+ExecStartPre=/bin/bash -ec \
+    "test -s /home/hyunyoun/data/hy-home.docker/secrets/tools/renovate_token.txt || { echo 'ERROR: renovate_token secret missing or empty'; exit 1; }"
+
+# Pull the latest declared image tag before running so the pinned digest is
+# always current.  --quiet suppresses the layer-pull progress noise in the
+# journal; remove it temporarily when debugging an image pull failure.
+ExecStartPre=/usr/bin/docker compose \
+    --profile dependency-update \
+    pull --quiet renovate
+
+# The Renovate one-shot container. --rm removes the stopped container
+# automatically so no manual cleanup is needed between runs.
+ExecStart=/usr/bin/docker compose \
+    --profile dependency-update \
+    run --rm renovate
+
+# Post-run: prune dangling images to avoid unbounded disk growth. The filter
+# restricts the prune to images with no tag (build layer debris only) and does
+# not touch tagged pinned images.
+ExecStartPost=/usr/bin/docker image prune --force --filter "dangling=true"
+
+# Systemd marks the unit failed when ExecStart exits non-zero. No automatic
+# restart is desired because a failed Renovate run requires human review of
+# the exit log before retrying. Timer re-triggers on the next scheduled slot.
+Restart=no
+
+# Give the job up to 30 minutes before systemd sends SIGTERM and then SIGKILL.
+# A normal run against a bounded repository list completes in under 10 minutes;
+# 30 minutes covers slow image pulls and transient GitHub API delays.
+TimeoutStartSec=1800
+TimeoutStopSec=60
+
+# Redirect stdout and stderr to the journal with a dedicated syslog tag so
+# logs are retrievable with:  journalctl -u hyhome-renovate.service
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hyhome-renovate
+
+[Install]
+WantedBy=multi-user.target

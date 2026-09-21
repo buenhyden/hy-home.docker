@@ -1,0 +1,25 @@
+[Unit]
+Description=Weekly Renovate dependency-update trigger (Monday 00:00–05:59 KST)
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/09-tooling/0083-renovate/guide.md
+# The timer must only exist alongside the matching service unit.
+Requires=hyhome-renovate.service
+
+[Timer]
+# Fire once per week on Monday at a random time in the 00:00–01:00 KST window.
+# This matches the renovate.json5 "schedule": ["* 0-5 * * 1"] window so the
+# host-side trigger and the in-app schedule guard use the same window.
+#
+# The timezone suffix (Asia/Seoul) requires systemd >= 242.
+# This host runs systemd 255 so the directive is safe.
+OnCalendar=Mon *-*-* 00:00:00 Asia/Seoul
+
+# Spread the actual start over the first hour to avoid thundering-herd with
+# any other Monday maintenance jobs. The combined trigger window is 00:00–01:00.
+RandomizedDelaySec=3600
+
+# Persistent=true re-fires immediately on next boot if the last scheduled
+# trigger was missed (e.g., host was offline on Monday morning).
+Persistent=true
+
+[Install]
+WantedBy=timers.target

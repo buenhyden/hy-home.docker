@@ -25,6 +25,16 @@ Lifecycle: **DEV maintenance job**. Operational controls and recovery belong to 
 
 [Compose](docker-compose.yml) owns the service, mounts, network grants and entrypoint.
 
+```
+renovate/
+├── config/
+│   └── config.js          # self-host command allowlist
+├── systemd/
+│   ├── hyhome-renovate.service  # oneshot service unit
+│   └── hyhome-renovate.timer   # weekly schedule trigger
+└── docker-compose.yml
+```
+
 ## Tech Stack
 
 Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a derived Compose image projection, not a deployment manifest.
