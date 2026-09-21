@@ -11,6 +11,10 @@ services:
       - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
+      # - storage
+      # - obs
+      # - logs
+      # - tracing
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -46,6 +50,10 @@ services:
       - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
+      # - storage
+      # - obs
+      # - logs
+      # - tracing
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -78,6 +86,10 @@ services:
       - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
+      # - storage
+      # - obs
+      # - logs
+      # - tracing
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -115,6 +127,10 @@ services:
     profiles:
       - seaweedfs
       - storage-seaweedfs
+      # - storage
+      # - obs
+      # - logs
+      # - tracing
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med

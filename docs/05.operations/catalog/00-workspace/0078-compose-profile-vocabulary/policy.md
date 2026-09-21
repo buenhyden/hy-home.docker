@@ -35,7 +35,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 
 | Profile | Category | Purpose | Selected services | Default? | Additional side effect | Lifecycle |
 | --- | --- | --- | --- | --- | --- | --- |
-| `admin` | domain | 데이터·로그·노트북 관리 UI | `surrealdb`, `dozzle`, `open_notebook`, `redisinsight` | No | normal service startup | current |
+| `admin` | domain | 데이터·로그·노트북 관리 UI | `dozzle`, `redisinsight` | No | normal service startup | current |
 | `admin-data` | role | Valkey 데이터 탐색 UI | `redisinsight` | No | normal service startup | current |
 | `admin-logs` | role | 컨테이너 로그 UI | `dozzle` | No | normal service startup | current |
 | `ai` | domain | HOME 언어·이미지 AI와 vector 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui`, `comfyui` | No | normal service startup | current |
