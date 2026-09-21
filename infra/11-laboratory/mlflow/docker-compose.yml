@@ -83,6 +83,9 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
+    # Measured 2026-09-21: the CLI parent (~210 MB) plus two uvicorn workers
+    # (~240 MB each) need ~500 MB; 512m caused repeated OOM kills.
+    mem_limit: 1g
     build:
       context: .
       dockerfile: Dockerfile
@@ -99,6 +102,9 @@ services:
       MLFLOW_S3_USER: '${MLFLOW_S3_USER:-mlflow-artifacts}'
       AWS_DEFAULT_REGION: '${MLFLOW_S3_REGION:-us-east-1}'
       MLFLOW_ALLOWED_HOSTS: 'mlflow:*,mlflow.${DEFAULT_URL},localhost:*,127.0.0.1:*'
+      # Server-side GenAI jobs start about seven huey consumers (~200 MB each);
+      # experiment tracking does not use them.
+      MLFLOW_SERVER_ENABLE_JOB_EXECUTION: 'false'
     secrets:
       - mlflow_db_password
       - mlflow_s3_password
@@ -122,6 +128,7 @@ services:
             "postgresql+psycopg2://$${MLFLOW_DB_USER}@$${MLFLOW_DB_HOST}:$${MLFLOW_DB_PORT}/$${MLFLOW_DB_NAME}" \
           --artifacts-destination "s3://$${MLFLOW_ARTIFACT_BUCKET}" \
           --serve-artifacts \
+          --workers 2 \
           --allowed-hosts "$${MLFLOW_ALLOWED_HOSTS}"
     expose:
       - '${MLFLOW_PORT:-5000}'

@@ -18,7 +18,7 @@ read_secret() {
   value="$(cat "$1")"
   [ -n "$value" ] || fail "secret is empty: $1"
   case "$value" in
-    *$'\r'* | *$'\n'* | *'"'* | *'\'*) fail "secret contains a line break, quote or backslash: $1" ;;
+    *$'\r'* | *$'\n'* | *'"'* | *\\*) fail "secret contains a line break, quote or backslash: $1" ;;
   esac
   [ "${#value}" -le 512 ] || fail "secret exceeds 512 characters: $1"
   printf '%s' "$value"

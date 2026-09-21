@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -40,6 +40,16 @@ operating command; adding it is a separate activation decision.
   credentials. The MLflow MinIO identity cannot read other buckets.
 - The shared `mng-pg-init` job no longer creates MLflow objects and no longer
   reads MLflow secrets, so `core`/`mng`/`dev`/`local` start without them.
+
+### Sizing
+
+Measured on first start (2026-09-21): with default settings MLflow 3.x starts
+server-job consumers (`huey`, about 200 MB each) and uvicorn workers, and the
+512 MB template limit caused repeated OOM kills. The Compose file disables
+server-side jobs (`MLFLOW_SERVER_ENABLE_JOB_EXECUTION=false`; GenAI scheduled
+scorers and trace archival are not used), runs two workers and sets
+`mem_limit: 1g` (steady state about 560 MB). Re-enable jobs only with a measured
+memory budget.
 
 ### Authentication and identity
 
