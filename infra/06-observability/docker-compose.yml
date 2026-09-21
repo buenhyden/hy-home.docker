@@ -598,3 +598,35 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
+
+  dcgm-exporter:
+    profiles:
+      - obs-gpu
+
+    extends:
+      file: ../common-optimizations.yml
+      service: template-host-observer-med
+
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:${DCGM_EXPORTER_TAG}
+    container_name: dcgm-exporter
+
+    cap_add:
+      - SYS_ADMIN
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+
+    expose:
+      - '${DCGM_EXPORTER_PORT:-9400}'
+
+    networks:
+      infra_net: {}
+
+    labels:
+      <<: *tier-label
