@@ -2,8 +2,8 @@ mlflow==3.16.1
 polars==1.44.2
 pyarrow==23.0.1
 duckdb==1.5.5
-psycopg[binary]==3.1.20
-boto3==1.35.46
+psycopg[binary]==3.3.6
+boto3==1.43.75
 s3fs==2026.7.0
 confluent-kafka==2.15.1
 jupysql==0.11.1
