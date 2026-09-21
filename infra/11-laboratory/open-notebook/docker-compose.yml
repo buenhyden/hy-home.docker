@@ -41,7 +41,18 @@ services:
       - SURREAL_USER=${SURREALDB_USERNAME}
       - SURREAL_NAMESPACE=${SURREALDB_NAMESPACE}
       - SURREAL_DATABASE=${SURREALDB_DATABASE}
+      # OPTIONAL: heavy extraction runtimes, installed on first startup when
+      # enabled (downloads are cached on the ./notebook_data volume, so only the
+      # first boot is slow). See docs/5-CONFIGURATION/environment-reference.md.
+      # - OPEN_NOTEBOOK_ENABLE_DOCLING=true    # Docling engine + OCR + image sources (large ML stack)
+      # - OPEN_NOTEBOOK_ENABLE_CRAWL4AI=true   # local Crawl4AI (bundles a Chromium browser)
+      # - CRAWL4AI_API_URL=http://crawl4ai:11235  # use a remote Crawl4AI server instead (no local install)
+      # - CRAWL4AI_API_TOKEN=${CRAWL4AI_API_TOKEN}  # bearer token for that server (required by Crawl4AI >= 0.9.0)
 
+      # OPTIONAL: max concurrent background tasks the worker processes at once
+      # (default 5). Set to 1 for sequential processing on single-GPU / local
+      # LLM setups to avoid overloading the model with parallel requests.
+      # - OPEN_NOTEBOOK_WORKER_MAX_TASKS=1
       # Ollama (required when running Ollama via Docker, as in this compose file)
       - OLLAMA_API_BASE=http://ollama:11434
     volumes:

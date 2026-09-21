@@ -197,6 +197,12 @@ secrets:
 
   renovate_token:
     file: ./secrets/tools/renovate_token.txt
+  # ── Crawl4AI ───────────────────────────────────────────────────
+  crawl4ai_api_token:
+    file: ./secrets/tools/crawl4ai_api_token.txt
+  # ── Web Scraper (Playwright) ─────────────────────────────────
+  web_scraper_chrome_path:
+    file: ./secrets/tools/web_scraper_chrome_path.txt
 
 include:
   # Every file below is included unconditionally; Compose profiles decide what
