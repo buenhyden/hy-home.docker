@@ -256,7 +256,11 @@ Commands ran in the isolated worktree on the branch head before commit.
 | Renovate `renovate-config-validator --strict` (repo and global) | PASS | `renovate@latest` via npx |
 | `systemd-analyze verify` on both units | no findings | Host units not reinstalled |
 | `gen-secrets.sh --dry-run` | 103 rows, 9 new create/update actions | Public example only |
-| Remaining registered gates | recorded below after the final run | |
+| `check-document-metadata.py --mode check-contracts --history-scope full` | PASS, violations=0 (base 36) | CI's first failure is resolved |
+| `check-document-links.py --mode all` | PASS (base 9 failures) | SurrealDB links point to the current subject |
+| Agent governance, corpus lifecycle, script manifest, workflow contract, supply chain, quickwin, template security, `check-all-hardening.sh` | PASS | Template baseline and hardening were failing at base |
+| Ruff 0.15.12 format/check on changed tests (official container) | PASS | Host has no pip/uvx |
+| `run-ci-gate.py --profile full` at `f0737491d` | exit 1: 11 suites OK, 1 failure `test_automatic_pre_commit_sees_index_content_and_untracked_paths` (`exec: pre-commit: not found`) | Environment prerequisite absent locally; CI installs it. Earlier local runs also failed two file-mode tests caused by this worktree's umask 002 checkout (Git stores only the exec bit); normalizing the local modes cleared them. Hosted `validation-full` has not run on this branch |
 
 ## Review Evidence
 
@@ -286,7 +290,20 @@ Commands ran in the isolated worktree on the branch head before commit.
 
 ## Commit Ledger
 
-Recorded after commits.
+Branch `claude/home-dev-restructure` from `ea3a7480d`; local only, not pushed.
+
+| Commit | Scope |
+| --- | --- |
+| `30228fc69` fix(infra) | Provisioning split, feature jobs/SQL, MLflow/Jupyter/dbt/Connect wiring, env/secret metadata, version projection, tests |
+| `d19af851d` fix(obs) | Alloy storage path, DCGM pin/capability, GPU alerts, Grafana auth hardening |
+| `a456e9380` fix(auth) | `trusted_ips` removal, identity-only headers, Open Notebook loopback, hardening baseline |
+| `6857c42c2` feat(ai) | Crawl4AI inclusion and isolation |
+| `c89f8caa4` fix(deps) | Renovate units and `pip_requirements` ownership |
+| `145dd5d5e` docs(ops) | READMEs, Stage 05 triplets, POL-0078, inventory, links, this Task, Plan and Spec |
+| `f0737491d` docs(ops) | Inventory refresh for the heartbeat schema |
+| this commit | Final evidence and ledger |
+
+Intermediate commits are grouped by concern; only the branch head is gate-verified.
 
 ## Rulings
 
