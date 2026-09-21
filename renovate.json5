@@ -20,7 +20,7 @@
   "timezone": "Asia/Seoul",
 
   "schedule": [
-    "before 6am on monday"
+    "* 0-5 * * 1"
   ],
 
   "minimumReleaseAge": "7 days",
