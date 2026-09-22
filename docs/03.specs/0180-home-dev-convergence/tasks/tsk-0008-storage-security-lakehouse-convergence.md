@@ -513,7 +513,7 @@ recreated.
 | --- | --- |
 | identities | `config/s3-identities.conf`: `loki`, `tempo`, `mlflow`, `terrakube` scoped to their bucket (STRG-011–014); `anonymous` may only read `cdn-bucket`; the start script refuses to start when any listed secret is missing |
 | buckets | `seaweedfs-buckets` (aws-cli, admin) creates the five buckets idempotently; consumers wait for it |
-| migration | `seaweedfs-migrate` (`storage-migration`, MinIO `mc`): S3-API mirror per bucket, `--remove` only with `ALLOW_REMOVE=1`, fails on count or byte mismatch; removed with MinIO |
+| migration | `seaweedfs-migrate` (`storage-migration`, MinIO `mc`): S3-API mirror per bucket that adds missing objects; `FINAL=1` also overwrites and deletes, requires identical key and size listings and writes the cutover marker; removed with MinIO |
 | profiles | SeaweedFS joins every S3 consumer profile and so HOME; `iac` is excluded (automation, forbidden in HOME), so Terrakube runs with `storage` |
 | Loki, Tempo | endpoint `seaweedfs-s3:8333`, region `us-east-1`, own identity; the image entrypoints read `S3_SECRET_KEY_FILE`; image tags renamed (`hy/loki:3.7.8-seaweedfs`, `hy/tempo:3.0.3-seaweedfs`) so the new entrypoint is always built, which also fixes tags that named older versions than their Dockerfiles |
 | MLflow | endpoint and `mlflow` identity; `mlflow-artifact-provision`, its MinIO script, `MLFLOW_S3_USER`, `mlflow_s3_password` and STRG-005/006 removed |
@@ -540,6 +540,24 @@ refused on `tempo-bucket` and cannot create a bucket, and anonymous access
 returns 200 for a CDN object but 403 for listing, PUT and DELETE. MinIO
 itself, its bootstrap, its Prometheus job, dashboards and the MinIO subject
 stay until S07b; architecture and requirement mentions are swept there.
+
+### S07a live cutover (2026-09-22, owner-approved)
+
+PR #200 merged as `887aa70da`; the operations checkout was fast-forwarded to it.
+Nginx and Terrakube were not running, so only Loki, Tempo and MLflow were
+switched.
+
+| Step | Result |
+| --- | --- |
+| Secrets | STRG-011–014 created by the S06 method (32 alphanumeric characters, 0640); registry Value cells stay empty until `SEC-003` is repaired |
+| SeaweedFS | `seaweedfs-s3` recreated with the identities (healthy); `seaweedfs-buckets` created all five buckets |
+| Initial copy | `loki-bucket` 1263 objects / 98,022,560 B, `tempo-bucket` 464 / 69,820,711 B, `mlflow-artifacts` 2 / 4 B, `cdn-bucket` 0; both sides equal |
+| Loki | image built, stopped, `FINAL=1` equal (1263) and marked, recreated healthy. The 6-hour counts for 3 to 2 days before (191368, 325259, 315666) match the pre-cutover baseline exactly; new lines are queryable; the only error was a start-up `empty ring` |
+| Tempo | image built, stopped, `FINAL=1` equal (496 / 71,930,488 B) and marked, recreated healthy. The pre-cutover baseline trace `bf7ba3a2…` from 2 days before is returned; search works; the bucket grew to 516 objects. Start-up dropped one partial WAL block written at stop time (`failed to replay block. removing`), so traces received in the last seconds before stop may be lost |
+| MLflow | stopped, `FINAL=1` equal (2) and marked, recreated. The operator `.env` still set `MLFLOW_S3_ENDPOINT_URL` to MinIO (only `.env.example` changed in source); that one value was changed and MLflow recreated. An existing artifact returns 200 through the artifact proxy, and PUT, GET and DELETE of a probe succeed |
+| `cdn-bucket` | empty on both sides; `FINAL=1` marked |
+| Scope | 3×3 list check with each consumer key: own bucket allowed, the other two denied |
+| MinIO | still running with its data untouched; the rollback is the previous configuration against it. `doc-intel-assets` is empty and was not copied |
 
 ## Verification Evidence
 
@@ -600,6 +618,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - n8n queue configuration points at `redis://mng-n8n-valkey`, a name no service declares (found in S05 review; n8n stage owner).
 
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
+
+- Operator `.env` keeps `MINIO_APP_USERNAME` and `MLFLOW_S3_USER`, no longer read; drop them with MinIO in S07b.
+- An exited `mlflow-artifact-provision` container remains as a Compose orphan; remove it in S07b.
 
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
