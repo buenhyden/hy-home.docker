@@ -192,6 +192,12 @@ private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승�
   활성화할 때 컨테이너 내부 read test와 `/proc` supplementary group 확인 후 `0640`으로
   낮춥니다. Compose 소비자가 없는 파일은 `0600`입니다. `certs/`는 별도의
   `hyhome-certs` group(`CERT_GROUP_GID`) 모델을 유지합니다.
+- `secrets/security/`의 `vault_token.txt`(SEC-001)와 `vault_unseal_keys.legacy.txt`는
+  legacy Vault 전용이며 OpenBao를 unseal할 수 없습니다. OpenBao Shamir unseal share(3개,
+  threshold 2)는 이 디렉터리에 두지 않고 owner의 bootstrap custody에 보관합니다
+  ([TSK-0002](../docs/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md),
+  [OpenBao runbook](../docs/05.operations/catalog/03-security/0085-openbao/runbook.md)).
+  share는 서로 다른 offline 위치로 분리하며, initial root token은 폐기되었습니다.
 - AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 
 ## Related Documents
