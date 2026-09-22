@@ -443,6 +443,22 @@ Restore problems and fixes:
   host-only file (no Compose consumer), so it joins the registry path
   exceptions; public registry rows 103 → 104. The runbook records the
   separate-custody exception.
+
+### Reboot rehearsal (2026-09-22, owner-run)
+
+Host rebooted 12:56 KST. The data disk mounted before Docker, which started
+from `/home/hyunyoun/storage/docker-root`. All 53 baseline containers returned
+with identical addresses on every network, no leftover temporary names; the
+owner unsealed OpenBao. Every container was healthy at 13:16:53, about 21
+minutes after boot. CDC connector and task RUNNING, slot lag 537 kB; SSO routes
+401/302, Open WebUI 200. Boot-time restarts while dependencies came up included
+oauth2-proxy 34, Gatus 31, kafbat-ui 13, Airflow API server 10, worker 8.
+
+The slow start is caused by the data-root move: `/dev/sdb` is a 7200 rpm hard
+disk and `/` is an SSD. With image snapshots on the hard disk, 53 containers
+read their layers at once; I/O pressure `full` stayed at 42–60% and
+`mng-pg` spent over 300 s in its startup fsync. The move was recommended
+without checking the disk type. `/var/lib/*.pre-move` remain on `/`.
 - Prometheus has ten targets down (k3d cluster, OpenBao metrics, OpenSearch);
   all were already down for the previous six hours.
 
