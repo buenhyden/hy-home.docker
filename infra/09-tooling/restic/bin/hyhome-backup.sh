@@ -73,8 +73,8 @@ running() { [[ "$(docker inspect -f '{{.State.Running}}' "$1" 2>/dev/null)" == t
 
 status=0
 if running mng-pg; then
-    type=diff
-    [[ "$(date +%u)" == 7 ]] && type=full
+    type="diff"
+    [[ "$(date +%u)" == 7 ]] && type="full"
     docker exec -u postgres mng-pg pgbackrest --stanza=mng --type="$type" backup || status=1
     docker exec -u postgres mng-pg sh -c 'pg_dumpall --globals-only -U "$POSTGRES_USER"' \
         >"$staging/mng-pg-globals.sql" || status=1
