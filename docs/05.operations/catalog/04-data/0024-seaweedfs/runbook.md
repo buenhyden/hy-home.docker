@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -26,43 +26,52 @@ From the repository root:
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
-docker compose --env-file .env.example --profile seaweedfs config --services
+HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
+  tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-Confirm master, volume, filer and S3 services, the two distinct persistent
-volumes, `infra_net`, health checks and standard gateway chain. No service is
-privileged or adds capabilities.
+The rehearsal renders the real services on disposable data. It checks that
+anonymous and wrong-credential requests are refused, that filer and volume
+HTTP need a JWT, that gRPC requires a client certificate, the consumer S3 API,
+persistence across restart, a read failing while the volume server is down,
+and backup and restore into empty stores.
 
-### Planned coordinated backup
+### First activation (approved task)
 
-1. Record image source/version, topology, volume IDs, filer stores, clients and
-   object/file counts. Select a separate encrypted destination.
-2. Fence all S3, filer and mount writers. Confirm the accepted recovery point.
-3. Use the official `weed backup` workflow for volume data and verify its output.
-   Export filer metadata with `fs.meta.save` for the same point.
-4. Stop/quiesce the master before snapshotting `seaweedfs-master-data` for local
-   rollback evidence; record topology/volume assignment and mark that snapshot as
-   non-portable because upstream does not specify a master-state restore. Capture
-   `seaweedfs-volume-data` only as supporting evidence, not as a substitute for
-   engine-aware volume backup.
-5. Record every artifact, engine version, time, size and checksum in one manifest.
-   The official guide itself describes limitations, so mark backup status
-   unverified until restore succeeds.
+1. `bash scripts/operations/gen-secrets.sh` creates STRG-008, STRG-009 and
+   STRG-010; set `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` in `.env`.
+2. `bash infra/04-data/lake-and-object/seaweedfs/bin/gen-grpc-certs.sh` issues
+   the gRPC certificates into `secrets/certs/seaweedfs` (kept unless
+   `--rotate`).
+3. Create `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` owned by UID
+   1000 (the host operator), then
+   `docker compose --profile seaweedfs up -d --wait`.
+4. Verify with the admin identity: create and delete a disposable bucket, and
+   confirm an anonymous request returns 403.
 
-### Planned isolated restore
+### Backup (daily, RUN-0021)
 
-1. Provision an empty isolated target at the same SeaweedFS version with fresh
-   master identity. Do not expose its S3 route or mount it on the HOME host.
-2. Recreate the recorded topology, place the engine-aware volume backups on their
-   intended volume servers, then load filer metadata with `fs.meta.load`. Do not
-   import the source master volume unless version-specific upstream evidence first
-   proves that path. Never combine artifacts from different captures.
-3. Run `volume.fsck` or the current upstream consistency check, inspect master
-   volume assignments, traverse filer paths and compare object/file counts.
-4. Test disposable filer and S3 read/write/delete operations. Test FUSE only in an
-   approved isolated environment with the same mount semantics.
-5. Record recovery point and elapsed time. A separately approved cutover performs
-   a final fenced capture, switches named clients and preserves rollback.
+`hyhome-backup.sh` runs, through `seaweedfs-master`:
+`volume.vacuum.disable`, then `fs.meta.save -o /tmp/filer.meta /` copied to the
+staging export, then Restic reads `data/seaweedfs/volume` and
+`data/seaweedfs/master`, then `volume.vacuum.enable` in its EXIT trap. The
+script fails the run on a non-zero `weed shell` exit or error text in its
+output, on an empty export, or when only one of master and filer runs; a stale export is removed before each save. SeaweedFS not running at all
+is not a failure. A run killed with SIGKILL (for example at the unit's stop
+timeout) leaves vacuum off: run `volume.vacuum.enable` through
+`hyhome-seaweedfs.sh shell` in `seaweedfs-master`.
+
+### Restore (isolated first)
+
+1. Restore the Restic snapshot's `data/seaweedfs/{volume,master}` and the
+   `seaweedfs-filer.meta` export (RUN-0021 step 5) to an empty target at the
+   same version, with an empty `filer` directory.
+2. Start the four services and wait for health.
+3. Copy the export into `seaweedfs-master` and run `fs.meta.load` through
+   `hyhome-seaweedfs.sh shell`, then `volume.fsck`; objects changed during the
+   backup's Restic window may be missing (POL-0024).
+4. Read back objects of every bucket through S3 and compare counts and bytes
+   with the manifest before any client is switched.
 
 ## Evidence
 
@@ -79,14 +88,14 @@ final consistency capture, application validation and a retained rollback window
 ## Escalation
 
 Stop for missing filer metadata, topology mismatch, orphaned volumes, checksum
-failure, security exposure or version incompatibility. Do not improvise a raw
-volume-only restore.
+failure, security exposure or version incompatibility. Never restore volume
+trees without the filer metadata export of the same snapshot.
 
 ## Traceability
 
 - Runtime source: [SeaweedFS Compose](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.
-- Procedures are planned unless a dated verification record explicitly says they ran.
+- The isolated rehearsal ran on 2026-09-22 (SPEC-0180 Task 0008 S06); HOME activation and HOME restore have not run.
 
 ### References
 

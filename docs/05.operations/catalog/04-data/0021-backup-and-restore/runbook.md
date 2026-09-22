@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -100,6 +100,10 @@ done and Restic untouched: review the logged sizes and request the approved
 emptied, and a stale Restic lock is cleared with `restic unlock` once no Restic
 process runs.
 
+When SeaweedFS is running, the run also pauses vacuum and exports filer
+metadata; error text from `weed shell`, an empty export, or only one of master
+and filer running makes the run exit 1 (RUN-0024).
+
 ### 5. Point-in-time restore of `mng-pg` into isolation
 
 Restore into a new directory, never over the live `PGDATA`. Image names come
@@ -159,6 +163,11 @@ docker run --rm -e RESTIC_PASSWORD_FILE=/pw \
 
 Use `"$host/restic"` for `secrets/` and `.env`.
 Compare with `sha256sum`, then copy only the reviewed files back.
+
+SeaweedFS is restored as one set: `--include /src/state/volumes/data/seaweedfs`
+together with `/src/state/exports/seaweedfs-filer.meta` from the same snapshot,
+then RUN-0024 (volume and master trees in place, empty filer store,
+`fs.meta.load`).
 
 ### 7. Delete old snapshots (approval: irreversible)
 

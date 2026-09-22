@@ -402,6 +402,76 @@ filter keeps only `project_net|infra_net` targets (`config.alloy`,
 with MinIO in S07, so phase 2 must not precede S07 or must move it to
 `lab_net`); and RedisInsight reaches only `mng_data_net` stores.
 
+### S05 phase 1 live activation (2026-09-22, owner-approved)
+
+The operations checkout was already at `f6e507955` (#196). The 53 running
+services (the 8-profile HOME set plus Kafka, MLflow, JupyterLab, Open Notebook,
+SurrealDB, Registry, DCGM and Crawl4AI) were recreated with
+`up -d --no-deps --pull never`. `--no-deps` kept the init jobs from rerunning;
+`--pull never` kept Open Notebook's moving `v1-latest-single` tag on its local
+image.
+
+| Step | Result |
+| --- | --- |
+| Dry run | 51 recreate, Registry and Crawl4AI unchanged, 9 networks created (`lab_net`, `seaweed_internal`, `supabase_net`, `terrakube_net` have no running member) |
+| First apply (10:5x–11:03 UTC) | exit 1: `--wait` aborted when n8n was briefly unhealthy while `mng-pg` restarted; the containers not yet started were left in `Created` |
+| Second apply without `--wait` | exit 0; 53 running; after the health wait 51 healthy, 2 without a health check (as before) |
+| DNS order | from Traefik, `oauth2-proxy` and `grafana` resolve to `edge_net` addresses and `keycloak.hy.home.arpa` to `10.250.1.2`: the phase-1 review's premise holds, so the dual trusted-proxy fix was required |
+| SSO | Prometheus/Loki/Alloy forward-auth returns the Keycloak redirect whose state keeps `https://prometheus.hy.home.arpa/` (forwarded headers trusted); Grafana, Keycloak, Dozzle login redirects; Gatus and Airflow 200 |
+| Startup noise | OAuth2 Proxy and Gatus crashed and restarted until Keycloak and Traefik were ready (OIDC discovery 404/503), then ran normally |
+| Prometheus | 21 up, 10 down: 8 k8s NodePort targets on `172.18.0.2` (connection refused; `.2` is Traefik's own k3d address, `k3d-hyhome` was not changed, pre-apply state not captured, so a pre-existing target error is likely but unverified), OpenSearch (not running), OpenBao (503, sealed) |
+| OpenBao | sealed after its restart (initialized, 2-of-3 shares): owner unseal required; no key material read |
+
+Lesson for phase 2: recreate in dependency waves, providers first
+(`mng-pg`, `mng-valkey`, Keycloak, Traefik), then the rest. Do not rely on
+`--wait` across the whole set. Plan the OpenBao unseal for its restart.
+
+### S06 — SeaweedFS as a durable, secured store
+
+The image's own facts decided the design. `/entrypoint.sh` adds `-mdir=/data`
+and `-dir=/data` only when the first argument is the bare subcommand; every
+tracked command started with `-v=1`, so master and volume wrote to `/tmp` (the
+flag defaults), and the filer's leveldb2 store (`/data/filerldb2`) had no
+volume. The same entrypoint needs root to `chown` and `su-exec`, which
+`cap_drop: ALL` forbids. No SeaweedFS volume existed on HOME, so nothing was
+lost or migrated. `gateway-standard-chain` has no authentication, so the
+master UI (`seaweedfs.`) and the whole filer (`cdn.`) were public. S3 also
+listens by default on gRPC (`port+10000`), Iceberg (8181) and Lance (9101).
+The tracked `security.toml.example` used a format SeaweedFS does not read.
+
+| Requirement | Implementation |
+| --- | --- |
+| persistent set | bind volumes `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`; `-mdir=/data`, `-dir=/data`; filer on the embedded leveldb2 store (no start or recovery dependency, portable through `fs.meta.save`); UID 1000, so no root step |
+| explicit identities, no anonymous write | `hyhome-seaweedfs.sh` writes `s3.json` from `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` and STRG-010 and refuses to start without them; per-consumer bucket-scoped identities come with each S07 cutover |
+| no IAM bypass | volume and filer HTTP need JWTs (STRG-008, STRG-009) for reads and writes; master and filer routes removed, both only on `seaweed_internal` |
+| TLS and internal authentication | gRPC mutual TLS for all four components from a SeaweedFS-only CA (`bin/gen-grpc-certs.sh`, CA key discarded); S3 is SigV4 over HTTP on `object_net`, HTTPS through Traefik |
+| minimal surface | `-port.iceberg=0 -port.lance=0 -iam=false` until S12 |
+| capacity | `-minFreeSpace=20GiB`; replication `000` (same-host copies are not availability) |
+| independent backup | the orchestrator pauses vacuum, saves filer metadata, Restic reads the volume and master trees, vacuum resumes in the EXIT trap; allowlist gains `data/seaweedfs/{volume,master}`; POL-0021 records why this live read is accepted |
+
+`SeaweedfsRehearsalTests` (opt-in `HYHOME_SEAWEEDFS_REHEARSAL=1`) renders the
+real services onto disposable data and two internal networks. It passed 6/6
+on 2026-09-22. It covered refusals (anonymous 403, wrong secret, filer and
+volume 401 without a JWT, gRPC TLS alert without a client certificate). It
+covered the consumer API: content type, metadata, tags, range, prefix listing,
+an encoded key, a 20 MiB multipart upload whose ETag is not an MD5, presigned
+GET, and keys `a` and `a/b` coexisting. It also showed that the bind paths
+hold the data, that a GET fails while the volume server is down, that objects
+survive a restart, and that the backup set restores into empty stores with
+identical bytes. Versioning, Object Lock, SSE, notifications and lifecycle
+were not tested; S07 tests whichever a consumer needs.
+
+Sequential review findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| Critical: master, volume and filer were still on `infra_net`, where any container could take a write JWT from `/dir/assign` or delete a bucket through `/col/delete` | removed from `infra_net`; now only on `seaweed_internal`; contract test pins the network set; the rehearsal checks S3 clients cannot reach them |
+| Important: `weed shell` may exit 0 on failed commands; a stale export could pass as current | the orchestrator fails on a non-zero exit, error text, an empty export or a half-running pair, and removes the export before and after each save; the rehearsal observed exit 1 for a failed `fs.meta.load` (the premise does not hold for that command) and no error text in normal output |
+| Important: the consistency claim was too strong | narrowed in POL-0024 and POL-0021: objects overwritten or deleted inside the Restic window may restore as missing; restore runs `volume.fsck` |
+| `-port.grpc` not passed, config read from the `/data` bind first, partial certificate sets reported as complete | `-port.grpc` from the port keys; `working_dir: /etc/seaweedfs`; the certificate script requires the full set or `--rotate` |
+| every container mounts every component key | accepted: the S3 container already holds the client certificate and both JWT keys, which give the same reach |
+| the SeaweedFS trees count against the 5 GiB state budget | deferred to S07, where consumer data first arrives |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -420,7 +490,9 @@ with MinIO in S07, so phase 2 must not precede S07 or must move it to
 | S04 structure | Task 10 / S04 | PASS: `seaweedfs-mount` removed; `seaweedfs` renders master/volume/filer/S3, `seaweedfs-mount` renders nothing; no remaining current reference | this Task |
 | S04 accumulated gates | Task 10 / S04 | PASS: Compose 71 selections/314 services, operations catalog, projection (89 repositories), links (942 documents, 0 failures), `git diff --check`; 623 unit tests with 2 local-only failures (group-write bit on two entrypoint scripts from this worktree's umask 002, not tracked by Git; CI unaffected) | this Task |
 | S05 phase 1 source | Task 10 / S05 | PASS: 150 services assigned, rendered memberships equal the assignment; every traced flow shares a segmented network (static trace plus review); review Critical/Important findings fixed; Compose 71 selections/314 services; 5/5 `NetworkSegmentationContractTests` | this Task, AD-0026 |
-| S05 phase 1 live | Task 10 / S05 | BLOCKED_APPROVAL: applying it recreates every running container | RUN-0077 |
+| S05 phase 1 live | Task 10 / S05 | PASS with one open item: 53 services recreated and healthy, SSO and forwarded headers verified; OpenBao sealed until the owner unseals | this Task |
+| S06 source and rehearsal | Task 10 / S06 | PASS: 6/6 `SeaweedfsRehearsalTests`, 2/2 `SeaweedfsContractTests`, secret registry 110 rows (STRG-007–010) | GDE/POL/RUN-0024 |
+| S06 HOME activation | Task 10 / S06 | NOT_RUN: needs secrets, certificates and data directories (RUN-0024 first activation), then an approved start | RUN-0024 |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence

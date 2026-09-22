@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -22,56 +22,78 @@ created: "2026-05-10"
 
 ## Usage
 
-SeaweedFS is an OPTIONAL master/volume/filer/S3 topology with no proven current
-client. It is retained for a named file/object-storage experiment and is not the
-HOME MinIO replacement. The privileged FUSE mount was removed (SPEC-0180 S04):
-it had no consumer, and S3 is the interface.
+SeaweedFS is the S3 object store that takes over from MinIO one consumer at a
+time in SPEC-0180 S07. Until then it stays OPTIONAL. S3 at
+`http://seaweedfs-s3:8333` (path-style, region `us-east-1`) is the only
+interface. The privileged FUSE mount was removed in S04, and the master and
+filer have no route.
 
 ### Current implementation
 
 [`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)
 defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer` and
 `seaweedfs-s3`. Profiles `seaweedfs` and `storage-seaweedfs` select all four.
+Each starts through
+[`config/hyhome-seaweedfs.sh`](../../../../../infra/04-data/lake-and-object/seaweedfs/config/hyhome-seaweedfs.sh)
+as UID 1000. The script builds `security.toml` (volume and filer JWT keys, gRPC
+mTLS) and, for S3, the identities file from Docker secrets. It refuses to start
+when a secret or certificate is missing.
 
-`seaweedfs-master-data` and `seaweedfs-volume-data` are Docker-managed volumes.
-Filer metadata is not a separate persistent volume in current source. Services
-join `infra_net`; S3 routes through the standard gateway chain. No secret,
-authentication, transport encryption or mounted `security.toml` is declared.
+State is on the data disk: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`
+and `/filer` (the embedded leveldb2 store). Master, volume and filer are only
+on `seaweed_internal`. S3 also joins `object_net` for clients and `edge_net`
+for the `s3.${DEFAULT_URL}` route.
 
 ### Images, configuration and resource controls
 
-The Compose file owns the pinned `chrislusf/seaweedfs` image; repository Renovate
-may propose updates and the version projection is derived. Root
-`SEAWEEDFS_*_HTTP_PORT` and `SEAWEEDFS_*_GRPC_PORT` keys control the declared
-listeners; no credential environment key is present. Master/filer extend
+The Compose file owns the pinned `chrislusf/seaweedfs` image; Renovate may
+propose updates and the version projection is derived. Root
+`SEAWEEDFS_*_HTTP_PORT` and `SEAWEEDFS_*_GRPC_PORT` keys control the listeners.
+`SEAWEEDFS_S3_ADMIN_ACCESS_KEY` names the admin identity. Its secret key
+(STRG-010) and the JWT keys (STRG-008, STRG-009) are secret files, and the gRPC
+certificates come from `bin/gen-grpc-certs.sh`. Master and filer extend
 `template-stateful-med`, volume `template-stateful-high`, and S3
-`template-infra-med`; every service declares a health check. Flow is
-master → volume, filer → master/volume, then S3 → filer.
+`template-infra-med`; every service has a health check. The volume server
+refuses writes below 20 GiB free. Flow: master → volume, filer →
+master/volume, then S3 → filer.
 
-### Static preflight
+### Static preflight and rehearsal
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
-docker compose --env-file .env.example --profile seaweedfs config --services
+HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
+  tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-Run from the repository root. Activation requires a named client, capacity and
-security review, especially for the unauthenticated S3 endpoint.
+Run these from the repository root. The rehearsal needs Docker and uses only
+disposable data.
+
+### Verified S3 behaviour (4.47, 2026-09-22 rehearsal)
+
+| Area | Result |
+| --- | --- |
+| Anonymous PUT/list, wrong secret | 403; `SignatureDoesNotMatch` |
+| Filer GET/PUT and volume POST without JWT | 401 |
+| gRPC without a client certificate | TLS alert `certificate required` |
+| PUT with content type, user metadata and tags; HEAD; tagging read | preserved |
+| Range GET, list with prefix, URL-encoded key with space and `+` | correct bytes and key |
+| 20 MiB multipart upload | round trip identical; ETag has the `-N` part suffix, so it is not an MD5 |
+| Presigned GET | correct bytes |
+| Key `a` then `a/b` | both stored and readable with their own bytes |
+| Volume server stopped | GET fails instead of returning data |
+| Restart; restore of volume and master trees plus `fs.meta.load` into empty stores | objects identical |
+
+Versioning, Object Lock, SSE, notifications and lifecycle rules were not
+tested. S07 tests any that a consumer needs before its cutover.
 
 ### Recovery and lifecycle
 
-A usable recovery set coordinates volume data, filer metadata and the master
-topology inventory at one accepted write boundary. The local master volume may be
-quiesced for rollback evidence, but upstream does not define it as a portable
-restore artifact. The official backup page describes
-`weed backup` for volume data and `fs.meta.save`/`fs.meta.load` for filer metadata,
-and recommends a same-version target; it also describes its procedures as limited.
-[RUN-0024](runbook.md) therefore requires an isolated rehearsal and records that
-complete recovery remains unverified.
+The backup set is the filer metadata export plus the volume and master trees,
+taken in that order with vacuum paused ([RUN-0024](runbook.md), RUN-0021).
 
-Upgrade or MinIO-migration work needs a separate spec, official release review,
-S3/file semantic tests, export/restore proof and rollback. SeaweedFS is Apache-2.0
-licensed; mounted clients and images retain their own license obligations.
+An image upgrade needs an official release review and a passing rehearsal.
+Consumer cutover from MinIO is S07, one consumer at a time. SeaweedFS is
+Apache-2.0 licensed.
 
 ### Official references
 

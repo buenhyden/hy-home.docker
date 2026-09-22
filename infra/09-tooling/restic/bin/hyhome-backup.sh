@@ -2,7 +2,8 @@
 # Daily HOME backup orchestrator (run by systemd/hyhome-backup.service).
 #   1. single-run lock and cross-disk preflight
 #   2. pgBackRest physical backup of mng-pg (full on Sunday, else differential)
-#   3. consistent exports: PostgreSQL globals, Valkey RDB, SQLite stores
+#   3. consistent exports: PostgreSQL globals, Valkey RDB, SQLite stores,
+#      SeaweedFS filer metadata (vacuum paused until the run ends)
 #   4. Restic backup and check of both repositories
 #   5. remove the plaintext exports from staging, on success or failure
 # Paths come from the rendered Compose model; .env is never sourced.
@@ -67,9 +68,27 @@ flock -n 9 || { echo "another backup run holds the lock" >&2; exit 75; }
 
 # Exports are plaintext; never leave them behind, even after a failure or a
 # timeout. The encrypted snapshots hold them once Restic succeeds.
-trap 'find "$staging" -mindepth 1 -delete' EXIT
-
 running() { [[ "$(docker inspect -f '{{.State.Running}}' "$1" 2>/dev/null)" == true ]]; }
+# A failed weed shell command may still exit 0, so its output is checked too.
+# Ports are the Compose defaults (SEAWEEDFS_MASTER_HTTP_PORT, _FILER_HTTP_PORT).
+seaweed_shell() {
+    local out
+    out="$(docker exec -i seaweedfs-master /bin/sh /opt/hyhome/hyhome-seaweedfs.sh shell \
+        -master=localhost:9333 -filer=seaweedfs-filer:8888 2>&1)" || { printf '%s\n' "$out" >&2; return 1; }
+    if grep -qiE 'error|fail' <<<"$out"; then
+        printf '%s\n' "$out" >&2
+        return 1
+    fi
+}
+seaweed_vacuum_paused=false
+cleanup() {
+    if [[ "$seaweed_vacuum_paused" == true ]]; then
+        printf 'lock\nvolume.vacuum.enable\nunlock\n' | seaweed_shell >/dev/null ||
+            echo "SeaweedFS vacuum could not be re-enabled; run volume.vacuum.enable" >&2
+    fi
+    find "$staging" -mindepth 1 -delete
+}
+trap cleanup EXIT
 
 status=0
 if running mng-pg; then
@@ -93,6 +112,36 @@ else
 fi
 
 "${compose[@]}" run --rm --no-deps backup-sqlite-export || status=1
+
+# SeaweedFS: needles are append-only, so filer metadata saved before Restic
+# reads the volume files refers to bytes the snapshot contains, except objects
+# overwritten or deleted inside the Restic window (RUN-0024). Vacuum, which
+# rewrites .dat files, stays off until the EXIT trap; a SIGKILLed run leaves it
+# off until volume.vacuum.enable or a master restart.
+if running seaweedfs-master && running seaweedfs-filer; then
+    # A leftover export from a killed run must never pass as this run's.
+    docker exec seaweedfs-master rm -f /tmp/filer.meta || status=1
+    if printf 'lock\nvolume.vacuum.disable\nunlock\n' | seaweed_shell; then
+        seaweed_vacuum_paused=true
+        if printf 'fs.meta.save -o /tmp/filer.meta /\n' | seaweed_shell &&
+            docker exec seaweedfs-master sh -c 'test -s /tmp/filer.meta && cat /tmp/filer.meta' \
+                >"$staging/seaweedfs-filer.meta" && [[ -s "$staging/seaweedfs-filer.meta" ]]; then
+            :
+        else
+            echo "SeaweedFS filer metadata export failed" >&2
+            status=1
+        fi
+        docker exec seaweedfs-master rm -f /tmp/filer.meta || true
+    else
+        echo "SeaweedFS vacuum could not be paused; metadata export skipped" >&2
+        status=1
+    fi
+elif running seaweedfs-master || running seaweedfs-filer; then
+    echo "SeaweedFS is partly running: filer metadata export skipped" >&2
+    status=1
+else
+    echo "SeaweedFS not running: filer metadata export skipped"
+fi
 
 # Size budget, measured after pgBackRest has expired old backups. Above it the
 # Restic step adds nothing; deleting snapshots stays a separate approval.

@@ -1618,10 +1618,16 @@ class BackupContractTests(unittest.TestCase):
             "workflow/airflow/logs",
             "workflow/airflow/airflow-valkey",
         )
-        for rel in allowed:
+        # SeaweedFS needle and master trees are read live on purpose: needles
+        # are append-only and the filer metadata export is taken first (S06).
+        # The live filer store is never copied.
+        seaweedfs = {"data/seaweedfs/volume", "data/seaweedfs/master"}
+        self.assertLessEqual(seaweedfs, set(allowed))
+        for rel in set(allowed) - seaweedfs:
             self.assertFalse(
                 any(rel == x.rstrip("/") or rel.startswith(x) for x in live), rel
             )
+        self.assertFalse(any(rel.startswith("data/seaweedfs/filer") for rel in allowed))
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         self.assertIn("--files-from-verbatim", script)
 
@@ -1656,7 +1662,11 @@ class BackupContractTests(unittest.TestCase):
             "workflow/airflow\n",
             (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(),
         )
-        self.assertIn("trap 'find \"$staging\" -mindepth 1 -delete' EXIT", script)
+        cleanup = script[
+            script.index("cleanup() {") : script.index("trap cleanup EXIT")
+        ]
+        self.assertIn('find "$staging" -mindepth 1 -delete', cleanup)
+        self.assertIn("volume.vacuum.enable", cleanup)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
         )
@@ -2014,6 +2024,625 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         self.assertIn("wrong password", wrong.stderr)
 
 
+SEAWEEDFS_DIR = "infra/04-data/lake-and-object/seaweedfs"
+SEAWEEDFS_SERVICES = (
+    "seaweedfs-master",
+    "seaweedfs-volume",
+    "seaweedfs-filer",
+    "seaweedfs-s3",
+)
+
+
+class SeaweedfsContractTests(unittest.TestCase):
+    """Static S06 contracts; SeaweedfsRehearsalTests proves them at runtime."""
+
+    def services(self) -> dict[str, dict]:
+        import yaml
+
+        path = ROOT / SEAWEEDFS_DIR / "docker-compose.yml"
+        return yaml.safe_load(path.read_text(encoding="utf-8"))["services"]
+
+    def test_every_component_starts_through_the_security_script(self) -> None:
+        for name, service in self.services().items():
+            self.assertEqual("1000:1000", service["user"], name)
+            self.assertEqual(
+                ["/bin/sh", "/opt/hyhome/hyhome-seaweedfs.sh"],
+                service["entrypoint"],
+                name,
+            )
+            self.assertIn("seaweedfs_jwt_filer_key", service["secrets"], name)
+
+    def test_state_is_persistent_and_only_s3_is_routed(self) -> None:
+        services = self.services()
+        commands = {
+            name: " ".join(service["command"]) for name, service in services.items()
+        }
+        self.assertIn("-mdir=/data", commands["seaweedfs-master"])
+        self.assertIn("-dir=/data", commands["seaweedfs-volume"])
+        for name in ("seaweedfs-master", "seaweedfs-volume", "seaweedfs-filer"):
+            self.assertTrue(
+                any(str(v).endswith(":/data:rw") for v in services[name]["volumes"]),
+                name,
+            )
+            self.assertNotIn("traefik.enable=true", _labels(services[name]), name)
+            # The master issues write JWTs and deletes collections for any
+            # caller, so these three are reachable only on the internal network.
+            self.assertEqual(
+                {"seaweed_internal"}, set(services[name]["networks"]), name
+            )
+            self.assertEqual("/etc/seaweedfs", services[name]["working_dir"], name)
+        for flag in ("-port.iceberg=0", "-port.lance=0", "-iam=false"):
+            self.assertIn(flag, commands["seaweedfs-s3"])
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_SEAWEEDFS_REHEARSAL") == "1",
+    "set HYHOME_SEAWEEDFS_REHEARSAL=1 to run the disposable SeaweedFS rehearsal (needs Docker)",
+)
+class SeaweedfsRehearsalTests(unittest.TestCase):
+    """The rendered SeaweedFS services on disposable data (SPEC-0180 S06).
+
+    The real Compose model is rendered, then only its container names, networks
+    (two internal ones), volume and secret sources are moved under a temporary
+    directory; commands, images, users, mounts of the start script and health
+    checks are the ones HOME uses. Tests run in name order.
+    """
+
+    AWS_IMAGE = "amazon/aws-cli:2.36.50"
+    PROBE_IMAGE = "python:3.13.15-alpine"
+    ACCESS = "rehearsaladmin"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tag = f"hysw{os.getpid()}"
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.tmp.cleanup)
+        cls.dir = Path(cls.tmp.name)
+        cls.secret_key = "Rehearsal" + os.urandom(6).hex()
+        for sub in (
+            "data/seaweedfs/master",
+            "data/seaweedfs/volume",
+            "data/seaweedfs/filer",
+            "io",
+            "backup",
+        ):
+            (cls.dir / sub).mkdir(parents=True)
+        (cls.dir / "io").chmod(0o777)
+        subprocess.run(
+            [
+                "bash",
+                str(ROOT / SEAWEEDFS_DIR / "bin/gen-grpc-certs.sh"),
+                str(cls.dir / "certs/seaweedfs"),
+            ],
+            check=True,
+            capture_output=True,
+            env={**os.environ, "SECRETS_GID": str(os.getgid())},
+        )
+        secrets = {
+            "seaweedfs_jwt_volume_key": "Volume" + os.urandom(6).hex(),
+            "seaweedfs_jwt_filer_key": "Filer" + os.urandom(6).hex(),
+            "seaweedfs_s3_admin_secret_key": cls.secret_key,
+        }
+        for name, value in secrets.items():
+            path = cls.dir / f"{name}.txt"
+            path.write_text(value + "\n", encoding="utf-8")
+            path.chmod(0o600)
+        env = {
+            **os.environ,
+            "DEFAULT_DATA_DIR": str(cls.dir / "data"),
+            "DEFAULT_CERT_DIR": str(cls.dir / "certs"),
+            "SEAWEEDFS_S3_ADMIN_ACCESS_KEY": cls.ACCESS,
+        }
+        rendered = json.loads(
+            subprocess.run(
+                [
+                    "docker",
+                    "compose",
+                    "--env-file",
+                    ".env.example",
+                    "--profile",
+                    "seaweedfs",
+                    "config",
+                    "--format",
+                    "json",
+                    *SEAWEEDFS_SERVICES,
+                ],
+                cwd=ROOT,
+                env=env,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout
+        )
+        services = {name: rendered["services"][name] for name in SEAWEEDFS_SERVICES}
+        for name, service in services.items():
+            service["container_name"] = f"{cls.tag}-{name}"
+            service["labels"] = {
+                k: v
+                for k, v in service.get("labels", {}).items()
+                if not k.startswith("traefik.")
+            }
+            service["networks"] = (
+                {"sw": {}, "client": {}} if name == "seaweedfs-s3" else {"sw": {}}
+            )
+            service.pop("ports", None)
+            service.pop("profiles", None)
+        volumes = rendered["volumes"]
+        for volume in volumes.values():
+            volume.pop("name", None)
+        cls.model = {
+            "name": cls.tag,
+            "services": services,
+            "networks": {"sw": {"internal": True}, "client": {"internal": True}},
+            "volumes": {
+                name: volumes[name]
+                for name in (
+                    "seaweedfs-master-data",
+                    "seaweedfs-volume-data",
+                    "seaweedfs-filer-data",
+                )
+            },
+            "secrets": {
+                name: {"file": str(cls.dir / f"{name}.txt")} for name in secrets
+            },
+        }
+        (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
+        cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
+        cls.up()
+
+    @classmethod
+    def compose(
+        cls, *args: str, check: bool = False
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                "docker",
+                "compose",
+                "-p",
+                cls.tag,
+                "-f",
+                str(cls.dir / "compose.json"),
+                *args,
+            ],
+            check=check,
+            capture_output=True,
+            text=True,
+        )
+
+    @classmethod
+    def up(cls) -> None:
+        result = cls.compose("up", "-d", "--wait", "--wait-timeout", "180")
+        if result.returncode != 0:
+            logs = cls.compose("logs", "--no-color", "--tail", "40").stdout
+            raise AssertionError(result.stderr + logs)
+
+    def aws(
+        self, *args: str, secret: str | None = None
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--network",
+                f"{self.tag}_client",
+                "-e",
+                f"AWS_ACCESS_KEY_ID={self.ACCESS}",
+                "-e",
+                f"AWS_SECRET_ACCESS_KEY={secret or self.secret_key}",
+                "-e",
+                "AWS_DEFAULT_REGION=us-east-1",
+                "-e",
+                "AWS_EC2_METADATA_DISABLED=true",
+                "-v",
+                f"{self.dir / 'io'}:/io",
+                self.AWS_IMAGE,
+                "--endpoint-url",
+                "http://seaweedfs-s3:8333",
+                *args,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    def probe(self, network: str, code: str) -> str:
+        return subprocess.run(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--network",
+                f"{self.tag}_{network}",
+                self.PROBE_IMAGE,
+                "python3",
+                "-c",
+                code,
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+
+    def shell(self, commands: str) -> str:
+        out = subprocess.run(
+            [
+                "docker",
+                "exec",
+                "-i",
+                f"{self.tag}-seaweedfs-master",
+                "/bin/sh",
+                "/opt/hyhome/hyhome-seaweedfs.sh",
+                "shell",
+                "-master=localhost:9333",
+                "-filer=seaweedfs-filer:8888",
+            ],
+            input=commands,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        text = out.stdout + out.stderr
+        # hyhome-backup.sh also treats this text as failure.
+        self.assertNotRegex(text.lower(), r"error|fail", commands)
+        return text
+
+    STATUS = (
+        "import urllib.request as u, urllib.error as e\n"
+        "def status(method, url, data=None):\n"
+        "    try:\n"
+        "        return u.urlopen(u.Request(url, data=data, method=method), timeout=10).status\n"
+        "    except e.HTTPError as err:\n"
+        "        return err.code\n"
+    )
+
+    def test_1_anonymous_and_wrong_credentials_are_refused(self) -> None:
+        codes = self.probe(
+            "client",
+            self.STATUS + "print(status('PUT', 'http://seaweedfs-s3:8333/anon'),"
+            " status('GET', 'http://seaweedfs-s3:8333/'))",
+        )
+        self.assertEqual("403 403", codes)
+        wrong = self.aws("s3api", "list-buckets", secret="wrong" + self.secret_key)
+        self.assertNotEqual(0, wrong.returncode)
+        self.assertIn("SignatureDoesNotMatch", wrong.stderr)
+
+    def test_2_filer_and_volume_http_need_a_jwt(self) -> None:
+        codes = self.probe(
+            "sw",
+            self.STATUS + "import json\n"
+            "fid = json.load(u.urlopen('http://seaweedfs-master:9333/dir/assign', timeout=10))\n"
+            "print(status('GET', 'http://seaweedfs-filer:8888/'),"
+            " status('PUT', 'http://seaweedfs-filer:8888/x', b'x'),"
+            " status('POST', 'http://' + fid['url'] + '/' + fid['fid'], b'x'))",
+        )
+        self.assertEqual("401 401 401", codes)
+
+    def test_2_grpc_requires_a_client_certificate(self) -> None:
+        # A TLS server that demands a client certificate fails the handshake
+        # with an alert; a plaintext listener would fail with a version error.
+        result = self.probe(
+            "sw",
+            "import socket, ssl\n"
+            "ctx = ssl.create_default_context()\n"
+            "ctx.check_hostname = False\n"
+            "ctx.verify_mode = ssl.CERT_NONE\n"
+            "out = []\n"
+            "for host, port in (('seaweedfs-master', 19333), ('seaweedfs-filer', 18888), ('seaweedfs-volume', 18085), ('seaweedfs-s3', 18333)):\n"
+            "    try:\n"
+            "        with ctx.wrap_socket(socket.create_connection((host, port), timeout=10)) as tls:\n"
+            "            tls.send(b'PRI * HTTP/2.0\\r\\n\\r\\nSM\\r\\n\\r\\n')\n"
+            "            tls.recv(1)\n"
+            "        out.append('accepted')\n"
+            "    except ssl.SSLError as err:\n"
+            "        out.append(str(err.reason))\n"
+            "    except OSError as err:\n"
+            "        out.append(type(err).__name__)\n"
+            "print(' '.join(out))",
+        )
+        self.assertEqual(
+            ["TLSV13_ALERT_CERTIFICATE_REQUIRED"] * 4, result.split(), result
+        )
+        # S3 clients cannot resolve or reach the master, volume or filer.
+        reach = self.probe(
+            "client",
+            "import socket\n"
+            "out = []\n"
+            "for host in ('seaweedfs-master', 'seaweedfs-volume', 'seaweedfs-filer'):\n"
+            "    try:\n"
+            "        socket.create_connection((host, 9333), timeout=5).close()\n"
+            "        out.append('reached')\n"
+            "    except OSError:\n"
+            "        out.append('unreachable')\n"
+            "print(' '.join(out))",
+        )
+        self.assertEqual("unreachable unreachable unreachable", reach)
+        # A failed shell command must be visible to hyhome-backup.sh through
+        # the exit status or error text (it checks both).
+        failed = subprocess.run(
+            [
+                "docker",
+                "exec",
+                "-i",
+                f"{self.tag}-seaweedfs-master",
+                "/bin/sh",
+                "/opt/hyhome/hyhome-seaweedfs.sh",
+                "shell",
+                "-master=localhost:9333",
+                "-filer=seaweedfs-filer:8888",
+            ],
+            input="fs.meta.load /nonexistent.meta\n",
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertTrue(
+            failed.returncode != 0
+            or re.search(r"error|fail", (failed.stdout + failed.stderr).lower()),
+            failed,
+        )
+
+    def test_3_s3_api_used_by_consumers(self) -> None:
+        io = self.dir / "io"
+        (io / "small.txt").write_bytes(b"0123456789hello")
+        (io / "big.bin").write_bytes(os.urandom(20 * 1024 * 1024))
+        self.assertEqual(
+            0, self.aws("s3api", "create-bucket", "--bucket", "rehearsal").returncode
+        )
+        put = self.aws(
+            "s3api",
+            "put-object",
+            "--bucket",
+            "rehearsal",
+            "--key",
+            "dir/space name+plus.txt",
+            "--body",
+            "/io/small.txt",
+            "--content-type",
+            "text/plain",
+            "--metadata",
+            "owner=s06",
+            "--tagging",
+            "tier=test",
+        )
+        self.assertEqual(0, put.returncode, put.stderr)
+        head = json.loads(
+            self.aws(
+                "s3api",
+                "head-object",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "dir/space name+plus.txt",
+            ).stdout
+        )
+        self.assertEqual("text/plain", head["ContentType"])
+        self.assertEqual({"owner": "s06"}, head["Metadata"])
+        tags = json.loads(
+            self.aws(
+                "s3api",
+                "get-object-tagging",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "dir/space name+plus.txt",
+            ).stdout
+        )
+        self.assertEqual([{"Key": "tier", "Value": "test"}], tags["TagSet"])
+        ranged = self.aws(
+            "s3api",
+            "get-object",
+            "--bucket",
+            "rehearsal",
+            "--key",
+            "dir/space name+plus.txt",
+            "--range",
+            "bytes=10-14",
+            "/io/range.out",
+        )
+        self.assertEqual(0, ranged.returncode, ranged.stderr)
+        self.assertEqual(b"hello", (io / "range.out").read_bytes())
+        big = self.aws("s3", "cp", "/io/big.bin", "s3://rehearsal/big.bin")
+        self.assertEqual(0, big.returncode, big.stderr)
+        etag = json.loads(
+            self.aws(
+                "s3api", "head-object", "--bucket", "rehearsal", "--key", "big.bin"
+            ).stdout
+        )["ETag"]
+        self.assertRegex(etag, r'-\d+"$')  # multipart ETag, not an MD5
+        self.assertEqual(
+            0, self.aws("s3", "cp", "s3://rehearsal/big.bin", "/io/big.out").returncode
+        )
+        self.assertEqual((io / "big.bin").read_bytes(), (io / "big.out").read_bytes())
+        listing = json.loads(
+            self.aws(
+                "s3api", "list-objects-v2", "--bucket", "rehearsal", "--prefix", "dir/"
+            ).stdout
+        )
+        self.assertEqual(
+            ["dir/space name+plus.txt"], [item["Key"] for item in listing["Contents"]]
+        )
+        url = self.aws(
+            "s3",
+            "presign",
+            "s3://rehearsal/dir/space name+plus.txt",
+            "--expires-in",
+            "300",
+        ).stdout.strip()
+        body = self.probe(
+            "client",
+            f"import urllib.request as u; print(u.urlopen({url!r}, timeout=10).read().decode())",
+        )
+        self.assertEqual("0123456789hello", body)
+        # A key that is also another key's prefix: record what the store does.
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3api",
+                "put-object",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "a",
+                "--body",
+                "/io/small.txt",
+            ).returncode,
+        )
+        nested = self.aws(
+            "s3api",
+            "put-object",
+            "--bucket",
+            "rehearsal",
+            "--key",
+            "a/b",
+            "--body",
+            "/io/small.txt",
+        )
+        self.assertEqual(0, nested.returncode, nested.stderr)
+        # Both keys stay readable with their own bytes (SeaweedFS keeps `a` as a
+        # file entry and `a/` as a directory entry).
+        (io / "small2.txt").write_bytes(b"nested")
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3api",
+                "put-object",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "a/b",
+                "--body",
+                "/io/small2.txt",
+            ).returncode,
+        )
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3api",
+                "get-object",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "a/b",
+                "/io/ab.out",
+            ).returncode,
+        )
+        self.assertEqual(b"nested", (io / "ab.out").read_bytes())
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3api",
+                "get-object",
+                "--bucket",
+                "rehearsal",
+                "--key",
+                "a",
+                "/io/a.out",
+            ).returncode,
+        )
+        self.assertEqual(b"0123456789hello", (io / "a.out").read_bytes())
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3api", "delete-object", "--bucket", "rehearsal", "--key", "a"
+            ).returncode,
+        )
+        gone = self.aws("s3api", "head-object", "--bucket", "rehearsal", "--key", "a")
+        self.assertNotEqual(0, gone.returncode)
+
+    def test_4_restart_keeps_objects(self) -> None:
+        data = self.dir / "data/seaweedfs"
+        self.assertTrue(
+            list((data / "volume").glob("*.dat")), "needles are not on the volume bind"
+        )
+        self.assertTrue(
+            (data / "filer/filerldb2").is_dir(), "filer store is not on its bind"
+        )
+        self.assertTrue(
+            any((data / "master").iterdir()), "master state is not on its bind"
+        )
+        # With the volume server down a read fails instead of returning bytes.
+        self.compose("stop", "--timeout", "10", "seaweedfs-volume", check=True)
+        down = self.aws("s3", "cp", "s3://rehearsal/big.bin", "/io/while-down.out")
+        self.assertNotEqual(0, down.returncode)
+        self.compose("stop", "--timeout", "10", check=True)
+        self.up()
+        self.assertEqual(
+            0,
+            self.aws(
+                "s3", "cp", "s3://rehearsal/big.bin", "/io/after-restart.out"
+            ).returncode,
+        )
+        self.assertEqual(
+            (self.dir / "io/big.bin").read_bytes(),
+            (self.dir / "io/after-restart.out").read_bytes(),
+        )
+
+    def test_5_backup_set_restores_into_empty_stores(self) -> None:
+        import shutil
+
+        # The orchestrator's order: pause vacuum, save filer metadata, then copy
+        # the volume and master trees while the servers run.
+        self.shell("lock\nvolume.vacuum.disable\nunlock\n")
+        self.shell("fs.meta.save -o /tmp/filer.meta /\n")
+        meta = subprocess.run(
+            [
+                "docker",
+                "exec",
+                f"{self.tag}-seaweedfs-master",
+                "cat",
+                "/tmp/filer.meta",
+            ],
+            check=True,
+            capture_output=True,
+        ).stdout
+        self.assertGreater(len(meta), 0)
+        backup = self.dir / "backup"
+        (backup / "filer.meta").write_bytes(meta)
+        data = self.dir / "data/seaweedfs"
+        for sub in ("volume", "master"):
+            shutil.copytree(data / sub, backup / sub)
+        self.compose("down", "--timeout", "10", check=True)
+        for sub in ("volume", "master", "filer"):
+            shutil.rmtree(data / sub)
+        shutil.copytree(backup / "volume", data / "volume")
+        shutil.copytree(backup / "master", data / "master")
+        (data / "filer").mkdir()
+        self.up()
+        subprocess.run(
+            [
+                "docker",
+                "cp",
+                str(backup / "filer.meta"),
+                f"{self.tag}-seaweedfs-master:/tmp/restore.meta",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        self.shell("fs.meta.load /tmp/restore.meta\n")
+        restored = self.aws("s3", "cp", "s3://rehearsal/big.bin", "/io/restored.out")
+        self.assertEqual(0, restored.returncode, restored.stderr)
+        self.assertEqual(
+            (self.dir / "io/big.bin").read_bytes(),
+            (self.dir / "io/restored.out").read_bytes(),
+        )
+        self.compose("restart", "--timeout", "10", check=True)
+        self.up()
+        small = self.aws(
+            "s3api",
+            "get-object",
+            "--bucket",
+            "rehearsal",
+            "--key",
+            "dir/space name+plus.txt",
+            "/io/restored-small.out",
+        )
+        self.assertEqual(0, small.returncode, small.stderr)
+        self.assertEqual(
+            b"0123456789hello", (self.dir / "io/restored-small.out").read_bytes()
+        )
+
+
 def _labels(service: dict) -> set[str]:
     labels = service.get("labels") or {}
     if isinstance(labels, dict):
@@ -2074,9 +2703,9 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         self.assertEqual(
             {"keycloak.${DEFAULT_URL}", "auth.${DEFAULT_URL}"}, set(edge["aliases"])
         )
-        oauth2 = (ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg").read_text(
-            encoding="utf-8"
-        )
+        oauth2 = (
+            ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg"
+        ).read_text(encoding="utf-8")
         self.assertRegex(oauth2, r'trusted_proxy_ips = \[[^]]*"10\.250\.1\.2/32"')
         airflow = self._services()["airflow-apiserver"]["environment"]
         self.assertIn("10.250.1.2", airflow["FORWARDED_ALLOW_IPS"].split(","))
