@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -90,7 +90,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |
 | `sast` | role | 소스 정적 분석 | `sonarqube` | No | normal service startup | current |
 | `seaweedfs` | capability | 분산 파일·S3 호환 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3` | No | normal service startup | current |
-| `seaweedfs-mount` | capability | FUSE host mount와 필수 서버; host 부작용 있음 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-mount` | No | host FUSE mount | current |
 | `secrets` | role | OpenBao secret 관리·Agent | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `starrocks` | capability | 분석용 warehouse | `starrocks-fe`, `starrocks-be` | No | normal service startup | current |
@@ -151,7 +150,6 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | messaging-cluster | 현재 선언이 kafka-1도 포함; quorum·지속성 검증은 별도이며 물리 HA가 아님 |
 | opensearch with opensearch-cluster | 대체 토폴로지; 기본 port 충돌을 피하고 dashboards endpoint를 일치시킴 |
 | storage-cluster with storage/logs | 서로 다른 object store; endpoint·data migration 없이 교체 불가 |
-| seaweedfs-mount | master·volume·filer 폐포 포함; FUSE host mount 권한과 해제 계획 확인 |
 | legacy-vault with HOME | 정상 HOME에서 제외; 보존된 상태의 migration 승인 후에만 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |

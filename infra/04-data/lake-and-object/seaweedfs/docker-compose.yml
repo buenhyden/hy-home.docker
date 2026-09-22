@@ -8,7 +8,6 @@ volumes:
 services:
   seaweedfs-master:
     profiles:
-      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
       # - storage
@@ -47,7 +46,6 @@ services:
 
   seaweedfs-volume:
     profiles:
-      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
       # - storage
@@ -83,7 +81,6 @@ services:
 
   seaweedfs-filer:
     profiles:
-      - seaweedfs-mount
       - seaweedfs
       - storage-seaweedfs
       # - storage
@@ -159,26 +156,3 @@ services:
       timeout: 15s
       retries: 5
       start_period: 15s
-
-  seaweedfs-mount:
-    profiles:
-      - seaweedfs-mount
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-host-observer-med
-    image: chrislusf/seaweedfs:4.47
-    container_name: seaweedfs-mount
-    privileged: true
-    cap_add:
-      - SYS_ADMIN
-    command: '-v=4 mount -filer="seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}" -dirAutoCreate -dir=/mnt/seaweedfs -cacheCapacityMB=100 -concurrentWriters=128'
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.144
-    depends_on:
-      seaweedfs-master:
-        condition: service_healthy
-      seaweedfs-volume:
-        condition: service_healthy
-      seaweedfs-filer:
-        condition: service_healthy

@@ -329,6 +329,24 @@ is baked into the image and applies at the next `mng-pg` rebuild.
 `pre-commit` 4.6.1 was installed in a user venv on the owner's approval, so the
 local changed gate now runs completely (exit 0).
 
+### S04 — `infra/04-data` structure
+
+The S01 move table keeps every existing tier folder; S04 therefore carries out
+its only source decomposition now. Removals that depend on later acceptance
+stay with their stage: MinIO after S07, ksqlDB and StarRocks after S19.
+`lakehouse/` and `analytics/superset/` are created by S12 and S16, not as empty
+placeholders now. Moving InfluxDB and OpenSearch to `specialized/` and the
+NoSQL, PostgreSQL and Valkey labs under a new `lab/` folder was considered and
+rejected: S01 ruled them unchanged, and the moves would touch 115 referencing
+files for no functional change.
+
+| Unit | Change | Semantics before → after |
+| --- | --- | --- |
+| `seaweedfs-mount` removal | service and `seaweedfs-mount` profile removed from the SeaweedFS Compose; package README, GDE/POL/RUN-0024, POL-0078 (two rows), 04-data README and the m0021 generated inventory updated | privileged `SYS_ADMIN` FUSE service with no consumer and no data → none; master/volume/filer/S3, their two volumes, ports and profiles `seaweedfs`/`storage-seaweedfs` unchanged; no container existed, so no live change |
+
+The m0021 lifecycle ledger and its prose are dated Stage 90 judgments and keep
+their original wording; the generated inventory is the current view.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -344,6 +362,8 @@ local changed gate now runs completely (exit 0).
 | S03 live switch | Task 10 / S03 | PASS: `mng-pg` on the pgBackRest image, stanza, full and diff backups, WAL archive | RUN-0021 steps 1–3 |
 | S03 live restore | Task 10 / S03 | PASS (files): `.env` hash and Grafana export verified from live snapshots; PostgreSQL PITR on HOME data NOT_RUN (synthetic rehearsal only) | RUN-0021 steps 5–6 |
 | S03 timer | Task 10 / S03 | PENDING: owner runs the sudo install | RUN-0021 step 3 |
+| S04 structure | Task 10 / S04 | PASS: `seaweedfs-mount` removed; `seaweedfs` renders master/volume/filer/S3, `seaweedfs-mount` renders nothing; no remaining current reference | this Task |
+| S04 accumulated gates | Task 10 / S04 | PASS: Compose 71 selections/314 services, operations catalog, projection (89 repositories), links (942 documents, 0 failures), `git diff --check`; 623 unit tests with 2 local-only failures (group-write bit on two entrypoint scripts from this worktree's umask 002, not tracked by Git; CI unaffected) | this Task |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -353,6 +373,14 @@ Pending: sequential review after each implemented stage.
 ## Commit Ledger
 
 Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
+
+| PR | Scope | State |
+| --- | --- | --- |
+| #191 | S00–S03 | merged |
+| #192 | pre-commit repair, pgBackRest `archive-push` log level | merged |
+| #193 | backup size measurement through a read-only container | merged |
+| #194 | S03 live activation evidence | merged |
+| this PR | S04 `seaweedfs-mount` removal | open |
 
 ## Rulings
 

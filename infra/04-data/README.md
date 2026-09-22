@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-22"
 created: "2025-11-12"
 ---
 
@@ -35,7 +35,7 @@ documented operating boundaries.
 | [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
 | [`lake-and-object/minio`](lake-and-object/minio/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`; `storage-cluster` | HOME single node; LAB four nodes | Current Loki/Tempo and object buckets; preserve data while lifecycle migration is evaluated |
 | [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
-| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `seaweedfs`, `storage-seaweedfs`, `seaweedfs-mount` | OPTIONAL | Named filer/S3 experiment; privileged FUSE is separate; no automatic MinIO replacement |
+| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `seaweedfs`, `storage-seaweedfs` | OPTIONAL | Named filer/S3 experiment; no privileged FUSE mount (removed, SPEC-0180 S04); no automatic MinIO replacement |
 | [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
 | [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
 | [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |
