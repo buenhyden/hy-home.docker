@@ -1525,7 +1525,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
 
 
-
 RESTIC_COMPOSE = "infra/09-tooling/restic/docker-compose.yml"
 PGBACKREST_DIR = "infra/04-data/operational/mng-db/pg/backup"
 RESTIC_DIR = "infra/09-tooling/restic"
@@ -1544,11 +1543,14 @@ class BackupContractTests(unittest.TestCase):
         self.assertEqual("./pg/backup", service["build"]["context"])
         command = _compose_command(service)
         self.assertIn("archive_mode=on", command)
-        self.assertIn("archive_command=pgbackrest --stanza=mng archive-push %p", command)
+        self.assertIn(
+            "archive_command=pgbackrest --stanza=mng archive-push %p", command
+        )
         repo = [
             volume
             for volume in service["volumes"]
-            if isinstance(volume, dict) and volume.get("target") == "/var/lib/pgbackrest"
+            if isinstance(volume, dict)
+            and volume.get("target") == "/var/lib/pgbackrest"
         ]
         self.assertEqual(1, len(repo))
         self.assertIn("BACKUP_STATE_REPO_DIR", repo[0]["source"])
@@ -1556,12 +1558,18 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("pgbackrest_cipher_pass", service["secrets"])
         environment = service["environment"]
         self.assertFalse(any("CIPHER" in key for key in environment))
-        self.assertTrue(environment["PGBACKREST_CONFIG_INCLUDE_PATH"].startswith("/tmp/"))
+        self.assertTrue(
+            environment["PGBACKREST_CONFIG_INCLUDE_PATH"].startswith("/tmp/")
+        )
 
     def test_pgbackrest_image_pins_package_and_restores_default_umask(self) -> None:
         dockerfile = (ROOT / PGBACKREST_DIR / "Dockerfile").read_text(encoding="utf-8")
-        self.assertRegex(dockerfile, r"apk add --no-cache pgbackrest=\d+\.\d+\.\d+-r\d+")
-        entrypoint = (ROOT / PGBACKREST_DIR / "entrypoint.sh").read_text(encoding="utf-8")
+        self.assertRegex(
+            dockerfile, r"apk add --no-cache pgbackrest=\d+\.\d+\.\d+-r\d+"
+        )
+        entrypoint = (ROOT / PGBACKREST_DIR / "entrypoint.sh").read_text(
+            encoding="utf-8"
+        )
         # umask 077 leaking into the official entrypoint left PGDATA's parent
         # untraversable for the postgres user (rehearsal, 2026-09-22).
         before_exec = entrypoint.split("exec docker-entrypoint.sh")[0]
@@ -1589,16 +1597,31 @@ class BackupContractTests(unittest.TestCase):
                 self.assertIs(True, volume.get("read_only"), volume["target"])
 
     def test_restic_state_set_is_an_allowlist_without_live_engines(self) -> None:
-        lines = (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(encoding="utf-8")
-        allowed = [line for line in lines.splitlines() if line and not line.startswith("#")]
+        lines = (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(
+            encoding="utf-8"
+        )
+        allowed = [
+            line for line in lines.splitlines() if line and not line.startswith("#")
+        ]
         self.assertTrue(allowed)
         for rel in allowed:
             self.assertFalse(rel.startswith("/") or ".." in rel, rel)
-        live = ("management/pg", "management/valkey", "security/openbao", "obs/",
-                "message_broker", "data/", "ai/ollama", "ai/comfyui/models",
-                "workflow/airflow/logs", "workflow/airflow/airflow-valkey")
+        live = (
+            "management/pg",
+            "management/valkey",
+            "security/openbao",
+            "obs/",
+            "message_broker",
+            "data/",
+            "ai/ollama",
+            "ai/comfyui/models",
+            "workflow/airflow/logs",
+            "workflow/airflow/airflow-valkey",
+        )
         for rel in allowed:
-            self.assertFalse(any(rel == x.rstrip("/") or rel.startswith(x) for x in live), rel)
+            self.assertFalse(
+                any(rel == x.rstrip("/") or rel.startswith(x) for x in live), rel
+            )
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         self.assertIn("--files-from-verbatim", script)
 
@@ -1612,16 +1635,29 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("forget | prune)", passthrough)
 
     def test_orchestrator_never_sources_env_and_checks_disk_separation(self) -> None:
-        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(encoding="utf-8")
+        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
+            encoding="utf-8"
+        )
         self.assertNotRegex(script, r"(^|\s)(source|\.)\s+\S*\.env")
         self.assertIn("flock -n 9", script)
         self.assertIn('device_of "$state_repo"', script)
         self.assertIn('device_of "$host_repo"', script)
         self.assertIn("over the ${max_gib} GiB budget; Restic backup skipped", script)
         # The budget check follows pgBackRest (whose expire shrinks the repository).
-        self.assertLess(script.index("pgbackrest --stanza=mng"), script.index("state_kib="))
+        self.assertLess(
+            script.index("pgbackrest --stanza=mng"), script.index("state_kib=")
+        )
         self.assertIn("is inside backed-up source", script)
-        self.assertNotIn("workflow/airflow\n", (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text())
+        # pgbackrest/ is 0750 for UID 70; the host user cannot measure it (live
+        # finding, 2026-09-22), so its size comes from inside mng-pg.
+        self.assertIn(
+            "docker exec -u postgres mng-pg du -sk /var/lib/pgbackrest", script
+        )
+        self.assertIn("--exclude=pgbackrest", script)
+        self.assertNotIn(
+            "workflow/airflow\n",
+            (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(),
+        )
         self.assertIn("trap 'find \"$staging\" -mindepth 1 -delete' EXIT", script)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
@@ -1657,8 +1693,17 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         cls.addClassCleanup(
             subprocess.run,
             [
-                "docker", "run", "--rm", "-v", f"{cls.dir}:/w", "--entrypoint", "chown",
-                cls.RESTIC_IMAGE, "-R", f"{os.getuid()}:{os.getgid()}", "/w",
+                "docker",
+                "run",
+                "--rm",
+                "-v",
+                f"{cls.dir}:/w",
+                "--entrypoint",
+                "chown",
+                cls.RESTIC_IMAGE,
+                "-R",
+                f"{os.getuid()}:{os.getgid()}",
+                "/w",
             ],
             capture_output=True,
         )
@@ -1694,7 +1739,9 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         path.chmod(0o644)
         return path
 
-    def docker(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    def docker(
+        self, *args: str, check: bool = True
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["docker", *args], check=check, capture_output=True, text=True, timeout=600
         )
@@ -1704,24 +1751,47 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
     ) -> None:
         self.addCleanup(self.docker, "rm", "-f", name, check=False)
         self.docker(
-            "run", "-d", "--name", name, "--network", self.tag,
-            "-e", "POSTGRES_USER=admin",
-            "-e", "POSTGRES_PASSWORD_FILE=/run/secrets/pw",
-            "-e", "PGDATA=/var/lib/postgresql/data/pgdata",
-            "-e", "PGBACKREST_PG1_USER=admin",
-            "-e", "PGBACKREST_CONFIG_INCLUDE_PATH=/tmp/pgbackrest/conf.d",
-            "-v", f"{self.dir}/sec/pgbackrest_cipher_pass:/run/secrets/pgbackrest_cipher_pass:ro",
-            "-v", f"{self.dir}/sec/pw:/run/secrets/pw:ro",
-            "-v", f"{data}:/var/lib/postgresql/data",
+            "run",
+            "-d",
+            "--name",
+            name,
+            "--network",
+            self.tag,
+            "-e",
+            "POSTGRES_USER=admin",
+            "-e",
+            "POSTGRES_PASSWORD_FILE=/run/secrets/pw",
+            "-e",
+            "PGDATA=/var/lib/postgresql/data/pgdata",
+            "-e",
+            "PGBACKREST_PG1_USER=admin",
+            "-e",
+            "PGBACKREST_CONFIG_INCLUDE_PATH=/tmp/pgbackrest/conf.d",
+            "-v",
+            f"{self.dir}/sec/pgbackrest_cipher_pass:/run/secrets/pgbackrest_cipher_pass:ro",
+            "-v",
+            f"{self.dir}/sec/pw:/run/secrets/pw:ro",
+            "-v",
+            f"{data}:/var/lib/postgresql/data",
             *extra,
-            self.image, "postgres", *pg_args,
+            self.image,
+            "postgres",
+            *pg_args,
         )
         self.start_server_ready(name)
 
     def start_server_ready(self, name: str) -> None:
         for _ in range(90):
             ready = self.docker(
-                "exec", name, "psql", "-U", "admin", "-d", "postgres", "-Atc", "select 1",
+                "exec",
+                name,
+                "psql",
+                "-U",
+                "admin",
+                "-d",
+                "postgres",
+                "-Atc",
+                "select 1",
                 check=False,
             )
             if ready.returncode == 0:
@@ -1735,7 +1805,9 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         ).stdout.strip()
 
     def pgbackrest(self, name: str, *args: str) -> subprocess.CompletedProcess[str]:
-        return self.docker("exec", "-u", "postgres", name, "pgbackrest", "--stanza=mng", *args)
+        return self.docker(
+            "exec", "-u", "postgres", name, "pgbackrest", "--stanza=mng", *args
+        )
 
     def test_full_diff_and_point_in_time_restore(self) -> None:
         source = self.dir / "src-data"
@@ -1743,17 +1815,25 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         source.chmod(0o755)
         db = f"{self.tag}-db"
         self.start_server(
-            db, source, "-v", f"{self.dir}/repo:/var/lib/pgbackrest",
+            db,
+            source,
+            "-v",
+            f"{self.dir}/repo:/var/lib/pgbackrest",
             pg_args=(
-                "-c", "archive_mode=on",
-                "-c", "archive_command=pgbackrest --stanza=mng archive-push %p",
-                "-c", "archive_timeout=60",
+                "-c",
+                "archive_mode=on",
+                "-c",
+                "archive_command=pgbackrest --stanza=mng archive-push %p",
+                "-c",
+                "archive_timeout=60",
             ),
         )
         self.pgbackrest(db, "stanza-create")
         self.pgbackrest(db, "check")
         self.pgbackrest(db, "--type=full", "backup")
-        self.sql(db, "create table t(id int); insert into t select generate_series(1,100)")
+        self.sql(
+            db, "create table t(id int); insert into t select generate_series(1,100)"
+        )
         self.pgbackrest(db, "--type=diff", "backup")
         self.sql(db, "insert into t select generate_series(101,150)")
         subprocess.run(["sleep", "1"], check=True)
@@ -1768,11 +1848,20 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
 
         restored = self.dir / "restore"
         self.docker(
-            "run", "--rm", "--network", self.tag,
-            "-v", f"{self.dir}/sec/pgbackrest_cipher_pass:/run/secrets/pgbackrest_cipher_pass:ro",
-            "-v", f"{self.dir}/repo:/var/lib/pgbackrest:ro",
-            "-v", f"{restored}:/var/lib/postgresql/data",
-            "--entrypoint", "sh", self.image, "-ec",
+            "run",
+            "--rm",
+            "--network",
+            self.tag,
+            "-v",
+            f"{self.dir}/sec/pgbackrest_cipher_pass:/run/secrets/pgbackrest_cipher_pass:ro",
+            "-v",
+            f"{self.dir}/repo:/var/lib/pgbackrest:ro",
+            "-v",
+            f"{restored}:/var/lib/postgresql/data",
+            "--entrypoint",
+            "sh",
+            self.image,
+            "-ec",
             "mkdir -p /tmp/pgbackrest/conf.d; "
             'printf "[global]\\nrepo1-cipher-pass=%s\\n" "$(cat /run/secrets/pgbackrest_cipher_pass)"'
             " > /tmp/pgbackrest/conf.d/cipher.conf; chown -R postgres /tmp/pgbackrest; "
@@ -1784,23 +1873,39 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         # Recovery runs archive-get, so the restored server needs the image
         # entrypoint, the read-only repository and the cipher secret.
         self.start_server(
-            f"{self.tag}-restored", restored,
-            "-v", f"{self.dir}/repo:/var/lib/pgbackrest:ro",
+            f"{self.tag}-restored",
+            restored,
+            "-v",
+            f"{self.dir}/repo:/var/lib/pgbackrest:ro",
         )
-        self.assertEqual("150|150", self.sql(f"{self.tag}-restored", "select count(*), max(id) from t"))
+        self.assertEqual(
+            "150|150",
+            self.sql(f"{self.tag}-restored", "select count(*), max(id) from t"),
+        )
 
     def test_empty_cipher_secret_fails_before_start(self) -> None:
         empty = self.secret("empty", "  ")
         result = self.docker(
-            "run", "--rm", "-v", f"{empty}:/run/secrets/pgbackrest_cipher_pass:ro",
-            self.image, check=False,
+            "run",
+            "--rm",
+            "-v",
+            f"{empty}:/run/secrets/pgbackrest_cipher_pass:ro",
+            self.image,
+            check=False,
         )
         self.assertEqual(64, result.returncode)
 
     def test_restic_round_trip_excludes_and_guards(self) -> None:
         base = self.dir / "restic"
-        for sub in ("repo-state", "repo-host", "vol/ai/comfyui/input", "vol/management/pg",
-                    "staging", "secrets", "out"):
+        for sub in (
+            "repo-state",
+            "repo-host",
+            "vol/ai/comfyui/input",
+            "vol/management/pg",
+            "staging",
+            "secrets",
+            "out",
+        ):
             (base / sub).mkdir(parents=True)
         (base / "out").chmod(0o777)
         (base / "vol/ai/comfyui/input/a.txt").write_text("payload", encoding="utf-8")
@@ -1813,22 +1918,50 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
 
         def run(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
             return self.docker(
-                "run", "--rm", "-u", "0:0", "--cap-drop", "ALL", "--cap-add", "DAC_OVERRIDE",
-                "--security-opt", "no-new-privileges:true", "--read-only", "--tmpfs", "/tmp",
-                "--network", "none",
-                "-e", "RESTIC_PASSWORD_FILE=/run/secrets/restic_password",
-                "-e", "RESTIC_CACHE_DIR=/tmp/c",
-                "-v", f"{base}/pw:/run/secrets/restic_password:ro",
-                "-v", f"{restic_dir}/backup.sh:/opt/hyhome/backup.sh:ro",
-                "-v", f"{restic_dir}/sets:/opt/hyhome/sets:ro",
-                "-v", f"{base}/repo-state:/repo/state",
-                "-v", f"{base}/repo-host:/repo/host",
-                "-v", f"{base}/vol:/src/state/volumes:ro",
-                "-v", f"{base}/staging:/src/state/exports:ro",
-                "-v", f"{base}/secrets:/src/host/secrets:ro",
-                "-v", f"{base}/env:/src/host/env/.env:ro",
-                "-v", f"{base}/out:/out",
-                "--entrypoint", "/bin/sh", self.RESTIC_IMAGE, "/opt/hyhome/backup.sh", *args,
+                "run",
+                "--rm",
+                "-u",
+                "0:0",
+                "--cap-drop",
+                "ALL",
+                "--cap-add",
+                "DAC_OVERRIDE",
+                "--security-opt",
+                "no-new-privileges:true",
+                "--read-only",
+                "--tmpfs",
+                "/tmp",
+                "--network",
+                "none",
+                "-e",
+                "RESTIC_PASSWORD_FILE=/run/secrets/restic_password",
+                "-e",
+                "RESTIC_CACHE_DIR=/tmp/c",
+                "-v",
+                f"{base}/pw:/run/secrets/restic_password:ro",
+                "-v",
+                f"{restic_dir}/backup.sh:/opt/hyhome/backup.sh:ro",
+                "-v",
+                f"{restic_dir}/sets:/opt/hyhome/sets:ro",
+                "-v",
+                f"{base}/repo-state:/repo/state",
+                "-v",
+                f"{base}/repo-host:/repo/host",
+                "-v",
+                f"{base}/vol:/src/state/volumes:ro",
+                "-v",
+                f"{base}/staging:/src/state/exports:ro",
+                "-v",
+                f"{base}/secrets:/src/host/secrets:ro",
+                "-v",
+                f"{base}/env:/src/host/env/.env:ro",
+                "-v",
+                f"{base}/out:/out",
+                "--entrypoint",
+                "/bin/sh",
+                self.RESTIC_IMAGE,
+                "/opt/hyhome/backup.sh",
+                *args,
                 check=check,
             )
 
@@ -1843,22 +1976,45 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         # Restore runs in a plain container (RUN-0021): the hardened job has no
         # CHOWN/FOWNER to reapply ownership and must never write a source.
         self.docker(
-            "run", "--rm", "-e", "RESTIC_PASSWORD_FILE=/pw",
-            "-v", f"{base}/pw:/pw:ro", "-v", f"{base}/repo-host:/repo:ro",
-            "-v", f"{base}/out:/out", self.RESTIC_IMAGE,
-            "-r", "/repo", "--no-lock", "restore", "latest", "--target", "/out",
+            "run",
+            "--rm",
+            "-e",
+            "RESTIC_PASSWORD_FILE=/pw",
+            "-v",
+            f"{base}/pw:/pw:ro",
+            "-v",
+            f"{base}/repo-host:/repo:ro",
+            "-v",
+            f"{base}/out:/out",
+            self.RESTIC_IMAGE,
+            "-r",
+            "/repo",
+            "--no-lock",
+            "restore",
+            "latest",
+            "--target",
+            "/out",
         )
         restored = self.docker(
-            "run", "--rm", "-v", f"{base}/out:/r:ro", "--entrypoint", "cat",
-            self.RESTIC_IMAGE, "/r/src/host/secrets/x.txt",
+            "run",
+            "--rm",
+            "-v",
+            f"{base}/out:/r:ro",
+            "--entrypoint",
+            "cat",
+            self.RESTIC_IMAGE,
+            "/r/src/host/secrets/x.txt",
         ).stdout
         self.assertEqual("synthetic-secret", restored)
         self.assertEqual(64, run("forget-prune", check=False).returncode)
-        self.assertEqual(64, run("cmd", "state", "forget", "latest", check=False).returncode)
+        self.assertEqual(
+            64, run("cmd", "state", "forget", "latest", check=False).returncode
+        )
         (base / "pw").write_text("wrong", encoding="utf-8")
         wrong = run("cmd", "state", "snapshots", check=False)
         self.assertNotEqual(0, wrong.returncode)
         self.assertIn("wrong password", wrong.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
