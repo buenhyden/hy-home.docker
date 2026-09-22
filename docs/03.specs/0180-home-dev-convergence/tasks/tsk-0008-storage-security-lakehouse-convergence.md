@@ -516,7 +516,7 @@ Sequential review findings and their disposition:
 | S03 orchestrator end to end | Task 10 / S03 | PASS (live, 08:20 UTC) after one exit-1 run fixed by #193 | RUN-0021 step 4 |
 | S03 live switch | Task 10 / S03 | PASS: `mng-pg` on the pgBackRest image, stanza, full and diff backups, WAL archive | RUN-0021 steps 1–3 |
 | S03 live restore | Task 10 / S03 | PASS (files): `.env` hash and Grafana export verified from live snapshots; PostgreSQL PITR on HOME data NOT_RUN (synthetic rehearsal only) | RUN-0021 steps 5–6 |
-| S03 timer | Task 10 / S03 | PENDING: owner runs the sudo install | RUN-0021 step 3 |
+| S03 timer | Task 10 / S03 | PASS (install): owner installed the units on 2026-09-22; `hyhome-backup.timer` enabled and active, installed units byte-identical to source, first run scheduled 2026-09-23 03:58 KST; first timer-driven run NOT_RUN yet | RUN-0021 step 3 |
 | S04 structure | Task 10 / S04 | PASS: `seaweedfs-mount` removed; `seaweedfs` renders master/volume/filer/S3, `seaweedfs-mount` renders nothing; no remaining current reference | this Task |
 | S04 accumulated gates | Task 10 / S04 | PASS: Compose 71 selections/314 services, operations catalog, projection (89 repositories), links (942 documents, 0 failures), `git diff --check`; 623 unit tests with 2 local-only failures (group-write bit on two entrypoint scripts from this worktree's umask 002, not tracked by Git; CI unaffected) | this Task |
 | S05 phase 1 source | Task 10 / S05 | PASS: 150 services assigned, rendered memberships equal the assignment; every traced flow shares a segmented network (static trace plus review); review Critical/Important findings fixed; Compose 71 selections/314 services; 5/5 `NetworkSegmentationContractTests` | this Task, AD-0026 |
