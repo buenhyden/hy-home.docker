@@ -1,10 +1,10 @@
 ---
 title: "0012 Standardize Infra Net Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -57,6 +57,11 @@ created: "2026-05-17"
 
    - 실제 대상 서비스에는 위 예시를 그대로 복사하지 말고 authoritative table의 해당 서비스 IP를 사용한다.
    - (선택 사항) 만약 K3s 연동을 위해 기존 `k3d-hyhome` 네트워크가 이미 필요한 경우 기존 값을 유지한다.
+   - **Segmented networks (SPEC-0180 S05)**: 같은 `networks:` 아래에 서비스가 실제로 쓰는
+     peer의 network만 추가한다. 고정 주소 없이 `edge_net: {}` 형태로 쓴다. Traefik route가
+     있으면 `edge_net`, Prometheus가 scrape하면 `obs_net`, `mng-pg`/`mng-valkey`를 쓰면
+     `mng_data_net`, S3를 쓰면 `object_net`이다. 전체 표는 AD-0026 **Segmented networks**가
+     소유한다. `infra_net`은 phase 2에서 제거되므로 새 flow를 `infra_net`에만 의존시키지 않는다.
 3. **루트 Docker Compose 수정**:
    - 프로젝트 루트의 `docker-compose.yml` 내 `include:` 섹션에 해당 파일이 있는지 확인한다. include는 무조건 병합되므로, 실제 기동 여부는 선택한 profile로 판단한다.
 4. **구성 검증**:

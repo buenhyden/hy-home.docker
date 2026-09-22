@@ -48,5 +48,7 @@ services:
       # 3) 공통 서비스 포트
       traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
+      edge_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.121

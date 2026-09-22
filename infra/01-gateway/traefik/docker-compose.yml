@@ -40,6 +40,13 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      edge_net:
+        # Fixed: oauth2-proxy and Airflow trust this address as the proxy.
+        ipv4_address: 10.250.1.2
+        aliases:
+          - keycloak.${DEFAULT_URL}
+          - auth.${DEFAULT_URL}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.2
         aliases:

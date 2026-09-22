@@ -36,6 +36,7 @@ services:
     volumes:
       - starrocks-fe-data:/opt/starrocks/fe/meta:rw
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.152
     healthcheck:
@@ -72,6 +73,7 @@ services:
     volumes:
       - starrocks-be-data:/opt/starrocks/be/storage:rw
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.153
     healthcheck:

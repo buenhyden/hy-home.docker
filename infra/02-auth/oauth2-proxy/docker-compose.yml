@@ -53,6 +53,8 @@ services:
       traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file
       traefik.http.services.oauth2-proxy-svc.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
+      edge_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.4
     healthcheck:
@@ -77,6 +79,7 @@ services:
     secrets:
       - oauth2_valkey_password
     networks:
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.5
     restart: unless-stopped
@@ -108,6 +111,8 @@ services:
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
+      mng_data_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.6
     restart: unless-stopped

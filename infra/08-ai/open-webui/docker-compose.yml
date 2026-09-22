@@ -53,6 +53,8 @@ services:
     secrets:
       - openwebui_oidc_client_secret
     networks:
+      edge_net: {}
+      ai_net: {}
       infra_net:
         ipv4_address: 172.19.0.251
     labels:

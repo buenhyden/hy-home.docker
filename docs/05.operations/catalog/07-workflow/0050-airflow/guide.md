@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -75,7 +75,7 @@ created: "2026-05-10"
  client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
 - API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
  임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
- Forwarded header 신뢰 범위는 Traefik 주소 `172.19.0.2`로 제한한다.
+ Forwarded header 신뢰 범위는 Traefik 고정 주소 `172.19.0.2`(`infra_net`)와 `10.250.1.2`(`edge_net`)로 제한한다.
 - 기본 Celery broker는 `mng-valkey`다. `dedicated-valkey` profile은
   `airflow-valkey`와 exporter를 **기동만** 한다. 전용 broker를 실제로 쓰려면
   `AIRFLOW_VALKEY_HOST=airflow-valkey`와

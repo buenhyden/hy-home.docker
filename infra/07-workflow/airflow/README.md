@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 created: "2025-11-12"
 ---
 
@@ -69,7 +69,7 @@ airflow/
 - API base URL: `https://airflow.${DEFAULT_URL}`
 - local CA: certifi + mounted mkcert root
 - API server: `--proxy-headers`
-- trusted proxy: `172.19.0.2`
+- trusted proxy: `172.19.0.2` (`infra_net`) and `10.250.1.2` (`edge_net`)
 - Airflow route:
   `traefik.http.routers.airflow.middlewares: gateway-standard-chain@file`
 - OAuth2 Proxy ForwardAuth: **not applied to Airflow**

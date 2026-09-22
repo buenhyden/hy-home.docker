@@ -37,6 +37,7 @@ services:
       - influxdb-data:/var/lib/influxdb3/data:rw
       - influxdb-plugins:/var/lib/influxdb3/plugins:rw
     networks:
+      edge_net: {}
       infra_net:
         ipv4_address: 172.19.0.8
     healthcheck:

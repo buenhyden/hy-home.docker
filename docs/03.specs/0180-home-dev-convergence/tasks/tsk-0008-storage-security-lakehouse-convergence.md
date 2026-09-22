@@ -347,6 +347,61 @@ files for no functional change.
 The m0021 lifecycle ledger and its prose are dated Stage 90 judgments and keep
 their original wording; the generated inventory is the current view.
 
+### S05 — Network segmentation, phase 1 (dual-homed)
+
+Flows came from the rendered configuration of every profile: each service's
+own references (environment, commands, health checks, mounted read-only
+configuration), `depends_on`, Traefik routes, the Nginx upstreams, the Traefik
+file provider, Prometheus scrape targets, Grafana datasources and Gatus
+endpoints. Heuristic matches that are not connections were checked and
+dropped: Grafana dashboard text naming Nginx and Registry, Tempo's
+`registry:` configuration key, Qdrant → Supabase `storage`, and Vault Agent
+template paths naming Grafana, Keycloak and OAuth2 Proxy.
+
+Deviation from the S01 table, with the reason:
+
+| Change | Reason |
+| --- | --- |
+| added `secrets_net`, `ai_net`, `lab_net` and one network each for Airflow, n8n, Supabase and Terrakube | S01 listed no home for agent → secret store, AI backends, LAB cluster internals, or application-private stores such as the unauthenticated `airflow-valkey`; putting them on shared networks would recreate the mesh |
+| `mail_net` and `lakehouse_net` deferred to S17 and S12 | no service sends SMTP over a Docker network today, and no lakehouse service exists |
+| `pg-router` stays on `k3d-hyhome` | it is a measured k8s consumer (`.15`) that the S01 member list omitted |
+| services with no container peer (Registry, Renovate, OpenTofu, Locust) get the project default network in phase 2 | Compose needs a network for egress and published ports; a dedicated network adds nothing |
+
+Phase 1 adds the 13 networks with explicit `10.250.x.0/24` subnets (Docker's
+automatic pool cannot take one first) and attaches each service beside its
+existing `infra_net` address. `seaweed_internal` is the only `internal`
+network: an internal-only service cannot publish host ports. Traefik gets
+`10.250.1.2` with the `keycloak.`/`auth.${DEFAULT_URL}` OIDC aliases on
+`edge_net`, where dynamic addresses start at `.128`. The Traefik provider
+network, the hardening checks and `k3d-hyhome` stay as they are until phase 2.
+
+Phase 1 is not traffic-neutral. A name shared on several networks may resolve
+on a segmented network rather than `infra_net`, which network wins is not
+verified here (an isolated DNS probe was not approved), so phase 1 is made
+correct for either answer:
+
+| Review finding | Fix |
+| --- | --- |
+| SeaweedFS master and S3 listened on the address their own name resolves to; volume had no bind | master, volume and S3 bind `0.0.0.0` |
+| OAuth2 Proxy trusts only `172.19.0.2`, but Traefik reaches it by name, possibly from `10.250.1.2` | `trusted_proxy_ips` and Airflow `FORWARDED_ALLOW_IPS` trust both addresses |
+| OpenSearch node 1 (also on `edge_net`) may announce an address nodes 2 and 3 cannot reach | nodes get fixed `lab_net` addresses `.11`–`.13` (dynamic range `.128/25`) and announce them with `network.publish_host` |
+| CouchDB Erlang node names `couchdb-N.infra_net` resolve only through `infra_net` aliases | the same aliases are added on `lab_net` |
+
+AD-0026 has the network table, GDE-0077 the rule for new services, and five
+`NetworkSegmentationContractTests` check the routed, scrape, trusted-proxy,
+bind-address and OpenSearch announce contracts over every leaf Compose file
+(duplicate service names fail).
+
+Phase 2, after phase 1 is live and verified, will remove `infra_net` from
+every service and from the root. It will also switch the Traefik provider and
+the OAuth2 Proxy label to `edge_net`, drop `172.19.0.2` from the trusted
+proxies, remove `mng-pg` from `k3d-hyhome`, and rewrite POL/RUN-0077 and the
+hardening checks. The review also found phase 2 items: the Alloy Docker log
+filter keeps only `project_net|infra_net` targets (`config.alloy`,
+`config.home.alloy`); the MinIO cluster overlay is `infra_net` only (removed
+with MinIO in S07, so phase 2 must not precede S07 or must move it to
+`lab_net`); and RedisInsight reaches only `mng_data_net` stores.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -364,6 +419,8 @@ their original wording; the generated inventory is the current view.
 | S03 timer | Task 10 / S03 | PENDING: owner runs the sudo install | RUN-0021 step 3 |
 | S04 structure | Task 10 / S04 | PASS: `seaweedfs-mount` removed; `seaweedfs` renders master/volume/filer/S3, `seaweedfs-mount` renders nothing; no remaining current reference | this Task |
 | S04 accumulated gates | Task 10 / S04 | PASS: Compose 71 selections/314 services, operations catalog, projection (89 repositories), links (942 documents, 0 failures), `git diff --check`; 623 unit tests with 2 local-only failures (group-write bit on two entrypoint scripts from this worktree's umask 002, not tracked by Git; CI unaffected) | this Task |
+| S05 phase 1 source | Task 10 / S05 | PASS: 150 services assigned, rendered memberships equal the assignment; every traced flow shares a segmented network (static trace plus review); review Critical/Important findings fixed; Compose 71 selections/314 services; 5/5 `NetworkSegmentationContractTests` | this Task, AD-0026 |
+| S05 phase 1 live | Task 10 / S05 | BLOCKED_APPROVAL: applying it recreates every running container | RUN-0077 |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -392,6 +449,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- n8n queue configuration points at `redis://mng-n8n-valkey`, a name no service declares (found in S05 review; n8n stage owner).
 
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 

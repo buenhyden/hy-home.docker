@@ -56,6 +56,8 @@ services:
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
+      edge_net: {}
+      ai_net: {}
       # openclaw_default:
       infra_net:
         ipv4_address: 172.19.0.201
@@ -84,6 +86,8 @@ services:
     expose:
       - '${OLLAMA_EXPORTER_PORT:-8000}'
     networks:
+      ai_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.211
     labels:

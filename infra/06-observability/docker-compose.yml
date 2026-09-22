@@ -95,6 +95,8 @@ services:
       traefik.http.routers.prometheus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.20
       k3d-hyhome:
@@ -138,6 +140,9 @@ services:
       traefik.http.routers.loki.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.loki.loadbalancer.server.port: ${LOKI_PORT:-3100}
     networks:
+      edge_net: {}
+      obs_net: {}
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.21
       k3d-hyhome:
@@ -181,6 +186,9 @@ services:
       traefik.http.routers.tempo.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.tempo.loadbalancer.server.port: ${TEMPO_PORT:-3200}
     networks:
+      edge_net: {}
+      obs_net: {}
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.22
       k3d-hyhome:
@@ -247,6 +255,8 @@ services:
       traefik.http.routers.alloy.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.23
       k3d-hyhome:
@@ -359,6 +369,8 @@ services:
       traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}
 
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.24
       k3d-hyhome:
@@ -398,6 +410,7 @@ services:
       retries: 5
       start_period: 10s
     networks:
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.19
     labels:
@@ -448,6 +461,8 @@ services:
       traefik.http.routers.cadvisor.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.cadvisor.loadbalancer.server.port: ${CADVISOR_PORT:-8080}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.25
 
@@ -497,6 +512,9 @@ services:
       traefik.http.routers.gatus.middlewares: gateway-standard-chain@file
       traefik.http.services.gatus.loadbalancer.server.port: ${GATUS_PORT}
     networks:
+      edge_net: {}
+      mng_data_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.231
 
@@ -533,6 +551,8 @@ services:
       traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.26
 
@@ -578,6 +598,8 @@ services:
       traefik.http.routers.alertmanager.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.27
 
@@ -612,6 +634,8 @@ services:
       traefik.http.routers.pushgateway.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
     networks:
+      edge_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.28
 
@@ -641,6 +665,7 @@ services:
       - '${DCGM_EXPORTER_PORT:-9400}'
 
     networks:
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.112
 

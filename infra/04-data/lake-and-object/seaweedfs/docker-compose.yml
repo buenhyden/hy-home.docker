@@ -23,10 +23,14 @@ services:
     expose:
       - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
       - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
-    command: '-v=1 master -ip=seaweedfs-master -volumeSizeLimitMB=1024'
+    # -ip is the advertised name; listening on every attached network keeps the
+    # server reachable whichever network a peer resolves the name on.
+    command: '-v=1 master -ip=seaweedfs-master -ip.bind=0.0.0.0 -volumeSizeLimitMB=1024'
     volumes:
       - seaweedfs-master-data:/data:rw
     networks:
+      edge_net: {}
+      seaweed_internal: {}
       infra_net:
         ipv4_address: 172.19.0.140
     healthcheck:
@@ -61,13 +65,14 @@ services:
     expose:
       - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
       - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
-    command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333} -port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085} -ip=seaweedfs-volume -preStopSeconds=1 -max=10000'
+    command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333} -port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085} -ip=seaweedfs-volume -ip.bind=0.0.0.0 -preStopSeconds=1 -max=10000'
     volumes:
       - seaweedfs-volume-data:/data:rw
     depends_on:
       seaweedfs-master:
         condition: service_healthy
     networks:
+      seaweed_internal: {}
       infra_net:
         ipv4_address: 172.19.0.141
     healthcheck:
@@ -111,6 +116,8 @@ services:
       traefik.http.services.cdn.loadbalancer.server.port: ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
       traefik.http.routers.cdn.middlewares: gateway-standard-chain@file
     networks:
+      edge_net: {}
+      seaweed_internal: {}
       infra_net:
         ipv4_address: 172.19.0.142
     healthcheck:
@@ -135,7 +142,7 @@ services:
     container_name: seaweedfs-s3
     expose:
       - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
-    command: '-v=1 s3 -filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888} -ip.bind=seaweedfs-s3'
+    command: '-v=1 s3 -filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888} -ip.bind=0.0.0.0'
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -148,6 +155,9 @@ services:
       seaweedfs-filer:
         condition: service_healthy
     networks:
+      edge_net: {}
+      seaweed_internal: {}
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.143
     healthcheck:

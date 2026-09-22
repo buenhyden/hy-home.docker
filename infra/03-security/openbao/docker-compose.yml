@@ -50,6 +50,9 @@ services:
     command:
       - server
     networks:
+      edge_net: {}
+      secrets_net: {}
+      obs_net: {}
       # k3d-hyhome is external and has no dynamic range; a dynamic address
       # here took Traefik's 172.18.0.2 when OpenBao started first.
       k3d-hyhome:
@@ -106,6 +109,7 @@ services:
       retries: 5
       start_period: 20s
     networks:
+      secrets_net: {}
       infra_net:
         ipv4_address: 172.19.0.18
     labels:

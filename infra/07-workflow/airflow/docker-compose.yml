@@ -109,8 +109,8 @@ services:
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE: '10'
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES: '3'
 
-      # Traefik은 172.19.0.2로 고정되어 있음
-      FORWARDED_ALLOW_IPS: '172.19.0.2'
+      # Traefik 고정 주소: infra_net 172.19.0.2, edge_net 10.250.1.2 (SPEC-0180 S05)
+      FORWARDED_ALLOW_IPS: '172.19.0.2,10.250.1.2'
 
       # 아래 command에서 생성
       REQUESTS_CA_BUNDLE: /tmp/hy-home-ca-bundle.pem
@@ -128,6 +128,9 @@ services:
 
         exec airflow api-server --proxy-headers
     networks:
+      edge_net: {}
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.90
     healthcheck:
@@ -160,6 +163,8 @@ services:
     read_only: false
     command: scheduler
     networks:
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.91
     healthcheck:
@@ -184,6 +189,8 @@ services:
     read_only: false
     command: dag-processor
     networks:
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.92
     healthcheck:
@@ -208,6 +215,8 @@ services:
     read_only: false
     command: celery worker
     networks:
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.93
     environment:
@@ -237,6 +246,8 @@ services:
     read_only: false
     command: triggerer
     networks:
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.94
     healthcheck:
@@ -343,6 +354,8 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: '0:0'
     networks:
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.95
   # airflow-cli:
@@ -377,6 +390,9 @@ services:
     read_only: false
     command: celery flower
     networks:
+      edge_net: {}
+      airflow_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.97
     healthcheck:
@@ -414,6 +430,7 @@ services:
     secrets:
       - airflow_valkey_password
     networks:
+      airflow_net: {}
       infra_net:
         ipv4_address: 172.19.0.98
     restart: unless-stopped
@@ -446,6 +463,8 @@ services:
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
+      airflow_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.99
     restart: unless-stopped
@@ -485,6 +504,8 @@ services:
       airflow-init:
         condition: service_completed_successfully
     networks:
+      airflow_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.100
     expose:
