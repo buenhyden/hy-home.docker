@@ -422,6 +422,24 @@ image.
 | Prometheus | 21 up, 10 down: 8 k8s NodePort targets on `172.18.0.2` (connection refused; `.2` is Traefik's own k3d address, `k3d-hyhome` was not changed, pre-apply state not captured, so a pre-existing target error is likely but unverified), OpenSearch (not running), OpenBao (503, sealed) |
 | OpenBao | sealed after its restart (initialized, 2-of-3 shares): owner unseal required; no key material read |
 
+OpenBao follow-up (owner-approved, 2026-09-22): the owner unsealed OpenBao.
+The metrics scrape then returned 403. The earlier metrics token had expired, and
+a token issued with the human operator identity cannot carry the `prometheus`
+policy: `hy-home-operator` has no policy or orphan-token rights. Following
+RUN-0085 "Prometheus Metrics Credential", the owner staged an OIDC operator
+token in the container once. A single scripted process then ran the
+authenticated generate-root ceremony, with shares fed from
+`openbao_unseal_keys.txt` through stdin and decoded with the OTP in the same
+process. The temporary root wrote `prometheus` (`read` on `sys/metrics`) and
+issued an orphan, no-default-policy token with a 720h TTL. Checks: metrics read
+allowed, a KV secret read denied, policy list denied. The root was then revoked
+and the staged operator token deleted. The token file was replaced atomically,
+keeping mode 0640 and its group, and the accessor and expiry
+(`2026-10-22T11:54Z`, requested TTL) went to the ignored
+`openbao_metrics_token.custody`. After a Prometheus recreate the `openbao`
+target is up. No share, OTP or token value was printed or passed as a host
+argument.
+
 Lesson for phase 2: recreate in dependency waves, providers first
 (`mng-pg`, `mng-valkey`, Keycloak, Traefik), then the rest. Do not rely on
 `--wait` across the whole set. Plan the OpenBao unseal for its restart.
@@ -521,6 +539,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
+- Prometheus k8s NodePort targets on `172.18.0.2` refuse connections; `.2` is Traefik's k3d address (observability owner).
 
 - n8n queue configuration points at `redis://mng-n8n-valkey`, a name no service declares (found in S05 review; n8n stage owner).
 
