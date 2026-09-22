@@ -194,16 +194,6 @@ secrets:
     file: ./secrets/db/valkey/terrakube_password.txt
   airflow_valkey_password:
     file: ./secrets/db/valkey/airflow_password.txt
-  # ── MinIO ───────────────────────────────────────────────
-  minio_root_password:
-    file: ./secrets/storage/minio_root_password.txt
-  minio_root_username:
-    file: ./secrets/storage/minio_root_username.txt
-  minio_app_user_password:
-    file: ./secrets/storage/minio_app_user_password.txt
-  minio_app_username:
-    file: ./secrets/storage/minio_app_username.txt
-
   # ── SeaweedFS ───────────────────────────────────────────
   seaweedfs_jwt_volume_key:
     file: ./secrets/storage/seaweedfs_jwt_volume_key.txt
@@ -337,8 +327,6 @@ include:
   - infra/04-data/analytics/opensearch/docker-compose.yml
   - infra/04-data/analytics/starrocks/docker-compose.yml
   - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
-  - infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml
-  - infra/04-data/lake-and-object/minio/docker-compose.yml
   - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
   - infra/04-data/nosql/cassandra/docker-compose.yml
   - infra/04-data/nosql/couchdb/docker-compose.yml

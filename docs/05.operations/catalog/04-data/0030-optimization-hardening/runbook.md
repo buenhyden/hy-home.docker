@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0030"
 parent_ids:
@@ -51,8 +51,7 @@ change until ownership is proven.
 
 For actual data loss or corruption, stop writes and use the engine runbook:
 management PostgreSQL/Valkey [RUN-0028](../0028-management-database/runbook.md),
-Valkey Cluster [RUN-0022](../0022-valkey-cluster/runbook.md), MinIO
-[RUN-0023](../0023-minio/runbook.md), or SeaweedFS
+Valkey Cluster [RUN-0022](../0022-valkey-cluster/runbook.md), or SeaweedFS
 [RUN-0024](../0024-seaweedfs/runbook.md). This generic runbook does not supply a
 restore shortcut.
 

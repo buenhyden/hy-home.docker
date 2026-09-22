@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0001"
 parent_ids:
@@ -75,7 +75,7 @@ special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
 - **Key Entities / Flows**:
   - `Internet -> Traefik (TLS Term) -> Service Container`
-  - `Internet -> Nginx (TLS Term + Path Rewrite) -> Keycloak/MinIO` when the
+  - `Internet -> Nginx (TLS Term + Path Rewrite) -> Keycloak/SeaweedFS CDN` when the
     alternative `nginx` profile is selected
 - **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
 - **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
@@ -86,7 +86,7 @@ special-path routes; Nginx is not chained behind Traefik in the current Compose.
 - **Deployment Model**: the root compose includes both leaves. `traefik` is selected
   by `core`, `dev`, or `local`; `nginx` is selected only by `nginx`. Both publish
   host ports 80/443, so they must not be selected together. Nginx also requires
-  the root network and healthy MinIO dependency context.
+  the root network and healthy SeaweedFS S3 dependency context.
 - **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
 ## Traceability

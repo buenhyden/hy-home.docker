@@ -161,42 +161,6 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
 
   # ============================================================================
-  # [5] Object Storage (MinIO)
-  # ============================================================================
-  - name: Minio_alerts
-    rules:
-      - alert: MinioServiceDown
-        expr: up{job="minio"} == 0
-        for: 2m
-        labels:
-          severity: critical
-          domain: datastores
-        annotations:
-          summary: 'MinIO 서비스 다운: {{ $labels.instance }}'
-          description: 'MinIO 인스턴스가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
-
-      - alert: MinioClusterDiskOffline
-        expr: minio_cluster_drive_offline_total > 0
-        for: 2m
-        labels:
-          severity: critical
-        annotations:
-          summary: 'MinIO 클러스터 디스크 오프라인'
-          description: 'MinIO 클러스터에서 디스크가 오프라인입니다.'
-
-      - alert: MinioDiskSpaceUsage
-        expr: (sum(minio_cluster_capacity_used_bytes) /
-          sum(minio_cluster_capacity_total_bytes)) > 0.85
-        for: 10m
-        labels:
-          severity: warning
-        annotations:
-          summary: 'MinIO 디스크 공간 부족'
-          description: 'MinIO 클러스터 사용률이 85%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
-
-  # ============================================================================
   # [6] Vector DB (Qdrant)
   # ============================================================================
   - name: Qdrant_alerts

@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -52,7 +52,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
 | `couchdb` | topology | CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
 | `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler; 현재 소비자 없음 | `crawl4ai` | No | normal service startup | current |
-| `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
+| `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
 | `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
 | `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `prometheus`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init | current |
@@ -62,7 +62,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ksql` | automation | 명시적 스트림 SQL 실험 도구; datagen 컨테이너는 readiness 확인 후 대기 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | 현재 자동 데이터 생성 없음; 생성 명령 추가 시 synthetic data 부수 효과 검토 | current |
 | `legacy-vault` | lifecycle | 기존 Vault 마이그레이션 전용; HOME 제외 | `vault`, `vault-agent` | No | normal service startup | MIGRATE |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
-| `logs` | capability | 로그 수집·조회와 object 저장소 | `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `minio-create-buckets`, `loki`, `alloy`, `grafana` | No | initialization: minio-create-buckets, seaweedfs-buckets | current |
+| `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
 | `mail-server` | capability | 실제 메일 송수신; 별도 DNS·운영 준비 필요 | `stalwart` | No | normal service startup | current |
 | `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
@@ -72,12 +72,12 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `messaging-connect` | role | Kafka Connect와 broker·schema 종속성 | `kafka-1`, `schema-registry`, `kafka-connect` | No | normal service startup | current |
 | `messaging-rest` | role | Kafka REST 접근 | `kafka-1`, `schema-registry`, `kafka-rest-proxy` | No | normal service startup | current |
 | `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry` | No | normal service startup | current |
-| `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
+| `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter` | No | initialization: mng-pg-init | current |
 | `mongodb` | topology | MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` | No | initialization: mongo-key-generator, mongo-init | current |
-| `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
+| `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
-| `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `minio-create-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: minio-create-buckets, seaweedfs-buckets | current |
+| `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets | current |
 | `obs-core` | capability | 메트릭 수집·대시보드 | `prometheus`, `grafana` | No | normal service startup | current |
 | `obs-gpu` | capability | NVIDIA GPU 메트릭 exporter; GPU·driver·Container Toolkit 필요 | `dcgm-exporter` | No | normal service startup; 모든 GPU 예약 | current |
 | `obs-host` | capability | 호스트·컨테이너 자원 측정 | `node-exporter`, `cadvisor` | No | normal service startup | current |
@@ -93,15 +93,13 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `secrets` | role | OpenBao secret 관리·Agent | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `starrocks` | capability | 분석용 warehouse | `starrocks-fe`, `starrocks-be` | No | normal service startup | current |
-| `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `minio-create-buckets` | No | initialization: minio-create-buckets, seaweedfs-buckets | current |
-| `storage-cluster` | topology | 다중 MinIO 대안; endpoint·data 전환 필요 | `minio1`, `minio2`, `minio3`, `minio4` | No | normal service startup | current |
-| `storage-migration` | lifecycle | MinIO → SeaweedFS 버킷별 일회성 복사(SPEC-0180 S07); MinIO와 함께 제거 | `seaweedfs-migrate` | No | manual copy job | MIGRATE |
+| `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `supabase` | capability | 자체 호스팅 앱 backend 전체 구성 | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | normal service startup | current |
 | `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
 | `testing` | automation | 명시적 부하 생성; 대상·제한 확인 후 실행 | `k6`, `locust-master`, `locust-worker` | No | load or synthetic data generation | current |
 | `tooling` | domain | 일반 개발 도구 묶음 | `registry`, `sonarqube` | No | normal service startup | current |
-| `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `minio`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `minio-create-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: minio-create-buckets, seaweedfs-buckets | current |
+| `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `valkey-cluster` | topology | Valkey sharding 실험 구성 | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` | No | initialization: valkey-cluster-init | current |
 | `workflow` | domain | HOME Airflow·n8n·worker·runner | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter`, `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` | No | initialization: airflow-init | current |
 | `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
@@ -150,7 +148,6 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
 | messaging-cluster | 현재 선언이 kafka-1도 포함; quorum·지속성 검증은 별도이며 물리 HA가 아님 |
 | opensearch with opensearch-cluster | 대체 토폴로지; 기본 port 충돌을 피하고 dashboards endpoint를 일치시킴 |
-| storage-cluster with storage/logs | 서로 다른 object store; endpoint·data migration 없이 교체 불가 |
 | legacy-vault with HOME | 정상 HOME에서 제외; 보존된 상태의 migration 승인 후에만 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
@@ -158,7 +155,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
-| mlops / data-science / analytics-engineering / cdc | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 `minio`·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
+| mlops / data-science / analytics-engineering / cdc | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | `infra_net`에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |

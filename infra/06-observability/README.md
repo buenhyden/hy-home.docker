@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
-| Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
+| Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/seaweedfs_s3_loki_secret_key`, `/run/secrets/seaweedfs_s3_tempo_secret_key`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
 | Operations | Guide index (`docs/05.operations/catalog/06-observability/README.md`), Policy index (`docs/05.operations/catalog/06-observability/README.md`), Runbook index (`docs/05.operations/catalog/06-observability/README.md`) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |

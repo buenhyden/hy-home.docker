@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -14,7 +14,6 @@ implementation_services:
   - 'seaweedfs-buckets'
   - 'seaweedfs-filer'
   - 'seaweedfs-master'
-  - 'seaweedfs-migrate'
   - 'seaweedfs-s3'
   - 'seaweedfs-volume'
 created: "2026-05-10"
@@ -24,8 +23,7 @@ created: "2026-05-10"
 
 ## Usage
 
-SeaweedFS is the S3 object store that takes over from MinIO one consumer at a
-time in SPEC-0180 S07. It is part of HOME through the consumer profiles. S3 at
+SeaweedFS is the S3 object store; it replaced MinIO in SPEC-0180 S07. It is part of HOME through the consumer profiles. S3 at
 `http://seaweedfs-s3:8333` (path-style, region `us-east-1`) is the only
 interface. The privileged FUSE mount was removed in S04, and the master and
 filer have no route.
@@ -57,11 +55,10 @@ for the `s3.${DEFAULT_URL}` route.
 | Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
 
 `seaweedfs-buckets` (aws-cli, admin identity) creates the five buckets
-idempotently and every consumer waits for it. `seaweedfs-migrate`
-(`storage-migration` profile, MinIO's `mc`) copies MinIO buckets through the S3
-API, adds only missing objects unless `FINAL=1`, requires identical key and
-size listings on the final run, and then refuses that bucket through a cutover
-marker; it goes away with MinIO.
+idempotently; every bucket-owning consumer waits for it (Nginx waits for
+`seaweedfs-s3` only). The S07 cutover copied each
+MinIO bucket through the S3 API and left a `hyhome-migration/<bucket>.cutover`
+marker object; the copy job was removed with MinIO.
 
 ### Images, configuration and resource controls
 
@@ -111,8 +108,7 @@ The backup set is the filer metadata export plus the volume and master trees,
 taken in that order with vacuum paused ([RUN-0024](runbook.md), RUN-0021).
 
 An image upgrade needs an official release review and a passing rehearsal.
-Consumer cutover from MinIO is S07, one consumer at a time. SeaweedFS is
-Apache-2.0 licensed.
+SeaweedFS is Apache-2.0 licensed.
 
 ### Official references
 

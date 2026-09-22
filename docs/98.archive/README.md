@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.4.0"
+version: "2.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-23"
 layer: "archive"
 ---
 
@@ -110,6 +110,9 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/guide.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/policy.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` |
+| `superseded/05.operations/catalog/04-data/0023-minio/guide.md` | superseded | GDE-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/guide.md` |
+| `superseded/05.operations/catalog/04-data/0023-minio/policy.md` | superseded | POL-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/policy.md` |
+| `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | RUN-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/runbook.md` |
 
 이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
 유지합니다. 소급 적재는 하지 않습니다.

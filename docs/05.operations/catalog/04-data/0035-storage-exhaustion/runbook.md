@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0035"
 parent_ids: []
@@ -58,11 +58,10 @@ final consistency capture, application validation and a retained rollback window
 
 - Management PostgreSQL/Valkey: [RUN-0028](../0028-management-database/runbook.md)
 - Valkey Cluster: [RUN-0022](../0022-valkey-cluster/runbook.md)
-- MinIO: [RUN-0023](../0023-minio/runbook.md)
 - SeaweedFS: [RUN-0024](../0024-seaweedfs/runbook.md)
 - All HOME state owners and exceptions: [POL-0021](../0021-backup-and-restore/policy.md)
 
-Do not delete PostgreSQL WAL/data, Valkey AOF/RDB, MinIO objects, SeaweedFS volume
+Do not delete PostgreSQL WAL/data, Valkey AOF/RDB, retained MinIO data, SeaweedFS volume
 files, Kafka logs, SQLite WAL/journal files, OpenBao Raft data, Qdrant snapshots or
 observability WALs through filesystem commands.
 

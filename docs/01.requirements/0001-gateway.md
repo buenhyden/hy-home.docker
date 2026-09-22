@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Product Requirements"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0001"
 parent_ids: []
@@ -36,7 +36,7 @@ created: "2026-03-26"
 
 - **STORY-01**: 사용자가 브라우저를 통해 서비스에 접속하면 자동으로 HTTPS로 연결되고, 유효한 인증서가 제공되어야 함.
 - **STORY-02**: 관리자는 Traefik 대시보드를 통해 현재 라우팅 규칙과 서비스 상태를 실시간으로 확인할 수 있어야 함.
-- **STORY-03**: 특정 경로(예: `/keycloak/`, `/minio/`)에 대해 Nginx leaf를 통한 정교한 경로 재작성 및 헤더 조작이 가능해야 하며, Nginx runtime은 명시적 root network/dependency context에서만 다뤄야 함.
+- **STORY-03**: 특정 경로(예: `/keycloak/`, `/cdn/`)에 대해 Nginx leaf를 통한 정교한 경로 재작성 및 헤더 조작이 가능해야 하며, Nginx runtime은 명시적 root network/dependency context에서만 다뤄야 함.
 
 ## Functional Requirements
 

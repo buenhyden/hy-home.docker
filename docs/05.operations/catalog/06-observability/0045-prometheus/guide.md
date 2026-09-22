@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -127,7 +127,7 @@ graph TD
 `prometheus.yml`은 Prometheus가 수집하는 scrape job의 source of truth다.
 
 - **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway and observability services.
-- **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, MinIO, Qdrant, OpenSearch, etcd.
+- **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
 - **Kubernetes/GitOps**: k3d NodePort targets for Argo CD, kube-state-metrics, Istio, and Argo Rollouts.
 - **Applications**: Keycloak, n8n, Airflow, Vault, Ollama exporter.
 

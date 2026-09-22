@@ -1,10 +1,10 @@
 ---
 title: "09-tooling: Tooling Tier"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -42,7 +42,7 @@ documentation agents responsible for the tooling profile contract.
 - [OpenTofu](opentofu/README.md) is a local CLI job with workspace state and
   read-only provider credential mounts. Plan and apply are separate approvals.
 - [Terrakube](terrakube/README.md) stores metadata in management PostgreSQL,
-  state objects in MinIO, and transient coordination in Valkey. The three fixed
+  state objects in SeaweedFS, and transient coordination in Valkey. The three fixed
   services on one host are not an HA deployment.
 - [Registry](registry/README.md) persists OCI objects under
   `${DEFAULT_REGISTRY_DIR}`. Current Compose publishes port 5000 without tracked

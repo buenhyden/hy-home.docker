@@ -676,8 +676,14 @@ def validate_allocation_transition(
     deadline = time.monotonic() + MAX_GIT_SCAN_SECONDS
     remaining_bytes = MAX_TRANSITION_GIT_OUTPUT_BYTES
 
+    # Merged forks share most blobs; a blob is immutable, so each is read once.
+    blobs: dict[str, tuple[str, int]] = {}
+
     def git(*args: str, maximum: int = MAX_TRANSITION_GIT_OUTPUT_BYTES) -> str:
         nonlocal remaining_bytes
+        blob = args[2] if args[:2] == ("cat-file", "blob") and len(args) == 3 else None
+        if blob is not None and blob in blobs and blobs[blob][1] <= maximum:
+            return blobs[blob][0]
         output = _run_git(
             root,
             args,
@@ -685,6 +691,8 @@ def validate_allocation_transition(
             timeout_seconds=_remaining_scan_seconds(deadline),
         )
         remaining_bytes -= output.bytes_read
+        if blob is not None:
+            blobs[blob] = (output.text, output.bytes_read)
         return output.text
 
     def require_ancestor(ancestor: str, descendant: str, subject: str) -> None:

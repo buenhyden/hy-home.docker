@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -34,7 +34,7 @@ created: "2026-03-28"
 - **Consumes**:
   - `01-gateway` Traefik middleware chain
   - `02-auth` Keycloak 기반 SSO
-  - `04-data` MinIO object storage
+  - `04-data` SeaweedFS object storage
 - **Does Not Own**:
   - 애플리케이션 계측 코드(OTel SDK)
   - 비관측성 티어 라우팅 정책
@@ -80,7 +80,7 @@ created: "2026-03-28"
   - Metrics, logs, traces, profiles
 - **Storage Strategy**:
   - Prometheus local TSDB
-  - Loki/Tempo object storage via MinIO
+  - Loki/Tempo object storage via SeaweedFS
   - Pyroscope local storage
 - **Data Boundaries**:
   - 장기 보존/리텐션 정책은 operations 계층에서 관리

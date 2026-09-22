@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -117,7 +117,7 @@ docker compose exec airflow-apiserver airflow dags list
 
 - **Scheduler Heavy Load**: DAG 파일 내에서 DB 쿼리나 파일 시스템 접근을 직접 수행하면 스케줄러 성능이 저하됩니다.
 - **Worker Timeout**: 리소스 부족으로 워커가 종료되면 태스크가 `Queued` 상태로 멈출 수 있습니다.
-- **XCom Abuse**: XCom은 작은 데이터 교환용입니다. 대용량 데이터는 S3/MinIO 등 외부 저장소를 사용하십시오.
+- **XCom Abuse**: XCom은 작은 데이터 교환용입니다. 대용량 데이터는 S3(SeaweedFS) 등 외부 저장소를 사용하십시오.
 
 ### Source-backed operating contract
 

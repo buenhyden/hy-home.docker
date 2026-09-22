@@ -1,10 +1,10 @@
 ---
 title: "infra_net Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -49,7 +49,7 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.17-18 | OpenBao and OpenBao Agent |
 | 172.19.0.19 | cAdvisor |
 | 172.19.0.20-28 | Observability stack |
-| 172.19.0.29, 39 | MinIO and bucket job |
+| 172.19.0.29, 39 | released (MinIO removed, SPEC-0180 S07) |
 | 172.19.0.30-38 | Kafka stack |
 | 172.19.0.40 | Debezium source provisioning job |
 | 172.19.0.41-47 | Valkey cluster |
@@ -68,7 +68,7 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.122-123 | Open Notebook services |
 | 172.19.0.130-132 | ksqlDB stack |
 | 172.19.0.140-144 | SeaweedFS |
-| 172.19.0.145-148 | MinIO cluster nodes |
+| 172.19.0.145-148 | released (MinIO cluster removed, SPEC-0180 S07) |
 | 172.19.0.150-151 | Cassandra |
 | 172.19.0.152-153 | StarRocks FE and BE |
 | 172.19.0.160-163 | CouchDB |
@@ -79,7 +79,7 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.202 | Qdrant |
 | 172.19.0.203 | ComfyUI |
 | 172.19.0.221 | Dozzle |
-| 172.19.0.222 | Nginx gateway (MinIO cluster) |
+| 172.19.0.222 | Nginx gateway |
 | 172.19.0.223 | SonarQube |
 | 172.19.0.224 | OpenTofu |
 | 172.19.0.225-227 | Terrakube API, UI, and executor |
@@ -108,7 +108,7 @@ automatic address pool cannot take one first.
 | --- | --- | --- | --- |
 | `edge_net` | 10.250.1.0/24, dynamic from .128/25 | Traefik (fixed .2, aliases `keycloak.`/`auth.${DEFAULT_URL}`), Nginx, OAuth2 Proxy, every routed backend | gateway → backend; backend → Traefik alias for OIDC discovery |
 | `mng_data_net` | 10.250.2.0/24 | `mng-pg`, `mng-valkey`, OAuth2 Proxy Valkey, their exporters and clients | client → PostgreSQL/Valkey |
-| `object_net` | 10.250.3.0/24 | MinIO, `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, Nginx, bucket jobs | S3 client → object store |
+| `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, Nginx, bucket jobs | S3 client → object store |
 | `seaweed_internal` | 10.250.4.0/24, internal | SeaweedFS master, volume, filer, S3 | storage-internal only |
 | `obs_net` | 10.250.5.0/24 | Prometheus, Alloy, Loki, Tempo, Pyroscope, Grafana, Alertmanager, Pushgateway, exporters, every scrape target, k6 | scrape, push, datasource queries |
 | `kafka_net` | 10.250.6.0/24 | brokers, Schema Registry, Connect, REST Proxy, kafbat UI, exporter, init, ksqlDB | broker clients |

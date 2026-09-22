@@ -112,6 +112,28 @@ class IdentityHistoryTests(unittest.TestCase):
             source,
         )
 
+    def test_allocation_transition_reads_each_blob_once(self) -> None:
+        from scripts.lib.document_governance.archive import _approved_migration_document
+
+        root = pathlib.Path(__file__).resolve().parents[3]
+        base = _approved_migration_document(root)["baseline_commit"]
+        real = identity_history._run_git
+        blobs: list[str] = []
+
+        def counting(root_arg, args, **kwargs):
+            if tuple(args[:2]) == ("cat-file", "blob"):
+                blobs.append(args[2])
+            return real(root_arg, args, **kwargs)
+
+        with mock.patch.object(identity_history, "_run_git", counting):
+            identity_history.validate_allocation_transition(
+                root,
+                load_registry(),
+                {"docs/03.specs/0008-workflow/spec.md": "SPEC-0008"},
+                base,
+            )
+        self.assertEqual(len(blobs), len(set(blobs)))
+
     def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
         from scripts.lib.document_governance.archive import _approved_migration_document
 

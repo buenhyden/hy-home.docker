@@ -1,10 +1,10 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -37,7 +37,7 @@ created: "2026-03-25"
 
 #### Purpose
 
-To ensure all DAGs written for the project follow consistent patterns and utilize the shared infrastructure (PostgreSQL, MinIO) correctly.
+To ensure all DAGs written for the project follow consistent patterns and utilize the shared infrastructure (PostgreSQL, SeaweedFS) correctly.
 
 #### Prerequisites
 
