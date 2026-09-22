@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "specs"
 artifact_id: "SPEC-0180"
 parent_ids:
@@ -38,6 +38,19 @@ Scope includes infra, root Compose, Stage 01/02/03/05/90/99, public environment
 and secret schemas, existing synchronization scripts, validators and tests,
 Renovate and Dependabot. Frozen archive bodies, secret values, remote settings,
 unapproved runtime changes and destructive data removal are excluded.
+
+### Storage, secret custody and lakehouse follow-up (2026-09-22)
+
+Base main `1ac49fd3534ddf5ca324ea5874403513bd0c2592`. The owner's sequential
+S00→S19 mission supersedes two earlier dispositions: HashiCorp Vault and its
+Agent are removed from active source instead of being retained MIGRATE-only,
+and SeaweedFS replaces MinIO through a per-consumer cutover. OpenBao, its
+custody and Agent renewal are preserved. The mission also adds network
+segmentation with a minimal `k3d-hyhome` membership, Restic, pgBackRest,
+Testcontainers, WireMock, Pact Broker, Spark with Iceberg, Trino, Flink,
+Great Expectations, Superset and a configured internal Stalwart, all as opt-in
+profiles. Deleting legacy data or credentials, live cutovers and restarts keep
+their separate approvals. Task 0008 owns stage records, evidence and rulings.
 
 ## Behavior Contract
 
@@ -123,7 +136,8 @@ Task 0002. A failed or unexecuted check is never recorded as PASS.
 - [Native OIDC migration evidence](tasks/tsk-0004-native-oidc-service-migration.md)
 - [Prior current-main convergence evidence](tasks/tsk-0005-current-main-convergence.md)
 - [CI quality alignment](tasks/tsk-0006-ci-quality-version-alignment.md)
-- [Current Task](tasks/tsk-0007-optional-capability-restructure.md)
+- [Optional capability restructure](tasks/tsk-0007-optional-capability-restructure.md)
+- [Current Task](tasks/tsk-0008-storage-security-lakehouse-convergence.md)
 
 ## Open Questions
 

@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "specs"
 artifact_id: "SPEC-0180-PLAN-0001"
 parent_ids:
@@ -234,6 +234,20 @@ logical commits. Task 0007 owns the before/after tree, file move table,
 dispositions, verification, rulings and the approval-gated activation list;
 activation, private secret synchronization, builds and CDC registration remain
 separately approved.
+
+### Task 10: Storage, secret custody, network and lakehouse convergence (2026-09-22)
+
+Base main `1ac49fd3534ddf5ca324ea5874403513bd0c2592`, isolated branch
+`refactor/spec-0180-platform-convergence`. Stages S00→S19 run strictly in
+sequence; each stage re-reads the shared files changed by the previous stage,
+updates code, README, Stage 05, env/secret metadata, profiles, version
+projection and tests together, runs its unit and negative checks plus the
+accumulated regression set, and is reviewed before the next stage starts.
+A stage may end `SOURCE_READY/LIVE_PENDING`; that never satisfies a later
+stage's cutover or data-disposal condition. The earlier A–G/R parallel units do
+not apply. [Task 0008](tasks/tsk-0008-storage-security-lakehouse-convergence.md)
+owns the move table, duplicate rulings, communication table, evidence and the
+approval-gated live list.
 
 ### Original work-unit correspondence
 
