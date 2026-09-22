@@ -1648,6 +1648,10 @@ class BackupContractTests(unittest.TestCase):
             script.index("pgbackrest --stanza=mng"), script.index("state_kib=")
         )
         self.assertIn("is inside backed-up source", script)
+        # pgbackrest/ is 0750 for UID 70; the host user cannot measure it (live
+        # finding, 2026-09-22), so its size comes from inside mng-pg.
+        self.assertIn("docker exec -u postgres mng-pg du -sk /var/lib/pgbackrest", script)
+        self.assertIn("--exclude=pgbackrest", script)
         self.assertNotIn(
             "workflow/airflow\n",
             (ROOT / RESTIC_DIR / "sets/state-include.txt").read_text(),

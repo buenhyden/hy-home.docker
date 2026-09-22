@@ -96,7 +96,14 @@ fi
 
 # Size budget, measured after pgBackRest has expired old backups. Above it the
 # Restic step adds nothing; deleting snapshots stays a separate approval.
-state_kib="$(du -sk -- "$state_repo" | cut -f1)"
+# pgbackrest/ is 0750 for UID 70, so measure it inside mng-pg and the rest here.
+host_kib="$(du -sk --exclude=pgbackrest -- "$state_repo" | cut -f1)"
+if ! pg_kib="$(docker exec -u postgres mng-pg du -sk /var/lib/pgbackrest | cut -f1)"; then
+    echo "cannot measure the pgBackRest repository; Restic backup skipped" >&2
+    pg_kib=$((max_gib * 1024 * 1024))
+    status=1
+fi
+state_kib=$((host_kib + pg_kib))
 if (( state_kib >= max_gib * 1024 * 1024 )); then
     echo "BACKUP_STATE_REPO_DIR uses $((state_kib / 1024)) MiB, at or over the ${max_gib} GiB budget; Restic backup skipped" >&2
     status=1
@@ -107,5 +114,5 @@ fi
 
 # Size trend for capacity review (journal): repositories grow with retained
 # changes only; pgBackRest is bounded by retention, Restic until forget-prune.
-du -sh -- "$state_repo/pgbackrest" "$state_repo/restic" "$host_repo/restic" 2>/dev/null || true
+echo "repository sizes: pgbackrest=$((pg_kib / 1024))MiB state-other=$((host_kib / 1024))MiB host=$(du -sm -- "$host_repo/restic" | cut -f1)MiB" || true
 exit "$status"
