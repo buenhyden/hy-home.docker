@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -62,7 +62,7 @@ graph TD
     subgraph "04-data Tier (infra_net)"
         ROUTER[pg-router HAProxy]
         V_CLSTR[Valkey Cluster 6-nodes]
-        MINIO[MinIO S3]
+        OBJ[SeaweedFS S3]
         QDRANT[Qdrant Vector]
 
         subgraph "PostgreSQL HA Cluster"
@@ -75,7 +75,7 @@ graph TD
 
     APP --> ROUTER
     APP --> V_CLSTR
-    APP --> MINIO
+    APP --> OBJ
     APP --> QDRANT
 
     ROUTER --> PG0

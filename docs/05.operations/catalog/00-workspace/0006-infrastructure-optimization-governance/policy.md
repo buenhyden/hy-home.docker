@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -128,8 +128,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
   - [valkey-cluster](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
     ([OPER](../../04-data/0022-valkey-cluster/guide.md), [RUN](../../04-data/0022-valkey-cluster/runbook.md))
 - Lake & Object
-  - [minio](../../../../../infra/04-data/lake-and-object/minio/README.md): 버킷 수명주기/버전관리 정책, KMS 연동 암호화, 교차 AZ 복제 검토
-    ([OPER](../../04-data/0023-minio/guide.md), [RUN](../../04-data/0023-minio/runbook.md))
   - [seaweedfs](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
     ([OPER](../../04-data/0024-seaweedfs/guide.md), [RUN](../../04-data/0024-seaweedfs/runbook.md))
 - NoSQL

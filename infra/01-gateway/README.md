@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 ## Overview
 
-The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The root stack includes both leaves unconditionally and a profile decides what starts: `traefik` belongs to `core`, `dev`, and `local`, while `nginx` belongs only to `nginx`. Both publish host ports 80/443, so they must not be selected together on one host. Neither resolves when no profile is selected. Nginx also requires the root network and healthy MinIO dependency context.
+The `01-gateway` tier is the unified entry point for traffic entering the `hy-home.docker` ecosystem. The root stack includes both leaves unconditionally and a profile decides what starts: `traefik` belongs to `core`, `dev`, and `local`, while `nginx` belongs only to `nginx`. Both publish host ports 80/443, so they must not be selected together on one host. Neither resolves when no profile is selected. Nginx also requires the root network and healthy SeaweedFS S3 dependency context.
 
 ## Audience
 

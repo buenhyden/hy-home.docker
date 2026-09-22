@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-12-06"
 ---
 
@@ -12,8 +12,8 @@ created: "2025-12-06"
 
 ## Overview
 
-This package defines SeaweedFS, the S3 object store that replaces MinIO one
-consumer at a time (SPEC-0180 S07).
+This package defines SeaweedFS, the HOME S3 object store. It replaced MinIO
+in SPEC-0180 S07.
 
 ## Audience
 
@@ -36,7 +36,6 @@ the FUSE mount was removed in S04, and master and filer have no route.
 | `config/hyhome-seaweedfs.sh` | start script: builds JWT, gRPC mTLS and S3 identity configuration from secrets |
 | `config/s3-identities.conf` | bucket-scoped consumer identities (loki, tempo, mlflow, terrakube) and anonymous CDN reads |
 | `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: idempotent bucket creation with the admin identity |
-| `config/seaweedfs-migrate.sh` | `seaweedfs-migrate` job (S07 only): MinIO → SeaweedFS copy with a count and byte check |
 | `bin/gen-grpc-certs.sh` | host script: issues the SeaweedFS-only gRPC CA and certificates |
 
 State lives under `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`, owned

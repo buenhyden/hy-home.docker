@@ -559,6 +559,36 @@ switched.
 | Scope | 3×3 list check with each consumer key: own bucket allowed, the other two denied |
 | MinIO | still running with its data untouched; the rollback is the previous configuration against it. `doc-intel-assets` is empty and was not copied |
 
+### S07b — MinIO removal (source)
+
+| Unit | Change |
+| --- | --- |
+| Compose | `infra/04-data/lake-and-object/minio/` (HOME node, bucket job, LAB `minio1`–`minio4`) and its root includes removed; the `storage-cluster` profile goes with it. `seaweedfs-migrate`, its script and the `storage-migration` profile removed |
+| Secrets | `minio_root_*` and `minio_app_*` root declarations and STRG-001–004 removed; registry counts 268/58/208, 79 declarations, 108 rows |
+| Environment | `MINIO_PORT` and `MINIO_CONSOLE_PORT` removed from `.env.example` and the core-readiness example (which also held `MINIO_APP_USERNAME`) |
+| Observability | Prometheus `minio` job (both configs), the `Minio_alerts` group and `minio` in the missing-target regex removed; Grafana `minio.json` and `minio-bucket.json` removed |
+| Catalog | POL-0078 member lists, the `storage-cluster` and `storage-migration` rows and the storage-cluster compatibility row removed; the catalog profile map entry removed; m0021 authored rows removed and the inventory regenerated; tech-stack projection resynced (one image removed) |
+| Stage 05 | 0023-minio preserved under `docs/98.archive/superseded/` with `superseded_by` GDE/POL/RUN-0024 and three Retention Catalog rows (source `988059fe8`); inbound links removed; RUN-0024 replaces the cutover procedure with the retained-data note; POL-0021 row describes the retained, unbacked MinIO directory |
+| Documents | Requirements 0001/0002/0004/0007, descriptions 0001/0004/0006/0009/0019/0021/0024/0026 (MinIO addresses marked released), infra and secrets READMEs now name SeaweedFS |
+| Tests | rehearsal drops the migration job, the disposable MinIO and test 7 (7 tests remain) |
+
+Sequential review: no critical or important finding. Minor wording fixes
+applied: the retained MinIO directory is described as removed from source, not
+as stopped, until the live step runs; stale scope text in the lake-and-object
+README and m0021; Nginx waits only for `seaweedfs-s3`; RUN-0024 rollback no
+longer names a cluster. The gate also found links from Tasks 0001/0005, POL-0021
+and m0021 to removed paths (now identifiers or RUN-0024) and an empty
+`0023-minio` directory left by the move. Rehearsal 7/7 passed; the archive
+`Source` `988059fe8` is reachable from `main` (#201 merge commit).
+
+Kept deliberately: ADR-0001 and ADR-0006 name MinIO as the context of their
+decisions and are not rewritten; the historical live snapshot table in m0021
+and earlier Task text keep their MinIO rows as evidence.
+
+Runtime is not changed by this source step. After merge, the running `minio`
+container becomes a Compose orphan and is stopped and removed in a separately
+approved live step; its data directory stays.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -610,7 +640,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 ## Deferred Items
 
 - Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).
-- `secrets/storage/minio_*.txt` files are mode 0644 (world-readable); they go away with MinIO in S07, or tighten to 0640 now (owner).
+- `secrets/storage/minio_*.txt` files are mode 0644 (world-readable); tighten to 0640 or delete with the MinIO data disposition (owner).
 
 - OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
 - Prometheus k8s NodePort targets on `172.18.0.2` refuse connections; `.2` is Traefik's k3d address (observability owner).
@@ -619,8 +649,10 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 
-- Operator `.env` keeps `MINIO_APP_USERNAME` and `MLFLOW_S3_USER`, no longer read; drop them with MinIO in S07b.
-- An exited `mlflow-artifact-provision` container remains as a Compose orphan; remove it in S07b.
+- Operator `.env` keeps `MINIO_APP_USERNAME` and `MLFLOW_S3_USER`, no longer read; drop them in the S07b live step.
+- Exited `mlflow-artifact-provision` and running `minio` containers become Compose orphans; stop and remove them in the S07b live step (the MinIO data directory stays).
+- SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
+- `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).

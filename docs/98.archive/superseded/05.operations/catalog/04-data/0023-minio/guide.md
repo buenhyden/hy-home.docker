@@ -2,9 +2,9 @@
 title: "MinIO Object Storage Usage Guide"
 version: "1.0.2"
 type: "operation/guide"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0023"
 parent_ids:
@@ -18,6 +18,7 @@ implementation_services:
   infra/04-data/lake-and-object/minio/docker-compose.yml:
   - 'minio'
   - 'minio-create-buckets'
+superseded_by: "GDE-0024"
 created: "2026-05-10"
 ---
 

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-24"
 ---
 
@@ -47,7 +47,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / optional; see disposition |
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / optional; see disposition |
 | **03** | **Security** | [OpenBao](./03-security/openbao) | HOME bootstrap; Vault is legacy migration |
-| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [MinIO](./04-data/lake-and-object/minio), [Qdrant](./04-data/specialized/qdrant) | HOME / optional; see disposition |
+| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [SeaweedFS](./04-data/lake-and-object/seaweedfs), [Qdrant](./04-data/specialized/qdrant) | HOME / optional; see disposition |
 | **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Optional; cluster is LAB |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / optional; see disposition |
 | **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / optional; see disposition |

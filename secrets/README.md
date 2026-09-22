@@ -1,10 +1,10 @@
 ---
 title: "Secret Handling Surface"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2026-02-23"
 ---
 
@@ -55,7 +55,7 @@ secrets/
 ├── db/                   # PostgreSQL, Valkey, NoSQL 등 DB secret
 ├── observability/        # Grafana와 monitoring stack secret
 ├── security/             # OpenBao 서비스 자격 증명과 legacy Vault migration custody
-├── storage/              # MinIO 등 object storage secret
+├── storage/              # SeaweedFS object storage secret
 ├── tools/                # SonarQube 등 선택 도구 secret
 ├── SENSITIVE_ENV_VARS.md.example  # registry 예시
 └── README.md             # This file
@@ -82,7 +82,7 @@ secrets/
 | DB | `db/` | PostgreSQL, Valkey, Cassandra, CouchDB, MongoDB 등 DB secret |
 | Observability | `observability/` | Grafana and monitoring credentials |
 | Security | `security/` | OpenBao and separate legacy Vault secret |
-| Storage | `storage/` | MinIO and object storage credentials |
+| Storage | `storage/` | SeaweedFS keys and S3 identities |
 | Tools | `tools/` | SonarQube and optional utility service secret |
 
 추가 tracked directory identifier:

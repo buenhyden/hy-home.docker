@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -21,8 +21,7 @@ resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-SeaweedFS is the S3 object store that replaces MinIO consumer by consumer in
-SPEC-0180 S07. It is HOME: every profile that selects an S3 consumer (`storage`,
+SeaweedFS is the S3 object store; it replaced MinIO in SPEC-0180 S07. It is HOME: every profile that selects an S3 consumer (`storage`,
 `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`) also selects the four
 services and `seaweedfs-buckets`, as do `seaweedfs` and `storage-seaweedfs`.
 Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.

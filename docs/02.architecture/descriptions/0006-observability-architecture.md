@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -23,7 +23,7 @@ created: "2026-03-26"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시각화하며, 장애 시 상관 분석(Correlation Analysis)을 통해 문제 해결을 가속화한다. 현재 compose는 OTLP trace ingress, Docker log discovery, Prometheus scrape/remote-write 경로를 제공하고, Loki/Tempo는 MinIO 기반 S3 백엔드 스토리지를 사용한다.
+Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시각화하며, 장애 시 상관 분석(Correlation Analysis)을 통해 문제 해결을 가속화한다. 현재 compose는 OTLP trace ingress, Docker log discovery, Prometheus scrape/remote-write 경로를 제공하고, Loki/Tempo는 SeaweedFS 기반 S3 백엔드 스토리지를 사용한다.
 
 ## System Boundaries
 
@@ -37,7 +37,7 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
   - 통합 대시보드 (Grafana)
   - 통합 텔레메트리 수집 (Alloy)
 - **Consumes**:
-  - **MinIO (04-data)**: 로그 및 트레이스 데이터 저장을 위한 S3 스토리지.
+  - **SeaweedFS (04-data)**: 로그 및 트레이스 데이터 저장을 위한 S3 스토리지.
   - **Keycloak (02-auth)**: Grafana SSO 로그인을 위한 OIDC 공급자.
 - **Does Not Own**:
   - 애플리케이션 보안 로그 (03-security 소관)
@@ -53,7 +53,7 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 
 - **Performance**: Alloy를 통한 비동기 데이터 처리를 통해 애플리케이션 오버헤드 최소화.
 - **Security**: Keycloak OIDC 기반의 역할 기반 권한 제어(RBAC) 적용.
-- **Reliability**: Loki/Tempo의 MinIO object blocks와 각 서비스의 local WAL/working state를 함께 다루는 복구 경계.
+- **Reliability**: Loki/Tempo의 SeaweedFS object blocks와 각 서비스의 local WAL/working state를 함께 다루는 복구 경계.
 - **Scalability**: Prometheus는 현재 local TSDB가 durable authority이며 remote-write receiver 활성화만으로 외부 장기 저장소를 의미하지 않는다.
 - **Observability**: 자기 자신에 대한 모니터링(Self-monitoring) 대시보드 포함.
 
@@ -78,13 +78,13 @@ sink는 있으나 profile source가 없으므로 end-to-end profile collection�
 
 - **Key Entities / Flows**:
   - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus remote write
-  - **Logs Flow**: Docker Logs -> Alloy -> Loki -> MinIO
-  - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> MinIO
+  - **Logs Flow**: Docker Logs -> Alloy -> Loki -> SeaweedFS
+  - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> SeaweedFS
   - **Profiles Flow**: Pyroscope sink is configured, but no Alloy profile source is declared
 - **Storage Strategy**:
   - 메트릭: Prometheus local TSDB
-  - 로그: Loki MinIO bucket `loki-bucket`, `retention_period: 168h`
-  - 트레이스: Tempo MinIO bucket `tempo-bucket`, `block_retention: 24h`
+  - 로그: Loki SeaweedFS bucket `loki-bucket`, `retention_period: 168h`
+  - 트레이스: Tempo SeaweedFS bucket `tempo-bucket`, `block_retention: 24h`
   - 프로파일: Pyroscope local filesystem backend
 - **Data Boundaries**: 모든 텔레메트리 데이터는 `infra_net` 내부망에서만 소통함을 원칙으로 한다.
 

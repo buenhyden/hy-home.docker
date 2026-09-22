@@ -1492,42 +1492,6 @@
       ]
     },
     {
-      "component": "Compose image: quay.io/minio/minio",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "quay.io/minio/minio": "external"
-      },
-      "images": [
-        "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
-      ],
-      "compose_files": [
-        "infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml",
-        "infra/04-data/lake-and-object/minio/docker-compose.yml",
-        "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml",
-          "images": [
-            "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
-          ]
-        },
-        {
-          "compose_file": "infra/04-data/lake-and-object/minio/docker-compose.yml",
-          "images": [
-            "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
-          ]
-        },
-        {
-          "compose_file": "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml",
-          "images": [
-            "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: registry",
       "tier": "09-tooling",
       "classification": "external",

@@ -1,10 +1,10 @@
 ---
 title: "Tooling Tier Architecture Description"
-version: "2.0.0"
+version: "2.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-03-26"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, MinIO, Valkey 같은 data tier backend와 연동한다.
+`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, SeaweedFS, Valkey 같은 data tier backend와 연동한다.
 
 ## System Boundaries
 
@@ -34,7 +34,7 @@ created: "2026-03-26"
   - 사설 패키지/이미지 스토리지 (`Registry`)
   - 수동 의존성 업데이트 작업 (`Renovate`)
 - **Consumes**:
-  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, MinIO, Valkey)
+  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, SeaweedFS, Valkey)
   - 공통 인증 서비스 (`02-auth` / Keycloak)
   - 네트워크 리소스 (`infra_net`)
 - **Does Not Own**:
@@ -51,7 +51,7 @@ created: "2026-03-26"
 
 - **Scalability**: Locust 워커와 Terrakube 실행 용량은 승인된 구성 변경으로 조정한다. 현재 고정 Compose 서비스가 자동 확장을 구현하거나 검증했다는 뜻은 아니다.
 - **Security**: SonarQube/Terrakube 같은 공개 관리 UI에 gateway+SSO 체인 적용.
-- **Reliability**: IaC state/object persistence를 선언된 backend에 보관한다. 동일 호스트의 MinIO와 PostgreSQL은 독립 장애 도메인이 아니므로 호스트 장애 시 연속성을 보장하지 않는다. 백업과 격리 복구 검증은 별도 운영 증거가 필요하다.
+- **Reliability**: IaC state/object persistence를 선언된 backend에 보관한다. 동일 호스트의 SeaweedFS와 PostgreSQL은 독립 장애 도메인이 아니므로 호스트 장애 시 연속성을 보장하지 않는다. 백업과 격리 복구 검증은 별도 운영 증거가 필요하다.
 - **Operability**: 중앙 집중식 대시보드 및 API를 통한 통합 제어 환경 제공.
 
 ## Components
@@ -72,7 +72,7 @@ created: "2026-03-26"
 데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
 
 - **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / IaC Configuration → OpenTofu 또는 Terrakube Plan → 승인된 Apply.
-- **Storage Strategy**: Terrakube state/object data는 MinIO 호환 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 OpenTofu workspace는 현재 bind mount 기반 local persistence를 사용한다. Syncthing runtime은 제거되었으며 파일 동기화 경로를 소유하지 않는다.
+- **Storage Strategy**: Terrakube state/object data는 SeaweedFS S3 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 OpenTofu workspace는 현재 bind mount 기반 local persistence를 사용한다. Syncthing runtime은 제거되었으며 파일 동기화 경로를 소유하지 않는다.
 - **Data Boundaries**: 각 도구는 별도의 데이터베이스 또는 스키마를 사용하여 데이터 간섭을 방지한다.
 
 ## Deployment View

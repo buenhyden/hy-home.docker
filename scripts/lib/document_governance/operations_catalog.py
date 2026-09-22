@@ -736,7 +736,6 @@ _FIXED_PROFILE_CATEGORIES = {
     "opensearch": "topology",
     "opensearch-cluster": "topology",
     "postgres-ha": "topology",
-    "storage-cluster": "topology",
     "valkey-cluster": "topology",
 }
 

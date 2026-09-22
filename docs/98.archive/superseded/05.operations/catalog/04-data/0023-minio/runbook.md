@@ -2,13 +2,14 @@
 title: "MinIO Object Storage Health Runbook"
 version: "1.0.1"
 type: "operation/runbook"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0023"
 parent_ids:
 - "GDE-0023"
+superseded_by: "RUN-0024"
 created: "2026-05-17"
 ---
 

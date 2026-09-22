@@ -2,13 +2,14 @@
 title: "MinIO Object Storage Operations Policy"
 version: "1.0.2"
 type: "operation/policy"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0023"
 parent_ids:
 - "AD-0004"
+superseded_by: "POL-0024"
 created: "2026-05-17"
 ---
 

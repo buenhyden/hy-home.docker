@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Architecture Description"
-version: "2.0.1"
+version: "2.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -43,7 +43,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **Consumes**:
   - `01-gateway` middleware chain
   - `02-auth` SSO middleware
-  - `04-data` PostgreSQL/Valkey/MinIO/InfluxDB
+  - `04-data` PostgreSQL/Valkey/SeaweedFS/InfluxDB
 - **Does Not Own**:
   - 각 도구의 비즈니스 도메인 로직
   - 카탈로그 항목의 전면 구현 완료 상태
@@ -77,7 +77,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
   - terrakube api/ui/executor
   - locust master/worker, k6 service
 - **Shared dependencies**:
-  - PostgreSQL, Valkey, MinIO, InfluxDB, Keycloak
+  - PostgreSQL, Valkey, SeaweedFS, InfluxDB, Keycloak
 
 ## Data Flow
 

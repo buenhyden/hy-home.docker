@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0007"
 parent_ids: []
@@ -40,7 +40,7 @@ created: "2026-03-26"
 ## Functional Requirements
 
 - **REQ-0007-FR-0001**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
-- **REQ-0007-FR-0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(MinIO)에 영구 보관해야 한다.
+- **REQ-0007-FR-0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(SeaweedFS)에 영구 보관해야 한다.
 - **REQ-0007-FR-0003**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
 - **REQ-0007-FR-0004**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
 - **REQ-0007-FR-0005**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
@@ -75,7 +75,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Risks
 
-- **Persistence Layer**: Loki와 Tempo가 MinIO(`04-data`)에 의존하므로 데이터 계층 장애 시 관측 데이터 저장이 중단될 수 있다.
+- **Persistence Layer**: Loki와 Tempo가 SeaweedFS(`04-data`)에 의존하므로 데이터 계층 장애 시 관측 데이터 저장이 중단될 수 있다.
 - **Auth Layer**: Grafana 로그인 및 권한 관리가 Keycloak(`02-auth`)에 의존한다.
 
 ## Traceability

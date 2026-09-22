@@ -242,29 +242,3 @@ services:
       object_net: {}
     labels:
       <<: *tier-label
-
-  # Temporary MinIO -> SeaweedFS copy for the S07 cutover; removed with MinIO.
-  # Run per bucket: docker compose --profile storage-migration run --rm
-  #   -e BUCKETS=loki-bucket seaweedfs-migrate
-  seaweedfs-migrate:
-    profiles:
-      - storage-migration
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-job-low
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: seaweedfs-migrate
-    restart: 'no'
-    entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-migrate.sh' ]
-    environment:
-      SEAWEEDFS_S3_ADMIN_ACCESS_KEY: ${SEAWEEDFS_S3_ADMIN_ACCESS_KEY:-}
-    volumes:
-      - ./config/seaweedfs-migrate.sh:/opt/hyhome/seaweedfs-migrate.sh:ro
-    secrets:
-      - minio_root_username
-      - minio_root_password
-      - seaweedfs_s3_admin_secret_key
-    networks:
-      object_net: {}
-    labels:
-      <<: *tier-label
