@@ -23,6 +23,7 @@ HTPASSWD_ID_INPUTS = {"ELASTIC_USERNAME", "TRAEFIK_ADMIN_USERNAME"}
 REGISTRY_PATH_EXCEPTIONS = {
     "INFRA-002": "secrets/auth/traefik_admin_password.txt",
     "SEC-001": "secrets/security/vault_token.txt",
+    "SEC-003": "secrets/security/openbao_unseal_keys.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
 CONFIG_SUFFIXES = {
@@ -809,7 +810,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.environment["consumed"],
         )
         self.assertEqual(75, len(contract["declarations"]))
-        self.assertEqual(103, len(contract["rows"]))
+        self.assertEqual(104, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
