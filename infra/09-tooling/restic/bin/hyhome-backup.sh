@@ -96,14 +96,18 @@ fi
 
 # Size budget, measured after pgBackRest has expired old backups. Above it the
 # Restic step adds nothing; deleting snapshots stays a separate approval.
-# pgbackrest/ is 0750 for UID 70, so measure it inside mng-pg and the rest here.
-host_kib="$(du -sk --exclude=pgbackrest -- "$state_repo" | cut -f1)"
-if ! pg_kib="$(docker exec -u postgres mng-pg du -sk /var/lib/pgbackrest | cut -f1)"; then
-    echo "cannot measure the pgBackRest repository; Restic backup skipped" >&2
-    pg_kib=$((max_gib * 1024 * 1024))
+# Repository contents belong to UID 70 (pgBackRest) and root (Restic), so the
+# host user measures through a read-only, networkless container.
+restic_image="$(python3 -c 'import json,sys
+print(json.loads(sys.stdin.read())["services"]["restic"]["image"])' <<<"$rendered")"
+size_kib() {
+    docker run --rm --network none -v "$1:/m:ro" --entrypoint du "$restic_image" -sk /m | cut -f1
+}
+if ! state_kib="$(size_kib "$state_repo")"; then
+    echo "cannot measure $state_repo; Restic backup skipped" >&2
+    state_kib=$((max_gib * 1024 * 1024))
     status=1
 fi
-state_kib=$((host_kib + pg_kib))
 if (( state_kib >= max_gib * 1024 * 1024 )); then
     echo "BACKUP_STATE_REPO_DIR uses $((state_kib / 1024)) MiB, at or over the ${max_gib} GiB budget; Restic backup skipped" >&2
     status=1
@@ -114,5 +118,5 @@ fi
 
 # Size trend for capacity review (journal): repositories grow with retained
 # changes only; pgBackRest is bounded by retention, Restic until forget-prune.
-echo "repository sizes: pgbackrest=$((pg_kib / 1024))MiB state-other=$((host_kib / 1024))MiB host=$(du -sm -- "$host_repo/restic" | cut -f1)MiB" || true
+echo "repository sizes: state=$(( $(size_kib "$state_repo") / 1024 ))MiB (budget ${max_gib}GiB) host=$(( $(size_kib "$host_repo/restic") / 1024 ))MiB" || true
 exit "$status"
