@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -129,7 +129,7 @@ graph TD
 - **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway and observability services.
 - **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
 - **Kubernetes/GitOps**: k3d NodePort targets for Argo CD, kube-state-metrics, Istio, and Argo Rollouts.
-- **Applications**: Keycloak, n8n, Airflow, Vault, Ollama exporter.
+- **Applications**: Keycloak, n8n, Airflow, OpenBao, Ollama exporter.
 
 #### GPU metrics (DCGM Exporter, opt-in `obs-gpu`)
 
@@ -157,7 +157,7 @@ missing, so collection is **unverified** until an approved run shows
 Rules are partitioned into domain-specific files in `config/alert_rules/`.
 
 - Local domain files use the `alert_rules.local.*.yml` naming pattern.
-- Kubernetes, Keycloak, Vault, and recording rules are loaded as explicit files in `prometheus.yml`.
+- Kubernetes, Keycloak, the secret service (`alert_rules.vault.yml`, named after the `vault_` metric prefix OpenBao keeps) and recording rules are loaded as explicit files in `prometheus.yml`.
 - Rule changes must be validated before reload.
 
 #### 3. Storage (TSDB)

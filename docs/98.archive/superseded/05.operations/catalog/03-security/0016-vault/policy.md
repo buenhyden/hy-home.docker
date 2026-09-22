@@ -2,13 +2,14 @@
 title: "Vault Legacy Migration Policy"
 version: "1.0.1"
 type: "operation/policy"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0016"
 parent_ids:
 - "AD-0003"
+superseded_by: "POL-0085"
 created: "2026-05-17"
 ---
 

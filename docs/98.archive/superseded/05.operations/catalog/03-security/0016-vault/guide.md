@@ -2,9 +2,9 @@
 title: "Vault Legacy Migration Guide"
 version: "1.0.1"
 type: "operation/guide"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0016"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/03-security/vault/docker-compose.yml:
   - vault
   - vault-agent
+superseded_by: "GDE-0085"
 created: "2026-05-10"
 ---
 

@@ -1,23 +1,23 @@
 ---
 title: "Operations — 03 Security"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "operations"
 ---
 
 # Operations — 03 Security
 
-> Canonical OpenBao and legacy Vault operations grouped by stable subject.
+> Canonical OpenBao operations grouped by stable subject.
 
 ## Overview
 
 OpenBao (`0085-openbao`) is the canonical HOME secret service with Raft,
-AppRole Agent rendering, and native Keycloak OIDC. Vault (`0016-vault`) is
-retained only under `legacy-vault` for migration and recovery. Their data paths,
-seal material, snapshots, and consumers remain separate.
+AppRole Agent rendering, and native Keycloak OIDC. Vault was removed in
+SPEC-0180 S08; its preserved data path and seal material stay separate and out
+of service.
 
 ## Audience
 
@@ -25,7 +25,7 @@ seal material, snapshots, and consumers remain separate.
 
 ## Scope
 
-- OpenBao current operation and legacy Vault migration/recovery.
+- OpenBao current operation.
 - No secret values, runtime change, credential rotation, restore execution, or
   unauthenticated root recovery is authorized by this index.
 
@@ -33,8 +33,6 @@ seal material, snapshots, and consumers remain separate.
 
 | Subject | Available documents |
 | --- | --- |
-| [Vault](0016-vault/guide.md) | [Guide](0016-vault/guide.md), [Policy](0016-vault/policy.md), [Runbook](0016-vault/runbook.md) |
-
 | [OpenBao](0085-openbao/guide.md) | [Guide](0085-openbao/guide.md), [Policy](0085-openbao/policy.md), [Runbook](0085-openbao/runbook.md) |
 
 ## How to Work in This Area

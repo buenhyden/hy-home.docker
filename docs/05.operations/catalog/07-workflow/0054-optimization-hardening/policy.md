@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -42,7 +42,7 @@ created: "2026-05-10"
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지한다.
 - **Allowed**:
   - Airflow DAG quality gate/worker autoscale 기준의 단계적 강화
-  - n8n workflow Git backup/Vault credential 연계의 단계적 강화
+  - n8n workflow Git backup/OpenBao credential 연계의 단계적 강화
   - 미구현 workflow service 문서 제거 및 archive ledger 추적
 - **Disallowed**:
   - 무승인 middleware 완화
@@ -56,7 +56,7 @@ created: "2026-05-10"
   - worker autoscale 트리거(큐 지연, 실행 대기 수, CPU/memory) 기준 합의
 - **n8n 승인 조건**:
   - workflow Git backup 표준 운영 절차 수립
-  - credential store Vault 연계 모델 및 롤백 절차 문서화
+  - credential store OpenBao 연계 모델 및 롤백 절차 문서화
 
 ## Exceptions
 

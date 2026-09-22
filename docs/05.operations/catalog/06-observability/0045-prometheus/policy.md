@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -58,7 +58,6 @@ config, and alert-rule surfaces.
   - `opensearch_exporter_password` and `openbao_token` are Docker Secret file
     references only; their values must not appear in docs, logs, or task
     evidence.
-  - `SEC-001` / `vault_token` is legacy Vault migration custody only.
     Active Prometheus neither declares nor mounts it; preserve any existing
     private value until separately approved migration closeout, revocation, and
     file disposition.

@@ -375,8 +375,8 @@ metadata gate across the current corpus, not by the existence of these links.
 | valkey-node-3 | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/guide.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/policy.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/runbook.md) | linked | metadata gate |
 | valkey-node-4 | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/guide.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/policy.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/runbook.md) | linked | metadata gate |
 | valkey-node-5 | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/guide.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/policy.md) | [active](../../../05.operations/catalog/04-data/0022-valkey-cluster/runbook.md) | linked | metadata gate |
-| vault | [active](../../../05.operations/catalog/03-security/0016-vault/guide.md) | [active](../../../05.operations/catalog/03-security/0016-vault/policy.md) | [active](../../../05.operations/catalog/03-security/0016-vault/runbook.md) | linked | metadata gate |
-| vault-agent | [active](../../../05.operations/catalog/03-security/0016-vault/guide.md) | [active](../../../05.operations/catalog/03-security/0016-vault/policy.md) | [active](../../../05.operations/catalog/03-security/0016-vault/runbook.md) | linked | metadata gate |
+| vault | `GDE-0016` (superseded) | `POL-0016` (superseded) | `RUN-0016` (superseded) | linked | metadata gate |
+| vault-agent | `GDE-0016` (superseded) | `POL-0016` (superseded) | `RUN-0016` (superseded) | linked | metadata gate |
 | vector | [active](../../../05.operations/catalog/04-data/0029-supabase/guide.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/policy.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/runbook.md) | linked | metadata gate |
 
 #### G. Environment contract

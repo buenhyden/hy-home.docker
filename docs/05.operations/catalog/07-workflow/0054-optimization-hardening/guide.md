@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -64,7 +64,7 @@ created: "2026-05-17"
    - `python3 scripts/validation/check-document-links.py --mode traceability`
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
-   - n8n workflow Git backup/Vault credential 기준을 정책 문서에 반영한다.
+   - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.
    - 미구현 workflow service 문서는 active operations chain에서 제거한다.
 
 ### Common Pitfalls

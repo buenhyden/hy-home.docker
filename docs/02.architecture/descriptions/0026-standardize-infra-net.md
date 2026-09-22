@@ -1,6 +1,6 @@
 ---
 title: "infra_net Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -44,7 +44,7 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.3-6 | Authentication / Keycloak and OAuth2 Proxy |
 | 172.19.0.7 | Tooling registry |
 | 172.19.0.8 | InfluxDB |
-| 172.19.0.9-10 | Legacy Vault and Vault Agent |
+| 172.19.0.9-10 | released (Vault removed, SPEC-0180 S08) |
 | 172.19.0.11-16 | PostgreSQL and management database core |
 | 172.19.0.17-18 | OpenBao and OpenBao Agent |
 | 172.19.0.19 | cAdvisor |

@@ -71,14 +71,6 @@
         "reason": "Auth-disabled etcd cluster bootstrap mode"
       },
       {
-        "service": "vault",
-        "reason": "Core Vault server runs without Docker secrets; bootstrap credentials are handled by Vault procedures"
-      },
-      {
-        "service": "vault-agent",
-        "reason": "Vault Agent consumes Vault runtime state and mounted config, not Docker secrets"
-      },
-      {
         "service": "openbao",
         "reason": "Secret control plane uses owner-held initialization/unseal material and persistent Raft state, not a Docker Secret.",
         "owner": "@buenhyden",

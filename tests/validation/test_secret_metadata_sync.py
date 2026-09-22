@@ -14,7 +14,6 @@ import yaml
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/operations/gen-secrets.sh"
 ROOT = SCRIPT.parents[2]
-MIGRATION_COMPOSE = "infra/03-security/vault/docker-compose.yml"
 # DEFAULT_MOUNT_VOLUME_PATH left this set when the Restic job mounted it directly.
 INDIRECT_DERIVED_INPUTS = {
     "DEFAULT_DOCKER_PROJECT_PATH",
@@ -22,7 +21,6 @@ INDIRECT_DERIVED_INPUTS = {
 HTPASSWD_ID_INPUTS = {"ELASTIC_USERNAME", "TRAEFIK_ADMIN_USERNAME"}
 REGISTRY_PATH_EXCEPTIONS = {
     "INFRA-002": "secrets/auth/traefik_admin_password.txt",
-    "SEC-001": "secrets/security/vault_token.txt",
     "SEC-003": "secrets/security/openbao_unseal_keys.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
@@ -104,19 +102,13 @@ def environment_contract(compose_texts, env_text):
     derived_only = env_derived - compose_keys
     consumed = (compose_keys & public) | derived_only | HTPASSWD_ID_INPUTS
     orphan = public - consumed
-    migration_only = {
-        name
-        for name, uses in references.items()
-        if name in public and {relative for relative, _ in uses} == {MIGRATION_COMPOSE}
-    }
     required = {
         name
         for name, uses in references.items()
         if name in public and any(operator in (None, "?", ":?") for _, operator in uses)
     }
     required |= derived_only | HTPASSWD_ID_INPUTS
-    required -= migration_only
-    optional = public - required - migration_only - orphan
+    optional = public - required - orphan
     return {
         "public": public,
         "missing": missing,
@@ -125,7 +117,6 @@ def environment_contract(compose_texts, env_text):
         "orphan": orphan,
         "required": required,
         "optional": optional,
-        "migration_only": migration_only,
     }
 
 
@@ -755,22 +746,18 @@ class PublicSecretSchemaTests(unittest.TestCase):
         cls.environment = environment_contract(cls.compose_texts, cls.env_text)
         cls.registry_text = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
 
-    def test_public_environment_has_current_consumers_and_five_way_classification(self):
+    def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(268, len(contract["public"]))
+        self.assertEqual(266, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
-        self.assertEqual(
-            {"VAULT_CLUSTER_PORT", "VAULT_PORT"}, contract["migration_only"]
-        )
         self.assertEqual(58, len(contract["required"]))
         self.assertEqual(208, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"]
             | contract["optional"]
-            | contract["migration_only"]
             | contract["orphan"],
         )
 
@@ -793,14 +780,6 @@ class PublicSecretSchemaTests(unittest.TestCase):
         contract = environment_contract(self.compose_texts, with_orphan)
         self.assertIn("UNUSED_CONTRACT_KEY", contract["orphan"])
 
-        outside_migration = dict(self.compose_texts)
-        outside_migration["synthetic.yml"] = (
-            "services:\n  scanner-probe:\n"
-            "    image: example:latest\n"
-            "    environment:\n      PORT: '${VAULT_PORT}'\n"
-        )
-        contract = environment_contract(outside_migration, self.env_text)
-        self.assertNotIn("VAULT_PORT", contract["migration_only"])
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = secret_contract(
@@ -810,7 +789,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.environment["consumed"],
         )
         self.assertEqual(79, len(contract["declarations"]))
-        self.assertEqual(108, len(contract["rows"]))
+        self.assertEqual(107, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
@@ -1034,7 +1013,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertEqual('path "sys/metrics" {\n  capabilities = ["read"]\n}\n', policy)
 
         registry = (root / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
-        self.assertIn("**SEC-001**", registry)
+        self.assertNotIn("**SEC-001**", registry)  # legacy Vault token, removed in S08
         self.assertIn("**SEC-002**", registry)
         self.assertIn("secrets/security/openbao_token.txt", registry)
 

@@ -320,7 +320,6 @@ include:
   - infra/02-auth/oauth2-proxy/docker-compose.yml
   # 03-security
   - infra/03-security/openbao/docker-compose.yml
-  - infra/03-security/vault/docker-compose.yml # migration only
   # 04-data
   - infra/04-data/analytics/influxdb/docker-compose.yml
   - infra/04-data/analytics/ksql/docker-compose.yml

@@ -2,13 +2,14 @@
 title: "Vault Legacy Migration Runbook"
 version: "1.0.1"
 type: "operation/runbook"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0016"
 parent_ids:
 - "GDE-0016"
+superseded_by: "RUN-0085"
 created: "2026-05-17"
 ---
 
