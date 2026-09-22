@@ -45,9 +45,17 @@ volumes:
 services:
   seaweedfs-master:
     <<: *seaweedfs
-    profiles:
+    profiles: &seaweedfs-profiles
       - seaweedfs
       - storage-seaweedfs
+      # S3 store of every consumer's profile (SPEC-0180 S07).
+      - storage
+      - obs
+      - logs
+      - tracing
+      - nginx
+      - mlops
+      - data-science
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -80,9 +88,7 @@ services:
 
   seaweedfs-volume:
     <<: *seaweedfs
-    profiles:
-      - seaweedfs
-      - storage-seaweedfs
+    profiles: *seaweedfs-profiles
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
@@ -118,9 +124,7 @@ services:
 
   seaweedfs-filer:
     <<: *seaweedfs
-    profiles:
-      - seaweedfs
-      - storage-seaweedfs
+    profiles: *seaweedfs-profiles
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -158,9 +162,7 @@ services:
 
   seaweedfs-s3:
     <<: *seaweedfs
-    profiles:
-      - seaweedfs
-      - storage-seaweedfs
+    profiles: *seaweedfs-profiles
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -171,6 +173,10 @@ services:
       - seaweedfs_jwt_volume_key
       - seaweedfs_jwt_filer_key
       - seaweedfs_s3_admin_secret_key
+      - seaweedfs_s3_loki_secret_key
+      - seaweedfs_s3_tempo_secret_key
+      - seaweedfs_s3_mlflow_secret_key
+      - seaweedfs_s3_terrakube_secret_key
     expose:
       - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
     # Iceberg and Lance listeners stay off until S12 defines the catalog; the
@@ -184,6 +190,7 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      - ./config/s3-identities.conf:/opt/hyhome/s3-identities.conf:ro
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -207,3 +214,57 @@ services:
       timeout: 15s
       retries: 5
       start_period: 15s
+
+  # Idempotent bucket creation with the admin identity; consumers wait for it.
+  seaweedfs-buckets:
+    profiles: *seaweedfs-profiles
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-low
+    image: amazon/aws-cli:2.36.50
+    container_name: seaweedfs-buckets
+    restart: 'no'
+    entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-buckets.sh' ]
+    environment:
+      AWS_ACCESS_KEY_ID: ${SEAWEEDFS_S3_ADMIN_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_EC2_METADATA_DISABLED: 'true'
+      S3_ENDPOINT: http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}
+      BUCKETS: loki-bucket tempo-bucket mlflow-artifacts tfstate cdn-bucket
+    volumes:
+      - ./config/seaweedfs-buckets.sh:/opt/hyhome/seaweedfs-buckets.sh:ro
+    secrets:
+      - seaweedfs_s3_admin_secret_key
+    depends_on:
+      seaweedfs-s3:
+        condition: service_healthy
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label
+
+  # Temporary MinIO -> SeaweedFS copy for the S07 cutover; removed with MinIO.
+  # Run per bucket: docker compose --profile storage-migration run --rm
+  #   -e BUCKETS=loki-bucket seaweedfs-migrate
+  seaweedfs-migrate:
+    profiles:
+      - storage-migration
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-low
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: seaweedfs-migrate
+    restart: 'no'
+    entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-migrate.sh' ]
+    environment:
+      SEAWEEDFS_S3_ADMIN_ACCESS_KEY: ${SEAWEEDFS_S3_ADMIN_ACCESS_KEY:-}
+    volumes:
+      - ./config/seaweedfs-migrate.sh:/opt/hyhome/seaweedfs-migrate.sh:ro
+    secrets:
+      - minio_root_username
+      - minio_root_password
+      - seaweedfs_s3_admin_secret_key
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label

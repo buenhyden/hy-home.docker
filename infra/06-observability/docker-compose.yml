@@ -109,7 +109,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: hy/loki:3.7.3-custom
+    image: hy/loki:3.7.8-seaweedfs
     build:
       context: ./loki
       dockerfile: Dockerfile
@@ -122,9 +122,13 @@ services:
     ports:
       - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     environment:
-      MINIO_APP_USERNAME: ${MINIO_APP_USERNAME}
+      S3_ACCESS_KEY: loki
+      S3_SECRET_KEY_FILE: /run/secrets/seaweedfs_s3_loki_secret_key
     secrets:
-      - minio_app_user_password
+      - seaweedfs_s3_loki_secret_key
+    depends_on:
+      seaweedfs-buckets:
+        condition: service_completed_successfully
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -qO- http://127.0.0.1:${LOKI_PORT:-3100}/ready >/dev/null 2>&1 || exit 1' ]
       interval: 30s
@@ -158,7 +162,7 @@ services:
     build:
       context: ./tempo
       dockerfile: Dockerfile
-    image: hy/tempo:3.0.2-custom
+    image: hy/tempo:3.0.3-seaweedfs
     container_name: infra-tempo
     user: '10001:10001'
     volumes:
@@ -168,9 +172,13 @@ services:
     ports:
       - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
-      MINIO_APP_USERNAME: ${MINIO_APP_USERNAME}
+      S3_ACCESS_KEY: tempo
+      S3_SECRET_KEY_FILE: /run/secrets/seaweedfs_s3_tempo_secret_key
     secrets:
-      - minio_app_user_password
+      - seaweedfs_s3_tempo_secret_key
+    depends_on:
+      seaweedfs-buckets:
+        condition: service_completed_successfully
     healthcheck:
       test: [ 'CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:${TEMPO_PORT:-3200}/ready || exit 1' ]
       interval: 30s

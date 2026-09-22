@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 created: "2025-11-12"
 ---
 
@@ -15,7 +15,7 @@ created: "2025-11-12"
 
 ## Overview
 
-`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using the Terrakube images declared in Compose, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses MinIO-compatible S3 storage for Terraform state.
+`infra/09-tooling/terrakube/` defines the Terrakube service stack for centralized Terraform workflows. The stack includes API, UI, and executor services using the Terrakube images declared in Compose, integrates with Keycloak for identity, stores metadata in the management PostgreSQL service, and uses SeaweedFS-compatible S3 storage for Terraform state.
 
 This README is the service-level entrypoint. It summarizes the Compose surface and links to the canonical guide, operations policy, and runbook.
 
@@ -64,7 +64,7 @@ terrakube/
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock` |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule`, plus 9 more |
-| Secret refs | names: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/minio_app_user_password`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
+| Secret refs | names: `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/seaweedfs_s3_terrakube_secret_key`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
 | Healthcheck | Compose healthcheck declared for `terrakube-api`, `terrakube-ui`, `terrakube-executor` |
 | Operations | Guide (`docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -74,7 +74,7 @@ terrakube/
 
 1. Read the parent [`../README.md`](../README.md) and this service Compose file before changing Terrakube.
 2. Keep secret material in Docker secrets; document only secret names and purpose.
-3. Verify API, UI, executor, PostgreSQL, MinIO, Valkey, and Keycloak assumptions together when changing the stack.
+3. Verify API, UI, executor, PostgreSQL, SeaweedFS, Valkey, and Keycloak assumptions together when changing the stack.
 4. Update the related guide, operation, or runbook when user access, state handling, or recovery behavior changes.
 
 ## Tech Stack
@@ -85,7 +85,7 @@ terrakube/
 | `terrakube-ui` | [declared runtime image](../../tech-stack.versions.json) | Web management UI |
 | `terrakube-executor` | [declared runtime image](../../tech-stack.versions.json) | Terraform job execution |
 | Metadata | Management PostgreSQL | Terrakube database |
-| State storage | MinIO S3-compatible bucket `tfstate` | Terraform state and output storage |
+| State storage | SeaweedFS S3 bucket `tfstate` | Terraform state and output storage |
 | Identity | Keycloak / DEX validation | SSO integration |
 
 ## Usage Instructions

@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -48,6 +48,32 @@ and backup and restore into empty stores.
    `docker compose --profile seaweedfs up -d --wait`.
 4. Verify with the admin identity: create and delete a disposable bucket, and
    confirm an anonymous request returns 403.
+
+### Consumer cutover from MinIO (S07, approved task)
+
+For one consumer at a time (Loki, then Tempo, then MLflow):
+
+1. With MinIO and the consumer still running, copy what SeaweedFS lacks (no
+   overwrite, no deletion):
+   `docker compose --profile storage-migration run --rm -e BUCKETS=<bucket> seaweedfs-migrate`.
+2. Stop the consumer (writer and, for Loki, its compactor), then run the same
+   command with `-e FINAL=1`. It overwrites changed objects, deletes objects
+   MinIO no longer has, requires identical key and size listings, and writes
+   `hyhome-migration/<bucket>.cutover`. A listing mismatch leaves no marker.
+3. Recreate the consumer on the SeaweedFS configuration (`--build` for the
+   Loki and Tempo images) and confirm health.
+4. Read data from before the cutover and write new data (Loki: query old and
+   new logs; Tempo: find an old and a new trace; MLflow: download an old
+   artifact and log a new run). Then confirm the identity cannot reach another
+   bucket.
+5. The marker makes every later run for that bucket fail: a copy would replace
+   objects the consumer has written since. The key and size check does not see
+   a same-size content change, so keep the consumer stopped between step 2 and
+   step 3. Rolling back after new writes means copying those objects back to
+   MinIO first, then deleting the marker with the admin identity.
+
+`cdn-bucket` is empty in MinIO and is not copied, so no MinIO bucket policy
+can carry over.
 
 ### Backup (daily, RUN-0021)
 

@@ -1,10 +1,10 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -34,8 +34,8 @@ handling, backup/restore, upgrade and removal of the MLflow tracking server.
 - The MLflow database role is `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
   NOREPLICATION`. Provisioning refuses an administrator role and a database
   owned by another role instead of taking it over.
-- The server uses the bucket-scoped MinIO identity only. Do not give MLflow or
-  any SDK the shared application or root MinIO credential.
+- The server uses the bucket-scoped SeaweedFS identity only. Do not give MLflow or
+  any SDK the SeaweedFS admin credential or another consumer's identity.
 - Credentials reach the process through the environment, never argv or the
   backend URI.
 - Keep gateway SSO on the route. Adopting the community OIDC plugin or
@@ -53,7 +53,7 @@ an assurance. No exception may disable gateway SSO.
 
 Static profile rendering, provisioning contract tests and the disposable
 PostgreSQL rehearsal. Live verification requires: route returns 401 without a
-session, a run with an artifact round-trips through the proxy, the MLflow MinIO
+session, a run with an artifact round-trips through the proxy, the MLflow SeaweedFS
 user is denied on another bucket, and a restore rehearsal.
 
 ## Review Cadence
@@ -72,4 +72,4 @@ and credential rotation.
 - [Image Dockerfile](../../../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [MLflow Compose source](../../../../../infra/11-laboratory/mlflow/docker-compose.yml)
 - [Management database policy](../../04-data/0028-management-database/policy.md)
-- [MinIO policy](../../04-data/0023-minio/policy.md)
+- [SeaweedFS policy](../../04-data/0024-seaweedfs/policy.md)

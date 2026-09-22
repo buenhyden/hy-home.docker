@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0011"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 - readonly/tmpfs 운영 안정성 확보
 - config lint 실패 시 안전 롤백
-- 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/`) 정상성 회복
+- 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복
 
 ## When to Use
 
@@ -57,7 +57,7 @@ created: "2026-05-17"
    - approved runtime context에서 `nginx -t` 재통과 확인 후 reload 또는 재기동을 수행한다.
 4. 특수 경로 정상성 확인
    - `/ping` 200 응답
-   - `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 경로 응답 확인
+   - `/oauth2/`, `/keycloak/`, `/cdn/` 경로 응답 확인
 5. failover 정책 확인
    - `proxy_next_upstream` 정책/업스트림 `max_fails`, `fail_timeout` 존재 확인
 
@@ -100,8 +100,8 @@ created: "2026-05-17"
 
 Keep Traefik profiles unselected while Nginx owns 80/443. Restore `nginx.conf`
 from the last reviewed Git commit and certificates from their private owner,
-validate the root `nginx` profile with healthy MinIO, run `nginx -t`, and verify
-`/ping`, `/oauth2/`, `/keycloak/`, `/minio/`, and `/minio-console/`. tmpfs contents
+validate the root `nginx` profile with healthy SeaweedFS S3, run `nginx -t`, and verify
+`/ping`, `/oauth2/`, `/keycloak/`, and `/cdn/`. tmpfs contents
 are disposable. The full isolated recovery was documented but not executed during
 the 2026-09-20 correction.
 

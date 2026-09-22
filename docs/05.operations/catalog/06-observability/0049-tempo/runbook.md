@@ -1,10 +1,10 @@
 ---
 title: "Tempo Readiness and Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0049"
 parent_ids:
@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: Tempo readiness checks, OTLP ingestion triage, MinIO storage evidence, metrics generator verification, restart, and WAL symptom escalation.
+> Scope: Tempo readiness checks, OTLP ingestion triage, SeaweedFS storage evidence, metrics generator verification, restart, and WAL symptom escalation.
 
-이 런북은 Tempo trace ingestion failure, MinIO-backed storage error, metrics generator failure, query latency, and WAL corruption symptom을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
+이 런북은 Tempo trace ingestion failure, SeaweedFS-backed storage error, metrics generator failure, query latency, and WAL corruption symptom을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
 
 ### Purpose
 
-운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → MinIO → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → SeaweedFS → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
 
 ## When to Use
 
@@ -37,7 +37,7 @@ created: "2026-05-17"
 ### Checklist
 
 - [ ] `tempo` service, `infra-tempo` container, and `tempo-data` volume 상태를 확인한다.
-- [ ] Secret values를 열람하지 않는다. `minio_app_user_password` ID만 evidence에 기록한다.
+- [ ] Secret values를 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` ID만 evidence에 기록한다.
 - [ ] 문제 유형을 readiness, ingestion, storage, metrics generator, query, WAL symptom 중 하나로 분류한다.
 - [ ] WAL deletion, bucket mutation, retention change, or secret rotation이 필요해 보이면 중단하고 owning operator approval을 받는다.
 
@@ -54,8 +54,8 @@ created: "2026-05-17"
 2. Compose and config boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|minio_app_user_password|tempo.middlewares' infra/06-observability/docker-compose.yml
-   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: minio:9000|secret_key: \\$\\{MINIO_APP_USER_PASSWORD\\}' infra/06-observability/tempo/config/tempo.yaml
+   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \\$\\{S3_SECRET_KEY\\}' infra/06-observability/tempo/config/tempo.yaml
    ```
 
 3. Alloy exporter가 Tempo endpoint를 가리키는지 확인한다.
@@ -67,7 +67,7 @@ created: "2026-05-17"
 4. Storage or secret symptom은 로그 문구와 bucket/config boundary만 캡처한다. Secret value를 출력하지 않는다.
 
    ```bash
-   docker logs --tail=500 infra-tempo | grep -Ei 's3|bucket|tempo-bucket|minio|access denied|secret|wal|compact|block'
+   docker logs --tail=500 infra-tempo | grep -Ei 's3|bucket|tempo-bucket|seaweedfs|access denied|secret|wal|compact|block'
    ```
 
 5. Metrics generator failure가 의심되면 Tempo config의 `remote_write` endpoint와 Prometheus readiness를 확인한다.
@@ -98,7 +98,7 @@ created: "2026-05-17"
 - [ ] `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`가 성공한다.
 - [ ] Grafana Tempo datasource에서 최근 trace가 조회된다.
 - [ ] Service graph or span metrics가 필요한 경우 Prometheus remote write와 Grafana dashboard timestamp가 갱신된다.
-- [ ] Storage symptom이면 `tempo-bucket`, MinIO endpoint, secret reference boundary가 policy와 일치한다.
+- [ ] Storage symptom이면 `tempo-bucket`, SeaweedFS endpoint, secret reference boundary가 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
@@ -106,7 +106,7 @@ created: "2026-05-17"
 - **Logs**: `docker logs --tail=200 infra-tempo`
 - **Health**: Tempo `/ready`, Grafana Tempo datasource, Grafana service graph dashboards
 - **Config**: `tempo.yaml`, Alloy Tempo exporter, Prometheus `/-/healthy`
-- **Storage**: `tempo-bucket` boundary, MinIO endpoint `minio:9000`, `tempo-data` volume
+- **Storage**: `tempo-bucket` boundary, SeaweedFS endpoint `seaweedfs-s3:8333`, `tempo-data` volume
 - **Evidence to Capture**: failing symptom, log excerpt without secrets, affected route or endpoint, restart timestamp, final recovery or escalation state
 
 ### Safe Rollback or Recovery Procedure

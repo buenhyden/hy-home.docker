@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0042"
 parent_ids: []
@@ -53,8 +53,8 @@ created: "2026-03-25"
 2. Data path를 기준으로 각 component 역할을 확인한다.
 
    - **Metrics**: Prometheus scrapes exporters and stores TSDB data in `prometheus-data`.
-   - **Logs**: Alloy sends Docker logs to Loki at `http://loki:3100/loki/api/v1/push`; Loki stores chunks/indexes in MinIO bucket `loki-bucket`.
-   - **Traces**: Alloy accepts OTLP on `4317/4318` and exports traces to Tempo; Tempo stores blocks in MinIO bucket `tempo-bucket`.
+   - **Logs**: Alloy sends Docker logs to Loki at `http://loki:3100/loki/api/v1/push`; Loki stores chunks/indexes in SeaweedFS bucket `loki-bucket`.
+   - **Traces**: Alloy accepts OTLP on `4317/4318` and exports traces to Tempo; Tempo stores blocks in SeaweedFS bucket `tempo-bucket`.
    - **Visualization**: Grafana provisions datasources for Prometheus, Loki, Tempo, Alertmanager, and Pyroscope.
    - **Alerting**: Prometheus sends alerts to Alertmanager at `alertmanager:9093`.
    - **Batch metrics**: Pushgateway buffers metrics for short-lived jobs.
@@ -76,8 +76,8 @@ created: "2026-03-25"
 5. Service-specific 문서로 이동한다.
 
    - Prometheus: metrics and alert rules
-   - Loki: logs and MinIO storage
-   - Tempo: traces and MinIO storage
+   - Loki: logs and SeaweedFS storage
+   - Tempo: traces and SeaweedFS storage
    - Grafana: dashboards, datasources, SSO
    - Alloy: telemetry collection pipelines
    - Alertmanager: alert routing and silences
@@ -89,7 +89,7 @@ created: "2026-03-25"
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
 - **Retention assumption**: Loki `168h`, Tempo `24h`, Pyroscope local filesystem boundary는 각 service policy와 config를 확인해야 한다.
 - **Collector assumption**: Alloy pipeline이 실패하면 Loki/Tempo/Prometheus/Grafana가 정상이어도 telemetry가 비어 보일 수 있다.
-- **Secret evidence**: MinIO, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
+- **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
 
 ## Common Checks

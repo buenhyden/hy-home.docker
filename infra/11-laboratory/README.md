@@ -1,10 +1,10 @@
 ---
 title: "11-laboratory - Management & Laboratory Tier"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 created: "2026-03-26"
 ---
 
@@ -21,7 +21,7 @@ five leaves, while profiles select services:
 | `redisinsight` | `admin`, `admin-data` | local connection/settings database; target Redis/Valkey data remains external |
 | `open_notebook` | `notebook` | application data/provider credentials plus encryption-key custody; app password and admin CIDR, no shared SSO |
 | `surrealdb` | `notebook`, `surrealdb` | co-located Open Notebook database under `open-notebook/surrealdb/` |
-| `mlflow`, `mlflow-db-provision`, `mlflow-artifact-provision` | `mlops`, `data-science` | tracking database on `mng-pg` and bucket-scoped MinIO artifacts; SDK path on `infra_net` is unauthenticated |
+| `mlflow`, `mlflow-db-provision` | `mlops`, `data-science` | tracking database on `mng-pg` and bucket-scoped SeaweedFS artifacts; SDK path on `infra_net` is unauthenticated |
 | `jupyterlab` | `data-science` | single-user code execution with a mandatory server token; not JupyterHub |
 
 There is no `dev` profile for these services. Dozzle and RedisInsight can run

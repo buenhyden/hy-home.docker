@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -27,7 +27,7 @@ storage와 retention만 active 기준으로 관리하며, external long-term arc
 이 정책은 observability stack의 storage, retention, cardinality, resource,
 backup 책임 경계를 다룬다.
 
-- **Systems**: Prometheus local TSDB, Loki MinIO bucket `loki-bucket`, Tempo MinIO bucket `tempo-bucket`, Pyroscope local filesystem backend `/var/lib/pyroscope`, Grafana dashboard JSON assets
+- **Systems**: Prometheus local TSDB, Loki SeaweedFS bucket `loki-bucket`, Tempo SeaweedFS bucket `tempo-bucket`, Pyroscope local filesystem backend `/var/lib/pyroscope`, Grafana dashboard JSON assets
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
@@ -49,7 +49,7 @@ backup 책임 경계를 다룬다.
   - High-cardinality labels(user IDs, IP addresses, request IDs 등)는
     metrics/log labels에 직접 추가하지 않는다.
 - **Allowed**:
-  - Loki/Tempo MinIO snapshot 또는 replication은 MinIO owning policy와
+  - Loki/Tempo SeaweedFS snapshot 또는 replication은 SeaweedFS owning policy (POL-0024)와
     runbook evidence가 있을 때 검토한다.
   - Retention, resource, storage 변경은 관련 config diff, capacity impact,
     rollback evidence를 포함한 승인된 active Plan과 Task가 있을 때 수행한다.
@@ -79,7 +79,7 @@ backup 책임 경계를 다룬다.
 
 ## Review Cadence
 
-- 서비스 storage, retention, resource cap, MinIO bucket, dashboard provisioning
+- 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
   config가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 

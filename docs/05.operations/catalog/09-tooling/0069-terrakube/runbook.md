@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -35,7 +35,7 @@ or an approved backup/restore/upgrade. Work from the repository root.
 3. Classify before restarting:
    - UI only: inspect gateway and OIDC redirect/claims.
    - API DB errors: inspect `mng-pg`; do not retry migrations repeatedly.
-   - missing state/output: inspect MinIO bucket/key and DB reference without
+   - missing state/output: inspect SeaweedFS bucket/key and DB reference without
      downloading state into logs.
    - stuck execution: inspect Valkey coordination and executor/Docker access;
      confirm remote provider action before cancellation or replay.
@@ -47,7 +47,7 @@ or an approved backup/restore/upgrade. Work from the repository root.
 1. Block scheduling, wait for or safely resolve active runs, then stop API/UI and
    executor so no Terrakube writer remains.
 2. Use the PostgreSQL owner's online logical/physical backup procedure and the
-   MinIO owner's versioned object backup for `tfstate`. Record one recovery-point
+   SeaweedFS set in the daily backup (RUN-0024) for `tfstate`. Record one recovery-point
    receipt joining DB backup ID, object snapshot/version inventory, source commit,
    and Keycloak/client configuration. Capture no secret/state contents.
 3. Restore both stores to isolated targets. Use replacement secrets and disable

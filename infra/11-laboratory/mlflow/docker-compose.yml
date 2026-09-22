@@ -46,40 +46,6 @@ services:
       <<: *tier-label
       traefik.enable: 'false'
 
-  # Feature-owned artifact bucket and bucket-scoped MinIO identity.
-  mlflow-artifact-provision:
-    profiles:
-      - mlops
-      - data-science
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-job-low
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: mlflow-artifact-provision
-    entrypoint:
-      - /bin/bash
-      - /provision/minio-artifacts.sh
-    environment:
-      MINIO_ENDPOINT: 'http://minio:${MINIO_PORT:-9000}'
-      MLFLOW_ARTIFACT_BUCKET: '${MLFLOW_ARTIFACT_BUCKET:-mlflow-artifacts}'
-      MLFLOW_S3_USER: '${MLFLOW_S3_USER:-mlflow-artifacts}'
-    volumes:
-      - ./provisioning/minio-artifacts.sh:/provision/minio-artifacts.sh:ro
-    secrets:
-      - minio_root_username
-      - minio_root_password
-      - mlflow_s3_password
-    depends_on:
-      minio:
-        condition: service_healthy
-    networks:
-      object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.116
-    labels:
-      <<: *tier-label
-      traefik.enable: 'false'
-
   mlflow:
     profiles:
       - mlops
@@ -102,8 +68,9 @@ services:
       MLFLOW_DB_USER: '${MLFLOW_DB_USER:-mlflow}'
       MLFLOW_DB_NAME: '${MLFLOW_DB_NAME:-mlflow}'
       MLFLOW_ARTIFACT_BUCKET: '${MLFLOW_ARTIFACT_BUCKET:-mlflow-artifacts}'
-      MLFLOW_S3_ENDPOINT_URL: '${MLFLOW_S3_ENDPOINT_URL:-http://minio:9000}'
-      MLFLOW_S3_USER: '${MLFLOW_S3_USER:-mlflow-artifacts}'
+      # SeaweedFS S3; the `mlflow` identity is scoped to the artifact bucket
+      # (seaweedfs/config/s3-identities.conf).
+      MLFLOW_S3_ENDPOINT_URL: '${MLFLOW_S3_ENDPOINT_URL:-http://seaweedfs-s3:8333}'
       AWS_DEFAULT_REGION: '${MLFLOW_S3_REGION:-us-east-1}'
       MLFLOW_ALLOWED_HOSTS: 'mlflow:*,mlflow.${DEFAULT_URL},localhost:*,127.0.0.1:*'
       # Server-side GenAI jobs start about seven huey consumers (~200 MB each);
@@ -111,7 +78,7 @@ services:
       MLFLOW_SERVER_ENABLE_JOB_EXECUTION: 'false'
     secrets:
       - mlflow_db_password
-      - mlflow_s3_password
+      - seaweedfs_s3_mlflow_secret_key
     entrypoint:
       - /bin/sh
       - -ec
@@ -120,10 +87,10 @@ services:
     command:
       - |
         PGPASSWORD="$$(tr -d '\r\n' </run/secrets/mlflow_db_password)"
-        AWS_SECRET_ACCESS_KEY="$$(tr -d '\r\n' </run/secrets/mlflow_s3_password)"
+        AWS_SECRET_ACCESS_KEY="$$(tr -d '\r\n' </run/secrets/seaweedfs_s3_mlflow_secret_key)"
         [ -n "$$PGPASSWORD" ] && [ -n "$$AWS_SECRET_ACCESS_KEY" ] || { echo 'mlflow: empty credential secret' >&2; exit 64; }
         export PGPASSWORD AWS_SECRET_ACCESS_KEY
-        export AWS_ACCESS_KEY_ID="$$MLFLOW_S3_USER"
+        export AWS_ACCESS_KEY_ID=mlflow
 
         exec mlflow server \
           --host 0.0.0.0 \
@@ -141,9 +108,7 @@ services:
         condition: service_healthy
       mlflow-db-provision:
         condition: service_completed_successfully
-      minio:
-        condition: service_healthy
-      mlflow-artifact-provision:
+      seaweedfs-buckets:
         condition: service_completed_successfully
     healthcheck:
       test:

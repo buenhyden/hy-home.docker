@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 created: "2025-11-12"
 ---
 
@@ -59,13 +59,13 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | --- | --- |
 | Purpose | Observability Tier (06-observability) folder index; services `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | Uses non-secret env keys for MinIO app username, Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
+| Config values | Uses non-secret S3 access key IDs (`loki`, `tempo`), Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml`. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, and `CADVISOR_MEM_LIMIT` select the topology that used to be a second file. |
 | Networks | `infra_net`, `k3d-hyhome` |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
-| Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
+| Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
 | Operations | Guide index (`docs/05.operations/catalog/06-observability/README.md`), Policy index (`docs/05.operations/catalog/06-observability/README.md`), Runbook index (`docs/05.operations/catalog/06-observability/README.md`) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -83,7 +83,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 5. Always use `Alloy` as the primary entry point for telemetry data (OTLP).
 6. Dashboards MUST be provisioned via code in `grafana/provisioning/dashboards`.
 7. Recording rules and alerts MUST be defined in `prometheus/config/alert_rules`.
-8. Monitor `MinIO` bucket health as it is critical for Loki/Tempo availability.
+8. Monitor SeaweedFS S3 bucket health as it is critical for Loki/Tempo availability.
 
 ## Tech Stack
 
@@ -92,8 +92,8 @@ Runtime image pins are declared in [Compose](docker-compose.yml). The [derived C
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
 | Metrics    | Prometheus                     | Declared in Compose                   |
-| Logs       | Loki                           | Declared in Compose, MinIO bucket `loki-bucket` |
-| Tracing    | Tempo                          | Declared in Compose, MinIO bucket `tempo-bucket` |
+| Logs       | Loki                           | Declared in Compose, SeaweedFS bucket `loki-bucket` |
+| Tracing    | Tempo                          | Declared in Compose, SeaweedFS bucket `tempo-bucket` |
 | Profiling  | Pyroscope                      | Declared in Compose                    |
 | Collector  | Grafana Alloy                  | Declared in Compose                   |
 | UI         | Grafana                        | Declared in Compose                   |
@@ -117,7 +117,7 @@ Runtime image pins are declared in [Compose](docker-compose.yml). The [derived C
 
 ## Configuration
 
-- **Persistence**: Loki and Tempo use MinIO (`04-data`) as the S3-compatible object store; Prometheus and Pyroscope use local bind-backed volumes.
+- **Persistence**: Loki and Tempo use SeaweedFS (`04-data`) as the S3-compatible object store; Prometheus and Pyroscope use local bind-backed volumes.
 - **Auth**: Grafana is integrated with Keycloak (`02-auth`) for OAuth2 SSO.
 - **OpenBao metrics**: Prometheus source configuration declares only the dedicated `openbao_token` Docker Secret and the OpenBao `prometheus` policy. The secret contract is staged and unprovisioned; the historic live-Vault-down/no-OpenBao-loaded observation remains separate from current source readiness. A tracked source change does not prove the running Prometheus loaded the job or that the target is healthy.
 - **Networking**: All telemetry traffic flows through the `infra_net`.
@@ -134,7 +134,7 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 
 ## Change Impact
 
-- Modifying retention periods in Loki/Tempo will affect MinIO storage usage.
+- Modifying retention periods in Loki/Tempo will affect SeaweedFS storage usage.
 - Changes in Alloy OTLP endpoints will break telemetry for all downstream services.
 - Grafana plugin updates may require manual dashboard migration.
 
@@ -169,7 +169,7 @@ The stable documentation entry point is [docs/README.md](../../docs/README.md). 
 
 ## Related Documents
 
-- [04-data](../04-data/README.md) - MinIO for telemetry storage.
+- [04-data](../04-data/README.md) - SeaweedFS S3 for telemetry storage.
 - [02-auth](../02-auth/README.md) - Keycloak for SSO.
 - [01-gateway](../01-gateway/README.md) - Traefik routing to UIs.
 - [Documentation index](../../docs/README.md)

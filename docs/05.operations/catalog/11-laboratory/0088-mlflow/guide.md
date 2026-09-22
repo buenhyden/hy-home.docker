@@ -1,6 +1,6 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -13,7 +13,6 @@ implementation_services:
   infra/11-laboratory/mlflow/docker-compose.yml:
   - mlflow
   - mlflow-db-provision
-  - mlflow-artifact-provision
 created: "2026-09-21"
 ---
 
@@ -30,14 +29,15 @@ operating command; adding it is a separate activation decision.
 ### Current implementation
 
 - [MLflow Compose](../../../../../infra/11-laboratory/mlflow/docker-compose.yml)
-  owns three services: `mlflow-db-provision` runs the feature SQL, then
-  `mlflow-artifact-provision` creates the bucket and a bucket-scoped MinIO
-  identity, then `mlflow` starts.
+  owns two services: `mlflow-db-provision` runs the feature SQL, then `mlflow`
+  starts once `seaweedfs-buckets` has created `mlflow-artifacts`. Its SeaweedFS
+  identity `mlflow` is declared in
+  [s3-identities.conf](../../../../../infra/04-data/lake-and-object/seaweedfs/config/s3-identities.conf).
 - The tracking store is the `MLFLOW_DB_NAME` database on `mng-pg`, owned by
   `MLFLOW_DB_USER`. Other login roles lose the default `PUBLIC` connect right.
 - Artifacts go to `s3://${MLFLOW_ARTIFACT_BUCKET}` through the server's artifact
-  proxy. SDK clients upload and download through MLflow and never hold MinIO
-  credentials. The MLflow MinIO identity cannot read other buckets.
+  proxy. SDK clients upload and download through MLflow and never hold SeaweedFS
+  credentials. The MLflow SeaweedFS identity cannot read other buckets.
 - The shared `mng-pg-init` job no longer creates MLflow objects and no longer
   reads MLflow secrets, so `core`/`mng`/`dev`/`local` start without them.
 
@@ -57,7 +57,7 @@ memory budget.
 | --- | --- | --- |
 | Browser `https://mlflow.${DEFAULT_URL}` | Gateway SSO (`sso-auth`); any realm user passes | No MLflow-level user, experiment permission or group authorization |
 | SDK inside `infra_net` (`http://mlflow:5000`) | None; Host header must match `--allowed-hosts` | Any container on `infra_net` can read and write every experiment |
-| Artifact storage | Bucket-scoped MinIO user held only by the server | Deleting runs through MLflow deletes artifacts |
+| Artifact storage | Bucket-scoped SeaweedFS identity held only by the server | Deleting runs through MLflow deletes artifacts |
 
 MLflow's documented OIDC route is the community `mlflow-oidc-auth` plugin
 (`--app-name oidc-auth`); the built-in alternative is `basic-auth`. The plugin
@@ -75,8 +75,8 @@ experiment and artifact URIs stay valid only while `MLFLOW_ARTIFACT_BUCKET` and
 the database name are unchanged; renaming either is a migration.
 
 Back up the tracking database with `pg_dump` of `MLFLOW_DB_NAME` and the bucket
-with a MinIO mirror, taken together, because runs reference artifact paths.
-Restore into an isolated `mng-pg` and MinIO first and compare run and artifact
+with a SeaweedFS backup set, taken together, because runs reference artifact paths.
+Restore into an isolated `mng-pg` and SeaweedFS first and compare run and artifact
 counts. Before an upgrade, read the release notes; the server applies database
 migrations on start, so take the backup first. No backup or restore has been run
 for this service.
@@ -85,7 +85,7 @@ for this service.
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
-- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision mlflow-artifact-provision`
+- `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
 ## Runbook Handoff
 

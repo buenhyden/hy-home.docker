@@ -1,10 +1,10 @@
 ---
 title: "Loki Log Aggregation System"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 created: "2026-01-12"
 ---
 
@@ -12,13 +12,13 @@ created: "2026-01-12"
 
 ## Overview
 
-`infra/06-observability/loki` contains the Loki implementation for the `06-observability` tier. Loki runs as compose service `loki`, container `infra-loki`, image [declared runtime image](../../tech-stack.versions.json), stores working data in `loki-data`, and uses MinIO S3 bucket `loki-bucket` for log chunks and indexes. The custom image keeps Loki's upstream binary and a small entrypoint that exports `MINIO_APP_USER_PASSWORD` from Docker Secret `minio_app_user_password` before starting Loki with `-config.expand-env=true`.
+`infra/06-observability/loki` contains the Loki implementation for the `06-observability` tier. Loki runs as compose service `loki`, container `infra-loki`, image [declared runtime image](../../tech-stack.versions.json), stores working data in `loki-data`, and uses SeaweedFS S3 bucket `loki-bucket` for log chunks and indexes. The custom image keeps Loki's upstream binary and a small entrypoint that exports `S3_SECRET_KEY` from Docker Secret `seaweedfs_s3_loki_secret_key` before starting Loki with `-config.expand-env=true`.
 
 ## Audience
 
 - Developers debugging application and infrastructure logs
 - SREs managing retention, storage, and query performance
-- Operators maintaining Loki readiness and MinIO connectivity
+- Operators maintaining Loki readiness and SeaweedFS connectivity
 - AI Agents collecting evidence without exposing secret values
 
 ## Scope
@@ -26,7 +26,7 @@ created: "2026-01-12"
 ### In Scope
 
 - Log ingestion from Grafana Alloy to `http://loki:3100/loki/api/v1/push`
-- MinIO-backed Loki storage and bucket `loki-bucket`
+- SeaweedFS-backed Loki storage and bucket `loki-bucket`
 - Retention and compactor settings in `config/loki-config.yaml`
 - LogQL querying through Grafana datasource `Loki`
 - Compose service, custom image, entrypoint, secret, route, and readiness boundaries
@@ -35,7 +35,7 @@ created: "2026-01-12"
 
 - Application-side logging SDK changes
 - Long-term audit archiving beyond the active retention policy
-- MinIO bucket lifecycle policy outside the Loki service boundary
+- SeaweedFS bucket lifecycle policy outside the Loki service boundary
 - Runtime retention, resource, secret, or route changes without operations evidence
 
 ## Structure
@@ -43,8 +43,8 @@ created: "2026-01-12"
 ```text
 loki/
 ├── config/
-│   └── loki-config.yaml   # Loki config with MinIO, retention, compactor, and ruler settings
-├── docker-entrypoint.sh   # Exports MINIO_APP_USER_PASSWORD from Docker Secret
+│   └── loki-config.yaml   # Loki config with SeaweedFS, retention, compactor, and ruler settings
+├── docker-entrypoint.sh   # Exports S3_SECRET_KEY from Docker Secret
 ├── Dockerfile             # Builds declared runtime image from upstream Loki plus entrypoint
 └── README.md              # This file
 ```
@@ -60,11 +60,11 @@ loki/
 | Image | [declared runtime image](../../tech-stack.versions.json) |
 | Runtime user | `10001:10001` |
 | Config files | `config/loki-config.yaml`, `Dockerfile`, `docker-entrypoint.sh` |
-| Config values | MinIO S3 endpoint `http://minio:9000`, bucket `loki-bucket`, retention `168h`, compactor interval `10m` |
+| Config values | SeaweedFS S3 endpoint `http://seaweedfs-s3:8333`, bucket `loki-bucket`, retention `168h`, compactor interval `10m` |
 | Config mount | `./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro` |
 | Volumes | `loki-data:/loki:rw` |
-| Secret refs | `minio_app_user_password` |
-| Environment refs | `MINIO_APP_USERNAME` |
+| Secret refs | `seaweedfs_s3_loki_secret_key` |
+| Environment refs | `S3_ACCESS_KEY` |
 | Networks | `infra_net`, `k3d-hyhome` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}` |
 | Route | `https://loki.${DEFAULT_URL}` through `gateway-standard-chain@file,sso-errors@file,sso-auth@file` |
@@ -87,9 +87,9 @@ loki/
 ### Storage and Retention
 
 - **Bucket**: `loki-bucket`
-- **S3 endpoint**: `http://minio:9000`
-- **Access key source**: environment reference `MINIO_APP_USERNAME`
-- **Secret key source**: Docker Secret `minio_app_user_password`, exported as `MINIO_APP_USER_PASSWORD`
+- **S3 endpoint**: `http://seaweedfs-s3:8333`
+- **Access key source**: environment reference `S3_ACCESS_KEY`
+- **Secret key source**: Docker Secret `seaweedfs_s3_loki_secret_key`, exported as `S3_SECRET_KEY`
 - **Retention**: `retention_enabled: true`, `retention_period: 168h`
 - **Compactor**: `compaction_interval: 10m`, `retention_delete_delay: 2h`
 
@@ -103,8 +103,8 @@ loki/
 
 1. Follow the Loki guide (`docs/05.operations/catalog/06-observability/0043-loki/guide.md`) for usage and query context.
 2. Follow the Loki runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`) for readiness, storage, ingestion, restart, and rollback steps.
-3. Keep `MINIO_APP_USER_PASSWORD`, rendered environment values, and MinIO credentials out of docs, logs, task evidence, and commit messages.
-4. Do not change retention, compactor, MinIO bucket, resource caps, secret references, label cardinality policy, or route middleware without plan/task evidence and rollback notes.
+3. Keep `S3_SECRET_KEY`, rendered environment values, and SeaweedFS credentials out of docs, logs, task evidence, and commit messages.
+4. Do not change retention, compactor, SeaweedFS bucket, resource caps, secret references, label cardinality policy, or route middleware without plan/task evidence and rollback notes.
 
 ## Validation
 
@@ -119,7 +119,7 @@ loki/
 - Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For missing logs, verify Alloy `loki.write` status and Grafana datasource `Loki`.
-- For storage failures, inspect redacted Loki log symptoms for MinIO, bucket, retention, compactor, or credential errors.
+- For storage failures, inspect redacted Loki log symptoms for SeaweedFS, bucket, retention, compactor, or credential errors.
 - For query latency, review label cardinality and avoid promoting high-cardinality fields to labels.
 
 ### Convergence contract

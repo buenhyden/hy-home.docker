@@ -502,6 +502,45 @@ Sequential review findings and their disposition:
 | Telemetry | the master logs that it reports usage to `telemetry.seaweedfs.com` once 10 GiB are stored; with no egress on `seaweed_internal` the name does not resolve. The owner chose not to add `-telemetry=false`; if the master ever gets egress, revisit |
 | Backup | a manual orchestrator run exited 0: the latest state snapshot holds `exports/seaweedfs-filer.meta` and `data/seaweedfs/{master,volume}`; no export left in the container; state repository 289 MiB of 5 GiB |
 
+### S07a — Consumer switch to SeaweedFS (source)
+
+Live MinIO inventory (2026-09-22): `loki-bucket` 103 MB, `tempo-bucket`
+89 MB, `mlflow-artifacts` 40 KB. `cdn-bucket` and `doc-intel-assets` are empty,
+and `tfstate` was never created. `doc-intel-assets` has no consumer and is not
+recreated.
+
+| Unit | Change |
+| --- | --- |
+| identities | `config/s3-identities.conf`: `loki`, `tempo`, `mlflow`, `terrakube` scoped to their bucket (STRG-011–014); `anonymous` may only read `cdn-bucket`; the start script refuses to start when any listed secret is missing |
+| buckets | `seaweedfs-buckets` (aws-cli, admin) creates the five buckets idempotently; consumers wait for it |
+| migration | `seaweedfs-migrate` (`storage-migration`, MinIO `mc`): S3-API mirror per bucket, `--remove` only with `ALLOW_REMOVE=1`, fails on count or byte mismatch; removed with MinIO |
+| profiles | SeaweedFS joins every S3 consumer profile and so HOME; `iac` is excluded (automation, forbidden in HOME), so Terrakube runs with `storage` |
+| Loki, Tempo | endpoint `seaweedfs-s3:8333`, region `us-east-1`, own identity; the image entrypoints read `S3_SECRET_KEY_FILE`; image tags renamed (`hy/loki:3.7.8-seaweedfs`, `hy/tempo:3.0.3-seaweedfs`) so the new entrypoint is always built, which also fixes tags that named older versions than their Dockerfiles |
+| MLflow | endpoint and `mlflow` identity; `mlflow-artifact-provision`, its MinIO script, `MLFLOW_S3_USER`, `mlflow_s3_password` and STRG-005/006 removed |
+| Terrakube | `terrakube` identity, endpoint, region `us-east-1` for state and output |
+| Nginx | `/minio/` (the whole S3 API) and `/minio-console/` replaced by read-only `/cdn/` → `cdn-bucket` (GET/HEAD only) |
+
+Sequential review findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| `/cdn/*.png` and other static extensions were taken by the server-level asset regex | `location ^~ /cdn/`; forwarded headers restored; static contract test |
+| a repeated copy after a switch would overwrite consumer writes even without deletion | default runs add missing objects only; `FINAL=1` overwrites, deletes, requires identical key and size listings, then writes `hyhome-migration/<bucket>.cutover`; every later run for that bucket is refused |
+| the count check used awk, which the MinIO image lacks (verified: no awk, sed or grep), and ignored listing failures | bash-only listing with checked `mc` status; key and size comparison |
+| POL-0078 still named the removed MLflow job; Terrakube had no bucket ordering | rows corrected; `iac` row says Terrakube runs with `storage`; Terrakube waits for `seaweedfs-buckets` (`required: false`) |
+| Loki and Tempo accepted an empty secret; stale MinIO text in 0023, 0044 and the MinIO README | refused; text corrected |
+| MinIO `cdn-bucket` public policy could carry over with `--preserve` | not copied (empty); stated in RUN-0024 |
+| hard-coded `8333` in consumers | accepted: it is the S01 interface contract |
+
+`SeaweedfsRehearsalTests` passed 8/8 after the fixes, including the new scope
+and migration tests. The migration test uses a disposable MinIO: the first copy,
+then source edits, a deletion and an addition, then `FINAL=1` matching exactly,
+then a refused re-run. `loki` is
+refused on `tempo-bucket` and cannot create a bucket, and anonymous access
+returns 200 for a CDN object but 403 for listing, PUT and DELETE. MinIO
+itself, its bootstrap, its Prometheus job, dashboards and the MinIO subject
+stay until S07b; architecture and requirement mentions are swept there.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |

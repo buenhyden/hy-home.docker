@@ -1,6 +1,6 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -33,9 +33,9 @@ documented operating boundaries.
 | Component | Root profile(s) | Classification | Relationship and service operations |
 | --- | --- | --- | --- |
 | [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
-| [`lake-and-object/minio`](lake-and-object/minio/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`; `storage-cluster` | HOME single node; LAB four nodes | Current Loki/Tempo and object buckets; preserve data while lifecycle migration is evaluated |
+| [`lake-and-object/minio`](lake-and-object/minio/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`; `storage-cluster` | HOME single node; LAB four nodes | Being replaced per consumer by SeaweedFS (S07); preserve data until every cutover is accepted |
 | [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
-| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `seaweedfs`, `storage-seaweedfs` | OPTIONAL | S3 store replacing MinIO per consumer (S07); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
+| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `seaweedfs`, `storage-seaweedfs`; `storage-migration` | HOME | S3 store replacing MinIO per consumer (S07); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
 | [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
 | [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
 | [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |

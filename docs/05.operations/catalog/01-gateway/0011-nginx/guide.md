@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -40,7 +40,7 @@ created: "2026-05-10"
 ### Purpose
 
 - Nginx를 `template-infra-readonly-low` 기반으로 안정적으로 운영한다.
-- `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 경로 흐름을 유지하면서 하드닝 변경을 적용한다.
+- `/oauth2/`, `/keycloak/`, `/cdn/` 경로 흐름을 유지하면서 하드닝 변경을 적용한다.
 
 ### Prerequisites
 
@@ -50,7 +50,7 @@ created: "2026-05-10"
 - Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
 
 Nginx is selected only by `nginx`, publishes host ports 80/443, depends on a
-healthy `minio`, and mounts its config and `${DEFAULT_CERT_DIR}` read-only. It is
+healthy `seaweedfs-s3`, and mounts its config and `${DEFAULT_CERT_DIR}` read-only. It is
 an alternative listener to Traefik: because both claim the same host ports, do
 not select `nginx` with `core`, `dev`, or `local` on one host.
 
@@ -86,10 +86,10 @@ not select `nginx` with `core`, `dev`, or `local` on one host.
 ### Configuration Recovery and Upgrade
 
 Restore `nginx.conf` from Git and certificates from their private owner. Validate
-the root `nginx` profile with its MinIO dependency, lint the config in the approved
+the root `nginx` profile with its SeaweedFS S3 dependency, lint the config in the approved
 runtime, then verify `/ping` and every special path before restoring 80/443
 traffic. Cache/log/PID tmpfs needs no backup. Upgrade only after config lint and a
-canary of OAuth2, Keycloak, MinIO API, and MinIO console paths. This recovery is
+canary of OAuth2, Keycloak and the read-only `/cdn/` path. This recovery is
 planned and was not executed during this correction.
 
 ## Traceability

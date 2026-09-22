@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -17,7 +17,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다.
+이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/cdn/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다.
 
 ## Policy Scope
 
@@ -45,7 +45,7 @@ created: "2026-05-17"
 - **Allowed**:
   - 서비스 특성(대용량 업로드/다운로드)에 따른 location 단위 timeout override
 - **Disallowed**:
-  - `/ping`, `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 기본 흐름 훼손
+  - `/ping`, `/oauth2/`, `/keycloak/`, `/cdn/` 기본 흐름 훼손
   - readonly 환경에서 영구 쓰기 경로 의존 설정
 
 ### AI Agent Policy
@@ -68,7 +68,7 @@ created: "2026-05-17"
 ### Recovery and Upgrade Controls
 
 Rollback restores a reviewed config commit and matching private certificate set,
-then validates all four special paths with the real MinIO/auth dependencies.
+then validates all special paths with the real SeaweedFS/auth dependencies.
 Image upgrades require `nginx -t`, representative route acceptance, and a prior
 image declaration that can be restored with the same config.
 

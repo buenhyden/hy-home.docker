@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -62,7 +62,7 @@ created: "2026-05-17"
    - cAdvisor healthcheck(`/healthz`)를 추가한다.
 4. 커스텀 이미지 하드닝
    - Loki/Tempo Dockerfile에 non-root user(`10001`)를 강제한다.
-   - entrypoint에서 MinIO secret 존재를 선검증한다.
+   - entrypoint에서 S3 secret 파일(`S3_SECRET_KEY_FILE`)의 존재와 비어 있지 않음을 선검증한다.
 5. 자동 검증 및 CI 반영
    - `bash scripts/hardening/check-all-hardening.sh 06-observability`
    - `.github/workflow-contract.yml`에 `leaf.infrastructure-hardening` gate가 등록되어 있는지 확인

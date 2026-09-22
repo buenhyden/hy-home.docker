@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -11,8 +11,10 @@ parent_ids:
 - "POL-0024"
 implementation_services:
   infra/04-data/lake-and-object/seaweedfs/docker-compose.yml:
+  - 'seaweedfs-buckets'
   - 'seaweedfs-filer'
   - 'seaweedfs-master'
+  - 'seaweedfs-migrate'
   - 'seaweedfs-s3'
   - 'seaweedfs-volume'
 created: "2026-05-10"
@@ -23,7 +25,7 @@ created: "2026-05-10"
 ## Usage
 
 SeaweedFS is the S3 object store that takes over from MinIO one consumer at a
-time in SPEC-0180 S07. Until then it stays OPTIONAL. S3 at
+time in SPEC-0180 S07. It is part of HOME through the consumer profiles. S3 at
 `http://seaweedfs-s3:8333` (path-style, region `us-east-1`) is the only
 interface. The privileged FUSE mount was removed in S04, and the master and
 filer have no route.
@@ -43,6 +45,23 @@ State is on the data disk: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`
 and `/filer` (the embedded leveldb2 store). Master, volume and filer are only
 on `seaweed_internal`. S3 also joins `object_net` for clients and `edge_net`
 for the `s3.${DEFAULT_URL}` route.
+
+### Consumers, buckets and migration
+
+| Consumer | Bucket | Identity (access key ID) | Secret |
+| --- | --- | --- | --- |
+| Loki | `loki-bucket` | `loki` | STRG-011 |
+| Tempo | `tempo-bucket` | `tempo` | STRG-012 |
+| MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
+| Terrakube | `tfstate` | `terrakube` | STRG-014 |
+| Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
+
+`seaweedfs-buckets` (aws-cli, admin identity) creates the five buckets
+idempotently and every consumer waits for it. `seaweedfs-migrate`
+(`storage-migration` profile, MinIO's `mc`) copies MinIO buckets through the S3
+API, adds only missing objects unless `FINAL=1`, requires identical key and
+size listings on the final run, and then refuses that bucket through a cutover
+marker; it goes away with MinIO.
 
 ### Images, configuration and resource controls
 

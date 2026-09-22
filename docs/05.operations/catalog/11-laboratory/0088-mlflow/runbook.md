@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -25,12 +25,12 @@ artifact access denial, tracking-store restore, or upgrade.
 
    ```bash
    docker compose --profile core --profile mlops config --quiet
-   docker compose --profile core --profile mlops ps -a mlflow mlflow-db-provision mlflow-artifact-provision
-   docker compose --profile core --profile mlops logs --tail=100 mlflow-db-provision mlflow-artifact-provision mlflow
+   docker compose --profile core --profile mlops ps -a mlflow mlflow-db-provision
+   docker compose --profile core --profile mlops logs --tail=100 mlflow-db-provision seaweedfs-buckets mlflow
    ```
 
 2. Read the provisioning exit code. `64` is an input problem found before any
-   database or MinIO change (missing, empty or multi-line secret, invalid name).
+   database or SeaweedFS change (missing, empty or multi-line secret, invalid name).
    `3` is a psql error; the log names the refused condition, such as a database
    owned by another role or an administrator role name.
 3. `ON_ERROR_STOP` stops at the first error but does not undo statements that
@@ -39,7 +39,7 @@ artifact access denial, tracking-store restore, or upgrade.
 
    ```bash
    docker compose --profile core --profile mlops up --no-deps mlflow-db-provision
-   docker compose --profile core --profile mlops up --no-deps mlflow-artifact-provision
+   docker compose --profile core --profile mlops up --no-deps seaweedfs-buckets
    ```
 
 4. Start or restart the server only after both jobs exit `0`.
@@ -48,8 +48,9 @@ artifact access denial, tracking-store restore, or upgrade.
 
 1. Obtain approval naming the secret, services and restart.
 2. Replace the secret file through the registered secret workflow.
-3. Re-run the matching provisioning job; it resets only the MLflow role
-   password or the MLflow MinIO user secret.
+3. For the database password, re-run `mlflow-db-provision`; it resets only the
+   MLflow role password. For `seaweedfs_s3_mlflow_secret_key`, recreate
+   `seaweedfs-s3`, which rebuilds its identities at start (RUN-0024).
 4. Recreate `mlflow` and confirm health and one artifact read.
 
 ### Restore and upgrade
@@ -76,7 +77,7 @@ and upgrade rehearsals are **planned but unexecuted**.
 ## Escalation
 
 Stop on a refused foreign-owned database, any request to grant superuser or the
-shared MinIO credential, a failed restore count comparison, or a request to
+SeaweedFS admin credential, a failed restore count comparison, or a request to
 remove gateway SSO.
 
 ## Traceability
@@ -89,4 +90,4 @@ remove gateway SSO.
 
 - [Image Dockerfile](../../../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [Management database runbook](../../04-data/0028-management-database/runbook.md)
-- [MinIO runbook](../../04-data/0023-minio/runbook.md)
+- [SeaweedFS runbook](../../04-data/0024-seaweedfs/runbook.md)

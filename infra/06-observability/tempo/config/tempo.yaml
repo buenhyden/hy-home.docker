@@ -55,14 +55,15 @@ storage:
     local:
       path: /var/tempo/blocks
 
-    # MinIO / RustFS / SeaweedFS S3 API
+    # SeaweedFS S3 on object_net; identity scoped to tempo-bucket (POL-0024).
     s3:
       bucket: tempo-bucket
-      endpoint: minio:9000
-      access_key: ${MINIO_APP_USERNAME}
-      secret_key: ${MINIO_APP_USER_PASSWORD}
+      endpoint: seaweedfs-s3:8333
+      region: us-east-1
+      access_key: ${S3_ACCESS_KEY}
+      secret_key: ${S3_SECRET_KEY}
 
-      # Docker 내부에서 MinIO를 HTTP로 연결할 때만 true
+      # plain HTTP inside object_net
       insecure: true
 
       # self-hosted S3 endpoint에서는 path-style을 권장
