@@ -193,11 +193,14 @@ private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승�
   낮춥니다. Compose 소비자가 없는 파일은 `0600`입니다. `certs/`는 별도의
   `hyhome-certs` group(`CERT_GROUP_GID`) 모델을 유지합니다.
 - `secrets/security/`의 `vault_token.txt`(SEC-001)와 `vault_unseal_keys.legacy.txt`는
-  legacy Vault 전용이며 OpenBao를 unseal할 수 없습니다. OpenBao Shamir unseal share(3개,
-  threshold 2)는 이 디렉터리에 두지 않고 owner의 bootstrap custody에 보관합니다
-  ([TSK-0002](../docs/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md),
-  [OpenBao runbook](../docs/05.operations/catalog/03-security/0085-openbao/runbook.md)).
-  share는 서로 다른 offline 위치로 분리하며, initial root token은 폐기되었습니다.
+  legacy Vault 전용이며 OpenBao를 unseal할 수 없습니다.
+- OpenBao 관련 값은 `secrets/security/`에서 관리합니다(owner 결정, 2026-09-22).
+  `openbao_unseal_keys.txt`(SEC-003, `0600`, host 전용)는 Shamir unseal share 3개를
+  줄당 하나씩 담고, 그중 2개로 unseal합니다. `openbao_token.txt`(SEC-002)는 Prometheus
+  `sys/metrics` 읽기 토큰입니다. initial root token은 폐기되어 저장하지 않으며, Agent
+  token은 Agent가 자체 디렉터리에서 관리합니다. 세 share를 한 파일에 두는 것은
+  OpenBao runbook(`docs/05.operations/catalog/03-security/0085-openbao/runbook.md`)의
+  분리 보관 기준에 대한 명시적 예외입니다.
 - AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 
 ## Related Documents

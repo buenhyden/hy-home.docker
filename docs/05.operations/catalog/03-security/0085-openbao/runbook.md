@@ -4,7 +4,7 @@ version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -41,6 +41,14 @@ Never print initialization output, put credentials in command arguments, or
 commit recovery material. Initial root credentials must be revoked only after human OIDC login, the
 expected non-root policy, authenticated recovery, Agent authentication/rendering
 and a protected Raft snapshot succeed. A failed setup retains protected recovery material for operator recovery.
+
+Owner decision (2026-09-22): the three shares are kept together in
+`secrets/security/openbao_unseal_keys.txt` (SEC-003, one share per line, `0600`,
+Git-ignored, never mounted into a container). This is an explicit exception to
+separate custody: anyone who can read that file can unseal OpenBao. Unseal from
+an interactive terminal (`docker compose exec openbao bao operator unseal`) and
+paste one share at the hidden prompt; never pass a share as an argument. The
+legacy Vault files in the same directory cannot unseal OpenBao.
 
 The `hy-home-renderer` AppRole uses the
 [renderer policy](../../../../../infra/03-security/openbao/config/policies/renderer.hcl):

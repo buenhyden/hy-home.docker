@@ -436,6 +436,13 @@ Restore problems and fixes:
   states that OpenBao shares are not kept there. `openbao-agent` reports `no
   known secret ID` (its single-use SecretID was consumed on 2026-09-19) and needs
   the owner's SecretID issuance; services still read their Docker Secret files.
+- Owner decision: OpenBao unseal shares are managed in
+  `secrets/security/openbao_unseal_keys.txt` (SEC-003). The three `keys_base64`
+  shares were copied from the bootstrap custody file without printing, SHA-256
+  identical; the source file was not deleted. SEC-003 is registered as a
+  host-only file (no Compose consumer), so it joins the registry path
+  exceptions; public registry rows 103 → 104. The runbook records the
+  separate-custody exception.
 - Prometheus has ten targets down (k3d cluster, OpenBao metrics, OpenSearch);
   all were already down for the previous six hours.
 
