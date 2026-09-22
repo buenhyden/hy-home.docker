@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -30,9 +30,8 @@ docker compose --env-file .env.example --profile seaweedfs config --services
 ```
 
 Confirm master, volume, filer and S3 services, the two distinct persistent
-volumes, `infra_net`, health checks and standard gateway chain. Render
-`seaweedfs-mount` separately and verify `SYS_ADMIN` and `/dev/fuse` are present
-only when that privileged path is approved.
+volumes, `infra_net`, health checks and standard gateway chain. No service is
+privileged or adds capabilities.
 
 ### Planned coordinated backup
 

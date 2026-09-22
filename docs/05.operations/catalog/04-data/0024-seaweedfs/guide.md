@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -13,7 +13,6 @@ implementation_services:
   infra/04-data/lake-and-object/seaweedfs/docker-compose.yml:
   - 'seaweedfs-filer'
   - 'seaweedfs-master'
-  - 'seaweedfs-mount'
   - 'seaweedfs-s3'
   - 'seaweedfs-volume'
 created: "2026-05-10"
@@ -25,22 +24,19 @@ created: "2026-05-10"
 
 SeaweedFS is an OPTIONAL master/volume/filer/S3 topology with no proven current
 client. It is retained for a named file/object-storage experiment and is not the
-HOME MinIO replacement. The FUSE mount is a separate privileged selector.
+HOME MinIO replacement. The privileged FUSE mount was removed (SPEC-0180 S04):
+it had no consumer, and S3 is the interface.
 
 ### Current implementation
 
 [`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)
-defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`
-and `seaweedfs-mount`. Profiles `seaweedfs` and `storage-seaweedfs` select the
-master, volume, filer and S3 services; `seaweedfs-mount` selects the core services
-plus the privileged mount.
+defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer` and
+`seaweedfs-s3`. Profiles `seaweedfs` and `storage-seaweedfs` select all four.
 
 `seaweedfs-master-data` and `seaweedfs-volume-data` are Docker-managed volumes.
 Filer metadata is not a separate persistent volume in current source. Services
 join `infra_net`; S3 routes through the standard gateway chain. No secret,
 authentication, transport encryption or mounted `security.toml` is declared.
-The mount adds `SYS_ADMIN` and `/dev/fuse`, so it is never implied by ordinary S3
-selection.
 
 ### Images, configuration and resource controls
 
@@ -48,21 +44,19 @@ The Compose file owns the pinned `chrislusf/seaweedfs` image; repository Renovat
 may propose updates and the version projection is derived. Root
 `SEAWEEDFS_*_HTTP_PORT` and `SEAWEEDFS_*_GRPC_PORT` keys control the declared
 listeners; no credential environment key is present. Master/filer extend
-`template-stateful-med`, volume `template-stateful-high`, S3
-`template-infra-med`, and mount `template-host-observer-med`; every service except
-the mount declares health checks. Flow is master → volume, filer → master/volume,
-then S3 or FUSE → filer.
+`template-stateful-med`, volume `template-stateful-high`, and S3
+`template-infra-med`; every service declares a health check. Flow is
+master → volume, filer → master/volume, then S3 → filer.
 
 ### Static preflight
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
 docker compose --env-file .env.example --profile seaweedfs config --services
-docker compose --env-file .env.example --profile seaweedfs-mount config --quiet
 ```
 
 Run from the repository root. Activation requires a named client, capacity and
-security review, especially for the unauthenticated S3 endpoint and FUSE access.
+security review, especially for the unauthenticated S3 endpoint.
 
 ### Recovery and lifecycle
 

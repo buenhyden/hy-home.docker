@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -26,9 +26,8 @@ MinIO requires a separate migration decision and recovery evidence.
 
 ## Controls
 
-- Use `seaweedfs` or `storage-seaweedfs` for the core/S3 topology. Use
-  `seaweedfs-mount` only when FUSE and its host capabilities are explicitly
-  approved.
+- Use `seaweedfs` or `storage-seaweedfs` for the core/S3 topology. S3 is the
+  interface; a privileged FUSE host mount is not part of this subject.
 - Preserve distinct master and volume state. Do not treat the master, volume or
   filer metadata as independently recoverable.
 - Keep services on `infra_net` and the S3 route on the standard gateway chain.

@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.0.2"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 created: "2025-12-06"
 ---
 
@@ -21,28 +21,25 @@ It is intended for operators and maintainers evaluating SeaweedFS.
 ## Scope
 
 [`docker-compose.yml`](docker-compose.yml) defines `seaweedfs-master`,
-`seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, and `seaweedfs-mount`.
-Profiles `seaweedfs` and `storage-seaweedfs` select core plus S3;
-`seaweedfs-mount` additionally selects the privileged FUSE mount.
+`seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`. Profiles
+`seaweedfs` and `storage-seaweedfs` select all four. The privileged FUSE mount
+was removed (SPEC-0180 S04): it had no consumer, and S3 is the interface.
 
 ## Structure
 
 Master and volume state use `seaweedfs-master-data` and
 `seaweedfs-volume-data`. Services join `infra_net`; the S3 route uses the standard
 gateway chain. Current source declares no secret, internal authentication/TLS or
-mounted security configuration. The mount adds `SYS_ADMIN` and `/dev/fuse` and
-therefore needs explicit host-capability approval. Master, volume, filer and S3
-expose only their declared internal HTTP/gRPC ports; no host `ports` mapping is
-declared. Each core/S3 service has an HTTP health check, while the privileged mount
-has no health check. Commands/configuration are inline; `security.toml.example` is
-not mounted.
+mounted security configuration. Master, volume, filer and S3 expose only their
+declared internal HTTP/gRPC ports; no host `ports` mapping is declared. Each
+service has an HTTP health check. Commands/configuration are inline;
+`security.toml.example` is not mounted.
 
 ## How to Work in This Area
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
 docker compose --env-file .env.example --profile seaweedfs config --services
-docker compose --env-file .env.example --profile seaweedfs-mount config --quiet
 ```
 
 SeaweedFS remains OPTIONAL and is not an automatic MinIO replacement. Recovery
