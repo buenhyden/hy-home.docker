@@ -427,8 +427,15 @@ Restore problems and fixes:
   were renamed back without restarts; name lookups return 200.
 - Open WebUI hung at application startup because it started before Traefik
   (OIDC discovery); one restart fixed it.
-- OpenBao is sealed after its restart (Shamir). Unsealing is the owner-held
-  ceremony and was not done by the agent.
+- OpenBao was sealed after its restart (Shamir). The owner's first attempts
+  used `secrets/security/unseal_keys.txt`, which holds the legacy Vault keys:
+  one was accepted as a share and the combination failed with `message
+  authentication failed`. The storage was initialized once (2026-09-19); with
+  shares from that bootstrap custody the owner unsealed it, now active. The
+  legacy file was renamed `vault_unseal_keys.legacy.txt` and `secrets/README.md`
+  states that OpenBao shares are not kept there. `openbao-agent` reports `no
+  known secret ID` (its single-use SecretID was consumed on 2026-09-19) and needs
+  the owner's SecretID issuance; services still read their Docker Secret files.
 - Prometheus has ten targets down (k3d cluster, OpenBao metrics, OpenSearch);
   all were already down for the previous six hours.
 
