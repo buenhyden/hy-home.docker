@@ -15,7 +15,6 @@ import re
 import sqlite3
 import subprocess
 import tempfile
-import time
 import unittest
 from pathlib import Path
 
