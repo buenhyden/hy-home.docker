@@ -459,6 +459,28 @@ disk and `/` is an SSD. With image snapshots on the hard disk, 53 containers
 read their layers at once; I/O pressure `full` stayed at 42–60% and
 `mng-pg` spent over 300 s in its startup fsync. The move was recommended
 without checking the disk type. `/var/lib/*.pre-move` remain on `/`.
+
+### Containerd split and OpenBao Agent recovery (2026-09-22, owner-run)
+
+Owner decision: containerd (image content and container snapshots) returned to
+the SSD at `/var/lib/containerd`; Docker's data-root (volumes, build cache,
+container metadata) stays on the data disk. The owner-run script deleted both
+`/var/lib/*.pre-move` copies, copied containerd back, removed its mount
+dependency and kept `containerd.hdd-old` on the data disk for rollback. All 53
+containers returned; every container was healthy three minutes after
+`mng-pg` started (21 minutes on the hard disk); I/O pressure `full` 5%; CDC
+RUNNING; SSO 401/302. `/` is 73% (52 GB free), not the estimated 60%: with the
+containerd image store the image content and unpacked snapshots both live in
+containerd, so moving it back returned almost all of the space the `pre-move`
+copies had held. The disk relief of this Task is therefore the twelve removed
+image tags (84% → 75%) plus build cache and volumes on the data disk.
+
+OpenBao resealed on the restart and the owner unsealed it. The owner issued a
+fresh `hy-home-renderer` SecretID into the Agent directory with the Agent
+stopped; the Agent authenticated, started token renewal and deleted the
+SecretID file. Rendered outputs remain 0600 and unchanged since their
+2026-09-19 byte comparison.
+
 - Prometheus has ten targets down (k3d cluster, OpenBao metrics, OpenSearch);
   all were already down for the previous six hours.
 
