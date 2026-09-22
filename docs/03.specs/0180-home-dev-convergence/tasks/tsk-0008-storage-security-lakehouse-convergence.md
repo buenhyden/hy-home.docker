@@ -209,12 +209,113 @@ S09–S17 new tools on the new networks and storage → S18 auth → S19 removal
 and convergence. No MinIO data is deleted before S07 acceptance and a verified
 backup.
 
+### S02 — Shared contracts, safe configuration handling, regression baseline
+
+- Stage 99: all 40 registered template sources were read (headings and author
+  prompts; package README, guide, policy and runbook in full). The package
+  README prompt already requires profiles, dependencies, networks, ports,
+  persistence, env keys, secret references, health semantics and removal or
+  migration state; the runbook prompt already requires approval boundaries,
+  backup/restore, migration, stop conditions and evidence. No contract gap for
+  the new requirements was found, so no template, schema or registry changes.
+  The per-template ledger is completed in S19 because a later stage may still
+  expose a gap.
+- Contract changes routed to their stages: POL-0077 requires a fixed address
+  for every service, which conflicts with DNS-first networks and dynamic
+  one-shot jobs; the policy and its validator change first in S05. Each new
+  profile gets a POL-0078 row and each new service an authored m0021 inventory
+  row in the stage that adds it.
+- Env/secret tooling is already safe and is not reimplemented:
+  `gen-secrets.sh` parses `.env` without `source`/`eval`, writes through 0600
+  temporary files and atomic `mv`, rejects symlinked metadata paths, and has 30
+  regression tests. Private check in the main checkout (names only):
+  `--sync-metadata-check` exit 0; `.env` and `.env.example` key sets equal.
+- Accumulated regression set run after every stage: Compose validation (all
+  selections), operations catalog, version projection `--check`, document
+  metadata (changed) and links, focused unit tests, `check-all-hardening.sh`,
+  `gen-secrets.sh --dry-run`, and from S07/S08 the removed-reference checks.
+- Baseline `run-ci-gate.py --profile full` at `170b89cd3`: 486 tests, one
+  failure (`service-inventory-source: untracked build Dockerfile`) caused by
+  this stage's in-progress S03 file while the gate ran; everything else passed.
+
+### S03 — Restic and pgBackRest
+
+Implemented (SOURCE_READY/LIVE_PENDING):
+
+- `mng-pg` is built from `infra/04-data/operational/mng-db/pg/backup/`: the same
+  PostgreSQL base plus the pinned Alpine `pgbackrest` package, so
+  `archive_command` runs inside the server as UID/GID 70. Stanza `mng`,
+  `aes-256-cbc` repository, zstd, two full backups retained,
+  `archive_timeout=${POSTGRES_ARCHIVE_TIMEOUT:-300}`. The passphrase (BKP-001)
+  reaches pgBackRest through a 0600 include file written at start, never env
+  or tracked config. The repository binds `${BACKUP_STATE_REPO_DIR}/pgbackrest`
+  on the SSD while `PGDATA` stays on the data disk.
+- `infra/09-tooling/restic/`: `restic` (default `snapshots`; `init` never
+  re-initializes; `forget-prune` requires `HYHOME_PRUNE_CONFIRM`) and
+  `backup-sqlite-export` under profile `backup` (automation). Two repositories
+  cross the disks: data-disk state → SSD, `secrets/` and `.env` → data disk.
+  Live engine directories are excluded and covered by their own method.
+- Host orchestrator `bin/hyhome-backup.sh` under `hyhome-backup.timer` (daily
+  03:30 KST, idle I/O): `flock`, same-filesystem refusal, pgBackRest full
+  (Sunday) or differential, PostgreSQL globals, Valkey RDB, SQLite exports,
+  Restic backup and check, staging cleanup only on success. It reads paths
+  from `docker compose config` and never sources `.env`.
+- Contracts: root secrets `pgbackrest_cipher_pass`, `restic_password`; public
+  keys `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`, `POSTGRES_ARCHIVE_TIMEOUT`;
+  registry rows BKP-001/BKP-002 (dry-run 106 rows); POL-0078 `backup`; GDE/RUN-0021
+  added and POL-0021 rows for PostgreSQL, Valkey and three SQLite stores updated
+  with offsite recovery stated as not provided; mng-db, Restic and 09-tooling
+  READMEs; m0021 rows; version projection (+3 images).
+
+Review (read-only reviewer, 2026-09-22): no blocker; three high, five medium
+and six low findings, all corrected before commit. H1 runbook restore target
+now `chmod 0755` and the rehearsal uses 0755 instead of 0777; H2 the state set
+is an allowlist (`sets/state-include.txt`) instead of an incomplete denylist;
+H3 an unset repository key renders a missing path so only `mng-pg` recreation
+fails, and RUN-0021 syncs `.env` before checkout; M1
+`archive-push-queue-max=4GiB`; M2 `mem_limit: 1g`; M3 new SQLite sidecars are
+handed back to the database owner (verified on a stopped WAL database) and
+sources use `create_host_path: false`; M4 20 GiB free-space floor, EXIT-trap
+staging cleanup, four-hour timeout; M5 recorded below as not run; L1 dump
+command, L2 `cmd` refuses `forget`/`prune`, L3 missing Valkey fails the run,
+L4 multi-line cipher secret rejected, L5 wording, L6 `pull --ignore-buildable`.
+
+Owner decisions (2026-09-22): the owner first moved `BACKUP_STATE_REPO_DIR`
+to the data disk for SSD capacity, then asked for a capacity review and set the
+rule "keep the original SSD path if the repository can be capped below 5 GB".
+Measured inputs: all databases 96 MB, WAL about 14 MB/h, allowlisted trees about
+0.3 GB; Airflow logs (175 MB, +64 MB/day) and `airflow-valkey` left the
+allowlist. The cap is enforceable without automatic deletion: after pgBackRest
+(whose retention expires old backups) the orchestrator measures the SSD
+repository and, at or over `BACKUP_STATE_MAX_GIB=5`, skips Restic and fails the
+run. Estimated steady size is under 3 GB, so the SSD path
+`/home/hyunyoun/backups` stays and the same-disk exception was withdrawn. The
+orchestrator also refuses a repository inside a backed-up source, the only
+self-amplifying layout, and logs repository sizes every run. The estimate is
+replaced by the first measured sizes after the live switch.
+
+Rehearsal findings fixed before commit: the entrypoint's `umask 077` leaked
+into the official entrypoint and left the `PGDATA` parent untraversable for
+`postgres`; a restored server needs the image entrypoint, the read-only
+repository and the cipher secret because recovery runs `archive-get`; root
+with only `DAC_READ_SEARCH` cannot write the repository, so Restic uses
+`DAC_OVERRIDE` with every source mounted read-only; SQLite export needed
+`chmod` before `chown`; restore runs in a plain container.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | S00 inventory and live state | Task 10 / S00 | PASS: four-column state, consumers and requirement trace recorded above | this Task |
 | S01 target design | Task 10 / S01 | PASS (design): tree, duplicate rulings, interfaces, networks, order | this Task |
+| S02 contracts and baseline | Task 10 / S02 | PASS: no template gap; env/secret safety already present; baseline recorded | this Task, S19 ledger |
+| S03 static backup contracts | Task 10 / S03 | PASS 6/6 `BackupContractTests` (allowlist, recursion guard, budget order, queue cap, single-line secret, `cmd` delete refusal) | `test_compose_baseline_gates` |
+| S03 accumulated gates | Task 10 / S03 | PASS: Compose 72 selections/318 services, operations catalog, projection, links, metadata changed 0, secret dry-run 106 rows, 224 unit tests (8 opt-in skipped), hardening, `git diff --check` | this Task |
+| S03 isolated rehearsal | Task 10 / S03 | PASS 3/3 `BackupRestoreRehearsalTests` (`HYHOME_BACKUP_REHEARSAL=1`, after review fixes): stanza, check, full, diff, PITR to 150 of 999 rows on timeline 2 into a 0755 target; empty secret exit 64; Restic init skip, allowlist, read-only source, restore content, wrong password, prune and `cmd forget` refusal | RUN-0021 |
+| S03 manual rehearsal | Task 10 / S03 | PASS: wrong pgBackRest passphrase `status: error`; SQLite WAL export kept an uncheckpointed row; Valkey `--rdb -` reload returned the key | this Task |
+| S03 orchestrator end to end | Task 10 / S03 | NOT_RUN: `bin/hyhome-backup.sh` and the rendered `restic`/`backup-sqlite-export` services were not run through Compose; covered at the live step | RUN-0021 step 4 |
+| S03 live switch | Task 10 / S03 | APPROVED by owner 2026-09-22; pending merge to the running checkout | RUN-0021 steps 1–3 |
+| Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
 
