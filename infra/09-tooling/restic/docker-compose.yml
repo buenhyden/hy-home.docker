@@ -1,0 +1,112 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+services:
+  # One-shot Restic client for the two cross-disk repositories. The default
+  # command only lists snapshots, so an accidental `up` changes nothing; the
+  # host orchestrator (bin/hyhome-backup.sh) runs `init`, `backup` and `check`.
+  restic:
+    profiles:
+      - backup
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: restic/restic:0.19.1
+    container_name: restic
+    # Root with DAC_OVERRIDE reads every source regardless of owner. Every
+    # source is a read-only mount, so only the two repositories are writable.
+    user: '0:0'
+    cap_add:
+      - DAC_OVERRIDE
+    network_mode: none
+    # Repository index and the tmpfs cache grow with the repository.
+    mem_limit: 1g
+    entrypoint: ['/bin/sh', '/opt/hyhome/backup.sh']
+    command: ['snapshots']
+    environment:
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+      RESTIC_CACHE_DIR: /tmp/restic-cache
+      # Read by the host orchestrator: size budget of BACKUP_STATE_REPO_DIR.
+      BACKUP_STATE_MAX_GIB: ${BACKUP_STATE_MAX_GIB:-5}
+    secrets:
+      - restic_password
+    blkio_config:
+      weight: 100
+    volumes:
+      - ./backup.sh:/opt/hyhome/backup.sh:ro
+      - ./sets:/opt/hyhome/sets:ro
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/restic
+        target: /repo/state
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${BACKUP_HOST_REPO_DIR:-/missing-BACKUP_HOST_REPO_DIR}/restic
+        target: /repo/host
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEFAULT_MOUNT_VOLUME_PATH}
+        target: /src/state/volumes
+        read_only: true
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/staging
+        target: /src/state/exports
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ../../../secrets
+        target: /src/host/secrets
+        read_only: true
+      - type: bind
+        source: ../../../.env
+        target: /src/host/env/.env
+        read_only: true
+    labels:
+      <<: *tier-label
+
+  # Consistent SQLite copies through the Online Backup API for application
+  # stores that must not be file-copied while running (POL-0021).
+  backup-sqlite-export:
+    profiles:
+      - backup
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: python:3.13.15-alpine
+    container_name: backup-sqlite-export
+    user: '0:0'
+    # WAL readers need the -shm file, so sources are writable to this process;
+    # the Backup API only reads pages. The copy is handed to the host user.
+    cap_add:
+      - DAC_OVERRIDE
+      - CHOWN
+    network_mode: none
+    entrypoint: ['python3', '/opt/hyhome/export_sqlite.py']
+    environment:
+      HYHOME_EXPORT_OWNER: '1000:${SECRETS_GID:-1000}'
+    volumes:
+      - ./export_sqlite.py:/opt/hyhome/export_sqlite.py:ro
+      - type: bind
+        source: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+        target: /src/grafana
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEFAULT_OBSERVABILITY_DIR}/gatus
+        target: /src/gatus
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEFAULT_AI_MODEL_DIR}/open-webui
+        target: /src/open-webui
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/staging
+        target: /exports
+        bind:
+          create_host_path: false
+    labels:
+      <<: *tier-label

@@ -105,7 +105,12 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
-    image: postgres:18.6-alpine
+    # The plain PostgreSQL image plus pgBackRest (./pg/backup/Dockerfile), so
+    # archive_command runs inside the server as the postgres user.
+    image: hy-home/mng-pg:18.6-pgbackrest
+    build:
+      context: ./pg/backup
+      dockerfile: Dockerfile
     container_name: mng-pg
     hostname: mng-pg
     # Official entrypoint creates/chowns PGDATA and drops to postgres.
@@ -123,10 +128,23 @@ services:
       POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
       PGDATA: /var/lib/postgresql/data/pgdata
+      # pgBackRest connects through the local socket as the bootstrap superuser;
+      # the repository passphrase arrives through the include path, not env.
+      PGBACKREST_PG1_USER: ${POSTGRES_DEFAULT_USER}
+      PGBACKREST_CONFIG_INCLUDE_PATH: /tmp/pgbackrest/conf.d
     command:
       - postgres
       - -c
       - wal_level=logical
+
+      # Continuous WAL archiving to the pgBackRest repository (RPO bound by
+      # archive_timeout). A failing archive keeps WAL in pg_wal; watch disk use.
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=pgbackrest --stanza=mng archive-push %p
+      - -c
+      - archive_timeout=${POSTGRES_ARCHIVE_TIMEOUT:-300}
 
       - -c
       - max_replication_slots=${POSTGRES_MAX_REPLICATION_SLOTS:-4}
@@ -140,8 +158,16 @@ services:
       - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     volumes:
       - mng-pg-data:/var/lib/postgresql/data:rw
+      # pgBackRest repository (POL-0021). An unset key renders a path that does
+      # not exist, so only mng-pg (re)creation fails instead of every command.
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/pgbackrest
+        target: /var/lib/pgbackrest
+        bind:
+          create_host_path: false
     secrets:
       - mng_postgres_password
+      - pgbackrest_cipher_pass
     labels:
       <<: *tier-label
     healthcheck:

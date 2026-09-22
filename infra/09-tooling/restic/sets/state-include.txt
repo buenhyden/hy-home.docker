@@ -1,0 +1,21 @@
+# Allowlist of data-disk trees that are safe to copy while services run (POL-0021).
+# Paths are relative to DEFAULT_MOUNT_VOLUME_PATH. Everything else under it is a
+# live engine store with its own method (pgBackRest, an export, a snapshot) or a
+# recorded rebuild exception, and is never file-copied.
+ai/comfyui/custom_nodes
+ai/comfyui/input
+ai/comfyui/output
+ai/comfyui/user
+ai/open-webui/uploads
+auth/keycloak
+management/jupyterlab
+# Airflow logs follow their own retention and airflow-valkey is a live broker.
+workflow/airflow/dags
+workflow/airflow/config
+workflow/airflow/plugins
+workflow/n8n
+workflow/n8n-task-runner
+workflow/n8n-task-runner-worker
+registry
+# Legacy Vault Raft data: not running, kept until its owner disposition (S08).
+security/vault

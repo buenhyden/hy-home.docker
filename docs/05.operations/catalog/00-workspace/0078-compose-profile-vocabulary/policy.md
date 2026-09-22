@@ -45,6 +45,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `analytics-engineering` | capability | dbt 변환 작업과 feature 소유 DB 권한 준비; 명시적 명령만 쓰기 수행 | `mng-pg`, `mng-pg-init`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
+| `backup` | automation | Restic 백업·SQLite export 작업; host timer와 명시적 명령만 실행 | `restic`, `backup-sqlite-export` | No | backup repository and export staging writes when run | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |
 | `cdc` | capability | Debezium PostgreSQL CDC 원천 준비와 Connect worker | `mng-pg`, `mng-pg-init`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인 | current |

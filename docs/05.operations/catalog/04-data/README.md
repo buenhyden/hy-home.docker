@@ -1,10 +1,10 @@
 ---
 title: "Operations — 04 Data"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-22"
 layer: "operations"
 ---
 
@@ -35,7 +35,7 @@ four-digit subject identity. Role membership follows the current subject tree.
 | [Analytics — ksqlDB](0018-ksqldb/guide.md) | [Guide](0018-ksqldb/guide.md), [Policy](0018-ksqldb/policy.md), [Runbook](0018-ksqldb/runbook.md) |
 | [Analytics — OpenSearch](0019-opensearch/guide.md) | [Guide](0019-opensearch/guide.md), [Policy](0019-opensearch/policy.md), [Runbook](0019-opensearch/runbook.md) |
 | [Analytics — Warehouses](0020-starrocks/guide.md) | [Guide](0020-starrocks/guide.md), [Policy](0020-starrocks/policy.md), [Runbook](0020-starrocks/runbook.md) |
-| [Backup policy](0021-backup-and-restore/policy.md) | [Policy](0021-backup-and-restore/policy.md) |
+| [Backup and restore](0021-backup-and-restore/guide.md) | [Guide](0021-backup-and-restore/guide.md), [Policy](0021-backup-and-restore/policy.md), [Runbook](0021-backup-and-restore/runbook.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster/guide.md) | [Guide](0022-valkey-cluster/guide.md), [Policy](0022-valkey-cluster/policy.md), [Runbook](0022-valkey-cluster/runbook.md) |
 | [Lake and Object — MinIO](0023-minio/guide.md) | [Guide](0023-minio/guide.md), [Policy](0023-minio/policy.md), [Runbook](0023-minio/runbook.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs/guide.md) | [Guide](0024-seaweedfs/guide.md), [Policy](0024-seaweedfs/policy.md), [Runbook](0024-seaweedfs/runbook.md) |

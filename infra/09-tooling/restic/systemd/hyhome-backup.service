@@ -1,0 +1,26 @@
+[Unit]
+Description=HOME backup: pgBackRest, consistent exports and Restic (hy-home Docker Compose)
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/04-data/0021-backup-and-restore/runbook.md
+Requires=docker.socket
+After=docker.socket network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=hyunyoun
+Group=hyunyoun
+WorkingDirectory=/home/hyunyoun/data/hy-home.docker
+ExecStart=/home/hyunyoun/data/hy-home.docker/infra/09-tooling/restic/bin/hyhome-backup.sh
+# Backups must not starve HOME services on the shared disks.
+Nice=10
+IOSchedulingClass=idle
+Restart=no
+# A Sunday full backup can be long; on timeout the EXIT trap still removes the
+# plaintext exports, and a stale Restic lock needs `restic unlock` (RUN-0021).
+TimeoutStartSec=14400
+TimeoutStopSec=120
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=hyhome-backup
+
+# No [Install] section: only hyhome-backup.timer is enabled.
