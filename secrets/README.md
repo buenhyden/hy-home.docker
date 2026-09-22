@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 created: "2026-02-23"
 ---
 
@@ -183,6 +183,15 @@ private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승�
 - secret 값 파일, private key, token, 인증서 원문을 응답이나 문서에 노출하지 않습니다.
 - host filesystem encryption과 Docker secret mount 정책을 운영 환경 기준에 맞게 유지합니다.
 - registry와 실제 파일 경로가 달라지면 문서와 검증 절차를 함께 갱신합니다.
+- secret 값 파일 mode는 소유자와 `SECRETS_GID`(기본 1000, 소유자의 primary group)만
+  읽는 `0640`이 기준입니다. 소유자가 아닌 UID로 실행되는 컨테이너는 공통 template의
+  `group_add: ['${SECRETS_GID:-1000}']`로 group read를 얻습니다. 모든 capability를
+  제거한 root도 파일 권한 검사를 우회하지 못하므로 `0600`은 소유자 UID 1000 컨테이너만
+  읽을 수 있습니다. `gen-secrets.sh`는 새 파일을 `0640`으로 씁니다.
+- 아직 실행 검증하지 않은 서비스만 소비하는 파일은 `0644`로 남습니다. 해당 서비스를
+  활성화할 때 컨테이너 내부 read test와 `/proc` supplementary group 확인 후 `0640`으로
+  낮춥니다. Compose 소비자가 없는 파일은 `0600`입니다. `certs/`는 별도의
+  `hyhome-certs` group(`CERT_GROUP_GID`) 모델을 유지합니다.
 - AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 
 ## Related Documents

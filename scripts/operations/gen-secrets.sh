@@ -309,7 +309,9 @@ write_secret_file() {
     local value="$2"
     mkdir -p -- "$(dirname "$path")"
     printf '%s' "$value" > "$path"
-    chmod 600 "$path" 2>/dev/null || true
+    # Owner plus the owner's primary group (SECRETS_GID); containers that do not
+    # run as the owner read secret files through group_add, never "other".
+    chmod 640 "$path" 2>/dev/null || true
 }
 
 generate_htpasswd_hash() {

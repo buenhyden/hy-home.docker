@@ -350,6 +350,56 @@ the connector is stopped, bounded by `max_slot_wal_keep_size`.
 | `hy/gatus:oidc-review-final` | `sha256:2fca7d081002a44e2ee3b888f2568ca4a35c9950a55414abdb7c23984eabe5c4` |
 | `hy/gatus:oidc-build-test` | `sha256:c52ad9511a84a5738eda73155807acd5a2fe3842bd6a33f223fc570d308bba91` |
 
+### Owner-approved maintenance items (2026-09-22)
+
+Owner review of the items reported done:
+
+- Renovate units: installed files equal the tracked files; timer scheduled.
+- IAM-011: the private registry value cell is filled and its SHA-256 equals
+  the referenced secret file (value not printed).
+- Authenticated SSO: oauth2-proxy logs show one successful login and
+  authenticated 202 responses for `jupyter`, `mlflow` and `redisinsight`. No
+  logout, non-member denial or role-removal event appears, and the Kafka,
+  Schema Registry, kafbat and Dozzle routes were not exercised; those checks
+  remain owner-reported only.
+
+| Item | Result | Evidence |
+| --- | --- | --- |
+| Valkey outage (item 7) | Pass with impact | `mng-valkey` stopped 68 s: SSO unauthenticated 401, `/oauth2/start` 302, `/ping` OK throughout, oauth2-proxy no errors; Airflow worker reconnected 4 s after return without restart; n8n and worker restarted twice, healthy 37 s after return; authenticated-session behavior not measurable without credentials |
+| CDC isolated restore (item 8) | Pass (steps 1–3) | Disposable KRaft Kafka + Schema Registry on an internal network; 4/4 subjects with identical IDs; 563/563 records in 3 partitions byte-identical by SHA-256; connector config (password as provider reference) and offsets captured; connector not started because it would consume the live slot |
+| JupyterLab restore (item 8) | Pass on a test notebook | Work directory held no files; a test notebook was executed, archived, restored in isolation (manifest 1/1) and validated with its output; test notebook removed; backup kept under the host backup root |
+| Reboot rehearsal (item 8) | Not run | Needs sudo and ends this session; scheduled after the data-root move so one reboot also proves the mount dependency |
+| Data-root move (item 2) | Prepared, not run | Owner-run script under `_workspace/repo-support/`; needs sudo and stops every container |
+| Secret file modes (item 9) | Done for verified consumers | See below |
+
+Secret file modes. Measured before the change: 88 files 0664, 6 at 0644, 8 at
+0600. Two live failures were found: Traefik had returned `permission denied`
+for the dashboard basic-auth file since 08:41 (the file was regenerated at 0600
+by `gen-secrets.sh`, which the capability-dropped root process cannot read),
+and Open WebUI would lose its OIDC secret on its next restart. Change:
+
+- `group_add: ['${SECRETS_GID:-1000}']` on the shared security base and the three
+  templates without it, plus the MinIO cluster anchor; all 100 secret
+  consumers carry the group (Compose merges it with existing `group_add`).
+- `gen-secrets.sh` writes new secret files as 0640; `SECRETS_GID` added to the
+  env contract (public 267, optional 206).
+- Recreated with the group and verified in `/proc` (every process has group
+  1000): Prometheus, Alertmanager, Loki, Tempo, Grafana, both exporters,
+  Dozzle, kafbat-ui, Crawl4AI, Open Notebook, MLflow, Open WebUI, Traefik,
+  oauth2-proxy and `mng-valkey`.
+- Modes now: 34 files 0640 (every consumer running and verified, or a one-shot
+  job probed with its own user and group), 10 files 0600 (no Compose consumer),
+  41 files 0644 (a consumer in a profile that is not running; tightened when
+  activated). No secret file is group- or world-writable. In-container read
+  tests: every mounted secret readable; Dozzle (no shell) proven by recreate.
+
+Incidents during this work: Open WebUI was recreated before its 0600 secret was
+changed to 0640 and restart-looped for about three minutes (11 restarts) until
+the mode was fixed. oauth2-proxy restarted once because it was recreated
+together with Traefik and could not reach OIDC discovery. The Open Notebook
+recreate pulled its mutable `v1-latest-single` tag. Probing the dbt job rebuilt
+its image from cache (it had been archived to the registry and removed).
+
 ## Review Evidence
 
 - Stage 99 template review (read-only reviewer, all 40 sources): no template,
