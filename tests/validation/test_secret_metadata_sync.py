@@ -15,9 +15,9 @@ import yaml
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/operations/gen-secrets.sh"
 ROOT = SCRIPT.parents[2]
 MIGRATION_COMPOSE = "infra/03-security/vault/docker-compose.yml"
+# DEFAULT_MOUNT_VOLUME_PATH left this set when the Restic job mounted it directly.
 INDIRECT_DERIVED_INPUTS = {
     "DEFAULT_DOCKER_PROJECT_PATH",
-    "DEFAULT_MOUNT_VOLUME_PATH",
 }
 HTPASSWD_ID_INPUTS = {"ELASTIC_USERNAME", "TRAEFIK_ADMIN_USERNAME"}
 REGISTRY_PATH_EXCEPTIONS = {
@@ -757,7 +757,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_five_way_classification(self):
         contract = self.environment
-        self.assertEqual(267, len(contract["public"]))
+        self.assertEqual(271, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
@@ -765,7 +765,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
             {"VAULT_CLUSTER_PORT", "VAULT_PORT"}, contract["migration_only"]
         )
         self.assertEqual(59, len(contract["required"]))
-        self.assertEqual(206, len(contract["optional"]))
+        self.assertEqual(210, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"]
@@ -809,8 +809,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.registry_text,
             self.environment["consumed"],
         )
-        self.assertEqual(75, len(contract["declarations"]))
-        self.assertEqual(104, len(contract["rows"]))
+        self.assertEqual(77, len(contract["declarations"]))
+        self.assertEqual(106, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])

@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 created: "2025-11-12"
 ---
 
@@ -24,6 +24,7 @@ The current map is exact:
 | `iac` | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | explicit infrastructure tooling |
 | `dependency-update` | `renovate` | one-shot remote repository maintenance |
 | `analytics-engineering` | `dbt-db-provision`, `dbt` (plus `mng-pg`, `mng-pg-init`) | one-shot transformation job; `run`/`build` write the target schema |
+| `backup` | `restic`, `backup-sqlite-export` | one-shot backup jobs driven by the host timer |
 
 `tooling` does not select IaC or load generation. Terraform and Syncthing runtime
 were removed; OpenTofu is the current CLI engine. None of these services is part
@@ -51,6 +52,8 @@ documentation agents responsible for the tooling profile contract.
   must be recovered consistently.
 - [Renovate](renovate/README.md) uses a Docker Secret token and disposable cache.
   A live job can create remote branches/PRs and needs explicit authorization.
+- [Restic](restic/README.md) snapshots data-disk files, consistent exports,
+  `secrets/` and `.env` into two cross-disk repositories under a host timer.
 
 ## Structure
 
@@ -64,6 +67,7 @@ documentation agents responsible for the tooling profile contract.
 ├── sonarqube/   # code-quality/SAST service
 ├── renovate/    # dependency-update job
 ├── dbt/         # analytics-engineering transformation job
+├── restic/      # backup jobs, exclude lists, host orchestrator and timer
 └── README.md
 ```
 

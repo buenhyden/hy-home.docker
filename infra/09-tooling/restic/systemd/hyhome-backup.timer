@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily HOME backup trigger (03:30 KST)
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/04-data/0021-backup-and-restore/runbook.md
+
+[Timer]
+# 03:30–04:00 KST. Renovate runs Monday 00:00–01:00 and Spark table
+# maintenance Sunday 05:00, so these disk-heavy jobs never overlap.
+OnCalendar=*-*-* 03:30:00 Asia/Seoul
+RandomizedDelaySec=1800
+Persistent=true
+
+[Install]
+WantedBy=timers.target

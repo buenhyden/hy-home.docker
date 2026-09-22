@@ -220,6 +220,12 @@ secrets:
   jupyter_token:
     file: ./secrets/tools/jupyter_token.txt
 
+  # ── Backup ─────────────────────────────────────────────────────
+  pgbackrest_cipher_pass:
+    file: ./secrets/backup/pgbackrest_cipher_pass.txt
+  restic_password:
+    file: ./secrets/backup/restic_password.txt
+
 include:
   # Every file below is included unconditionally; Compose profiles decide what
   # starts. Selecting no profile resolves no service. The profile vocabulary is
@@ -276,6 +282,7 @@ include:
   - infra/09-tooling/terrakube/docker-compose.yml
   - infra/09-tooling/renovate/docker-compose.yml
   - infra/09-tooling/dbt/docker-compose.yml
+  - infra/09-tooling/restic/docker-compose.yml
   # 10-communication
   - infra/10-communication/mailpit/docker-compose.yml
   - infra/10-communication/stalwart/docker-compose.yml
