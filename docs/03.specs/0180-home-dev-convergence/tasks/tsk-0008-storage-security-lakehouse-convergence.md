@@ -302,6 +302,33 @@ with only `DAC_READ_SEARCH` cannot write the repository, so Restic uses
 `DAC_OVERRIDE` with every source mounted read-only; SQLite export needed
 `chmod` before `chown`; restore runs in a plain container.
 
+### S03 live activation (2026-09-22, owner-approved)
+
+The owner approved the merge, the checkout update, the `mng-pg` switch, the
+backup directories and the timer. PR #191 (S00–S03) was merged by the owner
+while `validation-changed` failed on three pre-commit hooks; #192 repaired them
+and #193 fixed a live finding; both passed `validation-changed` and are merged.
+
+| Step | Result | Evidence |
+| --- | --- | --- |
+| Operations checkout | `1ac49fd35` → `0b16d32dc` → `c45fe2fa8` (fast-forward) | clean before each pull |
+| `.env` and secrets | four keys added, existing values preserved, key sets equal; BKP-001/002 generated (16 characters, 0640) | `--sync-metadata-check` exit 0 |
+| Directories | SSD `/home/hyunyoun/backups/{pgbackrest (70:70 0750), restic, staging (0700)}`; data disk `/home/hyunyoun/storage/backups/restic` (0700) | set through a root container; no sudo |
+| Pre-switch dump | 2.4 MB, 9 databases, completion marker present, mode 0600 | `storage/backups/mng-pg/20260922T163235-pre-pgbackrest/` |
+| `mng-pg` recreate | healthy on `hy-home/mng-pg:18.6-pgbackrest`, restarts 0; `archive_mode=on`; archiver 4 archived / 0 failed after start; passphrase absent from env and `<redacted>` in logs | 53 containers up; `airflow-triggerer` reconnected once |
+| Stanza and full backup | `stanza-create` and `check` succeeded; full `20260922-073354F`: database 95.5 MB, repository 10.7 MB | `pgbackrest info` `status: ok` |
+| First orchestrator run (07:55 UTC) | exit 1: pgBackRest diff and all exports succeeded, host `du` could not read the root-owned Restic repository, so Restic was skipped; staging emptied by the EXIT trap | fixed in #193 |
+| Second orchestrator run (08:20 UTC) | exit 0: diff 5 MB; three SQLite exports with integrity ok; Restic state 234.8 MiB added (225.1 MiB stored), host 118.8 KiB; both `restic check` no errors; state repository 275 MiB of the 5 GiB budget; staging empty | this Task |
+| Grafana dashboard check | not a defect: the legacy `dashboard` table is empty because Grafana 13 keeps dashboards in unified storage; `resource` holds 67 `dashboard.grafana.app` dashboards and 6 folders, and the provisioner logs `finished to provision dashboards` | read-only `immutable=1` query of the live volume |
+| Live restore check | restored `.env` hash equals the live file; restored Grafana export integrity ok with the same row counts as the live database; scratch removed | isolated scratch directory |
+
+Live findings fixed: host `du` cannot read the UID 70 pgBackRest repository
+(#192) nor the root-owned Restic repository (#193); both sizes now come from a
+read-only, networkless container. The `archive-push` log level change in #192
+is baked into the image and applies at the next `mng-pg` rebuild.
+`pre-commit` 4.6.1 was installed in a user venv on the owner's approval, so the
+local changed gate now runs completely (exit 0).
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -313,8 +340,10 @@ with only `DAC_READ_SEARCH` cannot write the repository, so Restic uses
 | S03 accumulated gates | Task 10 / S03 | PASS: Compose 72 selections/318 services, operations catalog, projection, links, metadata changed 0, secret dry-run 106 rows, 224 unit tests (8 opt-in skipped), hardening, `git diff --check` | this Task |
 | S03 isolated rehearsal | Task 10 / S03 | PASS 3/3 `BackupRestoreRehearsalTests` (`HYHOME_BACKUP_REHEARSAL=1`, after review fixes): stanza, check, full, diff, PITR to 150 of 999 rows on timeline 2 into a 0755 target; empty secret exit 64; Restic init skip, allowlist, read-only source, restore content, wrong password, prune and `cmd forget` refusal | RUN-0021 |
 | S03 manual rehearsal | Task 10 / S03 | PASS: wrong pgBackRest passphrase `status: error`; SQLite WAL export kept an uncheckpointed row; Valkey `--rdb -` reload returned the key | this Task |
-| S03 orchestrator end to end | Task 10 / S03 | NOT_RUN: `bin/hyhome-backup.sh` and the rendered `restic`/`backup-sqlite-export` services were not run through Compose; covered at the live step | RUN-0021 step 4 |
-| S03 live switch | Task 10 / S03 | APPROVED by owner 2026-09-22; pending merge to the running checkout | RUN-0021 steps 1–3 |
+| S03 orchestrator end to end | Task 10 / S03 | PASS (live, 08:20 UTC) after one exit-1 run fixed by #193 | RUN-0021 step 4 |
+| S03 live switch | Task 10 / S03 | PASS: `mng-pg` on the pgBackRest image, stanza, full and diff backups, WAL archive | RUN-0021 steps 1–3 |
+| S03 live restore | Task 10 / S03 | PASS (files): `.env` hash and Grafana export verified from live snapshots; PostgreSQL PITR on HOME data NOT_RUN (synthetic rehearsal only) | RUN-0021 steps 5–6 |
+| S03 timer | Task 10 / S03 | PENDING: owner runs the sudo install | RUN-0021 step 3 |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -335,6 +364,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
