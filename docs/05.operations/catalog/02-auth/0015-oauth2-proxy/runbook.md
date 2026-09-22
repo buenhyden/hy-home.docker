@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -123,6 +123,17 @@ created: "2026-05-17"
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
 - Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
+
+`mng-valkey` was stopped for 68 seconds and recreated. Probes every five seconds:
+unauthenticated SSO route 401, `/oauth2/start` 302 and `/ping` OK throughout;
+oauth2-proxy logged no errors and did not restart. The Airflow Celery worker
+logged connection errors and reconnected four seconds after Valkey returned
+without a restart; n8n and its worker restarted twice and were healthy 37 seconds
+after Valkey returned. Not measured: an existing authenticated session during
+the outage, because oauth2-proxy rejects an unsigned cookie before it reaches
+Valkey and no test credentials were used.
 
 ## Rollback or Recovery
 

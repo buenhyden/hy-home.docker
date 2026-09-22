@@ -17,6 +17,8 @@ x-minio-common: &minio-common
     start_period: 15s
   networks:
     - infra_net
+  group_add:
+    - '${SECRETS_GID:-1000}'
   security_opt:
     - no-new-privileges:true
   cap_drop:

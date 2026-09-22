@@ -4,7 +4,7 @@ version: "1.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -55,7 +55,13 @@ token or notebook contents.
 ## Rollback or Recovery
 
 Configuration rollback restores Compose and requirements from Git; the previous
-image must be rebuilt. Work-directory restore is **planned but unexecuted**.
+image must be rebuilt. Work-directory restore was rehearsed on 2026-09-22: the
+work directory was empty, so a one-cell test notebook was executed and saved,
+archived with a SHA-256 manifest, restored to an isolated path (manifest 1/1),
+and validated with `nbformat` in a `--network none` container of the same image
+(saved output intact); the test notebook was then removed. The live service was
+not stopped because the directory held no user data; with user data, stop it
+first as step 1 requires.
 
 ## Escalation
 

@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -90,6 +90,16 @@ three-broker selector before any runtime use.
 6. Record observed recovery point, elapsed time and gaps. A separate cutover task
    fences source writes, captures final deltas, switches clients and preserves
    rollback. Do not reuse the live KRaft cluster ID.
+
+Rehearsal 2026-09-22 (steps 1–3, owner-approved): a disposable single-node KRaft
+Kafka and Schema Registry at the live versions on an `--internal` network. All
+four subjects were imported in `IMPORT` mode with identical IDs; the one CDC
+topic (three partitions, 563 records) was copied with the same partition and
+timestamp, and a SHA-256 digest over every key, value and header matched. The
+connector config (password replaced by its provider reference) and offsets were
+captured for step 4. Steps 4–6 were not run: a Connect worker against the live
+database would consume the production replication slot. The rehearsal stack was
+removed.
 
 ## Evidence
 
