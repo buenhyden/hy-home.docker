@@ -599,6 +599,19 @@ Runtime is not changed by this source step. After merge, the running `minio`
 container becomes a Compose orphan and is stopped and removed in a separately
 approved live step; its data directory stays.
 
+### S07b live cleanup (2026-09-23, owner-approved)
+
+Owner approved container removal and secret deletion.
+
+| Step | Result |
+| --- | --- |
+| Containers | `minio` stopped and removed; the exited `minio-create-buckets` and `mlflow-artifact-provision` removed. No MinIO container remains |
+| Data | volume `hy-home-infra_minio-data` kept untouched: 176.8 MB (`loki-bucket` 102.5 MB, `tempo-bucket` 73.5 MB, `mlflow-artifacts` 40 KB, `cdn-bucket` and `doc-intel-assets` empty) |
+| Secrets | the four `secrets/storage/minio_*.txt` deleted. Object data is unencrypted and readable by a new MinIO server, but the IAM state in `.minio.sys` was encrypted with those root credentials and is not recoverable |
+| Environment | operator `.env` lost `MINIO_APP_USERNAME`, `MLFLOW_S3_USER`, `MINIO_PORT`, `MINIO_CONSOLE_PORT` and the MinIO wording; `config --quiet` passes for storage, obs and mlops |
+| Prometheus | a HUP reload dropped the `Minio_alerts` group, so no false `MinioServiceDown` fires. The scrape job survives the reload because `prometheus.dev.yml` is a single-file bind mount and the edit replaced the host inode; the container still reads the old file and shows a down `minio` target until it is recreated |
+| Consumers | `seaweedfs-*`, `infra-loki`, `infra-tempo` and `mlflow` healthy after the removal |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -650,7 +663,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 ## Deferred Items
 
 - Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).
-- `secrets/storage/minio_*.txt` files are mode 0644 (world-readable); tighten to 0640 or delete with the MinIO data disposition (owner).
+- Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).
 
 - OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
 - Prometheus k8s NodePort targets on `172.18.0.2` refuse connections; `.2` is Traefik's k3d address (observability owner).
@@ -659,8 +672,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 
-- Operator `.env` keeps `MINIO_APP_USERNAME` and `MLFLOW_S3_USER`, no longer read; drop them in the S07b live step.
-- Exited `mlflow-artifact-provision` and running `minio` containers become Compose orphans; stop and remove them in the S07b live step (the MinIO data directory stays).
+- Prometheus still scrapes a `minio` target: its config is a single-file bind mount holding a replaced inode, so only a recreate clears it (next approved recreate). Single-file config mounts drift the same way for every service.
+- Orphan secret file `secrets/storage/mlflow_s3_password.txt` (STRG-005/006 were removed in S07a); delete with the next secret review (owner).
 - SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
