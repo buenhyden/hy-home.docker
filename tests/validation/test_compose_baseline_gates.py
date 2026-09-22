@@ -2211,9 +2211,10 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "container_name": f"{cls.tag}-minio",
             "command": ["server", "/data"],
             "environment": {
-                "MINIO_ROOT_USER": cls.minio_user,
-                "MINIO_ROOT_PASSWORD": cls.minio_pass,
+                "MINIO_ROOT_USER_FILE": "/run/secrets/minio_root_username",
+                "MINIO_ROOT_PASSWORD_FILE": "/run/secrets/minio_root_password",
             },
+            "secrets": ["minio_root_username", "minio_root_password"],
             "networks": {"client": {}},
         }
         volumes = rendered["volumes"]
