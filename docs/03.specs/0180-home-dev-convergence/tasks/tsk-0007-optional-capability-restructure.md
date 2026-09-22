@@ -400,6 +400,38 @@ together with Traefik and could not reach OIDC discovery. The Open Notebook
 recreate pulled its mutable `v1-latest-single` tag. Probing the dbt job rebuilt
 its image from cache (it had been archived to the registry and removed).
 
+### Data-root move and service restore (2026-09-22)
+
+The owner ran the data-root move script: Docker and containerd state now live
+on the data disk (`/home/hyunyoun/storage/docker-root`), both units require the
+mount, and the old directories are kept as `*.pre-move` for rollback (not yet
+deleted, so `/` is still 75%). `infra_net` was recreated with `ip_range`
+`172.19.1.0/24`. The saved list had 53 services; all 53 run again, none
+unhealthy or restarting, CDC connector and task RUNNING, slot lag 616 kB,
+SSO routes 401/302, Keycloak discovery 200.
+
+Restore problems and fixes:
+
+- A first restore with `--profile '*'` pulled in `n8n-valkey` from an inactive
+  profile and failed on its missing volume directory. The restore then used the
+  exact profile set that covers the saved list.
+- Containers already matching the Compose file were started, not recreated, and
+  failed on the removed network ID; they were force-recreated with `--no-deps`.
+- Traefik failed with "Address already in use" on `k3d-hyhome`: OpenBao has no
+  fixed address there and took `172.18.0.2` first. It was detached and
+  reattached without a restart, then given the fixed `172.18.0.17` (this change)
+  so the next boot cannot repeat the race.
+- Eight containers were left with the temporary `<id>_<name>` names of
+  interrupted recreates, which breaks name-based DNS (`infra-pyroscope`,
+  `registry`, `ollama`, `qdrant`, `jupyterlab`, `comfyui` and two jobs). They
+  were renamed back without restarts; name lookups return 200.
+- Open WebUI hung at application startup because it started before Traefik
+  (OIDC discovery); one restart fixed it.
+- OpenBao is sealed after its restart (Shamir). Unsealing is the owner-held
+  ceremony and was not done by the agent.
+- Prometheus has ten targets down (k3d cluster, OpenBao metrics, OpenSearch);
+  all were already down for the previous six hours.
+
 ## Review Evidence
 
 - Stage 99 template review (read-only reviewer, all 40 sources): no template,
