@@ -2014,5 +2014,89 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         self.assertIn("wrong password", wrong.stderr)
 
 
+def _labels(service: dict) -> set[str]:
+    labels = service.get("labels") or {}
+    if isinstance(labels, dict):
+        labels = [f"{key}={value}" for key, value in labels.items()]
+    return {label.lower() for label in labels}
+
+
+class NetworkSegmentationContractTests(unittest.TestCase):
+    """Fixed flows of the segmented networks (SPEC-0180 S05, AD-0026)."""
+
+    @staticmethod
+    def _services() -> dict[str, dict]:
+        import yaml
+
+        services: dict[str, dict] = {}
+        for path in sorted((ROOT / "infra").rglob("docker-compose*.y*ml")):
+            document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for name, service in (document.get("services") or {}).items():
+                if name in services:
+                    raise AssertionError(f"service {name} is declared twice")
+                services[name] = service
+        return services
+
+    def test_routed_services_join_edge_net(self) -> None:
+        missing = [
+            name
+            for name, service in self._services().items()
+            if "traefik.enable=true" in _labels(service)
+            and "edge_net" not in (service.get("networks") or {})
+        ]
+        self.assertEqual([], missing)
+
+    def test_prometheus_scrape_targets_are_services_on_obs_net(self) -> None:
+        services = self._services()
+        config = ROOT / "infra/06-observability/prometheus/config"
+        hosts = {
+            host
+            for path in config.glob("prometheus*.yml")
+            for host in re.findall(
+                r"[\"'\s\[/]([a-z][a-z0-9_.-]*):\d{2,5}\b",
+                path.read_text(encoding="utf-8"),
+            )
+        } - {"localhost"}
+        self.assertIn("traefik", hosts)
+        self.assertEqual([], sorted(hosts - services.keys()))
+        missing = [
+            name
+            for name in sorted(hosts)
+            if "obs_net" not in (services[name].get("networks") or {})
+        ]
+        self.assertEqual([], missing)
+
+    def test_traefik_edge_address_is_the_trusted_proxy(self) -> None:
+        edge = _compose_service(
+            "infra/01-gateway/traefik/docker-compose.yml", "traefik"
+        )["networks"]["edge_net"]
+        self.assertEqual("10.250.1.2", edge["ipv4_address"])
+        self.assertEqual(
+            {"keycloak.${DEFAULT_URL}", "auth.${DEFAULT_URL}"}, set(edge["aliases"])
+        )
+        oauth2 = (ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg").read_text(
+            encoding="utf-8"
+        )
+        self.assertRegex(oauth2, r'trusted_proxy_ips = \[[^]]*"10\.250\.1\.2/32"')
+        airflow = self._services()["airflow-apiserver"]["environment"]
+        self.assertIn("10.250.1.2", airflow["FORWARDED_ALLOW_IPS"].split(","))
+
+    def test_servers_do_not_bind_to_one_network_address(self) -> None:
+        # A multi-homed server bound to its own name listens only on the
+        # network that name happens to resolve on.
+        for name, service in self._services().items():
+            command = service.get("command") or ""
+            command = command if isinstance(command, str) else " ".join(command)
+            for bind in re.findall(r"-ip\.bind=(\S+?)'?(?:\s|$)", command):
+                self.assertEqual("0.0.0.0", bind, name)
+
+    def test_opensearch_nodes_announce_their_lab_net_address(self) -> None:
+        services = self._services()
+        for index in (1, 2, 3):
+            node = services[f"opensearch-node{index}"]
+            address = node["networks"]["lab_net"]["ipv4_address"]
+            self.assertIn(f"network.publish_host={address}", node["environment"])
+
+
 if __name__ == "__main__":
     unittest.main()

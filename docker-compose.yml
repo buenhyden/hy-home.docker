@@ -11,6 +11,79 @@ networks:
           # fixed service address from the 172.19.0.x allocation table.
           ip_range: ${INFRA_IP_RANGE:-172.19.1.0/24}
           gateway: ${INFRA_GATEWAY:-172.19.0.1}
+  # Segmented networks (SPEC-0180 S05, AD-0026). Each carries only the flows
+  # named in GDE-0077; a service joins a network only for a peer it uses.
+  # Subnets are explicit so Docker's automatic pool never takes one first.
+  edge_net:
+    name: edge_net
+    ipam:
+      config:
+        - subnet: 10.250.1.0/24
+          # Dynamic addresses stay above .127 so Traefik's fixed .2 is free.
+          ip_range: 10.250.1.128/25
+  mng_data_net:
+    name: mng_data_net
+    ipam:
+      config:
+        - subnet: 10.250.2.0/24
+  object_net:
+    name: object_net
+    ipam:
+      config:
+        - subnet: 10.250.3.0/24
+  seaweed_internal:
+    name: seaweed_internal
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.4.0/24
+  obs_net:
+    name: obs_net
+    ipam:
+      config:
+        - subnet: 10.250.5.0/24
+  kafka_net:
+    name: kafka_net
+    ipam:
+      config:
+        - subnet: 10.250.6.0/24
+  secrets_net:
+    name: secrets_net
+    ipam:
+      config:
+        - subnet: 10.250.7.0/24
+  ai_net:
+    name: ai_net
+    ipam:
+      config:
+        - subnet: 10.250.8.0/24
+  lab_net:
+    name: lab_net
+    ipam:
+      config:
+        - subnet: 10.250.9.0/24
+          # Dynamic addresses stay above .127; OpenSearch nodes announce fixed .11-.13.
+          ip_range: 10.250.9.128/25
+  airflow_net:
+    name: airflow_net
+    ipam:
+      config:
+        - subnet: 10.250.10.0/24
+  n8n_net:
+    name: n8n_net
+    ipam:
+      config:
+        - subnet: 10.250.11.0/24
+  supabase_net:
+    name: supabase_net
+    ipam:
+      config:
+        - subnet: 10.250.12.0/24
+  terrakube_net:
+    name: terrakube_net
+    ipam:
+      config:
+        - subnet: 10.250.13.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}

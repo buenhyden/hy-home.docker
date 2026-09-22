@@ -60,6 +60,9 @@ services:
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     networks:
+      edge_net: {}
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.70
     healthcheck:
@@ -88,6 +91,8 @@ services:
       service: template-infra-med
     image: opensearchproject/opensearch-dashboards:3.8.0
     networks:
+      edge_net: {}
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.71
     expose:
@@ -154,6 +159,8 @@ services:
     environment:
       # 노드/클러스터 기본 설정
       - node.name=opensearch-node1
+      # Announce the lab_net address: node1 may resolve its own name on another network.
+      - network.publish_host=10.250.9.11
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
       # 클러스터 디스커버리 설정 (3노드 모두 동일하게 설정)
       - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
@@ -207,6 +214,9 @@ services:
       - 'traefik.http.services.opensearch.loadbalancer.server.port=9200'
       - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
     networks:
+      edge_net: {}
+      lab_net:
+        ipv4_address: 10.250.9.11
       infra_net:
         ipv4_address: 172.19.0.72
     healthcheck:
@@ -237,6 +247,8 @@ services:
     container_name: opensearch-node2
     environment:
       - node.name=opensearch-node2
+      # Announce the lab_net address: node2 may resolve its own name on another network.
+      - network.publish_host=10.250.9.12
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
       - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2,opensearch-node3
@@ -262,6 +274,8 @@ services:
       - '9200'
       - '9600'
     networks:
+      lab_net:
+        ipv4_address: 10.250.9.12
       infra_net:
         ipv4_address: 172.19.0.73
     healthcheck:
@@ -292,6 +306,8 @@ services:
     container_name: opensearch-node3
     environment:
       - node.name=opensearch-node3
+      # Announce the lab_net address: node3 may resolve its own name on another network.
+      - network.publish_host=10.250.9.13
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
       - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2,opensearch-node3
@@ -317,6 +333,8 @@ services:
       - '9200'
       - '9600'
     networks:
+      lab_net:
+        ipv4_address: 10.250.9.13
       infra_net:
         ipv4_address: 172.19.0.74
     healthcheck:

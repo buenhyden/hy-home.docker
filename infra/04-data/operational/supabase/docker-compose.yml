@@ -34,6 +34,7 @@ services:
       OPENAI_API_KEY_FILE: /run/secrets/supabase_openai_api_key
       LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.179
     labels:
@@ -72,6 +73,7 @@ services:
       DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME:-supabase_admin}
       DASHBOARD_PASSWORD_FILE: /run/secrets/supabase_dashboard_password
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.180
     labels:
@@ -108,6 +110,7 @@ services:
       GOTRUE_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
       GOTRUE_SMTP_PASS_FILE: /run/secrets/supabase_smtp_password
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.181
     labels:
@@ -142,6 +145,7 @@ services:
       PGRST_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
       PGRST_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.182
     labels:
@@ -177,6 +181,7 @@ services:
       METRICS_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
       SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.183
     labels:
@@ -218,6 +223,7 @@ services:
       AUTH_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
       DATABASE_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.184
     labels:
@@ -243,6 +249,7 @@ services:
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.185
     labels:
@@ -275,6 +282,7 @@ services:
       PG_META_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
       CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.186
     labels:
@@ -311,6 +319,7 @@ services:
       SUPABASE_SERVICE_ROLE_KEY_FILE: /run/secrets/supabase_service_key
       SUPABASE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.187
     labels:
@@ -343,6 +352,7 @@ services:
       DB_PASSWORD_FILE: /run/secrets/supabase_db_password
       LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.188
     labels:
@@ -384,6 +394,7 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
       JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.189
     labels:
@@ -409,6 +420,7 @@ services:
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro
     command: [ '--config', '/etc/vector/vector.yml' ]
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.190
     labels:
@@ -451,6 +463,7 @@ services:
       SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
       VAULT_ENC_KEY_FILE: /run/secrets/supabase_vault_enc_key
     networks:
+      supabase_net: {}
       infra_net:
         ipv4_address: 172.19.0.191
     labels:

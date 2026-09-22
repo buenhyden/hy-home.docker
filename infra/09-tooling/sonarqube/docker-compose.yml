@@ -42,6 +42,8 @@ services:
       - sonarqube-data-volume:/opt/sonarqube/data:rw
       - sonarqube-logs-volume:/opt/sonarqube/logs:rw
     networks:
+      edge_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.223
     secrets: [sonarqube_db_password]

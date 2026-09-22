@@ -86,6 +86,8 @@ services:
       retries: 10
       start_period: 45s
     networks:
+      kafka_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.30
     labels:
@@ -150,6 +152,8 @@ services:
       retries: 10
       start_period: 60s
     networks:
+      edge_net: {}
+      kafka_net: {}
       infra_net:
         ipv4_address: 172.19.0.33
 
@@ -261,6 +265,9 @@ services:
       retries: 10
       start_period: 60s
     networks:
+      edge_net: {}
+      kafka_net: {}
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.34
 
@@ -306,6 +313,7 @@ services:
       mng-pg-init:
         condition: service_completed_successfully
     networks:
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.40
     labels:
@@ -364,6 +372,8 @@ services:
       retries: 10
       start_period: 60s
     networks:
+      edge_net: {}
+      kafka_net: {}
       infra_net:
         ipv4_address: 172.19.0.35
 
@@ -469,6 +479,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      edge_net: {}
+      kafka_net: {}
       infra_net:
         ipv4_address: 172.19.0.36
 
@@ -504,6 +516,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      kafka_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.37
 
@@ -540,6 +554,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      kafka_net: {}
       infra_net:
         ipv4_address: 172.19.0.38
 
@@ -588,6 +603,8 @@ services:
       - ${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}
       - ${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
     networks:
+      kafka_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.31
 
@@ -636,5 +653,7 @@ services:
       - ${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}
       - ${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
     networks:
+      kafka_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.32

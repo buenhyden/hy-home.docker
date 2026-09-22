@@ -84,6 +84,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.41
 
@@ -102,6 +104,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.42
 
@@ -120,6 +124,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.43
 
@@ -138,6 +144,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.44
 
@@ -156,6 +164,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.45
 
@@ -174,6 +184,8 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.46
 
@@ -207,6 +219,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.48
   valkey-cluster-exporter:
@@ -250,6 +263,8 @@ services:
       valkey-node-5:
         condition: service_healthy
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.47
     labels:

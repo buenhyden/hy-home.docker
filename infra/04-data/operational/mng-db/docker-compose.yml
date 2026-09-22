@@ -48,6 +48,7 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.12
       k3d-hyhome:
@@ -88,6 +89,8 @@ services:
       <<: *tier-label
       traefik.enable: 'false'
     networks:
+      mng_data_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.13
   mng-pg:
@@ -177,6 +180,7 @@ services:
       retries: 5
       start_period: 20s
     networks:
+      mng_data_net: {}
       k3d-hyhome:
         ipv4_address: 172.18.0.16
       infra_net:
@@ -253,6 +257,7 @@ services:
       - terrakube_db_password
       - sonarqube_db_password
     networks:
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.15
     labels:
@@ -297,5 +302,7 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      mng_data_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.16

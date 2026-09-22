@@ -39,6 +39,7 @@ services:
       mng-pg-init:
         condition: service_completed_successfully
     networks:
+      mng_data_net: {}
       infra_net:
         ipv4_address: 172.19.0.115
     labels:
@@ -72,6 +73,7 @@ services:
       minio:
         condition: service_healthy
     networks:
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.116
     labels:
@@ -164,5 +166,9 @@ services:
       traefik.http.routers.mlflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.mlflow.loadbalancer.server.port: ${MLFLOW_PORT:-5000}
     networks:
+      edge_net: {}
+      ai_net: {}
+      mng_data_net: {}
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.110

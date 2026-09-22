@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -127,6 +127,7 @@ lifecycle change and at least annually while retained.
 ## Related Documents
 
 - [Backup and Restore Guide](guide.md) and [Runbook](runbook.md)
+- Runtime sources: [Restic Compose](../../../../../infra/09-tooling/restic/docker-compose.yml), [pgBackRest image](../../../../../infra/04-data/operational/mng-db/pg/backup/Dockerfile) and the [derived image projection](../../../../../infra/tech-stack.versions.json)
 - [Data Architecture](../../../../02.architecture/descriptions/0004-data-architecture.md)
 - [Data hardening policy](../0030-optimization-hardening/policy.md)
 - [Storage exhaustion runbook](../0035-storage-exhaustion/runbook.md)

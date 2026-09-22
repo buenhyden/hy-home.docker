@@ -56,6 +56,9 @@ services:
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
       traefik.http.routers.minio-console.middlewares: gateway-standard-chain@file
     networks:
+      edge_net: {}
+      object_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.29
 
@@ -101,5 +104,6 @@ services:
     labels:
       <<: *tier-label
     networks:
+      object_net: {}
       infra_net:
         ipv4_address: 172.19.0.39

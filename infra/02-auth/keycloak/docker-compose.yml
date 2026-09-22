@@ -86,5 +86,8 @@ services:
       retries: 5
       start_period: 60s
     networks:
+      edge_net: {}
+      mng_data_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.3

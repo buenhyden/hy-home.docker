@@ -84,6 +84,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.50
     labels:
@@ -122,6 +124,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.51
     labels:
@@ -162,6 +166,8 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.52
 
@@ -219,6 +225,9 @@ services:
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
       traefik.http.routers.haproxy-stats.middlewares: gateway-standard-chain@file
     networks:
+      edge_net: {}
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.11
       k3d-hyhome:
@@ -271,6 +280,7 @@ services:
       - patroni_exporter_password
       - service_postgres_password
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.53
     labels:
@@ -316,6 +326,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.54
 
@@ -359,6 +370,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.55
 
@@ -402,6 +414,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
       infra_net:
         ipv4_address: 172.19.0.56
 
@@ -440,6 +453,8 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.57
 
@@ -478,6 +493,8 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.58
 
@@ -516,5 +533,7 @@ services:
     labels:
       <<: *tier-label
     networks:
+      lab_net: {}
+      obs_net: {}
       infra_net:
         ipv4_address: 172.19.0.59
