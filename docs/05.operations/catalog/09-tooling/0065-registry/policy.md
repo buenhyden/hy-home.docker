@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -27,7 +27,9 @@ garbage collection, upgrade, and removal.
 ## Controls
 
 - **Activation:** use `registry` or general `tooling`; it is excluded from HOME.
-- **Exposure/auth:** do not assume firewall or daemon restrictions. Before
+- **Exposure/auth:** the host port is bound to `127.0.0.1`; containers on
+  `infra_net` can still reach it without authentication. Do not assume firewall
+  or daemon restrictions. Before
   sensitive use or broader access, implement and validate TLS plus authentication
   or a trusted authenticated reverse proxy. Insecure registry client settings are
   permitted only for the bounded DEV network and are not a production control.

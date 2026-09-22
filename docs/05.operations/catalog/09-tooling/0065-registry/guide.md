@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -31,11 +31,14 @@ available from a trusted upstream.
 
 - [Registry Compose](../../../../../infra/09-tooling/registry/docker-compose.yml)
   owns the image, profiles, host publication, healthcheck, and storage mount.
-- Host port `${REGISTRY_PORT:-5000}` is published without a bind address. The
-  tracked service config contains no Registry TLS or authentication settings and
-  no Traefik route. Unless an external firewall/daemon policy supplies protection,
-  the current endpoint is unauthenticated HTTP. That external protection is not
-  proven by source and must not be assumed.
+- Host port `${REGISTRY_PORT:-5000}` is published on `127.0.0.1` only, to
+  container port 5000. The tracked service config contains no Registry TLS or
+  authentication settings and no Traefik route, so the endpoint is
+  unauthenticated HTTP for local host users and for every container on
+  `infra_net` (`registry:5000`). Docker trusts `127.0.0.0/8` registries over
+  HTTP by default, so no insecure-registry daemon setting is needed.
+- The container runs as `1000:1000`, the owner of `${DEFAULT_REGISTRY_DIR}`;
+  root with every capability dropped cannot write that directory.
 - `/v2/` health proves HTTP response only. It does not prove authorization,
   digest integrity, push/pull, storage durability, or client trust.
 - The bind-backed `/var/lib/registry` is authoritative filesystem storage.
@@ -50,6 +53,20 @@ available from a trusted upstream.
 3. Tag by immutable release/digest policy, push, then pull by digest and verify
    the manifest digest. Record repository, tag, digest, and source authority.
 4. Treat the filesystem and digest inventory as one backup unit.
+
+### Archiving locally built images
+
+Locally built images that are not running can be kept in the Registry so the
+Docker image store on `/` does not hold them. `${DEFAULT_REGISTRY_DIR}` lives on
+the data disk.
+
+1. Tag the image as `localhost:${REGISTRY_PORT:-5000}/<repository>:<tag>` and push it.
+2. Pull the pushed reference by digest and compare the digest with the push
+   output. Record repository, tag, digest and the source Dockerfile in the Task.
+3. Remove the local tags only after step 2 succeeds. Never remove an image that a
+   container, running or stopped, still uses.
+4. To use it again, pull the Registry reference and retag it to the name the
+   Compose file expects, or rebuild it from the tracked Dockerfile.
 
 ### Backup and upgrade
 

@@ -4,20 +4,20 @@ version: "1.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 created: "2026-03-19"
 ---
 
 <!-- [ID:09-tooling:registry] -->
 # Docker Registry
 
-> On-demand OPTIONAL OCI image store; the tracked endpoint is unauthenticated HTTP.
+> On-demand OPTIONAL OCI image store; the host endpoint is loopback-only unauthenticated HTTP.
 
 ## Overview
 
-이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 `${REGISTRY_PORT:-5000}`을 bind address 없이 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 외부 firewall 또는 Docker daemon 정책은 tracked source로 확인되지 않으므로 보호 수단으로 가정하지 않습니다.
+이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. `infra_net`의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
 
-The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its current all-interface endpoint is unauthenticated HTTP. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
+The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its host endpoint is bound to `127.0.0.1` and is unauthenticated HTTP; containers on `infra_net` can also reach it without authentication. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
 
 ## Audience
 
@@ -54,7 +54,7 @@ registry/
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
 | **Service** | Registry v2 | Image Distribution |
-| **Port** | `5000` | Standard OCI port |
+| **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback-only host publication |
 | **Storage** | Bind Mount | `${DEFAULT_REGISTRY_DIR}` |
 
 ## Configuration
@@ -63,7 +63,7 @@ registry/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `REGISTRY_PORT` | No | Registry listening port (default: 5000). |
+| `REGISTRY_PORT` | No | Loopback host port (default: 5000); the container always listens on 5000. |
 | `DEFAULT_REGISTRY_DIR` | Yes | Local path for image persistence. |
 
 ## Available Scripts
@@ -104,7 +104,7 @@ Run these read-only checks from the repository root. Starting or changing Regist
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
-| Ports | `${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}` |
+| Ports | `127.0.0.1:${REGISTRY_PORT:-5000}:5000` |
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `registry` |

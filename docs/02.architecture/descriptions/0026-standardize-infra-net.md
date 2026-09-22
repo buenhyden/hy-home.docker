@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -54,6 +54,8 @@ Root Compose가 global network를 정의하고 include된 tier Compose가 servic
 | 172.19.0.70-71 | OpenSearch |
 | 172.19.0.80-85 | n8n workflow |
 | 172.19.0.90-100 | Airflow workflow |
+| 172.19.0.110-111 | MLflow and JupyterLab |
+| 172.19.0.112 | DCGM GPU exporter |
 | 172.19.0.121 | RedisInsight |
 | 172.19.0.122-123 | Open Notebook services |
 | 172.19.0.130-132 | ksqlDB stack |

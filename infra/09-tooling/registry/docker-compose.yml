@@ -20,14 +20,16 @@ services:
       service: template-stateful-med
     image: registry:3
     container_name: registry
+    # Owner of ${DEFAULT_REGISTRY_DIR}; root without capabilities cannot write it.
+    user: '1000:1000'
     restart: unless-stopped
     read_only: false
     ports:
-      - '${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}'
+      - '127.0.0.1:${REGISTRY_PORT:-5000}:5000'
     volumes:
       - registry-data-volume:/var/lib/registry:rw
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${REGISTRY_PORT:-5000}/v2/ || exit 1']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:5000/v2/ || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
