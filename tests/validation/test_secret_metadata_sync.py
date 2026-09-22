@@ -756,7 +756,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_five_way_classification(self):
         contract = self.environment
-        self.assertEqual(265, len(contract["public"]))
+        self.assertEqual(266, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
@@ -764,7 +764,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
             {"VAULT_CLUSTER_PORT", "VAULT_PORT"}, contract["migration_only"]
         )
         self.assertEqual(59, len(contract["required"]))
-        self.assertEqual(204, len(contract["optional"]))
+        self.assertEqual(205, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"]

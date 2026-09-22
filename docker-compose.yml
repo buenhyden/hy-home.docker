@@ -7,6 +7,9 @@ networks:
     ipam:
       config:
         - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          # Dynamic addresses come only from this range, so they never take a
+          # fixed service address from the 172.19.0.x allocation table.
+          ip_range: ${INFRA_IP_RANGE:-172.19.1.0/24}
           gateway: ${INFRA_GATEWAY:-172.19.0.1}
   project_net:
     external: true

@@ -36,24 +36,36 @@ services:
     <<: *minio-common
     hostname: minio1
     container_name: minio1
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.145
     volumes:
       - minio-data1-volume:/data:rw
   minio2:
     <<: *minio-common
     hostname: minio2
     container_name: minio2
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.146
     volumes:
       - minio-data2-volume:/data:rw
   minio3:
     <<: *minio-common
     hostname: minio3
     container_name: minio3
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.147
     volumes:
       - minio-data3-volume:/data:rw
   minio4:
     <<: *minio-common
     hostname: minio4
     container_name: minio4
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.148
     volumes:
       - minio-data4-volume:/data:rw
 

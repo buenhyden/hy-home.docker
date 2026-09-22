@@ -40,7 +40,8 @@ services:
       mng-pg-init:
         condition: service_completed_successfully
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.114
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -83,6 +84,7 @@ services:
       dbt-db-provision:
         condition: service_completed_successfully
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.113
     labels:
       <<: *tier-label

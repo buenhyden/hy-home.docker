@@ -327,7 +327,13 @@ the connector is stopped, bounded by `max_slot_wal_keep_size`.
   POL-0077 requires fixed addresses; they now use `.110`, `.111`, `.112`
   (recreated, healthy, GPU scrape `up=1`). Older services without fixed
   addresses (MinIO cluster, OpenSearch nodes, StarRocks, k6, nginx, Renovate,
-  one-shot jobs) are pre-existing drift and were not changed.
+  one-shot jobs) were pre-existing drift; a follow-up change (owner-approved)
+  gives all nineteen of them fixed addresses (148 fixed, no duplicates) and
+  adds `ip_range` `172.19.1.0/24` (`INFRA_IP_RANGE`) to `infra_net`. The range
+  applies only when the network is recreated, which is scheduled with the
+  Docker data-root move in one maintenance window. Services started with
+  `docker compose run` (dbt, k6, Renovate) now have fixed addresses, so two
+  concurrent runs of the same service would conflict.
 - Registry: host port bound to `127.0.0.1` (loopback 200, LAN refused), runs as
   `1000:1000` after a first push failed with `permission denied`. Seven unused
   local builds were pushed, their registry manifest digests matched 7/7, a

@@ -207,7 +207,8 @@ services:
       - 'traefik.http.services.opensearch.loadbalancer.server.port=9200'
       - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.72
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
@@ -261,7 +262,8 @@ services:
       - '9200'
       - '9600'
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.73
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
@@ -315,7 +317,8 @@ services:
       - '9200'
       - '9600'
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.74
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s

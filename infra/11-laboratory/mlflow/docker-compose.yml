@@ -39,7 +39,8 @@ services:
       mng-pg-init:
         condition: service_completed_successfully
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.115
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -71,7 +72,8 @@ services:
       minio:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.116
     labels:
       <<: *tier-label
       traefik.enable: 'false'
