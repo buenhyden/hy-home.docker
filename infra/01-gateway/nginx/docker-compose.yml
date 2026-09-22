@@ -18,7 +18,8 @@ services:
       - /var/log/nginx
       - /var/run
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.222
     depends_on:
       minio: { condition: service_healthy }
     healthcheck:

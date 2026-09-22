@@ -21,7 +21,8 @@ services:
     volumes:
       - mongo-key:/data/configdb:rw
     networks:
-      infra_net: {}
+      infra_net:
+        ipv4_address: 172.19.0.176
     command: >
       /bin/sh -c "
         if [ ! -f /data/configdb/mongodb.key ]; then
