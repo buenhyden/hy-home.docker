@@ -581,6 +581,16 @@ and m0021 to removed paths (now identifiers or RUN-0024) and an empty
 `0023-minio` directory left by the move. Rehearsal 7/7 passed; the archive
 `Source` `988059fe8` is reachable from `main` (#201 merge commit).
 
+CI `validation-changed` failed twice on #202 with `Git identity scan exceeded
+its output bound`, independent of this change: the allocation transition scan
+shares one 64 MiB budget, reads the registry blob again for every merged fork,
+and measured 65.6 MiB locally; the synthetic PR merge commit adds one more
+fork. `validate_allocation_transition` now reads each immutable blob once
+(cache hits still honour the per-call limit), which brings the scan to 48.5
+MiB; a test asserts no blob is read twice. The scan still grows about 0.25 MiB
+per merge (one tree grep per fork), so the bound will be reached again after
+roughly 60 more merges.
+
 Kept deliberately: ADR-0001 and ADR-0006 name MinIO as the context of their
 decisions and are not rewritten; the historical live snapshot table in m0021
 and earlier Task text keep their MinIO rows as evidence.
@@ -654,6 +664,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
+- Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
 - Legacy Vault data (`vault/data`, 28 KB) and `vault_unseal_keys.legacy.txt` disposition (owner approval).
