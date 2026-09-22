@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -22,7 +22,7 @@ not establish support, SLA, enterprise features, or HA for this single-host depl
 ## Policy Scope
 
 API/UI/executor activation, native/gateway authentication, Docker-socket and
-provider authority, PostgreSQL/MinIO/Valkey data, coordinated recovery, upgrades,
+provider authority, PostgreSQL/SeaweedFS/Valkey data, coordinated recovery, upgrades,
 and removal.
 
 ## Controls
@@ -36,9 +36,9 @@ and removal.
   resources, and approver. Apply/destroy remain separately approved.
 - **Secrets:** use only declared secret files; no secret/state/plan output in
   logs, screenshots, Tasks, or support bundles.
-- **Data:** PostgreSQL metadata and MinIO `tfstate` are jointly authoritative.
+- **Data:** PostgreSQL metadata and SeaweedFS `tfstate` are jointly authoritative.
   Valkey is coordination state. Retention must cover a consistent recovery point.
-- **Backup/recovery:** quiesce scheduling/execution, capture PostgreSQL and MinIO
+- **Backup/recovery:** quiesce scheduling/execution, capture PostgreSQL and SeaweedFS
   consistently, preserve config/client/custody metadata, and rehearse with
   external execution disabled. One-store recovery is incomplete.
 - **Resources/availability:** treat this as a single-host, single-replica DEV

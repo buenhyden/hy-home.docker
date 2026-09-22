@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 created: "2026-01-12"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-01-12"
 
 ## Overview
 
-Tempo stores trace data in an S3-compatible backend (MinIO). It enables "TraceQL" for powerful querying and allows correlation between metrics, logs, and traces starting from a Span ID. It also generates span metrics and service graphs automatically.
+Tempo stores trace data in an S3-compatible backend (SeaweedFS). It enables "TraceQL" for powerful querying and allows correlation between metrics, logs, and traces starting from a Span ID. It also generates span metrics and service graphs automatically.
 
 ## Audience
 
@@ -54,7 +54,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
 | Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | Declared in Compose | Distributed Tracing Backend |
-| Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | [Compose](../../04-data/lake-and-object/minio/docker-compose.yml) | S3-Compatible Object Store |
+| Storage | [SeaweedFS](../../04-data/lake-and-object/seaweedfs/README.md) | [Compose](../../04-data/lake-and-object/seaweedfs/docker-compose.yml) | S3-Compatible Object Store |
 | Ingestion | [Grafana Alloy](../alloy/README.md) | Declared in Compose | OTLP Receiver & Forwarder |
 
 ## Available Scripts
@@ -67,7 +67,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 ## Configuration
 
 - **Ingestion**: Supports OTLP via gRPC (4317) and HTTP (4318).
-- **Persistence**: Bucket `tempo-bucket` in MinIO.
+- **Persistence**: Bucket `tempo-bucket` in SeaweedFS.
 - **WAL**: Local disk used for write-ahead logging (`/var/tempo/wal`).
 
 ## Operational Status
@@ -119,7 +119,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
-| Secret refs | `minio_app_user_password` |
+| Secret refs | `seaweedfs_s3_tempo_secret_key` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
 | Operations | Guide (`docs/05.operations/catalog/06-observability/0049-tempo/guide.md`), Policy (`docs/05.operations/catalog/06-observability/0049-tempo/policy.md`), Runbook (`docs/05.operations/catalog/06-observability/0049-tempo/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -131,4 +131,4 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 1. **TraceQL Analysis**: Use TraceQL to correlate high-latency spans with specific service names and status codes.
 2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.
-3. **Storage Health**: Monitor MinIO bucket availability if trace ingestion gaps occur.
+3. **Storage Health**: Monitor SeaweedFS bucket availability if trace ingestion gaps occur.

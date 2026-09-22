@@ -9,12 +9,14 @@ common:
   path_prefix: /loki
   storage:
     s3:
-      endpoint: http://minio:9000 # Docker 내부 MinIO 주소
-      bucketnames: loki-bucket # Loki용 버킷 이름
-      access_key_id: ${MINIO_APP_USERNAME}
-      secret_access_key: ${MINIO_APP_USER_PASSWORD}
-      s3forcepathstyle: true # MinIO 필수 옵션
-      insecure: true # HTTP 사용 허용
+      # SeaweedFS S3 on object_net; identity scoped to loki-bucket (POL-0024).
+      endpoint: http://seaweedfs-s3:8333
+      region: us-east-1
+      bucketnames: loki-bucket
+      access_key_id: ${S3_ACCESS_KEY}
+      secret_access_key: ${S3_SECRET_KEY}
+      s3forcepathstyle: true
+      insecure: true # plain HTTP inside object_net
   replication_factor: 1
   ring:
     kvstore:

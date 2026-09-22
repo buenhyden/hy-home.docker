@@ -1,10 +1,10 @@
 ---
 title: "Loki Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "POL-0043"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 Loki log aggregation service의 retention, MinIO storage,
+이 정책은 Loki log aggregation service의 retention, SeaweedFS storage,
 cardinality, compactor, resource, secret boundary를 정의한다. 사용 흐름은
 Loki guide가, 장애 대응 절차는 Loki runbook이 담당한다.
 
@@ -25,20 +25,20 @@ Loki guide가, 장애 대응 절차는 Loki runbook이 담당한다.
 이 정책은 current `infra/06-observability/loki` compose와 config에 선언된
 Loki 운영 기준을 다룬다.
 
-- **Systems**: compose service `loki`, container `infra-loki`, image [hy/loki image declaration](../../../../../infra/06-observability/docker-compose.yml), MinIO bucket `loki-bucket`, config `infra/06-observability/loki/config/loki-config.yaml`
+- **Systems**: compose service `loki`, container `infra-loki`, image [hy/loki image declaration](../../../../../infra/06-observability/docker-compose.yml), SeaweedFS bucket `loki-bucket`, config `infra/06-observability/loki/config/loki-config.yaml`
 - **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls
 
 - **Required**:
-  - Loki storage는 MinIO S3 backend와 `loki-bucket`을 사용한다.
+  - Loki storage는 SeaweedFS S3 backend와 `loki-bucket`을 사용한다.
   - Retention은 `retention_enabled: true`와 `retention_period: 168h`를
     기준으로 한다.
   - Compactor는 `compaction_interval: 10m`,
     `retention_delete_delay: 2h`, `retention_delete_worker_count: 15`
     설정을 따른다.
-  - `minio_app_user_password`는 Docker Secret으로만 주입한다.
+  - `seaweedfs_s3_loki_secret_key`는 Docker Secret으로만 주입한다.
   - Service는 `template-stateful-high` 기준의 restart, security, resource
     cap(`cpus: "2.00"`, `mem_limit: 2g`)을 유지한다.
   - Loki route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
@@ -48,25 +48,25 @@ Loki 운영 기준을 다룬다.
     값을 label로 승격하지 않는다.
 - **Allowed**:
   - Dynamic log fields는 LogQL parser(`| json` 등)로 query time에 추출한다.
-  - Long-term audit 보관이 필요하면 MinIO owning policy/runbook과 별도
+  - Long-term audit 보관이 필요하면 SeaweedFS owning policy/runbook과 별도
     co-located Task evidence로 snapshot 또는 replication을 검토한다.
 - **Disallowed**:
   - Retention 변경 없이 문서만 수정해 보관 정책이 바뀐 것처럼 선언하는 행위
-  - `MINIO_APP_USER_PASSWORD` 또는 secret 값을 문서, 로그, task evidence에
+  - `S3_SECRET_KEY` 또는 secret 값을 문서, 로그, task evidence에
     기록하는 행위
-  - 승인 없이 Loki route, retention, compactor, MinIO bucket, resource cap을
+  - 승인 없이 Loki route, retention, compactor, SeaweedFS bucket, resource cap을
     runtime에서 변경하는 행위
 
 ### Lifecycle and data controls
 
-- Keep Loki `HOME`; retain gateway controls, MinIO secret-file use, schema-v13 configuration, and the declared 168h retention unless an approved capacity/retention change says otherwise.
-- The MinIO `loki-bucket`, configuration, and recovery-relevant local `loki-data` state form a coordinated set. Object-store backup remains with its storage owner.
+- Keep Loki `HOME`; retain gateway controls, SeaweedFS secret-file use, schema-v13 configuration, and the declared 168h retention unless an approved capacity/retention change says otherwise.
+- The SeaweedFS `loki-bucket`, configuration, and recovery-relevant local `loki-data` state form a coordinated set. Object-store backup remains with its storage owner.
 - Quiesce ingestion or document the consistency point before backup/restore/upgrade. Rehearse on isolated bucket prefixes/storage and verify old/new queries, ruler behavior, compaction, and retention.
-- Removal requires producer migration, retention/export decision, MinIO-owner cleanup approval, revoked credentials, and explicit approval before deleting local or object data.
+- Removal requires producer migration, retention/export decision, SeaweedFS-owner cleanup approval, revoked credentials, and explicit approval before deleting local or object data.
 
 ## Exceptions
 
-- Retention, label cardinality, MinIO storage, resource cap 예외는 사용자
+- Retention, label cardinality, SeaweedFS storage, resource cap 예외는 사용자
   승인과 관련 plan/task evidence가 있을 때만 허용한다.
 - 장애 대응 중 임시 조치가 필요하면 Loki runbook에서 최소 조치와 rollback
   evidence를 기록한다.
@@ -76,13 +76,13 @@ Loki 운영 기준을 다룬다.
 - Loki config:
   `rg -n 'bucketnames: loki-bucket|retention_enabled: true|retention_period: 168h|compaction_interval: 10m' infra/06-observability/loki/config/loki-config.yaml`
 - Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: hy/loki:|minio_app_user_password|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+  `rg -n 'service: template-stateful-high|image: hy/loki:|seaweedfs_s3_loki_secret_key|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 
 ## Review Cadence
 
-- Loki image, config, MinIO bucket, compactor, retention, resource cap, route,
+- Loki image, config, SeaweedFS bucket, compactor, retention, resource cap, route,
   or secret reference가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 

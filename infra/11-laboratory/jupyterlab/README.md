@@ -1,10 +1,10 @@
 ---
 title: "Laboratory JupyterLab Workspace"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 created: "2026-09-21"
 ---
 
@@ -62,7 +62,7 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 | Authentication | Gateway SSO for the browser route **and** a Jupyter Server token from secret `jupyter_token` (AI-007), exported as `JUPYTER_TOKEN`; startup fails when it is shorter than 16 characters. An empty token is not allowed because `infra_net` peers could otherwise reach kernels, terminals and the REST API directly |
 | Work directory | Bind `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work` → `/home/jovyan/work`, `create_host_path: false`; create it owned by UID 1000 before first start |
 | MLflow client | `MLFLOW_TRACKING_URI=http://mlflow:${MLFLOW_PORT}` — an internal path that does not pass the gateway SSO route |
-| Object storage | No MinIO credential is injected; artifacts are uploaded through the MLflow artifact proxy |
+| Object storage | No object-storage credential is injected; artifacts are uploaded through the MLflow artifact proxy |
 | Health | `GET /api` (unauthenticated version endpoint); proves the server answers, not kernel health |
 
 ## Validation

@@ -15,6 +15,7 @@ import re
 import sqlite3
 import subprocess
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -867,7 +868,7 @@ FEATURE_SECRETS = {
     "mlflow_db_password",
     "dbt_db_password",
     "debezium_postgres_password",
-    "mlflow_s3_password",
+    "seaweedfs_s3_mlflow_secret_key",
 }
 
 
@@ -2036,6 +2037,16 @@ SEAWEEDFS_SERVICES = (
 class SeaweedfsContractTests(unittest.TestCase):
     """Static S06 contracts; SeaweedfsRehearsalTests proves them at runtime."""
 
+    def test_nginx_cdn_is_a_read_only_prefix_to_cdn_bucket(self) -> None:
+        conf = (ROOT / "infra/01-gateway/nginx/config/nginx.conf").read_text(
+            encoding="utf-8"
+        )
+        block = conf[conf.index("location ^~ /cdn/ {") :]
+        block = block[: block.index("\n        }\n")]
+        self.assertIn("limit_except GET HEAD { deny all; }", block)
+        self.assertIn("proxy_pass http://seaweedfs_s3/cdn-bucket/;", block)
+        self.assertNotIn("minio", conf)
+
     def services(self) -> dict[str, dict]:
         import yaml
 
@@ -2043,7 +2054,9 @@ class SeaweedfsContractTests(unittest.TestCase):
         return yaml.safe_load(path.read_text(encoding="utf-8"))["services"]
 
     def test_every_component_starts_through_the_security_script(self) -> None:
-        for name, service in self.services().items():
+        services = self.services()
+        for name in SEAWEEDFS_SERVICES:
+            service = services[name]
             self.assertEqual("1000:1000", service["user"], name)
             self.assertEqual(
                 ["/bin/sh", "/opt/hyhome/hyhome-seaweedfs.sh"],
@@ -2055,7 +2068,7 @@ class SeaweedfsContractTests(unittest.TestCase):
     def test_state_is_persistent_and_only_s3_is_routed(self) -> None:
         services = self.services()
         commands = {
-            name: " ".join(service["command"]) for name, service in services.items()
+            name: " ".join(services[name]["command"]) for name in SEAWEEDFS_SERVICES
         }
         self.assertIn("-mdir=/data", commands["seaweedfs-master"])
         self.assertIn("-dir=/data", commands["seaweedfs-volume"])
@@ -2122,11 +2135,25 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "seaweedfs_jwt_volume_key": "Volume" + os.urandom(6).hex(),
             "seaweedfs_jwt_filer_key": "Filer" + os.urandom(6).hex(),
             "seaweedfs_s3_admin_secret_key": cls.secret_key,
+            **{
+                f"seaweedfs_s3_{name}_secret_key": name.title() + os.urandom(6).hex()
+                for name in ("loki", "tempo", "mlflow", "terrakube")
+            },
+        }
+        cls.minio_user, cls.minio_pass = "rehearsalroot", "Root" + os.urandom(8).hex()
+        for name, value in (
+            ("minio_root_username", cls.minio_user),
+            ("minio_root_password", cls.minio_pass),
+        ):
+            secrets[name] = value
+        cls.consumer_secret = {
+            name: secrets[f"seaweedfs_s3_{name}_secret_key"]
+            for name in ("loki", "tempo", "mlflow", "terrakube")
         }
         for name, value in secrets.items():
             path = cls.dir / f"{name}.txt"
             path.write_text(value + "\n", encoding="utf-8")
-            path.chmod(0o600)
+            path.chmod(0o640)  # as on HOME: group SECRETS_GID via group_add
         env = {
             **os.environ,
             "DEFAULT_DATA_DIR": str(cls.dir / "data"),
@@ -2142,10 +2169,14 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     ".env.example",
                     "--profile",
                     "seaweedfs",
+                    "--profile",
+                    "storage-migration",
                     "config",
                     "--format",
                     "json",
                     *SEAWEEDFS_SERVICES,
+                    "seaweedfs-buckets",
+                    "seaweedfs-migrate",
                 ],
                 cwd=ROOT,
                 env=env,
@@ -2154,7 +2185,10 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 text=True,
             ).stdout
         )
-        services = {name: rendered["services"][name] for name in SEAWEEDFS_SERVICES}
+        services = {
+            name: rendered["services"][name]
+            for name in (*SEAWEEDFS_SERVICES, "seaweedfs-buckets", "seaweedfs-migrate")
+        }
         for name, service in services.items():
             service["container_name"] = f"{cls.tag}-{name}"
             service["labels"] = {
@@ -2163,10 +2197,25 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 if not k.startswith("traefik.")
             }
             service["networks"] = (
-                {"sw": {}, "client": {}} if name == "seaweedfs-s3" else {"sw": {}}
+                {"sw": {}, "client": {}}
+                if name == "seaweedfs-s3"
+                else {"client": {}}
+                if name in ("seaweedfs-buckets", "seaweedfs-migrate")
+                else {"sw": {}}
             )
             service.pop("ports", None)
             service.pop("profiles", None)
+        # A disposable MinIO as the copy source (test_7); not started by up().
+        services["minio"] = {
+            "image": rendered["services"]["seaweedfs-migrate"]["image"],
+            "container_name": f"{cls.tag}-minio",
+            "command": ["server", "/data"],
+            "environment": {
+                "MINIO_ROOT_USER": cls.minio_user,
+                "MINIO_ROOT_PASSWORD": cls.minio_pass,
+            },
+            "networks": {"client": {}},
+        }
         volumes = rendered["volumes"]
         for volume in volumes.values():
             volume.pop("name", None)
@@ -2189,6 +2238,9 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
         cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
         cls.up()
+        buckets = cls.compose("run", "--rm", "--no-deps", "seaweedfs-buckets")
+        if buckets.returncode != 0:
+            raise AssertionError(buckets.stdout + buckets.stderr)
 
     @classmethod
     def compose(
@@ -2211,13 +2263,15 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
 
     @classmethod
     def up(cls) -> None:
-        result = cls.compose("up", "-d", "--wait", "--wait-timeout", "180")
+        result = cls.compose(
+            "up", "-d", "--wait", "--wait-timeout", "180", *SEAWEEDFS_SERVICES
+        )
         if result.returncode != 0:
             logs = cls.compose("logs", "--no-color", "--tail", "40").stdout
             raise AssertionError(result.stderr + logs)
 
     def aws(
-        self, *args: str, secret: str | None = None
+        self, *args: str, secret: str | None = None, access: str | None = None
     ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [
@@ -2227,7 +2281,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "--network",
                 f"{self.tag}_client",
                 "-e",
-                f"AWS_ACCESS_KEY_ID={self.ACCESS}",
+                f"AWS_ACCESS_KEY_ID={access or self.ACCESS}",
                 "-e",
                 f"AWS_SECRET_ACCESS_KEY={secret or self.secret_key}",
                 "-e",
@@ -2641,6 +2695,149 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         self.assertEqual(
             b"0123456789hello", (self.dir / "io/restored-small.out").read_bytes()
         )
+
+    def test_6_consumer_identities_are_bucket_scoped(self) -> None:
+        io = self.dir / "io"
+        (io / "scope.txt").write_bytes(b"scope")
+        for bucket in (
+            "loki-bucket",
+            "tempo-bucket",
+            "mlflow-artifacts",
+            "tfstate",
+            "cdn-bucket",
+        ):
+            self.assertEqual(
+                0,
+                self.aws("s3api", "head-bucket", "--bucket", bucket).returncode,
+                bucket,
+            )
+        loki = {"access": "loki", "secret": self.consumer_secret["loki"]}
+        own = self.aws(
+            "s3api",
+            "put-object",
+            "--bucket",
+            "loki-bucket",
+            "--key",
+            "k",
+            "--body",
+            "/io/scope.txt",
+            **loki,
+        )
+        self.assertEqual(0, own.returncode, own.stderr)
+        for args in (
+            (
+                "s3api",
+                "put-object",
+                "--bucket",
+                "tempo-bucket",
+                "--key",
+                "k",
+                "--body",
+                "/io/scope.txt",
+            ),
+            ("s3api", "list-objects-v2", "--bucket", "tempo-bucket"),
+            ("s3api", "create-bucket", "--bucket", "loki-extra"),
+        ):
+            denied = self.aws(*args, **loki)
+            self.assertNotEqual(0, denied.returncode, args)
+            self.assertIn("AccessDenied", denied.stderr, args)
+        put = self.aws(
+            "s3api",
+            "put-object",
+            "--bucket",
+            "cdn-bucket",
+            "--key",
+            "asset.txt",
+            "--body",
+            "/io/scope.txt",
+            "--content-type",
+            "text/plain",
+        )
+        self.assertEqual(0, put.returncode, put.stderr)
+        codes = self.probe(
+            "client",
+            self.STATUS
+            + "print(status('GET', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
+            " status('GET', 'http://seaweedfs-s3:8333/cdn-bucket?list-type=2'),"
+            " status('PUT', 'http://seaweedfs-s3:8333/cdn-bucket/x', b'x'),"
+            " status('DELETE', 'http://seaweedfs-s3:8333/cdn-bucket/asset.txt'),"
+            " status('GET', 'http://seaweedfs-s3:8333/loki-bucket/k'))",
+        )
+        self.assertEqual("200 403 403 403 403", codes)
+
+    def test_7_migration_copies_then_final_delta_then_refuses(self) -> None:
+        self.compose("up", "-d", "minio", check=True)
+        minio = f"{self.tag}-minio"
+        for _ in range(60):
+            if (
+                subprocess.run(
+                    ["docker", "exec", minio, "mc", "ready", "local"],
+                    capture_output=True,
+                    check=False,
+                ).returncode
+                == 0
+            ):
+                break
+            time.sleep(1)
+
+        def src(script: str) -> None:
+            subprocess.run(
+                [
+                    "docker",
+                    "exec",
+                    "-e",
+                    f"U={self.minio_user}",
+                    "-e",
+                    f"P={self.minio_pass}",
+                    minio,
+                    "bash",
+                    "-ec",
+                    'mc alias set s http://127.0.0.1:9000 "$U" "$P" >/dev/null\n'
+                    + script,
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+
+        src(
+            "mc mb s/tempo-bucket\n"
+            "echo one | mc pipe s/tempo-bucket/a.txt\n"
+            "echo two | mc pipe s/tempo-bucket/b.txt\n"
+            "echo three | mc pipe s/tempo-bucket/dir/c.txt"
+        )
+
+        def migrate(*env: str) -> subprocess.CompletedProcess[str]:
+            args = [
+                x
+                for pair in (("-e", e) for e in ("BUCKETS=tempo-bucket", *env))
+                for x in pair
+            ]
+            return self.compose("run", "--rm", "--no-deps", *args, "seaweedfs-migrate")
+
+        first = migrate()
+        self.assertEqual(0, first.returncode, first.stdout + first.stderr)
+        self.assertIn("minio 3 objects", first.stdout)
+        self.assertIn("seaweedfs 3 objects", first.stdout)
+        # Source changes while the consumer still writes to MinIO.
+        src(
+            "echo one-longer | mc pipe s/tempo-bucket/a.txt\n"
+            "mc rm s/tempo-bucket/b.txt\n"
+            "echo four | mc pipe s/tempo-bucket/d.txt"
+        )
+        final = migrate("FINAL=1")
+        self.assertEqual(0, final.returncode, final.stdout + final.stderr)
+        self.assertIn("final copy verified; cutover marker written", final.stdout)
+        listing = json.loads(
+            self.aws("s3api", "list-objects-v2", "--bucket", "tempo-bucket").stdout
+        )
+        self.assertEqual(
+            {"a.txt": 11, "d.txt": 5, "dir/c.txt": 6},
+            {o["Key"]: o["Size"] for o in listing["Contents"]},
+        )
+        again = migrate()
+        self.assertNotEqual(0, again.returncode)
+        self.assertIn("already cut over", again.stderr)
 
 
 def _labels(service: dict) -> set[str]:

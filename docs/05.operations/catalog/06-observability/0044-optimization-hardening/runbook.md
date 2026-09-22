@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -68,7 +68,7 @@ created: "2026-05-17"
 4. Custom image hardening boundary를 확인한다.
 
    ```bash
-   rg -n 'USER 10001:10001|/run/secrets/minio_app_user_password|MINIO_APP_USER_PASSWORD|exec /usr/bin/(loki|tempo)' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh
+   rg -n 'USER 10001:10001|S3_SECRET_KEY_FILE|S3_SECRET_KEY|exec /usr/bin/(loki|tempo)' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh
    ```
 
 5. Pyroscope and cAdvisor route availability boundary를 확인한다.

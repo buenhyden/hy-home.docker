@@ -290,7 +290,7 @@
         "hy/loki": "local-custom"
       },
       "images": [
-        "hy/loki:3.7.3-custom"
+        "hy/loki:3.7.8-seaweedfs"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -299,7 +299,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/loki:3.7.3-custom"
+            "hy/loki:3.7.8-seaweedfs"
           ]
         }
       ]
@@ -312,7 +312,7 @@
         "hy/tempo": "local-custom"
       },
       "images": [
-        "hy/tempo:3.0.2-custom"
+        "hy/tempo:3.0.3-seaweedfs"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -321,7 +321,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/tempo:3.0.2-custom"
+            "hy/tempo:3.0.3-seaweedfs"
           ]
         }
       ]
@@ -1504,7 +1504,7 @@
       "compose_files": [
         "infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml",
         "infra/04-data/lake-and-object/minio/docker-compose.yml",
-        "infra/11-laboratory/mlflow/docker-compose.yml"
+        "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
       ],
       "sources": [
         {
@@ -1520,7 +1520,7 @@
           ]
         },
         {
-          "compose_file": "infra/11-laboratory/mlflow/docker-compose.yml",
+          "compose_file": "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml",
           "images": [
             "quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z"
           ]
@@ -2029,6 +2029,28 @@
           "compose_file": "infra/09-tooling/restic/docker-compose.yml",
           "images": [
             "restic/restic:0.19.1"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: amazon/aws-cli",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "amazon/aws-cli": "external"
+      },
+      "images": [
+        "amazon/aws-cli:2.36.50"
+      ],
+      "compose_files": [
+        "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml",
+          "images": [
+            "amazon/aws-cli:2.36.50"
           ]
         }
       ]

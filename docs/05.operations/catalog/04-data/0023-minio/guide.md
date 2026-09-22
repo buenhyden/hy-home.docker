@@ -1,10 +1,10 @@
 ---
 title: "MinIO Object Storage Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0023"
 parent_ids:
@@ -27,12 +27,11 @@ created: "2026-05-10"
 
 MinIO is retained as the HOME S3-compatible store because the root bootstrap
 creates `loki-bucket`, `tempo-bucket`, `cdn-bucket`, and `doc-intel-assets`, and
-current Loki/Tempo configuration names its endpoint. The `mlflow-artifacts`
-bucket and its bucket-scoped user are created by the MLflow-owned
-`mlflow-artifact-provision` job, not by the shared bootstrap; `mlops` and
-`data-science` select `minio` itself for dependency closure. The four-node
-`storage-cluster` topology is LAB on one host. SeaweedFS is OPTIONAL and is not an
-automatic replacement.
+its consumers are moving to SeaweedFS one at a time (SPEC-0180 S07); the
+switched configuration already names SeaweedFS, and MinIO keeps its data until
+every cutover is accepted and MinIO is removed. `mlflow-artifacts` was created
+by a MinIO provisioning job that S07 removed; SeaweedFS now owns that bucket.
+The four-node `storage-cluster` topology is LAB on one host.
 
 The upstream community repository was archived and made read-only on 2026-04-25;
 its README says the community server is no longer maintained and distributed as

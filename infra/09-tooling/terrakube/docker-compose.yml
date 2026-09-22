@@ -13,7 +13,7 @@ services:
     container_name: terrakube-api
     secrets:
       - terrakube_db_password
-      - minio_app_user_password
+      - seaweedfs_s3_terrakube_secret_key
       - terrakube_valkey_password
       - terrakube_pat_secret
       - terrakube_internal_secret
@@ -32,16 +32,21 @@ services:
       InternalSecret_FILE: /run/secrets/terrakube_internal_secret
       DexClientId: ${OAUTH2_PROXY_CLIENT_ID}
       StorageType: AWS
-      AwsStorageAccessKey: ${MINIO_APP_USERNAME}
-      AwsStorageSecretKey_FILE: /run/secrets/minio_app_user_password
+      AwsStorageAccessKey: terrakube
+      AwsStorageSecretKey_FILE: /run/secrets/seaweedfs_s3_terrakube_secret_key
       AwsStorageBucketName: tfstate
-      AwsStorageRegion: ap-northeast-2
-      AwsEndpoint: http://minio:9000
+      AwsStorageRegion: us-east-1
+      AwsEndpoint: http://seaweedfs-s3:8333
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
       DexIssuerUri: 'https://keycloak.${DEFAULT_URL}/realms/hy-home.realm'
       TerrakubeRedisHostname: ${VALKEY_MNG_HOSTNAME}
       TerrakubeRedisPassword_FILE: /run/secrets/terrakube_valkey_password
       TerrakubeRedisPort: ${VALKEY_PORT:-6379}
+    # tfstate comes from seaweedfs-buckets; run Terrakube with --profile storage.
+    depends_on:
+      seaweedfs-buckets:
+        condition: service_completed_successfully
+        required: false
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -112,22 +117,22 @@ services:
     container_name: terrakube-executor
     secrets:
       - terrakube_internal_secret
-      - minio_app_user_password
+      - seaweedfs_s3_terrakube_secret_key
       - terrakube_valkey_password
     environment:
       TerrakubeEnableSecurity: 'true'
       InternalSecret_FILE: /run/secrets/terrakube_internal_secret
       TerraformStateType: AwsTerraformStateImpl
-      AwsTerraformStateAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformStateSecretKey_FILE: /run/secrets/minio_app_user_password
+      AwsTerraformStateAccessKey: terrakube
+      AwsTerraformStateSecretKey_FILE: /run/secrets/seaweedfs_s3_terrakube_secret_key
       AwsTerraformStateBucketName: tfstate
-      AwsTerraformStateRegion: ap-northeast-2
-      AwsEndpoint: http://minio:9000
+      AwsTerraformStateRegion: us-east-1
+      AwsEndpoint: http://seaweedfs-s3:8333
       TerraformOutputType: AwsTerraformOutputImpl
-      AwsTerraformOutputAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformOutputSecretKey_FILE: /run/secrets/minio_app_user_password
+      AwsTerraformOutputAccessKey: terrakube
+      AwsTerraformOutputSecretKey_FILE: /run/secrets/seaweedfs_s3_terrakube_secret_key
       AwsTerraformOutputBucketName: tfstate
-      AwsTerraformOutputRegion: ap-northeast-2
+      AwsTerraformOutputRegion: us-east-1
       AzBuilderApiUrl: https://terrakube-api.${DEFAULT_URL}
       ExecutorFlagBatch: 'false'
       ExecutorFlagDisableAcknowledge: 'false'
@@ -152,6 +157,9 @@ services:
     depends_on:
       terrakube-api:
         condition: service_healthy
+      seaweedfs-buckets:
+        condition: service_completed_successfully
+        required: false
     networks:
       edge_net: {}
       terrakube_net: {}

@@ -211,6 +211,14 @@ secrets:
     file: ./secrets/storage/seaweedfs_jwt_filer_key.txt
   seaweedfs_s3_admin_secret_key:
     file: ./secrets/storage/seaweedfs_s3_admin_secret_key.txt
+  seaweedfs_s3_loki_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_loki_secret_key.txt
+  seaweedfs_s3_tempo_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_tempo_secret_key.txt
+  seaweedfs_s3_mlflow_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_mlflow_secret_key.txt
+  seaweedfs_s3_terrakube_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_terrakube_secret_key.txt
 
   # ── OpenSearch ──────────────────────────────────────────
   opensearch_admin_password:
@@ -295,8 +303,6 @@ secrets:
   debezium_postgres_password:
     file: ./secrets/db/postgres/debezium_password.txt
 
-  mlflow_s3_password:
-    file: ./secrets/storage/mlflow_s3_password.txt
 
   jupyter_token:
     file: ./secrets/tools/jupyter_token.txt

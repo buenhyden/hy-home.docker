@@ -3,8 +3,8 @@
 # Docker secrets and the mounted gRPC certificates, then exec weed.
 #   security.toml: JWT keys for volume and filer HTTP (reads and writes), so
 #     neither can be used directly to bypass S3 IAM; mTLS for every gRPC port.
-#   s3.json (s3 only): explicit identities; with identities present anonymous
-#     requests are denied.
+#   s3.json (s3 only): admin plus the bucket-scoped identities in
+#     s3-identities.conf; anonymous access exists only where that file grants it.
 # Nothing here is written to a mounted path or printed.
 # Usage: hyhome-seaweedfs.sh <master|volume|filer|s3|shell> [weed flags...]
 set -eu
@@ -68,8 +68,24 @@ case "$component" in
                 ;;
         esac
         admin_key="$(read_secret seaweedfs_s3_admin_secret_key)"
-        printf '{"identities":[{"name":"admin","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}\n' \
-            "$access" "$admin_key" >/etc/seaweedfs/s3.json
+        {
+            printf '{"identities":[{"name":"admin","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}' \
+                "$access" "$admin_key"
+            grep -vE '^[[:space:]]*(#|$)' /opt/hyhome/s3-identities.conf | while read -r name secret actions; do
+                case "$name" in '' | *[!a-z0-9-]*) echo "seaweedfs: bad identity name" >&2; exit 64 ;; esac
+                case "$actions" in '' | *[!A-Za-z0-9:,.-]*) echo "seaweedfs: bad actions for $name" >&2; exit 64 ;; esac
+                list="\"$(printf '%s' "$actions" | sed 's/,/","/g')\""
+                if [ "$secret" = - ]; then
+                    [ "$name" = anonymous ] || { echo "seaweedfs: only anonymous may have no secret" >&2; exit 64; }
+                    printf ',{"name":"anonymous","actions":[%s]}' "$list"
+                else
+                    key="$(read_secret "$secret")"
+                    printf ',{"name":"%s","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":[%s]}' \
+                        "$name" "$name" "$key" "$list"
+                fi
+            done
+            printf ']}\n'
+        } >/etc/seaweedfs/s3.json
         unset admin_key
         exec /usr/bin/weed -logtostderr=true s3 -config=/etc/seaweedfs/s3.json "$@"
         ;;

@@ -6,3 +6,12 @@ useDefault = true
 # Start from the upstream default ruleset and keep repo-specific tuning minimal.
 # Add narrowly scoped allowlists here only when the default detector produces
 # verified false positives for committed source files.
+
+# The generated service inventory lists Docker secret names (never values);
+# names such as seaweedfs_s3_loki_secret_key look like key assignments. Both
+# conditions must hold, so a real value in that file is still reported.
+[[allowlists]]
+description = "Docker secret names in the generated service inventory"
+condition = "AND"
+paths = ['''^docs/90\.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation\.md$''']
+regexes = ['''^seaweedfs_s3_[a-z]+_secret_key$''']

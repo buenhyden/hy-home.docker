@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -38,10 +38,10 @@ dependencies; it does not provide or claim high availability.
   `terrakube-executor`. The existing routes apply gateway ForwardAuth while UI/API
   settings also use Keycloak/Dex-style OIDC. Both layers must be tested; static
   configuration does not prove native login or role mapping.
-- PostgreSQL (`mng-pg`) holds Terrakube metadata. MinIO bucket `tfstate` holds
+- PostgreSQL (`mng-pg`) holds Terrakube metadata. SeaweedFS bucket `tfstate` holds
   state and outputs. Management Valkey coordinates work. These are dependencies,
   not services declared in the Terrakube leaf.
-- Secrets are `terrakube_db_password`, `minio_app_user_password`,
+- Secrets are `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`,
   `terrakube_valkey_password`, `terrakube_pat_secret`, and
   `terrakube_internal_secret`; values never enter evidence.
 - The executor mounts `/var/run/docker.sock` read-write. This is host-equivalent
@@ -55,7 +55,7 @@ dependencies; it does not provide or claim high availability.
    expected resources, state key, and approval boundary.
 2. From the root run `docker compose --profile iac config --quiet` and confirm
    all three Terrakube services plus the separately selected dependencies.
-3. Verify PostgreSQL, MinIO `tfstate`, Valkey, Keycloak, and gateway readiness
+3. Verify PostgreSQL, SeaweedFS `tfstate`, Valkey, Keycloak, and gateway readiness
    without printing credentials or state.
 4. Start only the Terrakube services after dependency and Docker-socket authority
    review. Verify UI login, API authorization, executor registration, and a
@@ -64,14 +64,14 @@ dependencies; it does not provide or claim high availability.
 
 ### State, backup, and upgrade
 
-Recovery needs a consistent set: Terrakube PostgreSQL database, MinIO `tfstate`
+Recovery needs a consistent set: Terrakube PostgreSQL database, SeaweedFS `tfstate`
 objects/versions, relevant Keycloak client/role configuration, tracked Compose,
 and secret metadata/custody. Valkey is coordination state and must be empty or
 consistent with a quiesced control plane. Stop new runs and quiesce API/executor
 before coordinated database/object snapshots. Restore only in an isolated
 environment with provider and webhook egress disabled, then verify DB/state-key
 referential consistency and a non-applying plan. Do not infer recoverability from
-one MinIO copy or one DB dump.
+one SeaweedFS copy or one DB dump.
 
 Before upgrade, take that coordinated backup, read Terrakube release/migration
 notes, test against restored copies, and roll forward one component set together.

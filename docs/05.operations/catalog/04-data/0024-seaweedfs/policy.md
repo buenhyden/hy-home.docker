@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -22,8 +22,10 @@ resource, lifecycle and independently verifiable operator controls.
 ## Policy Scope
 
 SeaweedFS is the S3 object store that replaces MinIO consumer by consumer in
-SPEC-0180 S07; until a consumer is cut over it stays OPTIONAL. The profiles
-`seaweedfs` and `storage-seaweedfs` select master, volume, filer and S3.
+SPEC-0180 S07. It is HOME: every profile that selects an S3 consumer (`storage`,
+`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`) also selects the four
+services and `seaweedfs-buckets`, as do `seaweedfs` and `storage-seaweedfs`.
+Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
 
 ## Controls
 
@@ -36,7 +38,10 @@ SPEC-0180 S07; until a consumer is cut over it stays OPTIONAL. The profiles
 - **S3 identities.** `seaweedfs-s3` starts only with explicit identities built
   from secrets (admin: `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` and STRG-010). With
   identities present, anonymous requests are refused. Every consumer added in
-  S07 gets its own identity scoped to its bucket; no consumer uses admin.
+  S07 has its own identity in `config/s3-identities.conf`, scoped to its
+  bucket (loki, tempo, mlflow, terrakube); no consumer uses admin, and
+  `anonymous` may only read objects in `cdn-bucket`. Buckets are created by
+  `seaweedfs-buckets`, never by a consumer.
 - **No IAM bypass.** Volume and filer HTTP require JWTs signed with STRG-008 and
   STRG-009 for reads and writes. Only the S3 route exists; master and filer have
   no Traefik route, and a CDN is a public-read bucket through S3, never the
@@ -81,7 +86,7 @@ same change as that consumer's cutover.
 
 ## Exceptions
 
-The optional stack remains absent without a named client; FUSE needs separate approval. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
+A FUSE mount needs separate approval. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
 storage copies or same-host availability claims.
 
 ## Verification

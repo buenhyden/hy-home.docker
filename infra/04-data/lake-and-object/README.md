@@ -1,10 +1,10 @@
 ---
 title: "Lake & Object Storage (04-data/lake-and-object)"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-22"
 created: "2026-05-15"
 ---
 
@@ -26,14 +26,14 @@ It covers the retained HOME store and the optional filer/S3 experiment.
 
 ### Packages and relationship
 
-- [`minio`](minio/README.md) is the retained HOME S3-compatible store. Current
-  bootstrap creates Loki, Tempo, CDN and document-intelligence buckets.
-- [`seaweedfs`](seaweedfs/README.md) is OPTIONAL for a named filer/S3 experiment.
-  Its master, volume, filer and mount semantics differ from MinIO.
+- [`seaweedfs`](seaweedfs/README.md) is the HOME S3 store. Consumers move to
+  it one at a time with a freeze, a final delta copy and verification
+  (SPEC-0180 S07); each has a bucket-scoped identity.
+- [`minio`](minio/README.md) keeps serving consumers that have not moved yet
+  and keeps its data until every cutover is accepted; it is then removed.
 
-Do not run both as interchangeable defaults or point them at each other's data.
-MinIO migration requires S3/client, policy, object-metadata, recovery and rollback
-proof; SeaweedFS is not preselected as the target.
+The two stores never share data paths. Copying between them goes only through
+the S3 API (`seaweedfs-migrate`), never through their storage directories.
 
 ## How to Work in This Area
 

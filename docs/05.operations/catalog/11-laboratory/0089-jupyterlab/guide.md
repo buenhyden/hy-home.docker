@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -53,7 +53,7 @@ into this single-user server.
 `MLFLOW_TRACKING_URI` points to `http://mlflow:5000` on `infra_net`, which
 bypasses the browser SSO route and has no MLflow-level authentication. Runs
 logged from a notebook are not attributed to an SSO user. Artifacts upload
-through the MLflow proxy, so the notebook holds no MinIO credential. If MLflow
+through the MLflow proxy, so the notebook holds no object-storage credential. If MLflow
 authentication is adopted later, give notebooks a dedicated MLflow identity
 instead of reopening an unauthenticated API.
 
