@@ -78,4 +78,5 @@ services:
       traefik.http.services.jupyter.loadbalancer.server.port: ${JUPYTER_PORT:-8888}
 
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.111

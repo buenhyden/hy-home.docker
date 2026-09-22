@@ -309,6 +309,41 @@ containers read them; the private registry value cell for IAM-011 is empty
 (the root-owned secret file itself is intact); the CDC slot retains WAL while
 the connector is stopped, bounded by `max_slot_wal_keep_size`.
 
+### Owner follow-up and disk relief (2026-09-22)
+
+- The owner reported the Renovate unit reinstall, the IAM-011 registry cell and
+  the authenticated SSO acceptance tests as done. The installed units now match
+  the tracked files byte for byte and the timer is scheduled; the other two
+  are owner-reported and not independently measured here.
+- The owner removed twelve superseded public image tags that no container,
+  Compose file or Dockerfile referenced: `/` went from 84% to 75% (49 GB free),
+  images 75 → 63, all 52 containers healthy. The oauth2-proxy base tag was kept.
+- Build-cache pruning older than 168 hours freed 0 B: all 26.3 GB was used in
+  the last seven days. A shorter window would force cold rebuilds and is left
+  to the owner.
+- `infra_net` has no separate dynamic range, so services without a fixed
+  address took reserved ones: `dcgm-exporter` held `172.19.0.7` (Registry),
+  `mlflow` and `jupyterlab` held `.5`/`.6` (dedicated OAuth2 Proxy Valkey).
+  POL-0077 requires fixed addresses; they now use `.110`, `.111`, `.112`
+  (recreated, healthy, GPU scrape `up=1`). Older services without fixed
+  addresses (MinIO cluster, OpenSearch nodes, StarRocks, k6, nginx, Renovate,
+  one-shot jobs) are pre-existing drift and were not changed.
+- Registry: host port bound to `127.0.0.1` (loopback 200, LAN refused), runs as
+  `1000:1000` after a first push failed with `permission denied`. Seven unused
+  local builds were pushed, their registry manifest digests matched 7/7, a
+  pull-back reproduced `sha256:f7786db36a0d…`, and the local tags were removed
+  (about 0.6 GB; registry store 236 MB on the data disk).
+
+| Archived reference (`localhost:5000/…`) | Digest |
+| --- | --- |
+| `hy-home/dbt-postgres:1.11-local` | `sha256:6e5fe26fb565b392a60879d7d1ff28d485b9e80c8980299e8cef86707ca7a75a` |
+| `hy/gatus:5.36.0` | `sha256:4ddbd9bd3c710c2a189eacddc1ed55c433b6a61fa2a7f82cfc9a310f9569c7ab` |
+| `hy/gatus:pre-oidc-20260920` | `sha256:29a58214dbca8ca30247c6424cf37bdf7626a215c689f04b44d68cec30e1fdb2` |
+| `hy/gatus:oidc-review` | `sha256:f7786db36a0d0861014d37da054484aae296683017b15deb2046f51e9afc8bc6` |
+| `hy/gatus:oidc-review-fresh` | `sha256:56b11edaca01c8c34bd5cac5c2cdd4ea45e8f5f9a53ea7943d257966b7eab486` |
+| `hy/gatus:oidc-review-final` | `sha256:2fca7d081002a44e2ee3b888f2568ca4a35c9950a55414abdb7c23984eabe5c4` |
+| `hy/gatus:oidc-build-test` | `sha256:c52ad9511a84a5738eda73155807acd5a2fe3842bd6a33f223fc570d308bba91` |
+
 ## Review Evidence
 
 - Stage 99 template review (read-only reviewer, all 40 sources): no template,

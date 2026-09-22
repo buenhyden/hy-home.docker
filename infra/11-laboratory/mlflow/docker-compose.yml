@@ -162,4 +162,5 @@ services:
       traefik.http.routers.mlflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.mlflow.loadbalancer.server.port: ${MLFLOW_PORT:-5000}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.110
