@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -12,41 +12,42 @@ created: "2025-12-06"
 
 ## Overview
 
-This package defines the repository's optional SeaweedFS surface.
+This package defines SeaweedFS, the S3 object store that replaces MinIO one
+consumer at a time (SPEC-0180 S07).
 
 ## Audience
 
-It is intended for operators and maintainers evaluating SeaweedFS.
+It is intended for operators and maintainers of object storage.
 
 ## Scope
 
 [`docker-compose.yml`](docker-compose.yml) defines `seaweedfs-master`,
 `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`. Profiles
-`seaweedfs` and `storage-seaweedfs` select all four. The privileged FUSE mount
-was removed (SPEC-0180 S04): it had no consumer, and S3 is the interface.
+`seaweedfs` and `storage-seaweedfs` select all four. S3 is the only interface:
+the FUSE mount was removed in S04, and master and filer have no route.
 
 ## Structure
 
-Master and volume state use `seaweedfs-master-data` and
-`seaweedfs-volume-data`. Services join `infra_net`; the S3 route uses the standard
-gateway chain. Current source declares no secret, internal authentication/TLS or
-mounted security configuration. Master, volume, filer and S3 expose only their
-declared internal HTTP/gRPC ports; no host `ports` mapping is declared. Each
-service has an HTTP health check. Commands/configuration are inline;
-`security.toml.example` is not mounted.
+| Path | Role |
+| --- | --- |
+| `docker-compose.yml` | four services, data-disk bind volumes, secrets |
+| `config/hyhome-seaweedfs.sh` | start script: builds JWT, gRPC mTLS and S3 identity configuration from secrets |
+| `bin/gen-grpc-certs.sh` | host script: issues the SeaweedFS-only gRPC CA and certificates |
+
+State lives under `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`, owned
+by UID 1000. Master, volume and filer are only on `seaweed_internal`. S3 also
+joins `object_net` for clients and `edge_net` for its route.
 
 ## How to Work in This Area
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
-docker compose --env-file .env.example --profile seaweedfs config --services
+HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
+  tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-SeaweedFS remains OPTIONAL and is not an automatic MinIO replacement. Recovery
-must coordinate engine-aware volume backup, filer metadata and quiesced
-master/topology state at one point, then validate on a same-version isolated
-target. The official backup page describes limitations, so recovery remains
-unverified until rehearsal.
+First activation, backup and restore follow RUN-0024. The daily backup takes
+filer metadata and the volume and master trees in one ordered set (RUN-0021).
 
 ## Related Documents
 

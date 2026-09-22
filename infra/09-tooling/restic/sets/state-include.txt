@@ -19,3 +19,7 @@ workflow/n8n-task-runner-worker
 registry
 # Legacy Vault Raft data: not running, kept until its owner disposition (S08).
 security/vault
+# SeaweedFS needle volumes and master state. Filer metadata comes from the
+# fs.meta.save export taken first (RUN-0024), never from the live leveldb store.
+data/seaweedfs/volume
+data/seaweedfs/master

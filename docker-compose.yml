@@ -204,6 +204,14 @@ secrets:
   minio_app_username:
     file: ./secrets/storage/minio_app_username.txt
 
+  # ── SeaweedFS ───────────────────────────────────────────
+  seaweedfs_jwt_volume_key:
+    file: ./secrets/storage/seaweedfs_jwt_volume_key.txt
+  seaweedfs_jwt_filer_key:
+    file: ./secrets/storage/seaweedfs_jwt_filer_key.txt
+  seaweedfs_s3_admin_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_admin_secret_key.txt
+
   # ── OpenSearch ──────────────────────────────────────────
   opensearch_admin_password:
     file: ./secrets/data/opensearch_admin_password.txt

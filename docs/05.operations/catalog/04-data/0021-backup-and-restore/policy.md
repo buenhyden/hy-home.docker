@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -43,6 +43,7 @@ This policy applies to the current source-backed package and its retained state.
 | OpenBao Agent generated auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | Do not generically back up rendered secret output. Recover by re-authenticating the agent and re-rendering from restored OpenBao; separately preserve non-secret template source | Output is secret-bearing and source-at-rest encryption is unverified; no general retention | Data RPO not applicable to derived output; recovery target 4 h, unverified | No rehearsal. Security operations own re-authentication, template verification and secure disposal of stale output. |
 | MinIO S3: `loki-bucket`, `tempo-bucket`, `cdn-bucket`, `doc-intel-assets` | `minio-data` → `${DEFAULT_DATA_DIR}/minio/data-1`; optional LAB nodes use `${DEFAULT_DATA_DIR}/minio/data1` … `data4` | Object-aware mirror/replication to a separate target plus bucket inventory, policies, versioning and IAM configuration; no raw copy of active `/data` | No server-side encryption or KMS is declared; encrypted destination required; daily 30 days, weekly 90 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. Recovery: [RUN-0023](../0023-minio/runbook.md) |
 | Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export` copies `webui.db` through the SQLite Online Backup API with an integrity check; uploads and other files go to Restic directly; the live database files and cache are excluded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 8 h; planning target, unverified | Synthetic WAL-database export rehearsed 2026-09-22; no HOME-data restore. The AI operations subject owns isolated validation. |
+| SeaweedFS objects and filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator pauses vacuum, exports filer metadata with `fs.meta.save`, Restic reads the volume and master trees, vacuum resumes on exit; the live leveldb2 filer store is not file-copied | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly; counts toward the 5 GiB state budget | RPO 24 h, RTO 8 h; planning target | Isolated rehearsal 2026-09-22: restore into empty stores returned identical objects; no HOME data yet. GDE/RUN-0024 own validation. |
 | Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; SQLite at `/data/gatus.db` in WAL mode | `backup-sqlite-export` Online Backup API copy including uncheckpointed WAL pages, then Restic | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; planning target, unverified | Synthetic WAL export rehearsed 2026-09-22; no HOME-data restore. The Gatus operations subject owns validation. |
 | Grafana database, plugins and mutable state | `grafana-data` → `${DEFAULT_OBSERVABILITY_DIR}/grafana`; current Compose does not configure external PostgreSQL | `backup-sqlite-export` Online Backup API copy of `grafana.db`, then Restic; plugins are rebuildable from provisioning and the plugin list; provisioning files remain tracked source | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; planning target, unverified | Synthetic export rehearsed 2026-09-22; no HOME-data restore. The Grafana operations subject owns validation. |
 | Keycloak themes, providers and runtime configuration | `keycloak-themes` → `${DEFAULT_AUTH_DIR}/keycloak/themes`; `keycloak-providers` → `${DEFAULT_AUTH_DIR}/keycloak/providers`; `keycloak-config` → `${DEFAULT_AUTH_DIR}/keycloak/conf`; mounted read-only by the service | Versioned source/build artifact where available plus quiesced file snapshot and hash manifest; pair with the `keycloak` PostgreSQL database and separately custodied secrets | No at-rest encryption is declared; encrypt any backup; weekly 90 days and before upgrades | RPO 7 days, RTO 8 h; planning target, unverified | No rehearsal. Auth operations must validate provider/theme compatibility and realm login against restored database state. |
@@ -75,7 +76,10 @@ This policy applies to the current source-backed package and its retained state.
    separately approved manual procedure.
 5. Use engine-supported export or snapshot methods. Raw copies of active
    PostgreSQL, SQLite, Valkey, MinIO, Qdrant, Loki or Tempo storage are not
-   accepted backup artifacts.
+   accepted backup artifacts. SeaweedFS volume trees are read live only
+   because needles are append-only, vacuum is paused and filer metadata is
+   exported first, and the restore of that set is rehearsed (GDE-0024);
+   objects changed during the Restic read may be missing from it (POL-0024).
 6. Capture a manifest containing service, engine/source version, timestamp,
    scope, object/file count where meaningful, byte size and cryptographic hash.
 7. Do not place passwords, unseal material, database dumps, workflow credentials

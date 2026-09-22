@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -21,42 +21,63 @@ resource, lifecycle and independently verifiable operator controls.
 
 ## Policy Scope
 
-SeaweedFS remains OPTIONAL. Selection requires a named workload; replacement of
-MinIO requires a separate migration decision and recovery evidence.
+SeaweedFS is the S3 object store that replaces MinIO consumer by consumer in
+SPEC-0180 S07; until a consumer is cut over it stays OPTIONAL. The profiles
+`seaweedfs` and `storage-seaweedfs` select master, volume, filer and S3.
 
 ## Controls
 
-- Use `seaweedfs` or `storage-seaweedfs` for the core/S3 topology. S3 is the
-  interface; a privileged FUSE host mount is not part of this subject.
-- Preserve distinct master and volume state. Do not treat the master, volume or
-  filer metadata as independently recoverable.
-- Keep services on `infra_net` and the S3 route on the standard gateway chain.
-  Current source declares no internal authentication, TLS or mounted security
-  configuration; do not describe it as hardened.
-- Record the client, data semantics, capacity, retention and security boundary
-  before activation. Same-host services do not provide host availability.
+- **Persistent set.** Master (`-mdir=/data`), volume (`-dir=/data`) and the
+  filer's embedded leveldb2 store (`/data/filerldb2`) each have a bind volume
+  under `${DEFAULT_DATA_DIR}/seaweedfs`. The embedded store is chosen over an
+  external database: it adds no start or recovery dependency, and the filer
+  metadata export is its portable form. A `/data` mount alone never proves the
+  path; the rehearsal checks the files land there.
+- **S3 identities.** `seaweedfs-s3` starts only with explicit identities built
+  from secrets (admin: `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` and STRG-010). With
+  identities present, anonymous requests are refused. Every consumer added in
+  S07 gets its own identity scoped to its bucket; no consumer uses admin.
+- **No IAM bypass.** Volume and filer HTTP require JWTs signed with STRG-008 and
+  STRG-009 for reads and writes. Only the S3 route exists; master and filer have
+  no Traefik route, and a CDN is a public-read bucket through S3, never the
+  filer.
+- **Internal transport.** Every gRPC port uses mutual TLS from a SeaweedFS-only
+  CA (`bin/gen-grpc-certs.sh`; the CA key is discarded after issuance). S3 is
+  plain HTTP on `object_net` with SigV4 signatures, and HTTPS through Traefik
+  for host clients. Master, volume and filer are only on `seaweed_internal`
+  (internal); the master's unauthenticated `/dir/assign` is reachable only
+  there.
+- **Minimal surface.** The Iceberg and Lance listeners and the embedded IAM API
+  are off until S12 defines the catalog.
+- **Capacity.** The volume server stops accepting writes below 20 GiB free on
+  the data disk (`-minFreeSpace`, POL-0035). Same-host replicas are not host
+  availability, so replication is `000`.
 
 ### Backup and restore
 
-Pause or fence writers for a coordinated recovery point. Capture volume data with
-an engine-aware method, export filer metadata, and capture master/topology state
-only from a stopped/quiesced source. Store manifests and artifacts on a separate
-encrypted destination. When selected for retained data, keep daily sets for 30 days and weekly sets for
-90 days. The planning objective is RPO 24 hours and RTO 8 hours; no rehearsal
-proves it. Shared resource limits remain mandatory; removal requires client and
-data inventory plus verified export/restore.
+The daily orchestrator (RUN-0021) pauses vacuum, saves filer metadata with
+`fs.meta.save`, lets Restic read the volume and master trees, and re-enables
+vacuum on exit. Needles are append-only, so objects written before the
+metadata export restore intact. An object overwritten or deleted while Restic
+reads the volume files may restore as missing, and a volume index copied after
+its data file may list needles past its end (checked with `volume.fsck` on
+restore). The recovery point is therefore the export time, minus objects
+changed inside the Restic window. The set lives in the encrypted Restic state
+repository on the other physical disk, inside the 5 GiB budget (POL-0021).
+Keep daily sets for 30 days and weekly sets for 90 days. The target is RPO
+24 hours and RTO 8 hours; the isolated rehearsal proves the method, not the
+HOME timing.
 
-Restore on a same-version, empty isolated target with fresh master identity.
-Recreate the recorded topology, restore volume data and filer metadata as one set,
-then use volume consistency checks,
-filer traversal and S3/file client tests. Production cutover, deletion or state
-reuse requires separate approval.
+Restore on an empty target at the same version: volume and master trees in
+place, an empty filer store, then `fs.meta.load`, then S3 reads. Cutover,
+deletion or state reuse on HOME needs separate approval.
 
 ### Change policy
 
-Image updates require official release and license review plus isolated restore
-proof. Authentication/TLS enablement, FUSE host access and MinIO migration are
-architectural changes, not routine operations.
+Image updates need an official release and license review plus a passing
+`SeaweedfsRehearsalTests` run. Identity, key or certificate rotation restarts
+every component and needs approval. A new consumer identity is added in the
+same change as that consumer's cutover.
 
 ## Exceptions
 
