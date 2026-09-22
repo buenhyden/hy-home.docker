@@ -422,6 +422,24 @@ image.
 | Prometheus | 21 up, 10 down: 8 k8s NodePort targets on `172.18.0.2` (connection refused; `.2` is Traefik's own k3d address, `k3d-hyhome` was not changed, pre-apply state not captured, so a pre-existing target error is likely but unverified), OpenSearch (not running), OpenBao (503, sealed) |
 | OpenBao | sealed after its restart (initialized, 2-of-3 shares): owner unseal required; no key material read |
 
+OpenBao follow-up (owner-approved, 2026-09-22): the owner unsealed OpenBao.
+The metrics scrape then returned 403. The earlier metrics token had expired, and
+a token issued with the human operator identity cannot carry the `prometheus`
+policy: `hy-home-operator` has no policy or orphan-token rights. Following
+RUN-0085 "Prometheus Metrics Credential", the owner staged an OIDC operator
+token in the container once. A single scripted process then ran the
+authenticated generate-root ceremony, with shares fed from
+`openbao_unseal_keys.txt` through stdin and decoded with the OTP in the same
+process. The temporary root wrote `prometheus` (`read` on `sys/metrics`) and
+issued an orphan, no-default-policy token with a 720h TTL. Checks: metrics read
+allowed, a KV secret read denied, policy list denied. The root was then revoked
+and the staged operator token deleted. The token file was replaced atomically,
+keeping mode 0640 and its group, and the accessor and expiry
+(`2026-10-22T11:54Z`, requested TTL) went to the ignored
+`openbao_metrics_token.custody`. After a Prometheus recreate the `openbao`
+target is up. No share, OTP or token value was printed or passed as a host
+argument.
+
 Lesson for phase 2: recreate in dependency waves, providers first
 (`mng-pg`, `mng-valkey`, Keycloak, Traefik), then the rest. Do not rely on
 `--wait` across the whole set. Plan the OpenBao unseal for its restart.
@@ -472,6 +490,18 @@ Sequential review findings and their disposition:
 | every container mounts every component key | accepted: the S3 container already holds the client certificate and both JWT keys, which give the same reach |
 | the SeaweedFS trees count against the 5 GiB state budget | deferred to S07, where consumer data first arrives |
 
+### S06 HOME activation (2026-09-22, owner-approved)
+
+| Step | Result |
+| --- | --- |
+| Operations checkout | fast-forward to `f7a6c55cf` (#197). The owner's local `.gitignore` line for `*.custody` was not in main because #197 merged before that commit; it was restored at once and is carried by #198 |
+| Secrets | `gen-secrets.sh --sync-metadata-check` refused its input: the private registry's `SEC-003` row spans three lines (its multi-line Value cell was not read). Generation also rewrites that registry, so STRG-008–010 were created with the same method instead (16 alphanumeric characters, 0640, group `SECRETS_GID`), and `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` was appended to `.env`. Registry Value cells for them stay empty until the owner repairs `SEC-003` and runs `--sync-metadata` |
+| Certificates | issued into `secrets/certs/seaweedfs` (0700, keys 0640); no ignore rule covered that directory, so one was added locally and in #198 before anything else ran |
+| Start | `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` created (UID 1000); four services healthy on the first `up --wait` |
+| Checks | anonymous PUT and list 403 on `object_net`; admin create, head and delete of a disposable bucket exit 0; `s3.` route 403 without credentials, `seaweedfs.` and `cdn.` 404; master, volume and filer only on `seaweed_internal`; state on the binds (`m9333`, `N.dat/.idx/.vif`, `filer/filerldb2`); master and volume also create an empty `filerldb2` directory from the image `filer.toml` (4 KiB, harmless) |
+| Telemetry | the master logs that it reports usage to `telemetry.seaweedfs.com` once 10 GiB are stored; with no egress on `seaweed_internal` the name does not resolve. The owner chose not to add `-telemetry=false`; if the master ever gets egress, revisit |
+| Backup | a manual orchestrator run exited 0: the latest state snapshot holds `exports/seaweedfs-filer.meta` and `data/seaweedfs/{master,volume}`; no export left in the container; state repository 289 MiB of 5 GiB |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -492,7 +522,7 @@ Sequential review findings and their disposition:
 | S05 phase 1 source | Task 10 / S05 | PASS: 150 services assigned, rendered memberships equal the assignment; every traced flow shares a segmented network (static trace plus review); review Critical/Important findings fixed; Compose 71 selections/314 services; 5/5 `NetworkSegmentationContractTests` | this Task, AD-0026 |
 | S05 phase 1 live | Task 10 / S05 | PASS with one open item: 53 services recreated and healthy, SSO and forwarded headers verified; OpenBao sealed until the owner unseals | this Task |
 | S06 source and rehearsal | Task 10 / S06 | PASS: 6/6 `SeaweedfsRehearsalTests`, 2/2 `SeaweedfsContractTests`, secret registry 110 rows (STRG-007–010) | GDE/POL/RUN-0024 |
-| S06 HOME activation | Task 10 / S06 | NOT_RUN: needs secrets, certificates and data directories (RUN-0024 first activation), then an approved start | RUN-0024 |
+| S06 HOME activation | Task 10 / S06 | PASS: healthy, anonymous refused, admin bucket round trip, only S3 routed, isolated internals, SeaweedFS set in the Restic snapshot; registry Value cells pending the owner's `SEC-003` repair | RUN-0024 |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -521,6 +551,12 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).
+- `secrets/storage/minio_*.txt` files are mode 0644 (world-readable); they go away with MinIO in S07, or tighten to 0640 now (owner).
+
+- OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
+- Prometheus k8s NodePort targets on `172.18.0.2` refuse connections; `.2` is Traefik's k3d address (observability owner).
 
 - n8n queue configuration points at `redis://mng-n8n-valkey`, a name no service declares (found in S05 review; n8n stage owner).
 
