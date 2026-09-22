@@ -50,7 +50,10 @@ services:
     command:
       - server
     networks:
-      k3d-hyhome: {}
+      # k3d-hyhome is external and has no dynamic range; a dynamic address
+      # here took Traefik's 172.18.0.2 when OpenBao started first.
+      k3d-hyhome:
+        ipv4_address: 172.18.0.17
       infra_net:
         ipv4_address: 172.19.0.17
     healthcheck:
