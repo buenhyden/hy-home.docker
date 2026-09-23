@@ -3315,9 +3315,6 @@ ROUTES_WITHOUT_SSO = {
     "s3": "sigv4",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
-    # File-provider catch-all to the former k3s ingress; no gateway auth.
-    # Removal is an open owner decision (k3s change).
-    "k3s-ingress": "unauthenticated-legacy-k3s",
 }
 
 
@@ -3376,8 +3373,7 @@ class RouteAuthContractTests(unittest.TestCase):
             (src, name)
             for src, name, chain in routers
             if not chain
-            and ROUTES_WITHOUT_SSO.get(name)
-            not in {"static-only", "unauthenticated-legacy-k3s"}
+            and ROUTES_WITHOUT_SSO.get(name) != "static-only"
         )
         self.assertEqual([], bare)
 

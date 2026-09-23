@@ -1340,6 +1340,15 @@ Qdrant rehearsal with a synthetic key on `qdrant/qdrant:v1.19.1-unprivileged`:
 `/readyz` 200 without the key (the healthcheck is unchanged), `/metrics` and
 `/collections` 401 without it, `/metrics` 200 with `Authorization: Bearer`.
 
+**`k3s-ingress` removal (owner decision 2026-09-24).** The file-provider
+router forwarded any `*.k8s.hy.home.arpa` host to `192.168.0.13:32246` with no
+gateway authentication. Native k3s is still active on the host and that
+NodePort answers (404 at `/`), but the Traefik access log shows no request
+through the router in the prior seven days. `k3s.yml` is deleted; the route
+contract has no unauthenticated exception left. The running Traefik watches
+the operations checkout's `dynamic/` directory, so the router disappears when
+that checkout pulls the merge; no restart. Rollback: restore the file from Git.
+
 The Mailpit hardening test failed on main since S17: its fixture tree lacked
 the Stalwart plan, so the Stalwart relay guard failed before the Mailpit check.
 The fixture now copies `plan.ndjson`.
@@ -1468,7 +1477,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 - Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
-- File-provider router `k3s-ingress` (`infra/01-gateway/traefik/dynamic/k3s.yml`) forwards `*.k8s.` hosts to the former k3s ingress with no gateway authentication; GDE-0096 says it is unrelated to the current cluster. Remove it or put it behind SSO (owner; k3s change).
+- ~~File-provider router `k3s-ingress` forwards `*.k8s.` hosts to the native k3s NodePort with no gateway authentication (owner).~~ Closed 2026-09-24: removed in S19 on the owner's decision.
 - `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).
 
 - ~~Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).~~ Closed 2026-09-23: the row was replaced by the example placeholder after a private equality check (secret cleanup section).

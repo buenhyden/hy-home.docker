@@ -424,7 +424,7 @@ routers, because ForwardAuth cannot protect them.
 `RouteAuthContractTests` in `tests/validation/test_compose_baseline_gates.py`
 fails when a router is neither, when this list names a router that no longer
 exists or now uses SSO, or when a router has no middleware at all (except
-`grafana-static` and `k3s-ingress`).
+`grafana-static`).
 
 | Router | Authentication without the SSO chain |
 | --- | --- |
@@ -438,7 +438,6 @@ exists or now uses SSO, or when a router has no middleware at all (except
 | `dashboard` (Traefik), `prometheus-api` | Traefik basic auth |
 | `s3` | S3 SigV4 identities |
 | `grafana-static` | none: two static files only |
-| `k3s-ingress` (file provider, `*.k8s.` hosts) | **none at the gateway**: forwards to the former k3s ingress; removal is an open owner decision |
 
 On 2026-09-24 (SPEC-0180 S18) four routes that reached an application with no
 identity check were closed: `qdrant` (HOME, no API key) and the Kafka
