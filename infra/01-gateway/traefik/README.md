@@ -63,7 +63,7 @@ traefik/
 | Config files | `docker-compose.yml`, `config`, `config/README.md`, `config/traefik.yml` |
 | Config values | profiles: `core`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/01-gateway/traefik/docker-compose.yml` |
-| Networks | `edge_net`, `k3d-hyhome`, `obs_net` |
+| Networks | `edge_net`, `obs_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `${DEFAULT_CERT_DIR}:/certs:ro`, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |

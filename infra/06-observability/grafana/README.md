@@ -62,7 +62,7 @@ grafana/
 | Config values | Datasource UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`; Pyroscope datasource type `grafana-pyroscope-datasource`; dashboard providers `editable: false`; role mapping for `/admins` and `/editors` |
 | Volumes | `./grafana/provisioning:/etc/grafana/provisioning:ro`, `./grafana/dashboards:/etc/grafana/dashboards:ro`, `grafana-data:/var/lib/grafana:rw` |
 | Secret refs | `grafana_admin_password`, `grafana_client_secret` |
-| Networks | `edge_net`, `k3d-hyhome`, `obs_net` |
+| Networks | `edge_net`, `obs_net` |
 | Ports | `traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}` |
 | Labels | `traefik.http.routers.grafana.*`, `traefik.http.routers.grafana-static.*`, `traefik.http.services.grafana-svc.*` |
 | Healthcheck | `http://localhost:${GRAFANA_PORT:-3000}/api/health` |

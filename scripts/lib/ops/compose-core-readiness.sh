@@ -591,7 +591,7 @@ if set(networks) != {"crr_net"} or networks.get("crr_net", {}).get("external") i
     errors.append("external/shared network")
 
 serialized = json.dumps(document, sort_keys=True)
-for forbidden in ("mng-pg", "mng-valkey", "k3d-hyhome"):
+for forbidden in ("mng-pg", "mng-valkey"):
     if forbidden in serialized:
         errors.append(f"forbidden reference:{forbidden}")
 

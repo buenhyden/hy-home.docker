@@ -49,8 +49,6 @@ services:
       start_period: 15s
     networks:
       mng_data_net: {}
-      k3d-hyhome:
-        ipv4_address: 172.18.0.9
 
   mng-valkey-exporter:
     profiles:

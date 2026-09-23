@@ -46,11 +46,3 @@ providers:
     options:
       path: /etc/grafana/dashboards/Security
 
-  - name: 'Kubernetes Dashboards'
-    orgId: 1
-    folder: 'Kubernetes'
-    type: file
-    disableDeletion: false
-    editable: false
-    options:
-      path: /etc/grafana/dashboards/Kubernetes
