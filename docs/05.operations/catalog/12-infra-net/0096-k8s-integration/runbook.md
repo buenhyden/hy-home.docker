@@ -208,7 +208,7 @@ R auth list -format=json | grep -q '"kubernetes/"' || R auth enable kubernetes
 R policy write eso-read-platform /policies/eso-read-platform.hcl
 R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
 R policy write hy-home-operator /policies/operator.hcl
-R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1h
+R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
 R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
