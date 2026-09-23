@@ -36,7 +36,7 @@ Runtime pins belong to [Compose](docker-compose.yml) and its referenced build so
 
 | Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |
 | --- | --- | --- | --- | --- |
-| `openbao` | `security, secrets, core, local, dev` | `k3d-hyhome, secrets_net, edge_net, obs_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `openbao` | `security, secrets, core, local, dev` | `secrets_net, edge_net, obs_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 | `openbao-agent` | `security, secrets, core, local, dev` | `secrets_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:

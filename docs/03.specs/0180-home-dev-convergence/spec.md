@@ -46,7 +46,7 @@ S00→S19 mission supersedes two earlier dispositions: HashiCorp Vault and its
 Agent are removed from active source instead of being retained MIGRATE-only,
 and SeaweedFS replaces MinIO through a per-consumer cutover. OpenBao, its
 custody and Agent renewal are preserved. The mission also adds network
-segmentation with a minimal `k3d-hyhome` membership, Restic, pgBackRest,
+segmentation with no `k3d-hyhome` membership (owner decision 2026-09-23), Restic, pgBackRest,
 Testcontainers, WireMock, Pact Broker, Spark with Iceberg, Trino, Flink,
 Great Expectations, Superset and a configured internal Stalwart, all as opt-in
 profiles. Deleting legacy data or credentials, live cutovers and restarts keep

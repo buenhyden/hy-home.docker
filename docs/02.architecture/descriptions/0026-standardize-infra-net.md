@@ -32,8 +32,10 @@ fixed address.
   `0.0.0.0` and never the address of its own name.
 - Fixed addresses are the exception and each has a stated reason; everything
   else takes a dynamic address.
-- `project_net`, `k3d-hyhome`, the host firewall and any cloud VPC stay outside
-  this architecture's ownership and keep their existing connections.
+- `project_net`, the host firewall and any cloud VPC stay outside this
+  architecture's ownership. No service joins `k3d-hyhome`; the owner removed
+  the k3d integration on 2026-09-23, so the k8s cluster reaches no Compose
+  service.
 
 ## Components
 
@@ -57,7 +59,6 @@ automatic address pool cannot take one first.
 | `lab_net` | 10.250.9.0/24 | LAB clusters (Valkey, PostgreSQL/etcd, Cassandra, CouchDB, MongoDB, StarRocks) and OpenSearch nodes | cluster-internal and init jobs |
 | `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
 | `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
-| `k3d-hyhome` | external | Traefik, Prometheus, Alloy, Loki, Tempo, Grafana, `mng-valkey`, OpenBao, `pg-router` | measured k8s consumers |
 
 Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the
 project default network. WireMock also uses it until a named consumer exists;

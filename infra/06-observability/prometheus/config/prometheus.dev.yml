@@ -12,7 +12,6 @@ alerting:
 
 rule_files:
   - "/etc/prometheus/alert_rules/alert_rules.local.*.yml"
-  - "/etc/prometheus/alert_rules/alert_rules.k8s.yml"
   - "/etc/prometheus/alert_rules/alert_rules.keycloak.yml"
   - "/etc/prometheus/alert_rules/alert_rules.vault.yml"
   - "/etc/prometheus/alert_rules/recording_rules.yml"
@@ -129,75 +128,6 @@ scrape_configs:
       - targets: ["kafka-exporter:9308"]
         labels:
           domain: "messaging"
-
-  # ============================================================================
-  # KUBERNETES / GITOPS
-  # ============================================================================
-  # ArgoCD metrics via NodePort (k3d-hyhome-server-0: 172.18.0.2)
-  - job_name: "argocd-application-controller"
-    static_configs:
-      - targets: ["172.18.0.2:30082"]
-        labels:
-          component: "application-controller"
-          domain: "gitops"
-
-  - job_name: "argocd-server"
-    static_configs:
-      - targets: ["172.18.0.2:30083"]
-        labels:
-          component: "server"
-          domain: "gitops"
-
-  - job_name: "argocd-repo-server"
-    static_configs:
-      - targets: ["172.18.0.2:30084"]
-        labels:
-          component: "repo-server"
-          domain: "gitops"
-
-  - job_name: "argocd-applicationset-controller"
-    static_configs:
-      - targets: ["172.18.0.2:30085"]
-        labels:
-          component: "applicationset-controller"
-          domain: "gitops"
-
-  - job_name: "argocd-notifications-controller"
-    static_configs:
-      - targets: ["172.18.0.2:30086"]
-        labels:
-          component: "notifications-controller"
-          domain: "gitops"
-
-  # ============================================================================
-  # KUBERNETES CLUSTER (k3d-hyhome)
-  # ============================================================================
-  # kube-state-metrics via NodePort (k3d-hyhome-server-0: 172.18.0.2)
-  # kube_pod_*, kube_deployment_*, kube_node_*, kube_namespace_* 등 제공
-  - job_name: "kube-state-metrics"
-    static_configs:
-      - targets: ["172.18.0.2:30091"]
-        labels:
-          cluster: "k3d-hyhome"
-          domain: "kubernetes"
-
-  # istiod 메트릭 via NodePort (Istio control plane: xDS push, pilot_k8s_cfg_events 등)
-  - job_name: "istiod"
-    static_configs:
-      - targets: ["172.18.0.2:30090"]
-        labels:
-          component: "istiod"
-          cluster: "k3d-hyhome"
-          domain: "mesh"
-
-  # Argo Rollouts 메트릭 via NodePort (rollout_phase, analysis_run_info 등)
-  - job_name: "argo-rollouts"
-    static_configs:
-      - targets: ["172.18.0.2:30092"]
-        labels:
-          component: "argo-rollouts"
-          cluster: "k3d-hyhome"
-          domain: "gitops"
 
   # ============================================================================
   # APPLICATIONS
