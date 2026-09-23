@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -22,8 +22,9 @@ resource, lifecycle and independently verifiable operator controls.
 ## Policy Scope
 
 SeaweedFS is the S3 object store; it replaced MinIO in SPEC-0180 S07. It is HOME: every profile that selects an S3 consumer (`storage`,
-`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`) also selects the four
-services and `seaweedfs-buckets`, as do `seaweedfs` and `storage-seaweedfs`.
+`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`) also
+selects the four services and `seaweedfs-buckets`, as do `seaweedfs` and
+`storage-seaweedfs`; `lakehouse` also selects `seaweedfs-table-bucket`.
 Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
 
 ## Controls
@@ -38,7 +39,7 @@ Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
   from secrets (admin: `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` and STRG-010). With
   identities present, anonymous requests are refused. Every consumer added in
   S07 has its own identity in `config/s3-identities.conf`, scoped to its
-  bucket (loki, tempo, mlflow, terrakube); no consumer uses admin, and
+  bucket (loki, tempo, mlflow, terrakube, lakehouse); no consumer uses admin, and
   `anonymous` may only read objects in `cdn-bucket`. Buckets are created by
   `seaweedfs-buckets`, never by a consumer.
 - **No IAM bypass.** Volume and filer HTTP require JWTs signed with STRG-008 and
@@ -51,8 +52,13 @@ Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
   for host clients. Master, volume and filer are only on `seaweed_internal`
   (internal); the master's unauthenticated `/dir/assign` is reachable only
   there.
-- **Minimal surface.** The Iceberg and Lance listeners and the embedded IAM API
-  are off until S12 defines the catalog.
+- **Minimal surface.** The Lance listener and the embedded IAM API are off.
+  The Iceberg REST catalog listens on `${SEAWEEDFS_ICEBERG_PORT:-8181}` on
+  `object_net` only, with no route; it signs with the same identities (SigV4).
+  Only the `lakehouse` table bucket exists, owned by admin. Its policy grants
+  the `lakehouse` identity catalog and table actions only (no policy change,
+  no bucket deletion); `seaweedfs-table-bucket` rewrites it on every run, so a
+  hand-edited policy does not survive.
 - **Capacity.** The volume server stops accepting writes below 20 GiB free on
   the data disk (`-minFreeSpace`, POL-0035). Same-host replicas are not host
   availability, so replication is `000`.

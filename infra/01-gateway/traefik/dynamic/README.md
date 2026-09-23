@@ -47,6 +47,7 @@ Configurations in this directory are hot-reloaded by Traefik without requiring a
 
 ```text
 infra/01-gateway/traefik/dynamic/
+├── k3s.yml  # native k3s NodePort route
 ├── middleware.yml  # 구성 파일
 ├── README.md  # This file
 └── tls.yaml  # 구성 파일

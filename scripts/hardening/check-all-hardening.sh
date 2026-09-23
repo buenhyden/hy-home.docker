@@ -442,6 +442,20 @@ check_04_data() {
 
   check_service_healthcheck "$supabase_compose" "db"
   check_service_healthcheck "$supabase_compose" "auth"
+
+  # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
+  # time, and the table identity must never gain policy or bucket deletion.
+  local spark_wrapper="infra/04-data/lakehouse/spark/hyhome-spark.sh"
+  local table_bucket="infra/04-data/lake-and-object/seaweedfs/config/seaweedfs-table-bucket.sh"
+  check_file "$spark_wrapper"
+  check_file "$table_bucket"
+  check_contains "$spark_wrapper" "rest.auth.type sigv4" "spark catalog must sign with SigV4"
+  check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
+  check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
+  check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
+  if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
+    fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
+  fi
 }
 
 # --- Tier 05: Messaging ---

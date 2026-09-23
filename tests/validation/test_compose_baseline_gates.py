@@ -2090,8 +2090,20 @@ class SeaweedfsContractTests(unittest.TestCase):
                 {"seaweed_internal"}, set(services[name]["networks"]), name
             )
             self.assertEqual("/etc/seaweedfs", services[name]["working_dir"], name)
-        for flag in ("-port.iceberg=0", "-port.lance=0", "-iam=false"):
+        # The Iceberg REST catalog (S12) is on; like S3 it has no host port,
+        # and the only route still targets the S3 port.
+        for flag in (
+            "-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}",
+            "-port.lance=0",
+            "-iam=false",
+        ):
             self.assertIn(flag, commands["seaweedfs-s3"])
+        self.assertNotIn("ports", services["seaweedfs-s3"])
+        self.assertIn(
+            "traefik.http.services.s3.loadbalancer.server.port="
+            "${seaweedfs_s3_http_port:-8333}",
+            _labels(services["seaweedfs-s3"]),
+        )
 
 
 @unittest.skipUnless(
@@ -2143,12 +2155,12 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "seaweedfs_s3_admin_secret_key": cls.secret_key,
             **{
                 f"seaweedfs_s3_{name}_secret_key": name.title() + os.urandom(6).hex()
-                for name in ("loki", "tempo", "mlflow", "terrakube")
+                for name in ("loki", "tempo", "mlflow", "terrakube", "lakehouse")
             },
         }
         cls.consumer_secret = {
             name: secrets[f"seaweedfs_s3_{name}_secret_key"]
-            for name in ("loki", "tempo", "mlflow", "terrakube")
+            for name in ("loki", "tempo", "mlflow", "terrakube", "lakehouse")
         }
         for name, value in secrets.items():
             path = cls.dir / f"{name}.txt"
@@ -2169,11 +2181,14 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     ".env.example",
                     "--profile",
                     "seaweedfs",
+                    "--profile",
+                    "lakehouse",
                     "config",
                     "--format",
                     "json",
                     *SEAWEEDFS_SERVICES,
                     "seaweedfs-buckets",
+                    "seaweedfs-table-bucket",
                 ],
                 cwd=ROOT,
                 env=env,
@@ -2184,7 +2199,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         )
         services = {
             name: rendered["services"][name]
-            for name in (*SEAWEEDFS_SERVICES, "seaweedfs-buckets")
+            for name in (*SEAWEEDFS_SERVICES, "seaweedfs-buckets", "seaweedfs-table-bucket")
         }
         for name, service in services.items():
             service["container_name"] = f"{cls.tag}-{name}"
@@ -2197,7 +2212,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 {"sw": {}, "client": {}}
                 if name == "seaweedfs-s3"
                 else {"client": {}}
-                if name == "seaweedfs-buckets"
+                if name in ("seaweedfs-buckets", "seaweedfs-table-bucket")
                 else {"sw": {}}
             )
             service.pop("ports", None)
@@ -2224,9 +2239,10 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
         cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
         cls.up()
-        buckets = cls.compose("run", "--rm", "--no-deps", "seaweedfs-buckets")
-        if buckets.returncode != 0:
-            raise AssertionError(buckets.stdout + buckets.stderr)
+        for job in ("seaweedfs-buckets", "seaweedfs-table-bucket"):
+            result = cls.compose("run", "--rm", "--no-deps", job)
+            if result.returncode != 0:
+                raise AssertionError(result.stdout + result.stderr)
 
     @classmethod
     def compose(
@@ -2421,6 +2437,72 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             or re.search(r"error|fail", (failed.stdout + failed.stderr).lower()),
             failed,
         )
+
+    def catalog(self, path: str, access: str, secret: str) -> str:
+        return subprocess.run(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--network",
+                f"{self.tag}_client",
+                "--entrypoint",
+                "curl",
+                self.AWS_IMAGE,
+                "-s",
+                "--aws-sigv4",
+                "aws:amz:us-east-1:s3",
+                "--user",
+                f"{access}:{secret}",
+                f"http://seaweedfs-s3:8181{path}",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout
+
+    def test_3_lakehouse_catalog_is_scoped_to_its_identity(self) -> None:
+        lakehouse = {"access": "lakehouse", "secret": self.consumer_secret["lakehouse"]}
+        # seaweedfs-table-bucket created the bucket, its policy and namespaces.
+        listed = json.loads(self.catalog("/v1/lakehouse/namespaces", **lakehouse))
+        self.assertEqual(
+            {"dev", "test"}, {".".join(ns) for ns in listed["namespaces"]}
+        )
+        # Another identity cannot even see the table bucket.
+        self.assertIn(
+            '"code":404',
+            self.catalog("/v1/lakehouse/namespaces", "loki", self.consumer_secret["loki"]),
+        )
+        # The identity is limited to its bucket on the S3 side as well.
+        self.assertNotEqual(
+            0, self.aws("s3", "ls", "s3://loki-bucket", **lakehouse).returncode
+        )
+        self.assertNotEqual(
+            0,
+            self.aws(
+                "s3tables", "create-table-bucket", "--name", "other", **lakehouse
+            ).returncode,
+        )
+        # The policy grants table work, not control of the bucket itself.
+        arn = self.aws(
+            "s3tables",
+            "list-table-buckets",
+            "--query",
+            "tableBuckets[?name=='lakehouse'].arn | [0]",
+            "--output",
+            "text",
+        ).stdout.strip()
+        for command in (
+            ("put-table-bucket-policy", "--resource-policy", '{"Version":"2012-10-17","Statement":[]}'),
+            ("delete-table-bucket",),
+        ):
+            self.assertNotEqual(
+                0,
+                self.aws(
+                    "s3tables", command[0], "--table-bucket-arn", arn, *command[1:], **lakehouse
+                ).returncode,
+                command[0],
+            )
 
     def test_3_s3_api_used_by_consumers(self) -> None:
         io = self.dir / "io"

@@ -806,6 +806,66 @@ Sequential review (read-only reviewer) findings and their disposition:
 | `PACT_BROKER_BASE_URL` unset | kept unset; POL-0093 records why and when to set it |
 | fourth near-copy of the feature-provisioning SQL prologue | deferred: a shared prologue is worth extracting the next time the refusal logic changes |
 
+### S10/S11 CI finding (after merge)
+
+PRs #210 and #214 were merged while `validation-changed` failed on
+`invalid-initial-status`: new guide, policy, runbook and package README
+documents must start at `draft`, and the eight WireMock and Pact Broker
+documents were created `active`. The local gate did not catch it because it
+selects the metadata comparison base only from `EVENT_NAME` and `PR_BASE_SHA`,
+which a local run does not set. Moving them back needs reverse-transition
+override evidence, so they stay `active` and this record is the deviation.
+From S12 on, new documents start at `draft` (promoted after live acceptance)
+and `check-document-metadata.py --mode check-changed` runs locally with
+`TEMPLATE_GATE_BASE` set to `origin/main`.
+
+### S12 — Spark and Iceberg (source)
+
+| Unit | Change |
+| --- | --- |
+| Catalog | `seaweedfs-s3` enables the built-in Iceberg REST catalog on `${SEAWEEDFS_ICEBERG_PORT:-8181}` (exposed on `object_net`, no host port, no route); Lance and embedded IAM stay off. The catalog signs with the S3 identities (SigV4) |
+| Table bucket | new `seaweedfs-table-bucket` job (`lakehouse` only) creates the `lakehouse` table bucket (admin-owned), a policy granting the `lakehouse` identity ten namespace and table actions (no policy change, no bucket deletion), and the `dev` and `test` namespaces, all idempotent; `seaweedfs-buckets` is unchanged apart from an empty-secret check |
+| Identity | new `lakehouse` identity (STRG-015) with `Read/Write/List/Tagging:lakehouse`; secret mounted into `seaweedfs-s3` and `spark` |
+| Spark | `infra/04-data/lakehouse/spark/`: `apache/spark:4.1.3-scala2.13-java21-python3-ubuntu` plus `iceberg-spark-runtime-4.1_2.13` and `iceberg-aws-bundle` 1.11.0 added with SHA-256 checksums (SHA-1 matched Maven Central). One-shot job on `template-job-med` with 2 CPUs and 2 GiB, read-only root, `object_net` only. The wrapper writes `spark-defaults.conf` to tmpfs (catalog `lakehouse` as default, in-memory session catalog, no UI) and exports the secret into the process. Default command `SHOW NAMESPACES` |
+| Profile | new `lakehouse` (capability) with the SeaweedFS closure; POL-0078 row and companion row |
+| Contracts | root include and secret; `SEAWEEDFS_ICEBERG_PORT` (the bucket name and region are fixed, not knobs); AD-0026 `object_net`; SeaweedFS guide and policy (consumer row, minimal-surface control); version projection (local image); m0021 row and re-rendered SeaweedFS rows; pinned counts in `test_secret_metadata_sync`; the SeaweedFS surface test now asserts the catalog flag, no host port and an S3-only route |
+| Documents | new subject `0094-lakehouse` (GDE/POL/RUN-0094, `draft`), Spark package README (`draft`), 04-data infra and catalog READMEs |
+
+Design finding: a scoped identity cannot create a namespace in a table bucket
+it does not own, and `Admin:<bucket>` does not grant table bucket creation.
+Two working options were measured: a bucket owned by the identity's account
+(`weed shell s3tables.bucket -account`) or an admin-owned bucket with a table
+bucket policy. The policy route was chosen because it stays inside the existing
+`aws-cli` job and needs no master or JWT access. Another identity sees the
+table bucket as not found.
+
+Evidence (isolated SeaweedFS 4.47 probe and the repository rehearsal):
+the bucket script created the bucket, policy and namespaces and a second run
+changed nothing; the built image as `spark` with a read-only root and
+`CapDrop=[ALL]` listed namespaces, created a table, inserted and counted three
+rows, compacted with `rewrite_data_files` and dropped the table with `PURGE`,
+using only the `lakehouse` identity, which was denied on `loki-bucket`.
+The disposable SeaweedFS rehearsal (`HYHOME_SEAWEEDFS_REHEARSAL=1`, the real
+rendered services on temporary data) passes 8/8, including the new
+`test_3_lakehouse_catalog_is_scoped_to_its_identity`.
+
+Sequential review (read-only reviewer) findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| `s3tables:*` also granted policy and bucket control, contradicting the documents | measured: SeaweedFS enforces table actions individually; ten actions (`GetTableBucket`, `List/Create/Get/DeleteNamespace`, `ListTables`, `Create/Get/Update/DeleteTable`) carry a full Spark round trip (create, insert, `rewrite_data_files`, `expire_snapshots`, schema change, `DROP … PURGE`); the identity is denied `PutTableBucketPolicy` and `DeleteTableBucket`, asserted in the rehearsal and a hardening check |
+| `LAKEHOUSE_TABLE_BUCKET` renamed the bucket but not the identity scope; `LAKEHOUSE_S3_REGION` could disagree with the job | both knobs removed; `lakehouse` and `us-east-1` are fixed |
+| the S3 Tables steps sat in `seaweedfs-buckets`, on the startup path of eight profiles | moved to `seaweedfs-table-bucket` under `lakehouse` only; Spark waits on it |
+| POL-0024 and the SeaweedFS README still listed the old profiles and identities | updated, with the new job and its policy reset behaviour |
+| no automated check read the Spark wrapper; S12 added no hardening line | `check_04_data` asserts the four catalog keys and forbids a wildcard or control action in the table bucket policy |
+| `AWS_REGION` unguarded, no empty admin-secret check, unconditional policy rewrite undocumented, namespace list compared as ordered, `cpus: 2.0` | fixed |
+| POL-0086 has no row for checksum-pinned build downloads (also the Gatus tarball) | deferred: pre-existing gap; the Spark README states manual ownership |
+
+`validate-docker-compose.sh` (`lakehouse`: 6 services), catalog, hardening,
+version projection and the metadata check against `origin/main` pass. Live is
+NOT_RUN: it needs STRG-015 generated, the `.env` keys, a `seaweedfs-s3`
+recreate and a `seaweedfs-buckets` run, each approved.
+
 ### k3d removal (source, owner instruction 2026-09-23)
 
 The owner asked to remove the k3d integration from Traefik and everywhere
@@ -815,7 +875,7 @@ replaces the S01/S05 "minimal `k3d-hyhome` membership" target with none.
 | Unit | Change |
 | --- | --- |
 | Networks | `k3d-hyhome` attachment and fixed address removed from Traefik (`.2`), Prometheus, Loki, Tempo, Alloy, Grafana, `mng-valkey`, OpenBao (`.17`) and `pg-router`; the root external network and `K3D_HYHOME_NET_NAME` (root and core-readiness examples) removed |
-| Traefik | file-provider routes `adminer-k3d`, `argocd-k3d`, `headlamp-k3d`, `kiali-k3d`, `rollouts-k3d` and `k3s.yml` deleted |
+| Traefik | file-provider routes `adminer-k3d`, `argocd-k3d`, `headlamp-k3d`, `kiali-k3d`, `rollouts-k3d` deleted; `k3s.yml` kept, it routes the native k3s NodePort and not k3d (matches #217) |
 | Prometheus | the Argo CD, kube-state-metrics, Istio and Argo Rollouts NodePort jobs and `alert_rules.k8s.yml` removed from both configs |
 | Grafana | the `Kubernetes` dashboard folder (20 dashboards) and its provider, the four Argo CD dashboards, and the `k3d-hyhome` default of the Prometheus dashboard's cluster variable removed |
 | Checks | the OpenBao `172.18.0.17` hardening assertion and the `k3d-hyhome` string in the core-readiness guard removed (the guard still rejects any external network); pinned public env-key counts updated |
@@ -853,6 +913,7 @@ the `k3d-hyhome` network itself (owned by k3d) is not deleted.
 | S09 Testcontainers | Task 10 / S09 | PASS: 2/2 integration tests against the declared PostgreSQL pin after the move to `tests/validation/`; skip-without-opt-in verified; `run-ci-gate.py --profile changed` exit 0 | tests README |
 | S10 WireMock | Task 10 / S10 | PASS: Compose all selections, catalog, version projection, hardening (now asserting the loopback binding); isolated Compose rehearsal healthy and hardened; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0092 subject |
 | S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0093 subject |
+| S12 Spark and Iceberg | Task 10 / S12 | PASS: Compose, catalog, hardening, version projection, metadata check-changed, provisioning and secret tests; isolated catalog and Spark round trip with the scoped identity; SeaweedFS rehearsal 8/8; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0094 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
