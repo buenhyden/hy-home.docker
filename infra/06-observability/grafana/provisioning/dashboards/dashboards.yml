@@ -45,4 +45,3 @@ providers:
     editable: false
     options:
       path: /etc/grafana/dashboards/Security
-
