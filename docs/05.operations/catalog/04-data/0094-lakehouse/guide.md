@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -12,6 +12,9 @@ parent_ids:
 implementation_services:
   infra/04-data/lake-and-object/seaweedfs/docker-compose.yml:
   - seaweedfs-table-bucket
+  infra/04-data/lakehouse/flink/docker-compose.yml:
+  - flink-jobmanager
+  - flink-taskmanager
   infra/04-data/lakehouse/spark/docker-compose.yml:
   - spark
   infra/04-data/lakehouse/trino/docker-compose.yml:
@@ -28,9 +31,8 @@ created: "2026-09-23"
 The lakehouse is OPTIONAL and selected by `lakehouse`. Tables are Apache
 Iceberg in the SeaweedFS `lakehouse` table bucket, catalogued by the SeaweedFS
 built-in Iceberg REST catalog. Spark is the batch and table-maintenance
-engine and Trino the interactive SQL engine; Flink (S14) joins the same
-catalog. Iceberg is a table
-format, not a service.
+engine, Trino the interactive SQL engine and Flink the streaming engine, all on
+the same catalog. Iceberg is a table format, not a service.
 
 ### Current implementation
 
@@ -59,6 +61,23 @@ format, not a service.
   SeaweedFS serves none. The HTTP API has no authentication, so it is published
   on `127.0.0.1:${TRINO_HOST_PORT:-18090}` only, with no route. It runs with
   2 CPUs, 2 GiB (80% heap), a read-only root and tmpfs for its data directory.
+- **Flink.** [Flink Compose](../../../../../infra/04-data/lakehouse/flink/docker-compose.yml)
+  runs a session cluster (`flink-jobmanager`, `flink-taskmanager` with two
+  slots) built from `flink` plus the pinned Iceberg Flink runtime, AWS bundle,
+  Kafka SQL connector and Hadoop client. The wrapper exports the secret into
+  each JVM and writes the `CREATE CATALOG lakehouse` statement to
+  `/tmp/lakehouse.sql`, which the SQL client loads with `-i`; that file also
+  sets a 60 s checkpoint interval, because the Iceberg sink commits only on a
+  checkpoint. Jobs are
+  submitted from the SQL client inside the JobManager container; JAR upload
+  through the REST API is off. File checkpoints go to
+  `${DEFAULT_DATA_DIR}/flink/checkpoints`, shared by both containers. Kafka
+  sources and sinks use `kafka-1:19092` on `kafka_net`; Kafka is selected with
+  its own profile. The REST API and UI have no authentication, so they are
+  published on `127.0.0.1:${FLINK_HOST_PORT:-18091}` only, with no route. The
+  JobManager has 1 CPU and 1.25 GiB (1 GiB Flink process), the TaskManager
+  2 CPUs and 2 GiB (1.5 GiB Flink process); both run as UID 9999 with a
+  read-only root.
 
 ### Commands and side effects
 
@@ -75,6 +94,11 @@ format, not a service.
 | `… --execute "CREATE TABLE lakehouse.dev.t (…)"` / `INSERT` / `UPDATE` | Writes table metadata and data files |
 | `… --execute "ALTER TABLE lakehouse.dev.t EXECUTE optimize"` | Compacts data files; adds a snapshot |
 | `… --execute "DROP TABLE lakehouse.dev.t"` | Deletes the table and its files |
+| `docker compose --profile lakehouse up -d flink-jobmanager flink-taskmanager` | Starts the session cluster; writes nothing |
+| `docker compose exec flink-jobmanager bash /opt/hyhome/hyhome-flink.sh /opt/flink/bin/sql-client.sh -i /tmp/lakehouse.sql` | Opens the SQL client on the `lakehouse` catalog |
+| `INSERT INTO dev.t SELECT … FROM <kafka table>` (streaming) | Runs until cancelled; commits a snapshot on each checkpoint |
+| `SET 'execution.runtime-mode' = 'batch'; INSERT INTO dev.t …` | Writes table metadata and data files once |
+| `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | Stops a job; data committed at earlier checkpoints stays |
 
 ## Common Checks
 
@@ -98,3 +122,5 @@ and table recovery.
 - [Iceberg Spark procedures](https://iceberg.apache.org/docs/latest/spark-procedures/)
 - [Iceberg REST catalog configuration](https://iceberg.apache.org/docs/latest/spark-configuration/)
 - [Trino Iceberg connector](https://trino.io/docs/current/connector/iceberg.html)
+- [Flink](../../../../../infra/04-data/lakehouse/flink/README.md) package README
+- [Iceberg Flink connector](https://iceberg.apache.org/docs/latest/flink/)

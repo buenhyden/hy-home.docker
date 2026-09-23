@@ -38,7 +38,7 @@ bucket을 `lakehouse` S3 identity로 사용합니다. 기본 명령은 namespace
 ### Out of Scope
 
 - A Spark cluster (master/worker), Spark UI or history server.
-- Interactive SQL serving ([Trino](../trino/README.md)) and streaming (Flink, S14).
+- Interactive SQL serving ([Trino](../trino/README.md)) and streaming ([Flink](../flink/README.md)).
 
 ## Structure
 

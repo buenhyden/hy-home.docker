@@ -475,6 +475,16 @@ check_04_data() {
   check_contains "$trino_catalog" "iceberg.rest-catalog.security=SIGV4" "trino catalog must sign with SigV4"
   check_contains "$trino_catalog" "iceberg.rest-catalog.signing-name=s3" "trino catalog signing name must be s3"
   check_contains "$trino_catalog" 's3.aws-secret-key=${ENV:AWS_SECRET_ACCESS_KEY}' "trino S3 secret must come from the environment"
+  local flink_compose="infra/04-data/lakehouse/flink/docker-compose.yml"
+  local flink_wrapper="infra/04-data/lakehouse/flink/hyhome-flink.sh"
+  check_file "$flink_compose"
+  check_file "$flink_wrapper"
+  check_contains "$flink_compose" '127.0.0.1:${FLINK_HOST_PORT:-18091}:8081' "flink unauthenticated REST API must be loopback"
+  check_contains "$flink_compose" "web.submit.enable=false" "flink must refuse JAR upload through the REST API"
+  check_not_contains "$flink_compose" "traefik.enable" "flink must not have a gateway route"
+  check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
+  check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
+  check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
   if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
     fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
   fi

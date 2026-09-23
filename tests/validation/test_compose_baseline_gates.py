@@ -2032,6 +2032,7 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
 
 
 SEAWEEDFS_DIR = "infra/04-data/lake-and-object/seaweedfs"
+FLINK_SERVICES = ("flink-jobmanager", "flink-taskmanager")
 SEAWEEDFS_SERVICES = (
     "seaweedfs-master",
     "seaweedfs-volume",
@@ -2136,9 +2137,13 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "data/seaweedfs/filer",
             "io",
             "backup",
+            "data/flink/checkpoints",
         ):
             (cls.dir / sub).mkdir(parents=True)
         (cls.dir / "io").chmod(0o777)
+        # As RUN-0094 creates it: operator-owned, setgid, written by the
+        # image user through its SECRETS_GID supplementary group.
+        (cls.dir / "data/flink/checkpoints").chmod(0o2770)
         subprocess.run(
             [
                 "bash",
@@ -2171,6 +2176,8 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "DEFAULT_DATA_DIR": str(cls.dir / "data"),
             "DEFAULT_CERT_DIR": str(cls.dir / "certs"),
             "SEAWEEDFS_S3_ADMIN_ACCESS_KEY": cls.ACCESS,
+            # Flink (UID 9999) reads secrets and checkpoints through this group.
+            "SECRETS_GID": str(os.getgid()),
         }
         rendered = json.loads(
             subprocess.run(
@@ -2190,6 +2197,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     "seaweedfs-buckets",
                     "seaweedfs-table-bucket",
                     "trino",
+                    *FLINK_SERVICES,
                 ],
                 cwd=ROOT,
                 env=env,
@@ -2205,6 +2213,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "seaweedfs-buckets",
                 "seaweedfs-table-bucket",
                 "trino",
+                *FLINK_SERVICES,
             )
         }
         for name, service in services.items():
@@ -2218,7 +2227,8 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 {"sw": {}, "client": {}}
                 if name == "seaweedfs-s3"
                 else {"client": {}}
-                if name in ("seaweedfs-buckets", "seaweedfs-table-bucket", "trino")
+                if name
+                in ("seaweedfs-buckets", "seaweedfs-table-bucket", "trino", *FLINK_SERVICES)
                 else {"sw": {}}
             )
             service.pop("ports", None)
@@ -2236,6 +2246,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     "seaweedfs-master-data",
                     "seaweedfs-volume-data",
                     "seaweedfs-filer-data",
+                    "flink-checkpoints",
                 )
             },
             "secrets": {
@@ -2243,6 +2254,18 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             },
         }
         (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
+        # Checkpoint files belong to the Flink image user; delete them as that
+        # user once the containers are gone, before the temporary directory.
+        cls.addClassCleanup(
+            subprocess.run,
+            [
+                "docker", "run", "--rm", "--user", "9999:9999",
+                "--group-add", str(os.getgid()), "--entrypoint", "find",
+                "-v", f"{cls.dir / 'data/flink/checkpoints'}:/c",
+                services["flink-jobmanager"]["image"], "/c", "-mindepth", "1", "-delete",
+            ],
+            capture_output=True,
+        )
         cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
         cls.up()
         for job in ("seaweedfs-buckets", "seaweedfs-table-bucket"):
@@ -2545,6 +2568,56 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         self.assertIn('"s13_rehearsal"', sql("SHOW TABLES FROM lakehouse.test"))
         sql(f"DROP TABLE {table}")
         self.assertNotIn("s13_rehearsal", sql("SHOW TABLES FROM lakehouse.test"))
+
+    def test_3_flink_writes_the_lakehouse_catalog(self) -> None:
+        # SPEC-0180 S14: the HOME image, wrapper and catalog statement, on the
+        # scoped identity; batch and checkpointed streaming inserts both commit.
+        started = self.compose(
+            "up", "-d", "--no-deps", "--wait", "--wait-timeout", "240", *FLINK_SERVICES
+        )
+        self.addCleanup(self.compose, "rm", "-sf", *FLINK_SERVICES)
+        self.assertEqual(0, started.returncode, started.stderr)
+
+        def sql(script: str) -> str:
+            result = subprocess.run(
+                [
+                    "docker", "compose", "-p", self.tag,
+                    "-f", str(self.dir / "compose.json"),
+                    "exec", "-T", "flink-jobmanager", "bash", "-c",
+                    "cat >/tmp/job.sql && bash /opt/hyhome/hyhome-flink.sh"
+                    " /opt/flink/bin/sql-client.sh -i /tmp/lakehouse.sql -f /tmp/job.sql",
+                ],
+                input="SET 'table.dml-sync' = 'true';\n"
+                "SET 'sql-client.execution.result-mode' = 'tableau';\n" + script,
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertNotIn("[ERROR]", result.stdout)
+            return result.stdout
+
+        table = "`test`.s14_rehearsal"
+        sql(f"CREATE TABLE {table} (id BIGINT, name STRING);\n")
+        self.addCleanup(sql, f"DROP TABLE IF EXISTS {table};\n")
+        sql(
+            "SET 'execution.runtime-mode' = 'batch';\n"
+            f"INSERT INTO {table} VALUES (1, 'a'), (2, 'b');\n"
+        )
+        sql(
+            "SET 'execution.runtime-mode' = 'streaming';\n"
+            "SET 'execution.checkpointing.interval' = '2s';\n"
+            "CREATE TEMPORARY TABLE gen (id BIGINT) WITH ("
+            "'connector' = 'datagen', 'number-of-rows' = '5', 'rows-per-second' = '2',"
+            " 'fields.id.kind' = 'sequence', 'fields.id.start' = '10',"
+            " 'fields.id.end' = '14');\n"
+            f"INSERT INTO {table} SELECT id, 's' FROM gen;\n"
+        )
+        out = sql(
+            "SET 'execution.runtime-mode' = 'batch';\n"
+            f"SELECT COUNT(*) AS n, SUM(id) AS s FROM {table};\n"
+        )
+        self.assertRegex(out, r"\|\s+7\s+\|\s+63\s+\|")
 
     def test_3_s3_api_used_by_consumers(self) -> None:
         io = self.dir / "io"
