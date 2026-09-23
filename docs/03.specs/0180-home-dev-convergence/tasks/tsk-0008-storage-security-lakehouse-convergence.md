@@ -1016,6 +1016,21 @@ Live NOT_RUN: Traefik must be recreated to read the new INFRA-007 file (a
 single-file mount keeps the old inode); the OpenBao root session and per-
 rebuild steps are the owner's (OIDC browser login).
 
+### OpenBao Kubernetes auth live application (2026-09-23)
+
+Run by the owner from a throwaway `openbao/openbao:2.6.2` client container;
+results only, no values.
+
+| Step | Result |
+| --- | --- |
+| Session 1 (temporary root) | `kubernetes` auth enabled; policies `eso-read-platform`, `k8s-bootstrap`, `hy-home-operator` written; token role `k8s-bootstrap`; `secret/platform/argocd` version 1; root revoked (lookup rejected), generate-root not started. The ESO role write lost its namespace argument to a broken line continuation, and the snapshot, CA read and token write failed with permission denied because the container ran as its own non-root user |
+| Session 2 (`--user` = host uid, one-line commands) | snapshot `pre-k8s-role.snap` taken before root; role `eso-read-platform` bound to `external-secrets/external-secrets`; root revoked (lookup rejected); `auth/kubernetes/config` host `https://192.168.0.13:6550` with the new cluster CA, as the OIDC operator |
+| Bootstrap token | first write needed `-force`; reissued by the operator (pending confirmation) |
+
+RUN-0085 now carries the commands as run: host preparation, the client
+container with `--user`, one-line commands, root passed per command through a
+shell function, and `-force` for the token role.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
