@@ -30,7 +30,7 @@ The `qdrant` service provides the vector database layer for AI/ML applications, 
 ### In Scope
 
 - Qdrant unprivileged container configuration (`docker-compose.yml`)
-- Dual protocol networking (REST 6333, gRPC 6334)
+- REST 6333 (routed behind SSO) and gRPC 6334 (in-network only)
 - Snapshot storage configuration (`/qdrant/storage/snapshots`)
 - Telemetry and service health monitoring
 
@@ -60,7 +60,7 @@ qdrant/
 | Networks | `ai_net`, `edge_net`, `obs_net` |
 | Volumes | `qdrant-data:/qdrant/storage:rw`, `qdrant-data` |
 | Ports | `${QDRANT_PORT:-6333}`, `${QDRANT_GRPC_PORT:-6334}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port`, `traefik.tcp.routers.qdrant-grpc.rule`, plus 5 more |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `qdrant` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`), Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`) |
