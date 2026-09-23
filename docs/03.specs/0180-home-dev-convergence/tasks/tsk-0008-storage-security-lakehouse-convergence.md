@@ -1032,6 +1032,25 @@ RUN-0085 now carries the commands as run: host preparation, the client
 container with `--user`, one-line commands, root passed per command through a
 shell function, and `-force` for the token role.
 
+### hy-home.k8s integration runbook (owner request 2026-09-23)
+
+The owner asked for one document with the whole procedure. New subject
+`12-infra-net/0096-k8s-integration` (guide, policy, runbook; draft) holds the
+host-address contract, its controls and an eight-phase runbook: repository,
+secrets and `.env`, gateway and Prometheus, host endpoints, OpenBao Kubernetes
+auth, hand-off, verification from both sides, and cleanup, with a
+troubleshooting table from every error met today. RUN-0085's k8s section is
+now a pointer, so the procedure has one owner. The runbook passes the
+Prometheus credential to curl through stdin (`-K -`), not an argument, and
+reads the OpenBao client image from Compose.
+
+Measured while writing it: phase 3.2 gives `401` without and `200` with the
+credential, and `401` for the UI path; phase 4.1 shows ports 443, 3100, 3200
+and 26379 open. Six Compose containers are still attached to the orphaned
+`k3d-hyhome` network. There is currently no k3d cluster (port 6550 is closed),
+so after the rebuild, phase 5 (5.1–5.3, 5.5–5.7) must run again with the new
+CA.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
