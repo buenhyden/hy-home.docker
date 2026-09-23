@@ -15,4 +15,3 @@ for bucket in ${BUCKETS:?}; do
         echo "bucket $bucket created"
     fi
 done
-
