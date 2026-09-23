@@ -45,8 +45,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
   통과시킨다. 그룹을 넓히는 것은 owner 승인이 필요한 변경이다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
-  (`RouteAuthContractTests`). 예외는 file provider의 `k3s-ingress` 하나이며,
-  제거 여부는 owner 결정으로 남아 있다.
+  (`RouteAuthContractTests`).
 - Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.

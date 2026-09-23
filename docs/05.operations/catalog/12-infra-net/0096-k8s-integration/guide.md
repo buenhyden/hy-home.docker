@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -42,8 +42,9 @@ and repeats it after each cluster rebuild.
 
 Not provided: Grafana on a host port or with anonymous access (an owner
 decision; Kiali uses the Viewer token instead), and Alloy OTLP on `4317/4318` (the
-HOME Alloy configuration has no OTLP receiver). The native k3s route
-(`k3s.yml`, `*.k8s.hy.home.arpa`) is unrelated to this cluster.
+HOME Alloy configuration has no OTLP receiver). Traefik has no
+`*.k8s.hy.home.arpa` route: the unauthenticated catch-all to the native k3s
+NodePort was removed on 2026-09-24 (no request in the prior seven days).
 
 ### What hy-home.k8s needs from this side
 

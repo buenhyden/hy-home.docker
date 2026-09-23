@@ -3315,9 +3315,6 @@ ROUTES_WITHOUT_SSO = {
     "s3": "sigv4",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
-    # File-provider catch-all to the former k3s ingress; no gateway auth.
-    # Removal is an open owner decision (k3s change).
-    "k3s-ingress": "unauthenticated-legacy-k3s",
 }
 
 
@@ -3376,11 +3373,9 @@ class RouteAuthContractTests(unittest.TestCase):
             (src, name)
             for src, name, chain in routers
             if not chain
-            and ROUTES_WITHOUT_SSO.get(name)
-            not in {"static-only", "unauthenticated-legacy-k3s"}
+            and ROUTES_WITHOUT_SSO.get(name) != "static-only"
         )
         self.assertEqual([], bare)
-
 
 
 class QdrantApiKeyContractTests(unittest.TestCase):
@@ -3395,6 +3390,11 @@ class QdrantApiKeyContractTests(unittest.TestCase):
         self.assertIn("</run/secrets/qdrant_api_key", script)
         self.assertIn("export QDRANT__SERVICE__API_KEY", script)
         self.assertIn("exec ./entrypoint.sh", script)
+        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
+        self.assertIn("qdrant_api_key", root["secrets"])
+        observability = ROOT / "infra/06-observability/docker-compose.yml"
+        prometheus = yaml.safe_load(observability.read_text(encoding="utf-8"))
+        self.assertIn("qdrant_api_key", prometheus["services"]["prometheus"]["secrets"])
         for name in ("prometheus.yml", "prometheus.dev.yml"):
             config = ROOT / "infra/06-observability/prometheus/config" / name
             jobs = yaml.safe_load(config.read_text(encoding="utf-8"))["scrape_configs"]

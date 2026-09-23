@@ -812,8 +812,8 @@
       },
       {
         "current": {
-          "text": "qdrant-monitor",
-          "value": "qdrant-monitor"
+          "text": "qdrant",
+          "value": "qdrant"
         },
         "datasource": {
           "type": "prometheus",
@@ -825,8 +825,8 @@
         "options": [
           {
             "selected": true,
-            "text": "qdrant-monitor",
-            "value": "qdrant-monitor"
+            "text": "qdrant",
+            "value": "qdrant"
           }
         ],
         "query": "label_values(app_info, job)",

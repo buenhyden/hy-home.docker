@@ -38,10 +38,10 @@ groups:
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
         # expr: sum by (job) (up{job=~"postgres-cluster|manage
-        #   postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
+        #   postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|haproxy|keycloak|opensearch-exporter"})
         #   == 0
         expr: sum by (job) (up{job=~"postgres-cluster|manage
-          postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
+          postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|haproxy|keycloak|opensearch-exporter"})
           == 0
         for: 10m
         labels:

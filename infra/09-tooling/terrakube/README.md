@@ -103,7 +103,7 @@ After the stack is enabled with the `iac` profile, use these routed endpoints:
 - Verify workspace configuration by checking the Terrakube UI and confirming Terraform workspaces are registered with correct provider credentials.
 - Confirm API connectivity by checking `terrakube-api`, `terrakube-ui`, and `terrakube-executor` logs after config changes.
 - Verify OIDC authentication by confirming the Keycloak client configuration matches Terrakube's auth settings.
-- The API and UI still reuse the OAuth2 Proxy client id, and the API route's ForwardAuth blocks Terraform CLI and API-token calls. Fix both at `iac` activation: a dedicated public client `home-terrakube`, no ForwardAuth on the API route, and a live audience/RBAC check (GDE-0079).
+- The API and UI still reuse the OAuth2 Proxy client id, and the API route's ForwardAuth blocks Terraform CLI, API-token calls and `terrakube-executor`, which calls the API by its public URL. Fix these at `iac` activation: a dedicated public client `home-terrakube`, no ForwardAuth on the API route (or an internal API URL for the executor), a decision on the executor route's SSO, and a live audience/RBAC check (GDE-0079).
 
 ## Troubleshooting
 

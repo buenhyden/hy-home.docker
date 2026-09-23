@@ -33,7 +33,7 @@ created: "2026-05-17"
 - **Required**: Every Qdrant client reads the key from a secret file; the key never appears in Compose environment values, logs or evidence.
 - **Required**: External access guidance must stay behind the declared SSO REST route and must not imply host port publishing or a gRPC route.
 - **Required**: Persistence and snapshot-path wording must match `qdrant-data:/qdrant/storage:rw` and `/qdrant/storage/snapshots`.
-- **Required**: Backup inventory records collection or full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention and restore evidence. Snapshot files remain protected even though current Compose lacks API authentication.
+- **Required**: Backup inventory records collection or full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention and restore evidence. Snapshot files stay protected on disk; the API key guards only API access to them.
 - **Required**: Restore rehearsal uses a fresh isolated target with same minor or next minor compatibility, absent target collection unless an explicitly reviewed force action applies, and approximately twice the snapshot size in free disk.
 - **Required**: Verify aliases, collection config/status, point counts and representative searches before promotion. Upgrade/removal requires a restore-tested snapshot and capacity review.
 - **Allowed**: Read-only `/readyz`, `/collections` (with the key from the secret file), compose config rendering, service logs, and `docker compose ps` for evidence capture.
