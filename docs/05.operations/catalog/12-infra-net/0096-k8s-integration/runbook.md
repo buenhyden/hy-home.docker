@@ -21,7 +21,7 @@ created: "2026-09-23"
 | First setup of the integration | 1 → 8, in order |
 | hy-home.k8s cluster rebuilt (new API server CA) | 1, 5 (steps 5.1–5.3 and 5.6–5.7), 6, 7, 8 |
 | Prometheus API password rotated | 1, [rotation](#rotating-the-prometheus-api-credential), 7, 8 |
-| Setup done before the Prometheus API or Grafana KV entry existed | 1, 5 (5.1–5.3 with 5.1.1, 5.4 with 5.4.2, 5.4.3), 7, 8 |
+| Setup done before the Prometheus API or Grafana KV entry existed | 1, 5 (5.1–5.3 with 5.1a, 5.4 with 5.4.2, 5.4.3), 7, 8 |
 | Kiali Grafana token expiring | 1, [reissue](#reissuing-the-kiali-grafana-token), 8 |
 | OpenBao auth mount, policy or role lost | 1, 5 (all steps), 6, 7, 8 |
 
@@ -140,7 +140,7 @@ umask 077; mkdir -p /tmp/bao-k8s
 KUBECONFIG=$(k3d kubeconfig write hyhome) kubectl config view --raw --minify -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/bao-k8s/k3d-ca.crt
 ```
 
-5.1.1 Issue the Kiali Grafana token into the same directory (first setup,
+5.1a Issue the Kiali Grafana token into the same directory (first setup,
 Session 3, or a [reissue](#reissuing-the-kiali-grafana-token)). Grafana allows
 no anonymous access, so Kiali sends the token of the Viewer service account
 `k8s-kiali`. `graf_auth` writes the admin credential to curl's stdin, like
@@ -220,12 +220,12 @@ Expected: `[external-secrets]`. `secret/platform/argocd` (the Argo CD Valkey
 password) and `secret/platform/prometheus-api` (the Prometheus API credential,
 the same source as `INFRA-007`: `PROMETHEUS_API_USERNAME` and
 `prometheus_api_password.txt`) and `secret/platform/grafana-api` (the Kiali
-Grafana token from 5.1.1) are required. Add `secret/platform/postgres-app`
+Grafana token from 5.1a) are required. Add `secret/platform/postgres-app`
 `{db_name,username,password}` and `secret/platform/notifications`
 `{slack_token}` the same way, and only when k8s apps use them.
 
 5.4.2 Additional application (Session 3) for an environment set up before the
-Prometheus API and Grafana entries and the role cap existed. Run 5.1.1 first:
+Prometheus API and Grafana entries and the role cap existed. Run 5.1a first:
 
 ```sh
 R policy write eso-read-platform /policies/eso-read-platform.hcl
@@ -294,7 +294,7 @@ secret files.
 | --- | --- |
 | Bootstrap token (use within two hours) | `/tmp/bao-k8s/k8s-bootstrap.token` |
 | Prometheus API credential | OpenBao `secret/platform/prometheus-api` (`username`, `password`), synced by ESO; the source is `.env` `PROMETHEUS_API_USERNAME` and `secrets/observability/prometheus_api_password.txt` |
-| Kiali Grafana token | OpenBao `secret/platform/grafana-api` (`token`), synced by ESO; issued in 5.1.1 |
+| Kiali Grafana token | OpenBao `secret/platform/grafana-api` (`token`), synced by ESO; issued in 5.1a |
 | Gateway CA (public) | `secrets/certs/rootCA.pem` |
 | Endpoints | the contract table in the [guide](guide.md) |
 
@@ -375,10 +375,10 @@ operator can update the entry without a root session.
 
 ### Reissuing the Kiali Grafana token
 
-The token from 5.1.1 lives 90 days. The OIDC operator can replace the entry
+The token from 5.1a lives 90 days. The OIDC operator can replace the entry
 without a root session.
 
-1. Run 5.1.1 with a new token name (the date suffix does it).
+1. Run 5.1a with a new token name (the date suffix does it).
 2. Update OpenBao as the operator (5.2 client container, 5.3 login), then
    leave the container:
 
