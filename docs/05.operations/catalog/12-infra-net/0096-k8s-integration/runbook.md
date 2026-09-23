@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -21,7 +21,8 @@ created: "2026-09-23"
 | First setup of the integration | 1 → 8, in order |
 | hy-home.k8s cluster rebuilt (new API server CA) | 1, 5 (steps 5.1–5.3 and 5.6–5.7), 6, 7, 8 |
 | Prometheus API password rotated | 1, [rotation](#rotating-the-prometheus-api-credential), 7, 8 |
-| Setup done before the Prometheus API KV entry existed | 1, 5 (5.1–5.3, 5.4 with 5.4.2, 5.4.3), 7, 8 |
+| Setup done before the Prometheus API or Grafana KV entry existed | 1, 5 (5.1–5.3 with 5.1.1, 5.4 with 5.4.2, 5.4.3), 7, 8 |
+| Kiali Grafana token expiring | 1, [reissue](#reissuing-the-kiali-grafana-token), 8 |
 | OpenBao auth mount, policy or role lost | 1, 5 (all steps), 6, 7, 8 |
 
 Rules for every phase:
@@ -139,6 +140,25 @@ umask 077; mkdir -p /tmp/bao-k8s
 KUBECONFIG=$(k3d kubeconfig write hyhome) kubectl config view --raw --minify -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/bao-k8s/k3d-ca.crt
 ```
 
+5.1.1 Issue the Kiali Grafana token into the same directory (first setup,
+Session 3, or a [reissue](#reissuing-the-kiali-grafana-token)). Grafana allows
+no anonymous access, so Kiali sends the token of the Viewer service account
+`k8s-kiali`. `graf_auth` writes the admin credential to curl's stdin, like
+`prom_auth` in 3.2:
+
+```bash
+graf_auth() { printf 'user = "%s:%s"\n' "$(grep '^GRAFANA_ADMIN_USERNAME=' .env | cut -d= -f2 | tr -d '"')" "$(cat secrets/observability/grafana_admin_password.txt)"; }
+SA=$(graf_auth | curl -K - -s --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem 'https://grafana.hy.home.arpa/api/serviceaccounts/search?query=k8s-kiali' | jq -r '.serviceAccounts[] | select(.name=="k8s-kiali") | .id')
+[ -n "$SA" ] || SA=$(graf_auth | curl -K - -s --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem -H 'Content-Type: application/json' -d '{"name":"k8s-kiali","role":"Viewer"}' https://grafana.hy.home.arpa/api/serviceaccounts | jq -r '.id')
+graf_auth | curl -K - -s --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem -H 'Content-Type: application/json' -d "{\"name\":\"k8s-kiali-$(date +%Y%m%d)\",\"secondsToLive\":7776000}" "https://grafana.hy.home.arpa/api/serviceaccounts/$SA/tokens" | jq -j '.key' >/tmp/bao-k8s/grafana-kiali.token
+printf 'header = "Authorization: Bearer %s"\n' "$(cat /tmp/bao-k8s/grafana-kiali.token)" | curl -K - -s -o /dev/null -w '%{http_code}\n' --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://grafana.hy.home.arpa/api/search
+curl -s -o /dev/null -w '%{http_code}\n' --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://grafana.hy.home.arpa/api/search
+```
+
+Expected: `200` with the token and `401` without it. The token lives 90 days;
+record its expiry date, never its value. The service account keeps the Viewer
+role only.
+
 5.2 Start a throwaway client as the host user on the host network. The host has
 no `bao` CLI, the mounted files need the host uid, and the OIDC callback
 listens on `localhost:8250`. The image is the one the
@@ -192,30 +212,34 @@ R write auth/kubernetes/role/eso-read-platform bound_service_account_names=exter
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
 R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
+R kv put secret/platform/grafana-api token=@/s/k8s/grafana-kiali.token
 R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
 ```
 
 Expected: `[external-secrets]`. `secret/platform/argocd` (the Argo CD Valkey
 password) and `secret/platform/prometheus-api` (the Prometheus API credential,
 the same source as `INFRA-007`: `PROMETHEUS_API_USERNAME` and
-`prometheus_api_password.txt`) are required. Add `secret/platform/postgres-app`
+`prometheus_api_password.txt`) and `secret/platform/grafana-api` (the Kiali
+Grafana token from 5.1.1) are required. Add `secret/platform/postgres-app`
 `{db_name,username,password}` and `secret/platform/notifications`
 `{slack_token}` the same way, and only when k8s apps use them.
 
 5.4.2 Additional application (Session 3) for an environment set up before the
-Prometheus API entry and the role cap existed:
+Prometheus API and Grafana entries and the role cap existed. Run 5.1.1 first:
 
 ```sh
 R policy write eso-read-platform /policies/eso-read-platform.hcl
 R policy write hy-home-operator /policies/operator.hcl
-R policy read eso-read-platform | grep -c 'platform/prometheus-api'
-R policy read hy-home-operator | grep -c 'platform/prometheus-api'
+R policy read eso-read-platform | grep -cE 'platform/(prometheus|grafana)-api'
+R policy read hy-home-operator | grep -cE 'platform/(prometheus|grafana)-api'
 R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
+R kv put secret/platform/grafana-api token=@/s/k8s/grafana-kiali.token
 R kv metadata get -format=json secret/platform/prometheus-api | grep '"current_version"'
+R kv metadata get -format=json secret/platform/grafana-api | grep '"current_version"'
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 ```
 
-Expected: `2`, `2`, `current_version` at least `1`.
+Expected: `4`, `4`, and each `current_version` at least `1`.
 
 5.4.3 Verify the token role, then revoke the root:
 
@@ -270,16 +294,18 @@ secret files.
 | --- | --- |
 | Bootstrap token (use within two hours) | `/tmp/bao-k8s/k8s-bootstrap.token` |
 | Prometheus API credential | OpenBao `secret/platform/prometheus-api` (`username`, `password`), synced by ESO; the source is `.env` `PROMETHEUS_API_USERNAME` and `secrets/observability/prometheus_api_password.txt` |
+| Kiali Grafana token | OpenBao `secret/platform/grafana-api` (`token`), synced by ESO; issued in 5.1.1 |
 | Gateway CA (public) | `secrets/certs/rootCA.pem` |
 | Endpoints | the contract table in the [guide](guide.md) |
 
 The cluster owner then applies their side:
 
 - the `system:auth-delegator` binding for the ESO service account
-- DNS for `openbao.hy.home.arpa` and `prometheus.hy.home.arpa` → `192.168.0.13`
+- DNS for `openbao.hy.home.arpa`, `prometheus.hy.home.arpa` and `grafana.hy.home.arpa` → `192.168.0.13`
 - trust in the CA
 - egress to ports 443, 3100, 3200 and 26379
 - Alloy remote write and Kiali with the Basic Auth credential and a `cluster` external label
+- Kiali's Grafana connection with the bearer token
 
 ### Phase 7. Verify from both sides
 
@@ -299,7 +325,7 @@ metrics NodePorts.
 ### Phase 8. Clean up and record
 
 ```bash
-rm -f /tmp/bao-k8s/k8s-bootstrap.token
+rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token
 mv /tmp/bao-k8s/pre-change.snap <protected custody>/
 rmdir /tmp/bao-k8s 2>/dev/null || ls -l /tmp/bao-k8s
 ```
@@ -347,6 +373,24 @@ operator can update the entry without a root session.
    run 7.2.
 5. Delete the old file from the backup once 7.2 passes.
 
+### Reissuing the Kiali Grafana token
+
+The token from 5.1.1 lives 90 days. The OIDC operator can replace the entry
+without a root session.
+
+1. Run 5.1.1 with a new token name (the date suffix does it).
+2. Update OpenBao as the operator (5.2 client container, 5.3 login), then
+   leave the container:
+
+   ```sh
+   bao kv put secret/platform/grafana-api token=@/s/k8s/grafana-kiali.token
+   bao kv metadata get -format=json secret/platform/grafana-api | grep '"current_version"'
+   ```
+
+   Expected: `current_version` one higher than before.
+3. Ask the cluster owner to force an ESO refresh of `kiali-grafana-auth`, then
+   delete the old token in Grafana (service account `k8s-kiali`, Tokens).
+
 ### Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -363,6 +407,7 @@ operator can update the entry without a root session.
 | bootstrap token TTL about 32 days | token roles ignore `token_ttl`/`token_max_ttl`, so the role had no cap | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`, reissue with 5.6, and set `token_explicit_max_ttl=2h` on the role in the next root session |
 | `ROOT STILL VALID` | revocation failed | stop and escalate; keep the session open |
 | cluster remote write gets `401` after a rotation | OpenBao `secret/platform/prometheus-api` still holds the old password | rotation step 3, then an ESO refresh |
+| Kiali shows Grafana unreachable or `401` | `secret/platform/grafana-api` missing, expired, or its token deleted | reissue the token, then an ESO refresh |
 | no `cluster="k3d-hyhome"` series in 7.2 | the cluster sender is not configured or cannot reach 443 | the cluster owner checks the Alloy logs, DNS, CA and egress |
 
 ## Evidence

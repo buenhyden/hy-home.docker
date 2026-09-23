@@ -1,7 +1,8 @@
 # Owner-approved human operations: two existing values, renderer credentials,
 # backup reads, authenticated quorum recovery, the hy-home.k8s cluster
-# rebuild steps (Kubernetes auth and bootstrap token) and the Prometheus API
-# credential rotation. No secret deletion or wildcards.
+# rebuild steps (Kubernetes auth and bootstrap token), the Prometheus API
+# credential rotation and the Kiali Grafana token reissue. No secret deletion
+# or wildcards.
 path "secret/data/hy-home/02-auth/keycloak" {
   capabilities = ["read", "update"]
 }
@@ -42,6 +43,16 @@ path "secret/data/platform/prometheus-api" {
 }
 
 path "secret/metadata/platform/prometheus-api" {
+  capabilities = ["read"]
+}
+
+# hy-home.k8s Kiali Grafana token (Viewer service account `k8s-kiali`): reissue
+# it before expiry without a root session.
+path "secret/data/platform/grafana-api" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/platform/grafana-api" {
   capabilities = ["read"]
 }
 

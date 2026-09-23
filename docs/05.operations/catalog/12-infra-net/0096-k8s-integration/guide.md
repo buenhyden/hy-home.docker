@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -33,14 +33,15 @@ and repeats it after each cluster rebuild.
 | Cluster bootstrap (before ESO) | same | `k8s-bootstrap` token, two hours | OpenBao |
 | Alloy metrics (remote write), Argo Rollouts analysis | `https://prometheus.hy.home.arpa/api/v1/write`, `/api/v1/query*` | Basic Auth from OpenBao `secret/platform/prometheus-api` (source `PROMETHEUS_API_USERNAME`, `OBS-013`) | [Prometheus](../../06-observability/0045-prometheus/guide.md) |
 | Kiali queries | `https://prometheus.hy.home.arpa` (only `/api/v1/` passes) | same | Prometheus |
+| Kiali Grafana links | `https://grafana.hy.home.arpa` | bearer token of the Viewer service account `k8s-kiali`, from OpenBao `secret/platform/grafana-api` | [Grafana](../../06-observability/0041-grafana/guide.md) |
 | Alloy logs | `http://192.168.0.13:3100` (Loki push) | none | Loki |
 | Traces | `http://192.168.0.13:3200` (Tempo) | none | Tempo |
 | Argo CD cache | `192.168.0.13:26379` (`mng-valkey`) | Valkey password (`CACHE-007`, delivered through OpenBao `platform/argocd`) | [Management database](../../04-data/0028-management-database/guide.md) |
 | Apps needing PostgreSQL (optional) | `192.168.0.13:15432` write, `15433` read | database credentials through OpenBao `platform/postgres-app` | `postgres-ha` profile |
 | OpenBao to the cluster | `https://192.168.0.13:6550` (k3d API) | the cluster CA in `auth/kubernetes/config` | OpenBao |
 
-Not provided: Grafana on a host port or with anonymous access (Kiali shows
-Grafana as unreachable, an owner decision), and Alloy OTLP on `4317/4318` (the
+Not provided: Grafana on a host port or with anonymous access (an owner
+decision; Kiali uses the Viewer token instead), and Alloy OTLP on `4317/4318` (the
 HOME Alloy configuration has no OTLP receiver). The native k3s route
 (`k3s.yml`, `*.k8s.hy.home.arpa`) is unrelated to this cluster.
 
@@ -50,8 +51,9 @@ HOME Alloy configuration has no OTLP receiver). The native k3s route
 | --- | --- | --- |
 | Gateway CA | `secrets/certs/rootCA.pem` (mkcert root, public) | copy |
 | Prometheus API credential | OpenBao `secret/platform/prometheus-api` (`username`, `password`), from `.env` `PROMETHEUS_API_USERNAME` and `secrets/observability/prometheus_api_password.txt` | ESO sync; no manual copy |
+| Kiali Grafana token | OpenBao `secret/platform/grafana-api` (`token`), issued by the runbook for 90 days | ESO sync; no manual copy |
 | Bootstrap token | `/tmp/bao-k8s/k8s-bootstrap.token` (created by the runbook) | protected channel, used within two hours |
-| Name resolution | `openbao.hy.home.arpa`, `prometheus.hy.home.arpa` → `192.168.0.13` | cluster DNS entry |
+| Name resolution | `openbao.hy.home.arpa`, `prometheus.hy.home.arpa`, `grafana.hy.home.arpa` → `192.168.0.13` | cluster DNS entry |
 
 The cluster side also owns a `system:auth-delegator` ClusterRoleBinding for
 the ESO service account, egress to `192.168.0.13` ports 443, 3100, 3200 and
