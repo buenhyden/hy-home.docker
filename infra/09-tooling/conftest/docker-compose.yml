@@ -1,0 +1,23 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+services:
+  # Policy tests over the infrastructure source (POL-0095). It reads infra/
+  # only, never secrets/ or .env, and has no network.
+  conftest:
+    profiles:
+      - policy-check
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: openpolicyagent/conftest:v0.70.1
+    container_name: conftest
+    user: '1000:1000'
+    network_mode: none
+    entrypoint:
+      - /bin/sh
+      - /project/infra/09-tooling/conftest/run.sh
+    volumes:
+      - ../..:/project/infra:ro
+    labels:
+      <<: *tier-label

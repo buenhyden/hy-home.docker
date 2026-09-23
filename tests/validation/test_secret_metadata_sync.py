@@ -361,6 +361,13 @@ def dockerfile_input_files(root, compose_path, service, tracked):
                     yield path
 
 
+# Services that read tracked source as data for static analysis (Conftest).
+# The files they mount name secret paths that they never dereference, so those
+# names are not references; test_source_analysis_services_hold_no_secrets keeps
+# the exemption safe.
+SOURCE_ANALYSIS_SERVICES = {"conftest"}
+
+
 def service_secret_contract(root, compose_texts):
     services = {}
     tracked = tracked_files(root)
@@ -373,9 +380,12 @@ def service_secret_contract(root, compose_texts):
             references = set()
             for scalar in walk_scalars(service):
                 references |= literal_secret_names(scalar)
-            source_files = set(
-                mounted_config_files(root, relative, service, tracked)
-            ) | set(dockerfile_input_files(root, relative, service, tracked))
+            source_files = (
+                set()
+                if name in SOURCE_ANALYSIS_SERVICES
+                else set(mounted_config_files(root, relative, service, tracked))
+                | set(dockerfile_input_files(root, relative, service, tracked))
+            )
             for path in source_files:
                 references |= literal_secret_names(
                     path.read_bytes().decode("utf-8", errors="ignore")
@@ -777,6 +787,21 @@ class PublicSecretSchemaTests(unittest.TestCase):
         with_orphan = self.env_text + "\nUNUSED_CONTRACT_KEY=value\n"
         contract = environment_contract(self.compose_texts, with_orphan)
         self.assertIn("UNUSED_CONTRACT_KEY", contract["orphan"])
+
+    def test_source_analysis_services_hold_no_secrets(self):
+        found = set()
+        for text in self.compose_texts.values():
+            document = yaml.safe_load(text) or {}
+            for name, service in (document.get("services") or {}).items():
+                if name not in SOURCE_ANALYSIS_SERVICES:
+                    continue
+                found.add(name)
+                self.assertEqual({}, service_grants(service), name)
+                self.assertEqual("none", service.get("network_mode"), name)
+                for volume in service.get("volumes", []):
+                    self.assertTrue(str(volume).endswith(":ro"), (name, volume))
+                    self.assertNotIn("secrets", str(volume), (name, volume))
+        self.assertEqual(SOURCE_ANALYSIS_SERVICES, found)
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = secret_contract(

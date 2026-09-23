@@ -27,6 +27,7 @@ The current map is exact:
 | `backup` | `restic`, `backup-sqlite-export` | one-shot backup jobs driven by the host timer |
 | `api-mock` | `wiremock` | HTTP stub server for development and tests; loopback-only admin API |
 | `contract-testing` | `pact-broker-db-provision`, `pact-broker` (plus `mng-pg`, `mng-pg-init`) | contract store; basic auth, loopback-only |
+| `policy-check` | `conftest` | one-shot Rego policy test over `infra/`; no network |
 
 `tooling` does not select IaC or load generation. Terraform and Syncthing runtime
 were removed; OpenTofu is the current CLI engine. None of these services is part
@@ -60,6 +61,8 @@ documentation agents responsible for the tooling profile contract.
   admin API is unauthenticated, so the host port is bound to loopback only.
 - [Pact Broker](pact-broker/README.md) stores pacts and verification results in
   a feature-owned `mng-pg` database behind basic auth on a loopback port.
+- [Conftest](conftest/README.md) runs Rego policy tests over the Compose files
+  and Dockerfiles under `infra/`, read-only and without a network.
 
 ## Structure
 
@@ -76,6 +79,7 @@ documentation agents responsible for the tooling profile contract.
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
 ├── wiremock/    # HTTP stub server and tracked mappings
 ├── pact-broker/ # contract broker and its database provisioning
+├── conftest/    # Rego policy tests over infra/
 └── README.md
 ```
 
@@ -83,7 +87,7 @@ documentation agents responsible for the tooling profile contract.
 
 Use the [documentation index](../../docs/README.md), then the exact Stage 05
 subjects under `docs/05.operations/catalog/09-tooling/` (`0061`, `0062`, `0065`,
-`0066`, `0069`, `0082`, `0083`, `0090`, `0092`, `0093`). Run from the repository root:
+`0066`, `0069`, `0082`, `0083`, `0090`, `0092`, `0093`, `0095`). Run from the repository root:
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling

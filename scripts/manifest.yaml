@@ -676,6 +676,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-conftest-policy.sh
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/check-document-corpus-lifecycle.py
   kind: validator
   authority: docs/99.templates/registry.json
