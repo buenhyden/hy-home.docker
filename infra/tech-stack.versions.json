@@ -70,6 +70,7 @@
         "supabase/postgres:17.6.1.173"
       ],
       "compose_files": [
+        "infra/04-data/analytics/superset/docker-compose.yml",
         "infra/04-data/operational/mng-db/docker-compose.yml",
         "infra/04-data/operational/supabase/docker-compose.yml",
         "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
@@ -83,6 +84,12 @@
           "compose_file": "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
           "images": [
             "ghcr.io/zalando/spilo-17:4.0-p3"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/analytics/superset/docker-compose.yml",
+          "images": [
+            "postgres:18.6-alpine"
           ]
         },
         {
@@ -2154,6 +2161,28 @@
           "compose_file": "infra/04-data/lakehouse/great-expectations/docker-compose.yml",
           "images": [
             "hy-home/great-expectations:1.23.1-local"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: hy-home/superset",
+      "tier": "04-data",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/superset": "local-custom"
+      },
+      "images": [
+        "hy-home/superset:6.1.0-local"
+      ],
+      "compose_files": [
+        "infra/04-data/analytics/superset/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/analytics/superset/docker-compose.yml",
+          "images": [
+            "hy-home/superset:6.1.0-local"
           ]
         }
       ]

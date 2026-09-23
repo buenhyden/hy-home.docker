@@ -1,0 +1,4 @@
+# The base image has no Authlib; Flask-AppBuilder OAuth needs it.
+authlib==1.8.0
+psycopg2-binary==2.9.13
+trino[sqlalchemy]==0.340.0

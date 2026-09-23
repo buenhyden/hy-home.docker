@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.2.2"
+version: "0.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -110,7 +110,7 @@ sequenceDiagram
     A->>A: Apply local roles or policies
 ```
 
-Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus가 이 경로를 사용한다. 이 router들은
+Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus, Superset이 이 경로를 사용한다. 이 router들은
 `gateway-standard-chain@file`을 사용하며 `sso-auth@file`을 적용하지 않는다.
 Keycloak에 이미 로그인했다면 비밀번호 입력이 생략될 수 있지만, 애플리케이션별
 callback 처리와 세션·권한 생성은 여전히 필요하다. OpenBao의 OIDC 로그인은
@@ -129,6 +129,7 @@ Realm은 `hy-home.realm`, issuer는
 | OpenBao | `home-openbao` | `https://openbao.${DEFAULT_URL}/ui/vault/auth/oidc/oidc/callback` | `home-admin` → `hy-home-operator`; [검증된 로그인 절차](../../03-security/0085-openbao/guide.md) |
 | Open WebUI | `home-openwebui` | `https://chat.${DEFAULT_URL}/oauth/oidc/callback` | 기존 로컬 사용자 ID·역할 보존; [운영 절차](../../08-ai/0057-open-webui/runbook.md) |
 | Gatus | `home-gatus` | `https://status.${DEFAULT_URL}/authorization-code/callback` | 정확한 subject allowlist; [운영 절차](../../06-observability/0087-gatus/runbook.md) |
+| Superset | `home-superset` | `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak` | 가입은 `Gamma`, 역할은 Superset Admin이 부여; [운영 절차](../../04-data/0097-superset/runbook.md) |
 
 OpenBao CLI callback은 `http://localhost:8250/oidc/callback`이다. 이는 브라우저
 루프백 수신점이며 서버의 공개 HTTP 주소가 아니다. 현재 OpenBao 그룹은
