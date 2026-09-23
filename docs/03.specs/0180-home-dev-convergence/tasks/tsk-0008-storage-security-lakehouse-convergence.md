@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0008"
 parent_ids:
@@ -947,7 +947,9 @@ the secret metadata and Compose tests pass. Live is NOT_RUN: generating
 `OBS-013`/`INFRA-007`, setting the username in `.env`, and recreating Traefik
 (new secret mount) and Prometheus (new router label) each need approval. The
 OpenBao Kubernetes auth reconfiguration for the recreated cluster (new CA) is
-also live and separately approved. The cluster-side Alloy and Kiali settings
+also live and separately approved. (Later on 2026-09-23 the live route answered
+`401` without and `200` with the credential; see the hy-home.k8s integration
+runbook section.) The cluster-side Alloy and Kiali settings
 belong to hy-home.k8s.
 
 From the same request: `mng-valkey` publishes `${VALKEY_MNG_HOST_POST:-26379}`
@@ -1259,7 +1261,7 @@ stays with S18 (Task 0007 item 6).
 | S03 orchestrator end to end | Task 10 / S03 | PASS (live, 08:20 UTC) after one exit-1 run fixed by #193 | RUN-0021 step 4 |
 | S03 live switch | Task 10 / S03 | PASS: `mng-pg` on the pgBackRest image, stanza, full and diff backups, WAL archive | RUN-0021 steps 1–3 |
 | S03 live restore | Task 10 / S03 | PASS (files): `.env` hash and Grafana export verified from live snapshots; PostgreSQL PITR on HOME data NOT_RUN (synthetic rehearsal only) | RUN-0021 steps 5–6 |
-| S03 timer | Task 10 / S03 | PASS (install): owner installed the units on 2026-09-22; `hyhome-backup.timer` enabled and active, installed units byte-identical to source, first run scheduled 2026-09-23 03:58 KST; first timer-driven run NOT_RUN yet | RUN-0021 step 3 |
+| S03 timer | Task 10 / S03 | PASS (install): owner installed the units on 2026-09-22; `hyhome-backup.timer` enabled and active, installed units byte-identical to source, first timer-driven run 2026-09-23 03:58 KST ended `Result=success`, exit `0` (systemd, read 2026-09-24) | RUN-0021 step 3 |
 | S04 structure | Task 10 / S04 | PASS: `seaweedfs-mount` removed; `seaweedfs` renders master/volume/filer/S3, `seaweedfs-mount` renders nothing; no remaining current reference | this Task |
 | S04 accumulated gates | Task 10 / S04 | PASS: Compose 71 selections/314 services, operations catalog, projection (89 repositories), links (942 documents, 0 failures), `git diff --check`; 623 unit tests with 2 local-only failures (group-write bit on two entrypoint scripts from this worktree's umask 002, not tracked by Git; CI unaffected) | this Task |
 | S05 phase 1 source | Task 10 / S05 | PASS: 150 services assigned, rendered memberships equal the assignment; every traced flow shares a segmented network (static trace plus review); review Critical/Important findings fixed; Compose 71 selections/314 services; 5/5 `NetworkSegmentationContractTests` | this Task, AD-0026 |
@@ -1280,7 +1282,11 @@ stays with S18 (Task 0007 item 6).
 
 ## Review Evidence
 
-Pending: sequential review after each implemented stage.
+Each stage from S12 on was reviewed by an independent read-only reviewer
+before its PR; the findings and their dispositions are in the stage sections
+above (S12, S13, S14, S15, S16). S17 was merged before its review returned;
+its findings go in a follow-up. Earlier stages (S00–S11) record their review
+in their own sections.
 
 ## Commit Ledger
 
@@ -1292,7 +1298,44 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #192 | pre-commit repair, pgBackRest `archive-push` log level | merged |
 | #193 | backup size measurement through a read-only container | merged |
 | #194 | S03 live activation evidence | merged |
-| this PR | S04 `seaweedfs-mount` removal | open |
+| #195 | S04 `seaweedfs-mount` removal | merged |
+| #196 | S05 phase 1 networks | merged |
+| #197 | S06 SeaweedFS durable and authenticated | merged |
+| #198 | OpenBao repair and S06 HOME activation evidence | merged |
+| #199 | backup timer installation evidence | merged |
+| #200 | S07a consumer switch | merged |
+| #201 | S07a live cutover evidence | merged |
+| #202 | S07b MinIO removal | merged |
+| #205 | S07b live cleanup evidence | merged |
+| #206 | S08 Vault removal | merged |
+| #207 | S05 phase 2 `infra_net` removal | merged |
+| #208 | S05 phase 2 live evidence | merged |
+| #209 | S09 Testcontainers | merged |
+| #210 | S10 WireMock | merged |
+| #211 | S10/S11 CI finding (TypeScript pin) | merged |
+| #214 | S11 Pact Broker | merged |
+| #215 | S12 Spark and Iceberg | merged |
+| #216 | S12 pre-commit fixes | merged |
+| #217 | k8s routes handed to hy-home.k8s | merged |
+| #218 | k3d removal | merged |
+| #219 | Conftest | merged |
+| #220 | inventory projection of the Traefik bind address | merged |
+| #221 | test count and `renovate.json` newline | merged |
+| #222 | Prometheus API for hy-home.k8s | merged |
+| #223 | S13 Trino | merged |
+| #224 | OpenBao k8s policies, runbook and secret tooling | merged |
+| #225 | OpenBao k8s commands as run | merged |
+| #226 | `k8s-bootstrap` token two-hour cap | merged |
+| #227 | OpenBao k8s setup procedure | merged |
+| #228 | hy-home.k8s integration runbook | merged |
+| #229 | Prometheus API credential through OpenBao | merged |
+| #230 | POL-0096 link fix | merged |
+| #231 | Kiali Grafana token through OpenBao | merged |
+| #232 | S14 Flink | merged |
+| #233 | S15 Great Expectations | merged |
+| #234 | S16 Superset | merged |
+| #235 | S17 Stalwart | merged |
+| this PR | Task ledger and stale evidence corrections | open |
 
 ## Rulings
 
@@ -1306,7 +1349,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 ## Deferred Items
 
-- Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).
+- ~~Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).~~ Closed 2026-09-23: the row was replaced by the example placeholder after a private equality check (secret cleanup section).
 - Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).
 
 - OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
@@ -1317,7 +1360,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 
 - Single-file config bind mounts keep the original inode, so a host edit never reaches the container. The stale Prometheus `minio` target this produced cleared with the S05 phase 2 recreate; every other single-file config mount drifts the same way (observability owner).
-- Orphan secret file `secrets/storage/mlflow_s3_password.txt` (STRG-005/006 were removed in S07a); delete with the next secret review (owner).
+- ~~Orphan secret file `secrets/storage/mlflow_s3_password.txt` (STRG-005/006 were removed in S07a); delete with the next secret review (owner).~~ Closed 2026-09-23: quarantined in `secrets/.retired/2026-09-23/`.
 - SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
@@ -1328,6 +1371,6 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
 - Alloy HOME config has no OTLP receiver while `4317/4318` stay published; add one when hy-home.k8s sends traces or logs over OTLP (observability owner).
-- `hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).
+- ~~`hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).~~ Closed 2026-09-23: the cluster reaches OpenBao through the host route in the hy-home.k8s integration runbook (RUN-0096), with Kubernetes auth and the `eso-read-platform` role.
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).
 - `examples/operations/compose-core-readiness/` still demonstrates a Vault-based readiness rig; restate it on OpenBao or declare it intentionally generic (owner).
