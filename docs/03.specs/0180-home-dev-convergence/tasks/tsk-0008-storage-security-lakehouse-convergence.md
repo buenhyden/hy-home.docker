@@ -1372,8 +1372,8 @@ The fixture now copies `plan.ndjson`.
 | S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin |
 | S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart |
 | S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running |
-| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must reach the application. `sso-errors` turns 401–403 into the sign-in flow, so a denial shows as a loop ending on the OAuth2 Proxy error page and a group denial in its log, not as a 403 at the route. On that signal the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) |
-| S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 |
+| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must reach the application. `sso-errors` turns 401–403 into the sign-in flow, so a denial shows as a loop ending on the OAuth2 Proxy error page and a group denial in its log, not as a 403 at the route. On that signal the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) **Done 2026-09-24** (S19 live apply) |
+| S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 **Done 2026-09-24** (S19 live apply) |
 | Terrakube | at `iac` activation: Keycloak client `home-terrakube` (remote), drop the API ForwardAuth, audience/RBAC acceptance |
 | hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network |
 | Acceptance | Flink and Trino live acceptance, then the ksqlDB and StarRocks removals |
@@ -1383,11 +1383,11 @@ The fixture now copies `plan.ndjson`.
 | Step | Result |
 | --- | --- |
 | Pull #240 into the operations checkout | fast-forward `77296f652` → `5cfd9de8a`; Traefik dropped `k3s-ingress` without a restart (`*.k8s.hy.home.arpa` now 404 from Traefik); other routes unchanged |
-| AI-008 | `secrets/data/qdrant_api_key.txt` created alone (16 alphanumeric, 0640, never printed). `gen-secrets.sh` was not used: its no-argument run would also create the unapproved Superset secrets, and `--sync-metadata-check` refuses the private registry because its SEC-003 row has 4 cells again (deferred below) |
+| AI-008 | `secrets/data/qdrant_api_key.txt` created alone (16 alphanumeric, 0640, never printed). `gen-secrets.sh` was not used: its no-argument run would also create the unapproved Superset secrets, and `--sync-metadata-check` refuses the private registry because its SEC-003 row had 4 `|` separators instead of 9 (a multi-line value split the row). The owner restored the row to the public placeholder after confirming the shares are intact in `secrets/security/openbao_unseal_keys.txt`; `--sync-metadata` then added AI-008, PG-028, PG-029, IAM-013 and AUTO-020 (`files_changed=2`, values preserved, secret files untouched) and a rerun of the check reports `files_changed=0` |
 | `qdrant` recreate | healthy; `/readyz` 200 without the key, `/collections` and `/metrics` 401 without it, `/collections` 200 with it; the key is not in the container's environment metadata; the stale `qdrant-grpc` TCP router and its "middleware does not exist" error are gone |
 | `prometheus` recreate | healthy; `up{job="qdrant"}` 1 through `bearer_token_file`; `QdrantDown` loaded with `job="qdrant"`. `opensearch` (not running) and `cadvisor` (first scrape pending) were the only unhealthy targets |
 | `oauth2-proxy` recreate | **Failed then fixed.** The new container crash-looped: `extra_hosts` pinned `keycloak.`/`auth.` to `host-gateway` (172.17.0.1), and Traefik publishes 443 only on `TRAEFIK_BIND_IP` since its recreate 11 hours earlier, so OIDC discovery was refused. The previous container had discovered at start 21 hours earlier, which hid the defect. Every SSO route answered 500 from about 22:52:28 to 22:53:30 UTC. Removing the two `extra_hosts` lines lets it resolve Keycloak through the Traefik `edge_net` alias like every other service; recreated healthy, unauthenticated SSO requests get 401 with the sign-in page. A test now fails if any service pins `keycloak.`/`auth.` to a host entry |
-| Owner login through an SSO route | pending: needs the owner's browser login; the check is reaching the application, and the rollback signal is the OAuth2 Proxy error page and a group denial in its log |
+| Owner login through an SSO route | **Pass.** The owner (in `/admins`) reached the application through an SSO route after the recreate; OAuth2 Proxy logged no group denial in the following two hours. `allowed_groups` is live |
 
 ## Verification Evidence
 
@@ -1484,7 +1484,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #238 | S18 independent review fixes (#237 merged before the review returned) | merged |
 | #239 | S19 convergence and the four owner auth decisions | merged |
 | #240 | `k3s-ingress` removal and the S19 review fixes (#239 merged before both) | merged |
-| this PR | S19 live apply and the OAuth2 Proxy Keycloak route fix | open |
+| #241 | S19 live apply and the OAuth2 Proxy Keycloak route fix | merged |
+| this PR | S19 live close: owner login and private registry repair | open |
 
 ## Rulings
 
@@ -1498,7 +1499,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 ## Deferred Items
 
-- Private `secrets/SENSITIVE_ENV_VARS.md` SEC-003 row has 4 cells again, so `gen-secrets.sh --sync-metadata-check` refuses it; the private registry also lacks AI-008 and the Superset rows (PG-028, PG-029, IAM-013, AUTO-020). Repair the row privately, then run `--sync-metadata` (owner).
+- ~~Private `secrets/SENSITIVE_ENV_VARS.md` SEC-003 row split across lines, blocking `--sync-metadata` (owner).~~ Closed 2026-09-24: restored to the public placeholder and synced (S19 live apply). It has broken this way twice; keep unseal shares only in their file.
 
 - Prometheus scrapes Qdrant with the full API key; a `QDRANT__SERVICE__READ_ONLY_API_KEY` secret would be least privilege (Qdrant owner).
 
