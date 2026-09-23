@@ -1471,7 +1471,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #236 | Task ledger and stale evidence corrections | merged |
 | #237 | S18 route authentication and S17 review follow-ups | merged |
 | #238 | S18 independent review fixes (#237 merged before the review returned) | merged |
-| this PR | S19 convergence and the four owner auth decisions | open |
+| #239 | S19 convergence and the four owner auth decisions | merged |
+| this PR | `k3s-ingress` removal and the S19 review fixes (#239 merged before both) | open |
 
 ## Rulings
 
