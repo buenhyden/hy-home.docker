@@ -477,16 +477,27 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertNotIn("synthetic-private", result.stdout + result.stderr)
         return result
 
-    def test_preserves_values_dates_unknown_rows_and_env_bytes(self):
+    def test_mirrors_public_layout_keeps_values_unknown_rows_and_env_bytes(self):
+        self.example.write_text(
+            "# Registry\n\n"
+            "| **TEST-002** | `O` | `PW` | `(empty)` | `-` | `secrets/two.txt` | 2026-02-02 | Second |\n"
+            + self.example.read_text()
+            + "*last updated: 2026-01-01*\n"
+        )
         unknown = "| **LOCAL-001** | `X` | `PW` | `synthetic-private-local` | `-` | | 2025-01-01 | Local |\n"
-        self.target.write_text(self.private + unknown)
+        self.target.write_text("operator note\n" + self.private + unknown)
         result = self.run_mode()
         self.assertEqual(0, result.returncode, result.stderr)
         text = self.target.read_text()
-        self.assertIn("`synthetic-private-value`", text)
-        self.assertIn("2025-01-01", text)
+        # Everything but the value cell comes from the public registry, in its
+        # order, including the date and the free text around the table.
+        mirrored = self.example.read_text().replace(
+            "`(empty)` | `NEW_KEY`", "`synthetic-private-value` | `NEW_KEY`"
+        )
+        self.assertTrue(text.startswith(mirrored), text)
+        self.assertNotIn("2025-01-01 | Old purpose", text)
+        self.assertNotIn("operator note", text)
         self.assertIn(unknown, text)
-        self.assertIn("`NEW_KEY`", text)
         self.assertEqual(
             "# operator comment\nEXISTING=synthetic-private-env\nUNKNOWN=keep\nADDED=default\n",
             (self.root / ".env").read_text(),
@@ -515,6 +526,22 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(0, second.returncode, second.stderr)
         self.assertNotIn("Updating htpasswd hash", second.stdout + second.stderr)
         self.assertEqual(before, htpasswd.read_bytes())
+
+    def test_generation_writes_only_the_value_cell(self):
+        text = (
+            "# Registry\n\n"
+            "| **TEST-001** | `O` | `PW` | `(empty)` | `-` | `secrets/gen.txt` | 2026-01-01 | Generated |\n"
+            "*last updated: 2026-01-01*\n"
+        )
+        self.example.write_text(text)
+        self.target.write_text(text)
+        self.target.chmod(0o600)
+        result = self.run_mode("")
+        self.assertEqual(0, result.returncode, result.stderr)
+        after = self.target.read_text()
+        value = (self.root / "secrets/gen.txt").read_text()
+        self.assertEqual(16, len(value))
+        self.assertEqual(text.replace("`(empty)`", f"`{value}`"), after)
 
     def test_check_reports_drift_without_writes(self):
         before = self.target.read_bytes()
@@ -684,7 +711,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
             },
         )
         registry = self.target.read_text()
-        self.assertIn("# registry comment\n", registry)
+        self.assertNotIn("# registry comment", registry)  # public layout only
         self.assertNotIn("LOCAL-001", registry)
         rows = [
             line.split("|") for line in registry.splitlines() if line.startswith("| **")
@@ -692,7 +719,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual({"TEST-001", "TEST-002"}, {row[1].strip("* ") for row in rows})
         retained = next(row for row in rows if "TEST-001" in row[1])
         self.assertEqual(before_retained[4], retained[4])
-        self.assertEqual(before_retained[7], retained[7])
+        self.assertEqual(" 2026-01-01 ", retained[7])  # the public date
         self.assertEqual("NEW_KEY", retained[5].strip(" `"))
         self.assertTrue(secret_file.is_file())
         self.assertEqual("synthetic-secret-file", secret_file.read_text())

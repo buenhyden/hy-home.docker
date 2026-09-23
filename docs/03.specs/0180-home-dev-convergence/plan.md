@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Plan"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-PLAN-0001"
 parent_ids:
@@ -164,8 +164,9 @@ contract are output to E/G. Classify every public key as `ACTIVE_REQUIRED`,
 and migration-only confinement instead of treating schema shape as closure.
 Test duplicate/orphan/missing mappings and literal service-secret references.
 
-Require ID-based merge, existing value/date preservation, unknown and removed
-IDs retained by default, and no secret-file deletion. Pruning is permitted only
+Require ID-based merge and existing value preservation, with the private
+registry otherwise identical to the public one (order, dates and text; owner
+decision 2026-09-24), unknown and removed IDs retained by default, and no secret-file deletion. Pruning is permitted only
 as an exact explicit exception; prior prune approval is not blanket permission.
 Check mode must reject private targets unless they are regular non-symlink files
 with mode exactly `0600`; write mode must use atomic replacement and normalize
