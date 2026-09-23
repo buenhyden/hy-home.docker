@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -47,6 +47,20 @@ Applying the policy, issuing or revoking the token, writing its file and
 recreating Prometheus are live credential/runtime changes that require a
 separately approved maintenance record. Tracked policy, Compose and scrape
 configuration prove only the source contract.
+
+### hy-home.k8s Kubernetes Auth
+
+The hy-home.k8s cluster authenticates through the `kubernetes` auth method.
+Only the External Secrets service account (`external-secrets` in namespace
+`external-secrets`, audience `vault`) may log in, through role
+`eso-read-platform`, whose policy reads only the `secret/platform/argocd`,
+`postgres-app` and `notifications` entries. A cluster bootstrap token comes only
+from the `k8s-bootstrap` token role: orphan, two-hour TTL, policy
+`k8s-bootstrap` (read `platform/argocd`). The OIDC operator may update
+`auth/kubernetes/config` and issue that token on each cluster rebuild; enabling
+the method, writing policies and roles, and writing the KV entries need an
+approved root session. The OpenBao Traefik route stays without SSO or an IP
+allowlist so the cluster can reach it.
 
 Root tokens are bootstrap and break-glass material only. Do not revoke the last
 usable root token until all of the following are verified in the same maintenance

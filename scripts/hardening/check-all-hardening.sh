@@ -416,6 +416,19 @@ check_03_security() {
   check_not_contains "$agent_hcl" "secret/data/example" "openbao-agent placeholder secret path"
   check_contains "$requirement_file" "../02.architecture/descriptions/0003-security-architecture.md" "tier 03 requirement trace link missing"
 
+  # hy-home.k8s policies stay read-only on secret/platform/*; no wildcard anywhere.
+  local policy_file
+  for policy_file in infra/03-security/openbao/config/policies/{eso-read-platform,k8s-bootstrap}.hcl; do
+    check_file "$policy_file"
+    check_not_contains "$policy_file" '"update"' "openbao k8s policy must be read-only"
+    check_not_contains "$policy_file" '"create"' "openbao k8s policy must be read-only"
+    check_not_contains "$policy_file" '"delete"' "openbao k8s policy must be read-only"
+    check_not_contains "$policy_file" '"sudo"' "openbao k8s policy must be read-only"
+  done
+  for policy_file in infra/03-security/openbao/config/policies/*.hcl; do
+    check_not_contains "$policy_file" '*"' "openbao policy must not use a path wildcard"
+  done
+
   local template_file
   for template_file in "$templates_dir"/*.ctmpl; do
     check_file "$template_file"

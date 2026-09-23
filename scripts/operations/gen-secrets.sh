@@ -387,17 +387,21 @@ process_htpasswd() {
     fi
 
     full_path="${REPO_ROOT}/${target_file_path}"
-    hashed="$(generate_htpasswd_hash "$user_value" "$pass_value")"
 
-    if [[ -f "$full_path" && -s "$full_path" ]]; then
+    # bcrypt salts differ per run, so compare by verifying, not by string:
+    # an existing entry that still matches the ID and password is kept.
+    if [[ -f "$full_path" && -s "$full_path" ]] &&
+        printf '%s\n' "$pass_value" | htpasswd -vi "$full_path" "$user_value" >/dev/null 2>&1; then
         existing="$(read_secret_file "$full_path")"
-        if [[ "$hashed" != "$existing" ]]; then
-            warn "Updating htpasswd hash for ${target_id} to match current source IDs."
-            write_secret_file "$full_path" "$hashed"
-        fi
-    else
-        write_secret_file "$full_path" "$hashed"
+        SECRET_VALUES["$target_id"]="$existing"
+        return 0
     fi
+
+    hashed="$(generate_htpasswd_hash "$user_value" "$pass_value")"
+    if [[ -f "$full_path" && -s "$full_path" ]]; then
+        warn "Updating htpasswd hash for ${target_id} to match current source IDs."
+    fi
+    write_secret_file "$full_path" "$hashed"
 
     SECRET_VALUES["$target_id"]="$hashed"
 }

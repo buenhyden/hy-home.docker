@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -75,9 +75,11 @@ TLS verification. The configured callbacks are the exact UI path
 
 The [operator policy](../../../../../infra/03-security/openbao/config/policies/operator.hcl)
 permits reading/updating only the Keycloak and Grafana KV values, issuing renderer
-SecretIDs, reading Raft snapshots and initiating/cancelling authenticated quorum
-root recovery. It does not grant root, secret deletion, arbitrary secret access,
-policy changes or auth configuration changes. OIDC token TTL is one hour, with
+SecretIDs, reading Raft snapshots, initiating/cancelling authenticated quorum
+root recovery, and the two hy-home.k8s rebuild steps: updating
+`auth/kubernetes/config` and creating a token through the `k8s-bootstrap` role.
+It does not grant root, secret deletion, arbitrary secret access, policy
+changes or any other auth configuration change. OIDC token TTL is one hour, with
 four-hour maximum lifetime. Because broad list permissions are absent, navigate
 to the known secret paths instead of expecting all secrets to appear in a list.
 

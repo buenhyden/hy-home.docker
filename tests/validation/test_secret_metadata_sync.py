@@ -468,7 +468,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
 
     def run_mode(self, mode="--sync-metadata"):
         result = subprocess.run(
-            ["bash", str(SCRIPT), mode],
+            ["bash", str(SCRIPT), *([mode] if mode else [])],
             cwd=self.root,
             capture_output=True,
             text=True,
@@ -493,6 +493,28 @@ class SecretMetadataSyncTests(unittest.TestCase):
         )
         self.assertFalse((self.root / "secrets/test.txt").exists())
         self.assertEqual(0, self.run_mode().returncode)
+
+    def test_generation_keeps_a_matching_htpasswd_entry(self):
+        rows = (
+            "| **INFRA-001** | `X` | `ID` | `(empty)` | `TRAEFIK_ADMIN_USERNAME` | | 2026-01-01 | Admin name |\n"
+            "| **INFRA-002** | `O` | `PW` | `(empty)` | `-` | `secrets/auth/admin.txt` | 2026-01-01 | Admin password |\n"
+            "| **INFRA-003** | `O` | `Secret` | `(empty)` | `-` | `secrets/auth/traefik_basicauth_password.txt` | 2026-01-01 | Admin hash |\n"
+        )
+        self.example.write_text(rows)
+        self.target.write_text(rows)
+        self.target.chmod(0o600)
+        (self.root / ".env").write_text("TRAEFIK_ADMIN_USERNAME=synthetic-user\n")
+        (self.root / "secrets/auth").mkdir()
+        (self.root / "secrets/auth/admin.txt").write_text("synthetic-password\n")
+        htpasswd = self.root / "secrets/auth/traefik_basicauth_password.txt"
+        first = self.run_mode("")
+        self.assertEqual(0, first.returncode, first.stderr)
+        before = htpasswd.read_bytes()
+        self.assertTrue(before.startswith(b"synthetic-user:"))
+        second = self.run_mode("")
+        self.assertEqual(0, second.returncode, second.stderr)
+        self.assertNotIn("Updating htpasswd hash", second.stdout + second.stderr)
+        self.assertEqual(before, htpasswd.read_bytes())
 
     def test_check_reports_drift_without_writes(self):
         before = self.target.read_bytes()

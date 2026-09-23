@@ -976,6 +976,46 @@ SeaweedFS rehearsal now starts the rendered `trino` service and proves the
 same round trip (`test_3_trino_reads_and_writes_the_lakehouse_catalog`); 9/9
 pass. Live is NOT_RUN: it needs the S12 live steps first.
 
+### Secret, env and OpenBao cleanup (owner request 2026-09-23)
+
+Live, on the owner's instruction; names, counts and booleans only.
+
+| Step | Result |
+| --- | --- |
+| Diagnosis | the private registry `SEC-003` row spanned three lines, so `--sync-metadata` rejected the file and 16 public IDs added since S06 never reached it; OBS-013/INFRA-007 files existed at 0 bytes |
+| Backup | private registry and `.env` copied to `secrets/.backup-20260923/` (`0700`/`0600`) |
+| SEC-003 | registry value compared privately with `openbao_unseal_keys.txt` (same three lines: true), then replaced by the example's placeholder row; the file stays the single copy |
+| Sync | `--sync-metadata` then `--sync-metadata-prune`: 16 IDs added, 7 retired rows (`SEC-001`, `STRG-001`–`006`) and 6 retired `.env` keys (`INFRA_*`, `K3D_HYHOME_NET_NAME`, `VAULT_*`) removed, 7 public keys added; both checks exit 0 |
+| Generation | `gen-secrets.sh` created PG-026, STRG-015, AUTO-018, OBS-013 and derived INFRA-007 (all non-empty, `0640`) |
+| Quarantine | 14 files with no consumer (MinIO, Vault, InfluxDB, Supabase DB key, SonarQube, Terrakube MinIO, agent-office Valkey, `mlflow_s3_password`, empty `web_scraper_chrome_path`) moved to `secrets/.retired/2026-09-23/`; `openbao_metrics_token.custody` stays |
+| Modes | 38 world-readable secret files set to `0640` after checking every consumer has `group_add` 1000 or runs as uid 0/1000; `certs/rootCA.pem` stays public |
+
+Deviation: `secrets/README.md` said not to prune the private `SEC-001` row
+before the Vault credential disposition. The prune removed it; the backup
+keeps the row and the token file is quarantined, so nothing is lost, and the
+README now states the new state. The backup registry was not Git-ignored:
+`.gitignore` now covers `secrets/.backup-*/` and `secrets/.retired/`, and the
+main checkout excludes them locally until this merges.
+
+Source changes in the same branch:
+
+- OpenBao policies: the uncommitted `eso-read-platform.hcl` began with a stray
+  path line (invalid HCL); all policies now have header comments and
+  `bao policy fmt` layout. `operator.hcl` adds `auth/kubernetes/config` and
+  `auth/token/create/k8s-bootstrap`. Hardening keeps the two k8s policies
+  read-only and every policy free of path wildcards.
+- RUN-0085: new "hy-home.k8s Kubernetes Auth" section (one-time root session;
+  per-rebuild OIDC operator steps with `disable_local_ca_jwt` and the
+  `k8s-bootstrap` token role), procedure numbering fixed, legacy Vault file
+  location updated. POL-0085 and GDE-0085 state the new operator scope.
+- `gen-secrets.sh` rewrote the INFRA-003/004 htpasswd files on every run
+  because bcrypt salts differ; it now keeps an entry that `htpasswd -v`
+  verifies, with a regression test.
+
+Live NOT_RUN: Traefik must be recreated to read the new INFRA-007 file (a
+single-file mount keeps the old inode); the OpenBao root session and per-
+rebuild steps are the owner's (OIDC browser login).
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
