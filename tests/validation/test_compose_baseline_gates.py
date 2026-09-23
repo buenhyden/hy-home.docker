@@ -2189,6 +2189,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     *SEAWEEDFS_SERVICES,
                     "seaweedfs-buckets",
                     "seaweedfs-table-bucket",
+                    "trino",
                 ],
                 cwd=ROOT,
                 env=env,
@@ -2203,6 +2204,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 *SEAWEEDFS_SERVICES,
                 "seaweedfs-buckets",
                 "seaweedfs-table-bucket",
+                "trino",
             )
         }
         for name, service in services.items():
@@ -2216,7 +2218,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 {"sw": {}, "client": {}}
                 if name == "seaweedfs-s3"
                 else {"client": {}}
-                if name in ("seaweedfs-buckets", "seaweedfs-table-bucket")
+                if name in ("seaweedfs-buckets", "seaweedfs-table-bucket", "trino")
                 else {"sw": {}}
             )
             service.pop("ports", None)
@@ -2516,6 +2518,33 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 ).returncode,
                 command[0],
             )
+
+    def test_3_trino_reads_and_writes_the_lakehouse_catalog(self) -> None:
+        # SPEC-0180 S13: the HOME catalog file and wrapper, on the scoped identity.
+        started = self.compose(
+            "up", "-d", "--no-deps", "--wait", "--wait-timeout", "240", "trino"
+        )
+        self.addCleanup(self.compose, "rm", "-sf", "trino")
+        self.assertEqual(0, started.returncode, started.stderr)
+
+        def sql(statement: str) -> str:
+            result = self.compose(
+                "exec", "-T", "trino", "trino", "--execute", statement
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            return result.stdout
+
+        table = "lakehouse.test.s13_rehearsal"
+        sql(f"CREATE TABLE {table} (id bigint, name varchar)")
+        sql(f"INSERT INTO {table} VALUES (1, 'a'), (2, 'b')")
+        sql(f"UPDATE {table} SET name = 'c' WHERE id = 2")
+        sql(f"ALTER TABLE {table} EXECUTE optimize")
+        self.assertEqual(
+            '"1","a"\n"2","c"', sql(f"SELECT id, name FROM {table} ORDER BY id").strip()
+        )
+        self.assertIn('"s13_rehearsal"', sql("SHOW TABLES FROM lakehouse.test"))
+        sql(f"DROP TABLE {table}")
+        self.assertNotIn("s13_rehearsal", sql("SHOW TABLES FROM lakehouse.test"))
 
     def test_3_s3_api_used_by_consumers(self) -> None:
         io = self.dir / "io"
