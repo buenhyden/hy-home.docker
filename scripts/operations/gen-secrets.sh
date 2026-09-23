@@ -13,7 +13,6 @@ EXAMPLE_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md.example"
 TARGET_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md"
 ENV_FILE="${REPO_ROOT}/.env"
 IMPLEMENTATION_FILE="${REPO_ROOT}/scripts/operations/gen-secrets.sh"
-CURRENT_DATE="$(date +%Y-%m-%d)"
 
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -409,12 +408,12 @@ process_htpasswd() {
 render_row_with_value() {
     local line="$1"
     local value="$2"
-    local date="$3"
     local lead id auto kind _old_value env_var file_path _old_date purpose tail
 
     IFS='|' read -r lead id auto kind _old_value env_var file_path _old_date purpose tail <<< "$line"
-    printf '%s|%s|%s|%s| `%s` |%s|%s| %s |%s|%s\n' \
-        "$lead" "$id" "$auto" "$kind" "$value" "$env_var" "$file_path" "$date" "$purpose" "$tail"
+    # The date cell is public metadata; writing a value never changes it.
+    printf '%s|%s|%s|%s| `%s` |%s|%s|%s|%s|%s\n' \
+        "$lead" "$id" "$auto" "$kind" "$value" "$env_var" "$file_path" "$_old_date" "$purpose" "$tail"
 }
 
 rewrite_registry() {
@@ -428,15 +427,13 @@ rewrite_registry() {
                 value="${SECRET_VALUES[$ROW_ID]}"
                 current_value="$ROW_VALUE"
                 if [[ "$value" != "$current_value" ]] || is_placeholder_value "$current_value"; then
-                    render_row_with_value "$line" "$value" "$CURRENT_DATE" >> "$final_temp"
+                    render_row_with_value "$line" "$value" >> "$final_temp"
                 else
                     printf '%s\n' "$line" >> "$final_temp"
                 fi
             else
                 printf '%s\n' "$line" >> "$final_temp"
             fi
-        elif [[ "$line" == *"마지막 업데이트:"* ]]; then
-            printf '*마지막 업데이트: %s* (스크립트 자동 갱신 완료)\n' "$CURRENT_DATE" >> "$final_temp"
         else
             printf '%s\n' "$line" >> "$final_temp"
         fi
@@ -592,27 +589,28 @@ def rows(text, strict):
 
 
 def registry_plan(source, current, exact):
+    """Render the private registry as the public one with private values.
+
+    Every line except a row's value cell comes from the public registry, in
+    its order, so the two files differ only in values. A private row the
+    public registry lacks is kept at the end unless pruning.
+    """
     public = rows(source, exact)
     private = rows(current, exact)
-    output = current
-    for identity, (line, cells) in private.items():
-        if identity not in public:
-            if exact:
-                output = output.replace(line, "", 1)
-            continue
-        metadata = public[identity][1]
-        # Preserve private value/date cells while aligning public metadata.
-        merged = [metadata[i] if i in (1, 2, 3, 5, 6, 8) else cell
-                  for i, cell in enumerate(cells)]
-        output = output.replace(line, "|".join(merged), 1)
-    missing = [line for identity, (line, _) in public.items() if identity not in private]
     if not current:
         return source
-    if missing:
-        output += ("" if output.endswith("\n") else "\n") + "\n## Public metadata additions\n\n"
+    output = source
+    for identity, (line, cells) in public.items():
+        if identity in private:
+            merged = list(cells)
+            merged[4] = private[identity][1][4]
+            output = output.replace(line, "|".join(merged), 1)
+    extra = [line for identity, (line, _) in private.items() if identity not in public]
+    if extra and not exact:
+        output += ("" if output.endswith("\n") else "\n") + "\n## Private-only rows\n\n"
         output += "| ID | Auto | Kind | Value | Env | Path | Date | Purpose |\n"
         output += "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
-        output += "".join(missing)
+        output += "".join(extra)
     return output
 
 
