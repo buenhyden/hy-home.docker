@@ -16,6 +16,14 @@ updates:
 
     open-pull-requests-limit: 5
 
+    # typescript-eslint (via eslint-config-next) rejects TypeScript 7; the
+    # 7.0.2 bump broke the frontend lint twice. Lift once typescript-eslint
+    # supports it (typescript-eslint/typescript-eslint#10940).
+    ignore:
+      - dependency-name: typescript
+        versions:
+          - ">=7.0.0"
+
     cooldown:
       default-days: 7
 
