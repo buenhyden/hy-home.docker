@@ -102,6 +102,8 @@ secrets:
     file: ./secrets/auth/traefik_basicauth_password.txt
   traefik_opensearch_basicauth_password:
     file: ./secrets/auth/traefik_opensearch_basicauth_password.txt
+  traefik_prometheus_api_htpasswd:
+    file: ./secrets/auth/traefik_prometheus_api_htpasswd.txt
 
   # ── Auth ────────────────────────────────────────────────
   keycloak_admin_password:

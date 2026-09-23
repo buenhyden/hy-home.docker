@@ -93,6 +93,13 @@ services:
       traefik.http.routers.prometheus.entrypoints: websecure
       traefik.http.routers.prometheus.tls: 'true'
       traefik.http.routers.prometheus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      # HTTP API (remote write and queries) for machine clients such as the
+      # hy-home.k8s cluster: Basic Auth instead of SSO. The UI stays behind SSO.
+      traefik.http.routers.prometheus-api.rule: Host(`prometheus.${DEFAULT_URL}`) && PathPrefix(`/api/v1/`)
+      traefik.http.routers.prometheus-api.entrypoints: websecure
+      traefik.http.routers.prometheus-api.tls: 'true'
+      traefik.http.routers.prometheus-api.middlewares: gateway-standard-chain@file,prometheus-api-auth@file
+      traefik.http.routers.prometheus-api.service: prometheus
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
     networks:
       edge_net: {}

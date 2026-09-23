@@ -346,7 +346,7 @@ collect_secret_values() {
 
         parse_row "$line"
         [[ -n "$ROW_ID" ]] || continue
-        [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" ]] && continue
+        [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" || "$ROW_ID" == "INFRA-007" ]] && continue
 
         full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
         new_value=""
@@ -452,6 +452,7 @@ run_generation() {
 
     process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik_basicauth_password.txt"
     process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik_opensearch_basicauth_password.txt"
+    process_htpasswd "INFRA-007" "OBS-012" "OBS-013" "secrets/auth/traefik_prometheus_api_htpasswd.txt"
 
     info "Updating Markdown registry..."
     rewrite_registry
@@ -464,7 +465,7 @@ dry_run_action_for_row() {
     local full_path="$1"
     local action
 
-    if [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" ]]; then
+    if [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" || "$ROW_ID" == "INFRA-007" ]]; then
         printf '%s' "derive-htpasswd"
         return 0
     fi

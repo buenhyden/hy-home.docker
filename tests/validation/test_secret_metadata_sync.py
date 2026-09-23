@@ -18,9 +18,14 @@ ROOT = SCRIPT.parents[2]
 INDIRECT_DERIVED_INPUTS = {
     "DEFAULT_DOCKER_PROJECT_PATH",
 }
-HTPASSWD_ID_INPUTS = {"ELASTIC_USERNAME", "TRAEFIK_ADMIN_USERNAME"}
+HTPASSWD_ID_INPUTS = {
+    "ELASTIC_USERNAME",
+    "PROMETHEUS_API_USERNAME",
+    "TRAEFIK_ADMIN_USERNAME",
+}
 REGISTRY_PATH_EXCEPTIONS = {
     "INFRA-002": "secrets/auth/traefik_admin_password.txt",
+    "OBS-013": "secrets/observability/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao_unseal_keys.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
@@ -758,11 +763,11 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(269, len(contract["public"]))
+        self.assertEqual(270, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
-        self.assertEqual(58, len(contract["required"]))
+        self.assertEqual(59, len(contract["required"]))
         self.assertEqual(211, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
@@ -810,8 +815,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.registry_text,
             self.environment["consumed"],
         )
-        self.assertEqual(82, len(contract["declarations"]))
-        self.assertEqual(112, len(contract["rows"]))
+        self.assertEqual(83, len(contract["declarations"]))
+        self.assertEqual(115, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
