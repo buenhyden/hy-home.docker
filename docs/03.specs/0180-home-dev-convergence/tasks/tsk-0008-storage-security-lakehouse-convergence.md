@@ -921,6 +921,10 @@ secrets. `SOURCE_ANALYSIS_SERVICES = {"conftest"}` exempts it from that
 scan, and a new test keeps the exemption safe: such a service holds no secret
 grant, has `network_mode: none` and mounts only read-only, non-`secrets` paths.
 
+The merge with main also moves the pinned public and optional env-key counts
+to 269 and 211: #217 added `TRAEFIK_BIND_IP` and #218 kept the old counts, so
+`test_secret_metadata_sync` failed on main.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
