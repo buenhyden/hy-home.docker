@@ -56,6 +56,7 @@ services:
       - nginx
       - mlops
       - data-science
+      - lakehouse
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
@@ -177,11 +178,15 @@ services:
       - seaweedfs_s3_tempo_secret_key
       - seaweedfs_s3_mlflow_secret_key
       - seaweedfs_s3_terrakube_secret_key
+      - seaweedfs_s3_lakehouse_secret_key
     expose:
       - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
-    # Iceberg and Lance listeners stay off until S12 defines the catalog; the
-    # embedded IAM API is off because identities come from the config file.
-    command: [ 's3', '-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_S3_HTTP_PORT:-8333}', '-port.iceberg=0', '-port.lance=0', '-iam=false' ]
+      - ${SEAWEEDFS_ICEBERG_PORT:-8181}
+    # The Iceberg REST catalog serves table buckets and signs with the same
+    # S3 identities (SigV4); it has no route and stays on object_net. Lance
+    # stays off, and the embedded IAM API is off because identities come from
+    # the config file.
+    command: [ 's3', '-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_S3_HTTP_PORT:-8333}', '-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}', '-port.lance=0', '-iam=false' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
@@ -231,6 +236,35 @@ services:
       BUCKETS: loki-bucket tempo-bucket mlflow-artifacts tfstate cdn-bucket
     volumes:
       - ./config/seaweedfs-buckets.sh:/opt/hyhome/seaweedfs-buckets.sh:ro
+    secrets:
+      - seaweedfs_s3_admin_secret_key
+    depends_on:
+      seaweedfs-s3:
+        condition: service_healthy
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label
+
+  # Iceberg table bucket, its policy and namespaces; lakehouse only, so the
+  # object-bucket job every S3 profile waits on never touches S3 Tables.
+  seaweedfs-table-bucket:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-low
+    image: amazon/aws-cli:2.36.50
+    container_name: seaweedfs-table-bucket
+    restart: 'no'
+    entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-table-bucket.sh' ]
+    environment:
+      AWS_ACCESS_KEY_ID: ${SEAWEEDFS_S3_ADMIN_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_EC2_METADATA_DISABLED: 'true'
+      S3_ENDPOINT: http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}
+    volumes:
+      - ./config/seaweedfs-table-bucket.sh:/opt/hyhome/seaweedfs-table-bucket.sh:ro
     secrets:
       - seaweedfs_s3_admin_secret_key
     depends_on:

@@ -24,8 +24,8 @@ It is intended for operators and maintainers of object storage.
 [`docker-compose.yml`](docker-compose.yml) defines `seaweedfs-master`,
 `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`. Profiles
 `seaweedfs`, `storage-seaweedfs` and every S3 consumer profile (`storage`,
-`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`) select them with
-`seaweedfs-buckets`. S3 is the only interface:
+`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`) select
+them with `seaweedfs-buckets`; `lakehouse` also selects `seaweedfs-table-bucket`. S3 is the only interface:
 the FUSE mount was removed in S04, and master and filer have no route.
 
 ## Structure
@@ -34,8 +34,9 @@ the FUSE mount was removed in S04, and master and filer have no route.
 | --- | --- |
 | `docker-compose.yml` | four services, data-disk bind volumes, secrets |
 | `config/hyhome-seaweedfs.sh` | start script: builds JWT, gRPC mTLS and S3 identity configuration from secrets |
-| `config/s3-identities.conf` | bucket-scoped consumer identities (loki, tempo, mlflow, terrakube) and anonymous CDN reads |
+| `config/s3-identities.conf` | bucket-scoped consumer identities (loki, tempo, mlflow, terrakube, lakehouse) and anonymous CDN reads |
 | `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: idempotent bucket creation with the admin identity |
+| `config/seaweedfs-table-bucket.sh` | `seaweedfs-table-bucket` job (`lakehouse`): Iceberg table bucket, its scoped policy and the `dev`/`test` namespaces |
 | `bin/gen-grpc-certs.sh` | host script: issues the SeaweedFS-only gRPC CA and certificates |
 
 State lives under `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`, owned
