@@ -53,8 +53,8 @@ services:
       traefik.http.routers.terrakube-api.rule: Host(`terrakube-api.${DEFAULT_URL}`)
       traefik.http.routers.terrakube-api.entrypoints: websecure
       traefik.http.routers.terrakube-api.tls: 'true'
-      # ForwardAuth needs the SSO cookie, so Terraform CLI and API-token calls
-      # cannot pass. At `iac` activation (owner decision 2026-09-24): dedicated
+      # ForwardAuth needs the SSO cookie, so Terraform CLI, API-token calls and
+      # terrakube-executor (it calls the API by its public URL) cannot pass. At `iac` activation (owner decision 2026-09-24): dedicated
       # public client home-terrakube, drop this ForwardAuth, verify audience/RBAC.
       traefik.http.routers.terrakube-api.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.terrakube-api.loadbalancer.server.port: 8080

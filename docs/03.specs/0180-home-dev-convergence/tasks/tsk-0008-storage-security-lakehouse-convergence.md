@@ -1333,7 +1333,7 @@ decided by the owner:
 | --- | --- | --- |
 | OAuth2 Proxy `allowed_groups = ["/admins"]` | the allowlist was commented and `email_domains=["*"]`, so every realm user passed every SSO route; the realm has one human user, in `/admins`; Kafbat already maps the full-path `/admins` from the same `groups` claim | config, hardening guard, GDE/POL-0079 |
 | Stalwart admin UI keeps gateway SSO plus its own admin login | Stalwart's OIDC directory replaces the password backend for every account, so IMAP/SMTP clients would need App Passwords | POL-0070 records the decision; item closed |
-| Terrakube at `iac` activation | not running; API and UI reuse the OAuth2 Proxy client id; the API route's ForwardAuth blocks Terraform CLI and API-token calls | compose comment, README, GDE-0079 row |
+| Terrakube at `iac` activation | not running; API and UI reuse the OAuth2 Proxy client id; the API route's ForwardAuth blocks Terraform CLI, API-token calls and `terrakube-executor`, which calls the API by its public URL | compose comment, README, GDE-0079 row |
 | Qdrant API key | zero collections; the only real client is the Prometheus scrape (Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so it uses its default store); `edge_net` members could write without authentication | `qdrant_api_key` (AI-008), start script, Prometheus `bearer_token_file` in both configs, `QdrantApiKeyContractTests`, Qdrant docs |
 
 Qdrant rehearsal with a synthetic key on `qdrant/qdrant:v1.19.1-unprivileged`:
@@ -1349,6 +1349,16 @@ contract has no unauthenticated exception left. The running Traefik watches
 the operations checkout's `dynamic/` directory, so the router disappears when
 that checkout pulls the merge; no restart. Rollback: restore the file from Git.
 
+Independent review of the decisions (3 Important, 7 Minor): the rollback
+signal for `allowed_groups` assumed a visible 403 that `sso-errors` hides;
+POL-0034 kept a no-authentication sentence; the Terrakube record missed the
+executor. All fixed, with the test's blank lines and two more assertions (the
+Prometheus grant and the root declaration). The Qdrant alert rule, the
+exporter-down regex and the dashboard used job `qdrant-monitor` while the
+scrape job is `qdrant`, so `QdrantDown` could never fire; now `qdrant`.
+Deferred: a read-only key for Prometheus and the unused Open WebUI
+`VECTOR_DB_URL`, which the RAG workflow docs still describe.
+
 The Mailpit hardening test failed on main since S17: its fixture tree lacked
 the Stalwart plan, so the Stalwart relay guard failed before the Mailpit check.
 The fixture now copies `plan.ndjson`.
@@ -1362,7 +1372,7 @@ The fixture now copies `plan.ndjson`.
 | S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin |
 | S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart |
 | S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running |
-| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must pass. If it returns 403, the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) |
+| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must reach the application. `sso-errors` turns 401–403 into the sign-in flow, so a denial shows as a loop ending on the OAuth2 Proxy error page and a group denial in its log, not as a 403 at the route. On that signal the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) |
 | S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 |
 | Terrakube | at `iac` activation: Keycloak client `home-terrakube` (remote), drop the API ForwardAuth, audience/RBAC acceptance |
 | hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network |
@@ -1474,6 +1484,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- Prometheus scrapes Qdrant with the full API key; a `QDRANT__SERVICE__READ_ONLY_API_KEY` secret would be least privilege (Qdrant owner).
 
 - Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
