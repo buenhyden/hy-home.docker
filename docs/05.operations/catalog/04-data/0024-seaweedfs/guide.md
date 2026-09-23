@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -52,10 +52,12 @@ for the `s3.${DEFAULT_URL}` route.
 | Tempo | `tempo-bucket` | `tempo` | STRG-012 |
 | MLflow | `mlflow-artifacts` | `mlflow` | STRG-013 |
 | Terrakube | `tfstate` | `terrakube` | STRG-014 |
+| Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
 | Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
 
-`seaweedfs-buckets` (aws-cli, admin identity) creates the five buckets
-idempotently; every bucket-owning consumer waits for it (Nginx waits for
+`seaweedfs-buckets` (aws-cli, admin identity) creates the five buckets and,
+under `lakehouse` only, `seaweedfs-table-bucket` creates the `lakehouse` table
+bucket, its policy and the `dev` and `test` namespaces, all idempotently; every bucket-owning consumer waits for it (Nginx waits for
 `seaweedfs-s3` only). The S07 cutover copied each
 MinIO bucket through the S3 API and left a `hyhome-migration/<bucket>.cutover`
 marker object; the copy job was removed with MinIO.

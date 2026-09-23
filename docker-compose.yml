@@ -199,6 +199,8 @@ secrets:
     file: ./secrets/storage/seaweedfs_s3_mlflow_secret_key.txt
   seaweedfs_s3_terrakube_secret_key:
     file: ./secrets/storage/seaweedfs_s3_terrakube_secret_key.txt
+  seaweedfs_s3_lakehouse_secret_key:
+    file: ./secrets/storage/seaweedfs_s3_lakehouse_secret_key.txt
 
   # ── OpenSearch ──────────────────────────────────────────
   opensearch_admin_password:
@@ -323,6 +325,7 @@ include:
   - infra/04-data/analytics/starrocks/docker-compose.yml
   - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
   - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  - infra/04-data/lakehouse/spark/docker-compose.yml
   - infra/04-data/nosql/cassandra/docker-compose.yml
   - infra/04-data/nosql/couchdb/docker-compose.yml
   - infra/04-data/nosql/mongodb/docker-compose.yml

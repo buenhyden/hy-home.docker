@@ -1,6 +1,6 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -34,7 +34,8 @@ documented operating boundaries.
 | --- | --- | --- | --- |
 | [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
 | [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
-| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `seaweedfs`, `storage-seaweedfs` | HOME | S3 store that replaced MinIO (S07); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
+| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`, `seaweedfs`, `storage-seaweedfs` | HOME | S3 store that replaced MinIO (S07) and serves the Iceberg REST catalog (S12); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
+| [`lakehouse/spark`](lakehouse/spark/README.md) | `lakehouse` | OPTIONAL | One-shot Spark batch and Iceberg maintenance job on the SeaweedFS catalog; tables in the `lakehouse` table bucket |
 | [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
 | [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
 | [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |

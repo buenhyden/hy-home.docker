@@ -1,0 +1,52 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+services:
+  # Batch and table-maintenance job over the Iceberg tables in the SeaweedFS
+  # REST catalog. The default command only lists namespaces; any write is an
+  # explicit `docker compose run --rm spark spark-sql ...`.
+  spark:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-med
+    # Spark local mode: driver and executors share this JVM.
+    cpus: "2.00"
+    mem_limit: 2g
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local
+    container_name: spark
+    entrypoint:
+      - /bin/bash
+      - /opt/hyhome/hyhome-spark.sh
+    command:
+      - /opt/spark/bin/spark-sql
+      - -S
+      - -e
+      - SHOW NAMESPACES
+    environment:
+      # SeaweedFS `lakehouse` identity: read, write and list on the lakehouse
+      # table bucket only (s3-identities.conf), plus the catalog and table
+      # actions its table bucket policy grants.
+      AWS_ACCESS_KEY_ID: lakehouse
+      # SeaweedFS does not enforce a region; SigV4 only needs a fixed one.
+      AWS_REGION: us-east-1
+      LAKEHOUSE_CATALOG_URI: 'http://seaweedfs-s3:${SEAWEEDFS_ICEBERG_PORT:-8181}'
+      LAKEHOUSE_S3_ENDPOINT: 'http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}'
+      LAKEHOUSE_WAREHOUSE: 's3://lakehouse/'
+    volumes:
+      - ./hyhome-spark.sh:/opt/hyhome/hyhome-spark.sh:ro
+    secrets:
+      - seaweedfs_s3_lakehouse_secret_key
+    depends_on:
+      seaweedfs-s3:
+        condition: service_healthy
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label
