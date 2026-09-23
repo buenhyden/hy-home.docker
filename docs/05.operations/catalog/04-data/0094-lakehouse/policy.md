@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -35,9 +35,13 @@ removal.
   own scoped one; none uses the admin identity.
 - `dev` and `test` hold development and test tables. Production-like data needs
   a separately approved namespace.
+- Trino's HTTP API has no authentication: loopback host port only, no route,
+  until a reviewed change adds TLS and an authenticator. Its default start
+  writes nothing.
 - The default Spark command reads only. `expire_snapshots`,
   `remove_orphan_files` and `DROP … PURGE` delete files and need a named table
-  and a recorded reason.
+  and a recorded reason. The same holds for Trino `DROP TABLE` and its
+  `expire_snapshots`/`remove_orphan_files` table procedures.
 - Engine images pin the base image and the Iceberg jars by checksum; the
   Iceberg version moves in all engines together.
 
@@ -65,4 +69,5 @@ new namespace.
 ## Related Documents
 
 - [Spark Compose source](../../../../../infra/04-data/lakehouse/spark/docker-compose.yml)
+- [Trino Compose source](../../../../../infra/04-data/lakehouse/trino/docker-compose.yml)
 - [Compose profile vocabulary](../../00-workspace/0078-compose-profile-vocabulary/policy.md)

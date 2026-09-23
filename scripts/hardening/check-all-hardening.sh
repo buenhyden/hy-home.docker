@@ -453,6 +453,15 @@ check_04_data() {
   check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
   check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
   check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
+  local trino_compose="infra/04-data/lakehouse/trino/docker-compose.yml"
+  local trino_catalog="infra/04-data/lakehouse/trino/catalog/lakehouse.properties"
+  check_file "$trino_compose"
+  check_file "$trino_catalog"
+  check_contains "$trino_compose" '127.0.0.1:${TRINO_HOST_PORT:-18090}:8080' "trino unauthenticated HTTP API must be loopback"
+  check_not_contains "$trino_compose" "traefik.enable" "trino must not have a gateway route"
+  check_contains "$trino_catalog" "iceberg.rest-catalog.security=SIGV4" "trino catalog must sign with SigV4"
+  check_contains "$trino_catalog" "iceberg.rest-catalog.signing-name=s3" "trino catalog signing name must be s3"
+  check_contains "$trino_catalog" 's3.aws-secret-key=${ENV:AWS_SECRET_ACCESS_KEY}' "trino S3 secret must come from the environment"
   if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
     fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
   fi

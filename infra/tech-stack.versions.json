@@ -2091,6 +2091,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: trinodb/trino",
+      "tier": "04-data",
+      "classification": "external",
+      "repository_classifications": {
+        "trinodb/trino": "external"
+      },
+      "images": [
+        "trinodb/trino:483"
+      ],
+      "compose_files": [
+        "infra/04-data/lakehouse/trino/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lakehouse/trino/docker-compose.yml",
+          "images": [
+            "trinodb/trino:483"
+          ]
+        }
+      ]
     }
   ]
 }

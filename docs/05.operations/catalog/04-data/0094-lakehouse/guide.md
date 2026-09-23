@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -14,6 +14,8 @@ implementation_services:
   - seaweedfs-table-bucket
   infra/04-data/lakehouse/spark/docker-compose.yml:
   - spark
+  infra/04-data/lakehouse/trino/docker-compose.yml:
+  - trino
 created: "2026-09-23"
 ---
 
@@ -26,7 +28,8 @@ created: "2026-09-23"
 The lakehouse is OPTIONAL and selected by `lakehouse`. Tables are Apache
 Iceberg in the SeaweedFS `lakehouse` table bucket, catalogued by the SeaweedFS
 built-in Iceberg REST catalog. Spark is the batch and table-maintenance
-engine; Trino (S13) and Flink (S14) join the same catalog. Iceberg is a table
+engine and Trino the interactive SQL engine; Flink (S14) joins the same
+catalog. Iceberg is a table
 format, not a service.
 
 ### Current implementation
@@ -48,6 +51,14 @@ format, not a service.
   the Spark process, so `spark-sql`, `spark-submit` and `pyspark` all see the
   same catalog. Spark runs in local mode with 2 CPUs and 2 GiB, a read-only
   root filesystem and no UI.
+- **Trino.** [Trino Compose](../../../../../infra/04-data/lakehouse/trino/docker-compose.yml)
+  runs a single-node coordinator (`trinodb/trino`) with the catalog
+  `lakehouse`. The catalog file reads the endpoints and the secret from the
+  environment (`${ENV:…}`), which the wrapper fills from the Docker secret.
+  SigV4 needs the S3 keys set explicitly, and view endpoints are off because
+  SeaweedFS serves none. The HTTP API has no authentication, so it is published
+  on `127.0.0.1:${TRINO_HOST_PORT:-18090}` only, with no route. It runs with
+  2 CPUs, 2 GiB (80% heap), a read-only root and tmpfs for its data directory.
 
 ### Commands and side effects
 
@@ -59,6 +70,11 @@ format, not a service.
 | `… -e "CALL lakehouse.system.rewrite_data_files(table => 'dev.t')"` | Compacts data files; adds a snapshot |
 | `… -e "CALL lakehouse.system.expire_snapshots(table => 'dev.t', older_than => TIMESTAMP '…')"` | Deletes unreferenced files; time travel before that point is lost |
 | `… -e "DROP TABLE dev.t PURGE"` | Deletes the table and its files |
+| `docker compose --profile lakehouse up -d trino` | Starts the SQL engine; writes nothing |
+| `docker compose exec trino trino --execute "SHOW TABLES FROM lakehouse.dev"` | Read only |
+| `… --execute "CREATE TABLE lakehouse.dev.t (…)"` / `INSERT` / `UPDATE` | Writes table metadata and data files |
+| `… --execute "ALTER TABLE lakehouse.dev.t EXECUTE optimize"` | Compacts data files; adds a snapshot |
+| `… --execute "DROP TABLE lakehouse.dev.t"` | Deletes the table and its files |
 
 ## Common Checks
 
@@ -78,6 +94,7 @@ and table recovery.
 
 ## Related Documents
 
-- [Spark package README](../../../../../infra/04-data/lakehouse/spark/README.md) and [derived version projection](../../../../../infra/tech-stack.versions.json)
+- [Spark](../../../../../infra/04-data/lakehouse/spark/README.md) and [Trino](../../../../../infra/04-data/lakehouse/trino/README.md) package READMEs and [derived version projection](../../../../../infra/tech-stack.versions.json)
 - [Iceberg Spark procedures](https://iceberg.apache.org/docs/latest/spark-procedures/)
 - [Iceberg REST catalog configuration](https://iceberg.apache.org/docs/latest/spark-configuration/)
+- [Trino Iceberg connector](https://trino.io/docs/current/connector/iceberg.html)

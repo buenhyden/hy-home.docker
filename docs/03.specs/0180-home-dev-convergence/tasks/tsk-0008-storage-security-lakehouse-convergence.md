@@ -957,6 +957,25 @@ Valkey `26379` stay published for the cluster. Alloy publishes OTLP
 `4317/4318`, but the HOME config (`config.home.alloy`) has no OTLP receiver, so
 connections are refused; deferred until a cluster trace path needs it.
 
+### S13 — Trino (source)
+
+| Unit | Change |
+| --- | --- |
+| Service | `infra/04-data/lakehouse/trino/`: `trinodb/trino:483` single node under `lakehouse`, `object_net`, read-only root with tmpfs data directory, 2 CPUs and 2 GiB, health check, waits for `seaweedfs-s3` and `seaweedfs-table-bucket` |
+| Catalog | `catalog/lakehouse.properties`: Iceberg REST on the SeaweedFS catalog, `SIGV4` with `signing-name=s3`, native S3 path-style; endpoints and the `lakehouse` identity come from `${ENV:…}`, which `hyhome-trino.sh` fills from STRG-015 |
+| Exposure | no authentication, so `127.0.0.1:${TRINO_HOST_PORT:-18090}` only and no route (POL-0078 companion row, POL-0094 control, hardening) |
+| Contracts | root include; POL-0078 `lakehouse` members; m0021 row; `.env.example` `TRINO_HOST_PORT`; version projection; `check_04_data` pins loopback, no route, SigV4 and the environment-sourced secret |
+| Documents | 0094 guide, policy and runbook extended; Trino package README (draft); Spark and 04-data READMEs |
+
+Measured on an isolated SeaweedFS 4.47 with the scoped identity: SigV4 fails
+at start unless `s3.aws-access-key`/`s3.aws-secret-key` are set, and listing
+tables fails with `Failed to list views` unless
+`iceberg.rest-catalog.view-endpoints-enabled=false`. With both, create,
+insert, update, `optimize`, schema change, list and table removal work. The
+SeaweedFS rehearsal now starts the rendered `trino` service and proves the
+same round trip (`test_3_trino_reads_and_writes_the_lakehouse_catalog`); 9/9
+pass. Live is NOT_RUN: it needs the S12 live steps first.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |

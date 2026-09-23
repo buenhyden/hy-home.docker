@@ -1,0 +1,54 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+services:
+  # Single-node SQL engine (coordinator also runs tasks) over the Iceberg
+  # tables in the SeaweedFS REST catalog, with the same scoped identity as Spark.
+  trino:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-high
+    image: trinodb/trino:483
+    container_name: trino
+    entrypoint:
+      - /bin/bash
+      - /opt/hyhome/hyhome-trino.sh
+    command:
+      - /usr/lib/trino/bin/run-trino
+    tmpfs:
+      - /tmp
+      - /run
+      - /data/trino:uid=1000,gid=1000
+    environment:
+      # SeaweedFS `lakehouse` identity (s3-identities.conf) and its table
+      # bucket policy; SigV4 signs both catalog and S3 requests.
+      AWS_ACCESS_KEY_ID: lakehouse
+      # SeaweedFS does not enforce a region; SigV4 only needs a fixed one.
+      AWS_REGION: us-east-1
+      LAKEHOUSE_CATALOG_URI: 'http://seaweedfs-s3:${SEAWEEDFS_ICEBERG_PORT:-8181}'
+      LAKEHOUSE_S3_ENDPOINT: 'http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}'
+    volumes:
+      - ./hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro
+      - ./catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro
+    secrets:
+      - seaweedfs_s3_lakehouse_secret_key
+    # Plain HTTP without authentication: loopback only, no Traefik route.
+    ports:
+      - '127.0.0.1:${TRINO_HOST_PORT:-18090}:8080'
+    healthcheck:
+      test: [ 'CMD', '/usr/lib/trino/bin/health-check' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    depends_on:
+      seaweedfs-s3:
+        condition: service_healthy
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label

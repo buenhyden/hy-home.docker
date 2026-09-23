@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-09-23"
 
 ## When to Use
 
-A Spark job fails, the catalog returns an error, access is denied, or a table
+A Spark job or Trino fails, the catalog returns an error, access is denied, or a table
 needs rollback after a bad write.
 
 ## Procedure
@@ -30,7 +30,9 @@ needs rollback after a bad write.
    ```
 
    The last command lists namespaces and proves catalog access end to end.
-2. Exit `64` from the wrapper means the `lakehouse` secret is missing or empty.
+   For Trino: `docker compose --profile lakehouse logs --tail=100 trino`,
+   then `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"`.
+2. Exit `64` from either wrapper means the `lakehouse` secret is missing or empty.
 3. `table bucket … not found` means the table bucket is missing or belongs to
    another account: re-run `seaweedfs-table-bucket`, which recreates the bucket,
    policy and namespaces idempotently.
@@ -45,7 +47,12 @@ needs rollback after a bad write.
    CALL lakehouse.system.rollback_to_snapshot('dev.t', <snapshot_id>);
    ```
 
-   Rollback works only while the snapshot has not been expired.
+   Rollback works only while the snapshot has not been expired. From Trino:
+   `SELECT snapshot_id, committed_at FROM lakehouse.dev."t$snapshots"` and
+   `ALTER TABLE lakehouse.dev.t EXECUTE rollback_to_snapshot(<snapshot_id>)`.
+6. `Failed to list views` from Trino means
+   `iceberg.rest-catalog.view-endpoints-enabled=false` is missing from the
+   catalog file.
 
 ## Evidence
 
@@ -73,4 +80,5 @@ reason.
 ## Related Documents
 
 - [Spark package README](../../../../../infra/04-data/lakehouse/spark/README.md)
+- [Trino package README](../../../../../infra/04-data/lakehouse/trino/README.md)
 - [Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)
