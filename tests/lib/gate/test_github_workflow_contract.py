@@ -152,6 +152,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "leaf.ci-gate-runner-regressions",
                 "leaf.ci-precommit-regressions",
                 "leaf.compose-baseline-regressions",
+                "leaf.conftest-policy",
                 "leaf.compose-validation",
                 "leaf.dependency-vulnerability-audit",
                 "leaf.docs-traceability",

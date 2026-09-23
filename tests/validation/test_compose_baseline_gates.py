@@ -2933,3 +2933,30 @@ class NetworkSegmentationContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ConftestPolicyGateTests(unittest.TestCase):
+    """The Conftest CI gate runs the declared job, and the job stays isolated."""
+
+    COMPOSE = "infra/09-tooling/conftest/docker-compose.yml"
+
+    def test_job_reads_infra_only_without_network_or_root(self) -> None:
+        service = _compose_service(self.COMPOSE, "conftest")
+        self.assertEqual("none", service["network_mode"])
+        self.assertEqual("1000:1000", service["user"])
+        self.assertEqual(["../..:/project/infra:ro"], service["volumes"])
+        self.assertNotIn("secrets", service)
+        self.assertEqual(["policy-check"], service["profiles"])
+
+    def test_gate_script_runs_the_declared_job(self) -> None:
+        script = (ROOT / "scripts/validation/check-conftest-policy.sh").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(f"-f {self.COMPOSE}", script)
+        self.assertIn("run --rm conftest", script)
+
+    def test_every_policy_has_unit_tests(self) -> None:
+        policy = ROOT / "infra/09-tooling/conftest/policy"
+        rules = {p.stem for p in policy.glob("*.rego") if not p.stem.endswith("_test")}
+        tests = {p.stem.removesuffix("_test") for p in policy.glob("*_test.rego")}
+        self.assertEqual(rules, tests)

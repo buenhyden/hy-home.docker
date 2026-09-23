@@ -862,6 +862,17 @@
       "suite_key": "supply-chain-fixture-policy"
     },
     {
+      "gate_id": "leaf.conftest-policy",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-conftest-policy.sh",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "conftest-policy"
+    },
+    {
       "gate_id": "leaf.template-security-baseline",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-template-security-baseline.sh",
@@ -964,6 +975,7 @@
       "opaque": false,
       "children": [
         "leaf.template-security-baseline",
+        "leaf.conftest-policy",
         "leaf.compose-baseline-regressions"
       ]
     },
@@ -1208,6 +1220,18 @@
         "argv": [
           "--check"
         ],
+        "contexts": [
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
+        ]
+      },
+      {
+        "suite": "repository-integrity",
+        "gate_id": "leaf.conftest-policy",
+        "entrypoint": "scripts/validation/check-conftest-policy.sh",
+        "argv": [],
         "contexts": [
           "local",
           "pull_request",
