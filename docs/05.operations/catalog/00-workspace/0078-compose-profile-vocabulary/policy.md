@@ -87,6 +87,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `opensearch` | topology | 단일 OpenSearch와 dashboards | `opensearch`, `opensearch-dashboards` | No | normal service startup | current |
 | `opensearch-cluster` | topology | OpenSearch 다중 노드 대안 | `opensearch-dashboards`, `opensearch-node1`, `opensearch-node2`, `opensearch-node3` | No | normal service startup | current |
 | `postgres-ha` | topology | Patroni·etcd PostgreSQL 실험 구성 | `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, `pg-1`, `pg-2`, `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter` | No | initialization: pg-cluster-init | current |
+| `policy-check` | capability | Conftest Rego 정책 테스트; `infra/` read-only, network 없음 | `conftest` | No | 읽기 전용 검사; 쓰기 없음 | current |
 | `profiling` | capability | 연속 프로파일 수집·조회 | `alloy`, `grafana`, `pyroscope` | No | normal service startup | current |
 | `qdrant` | capability | vector 검색 저장소 | `qdrant` | No | normal service startup | current |
 | `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |

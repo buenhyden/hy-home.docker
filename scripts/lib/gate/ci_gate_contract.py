@@ -110,6 +110,8 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.infrastructure-hardening": ("leaf.infrastructure-hardening",),
     "local.template-security-baseline": (
         "leaf.template-security-baseline",
+        # Added 2026-09-23. Rego policy tests over infra/ (POL-0095).
+        "leaf.conftest-policy",
         # Added 2026-08-29. Carries the failing-case suite for both Compose
         # baseline gates into the local profiles.
         "leaf.compose-baseline-regressions",

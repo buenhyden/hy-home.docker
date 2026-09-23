@@ -2069,6 +2069,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: openpolicyagent/conftest",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "openpolicyagent/conftest": "external"
+      },
+      "images": [
+        "openpolicyagent/conftest:v0.70.1"
+      ],
+      "compose_files": [
+        "infra/09-tooling/conftest/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/conftest/docker-compose.yml",
+          "images": [
+            "openpolicyagent/conftest:v0.70.1"
+          ]
+        }
+      ]
     }
   ]
 }

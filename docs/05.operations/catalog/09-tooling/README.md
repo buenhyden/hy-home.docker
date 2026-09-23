@@ -18,7 +18,7 @@ This domain co-locates each current tooling guide, policy, and runbook under
 its stable four-digit subject identity. Role membership follows the current
 subject tree. `tooling` selects Registry and SonarQube only; `testing` selects
 k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
-`dependency-update` selects Renovate; `api-mock` selects WireMock; `contract-testing` selects the Pact Broker. These
+`dependency-update` selects Renovate; `api-mock` selects WireMock; `contract-testing` selects the Pact Broker; `policy-check` selects Conftest. These
 services are outside HOME.
 
 ## Audience
@@ -49,6 +49,7 @@ services are outside HOME.
 | [dbt](0090-dbt/guide.md) | [Guide](0090-dbt/guide.md), [Policy](0090-dbt/policy.md), [Runbook](0090-dbt/runbook.md) |
 | [WireMock](0092-wiremock/guide.md) | [Guide](0092-wiremock/guide.md), [Policy](0092-wiremock/policy.md), [Runbook](0092-wiremock/runbook.md) |
 | [Pact Broker](0093-pact-broker/guide.md) | [Guide](0093-pact-broker/guide.md), [Policy](0093-pact-broker/policy.md), [Runbook](0093-pact-broker/runbook.md) |
+| [Conftest](0095-conftest/guide.md) | [Guide](0095-conftest/guide.md), [Policy](0095-conftest/policy.md), [Runbook](0095-conftest/runbook.md) |
 
 ## How to Work in This Area
 

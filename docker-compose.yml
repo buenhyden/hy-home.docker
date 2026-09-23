@@ -353,6 +353,7 @@ include:
   - infra/09-tooling/renovate/docker-compose.yml
   - infra/09-tooling/dbt/docker-compose.yml
   - infra/09-tooling/restic/docker-compose.yml
+  - infra/09-tooling/conftest/docker-compose.yml
   - infra/09-tooling/wiremock/docker-compose.yml
   - infra/09-tooling/pact-broker/docker-compose.yml
   # 10-communication

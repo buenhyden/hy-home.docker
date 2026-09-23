@@ -887,6 +887,40 @@ Compose, secret-metadata and core-readiness tests and `run-ci-gate.py --profile 
 nine containers keep their `k3d-hyhome` endpoint until each is recreated, and
 the `k3d-hyhome` network itself (owned by k3d) is not deleted.
 
+### Conftest (source, owner request 2026-09-23)
+
+The owner asked for Conftest to be implemented and included in the Docker
+stack.
+
+| Unit | Change |
+| --- | --- |
+| Service | `infra/09-tooling/conftest/`: `openpolicyagent/conftest:v0.70.1` one-shot job under the new `policy-check` profile; UID 1000, read-only root, `network_mode: none`, only `infra/` mounted read-only (never `secrets/`, `.env` or the Docker socket) |
+| Policies | `compose` namespace: deny privileged outside `cadvisor`, missing profile, `:latest` or untagged image, literal value in a password/secret/token/key variable; warn on host ports on all interfaces. `dockerfile` namespace: deny untagged or `:latest` `FROM`, `ADD` from a URL without `--checksum` |
+| Tests | `compose_test.rego` and `dockerfile_test.rego` (12 cases); `run.sh` runs `conftest verify` before testing the source |
+| Contracts | root include; POL-0078 `policy-check` row; m0021 row; version projection |
+| Documents | new subject `0095-conftest` and package README, all `draft`; 09-tooling infra and catalog READMEs |
+
+Evidence: the first run of the secret rule flagged 17 declarations, all false
+positives (booleans, URLs, `*_CMD`, `/run/secrets/` paths); the rule now
+exempts those shapes and each is a passing unit case. The job then reports
+verify 12/12, Compose 281 checks with 0 failures and 44 warnings (ports on all
+interfaces, mostly ingress, mail, Kafka and OpenSearch), and Dockerfile 51
+checks with 0 failures. A planted file with `:latest`, privileged, no profile
+and a literal password fails all four rules.
+
+On the owner's follow-up the job is a CI check: `leaf.conftest-policy`
+(`scripts/validation/check-conftest-policy.sh`, which runs the declared
+Compose job and exits 2 without Docker) is a `repository-integrity` validator
+and a child of `local.template-security-baseline` (pinned in
+`ci_gate_contract.py`), with a manifest row and `ConftestPolicyGateTests`
+pinning the job's isolation and the script's use of the declared job; `run-ci-gate.py --profile changed` exit 0 with the new leaf.
+
+`test_secret_metadata_sync` treats a secret path in any mounted file as a
+reference, so mounting `infra/` made `conftest` look like a reader of 30
+secrets. `SOURCE_ANALYSIS_SERVICES = {"conftest"}` exempts it from that
+scan, and a new test keeps the exemption safe: such a service holds no secret
+grant, has `network_mode: none` and mounts only read-only, non-`secrets` paths.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
