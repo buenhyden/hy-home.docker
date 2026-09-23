@@ -2049,6 +2049,28 @@
       ]
     },
     {
+      "component": "Compose image: hy-home/spark-iceberg",
+      "tier": "04-data",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/spark-iceberg": "local-custom"
+      },
+      "images": [
+        "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
+      ],
+      "compose_files": [
+        "infra/04-data/lakehouse/spark/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lakehouse/spark/docker-compose.yml",
+          "images": [
+            "hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local"
+          ]
+        }
+      ]
+    },
+    {
       "component": "Compose image: openpolicyagent/conftest",
       "tier": "09-tooling",
       "classification": "external",
