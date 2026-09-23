@@ -1,0 +1,36 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+services:
+  # Data quality job: checks Iceberg tables through Trino against the tracked
+  # suites in ./suites. The default command only lists suites; checking is an
+  # explicit `docker compose run --rm great-expectations validate [SUITE...]`,
+  # which reads tables and exits 1 when an expectation fails.
+  great-expectations:
+    profiles:
+      - lakehouse
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-med
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hy-home/great-expectations:1.23.1-local
+    container_name: great-expectations
+    command:
+      - list
+    environment:
+      HOME: /tmp
+      # No usage events leave the host.
+      GX_ANALYTICS_ENABLED: 'false'
+      # Trino has no authentication; the user name only labels the queries.
+      GX_TRINO_URL: 'trino://great-expectations@trino:8080/lakehouse'
+    volumes:
+      - ./suites:/opt/hyhome/suites:ro
+    depends_on:
+      trino:
+        condition: service_healthy
+    networks:
+      object_net: {}
+    labels:
+      <<: *tier-label

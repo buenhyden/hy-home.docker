@@ -2197,6 +2197,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                     "seaweedfs-buckets",
                     "seaweedfs-table-bucket",
                     "trino",
+                    "great-expectations",
                     *FLINK_SERVICES,
                 ],
                 cwd=ROOT,
@@ -2213,6 +2214,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "seaweedfs-buckets",
                 "seaweedfs-table-bucket",
                 "trino",
+                "great-expectations",
                 *FLINK_SERVICES,
             )
         }
@@ -2228,7 +2230,13 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 if name == "seaweedfs-s3"
                 else {"client": {}}
                 if name
-                in ("seaweedfs-buckets", "seaweedfs-table-bucket", "trino", *FLINK_SERVICES)
+                in (
+                    "seaweedfs-buckets",
+                    "seaweedfs-table-bucket",
+                    "trino",
+                    "great-expectations",
+                    *FLINK_SERVICES,
+                )
                 else {"sw": {}}
             )
             service.pop("ports", None)
@@ -2618,6 +2626,40 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             f"SELECT COUNT(*) AS n, SUM(id) AS s FROM {table};\n"
         )
         self.assertRegex(out, r"\|\s+7\s+\|\s+63\s+\|")
+
+    def test_3_great_expectations_passes_and_fails_through_trino(self) -> None:
+        # SPEC-0180 S15: the HOME image and the tracked rehearsal suite; a
+        # duplicate key turns the same suite into exit 1.
+        started = self.compose(
+            "up", "-d", "--no-deps", "--wait", "--wait-timeout", "240", "trino"
+        )
+        self.addCleanup(self.compose, "rm", "-sf", "trino")
+        self.assertEqual(0, started.returncode, started.stderr)
+
+        def sql(statement: str) -> None:
+            result = self.compose("exec", "-T", "trino", "trino", "--execute", statement)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+        def gx() -> subprocess.CompletedProcess[str]:
+            return self.compose(
+                "run", "--rm", "--no-deps", "great-expectations",
+                "validate", "lakehouse-rehearsal",
+            )
+
+        table = "lakehouse.test.gx_rehearsal"
+        sql(f"CREATE TABLE {table} (id bigint, name varchar)")
+        self.addCleanup(sql, f"DROP TABLE IF EXISTS {table}")
+        sql(f"INSERT INTO {table} VALUES (1, 'a'), (2, 'b')")
+        passed = gx()
+        self.assertEqual(0, passed.returncode, passed.stdout + passed.stderr)
+        self.assertIn('"table": "test.gx_rehearsal", "success": true', passed.stdout)
+        sql(f"INSERT INTO {table} VALUES (2, 'c')")
+        failed = gx()
+        self.assertEqual(1, failed.returncode, failed.stdout + failed.stderr)
+        self.assertIn(
+            '"expectation": "expect_column_values_to_be_unique"', failed.stdout
+        )
+        self.assertIn('"success": false}', failed.stdout)
 
     def test_3_s3_api_used_by_consumers(self) -> None:
         io = self.dir / "io"

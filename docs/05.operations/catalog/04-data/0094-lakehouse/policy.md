@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -42,6 +42,9 @@ removal.
   route, and `web.submit.enable=false` so no JAR can be uploaded through it.
   Jobs come from the SQL client inside the JobManager container. A streaming
   `INSERT` writes until it is cancelled; record the job ID and target table.
+- Great Expectations only reads: suites are tracked files mounted read-only,
+  the context is ephemeral, and `GX_ANALYTICS_ENABLED=false`. A failed suite
+  is a finding for the table owner, not a reason to change the suite.
 - The default Spark command reads only. `expire_snapshots`,
   `remove_orphan_files` and `DROP … PURGE` delete files and need a named table
   and a recorded reason. The same holds for Trino `DROP TABLE` and its
@@ -75,4 +78,5 @@ new namespace.
 - [Spark Compose source](../../../../../infra/04-data/lakehouse/spark/docker-compose.yml)
 - [Trino Compose source](../../../../../infra/04-data/lakehouse/trino/docker-compose.yml)
 - [Flink Compose source](../../../../../infra/04-data/lakehouse/flink/docker-compose.yml)
+- [Great Expectations Compose source](../../../../../infra/04-data/lakehouse/great-expectations/docker-compose.yml)
 - [Compose profile vocabulary](../../00-workspace/0078-compose-profile-vocabulary/policy.md)

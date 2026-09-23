@@ -1,0 +1,2 @@
+great-expectations==1.23.1
+trino[sqlalchemy]==0.340.0

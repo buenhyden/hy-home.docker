@@ -2135,6 +2135,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: hy-home/great-expectations",
+      "tier": "04-data",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/great-expectations": "local-custom"
+      },
+      "images": [
+        "hy-home/great-expectations:1.23.1-local"
+      ],
+      "compose_files": [
+        "infra/04-data/lakehouse/great-expectations/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/04-data/lakehouse/great-expectations/docker-compose.yml",
+          "images": [
+            "hy-home/great-expectations:1.23.1-local"
+          ]
+        }
+      ]
     }
   ]
 }
