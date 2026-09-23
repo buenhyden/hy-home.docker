@@ -740,6 +740,37 @@ Sequential review findings and their disposition:
 | a new dependency surface with no named update owner breaks the Behavior Contract | Renovate's `pip_requirements` description names it as manually owned |
 | the changed gate failed `test_every_test_module_is_reachable_from_the_full_profile`: the module was in no suite, and a `tests.integration` module is outside the adapter grammar | moved to `tests/validation/` and registered in `leaf.compose-baseline-regressions`, not a widened adapter grammar |
 
+### S10 — WireMock (source)
+
+| Unit | Change |
+| --- | --- |
+| Service | `infra/09-tooling/wiremock/`: `wiremock/wiremock:3.13.2-alpine` under the read-only template, UID 1000, all capabilities dropped, 512 MiB; tracked `mappings/` mounted read-only; request journal capped at 1000 entries; health from `/__admin/health` |
+| Exposure | the admin API is unauthenticated, so the host port `127.0.0.1:${WIREMOCK_HOST_PORT:-18088}` is loopback-only like the registry and no Traefik route or OIDC client exists; containers use `wiremock:8080` on the project default network |
+| Profile | new `api-mock` (capability) with a POL-0078 row and a companion row; not part of HOME or any domain profile |
+| Contracts | root include; public key `WIREMOCK_HOST_PORT` in `.env.example` (the operator `.env` gains it at the live step); version projection +1 image; authored m0021 row rendered by `render_service_inventory` |
+| Documents | new subject `0092-wiremock` (GDE/POL/RUN-0092), package README, 09-tooling infra and catalog READMEs |
+
+Evidence: `validate-docker-compose.sh` default mode 70 selections and 336
+services, and `api-mock` alone 1 service; `check-operations-catalog.py` PASS;
+`sync-tech-stack-versions.sh --check` in sync; `check-all-hardening.sh
+09-tooling` PASS. An isolated Compose project (`-p s10-probe`, host port 18188)
+started the real definition healthy with `user=1000:1000`, a read-only root,
+`CapDrop=[ALL]`, a 512 MiB limit and a `127.0.0.1` binding; the tracked stub
+answered, an unknown path returned 404 and appeared in
+`__admin/requests/unmatched/near-misses`, and `__admin/mappings/reset` reloaded
+one mapping; the project was removed afterwards. Live start is NOT_RUN and
+needs its own approval.
+
+Sequential review (read-only reviewer) findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| the default network is also an unauthenticated admin boundary, and AD-0026 listed only peerless services there | AD-0026 names WireMock and the rule; policy and guide state that any default-network container has full admin rights and a named consumer gets a scoped network |
+| the policy claimed the read-only mount forbids recording | reworded: it blocks persisting; recording or `proxyBaseUrl` is a policy prohibition |
+| the loopback binding, the only exposure control, had no gate | `check_09_tooling` asserts the `127.0.0.1` publication |
+| catalog table split by blank lines; hard-coded 18088 in commands; redundant healthcheck redirections; inventory row missing the HOME requirement link | fixed |
+| AD-0009 lists no profile for dbt, Restic or WireMock | pre-existing drift; deferred to S19 document convergence |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -764,6 +795,7 @@ Sequential review findings and their disposition:
 | S05 phase 2 source | Task 10 / S05 | PASS: 135 attachments removed across 41 Compose files, `infra_net` and its env keys gone, 13 `check_service_network` assertions replace the fixed-address ones; review findings fixed | this Task, AD-0026 |
 | S05 phase 2 live | Task 10 / S05 | PASS: 56 containers recreated, `infra_net` removed, Loki container coverage 6 → 56, SSO 302, Gatus 6/7 then 7/7 after the owner's unseal; Agent SecretID open | this Task |
 | S09 Testcontainers | Task 10 / S09 | PASS: 2/2 integration tests against the declared PostgreSQL pin after the move to `tests/validation/`; skip-without-opt-in verified; `run-ci-gate.py --profile changed` exit 0 | tests README |
+| S10 WireMock | Task 10 / S10 | PASS: Compose all selections, catalog, version projection, hardening (now asserting the loopback binding); isolated Compose rehearsal healthy and hardened; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0092 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence

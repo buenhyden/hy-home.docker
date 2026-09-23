@@ -1996,6 +1996,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: wiremock/wiremock",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "wiremock/wiremock": "external"
+      },
+      "images": [
+        "wiremock/wiremock:3.13.2-alpine"
+      ],
+      "compose_files": [
+        "infra/09-tooling/wiremock/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/wiremock/docker-compose.yml",
+          "images": [
+            "wiremock/wiremock:3.13.2-alpine"
+          ]
+        }
+      ]
     }
   ]
 }

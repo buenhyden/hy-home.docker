@@ -1,0 +1,38 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+
+services:
+  wiremock:
+    # An HTTP stub for development and tests. It serves only the tracked
+    # mappings, so it declares its own profile and joins no HOME selection.
+    profiles:
+      - api-mock
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-med
+    image: wiremock/wiremock:3.13.2-alpine
+    container_name: wiremock
+    user: '1000:1000'
+    # The admin API under /__admin has no authentication, so the host
+    # endpoint stays on loopback like the registry.
+    ports:
+      - '127.0.0.1:${WIREMOCK_HOST_PORT:-18088}:8080'
+    volumes:
+      # Read-only: stubs added through the admin API live in memory and
+      # disappear on restart; the tracked files stay the only authority.
+      - ./mappings:/home/wiremock/mappings:ro
+    command:
+      - --disable-banner
+      # The request journal is in memory; bound it so a long test run cannot
+      # grow the JVM past the template's memory limit.
+      - --max-request-journal-entries
+      - '1000'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8080/__admin/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    labels:
+      <<: *tier-label

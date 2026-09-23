@@ -1,0 +1,1 @@
+{"request":{"method":"GET","url":"/hyhome/ping"},"response":{"status":200,"jsonBody":{"stub":"wiremock"},"headers":{"Content-Type":"application/json"}}}

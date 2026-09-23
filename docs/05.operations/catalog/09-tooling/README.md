@@ -1,10 +1,10 @@
 ---
 title: "Operations — 09 Tooling"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 ---
 
@@ -18,7 +18,8 @@ This domain co-locates each current tooling guide, policy, and runbook under
 its stable four-digit subject identity. Role membership follows the current
 subject tree. `tooling` selects Registry and SonarQube only; `testing` selects
 k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
-`dependency-update` selects Renovate. These services are outside HOME.
+`dependency-update` selects Renovate; `api-mock` selects WireMock. These
+services are outside HOME.
 
 ## Audience
 
@@ -43,11 +44,10 @@ k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
 | [SonarQube](0066-sonarqube/guide.md) | [Guide](0066-sonarqube/guide.md), [Policy](0066-sonarqube/policy.md), [Runbook](0066-sonarqube/runbook.md) |
 | [Terraform](0068-terraform/guide.md) | [Guide](0068-terraform/guide.md), [Policy](0068-terraform/policy.md), [Runbook](0068-terraform/runbook.md) |
 | [Terrakube](0069-terrakube/guide.md) | [Guide](0069-terrakube/guide.md), [Policy](0069-terrakube/policy.md), [Runbook](0069-terrakube/runbook.md) |
-
 | [OpenTofu](0082-opentofu/guide.md) | [Guide](0082-opentofu/guide.md), [Policy](0082-opentofu/policy.md), [Runbook](0082-opentofu/runbook.md) |
-
 | [Renovate](0083-renovate/guide.md) | [Guide](0083-renovate/guide.md), [Policy](0083-renovate/policy.md), [Runbook](0083-renovate/runbook.md) |
 | [dbt](0090-dbt/guide.md) | [Guide](0090-dbt/guide.md), [Policy](0090-dbt/policy.md), [Runbook](0090-dbt/runbook.md) |
+| [WireMock](0092-wiremock/guide.md) | [Guide](0092-wiremock/guide.md), [Policy](0092-wiremock/policy.md), [Runbook](0092-wiremock/runbook.md) |
 
 ## How to Work in This Area
 
