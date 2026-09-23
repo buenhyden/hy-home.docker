@@ -61,7 +61,7 @@ automatic address pool cannot take one first.
 
 Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the
 project default network. `restic` and `backup-sqlite-export` keep
-`network_mode: none`. Mail networking is added with Stalwart in S17.
+`network_mode: none`. Stalwart and Mailpit are on `edge_net`; a dedicated mail network is added in S17.
 
 ## Data Flow
 

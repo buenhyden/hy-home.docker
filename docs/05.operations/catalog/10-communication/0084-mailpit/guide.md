@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -30,7 +30,7 @@ ports are bound to `127.0.0.1`, while the UI is also routed through Traefik.
 
 - [Mailpit Compose](../../../../../infra/10-communication/mailpit/docker-compose.yml)
   owns the image, profiles, ports, environment, healthcheck, and volume.
-- SMTP listens inside `infra_net` and on loopback host port
+- SMTP listens inside `edge_net` and on loopback host port
   `${MAILPIT_SMTP_HOST_PORT:-1025}`. The UI uses loopback
   `${MAILPIT_UI_HOST_PORT:-8025}` and `mailpit.${DEFAULT_URL}` through the
   gateway middleware chain.
@@ -47,7 +47,7 @@ ports are bound to `127.0.0.1`, while the UI is also routed through Traefik.
 
 1. Validate from the root with `docker compose --profile mail-dev config --quiet`.
 2. Configure a development application to send to `mailpit:${MAILPIT_SMTP_PORT:-1025}`
-   on `infra_net`; host tools use the loopback host port.
+   on `edge_net`; host tools use the loopback host port.
 3. Send only synthetic or approved test mail. The database contains bodies,
    headers, addresses, and attachments and must be treated as sensitive test data.
 4. Verify capture through the authenticated UI or a bounded API query, then

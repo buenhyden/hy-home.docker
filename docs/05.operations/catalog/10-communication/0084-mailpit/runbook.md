@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0084"
 parent_ids:
@@ -32,7 +32,7 @@ from the repository root and do not expose captured content in evidence.
 
 2. Separate the failure:
    - `readyz` failure: inspect database permissions/locks and free space.
-   - SMTP failure: verify the client uses service DNS from `infra_net` or the
+   - SMTP failure: verify the client uses service DNS from `edge_net` or the
      loopback host port; do not open the host bind.
    - UI failure: check Traefik/auth separately from SMTP capture.
 3. If restart is approved, restart only Mailpit and send one synthetic message

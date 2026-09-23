@@ -88,7 +88,7 @@ labels:
 
 ## Available Scripts
 
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate RedisInsight route, image, static IP, and healthcheck.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate RedisInsight route, image, network membership, and healthcheck.
 - `docker logs --tail 100 redisinsight`: inspect logs when the service is running.
 
 ## Validation

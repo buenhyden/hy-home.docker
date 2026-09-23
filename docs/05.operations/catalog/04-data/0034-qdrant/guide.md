@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `infra_net`, REST route, gRPC TCP route와 `/readyz` healthcheck를 사용한다.
+이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, REST route, gRPC TCP route와 `/readyz` healthcheck를 사용한다.
 
 ### Current implementation
 

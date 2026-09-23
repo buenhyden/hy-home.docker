@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -30,7 +30,7 @@ SurrealDB is an `OPTIONAL` database for Open Notebook pinned to SurrealDB v2 for
 | Consumer and data rationale | OPTIONAL persistent multi-model database for Open Notebook; pinned to SurrealDB v2 due to upstream compatibility constraints. |
 | Source / updater | [Compose](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml), [Dockerfile](../../../../../infra/11-laboratory/open-notebook/surrealdb/Dockerfile), and entrypoint own the process; base image is pinned to SurrealDB v2. |
 | Services / profiles | Single `surrealdb`; exact `surrealdb`, `notebook`. |
-| Flow / exposure | Open Notebook connects on `infra_net`; host access is internal port 8000 via Compose exposure. |
+| Flow / exposure | Open Notebook connects on `ai_net`; host access is internal port 8000 via Compose exposure. |
 | Persistence / environment | bind-backed `surrealdb-data:/mydata`; host-port and path inputs are Compose-owned. |
 | Secrets / security | `surreal_db_password`; root/namespace/database auth scopes must match each operation. |
 | Health / resources | `surreal is-ready` proves reachability only; the custom service uses its Compose-declared template. |
@@ -63,7 +63,7 @@ Describe the current profile, exposure, persistence, authentication, namespace/d
 1. Render the selected surface: `docker compose --profile surrealdb config --quiet`.
 2. Check the declared service: `docker compose --profile surrealdb ps surrealdb`.
 3. Check readiness without credentials or data: `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`.
-4. Applications on `infra_net` connect via `ws://surrealdb:8000/rpc`.
+4. Applications on `ai_net` connect via `ws://surrealdb:8000/rpc`.
 5. For recovery inventory, bind every export to engine version, namespace, database, auth level, schema/data scope, checksum, retention, and an isolated restore result.
 
 ### Common Pitfalls

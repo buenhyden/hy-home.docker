@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -62,7 +62,7 @@ created: "2026-05-17"
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- Nginx runtime lint such as `docker compose exec nginx nginx -t` is valid only after an approved Nginx context with root `infra_net` and backend dependencies is running.
+- Nginx runtime lint such as `docker compose exec nginx nginx -t` is valid only after an approved Nginx context with the root networks and backend dependencies is running.
 - Standalone `infra/01-gateway/nginx/docker-compose.yml` compose rendering is not readiness evidence.
 
 ### Recovery and Upgrade Controls

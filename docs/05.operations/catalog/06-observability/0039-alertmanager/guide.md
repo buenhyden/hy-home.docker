@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -93,7 +93,7 @@ created: "2026-05-10"
 ### Source-backed operating contract
 
 - **Purpose/classification/source**: `alertmanager` is a `HOME` alert-routing service selected by `obs`/`alerting`; [observability Compose](../../../../../infra/06-observability/docker-compose.yml), the mounted config template, and entrypoint are authoritative.
-- **Flow/dependencies/security**: Prometheus sends alerts over `infra_net`; Alertmanager groups, inhibits, and routes them to approved SMTP/Slack receivers. Traefik protects its UI. The entrypoint renders credentials from `smtp_username`, `smtp_password`, and `slack_webhook` Docker Secrets into a temporary runtime config; never render or archive that file as ordinary evidence.
+- **Flow/dependencies/security**: Prometheus sends alerts over `obs_net`; Alertmanager groups, inhibits, and routes them to approved SMTP/Slack receivers. Traefik protects its UI. The entrypoint renders credentials from `smtp_username`, `smtp_password`, and `slack_webhook` Docker Secrets into a temporary runtime config; never render or archive that file as ordinary evidence.
 - **State/resources**: `alertmanager-data:/alertmanager` retains silences and the notification log. Its loss does not delete Prometheus alerts, but it can repeat notifications or lose silences. Compose limits are source configuration, not measured headroom.
 - **Normal use/lifecycle**: from root run `docker compose --profile obs config --quiet`, validate the source config without printing rendered secrets, then start/reload only after receiver tests. Back up the stopped data volume plus source template and secret references; upgrade one pinned image at a time and verify grouping, inhibition, silence retention, and a controlled notification.
 - **Upstream/license**: follow official [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/). Alertmanager is Apache-2.0 licensed.

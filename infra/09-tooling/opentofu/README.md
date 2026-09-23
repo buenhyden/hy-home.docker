@@ -35,7 +35,7 @@ Runtime pins belong to [Compose](docker-compose.yml) and its referenced build so
 
 | Service | Profiles | Networks | Host ports | Secret references |
 | --- | --- | --- | --- | --- |
-| `opentofu` | `iac` | project default | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `opentofu` | `iac` | project default; a state backend against an in-project service (for example `seaweedfs-s3`) needs `object_net` added | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:
 

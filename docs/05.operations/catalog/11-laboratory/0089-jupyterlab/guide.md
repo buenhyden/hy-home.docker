@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -40,7 +40,7 @@ eight-profile operating command.
 | Path | Control | What it does not provide |
 | --- | --- | --- |
 | Browser route | Gateway SSO, then the server token (cookie afterwards); REST and kernel WebSockets follow the same route | Per-user identity inside Jupyter; every SSO user who knows the token is the same UID 1000 |
-| Direct `infra_net` access to port 8888 | Server token | Network isolation; peers can attempt the API |
+| Direct `ai_net` access to port 8888 | Server token | Network isolation; peers can attempt the API |
 | Kernels and terminals | Run as UID 1000 in the container | Isolation between people, CPU/memory quotas per user |
 
 SSO proves who reached the gateway; it does not isolate kernels or files. Real
@@ -50,7 +50,7 @@ into this single-user server.
 
 ### MLflow from notebooks
 
-`MLFLOW_TRACKING_URI` points to `http://mlflow:5000` on `infra_net`, which
+`MLFLOW_TRACKING_URI` points to `http://mlflow:5000` on `ai_net`, which
 bypasses the browser SSO route and has no MLflow-level authentication. Runs
 logged from a notebook are not attributed to an SSO user. Artifacts upload
 through the MLflow proxy, so the notebook holds no object-storage credential. If MLflow

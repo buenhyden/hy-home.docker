@@ -1,10 +1,10 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -40,7 +40,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
   - OTLP ingress는 gRPC `4317`과 HTTP `4318`을 사용한다.
   - Alloy UI/health endpoint는 `${ALLOY_PORT:-12345}`와 `/-/healthy`
     healthcheck를 기준으로 한다.
-  - Docker discovery는 `project_net|infra_net` network targets만 유지한다.
+  - Docker discovery는 `project_net|`obs_net`` network targets만 유지한다.
   - Docker log labels는 `service_name`, `container_name`, `compose_project`,
     `env`, `scope`를 기준으로 하고, observability infrastructure services는
     `scope=infra`로 relabel한다.
@@ -90,7 +90,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 - Compose service boundary:
   `rg -n 'service: template-infra-med|image: grafana/alloy:|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Alloy pipeline config:
-  `rg -n 'discovery.docker|project_net\\|infra_net|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
+  `rg -n 'discovery.docker|project_net\\|`obs_net`|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 

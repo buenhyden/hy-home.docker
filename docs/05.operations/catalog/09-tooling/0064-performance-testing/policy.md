@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -56,7 +56,7 @@ created: "2026-05-17"
 
 #### 2. 환경 격리 (Environment Isolation)
 
-- **네트워크**: `infra_net` 내에서 실행되며, 필요한 경우 부하 생성을 위한 전용 워커 노드를 분리하여 배치함.
+- **네트워크**: the project default network 내에서 실행되며, 필요한 경우 부하 생성을 위한 전용 워커 노드를 분리하여 배치함.
 - **데이터베이스**: 가능한 경우 실제 운영 DB가 아닌 복제본 또는 테스트 전용 환경을 대상으로 테스트를 수행해야 함.
 
 #### 3. 지표 관리 및 보존 (Retention)

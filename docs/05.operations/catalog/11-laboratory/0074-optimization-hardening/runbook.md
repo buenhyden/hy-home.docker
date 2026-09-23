@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -48,7 +48,7 @@ created: "2026-05-17"
    - middleware/allowlist 회귀:
      - 각 서비스 라우터 체인을 `gateway-standard-chain + <service>-admin-ip + sso-errors + sso-auth`로 복원
    - 네트워크 드리프트:
-     - root `infra_net` context에 합류하는 service network block 복원
+     - root 선언된 network context에 합류하는 service network block 복원
    - dashboard direct 노출:
      - `ports` 제거, `expose`만 유지
    - dozzle 권한 드리프트:

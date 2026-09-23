@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -27,8 +27,8 @@ garbage collection, upgrade, and removal.
 ## Controls
 
 - **Activation:** use `registry` or general `tooling`; it is excluded from HOME.
-- **Exposure/auth:** the host port is bound to `127.0.0.1`; containers on
-  `infra_net` can still reach it without authentication. Do not assume firewall
+- **Exposure/auth:** the host port is bound to `127.0.0.1`; containers on the
+  project default network can still reach it without authentication. Do not assume firewall
   or daemon restrictions. Before
   sensitive use or broader access, implement and validate TLS plus authentication
   or a trusted authenticated reverse proxy. Insecure registry client settings are

@@ -54,13 +54,13 @@ discovery.relabel "docker_logs_relabel" {
     replacement  = "app"
   }
 
-  // Keep every Compose-managed container. `loki.source.docker` deduplicates
+  // Keep this project's containers. `loki.source.docker` deduplicates
   // targets by container ID, so a container on several networks or with
   // several ports is still read once (SPEC-0180 S05 phase 2; the earlier
   // `project_net|infra_net` filter dropped segmented services instead).
   rule {
     source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
-    regex         = ".+"
+    regex         = "hy-home-infra"
     action        = "keep"
   }
 

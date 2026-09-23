@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -27,7 +27,7 @@ hardening contract. It does not authorize activation or security migration.
 ## Controls
 
 Every messaging change must preserve root Compose validity, explicit profiles,
-health checks, resource limits, persistence ownership, `infra_net`, secret files
+health checks, resource limits, persistence ownership, `kafka_net`, secret files
 and an actionable recovery owner. The only current broker family is Kafka.
 
 ### Security policy

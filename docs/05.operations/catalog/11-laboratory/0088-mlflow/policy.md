@@ -1,10 +1,10 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -45,7 +45,7 @@ handling, backup/restore, upgrade and removal of the MLflow tracking server.
 
 ## Exceptions
 
-Internal SDK access on `infra_net` is unauthenticated. This is an accepted,
+Internal SDK access on `ai_net`, `object_net` is unauthenticated. This is an accepted,
 recorded gap until an MLflow-level authentication path is approved; it is not
 an assurance. No exception may disable gateway SSO.
 

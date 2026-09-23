@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0017"
 parent_ids:
@@ -29,7 +29,7 @@ created: "2026-05-10"
 | --- | --- |
 | Classification and consumer | OPTIONAL, on-demand time-series experiment. No named production workload or measured capacity is confirmed. |
 | Compose ownership | Root project includes [the InfluxDB Compose fragment](../../../../../infra/04-data/analytics/influxdb/docker-compose.yml); profile `influxdb`; service `influxdb`. Compose owns the runtime image and Renovate owns update proposals. |
-| Data flow and exposure | Clients on `infra_net` write/query HTTP on container port `8181`; Traefik publishes `influxdb.${DEFAULT_URL}` through `gateway-standard-chain@file`. There is no direct host port. |
+| Data flow and exposure | Clients on `edge_net` write/query HTTP on container port `8181`; Traefik publishes `influxdb.${DEFAULT_URL}` through `gateway-standard-chain@file`. There is no direct host port. |
 | Persistence | Bind-backed named volumes `influxdb-data` and `influxdb-plugins` map below `${DEFAULT_DATA_DIR}/influxdb`. The server uses local object storage with node ID `node0`. |
 | Configuration and credentials | The command declares the data and plugin directories. The leaf service mounts no Docker Secret and does not provision a token; any authenticated write therefore needs separately managed runtime credentials. |
 | Health and resources | `/` accepts `200`, `204`, or `401`; `template-stateful-med` supplies 1 CPU, 512 MiB, restart policy, log rotation, dropped capabilities, and `no-new-privileges`. |
@@ -55,7 +55,7 @@ created: "2026-05-10"
 
 - `infra/04-data/analytics/influxdb/docker-compose.yml`
 - Request input: operator-selected database name; preserved registry entries for `influxdb_api_token` and `influxdb_password` are local metadata, not leaf server wiring or provisioning
-- `infra_net` access for service-to-service checks
+- `edge_net` access for service-to-service checks
 
 ### Step-by-step Instructions
 

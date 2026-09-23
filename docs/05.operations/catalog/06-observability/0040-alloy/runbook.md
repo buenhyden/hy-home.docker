@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -61,7 +61,7 @@ created: "2026-05-17"
 3. Pipeline config boundary를 확인한다.
 
    ```bash
-   rg -n 'discovery.docker|project_net\\|infra_net|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
+   rg -n 'discovery.docker|project_net\\|`obs_net`|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
    ```
 
 4. Downstream exporter failure가 의심되면 backend readiness를 확인한다.
@@ -82,7 +82,7 @@ created: "2026-05-17"
 6. Label drift or discovery gap이 의심되면 relabel rules와 network filter를 확인한다.
 
    ```bash
-   rg -n 'target_label  = "service_name"|target_label  = "container_name"|target_label = "scope"|regex         = "project_net\\|infra_net"|replacement   = "infra"' infra/06-observability/alloy/config/config.alloy
+   rg -n 'target_label  = "service_name"|target_label  = "container_name"|target_label = "scope"|regex         = "project_net\\|`obs_net`"|replacement   = "infra"' infra/06-observability/alloy/config/config.alloy
    ```
 
 7. Config가 현재 정책과 일치하지만 runtime state가 회복되지 않으면 Alloy를 재시작한다.

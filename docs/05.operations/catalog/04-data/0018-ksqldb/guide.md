@@ -1,10 +1,10 @@
 ---
 title: "ksqlDB Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0018"
 parent_ids:
@@ -30,7 +30,7 @@ created: "2026-05-10"
 | Field | Current contract |
 | --- | --- |
 | Services and flow | `ksqldb-server` connects to `kafka-1..3`, `schema-registry`, and `kafka-connect`; `ksqldb-cli` is an interactive companion; `ksql-datagen` only waits for Kafka/Schema Registry and tails. It does not load sample data automatically. |
-| Network and exposure | All services use `infra_net`; only server port `${KSQLDB_HOST_PORT:-8088}` is host-published. No Traefik route or Docker Secret is declared. |
+| Network and exposure | All services use `kafka_net`; only server port `${KSQLDB_HOST_PORT:-8088}` is host-published. No Traefik route or Docker Secret is declared. |
 | Persistence | `ksqldb-data-volume` persists local server state, while durable command and stream state also depends on Kafka internal/source/sink topics and Schema Registry. The local volume alone is not a complete recovery point. |
 | Configuration | `KSQL_BOOTSTRAP_SERVERS`, `KSQL_KSQL_SCHEMA_REGISTRY_URL`, `KSQL_KSQL_CONNECT_URL`, listeners, replication factor, and 512 MiB JVM heap are declared in Compose. |
 | Health and resources | `/info` is the readiness endpoint. The server inherits 1 CPU/512 MiB; CLI and datagen inherit low-tier limits and dependency health gates. |

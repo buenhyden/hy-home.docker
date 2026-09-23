@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -103,7 +103,7 @@ created: "2026-05-10"
 
 - **Purpose/classification/source**: `grafana` is the `HOME` observability UI selected by multiple observability profiles; [Compose](../../../../../infra/06-observability/docker-compose.yml) and provisioning files are authoritative.
 - **State flow**: current source sets no `GF_DATABASE_*` external database variables, so Grafana uses its default SQLite database in `grafana-data:/var/lib/grafana` together with plugins and runtime state. Datasources/dashboards are provisioned read-only from tracked files.
-- **Secrets/auth/dependencies**: `grafana_admin_password` and `grafana_client_secret` feed admin bootstrap and native Keycloak OAuth. Anonymous access is disabled by current source (2026-09-21); it previously exposed every dashboard without sign-in. Traefik, Keycloak, root CA, datasources, and `infra_net` are dependencies; evaluate anonymous access separately from OAuth administration.
+- **Secrets/auth/dependencies**: `grafana_admin_password` and `grafana_client_secret` feed admin bootstrap and native Keycloak OAuth. Anonymous access is disabled by current source (2026-09-21); it previously exposed every dashboard without sign-in. Traefik, Keycloak, root CA, datasources, and `obs_net` are dependencies; evaluate anonymous access separately from OAuth administration.
 - **Resources/normal use**: Compose limits are source values, not measured headroom. Render from root, verify `/api/health`, OAuth login, anonymous denial, datasource health, and provisioned dashboard load.
 - **Lifecycle**: stop Grafana before copying SQLite/`grafana-data`; preserve provisioning and matching secrets. Review plugin/schema compatibility, upgrade one pinned version, and verify users/teams/dashboards/alerts/datasources/OAuth before resuming.
 - **Upstream/license**: follow official [installation/database default](https://grafana.com/docs/grafana/latest/setup-grafana/installation/), [backup](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/), and [upgrade](https://grafana.com/docs/grafana/latest/upgrade-guide/when-to-upgrade/) guidance. Grafana OSS is AGPL-3.0 licensed.

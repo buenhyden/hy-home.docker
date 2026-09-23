@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -36,7 +36,7 @@ bash scripts/hardening/check-all-hardening.sh 04-data
 ```
 
 Inspect the rendered services without printing substituted private values. Verify
-classification/profile alignment, unique writable volumes, `infra_net`, secret
+classification/profile alignment, unique writable volumes, the declared networks, secret
 files, health checks, CPU/memory limits, intended port publication and an
 engine-specific backup/restore owner.
 

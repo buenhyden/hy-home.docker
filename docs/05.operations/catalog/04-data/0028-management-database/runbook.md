@@ -1,10 +1,10 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -30,7 +30,7 @@ docker compose --env-file .env.example --profile mng config --services
 ```
 
 Confirm both engines, init, exporters, separate persistent volumes, secret
-references, health checks and `infra_net`. Do not print the fully rendered
+references, health checks and `mng_data_net`. Do not print the fully rendered
 configuration where environment substitutions could expose private values.
 
 ### Planned PostgreSQL backup

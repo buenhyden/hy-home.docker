@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -36,7 +36,7 @@ promotion to HOME or replacement of `mng-valkey`.
   current source declares authentication but no TLS.
 - Record the client, dataset, retention and capacity hypothesis before activation.
   Three replicas on one host are a topology exercise, not host availability.
-- Preserve shared health checks, resource limits and the `infra_net` boundary.
+- Preserve shared health checks, resource limits and `lab_net` boundary.
 
 ### Data protection
 

@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0074"
 parent_ids:
@@ -53,7 +53,7 @@ created: "2026-05-17"
    - 각 Laboratory UI 라우터에 `gateway-standard-chain + service-ipallowlist + sso-errors + sso-auth`를 적용한다.
    - Open Notebook은 upload boundary를 위해 `large-body@file`을 추가한다.
 3. 네트워크 경계 표준화
-   - 모든 compose에 root `infra_net` context에 합류하는 service network block을 유지한다.
+   - 모든 compose에 root 선언된 network context에 합류하는 service network block을 유지한다.
 4. 최소권한 적용
    - dashboard `ports` 제거 후 `expose`만 사용한다.
    - dozzle docker socket을 `:ro`로 전환한다.

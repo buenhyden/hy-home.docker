@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -34,8 +34,8 @@ available from a trusted upstream.
 - Host port `${REGISTRY_PORT:-5000}` is published on `127.0.0.1` only, to
   container port 5000. The tracked service config contains no Registry TLS or
   authentication settings and no Traefik route, so the endpoint is
-  unauthenticated HTTP for local host users and for every container on
-  `infra_net` (`registry:5000`). Docker trusts `127.0.0.0/8` registries over
+  unauthenticated HTTP for local host users and for every container on the
+  project default network (`registry:5000`). Docker trusts `127.0.0.0/8` registries over
   HTTP by default, so no insecure-registry daemon setting is needed.
 - The container runs as `1000:1000`, the owner of `${DEFAULT_REGISTRY_DIR}`;
   root with every capability dropped cannot write that directory.

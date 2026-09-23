@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -106,7 +106,7 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 
 - **Purpose/classification**: `open-webui` is an owner-confirmed `HOME` chat/RAG interface.
 - **Profiles/source**: `ai`/`ai-llm` select the service. [Compose](../../../../../infra/08-ai/open-webui/docker-compose.yml), its selected image, and startup environment are authoritative.
-- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama and Qdrant over `infra_net`. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
+- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama and Qdrant over `ai_net`. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
 - **State/secrets**: `open-webui:/app/backend/data` contains the default SQLite database, uploads, chat/user state, and application data. Preserve `openwebui_oidc_client_secret`, session/auth secrets declared by Compose, the root CA, and the corresponding Qdrant snapshot owned by [RUN-0034](../../04-data/0034-qdrant/runbook.md). Never expose values in rendered config or logs.
 - **Resources/security**: Compose values are source limits, not measured headroom. Keep the UI behind native OIDC and the gateway standard chain; do not enable local password/signup paths as an incident workaround.
 - **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`; verify health, OIDC login, Ollama model listing, and a controlled RAG query. Stop Open WebUI before a consistent SQLite/data-volume backup. For upgrades, preserve the volume and matching secrets, review upstream migrations, update one version boundary, then verify identities/chats/uploads/OIDC and coordinate Qdrant recovery separately.

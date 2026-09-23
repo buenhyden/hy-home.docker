@@ -1,10 +1,10 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -86,7 +86,7 @@ created: "2026-05-10"
 
 - **Purpose/classification/source**: `tempo` is an `OPTIONAL` trace store selected by `obs`/`tracing`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Tempo config](../../../../../infra/06-observability/tempo/config/tempo.yaml) are authoritative.
 - **Flow/state**: Alloy receives OTLP and sends traces to Tempo. Durable blocks reside in SeaweedFS bucket `tempo-bucket`; `tempo-data:/var/tempo` holds ingest WAL, metrics-generator WAL, and local temporary blocks. Grafana queries Tempo.
-- **Secrets/dependencies/security**: `S3_ACCESS_KEY` and `seaweedfs_s3_tempo_secret_key` access object storage. SeaweedFS, Alloy, Grafana, gateway auth, root CA, and `infra_net` are dependencies. Do not render credentials or expose OTLP/query routes beyond declared controls.
+- **Secrets/dependencies/security**: `S3_ACCESS_KEY` and `seaweedfs_s3_tempo_secret_key` access object storage. SeaweedFS, Alloy, Grafana, gateway auth, root CA, and the declared networks are dependencies. Do not render credentials or expose OTLP/query routes beyond declared controls.
 - **Resources/normal use**: source limits are not headroom. Render at root, validate readiness, send a labeled test trace through Alloy, query it, and monitor WAL/object-store errors.
 - **Lifecycle**: quiesce trace intake, coordinate a consistent `tempo-bucket` backup with the SeaweedFS owner, and preserve local WAL/temp state/config at the same recovery point. Upgrade through supported versions and verify WAL replay plus historical/new traces.
 - **Upstream/license**: follow official [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/) and [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/). Tempo is AGPL-3.0 licensed.

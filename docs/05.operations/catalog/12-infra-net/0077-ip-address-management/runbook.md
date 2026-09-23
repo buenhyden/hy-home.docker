@@ -96,7 +96,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Traceability
 
-- Declared parent: [0012 Standardize Infra Net Usage Guide](guide.md) (`GDE-0077`)
+- Declared parent: [Compose Network Membership Usage Guide](guide.md) (`GDE-0077`)
 - Governing authority: [Compose Network Segmentation Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
 - Subject peers: [Guide](guide.md) (`GDE-0077`), [Policy](policy.md) (`POL-0077`)
 

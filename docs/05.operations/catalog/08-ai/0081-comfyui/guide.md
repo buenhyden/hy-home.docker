@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -52,7 +52,7 @@ Use the [runbook](runbook.md) for approval-gated runtime checks and recovery.
 
 - The selected `yanwk/comfyui-boot:cu126-slim` image is authoritative; the local Dockerfile is currently unselected. Record the image digest, CUDA/driver compatibility, model digests/licenses, workflow dependencies, and custom-node revisions before upgrade.
 - `models`, `custom_nodes`, `user`, `input`, and `output` are the recovery set; caches are rebuildable only from recorded sources. Environment values include listener/port and cache paths; registry/download tokens, if introduced, remain secret-owner inputs.
-- Traefik's standard/error/SSO chains protect the route; the loopback port is for local operations. Dependencies are NVIDIA runtime/driver, model storage, gateway/auth, root CA, and `infra_net`.
+- Traefik's standard/error/SSO chains protect the route; the loopback port is for local operations. Dependencies are NVIDIA runtime/driver, model storage, gateway/auth, root CA, and `edge_net`.
 - Use `docker compose --profile ai --profile ai-image config --quiet` from root. Before upgrade, stop queue intake and active jobs, make a consistent stopped snapshot, test the new image/nodes/models on isolated mounts, and verify `/system_stats`, GPU visibility, expected nodes, and a representative workflow.
 - ComfyUI is GPL-3.0 licensed; custom nodes and models carry separate licenses. Use the [official repository](https://github.com/Comfy-Org/ComfyUI) and [Manager guidance](https://docs.comfy.org/manager/overview).
 

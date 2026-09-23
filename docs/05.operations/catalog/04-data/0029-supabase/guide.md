@@ -1,10 +1,10 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -37,7 +37,7 @@ created: "2026-05-10"
 
 ### Overview
 
-`supabase`는 [Compose 구현](../../../../../infra/04-data/operational/supabase/docker-compose.yml)에 선언된 exact `supabase` profile 기반의 `OPTIONAL` 통합 백엔드 플랫폼이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를 `infra_net`에서 구성한다. 이 서비스들은 하나의 recovery unit이며 database dump만으로 Storage objects, mounted functions/config, JWT/provider settings를 복구할 수 없다.
+`supabase`는 [Compose 구현](../../../../../infra/04-data/operational/supabase/docker-compose.yml)에 선언된 exact `supabase` profile 기반의 `OPTIONAL` 통합 백엔드 플랫폼이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를 `supabase_net`에서 구성한다. 이 서비스들은 하나의 recovery unit이며 database dump만으로 Storage objects, mounted functions/config, JWT/provider settings를 복구할 수 없다.
 
 ### Current implementation
 

@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -34,7 +34,7 @@ Run from the repository root. Inspect rendered services and verify:
 - exact Kafka-family profiles and no removed broker family;
 - separate broker/Connect volumes and no path reuse;
 - health checks and shared CPU/memory limits;
-- `infra_net`, intended host port publication and PLAINTEXT listener risk;
+- `kafka_net`, intended host port publication and PLAINTEXT listener risk;
 - `kafbat_client_secret`, native `auth.type: OAUTH2`, local CA trust, RBAC groups,
   and `gateway-standard-chain@file` without forwarding-auth middleware;
 - backup/restore ownership for topic, offset, schema, connector and KRaft state.

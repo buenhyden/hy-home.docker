@@ -1,10 +1,10 @@
 ---
 title: "StarRocks Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0020"
 parent_ids:
@@ -29,7 +29,7 @@ created: "2026-05-10"
 | Field | Current contract |
 | --- | --- |
 | Source and updater | [Compose](../../../../../infra/04-data/analytics/starrocks/docker-compose.yml) owns `starrocks-fe` and `starrocks-be`; Renovate proposes image updates. |
-| Exposure and flow | FE publishes MySQL `9030` and HTTP `8030`; BE publishes HTTP `8040` on the host. Both join `infra_net`; no gateway or TLS boundary is declared. |
+| Exposure and flow | FE publishes MySQL `9030` and HTTP `8030`; BE publishes HTTP `8040` on the host. Both join `lab_net`; no gateway or TLS boundary is declared. |
 | Persistence | `starrocks-fe-data` stores FE metadata and `starrocks-be-data` stores BE data below `${DEFAULT_DATA_DIR}/starrocks`. Both are required for coherent recovery. |
 | Auth and security | Compose supplies no Docker Secret and health checks connect as native `root` without a password. Treat the stack as isolated LAB/OPTIONAL use until credentials and exposure are reviewed. Both services run as root with `no-new-privileges`; the DB-high template supplies 2 CPUs/2 GiB each. |
 | Backup and restore | Use StarRocks `BACKUP`/`RESTORE` with a configured remote repository and least-privilege `REPOSITORY` plus `EXPORT` grants. Restore asynchronously into an isolated compatible cluster and database before cutover. |
@@ -56,7 +56,7 @@ created: "2026-05-10"
 
 - `infra/04-data/analytics/starrocks/docker-compose.yml`
 - MySQL client
-- `infra_net` access
+- `lab_net` access
 
 ### Step-by-step Instructions
 

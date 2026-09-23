@@ -1,16 +1,16 @@
 ---
 title: "Operations — 12 Infra Net"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "operations"
 ---
 
 # Operations — 12 Infra Net
 
-> `infra_net` standardization and static-address operations grouped by stable subject and role.
+> Compose network membership and address operations grouped by stable subject and role.
 
 ## Overview
 
@@ -24,7 +24,7 @@ separate usage, control, and procedure responsibilities.
 
 ## Scope
 
-- Existing `infra_net` mapping context, address-allocation controls,
+- Compose network membership context, address controls,
   non-destructive validation, recovery boundaries, and escalation.
 - No live network recreation, static-IP mutation, service restart, or
   credential access is authorized by this index.
@@ -33,7 +33,7 @@ separate usage, control, and procedure responsibilities.
 
 | Subject | Available documents |
 | --- | --- |
-| [`infra_net` standardization](0077-ip-address-management/guide.md) | [Guide](0077-ip-address-management/guide.md), [Policy](0077-ip-address-management/policy.md), [Runbook](0077-ip-address-management/runbook.md) |
+| [Compose network membership](0077-ip-address-management/guide.md) | [Guide](0077-ip-address-management/guide.md), [Policy](0077-ip-address-management/policy.md), [Runbook](0077-ip-address-management/runbook.md) |
 
 ## How to Work in This Area
 
@@ -45,5 +45,5 @@ Runtime-changing network actions remain separately approval-gated.
 
 - [Operations index](../../README.md)
 - [Infrastructure index](../../../../infra/README.md)
-- [`infra_net` architecture and allocation map](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - [Incident records](../../incidents/README.md)

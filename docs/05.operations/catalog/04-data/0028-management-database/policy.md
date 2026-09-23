@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -30,7 +30,7 @@ rollback.
 - Operate through the root project with `mng`, `core`, `dev`, or `local`; do not
   run the leaf Compose file independently.
 - Keep PostgreSQL and Valkey on separate bind-backed volumes and preserve
-  `infra_net`, health checks, secret files and shared resource limits.
+  `mng_data_net`, health checks, secret files and shared resource limits.
 - Keep `mng_db_password`, `mng_valkey_password` and service database credentials
   in Docker secret custody. Dumps and evidence must not contain plaintext values.
 - Treat `mng-pg-init` as idempotent provisioning, not restore. Review its complete

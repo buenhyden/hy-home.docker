@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -35,10 +35,10 @@ stop condition.
   and its sibling Dockerfile. The Dockerfile/build declaration owns the runtime
   source; the derived image projection is navigation, not build authority.
 - Root selection: `docker compose --profile testing ...` from the repository
-  root. The root project supplies `infra_net`; do not use the leaf as a
+  root. The root project supplies the project default network; do not use the leaf as a
   standalone project.
 - Flow: operator/browser -> host port `${LOCUST_HOST_PORT:-18089}` -> master UI;
-  worker -> `locust-master` over `infra_net`; master and worker read the shared
+  worker -> `locust-master` over the project default network; master and worker read the shared
   `locust-data` bind-backed volume at `/mnt/locust`.
 - Dependency: the worker waits for the master's HTTP healthcheck. Target services
   are deliberately not Compose dependencies and must already be approved and

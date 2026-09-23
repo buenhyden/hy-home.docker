@@ -662,8 +662,20 @@ no remaining dependant.
 | Gateway | Traefik's Docker provider network and the OAuth2 Proxy router label are `edge_net`; OAuth2 Proxy and Airflow trust only `10.250.1.2` |
 | k3d | `mng-pg` left `k3d-hyhome` (no k8s consumer named it); `mng-valkey` stays, it is measured |
 | Alloy | the Docker log filter kept only `project_net|infra_net` targets. Live check: of 56 running containers just 13 were selected and 6 were shipping, so most container logs were silently dropped after phase 1. Upstream documents that `loki.source.docker` deduplicates targets by container ID, so the network filter was never needed; it now keeps every Compose-managed container |
-| Hardening | eleven fixed-address assertions covered `infra_net` addresses that no longer exist; each became a membership assertion for the network the service actually uses |
+| Hardening | eleven fixed-address assertions covered `infra_net` addresses that no longer exist. A new `check_service_network` helper reads one service block, so the replacements stay per service (13 assertions, including `openbao-agent`, `surrealdb` and the OAuth2 Proxy Valkey exporter, which a file-wide grep would not have distinguished). Negative-tested: an absent network and an unknown service both fail |
 | Documents | AD-0026 and REQ-0023 rewrote the single-mesh model as flow-scoped networks and dropped the `172.19.0.x` allocation table; GDE/POL/RUN-0077 now govern membership rather than fixed-address assignment; `.agents` environment constraints, nine architecture descriptions, five requirements and 40 package READMEs follow, with README network rows generated from the Compose files |
+
+Sequential review findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| RedisInsight kept only `edge_net` and `mng_data_net`, so the Valkey cluster, n8n Valkey and Airflow Valkey it exists to inspect became unreachable; no Compose key names those hosts, so no check caught it | `lab_net`, `n8n_net` and `airflow_net` added |
+| the new Alloy keep rule matched every Compose project on the host, not just this one | pinned to `hy-home-infra` |
+| REQ-0023 still asked for predictable addressing in the removed `172.19.0.0/16` | rewritten |
+| about 20 operations subjects still described `infra_net` as live, two of them as instructions ("backends must be on `infra_net` to be discovered", the Registry exposure radius) | each rewritten from the Compose files; the CouchDB Erlang node names keep their original spelling |
+| the `12-infra-net` index, the RUN-0077 parent link and the POL-0077 review item still named the old subject | rewritten |
+| the hardening conversion lost per-service granularity | `check_service_network` added (above) |
+| a Loki search-command example had its `rg` pattern rewritten by the sweep | restored to a pattern that matches the new rule |
 
 Live application is a separate approved step: removing a network from a
 service requires recreating it, and CouchDB's Erlang node names keep working

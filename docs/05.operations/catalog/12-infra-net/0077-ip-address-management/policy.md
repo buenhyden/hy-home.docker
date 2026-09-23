@@ -59,7 +59,7 @@ created: "2026-04-01"
 
 ## Review Cadence
 
-- **Monthly**: authoritative mapping table과 현재 Compose 파일 사이의 실태를 점검한다.
+- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
 - **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
 
 ## Traceability

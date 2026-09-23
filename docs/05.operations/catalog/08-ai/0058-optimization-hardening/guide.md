@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-17"
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
    - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-   - `infra/08-ai/*/docker-compose.yml` 파일은 `infra_net`과 root include context에 의존하므로 service-local 단독 `docker compose config` 대상으로 사용하지 않는다.
+   - `infra/08-ai/*/docker-compose.yml` 파일은 선언된 network과 root include context에 의존하므로 service-local 단독 `docker compose config` 대상으로 사용하지 않는다.
 2. Gateway/SSO 경계 정렬
    - Ollama proxy route는
      `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다.
