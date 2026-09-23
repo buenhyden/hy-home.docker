@@ -28,9 +28,9 @@ Local service definitions and implementation navigation. Operational controls an
 - `config/`: [Agent configuration](config/agent.hcl) and template sources
 - `config/policies/`: tracked ACL policies, applied by an operator (never mounted)
   - [renderer](config/policies/renderer.hcl): Agent AppRole, reads the two rendered KV paths
-  - [operator](config/policies/operator.hcl): `hy-home-operator`, the OIDC human policy (includes the Prometheus API credential rotation)
+  - [operator](config/policies/operator.hcl): `hy-home-operator`, the OIDC human policy (includes the Prometheus API credential rotation and the Kiali Grafana token reissue)
   - [prometheus](config/policies/prometheus.hcl): SEC-002 scrape token, `sys/metrics` only
-  - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets, reads `secret/platform/{argocd,postgres-app,notifications,prometheus-api}`
+  - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets, reads `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`
   - [k8s-bootstrap](config/policies/k8s-bootstrap.hcl): short-lived cluster bootstrap token
 - [docker-compose.yml](docker-compose.yml)
 

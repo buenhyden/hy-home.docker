@@ -84,6 +84,8 @@ created: "2026-05-10"
    - `/viewers` group: `Viewer`
    - Any other realm user: denied (`ROLE_ATTRIBUTE_STRICT=true`, no catch-all)
    - Anonymous access is disabled; new users default to `Viewer`.
+   - hy-home.k8s Kiali reads Grafana with the token of the Viewer service
+     account `k8s-kiali`; [RUN-0096](../../12-infra-net/0096-k8s-integration/runbook.md) issues and reissues it.
    - OAuth calls verify Keycloak with the mounted local root CA
      (`TLS_SKIP_VERIFY_INSECURE=false`).
    - Before the approved recreate that activates this, confirm in Keycloak that

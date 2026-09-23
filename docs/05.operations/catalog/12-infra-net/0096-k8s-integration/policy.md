@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -40,14 +40,16 @@ repository boundary.
   each issue. A longer-lived token is revoked on sight.
 - The OIDC operator may update `auth/kubernetes/config`, issue bootstrap
   tokens, and update `secret/platform/prometheus-api` for a credential
-  rotation. Enabling the method, writing policies and roles, and writing
-  `secret/platform/*` need an approved temporary-root session that ends with
-  revocation.
+  rotation and `secret/platform/grafana-api` for a token reissue. Enabling
+  the method, writing policies and roles, and writing `secret/platform/*`
+  need an approved temporary-root session that ends with revocation.
 - Prometheus is reachable from the cluster only through `/api/v1/` with Basic
   Auth (`INFRA-007`). The cluster gets the credential only through OpenBao
   `secret/platform/prometheus-api`, which changes in the same rotation as
   `OBS-013` and `INFRA-007`; no Prometheus host port is published and the UI keeps
-  SSO. Grafana gets no host port and no anonymous access.
+  SSO. Grafana gets no host port and no anonymous access; Kiali reads it with
+  the token of the Viewer service account `k8s-kiali` (90 days) from
+  `secret/platform/grafana-api`.
 - Loki `3100`, Tempo `3200` and `mng-valkey` `26379` stay published on all
   host interfaces without gateway authentication (Valkey keeps its password).
   This is an accepted LAN exposure for the cluster; narrowing it needs the
@@ -82,5 +84,5 @@ upgrade, and when a credential is rotated.
 
 ## Related Documents
 
-- [OpenBao policies](../../../../../infra/03-security/openbao/config/policies/)
+- [OpenBao policies](../../../../../infra/03-security/openbao/README.md)
 - [Prometheus policy](../../06-observability/0045-prometheus/policy.md)

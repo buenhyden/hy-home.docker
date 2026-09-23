@@ -31,3 +31,11 @@ path "secret/data/platform/prometheus-api" {
 path "secret/metadata/platform/prometheus-api" {
   capabilities = ["read"]
 }
+
+path "secret/data/platform/grafana-api" {
+  capabilities = ["read"]
+}
+
+path "secret/metadata/platform/grafana-api" {
+  capabilities = ["read"]
+}
