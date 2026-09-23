@@ -101,6 +101,7 @@ services:
       - data-science
       - analytics-engineering
       - cdc
+      - contract-testing
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
@@ -190,6 +191,7 @@ services:
       - data-science
       - analytics-engineering
       - cdc
+      - contract-testing
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low

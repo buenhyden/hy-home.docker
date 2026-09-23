@@ -1,6 +1,6 @@
 ---
 title: "09-tooling: Tooling Tier"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -26,6 +26,7 @@ The current map is exact:
 | `analytics-engineering` | `dbt-db-provision`, `dbt` (plus `mng-pg`, `mng-pg-init`) | one-shot transformation job; `run`/`build` write the target schema |
 | `backup` | `restic`, `backup-sqlite-export` | one-shot backup jobs driven by the host timer |
 | `api-mock` | `wiremock` | HTTP stub server for development and tests; loopback-only admin API |
+| `contract-testing` | `pact-broker-db-provision`, `pact-broker` (plus `mng-pg`, `mng-pg-init`) | contract store; basic auth, loopback-only |
 
 `tooling` does not select IaC or load generation. Terraform and Syncthing runtime
 were removed; OpenTofu is the current CLI engine. None of these services is part
@@ -57,6 +58,8 @@ documentation agents responsible for the tooling profile contract.
   `secrets/` and `.env` into two cross-disk repositories under a host timer.
 - [WireMock](wiremock/README.md) serves tracked, synthetic HTTP stubs. Its
   admin API is unauthenticated, so the host port is bound to loopback only.
+- [Pact Broker](pact-broker/README.md) stores pacts and verification results in
+  a feature-owned `mng-pg` database behind basic auth on a loopback port.
 
 ## Structure
 
@@ -72,6 +75,7 @@ documentation agents responsible for the tooling profile contract.
 ├── dbt/         # analytics-engineering transformation job
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
 ├── wiremock/    # HTTP stub server and tracked mappings
+├── pact-broker/ # contract broker and its database provisioning
 └── README.md
 ```
 
@@ -79,7 +83,7 @@ documentation agents responsible for the tooling profile contract.
 
 Use the [documentation index](../../docs/README.md), then the exact Stage 05
 subjects under `docs/05.operations/catalog/09-tooling/` (`0061`, `0062`, `0065`,
-`0066`, `0069`, `0082`, `0083`, `0090`, `0092`). Run from the repository root:
+`0066`, `0069`, `0082`, `0083`, `0090`, `0092`, `0093`). Run from the repository root:
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling

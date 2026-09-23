@@ -522,6 +522,11 @@ check_09_tooling() {
   local wiremock_compose="infra/09-tooling/wiremock/docker-compose.yml"
   check_file "$wiremock_compose"
   check_contains "$wiremock_compose" '127.0.0.1:${WIREMOCK_HOST_PORT:-18088}:8080' "wiremock admin API publication must be loopback"
+
+  local pact_compose="infra/09-tooling/pact-broker/docker-compose.yml"
+  check_file "$pact_compose"
+  check_contains "$pact_compose" '127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}:9292' "pact-broker publication must be loopback"
+  check_contains "$pact_compose" "PACT_BROKER_ALLOW_PUBLIC_READ: 'false'" "pact-broker public read must stay disabled"
 }
 
 # --- Tier 10: Communication ---

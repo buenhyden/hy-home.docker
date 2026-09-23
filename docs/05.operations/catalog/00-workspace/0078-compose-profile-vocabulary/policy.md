@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.6.0"
+version: "1.7.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -50,6 +50,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |
 | `cdc` | capability | Debezium PostgreSQL CDC 원천 준비와 Connect worker | `mng-pg`, `mng-pg-init`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인 | current |
+| `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기 | current |
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
 | `couchdb` | topology | CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
 | `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler; 현재 소비자 없음 | `crawl4ai` | No | normal service startup | current |
@@ -154,10 +155,11 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
-| mlops / data-science / analytics-engineering / cdc | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
+| mlops / data-science / analytics-engineering / cdc / contract-testing | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
+| contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
 
 ## Exceptions

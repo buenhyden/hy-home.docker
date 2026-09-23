@@ -1,0 +1,102 @@
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
+services:
+  # Feature-owned role and database on mng-pg. The base mng-pg-init job never
+  # reads the Pact Broker credential, so core/mng/dev/local start without it.
+  pact-broker-db-provision:
+    profiles:
+      - contract-testing
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: pact-broker-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: PACT_BROKER_DB_USER PACT_BROKER_DB_NAME
+      PROVISION_SECRETS: PACT_BROKER_DB_PASSWORD=/run/secrets/pact_broker_db_password
+      PACT_BROKER_DB_USER: '${PACT_BROKER_DB_USER:-pact_broker}'
+      PACT_BROKER_DB_NAME: '${PACT_BROKER_DB_NAME:-pact_broker}'
+    volumes:
+      - ../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - pact_broker_db_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      mng-pg-init:
+        condition: service_completed_successfully
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  pact-broker:
+    profiles:
+      - contract-testing
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-med
+    image: pactfoundation/pact-broker:3.0.0-pactbroker2.121.2
+    container_name: pact-broker
+    environment:
+      PACT_BROKER_PORT: '9292'
+      PACT_BROKER_DATABASE_ADAPTER: postgres
+      PACT_BROKER_DATABASE_HOST: mng-pg
+      PACT_BROKER_DATABASE_PORT: '${POSTGRES_PORT:-5432}'
+      PACT_BROKER_DATABASE_USERNAME: '${PACT_BROKER_DB_USER:-pact_broker}'
+      PACT_BROKER_DATABASE_NAME: '${PACT_BROKER_DB_NAME:-pact_broker}'
+      # Basic auth covers the UI and the API; only the heartbeat is public so
+      # the healthcheck needs no credential.
+      PACT_BROKER_BASIC_AUTH_USERNAME: '${PACT_BROKER_BASIC_AUTH_USERNAME:-pact}'
+      PACT_BROKER_ALLOW_PUBLIC_READ: 'false'
+      PACT_BROKER_PUBLIC_HEARTBEAT: 'true'
+      PACT_BROKER_LOG_LEVEL: INFO
+      # The image entrypoint otherwise pings a third-party analytics endpoint.
+      PACT_DO_NOT_TRACK: 'true'
+    secrets:
+      - pact_broker_db_password
+      - pact_broker_basic_auth_password
+    # The image reads credentials only from the environment, so they are
+    # exported into the broker process here instead of being declared above.
+    entrypoint:
+      - /bin/sh
+      - -ec
+    command:
+      - |
+        PACT_BROKER_DATABASE_PASSWORD="$$(tr -d '\r\n' </run/secrets/pact_broker_db_password)"
+        PACT_BROKER_BASIC_AUTH_PASSWORD="$$(tr -d '\r\n' </run/secrets/pact_broker_basic_auth_password)"
+        [ -n "$$PACT_BROKER_DATABASE_PASSWORD" ] && [ -n "$$PACT_BROKER_BASIC_AUTH_PASSWORD" ] || { echo 'pact-broker: empty credential secret' >&2; exit 64; }
+        export PACT_BROKER_DATABASE_PASSWORD PACT_BROKER_BASIC_AUTH_PASSWORD
+        exec sh ./entrypoint.sh
+    # The UI and API sit behind basic auth over plain HTTP, so the host port
+    # stays on loopback and no Traefik route exists.
+    ports:
+      - '127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}:9292'
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      pact-broker-db-provision:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:9292/diagnostic/status/heartbeat >/dev/null 2>&1 || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
