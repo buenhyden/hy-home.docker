@@ -52,3 +52,4 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
+      - traefik_prometheus_api_htpasswd

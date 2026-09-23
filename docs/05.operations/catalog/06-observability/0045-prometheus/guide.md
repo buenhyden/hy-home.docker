@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -174,6 +174,20 @@ Prometheus is the primary metrics datasource for Grafana dashboards.
 #### Alertmanager Integration
 
 Prometheus evaluates rules on the configured `evaluation_interval` and dispatches active alerts to Alertmanager for deduplication and notification routing.
+
+#### HTTP API for hy-home.k8s
+
+Machine clients that cannot pass SSO, such as the hy-home.k8s cluster, use the
+Prometheus HTTP API through Traefik at `https://prometheus.${DEFAULT_URL}/api/v1/`:
+Alloy remote write to `/api/v1/write` and Kiali queries to
+`/api/v1/query*`. The `prometheus-api` router admits only `/api/v1/`, and
+`prometheus-api-auth` checks Basic Auth against `INFRA-007`, which
+`gen-secrets.sh` derives from `PROMETHEUS_API_USERNAME` (`OBS-012`) and
+`secrets/observability/prometheus_api_password.txt` (`OBS-013`). The client
+needs that username and password, the Prometheus host name resolved to the
+Traefik bind address, and trust in the gateway certificate. Give cluster series
+a distinguishing external label such as `cluster`. The UI stays behind SSO, and
+no Prometheus host port is published.
 
 #### Keycloak Observation
 

@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -66,6 +66,11 @@ config, and alert-rule surfaces.
     scrape target.
   - Prometheus route must keep
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - The `prometheus-api` route admits only `/api/v1/` on the Prometheus host,
+    behind `prometheus-api-auth@file` (Basic Auth from `INFRA-007`, derived
+    from `OBS-012`/`OBS-013`). It serves machine clients that cannot pass SSO,
+    such as the hy-home.k8s cluster's remote write and Kiali queries. The UI
+    and every other path stay behind SSO, and the admin API stays disabled.
   - TSDB retention changes must be paired with
     [retention policy](../0048-telemetry-retention/policy.md), volume impact review, and plan/task
     evidence. The current compose command does not declare an explicit
@@ -86,6 +91,9 @@ config, and alert-rule surfaces.
     `alert_rules`
   - Recording secret values, bearer tokens, or rendered secret content in
     documentation or evidence
+  - Widening the `prometheus-api` rule beyond `/api/v1/`, enabling
+    `--web.enable-admin-api` while that route exists, or publishing an
+    unauthenticated Prometheus host port
   - Declaring retention behavior that is not backed by compose/config and the
     retention policy
 

@@ -925,6 +925,38 @@ The merge with main also moves the pinned public and optional env-key counts
 to 269 and 211: #217 added `TRAEFIK_BIND_IP` and #218 kept the old counts, so
 `test_secret_metadata_sync` failed on main.
 
+### Prometheus API for hy-home.k8s (source, owner decisions 2026-09-23)
+
+After the k3d removal nothing collects Kubernetes metrics: the NodePort jobs
+are gone, and no cluster sample reaches the remote-write receiver. hy-home.k8s
+asked for host-address access (Prometheus `192.168.0.13:9090` for Alloy remote
+write and Kiali queries, Grafana `3000` with an anonymous Viewer API). The
+owner chose Basic Auth through Traefik instead of an unauthenticated host port,
+and no anonymous Grafana access (Kiali shows Grafana as unreachable).
+
+| Unit | Change |
+| --- | --- |
+| Route | `prometheus-api` router on the Prometheus host, limited to `/api/v1/`, with `gateway-standard-chain` and the new `prometheus-api-auth` Basic Auth middleware; the UI keeps SSO, the admin API stays disabled, no host port is published |
+| Secrets | `OBS-012` (`PROMETHEUS_API_USERNAME`), `OBS-013` (generated password file, a registry path exception like `INFRA-002`) and the derived htpasswd `INFRA-007`, granted to Traefik only; `gen-secrets.sh` derives it like `INFRA-003`/`INFRA-004` |
+| Checks | `check_06_observability` pins the route rule, its middlewares and the middleware's `usersFile`; the secret metadata test counts the new key, declaration and rows |
+| Documents | POL-0045 route control and disallowed widening, GDE-0045 client contract, GDE-0013 and the Traefik README secret list |
+
+Evidence: `gen-secrets.sh --dry-run` plans `derive-htpasswd` for `INFRA-007`
+and `create-generated-file` for `OBS-013`; compose validation, hardening and
+the secret metadata and Compose tests pass. Live is NOT_RUN: generating
+`OBS-013`/`INFRA-007`, setting the username in `.env`, and recreating Traefik
+(new secret mount) and Prometheus (new router label) each need approval. The
+OpenBao Kubernetes auth reconfiguration for the recreated cluster (new CA) is
+also live and separately approved. The cluster-side Alloy and Kiali settings
+belong to hy-home.k8s.
+
+From the same request: `mng-valkey` publishes `${VALKEY_MNG_HOST_POST:-26379}`
+(was `-`, so an empty value no longer drops the default); the misspelled key
+name stays because the private `.env` sets it. Loki `3100`, Tempo `3200` and
+Valkey `26379` stay published for the cluster. Alloy publishes OTLP
+`4317/4318`, but the HOME config (`config.home.alloy`) has no OTLP receiver, so
+connections are refused; deferred until a cluster trace path needs it.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1002,6 +1034,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Every OpenBao restart costs an unseal ceremony and an Agent SecretID delivery, and this has now interrupted two approved recreates. Decide whether that stays manual or moves to an auto-unseal seal (OpenBao subject owner).
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
+- Alloy HOME config has no OTLP receiver while `4317/4318` stay published; add one when hy-home.k8s sends traces or logs over OTLP (observability owner).
 - `hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).
 - `examples/operations/compose-core-readiness/` still demonstrates a Vault-based readiness rig; restate it on OpenBao or declare it intentionally generic (owner).

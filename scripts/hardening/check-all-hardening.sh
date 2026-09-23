@@ -481,6 +481,9 @@ check_06_observability() {
   check_file "$compose_file"
   check_contains "$compose_file" "gateway-standard-chain@file,sso-errors@file,sso-auth@file" "observability sso middleware chain mismatch"
   check_contains "$compose_file" "condition: service_healthy" "observability health-gated dependency missing"
+  check_contains "$compose_file" 'traefik.http.routers.prometheus-api.rule: Host(`prometheus.${DEFAULT_URL}`) && PathPrefix(`/api/v1/`)' "prometheus API route must stay limited to /api/v1/"
+  check_contains "$compose_file" "traefik.http.routers.prometheus-api.middlewares: gateway-standard-chain@file,prometheus-api-auth@file" "prometheus API route auth missing"
+  check_contains "infra/01-gateway/traefik/dynamic/middleware.yml" 'usersFile: "/run/secrets/traefik_prometheus_api_htpasswd"' "prometheus API basic auth middleware missing"
 }
 
 # --- Tier 07: Workflow ---

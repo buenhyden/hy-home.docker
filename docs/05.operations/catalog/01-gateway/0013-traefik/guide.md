@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -54,9 +54,10 @@ It binds host ports 80/443, reads the Docker API through a read-only socket,
 mounts repository static/dynamic configuration read-only, and mounts
 `${DEFAULT_CERT_DIR}` read-only. A read-only socket prevents file writes but does
 not make Docker API access low privilege, so socket access remains a host-control
-security boundary. Compose grants `traefik_basicauth_password` and
-`traefik_opensearch_basicauth_password`; do not print either value in checks or
-evidence. The tracked configuration has no ACME storage declaration.
+security boundary. Compose grants `traefik_basicauth_password`,
+`traefik_opensearch_basicauth_password` and
+`traefik_prometheus_api_htpasswd`; do not print any of these values in
+checks or evidence. The tracked configuration has no ACME storage declaration.
 
 ### Step-by-step Instructions
 

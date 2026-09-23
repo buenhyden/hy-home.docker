@@ -66,6 +66,11 @@ http:
         removeHeader: false
         usersFile: "/run/secrets/traefik_opensearch_basicauth_password"
 
+    # 4. Prometheus HTTP API용 Basic Auth (k8s 클러스터 등 비대화형 client)
+    prometheus-api-auth:
+      basicAuth:
+        usersFile: "/run/secrets/traefik_prometheus_api_htpasswd"
+
     large-body:
       buffering:
         maxRequestBodyBytes: 104857600  # 100MB
