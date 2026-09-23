@@ -1294,7 +1294,7 @@ rotation sequence in POL-0070 and AD-0026; the unused
 `STALWART_HEALTHCHECK_URL`; paired-name comments; the template wording; the
 test file's `__main__` guard moved to the end so every class is collected.
 
-Open owner decisions, unchanged: `allowed_groups`, the Stalwart admin UI
+Open owner decisions at S18 (decided in S19): `allowed_groups`, the Stalwart admin UI
 OIDC (its OIDC backend validates bearer tokens and does not start a browser
 login), Terrakube proxy removal, and a Qdrant API key (would also need every
 client configured). Live is NOT_RUN: each changed service needs a recreate to
@@ -1325,6 +1325,25 @@ then `--sync-metadata` for the Superset rows (PG-028, PG-029, IAM-013,
 AUTO-020) and `--sync-metadata-prune` for the eleven Stalwart port keys
 removed in S17.
 
+**Owner auth decisions (2026-09-24).** The four open decisions were
+verified against source, running containers and upstream documentation, then
+decided by the owner:
+
+| Decision | Verified basis | Source change |
+| --- | --- | --- |
+| OAuth2 Proxy `allowed_groups = ["/admins"]` | the allowlist was commented and `email_domains=["*"]`, so every realm user passed every SSO route; the realm has one human user, in `/admins`; Kafbat already maps the full-path `/admins` from the same `groups` claim | config, hardening guard, GDE/POL-0079 |
+| Stalwart admin UI keeps gateway SSO plus its own admin login | Stalwart's OIDC directory replaces the password backend for every account, so IMAP/SMTP clients would need App Passwords | POL-0070 records the decision; item closed |
+| Terrakube at `iac` activation | not running; API and UI reuse the OAuth2 Proxy client id; the API route's ForwardAuth blocks Terraform CLI and API-token calls | compose comment, README, GDE-0079 row |
+| Qdrant API key | zero collections; the only real client is the Prometheus scrape (Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so it uses its default store); `edge_net` members could write without authentication | `qdrant_api_key` (AI-008), start script, Prometheus `bearer_token_file` in both configs, `QdrantApiKeyContractTests`, Qdrant docs |
+
+Qdrant rehearsal with a synthetic key on `qdrant/qdrant:v1.19.1-unprivileged`:
+`/readyz` 200 without the key (the healthcheck is unchanged), `/metrics` and
+`/collections` 401 without it, `/metrics` 200 with `Authorization: Bearer`.
+
+The Mailpit hardening test failed on main since S17: its fixture tree lacked
+the Stalwart plan, so the Stalwart relay guard failed before the Mailpit check.
+The fixture now copies `plan.ndjson`.
+
 **Approval-gated live list** (each step separately approved; none run):
 
 | Stage | Live steps |
@@ -1334,6 +1353,9 @@ removed in S17.
 | S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin |
 | S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart |
 | S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running |
+| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must pass. If it returns 403, the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) |
+| S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 |
+| Terrakube | at `iac` activation: Keycloak client `home-terrakube` (remote), drop the API ForwardAuth, audience/RBAC acceptance |
 | hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network |
 | Acceptance | Flink and Trino live acceptance, then the ksqlDB and StarRocks removals |
 
@@ -1428,8 +1450,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #234 | S16 Superset | merged |
 | #235 | S17 Stalwart | merged |
 | #236 | Task ledger and stale evidence corrections | merged |
-| #237 | S18 route authentication and S17 review follow-ups | open |
-| this PR | S19 convergence | open |
+| #237 | S18 route authentication and S17 review follow-ups | merged |
+| #238 | S18 independent review fixes (#237 merged before the review returned) | merged |
+| this PR | S19 convergence and the four owner auth decisions | open |
 
 ## Rulings
 
@@ -1442,6 +1465,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
 - File-provider router `k3s-ingress` (`infra/01-gateway/traefik/dynamic/k3s.yml`) forwards `*.k8s.` hosts to the former k3s ingress with no gateway authentication; GDE-0096 says it is unrelated to the current cluster. Remove it or put it behind SSO (owner; k3s change).
 - `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).

@@ -1,10 +1,10 @@
 ---
 title: "Superset Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0097"
 parent_ids:
@@ -43,8 +43,9 @@ upgrades.
 
 ## Exceptions
 
-None. Group-based access (`allowed_groups`) is an open owner decision; until
-it is made, any realm user can log in as `Gamma`.
+None. Superset uses native OIDC, so the OAuth2 Proxy `/admins` allowlist does
+not apply: any realm user can log in as `Gamma` (no data access) and an Admin
+grants roles. The owner kept this on 2026-09-24 with the realm at one user.
 
 ## Verification
 

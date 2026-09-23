@@ -369,6 +369,7 @@ check_02_auth() {
   check_contains "$oauth_cfg" "cookie_samesite = \"lax\"" "oauth2-proxy cookie_samesite mismatch"
   check_contains "$oauth_cfg" "client_secret_file = \"/run/secrets/oauth2_proxy_client_secret\"" "oauth2-proxy client secret file missing"
   check_contains "$oauth_cfg" "cookie_secret_file = \"/run/secrets/oauth2_proxy_cookie_secret\"" "oauth2-proxy cookie secret file missing"
+  check_contains "$oauth_cfg" "allowed_groups = [\"/admins\"]" "oauth2-proxy must allow only the /admins group"
 
   check_service_healthcheck "$keycloak_compose" "keycloak"
   check_service_healthcheck "$oauth_full_compose" "oauth2-proxy"
