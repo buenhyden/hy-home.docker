@@ -661,7 +661,7 @@ no remaining dependant.
 | Root | the `infra_net` definition and its `172.19.0.0/16` IPAM removed, and with them the now-orphan `INFRA_SUBNET`, `INFRA_IP_RANGE` and `INFRA_GATEWAY` keys (public keys 263, optional 205) |
 | Gateway | Traefik's Docker provider network and the OAuth2 Proxy router label are `edge_net`; OAuth2 Proxy and Airflow trust only `10.250.1.2` |
 | k3d | `mng-pg` left `k3d-hyhome` (no k8s consumer named it); `mng-valkey` stays, it is measured |
-| Alloy | the Docker log filter kept only `project_net|infra_net` targets. Live check: of 56 running containers just 13 were selected and 6 were shipping, so most container logs were silently dropped after phase 1. Upstream documents that `loki.source.docker` deduplicates targets by container ID, so the network filter was never needed; it now keeps every Compose-managed container |
+| Alloy | the Docker log filter kept only `project_net\|infra_net` targets. Live check: of 56 running containers just 13 were selected and 6 were shipping, so most container logs were silently dropped after phase 1. Upstream documents that `loki.source.docker` deduplicates targets by container ID, so the network filter was never needed; it now keeps every Compose-managed container |
 | Hardening | eleven fixed-address assertions covered `infra_net` addresses that no longer exist. A new `check_service_network` helper reads one service block, so the replacements stay per service (13 assertions, including `openbao-agent`, `surrealdb` and the OAuth2 Proxy Valkey exporter, which a file-wide grep would not have distinguished). Negative-tested: an absent network and an unknown service both fail |
 | Documents | AD-0026 and REQ-0023 rewrote the single-mesh model as flow-scoped networks and dropped the `172.19.0.x` allocation table; GDE/POL/RUN-0077 now govern membership rather than fixed-address assignment; `.agents` environment constraints, nine architecture descriptions, five requirements and 40 package READMEs follow, with README network rows generated from the Compose files |
 
@@ -680,6 +680,35 @@ Sequential review findings and their disposition:
 Live application is a separate approved step: removing a network from a
 service requires recreating it, and CouchDB's Erlang node names keep working
 only through the `lab_net` aliases phase 1 added.
+
+### S05 phase 2 live apply (2026-09-23, owner-approved)
+
+The approved unit was the full recreate. The CouchDB profile is not running,
+so the `lab_net` aliases were not exercised live.
+
+| Step | Result |
+| --- | --- |
+| Scope | 56 running containers, 52 of them attached to `infra_net`. The active profile set was derived from the running services (`admin ai crawl4ai data-science dev messaging notebook obs obs-gpu tooling workflow`) so the recreate could name every service explicitly and start nothing new |
+| Dry run | `docker compose up -d --no-deps --dry-run <56 services>`: 52 recreates, no container creations; `lab_net` and `hy-home-infra_default` to be created |
+| Apply | First pass stopped at `dependency failed to start: container airflow-apiserver is unhealthy` — the API server was still inside its start period, so 23 dependants stayed `Created`. A second identical pass once it reported healthy completed them; no other failure |
+| Network | `infra_net` reached 0 members and was removed. The project now runs on `edge_net`, `obs_net`, `mng_data_net`, `object_net`, `secrets_net`, `ai_net`, `kafka_net`, `airflow_net`, `n8n_net`, `crawl4ai_net`, `lab_net`, `seaweed_internal`, `k3d-hyhome` and the project default |
+| Containers | 56 running, the same set as before; none missing. `kafka-2`/`kafka-3` remain in `Created` from 2026-09-22 and predate this step |
+| Logs | Loki `container_name` label values went from 6 to 56, so the phase 1 log loss is closed. The window from 2026-09-22 to this apply stays unrecoverable |
+| Metrics | Prometheus `up==1` 21, `up==0` 10. The stale `minio` target is gone with the config remount. The ten down targets are the eight k3s NodePort jobs, `opensearch` (not running) and `openbao` |
+| Gateway | `grafana.hy.home.arpa` and `keycloak.hy.home.arpa` answer `302` to the SSO redirect through Traefik on `edge_net`. A `gateway-standard-chain@file does not exist` error appeared for ~90 seconds while Traefik loaded the Docker provider ahead of the file provider, then stopped |
+| Reachability | `redisinsight` resolves `mng-valkey`; `n8n-valkey` and `airflow-valkey` do not resolve because the `dedicated-valkey` profile is not running. `mlflow` resolves `seaweedfs-s3`, `alloy` resolves `loki` |
+| Gatus | 6 of 7 endpoints up; `OpenBao` is the one down |
+
+OpenBao sealed on restart, which is what a Shamir seal does and which this step
+did not anticipate. The unseal ceremony is the owner-controlled procedure in
+RUN-0085: two of three shares pasted at the hidden prompt of
+`docker compose exec openbao bao operator unseal`. The Agent additionally needs a
+fresh AppRole SecretID, because a SecretID is single-use and the Agent deletes
+its file after reading it; until then it logs `no known secret ID`. No running
+consumer broke — the rendered Agent outputs persist in the
+`openbao-agent-out` volume — but `sys/metrics` returns 503 while sealed, so the
+`openbao` scrape target and the Gatus endpoint stay down. Recorded as a
+deferred item for the owner.
 
 ## Verification Evidence
 
@@ -741,13 +770,14 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 - `mng-pg` rebuild to apply the quieter `archive-push` log level (next approved recreate).
 
-- Prometheus still scrapes a `minio` target: its config is a single-file bind mount holding a replaced inode, so only a recreate clears it (next approved recreate). Single-file config mounts drift the same way for every service.
+- Single-file config bind mounts keep the original inode, so a host edit never reaches the container. The stale Prometheus `minio` target this produced cleared with the S05 phase 2 recreate; every other single-file config mount drifts the same way (observability owner).
 - Orphan secret file `secrets/storage/mlflow_s3_password.txt` (STRG-005/006 were removed in S07a); delete with the next secret review (owner).
 - SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
 - Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
 - `examples/operations/compose-core-readiness/` keeps `INFRA_SUBNET`/`INFRA_GATEWAY` and its own Vault rig; restate the example or declare it intentionally generic (owner).
+- OpenBao is sealed after the S05 phase 2 recreate: two of three Shamir shares must be pasted at the hidden prompt of `docker compose exec openbao bao operator unseal`, and the Agent then needs a fresh single-use AppRole SecretID. `sys/metrics` returns 503 until both are done, so the `openbao` scrape target and the Gatus endpoint stay down (owner).
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
