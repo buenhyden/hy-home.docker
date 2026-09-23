@@ -543,6 +543,20 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(16, len(value))
         self.assertEqual(text.replace("`(empty)`", f"`{value}`"), after)
 
+    def test_generation_keeps_a_multiline_file_out_of_the_registry(self):
+        text = (
+            "| **TEST-001** | `X` | `Recovery` | `(empty)` | `-` | `secrets/shares.txt` | 2026-01-01 | Shares |\n"
+        )
+        self.example.write_text(text)
+        self.target.write_text(text)
+        self.target.chmod(0o600)
+        shares = self.root / "secrets/shares.txt"
+        shares.write_text("synthetic-share-1\nsynthetic-share-2\n")
+        result = self.run_mode("")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(text, self.target.read_text())
+        self.assertEqual("synthetic-share-1\nsynthetic-share-2\n", shares.read_text())
+
     def test_check_reports_drift_without_writes(self):
         before = self.target.read_bytes()
         result = self.run_mode("--sync-metadata-check")

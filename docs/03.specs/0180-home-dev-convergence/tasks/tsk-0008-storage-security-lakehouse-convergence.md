@@ -1367,16 +1367,16 @@ The fixture now copies `plan.ndjson`.
 
 | Stage | Live steps |
 | --- | --- |
-| S10 WireMock, S11 Pact Broker | start on their profiles; Pact Broker needs its DB provisioning |
-| S12 Spark, S13 Trino, S14 Flink, S15 Great Expectations | STRG-015 and the `.env` key, `seaweedfs-s3` recreate, `seaweedfs-table-bucket`; Flink checkpoint directory (`2770`, group `SECRETS_GID`) and image build |
-| S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin |
-| S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart |
-| S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running |
+| S10 WireMock, S11 Pact Broker | start on their profiles; Pact Broker needs its DB provisioning **Done 2026-09-24** |
+| S12 Spark, S13 Trino, S14 Flink, S15 Great Expectations | STRG-015 and the `.env` key, `seaweedfs-s3` recreate, `seaweedfs-table-bucket`; Flink checkpoint directory (`2770`, group `SECRETS_GID`) and image build **Done 2026-09-24** |
+| S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin **Blocked:** Keycloak client is the owner's |
+| S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart **Done 2026-09-24** |
+| S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running **Done 2026-09-24** (running services only) |
 | S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must reach the application. `sso-errors` turns 401–403 into the sign-in flow, so a denial shows as a loop ending on the OAuth2 Proxy error page and a group denial in its log, not as a 403 at the route. On that signal the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) **Done 2026-09-24** (S19 live apply) |
 | S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 **Done 2026-09-24** (S19 live apply) |
 | Terrakube | at `iac` activation: Keycloak client `home-terrakube` (remote), drop the API ForwardAuth, audience/RBAC acceptance |
-| hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network |
-| Acceptance | Flink and Trino live acceptance, then the ksqlDB and StarRocks removals |
+| hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network Network disconnect **done 2026-09-24**; Session 3 is the owner's |
+| Acceptance | Flink and Trino live acceptance, then the ksqlDB and StarRocks removals Flink/Trino **PASS 2026-09-24**; removals follow |
 
 ### S19 live apply (2026-09-24, owner-approved)
 
@@ -1388,6 +1388,22 @@ The fixture now copies `plan.ndjson`.
 | `prometheus` recreate | healthy; `up{job="qdrant"}` 1 through `bearer_token_file`; `QdrantDown` loaded with `job="qdrant"`. `opensearch` (not running) and `cadvisor` (first scrape pending) were the only unhealthy targets |
 | `oauth2-proxy` recreate | **Failed then fixed.** The new container crash-looped: `extra_hosts` pinned `keycloak.`/`auth.` to `host-gateway` (172.17.0.1), and Traefik publishes 443 only on `TRAEFIK_BIND_IP` since its recreate 11 hours earlier, so OIDC discovery was refused. The previous container had discovered at start 21 hours earlier, which hid the defect. Every SSO route answered 500 from about 22:52:28 to 22:53:30 UTC. Removing the two `extra_hosts` lines lets it resolve Keycloak through the Traefik `edge_net` alias like every other service; recreated healthy, unauthenticated SSO requests get 401 with the sign-in page. A test now fails if any service pins `keycloak.`/`auth.` to a host entry |
 | Owner login through an SSO route | **Pass.** The owner (in `/admins`) reached the application through an SSO route after the recreate; OAuth2 Proxy logged no group denial in the following two hours. `allowed_groups` is live |
+
+### Remaining live activation (2026-09-24, owner-approved)
+
+| Step | Result |
+| --- | --- |
+| `k3d-hyhome` network | The cluster was rebuilt 2026-09-23 and uses only host endpoints (`*-external` EndpointSlices on `192.168.0.13`, ESO through `https://openbao.hy.home.arpa`); the six Compose containers were only in k3d's injected NodeHosts. Disconnected without restart; all six healthy; ExternalSecrets unchanged (`argocd-notifications-secret` and `postgres-app-secret` were already `False`, optional) |
+| S18 recreates | `schema-registry`, `kafka-rest-proxy`: 401 at the routes; Kafka Connect reaches Schema Registry directly (200) and both connectors stay `RUNNING`. `mongo-express` and the OpenSearch cluster are not running, so nothing to recreate |
+| S10 WireMock | healthy; admin 200 on `127.0.0.1:18088`, refused on the LAN; one tracked mapping |
+| S11 Pact Broker | `pact-broker-db-provision` exit 0 (`--no-deps`: `mng-pg` hash unchanged, `mng-pg-init` not re-run); broker healthy, 401 without and 200 with basic auth, loopback only |
+| S17 Stalwart | data directory created empty (UID 2000 on first start); plan: 3 created, 4 updated, 5 default listeners removed; after restart only 25, 587, 993, 8080 listen; relay refused `550 Relay not allowed`; admin route 401 |
+| S12–S15 lakehouse | `seaweedfs-s3` recreated for the `lakehouse` identity (Loki and Tempo showed no S3 errors); table bucket and `dev`/`test` namespaces created; Spark lists both; Trino healthy on loopback; Flink checkpoint directory `2770`; Flink batch INSERT and a checkpointed streaming INSERT into `test.gx_rehearsal` (23 rows) finished; Trino reads 23 rows; Great Expectations suite `lakehouse-rehearsal` exit 0, three expectations true. **Flink and Trino live acceptance: PASS** |
+| Operations checkout modes | 47 tracked files `0600` and 6 directories `0700` from pulls run with a restrictive umask; Flink could not read its start script and the rebuilt GX image copied an unreadable script. Restored `644`/`755` (Git reports no change), images rebuilt; later pulls use umask `022` |
+| Secret registry parity (owner rule) | #243 merged; `0600` backups, then `--sync-metadata-prune`: the private registry equals the public one except value cells (209 lines each) and `.env` has exactly the public key set (the 11 retired Stalwart keys removed) |
+| Superset secrets | PG-028 and AUTO-020 generated (0640). The generation run copied the three-line SEC-003 unseal-share file into its table cell and split the row again, which is how SEC-003 broke twice before; the registry was rebuilt from the public text with SEC-003 back to its placeholder and the copy holding the shares was shredded. Generation now skips multi-line values (this PR) |
+| S16 Superset | **Blocked:** creating the Keycloak client `home-superset` was refused by the agent permission check; the owner creates it and stores its secret as IAM-013, then build, provisioning, start and `create-admin` follow RUN-0097 |
+| RUN-0096 Session 3 | owner-run (OIDC browser login and a temporary root from unseal shares). Evidence it may already be done: `kiali-grafana-auth` and both `prometheus-api-auth` ExternalSecrets are synced; only the owner can confirm the `k8s-bootstrap` role cap (`7200`) |
 
 ## Verification Evidence
 
@@ -1498,6 +1514,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- CI `validation-changed` now fails on every PR: the allocation-transition identity scan exceeds `MAX_TRANSITION_GIT_OUTPUT_BYTES` (64 MiB) — the growth recorded above has reached the bound (first seen on #243). Bound the per-fork `git grep` in `identity_history.validate_allocation_transition` (governance tooling owner).
 
 - ~~Private `secrets/SENSITIVE_ENV_VARS.md` SEC-003 row split across lines, blocking `--sync-metadata` (owner).~~ Closed 2026-09-24: restored to the public placeholder and synced (S19 live apply). It has broken this way twice; keep unseal shares only in their file.
 

@@ -1,6 +1,6 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.1.0"
+version: "3.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -44,7 +44,8 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 내용·행 순서·날짜·주변 문장까지 같고 Value cell만 다르다(owner 결정 2026-09-24).
 동기화는 공개 파일을 기준으로 개인 파일을 다시 만들고 Value cell만 옮긴다. 값
 생성도 Value cell만 바꾸며 날짜를 고치지 않는다. 행마다 `secrets/` 아래 경로의
-파일이 있고 비어 있지 않아야 한다. 이 경로는 개별 secret 값 파일을 생성·회전·삭제하지 않는다. 공개
+파일이 있고 비어 있지 않아야 한다. 여러 줄 값(SEC-003의 unseal share)은 표 행을
+쪼개므로 파일에만 두고 registry Value cell은 placeholder로 남긴다. 이 경로는 개별 secret 값 파일을 생성·회전·삭제하지 않는다. 공개
 스키마 밖의 행을 `Private-only rows` 섹션에 남기는 기존 `--sync-metadata`는 이번 정확한 집합 일치의
 완료 검사와 다르다. 중복·모호한 입력·경로 교체는 값을 출력하지 않고 거부한다.
 
