@@ -128,7 +128,6 @@ graph TD
 
 - **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway and observability services.
 - **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
-- **Kubernetes/GitOps**: k3d NodePort targets for Argo CD, kube-state-metrics, Istio, and Argo Rollouts.
 - **Applications**: Keycloak, n8n, Airflow, OpenBao, Ollama exporter.
 
 #### GPU metrics (DCGM Exporter, opt-in `obs-gpu`)

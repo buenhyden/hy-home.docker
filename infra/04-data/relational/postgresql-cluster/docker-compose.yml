@@ -222,8 +222,6 @@ services:
       edge_net: {}
       lab_net: {}
       obs_net: {}
-      k3d-hyhome:
-        ipv4_address: 172.18.0.15
 
   pg-cluster-init:
     profiles:

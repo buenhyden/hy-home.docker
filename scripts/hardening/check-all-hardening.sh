@@ -403,7 +403,6 @@ check_03_security() {
   check_contains "$compose_file" "openbao-agent-out:" "openbao-agent output volume missing"
   check_contains "$compose_file" "openbao-agent-out:/openbao/out" "openbao-agent output mount missing"
   check_contains "$compose_file" "traefik.http.routers.openbao.middlewares: gateway-standard-chain@file" "openbao gateway chain mismatch"
-  check_contains "$compose_file" "ipv4_address: 172.18.0.17" "openbao k3d-hyhome IP mismatch"
   check_service_network "$compose_file" "openbao" "secrets_net"
   check_service_network "$compose_file" "openbao-agent" "secrets_net"
   check_contains "$compose_file" '"storage":{"raft"' "openbao raft storage missing"

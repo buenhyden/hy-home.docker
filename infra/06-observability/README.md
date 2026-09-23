@@ -61,7 +61,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Config files | `docker-compose.yml` |
 | Config values | Uses non-secret S3 access key IDs (`loki`, `tempo`), Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml`. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, and `CADVISOR_MEM_LIMIT` select the topology that used to be a second file. |
-| Networks | `edge_net`, `k3d-hyhome`, `mng_data_net`, `object_net`, `obs_net` |
+| Networks | `edge_net`, `mng_data_net`, `object_net`, `obs_net` |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |

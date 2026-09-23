@@ -115,7 +115,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
 | Compose linkage | Declared in `../docker-compose.yml`, which the root file includes unconditionally; `tempo` resolves under the `obs` and `dev` profiles |
-| Networks | `edge_net`, `k3d-hyhome`, `object_net`, `obs_net` |
+| Networks | `edge_net`, `object_net`, `obs_net` |
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |

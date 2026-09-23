@@ -2881,8 +2881,8 @@
       },
       {
         "current": {
-          "text": "k3d-hyhome",
-          "value": "k3d-hyhome"
+          "text": "",
+          "value": ""
         },
         "datasource": {
           "type": "prometheus",

@@ -866,6 +866,27 @@ Sequential review (read-only reviewer) findings and their disposition:
 | `AWS_REGION` unguarded, no empty admin-secret check, unconditional policy rewrite undocumented, namespace list compared as ordered, `cpus: 2.0` | fixed |
 | POL-0086 has no row for checksum-pinned build downloads (also the Gatus tarball) | deferred: pre-existing gap; the Spark README states manual ownership |
 
+### k3d removal (source, owner instruction 2026-09-23)
+
+The owner asked to remove the k3d integration from Traefik and everywhere
+else, and chose the full scope including Kubernetes observability. This
+replaces the S01/S05 "minimal `k3d-hyhome` membership" target with none.
+
+| Unit | Change |
+| --- | --- |
+| Networks | `k3d-hyhome` attachment and fixed address removed from Traefik (`.2`), Prometheus, Loki, Tempo, Alloy, Grafana, `mng-valkey`, OpenBao (`.17`) and `pg-router`; the root external network and `K3D_HYHOME_NET_NAME` (root and core-readiness examples) removed |
+| Traefik | file-provider routes `adminer-k3d`, `argocd-k3d`, `headlamp-k3d`, `kiali-k3d`, `rollouts-k3d` deleted; `k3s.yml` kept, it routes the native k3s NodePort and not k3d (matches #217) |
+| Prometheus | the Argo CD, kube-state-metrics, Istio and Argo Rollouts NodePort jobs and `alert_rules.k8s.yml` removed from both configs |
+| Grafana | the `Kubernetes` dashboard folder (20 dashboards) and its provider, the four Argo CD dashboards, and the `k3d-hyhome` default of the Prometheus dashboard's cluster variable removed |
+| Checks | the OpenBao `172.18.0.17` hardening assertion and the `k3d-hyhome` string in the core-readiness guard removed (the guard still rejects any external network); pinned public env-key counts updated |
+| Documents | REQ-0023 STORY-03 and FR-0003, AD-0026 description, 0031, spec, POL/GDE-0077, Prometheus guide and policy, and the Traefik, OpenBao, observability, Grafana, Loki, Tempo and PostgreSQL-cluster READMEs; the m0021 inventory re-rendered. The ADR-0026 decision record is left as the historical decision |
+
+Evidence: `validate-docker-compose.sh` 71 selections; catalog PASS;
+hardening PASS; metadata check against `origin/main` 0 violations; the
+Compose, secret-metadata and core-readiness tests and `run-ci-gate.py --profile changed` (exit 0) pass. Live is NOT_RUN: the
+nine containers keep their `k3d-hyhome` endpoint until each is recreated, and
+the `k3d-hyhome` network itself (owned by k3d) is not deleted.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -926,7 +947,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).
 
 - OpenBao metrics token expires 2026-10-22: nothing alerts before expiry (the 13:55 token lapsed unnoticed). Add an expiry alert or rotate on a schedule (OpenBao subject owner).
-- Prometheus k8s NodePort targets on `172.18.0.2` refuse connections; `.2` is Traefik's k3d address (observability owner).
+- ~~Prometheus k8s NodePort targets on `172.18.0.2`~~ closed by the k3d removal: the jobs are gone.
 
 - n8n queue configuration points at `redis://mng-n8n-valkey`, a name no service declares (found in S05 review; n8n stage owner).
 
@@ -943,6 +964,6 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Every OpenBao restart costs an unseal ceremony and an Agent SecretID delivery, and this has now interrupted two approved recreates. Decide whether that stays manual or moves to an auto-unseal seal (OpenBao subject owner).
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
-- `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
+- `hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).
 - `examples/operations/compose-core-readiness/` still demonstrates a Vault-based readiness rig; restate it on OpenBao or declare it intentionally generic (owner).

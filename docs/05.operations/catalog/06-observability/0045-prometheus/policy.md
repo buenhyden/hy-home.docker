@@ -49,7 +49,6 @@ config, and alert-rule surfaces.
     `infra/06-observability/prometheus/config/prometheus.yml`.
   - Alert and recording rules are loaded from
     `/etc/prometheus/alert_rules/alert_rules.local.*.yml`,
-    `/etc/prometheus/alert_rules/alert_rules.k8s.yml`,
     `/etc/prometheus/alert_rules/alert_rules.keycloak.yml`,
     `/etc/prometheus/alert_rules/alert_rules.vault.yml`, and
     `/etc/prometheus/alert_rules/recording_rules.yml`.

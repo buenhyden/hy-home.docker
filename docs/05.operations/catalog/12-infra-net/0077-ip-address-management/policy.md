@@ -25,7 +25,7 @@ created: "2026-04-01"
 
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Agents**: 모든 인프라 관리 에이전트.
-- **Environments**: Local (k3d/docker-compose) 및 Production (Future) 개발/운영 환경.
+- **Environments**: Local (docker-compose) 및 Production (Future) 개발/운영 환경.
 
 ## Controls
 
@@ -33,8 +33,7 @@ created: "2026-04-01"
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
     프로젝트 기본 network를 쓴다.
   - 고정 주소는 다른 곳이 그 주소를 신뢰할 때만 부여하고, 사유를 Compose 주석에
-    남긴다(현재: Traefik의 `edge_net` 주소, OpenSearch node 간 announce 주소,
-    `k3d-hyhome` 소속 서비스).
+    남긴다(현재: Traefik의 `edge_net` 주소, OpenSearch node 간 announce 주소).
   - 고정 주소는 해당 network의 dynamic range 밖에 둔다.
 - **Allowed**:
   - 새 flow가 생기면 해당 network membership을 추가한다.
@@ -46,7 +45,7 @@ created: "2026-04-01"
 
 ## Exceptions
 
-- **K3d-hyhome Compatibility**: `k3d-hyhome` 네트워크는 마스터 노드 및 외부 게이트웨이 영역과의 호환성을 위해 기존 IP 체계를 예외적으로 유지하거나 별도 할당 방식을 적용할 수 있음.
+- None. The `k3d-hyhome` exception ended when no service remained attached to it (2026-09-23).
 
 ## Verification
 
