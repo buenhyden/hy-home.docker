@@ -1051,6 +1051,28 @@ and 26379 open. Six Compose containers are still attached to the orphaned
 so after the rebuild, phase 5 (5.1–5.3, 5.5–5.7) must run again with the new
 CA.
 
+### Prometheus API credential through OpenBao (hy-home.k8s request 2026-09-23)
+
+hy-home.k8s (PR #72) reads the Prometheus API credential from OpenBao
+`secret/platform/prometheus-api` through ESO for Alloy remote write, Kiali and
+Argo Rollouts analysis.
+
+| Unit | Change |
+| --- | --- |
+| Policies | `eso-read-platform` reads `platform/prometheus-api` data and metadata; `hy-home-operator` may create, read and update that entry (rotation without root); `bao policy fmt` clean |
+| RUN-0096 | client container mounts the password file and passes the non-secret username as `PROM_API_USER`; 5.4 split into 5.4.1 first setup (now also writes the entry), 5.4.2 additional application (Session 3: both policies, the entry, the `k8s-bootstrap` cap) and 5.4.3 verify and revoke, with expected outputs; new rotation section covering `OBS-013`, `INFRA-007` and the OpenBao entry; troubleshooting row for `401` after a rotation |
+| Documents | GDE/POL-0096, GDE/POL-0045, GDE-0085 and the OpenBao README state the new source and the joint rotation |
+
+Live Session 3 is the owner's (NOT_RUN). Expected results to record:
+`2`, `2`, `current_version` at least `1`, `7200`, `root revoked`,
+`Started false`. Grafana anonymous access stays off (owner decision earlier on
+2026-09-23). Conftest exists as the `policy-check` Docker job and CI gate, with
+no host binary; a `~/.local/bin/conftest` for hy-home.k8s `policy-gates` is not
+installed.
+
+A diagnostic in this session printed the last character of two secret files
+while checking for trailing newlines. Only a boolean should have been printed.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |

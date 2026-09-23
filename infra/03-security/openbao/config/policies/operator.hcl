@@ -1,7 +1,7 @@
 # Owner-approved human operations: two existing values, renderer credentials,
-# backup reads, authenticated quorum recovery, and the hy-home.k8s cluster
-# rebuild steps (Kubernetes auth and bootstrap token). No secret deletion or
-# wildcards.
+# backup reads, authenticated quorum recovery, the hy-home.k8s cluster
+# rebuild steps (Kubernetes auth and bootstrap token) and the Prometheus API
+# credential rotation. No secret deletion or wildcards.
 path "secret/data/hy-home/02-auth/keycloak" {
   capabilities = ["read", "update"]
 }
@@ -33,6 +33,16 @@ path "sys/generate-root-token/attempt" {
 
 path "sys/generate-root-token/update" {
   capabilities = ["update", "sudo"]
+}
+
+# hy-home.k8s Prometheus API credential: rotate it together with OBS-013 and
+# INFRA-007, without a root session.
+path "secret/data/platform/prometheus-api" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/platform/prometheus-api" {
+  capabilities = ["read"]
 }
 
 # hy-home.k8s rebuild: point Kubernetes auth at the new API server and CA,

@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -38,12 +38,15 @@ repository boundary.
 - The bootstrap token comes only from the `k8s-bootstrap` token role: orphan,
   policy `k8s-bootstrap`, lifetime at most two hours, requested explicitly on
   each issue. A longer-lived token is revoked on sight.
-- The OIDC operator may update `auth/kubernetes/config` and issue bootstrap
-  tokens. Enabling the method, writing policies and roles, and writing
+- The OIDC operator may update `auth/kubernetes/config`, issue bootstrap
+  tokens, and update `secret/platform/prometheus-api` for a credential
+  rotation. Enabling the method, writing policies and roles, and writing
   `secret/platform/*` need an approved temporary-root session that ends with
   revocation.
 - Prometheus is reachable from the cluster only through `/api/v1/` with Basic
-  Auth (`INFRA-007`); no Prometheus host port is published and the UI keeps
+  Auth (`INFRA-007`). The cluster gets the credential only through OpenBao
+  `secret/platform/prometheus-api`, which changes in the same rotation as
+  `OBS-013` and `INFRA-007`; no Prometheus host port is published and the UI keeps
   SSO. Grafana gets no host port and no anonymous access.
 - Loki `3100`, Tempo `3200` and `mng-valkey` `26379` stay published on all
   host interfaces without gateway authentication (Valkey keeps its password).

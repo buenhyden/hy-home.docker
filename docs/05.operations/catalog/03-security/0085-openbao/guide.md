@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Guide"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -77,7 +77,9 @@ The [operator policy](../../../../../infra/03-security/openbao/config/policies/o
 permits reading/updating only the Keycloak and Grafana KV values, issuing renderer
 SecretIDs, reading Raft snapshots, initiating/cancelling authenticated quorum
 root recovery, and the two hy-home.k8s rebuild steps: updating
-`auth/kubernetes/config` and creating a token through the `k8s-bootstrap` role.
+`auth/kubernetes/config`, creating a token through the `k8s-bootstrap` role,
+and updating `secret/platform/prometheus-api` for a Prometheus API credential
+rotation.
 It does not grant root, secret deletion, arbitrary secret access, policy
 changes or any other auth configuration change. OIDC token TTL is one hour, with
 four-hour maximum lifetime. Because broad list permissions are absent, navigate

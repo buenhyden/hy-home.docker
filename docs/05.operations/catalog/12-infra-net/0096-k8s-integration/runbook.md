@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -20,7 +20,8 @@ created: "2026-09-23"
 | --- | --- |
 | First setup of the integration | 1 → 8, in order |
 | hy-home.k8s cluster rebuilt (new API server CA) | 1, 5 (steps 5.1–5.3 and 5.6–5.7), 6, 7, 8 |
-| Prometheus API password rotated | 1, 2, 3, 6, 7, 8 |
+| Prometheus API password rotated | 1, [rotation](#rotating-the-prometheus-api-credential), 7, 8 |
+| Setup done before the Prometheus API KV entry existed | 1, 5 (5.1–5.3, 5.4 with 5.4.2, 5.4.3), 7, 8 |
 | OpenBao auth mount, policy or role lost | 1, 5 (all steps), 6, 7, 8 |
 
 Rules for every phase:
@@ -147,7 +148,7 @@ first with `ssh -L 8250:localhost:8250 <host>`.
 
 ```bash
 IMG=$(docker compose config --images openbao)
-docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/valkey/mng_password.txt:/s/valkey:ro" -v /tmp/bao-k8s:/s/k8s --entrypoint sh "$IMG"
+docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/valkey/mng_password.txt:/s/valkey:ro" -v "$PWD/secrets/observability/prometheus_api_password.txt:/s/prom:ro" -e PROM_API_USER="$(grep '^PROMETHEUS_API_USERNAME=' .env | cut -d= -f2 | tr -d '"')" -v /tmp/bao-k8s:/s/k8s --entrypoint sh "$IMG"
 ```
 
 The remaining steps of this phase run inside the container.
@@ -157,16 +158,16 @@ The remaining steps of this phase run inside the container.
 ```sh
 umask 077; mkdir -p /tmp/c
 bao login -no-print -method=oidc -path=oidc role=home-admin
-bao operator raft snapshot save /s/k8s/pre-change.snap
+bao operator raft snapshot save /s/k8s/pre-change.snap   # or a name for the change, e.g. pre-prometheus-api.snap
 ```
 
 Expected: the browser login succeeds and the snapshot file exists. Do not
 continue without it.
 
-5.4 **First setup only: temporary root.** This needs an approved root session
-and two distinct unseal shares from `secrets/security/openbao_unseal_keys.txt`,
-pasted one per hidden prompt. `R` passes the root per command, so it is never
-exported.
+5.4 **Temporary root** (first setup, or an additional application). This needs
+an approved root session and two distinct unseal shares from
+`secrets/security/openbao_unseal_keys.txt`, pasted one per hidden prompt. `R`
+passes the root per command, so it is never exported.
 
 ```sh
 bao operator generate-root -init -format=json > /tmp/c/init.json
@@ -175,6 +176,14 @@ bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p1.json
 bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p2.json
 ENC=$(sed -n 's/.*"encoded_token": *"\([^"]*\)".*/\1/p' /tmp/c/p2.json); bao operator generate-root -decode="$ENC" -otp="$OTP" > /tmp/c/root
 R() { BAO_TOKEN="$(cat /tmp/c/root)" bao "$@"; }
+```
+
+Then run 5.4.1 (first setup) or 5.4.2 (additional application), and always
+5.4.3.
+
+5.4.1 First setup: enable the method, write policies, roles and the KV entries.
+
+```sh
 R auth list -format=json | grep -q '"kubernetes/"' || R auth enable kubernetes
 R policy write eso-read-platform /policies/eso-read-platform.hcl
 R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
@@ -182,18 +191,43 @@ R policy write hy-home-operator /policies/operator.hcl
 R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1h
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
+R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
 R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
+```
+
+Expected: `[external-secrets]`. `secret/platform/argocd` (the Argo CD Valkey
+password) and `secret/platform/prometheus-api` (the Prometheus API credential,
+the same source as `INFRA-007`: `PROMETHEUS_API_USERNAME` and
+`prometheus_api_password.txt`) are required. Add `secret/platform/postgres-app`
+`{db_name,username,password}` and `secret/platform/notifications`
+`{slack_token}` the same way, and only when k8s apps use them.
+
+5.4.2 Additional application (Session 3) for an environment set up before the
+Prometheus API entry and the role cap existed:
+
+```sh
+R policy write eso-read-platform /policies/eso-read-platform.hcl
+R policy write hy-home-operator /policies/operator.hcl
+R policy read eso-read-platform | grep -c 'platform/prometheus-api'
+R policy read hy-home-operator | grep -c 'platform/prometheus-api'
+R kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
+R kv metadata get -format=json secret/platform/prometheus-api | grep '"current_version"'
+R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
+```
+
+Expected: `2`, `2`, `current_version` at least `1`.
+
+5.4.3 Verify the token role, then revoke the root:
+
+```sh
 R read -field=token_explicit_max_ttl auth/token/roles/k8s-bootstrap
 R token revoke -self
 R token lookup >/dev/null 2>&1 && echo "ROOT STILL VALID" || echo "root revoked"
 bao operator generate-root -status | grep -i started
 ```
 
-Expected: `[external-secrets]`, `7200`, `root revoked`, `Started false`.
-`secret/platform/argocd` (the Argo CD Valkey password) is required. Add
-`secret/platform/postgres-app` `{db_name,username,password}` and
-`secret/platform/notifications` `{slack_token}` the same way, and only when k8s
-apps use them.
+Expected: `7200`, `root revoked`, `Started false`. After an additional
+application, continue with Phase 7; the cluster configuration is unchanged.
 
 5.5 Point the method at the cluster:
 
@@ -235,8 +269,7 @@ secret files.
 | Item | Source |
 | --- | --- |
 | Bootstrap token (use within two hours) | `/tmp/bao-k8s/k8s-bootstrap.token` |
-| Prometheus API user | `.env` `PROMETHEUS_API_USERNAME` |
-| Prometheus API password | `secrets/observability/prometheus_api_password.txt` |
+| Prometheus API credential | OpenBao `secret/platform/prometheus-api` (`username`, `password`), synced by ESO; the source is `.env` `PROMETHEUS_API_USERNAME` and `secrets/observability/prometheus_api_password.txt` |
 | Gateway CA (public) | `secrets/certs/rootCA.pem` |
 | Endpoints | the contract table in the [guide](guide.md) |
 
@@ -276,6 +309,44 @@ current Task, record the date, the phases run, and the expected outputs of
 3.2, 4.1, 5.4, 5.5, 5.7 and 7.2. Never record the token, shares, passwords or
 KV values.
 
+### Rotating the Prometheus API credential
+
+The password lives in three places that must change together:
+
+- `OBS-013`, the file
+- `INFRA-007`, the Traefik htpasswd derived from it
+- the OpenBao entry the cluster reads
+
+If OpenBao is not updated, the cluster's remote write gets `401`. The OIDC
+operator can update the entry without a root session.
+
+1. Move the old file aside and generate a new one. `gen-secrets.sh` rederives
+   `INFRA-007` because the old hash no longer verifies:
+
+   ```bash
+   umask 077; B=secrets/.backup-$(date +%Y%m%d); mkdir -p "$B" && mv secrets/observability/prometheus_api_password.txt "$B"/
+   bash scripts/operations/gen-secrets.sh
+   ```
+
+2. Recreate Traefik and repeat the 3.2 checks (`401`, `200`):
+
+   ```bash
+   docker compose up -d --no-deps --force-recreate traefik
+   ```
+
+3. Update OpenBao as the operator (5.2 client container, 5.3 login), then
+   leave the container:
+
+   ```sh
+   bao kv put secret/platform/prometheus-api username="$PROM_API_USER" password=@/s/prom
+   bao kv metadata get -format=json secret/platform/prometheus-api | grep '"current_version"'
+   ```
+
+   Expected: `current_version` one higher than before.
+4. Ask the cluster owner to force an ESO refresh of the Prometheus secret, then
+   run 7.2.
+5. Delete the old file from the backup once 7.2 passes.
+
 ### Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -291,6 +362,7 @@ KV values.
 | `403` on `bao token lookup <token>` | the operator cannot look up other tokens | look up as the token itself (5.7) |
 | bootstrap token TTL about 32 days | token roles ignore `token_ttl`/`token_max_ttl`, so the role had no cap | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`, reissue with 5.6, and set `token_explicit_max_ttl=2h` on the role in the next root session |
 | `ROOT STILL VALID` | revocation failed | stop and escalate; keep the session open |
+| cluster remote write gets `401` after a rotation | OpenBao `secret/platform/prometheus-api` still holds the old password | rotation step 3, then an ESO refresh |
 | no `cluster="k3d-hyhome"` series in 7.2 | the cluster sender is not configured or cannot reach 443 | the cluster owner checks the Alloy logs, DNS, CA and egress |
 
 ## Evidence
