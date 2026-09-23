@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -38,7 +38,7 @@ created: "2026-05-10"
 
 - `locust` leaf는 `locust-master`, `locust-worker` 분산 실행에 사용한다.
 - `k6` leaf는 단일 `k6` 작업이며 worker service가 없다. 결과는 UI가 아니라 Grafana `k6 Prometheus` 대시보드에서 본다.
-- Root `infra_net` context가 필요하다.
+- Root the project default network context가 필요하다.
 - 대규모 테스트는 승인된 테스트 윈도우와 대상 서비스 owner 승인이 필요하다.
 
 ### Step-by-step Instructions
@@ -76,7 +76,7 @@ created: "2026-05-10"
 
 - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
-- 실행 승인 시 root+leaf overlay가 선택 leaf service와 `infra_net`을 함께 렌더링하는지 확인한다.
+- 실행 승인 시 root+leaf overlay가 선택 leaf service와 the project default network을 함께 렌더링하는지 확인한다.
 
 ## Runbook Handoff
 

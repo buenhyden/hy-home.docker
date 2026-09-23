@@ -1,6 +1,6 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -63,7 +63,7 @@ Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의
 
 이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
 
-Gateway leaves join `infra_net`, but they are alternative host listeners. Normal
+Gateway leaves join `edge_net`, but they are alternative host listeners. Normal
 HOME traffic enters Traefik. The `nginx` profile instead selects Nginx for its
 special-path routes; Nginx is not chained behind Traefik in the current Compose.
 

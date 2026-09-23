@@ -1,10 +1,10 @@
 ---
 title: "Specialized Data Services (04-data/specialized)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2026-05-15"
 ---
 
@@ -30,7 +30,7 @@ created: "2026-05-15"
 
 - Neo4j graph database 구성과 `neo4j_password` Docker Secret 경계
 - Qdrant vector database 구성과 현재 no-secret route 경계
-- Traefik route, `infra_net`, persistent volume, linked operations docs
+- Traefik route, network 소속, persistent volume, linked operations docs
 
 ### Out of Scope
 

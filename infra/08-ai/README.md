@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -80,7 +80,7 @@ Ollama, Open WebUI and ComfyUI are owner-confirmed always-on HOME capabilities. 
 | :--- | :--- | :--- | :--- |
 | `ollama` | HTTP | `ai`, `dev` | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` and `ollama.${DEFAULT_URL}` |
 | `open-webui` | HTTP | `ai` | `chat.${DEFAULT_URL}` via Traefik; no host port is declared |
-| `ollama-exporter` | HTTP metrics | `ai`, `dev` | exposed on `${OLLAMA_EXPORTER_PORT}` inside `infra_net` |
+| `ollama-exporter` | HTTP metrics | `ai`, `dev` | exposed on `${OLLAMA_EXPORTER_PORT}` inside `ai_net` |
 | `comfyui` | HTTP | `ai`, `ai-image` | `comfyui.${DEFAULT_URL}` plus declared loopback port |
 
 ## Configuration

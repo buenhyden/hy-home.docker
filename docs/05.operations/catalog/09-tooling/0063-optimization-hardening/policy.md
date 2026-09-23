@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -31,7 +31,7 @@ created: "2026-05-10"
 
 - **Required**:
   - SonarQube/Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
-  - tooling 서비스는 root Compose가 정의한 `infra_net` bridge에 연결한다.
+  - tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다.
   - locust-worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.
   - tooling 변경은 `check-all-hardening.sh 09-tooling` 및 CI `infrastructure-hardening`을 통과해야 한다.

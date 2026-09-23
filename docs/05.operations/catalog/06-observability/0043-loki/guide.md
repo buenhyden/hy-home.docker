@@ -1,10 +1,10 @@
 ---
 title: "Loki Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0043"
 parent_ids:
@@ -70,7 +70,7 @@ created: "2026-05-10"
 4. Log ingestion and query path를 확인한다.
 
    ```bash
-   rg -n 'loki.source.docker|loki.write|url = \"http://loki:3100/loki/api/v1/push\"|project_net\\|infra_net' infra/06-observability/alloy/config/config.alloy
+   rg -n 'loki.source.docker|loki.write|url = \"http://loki:3100/loki/api/v1/push\"|com_docker_compose_project' infra/06-observability/alloy/config/config.alloy
    rg -n 'name: Loki|uid: Loki|url: http://loki:3100' infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
@@ -94,7 +94,7 @@ created: "2026-05-10"
 
 - **Purpose/classification/source**: `loki` is the `HOME` log store selected by `obs`/`logs`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Loki config](../../../../../infra/06-observability/loki/config/loki-config.yaml) are authoritative.
 - **Flow/state**: Alloy pushes logs; Loki stores TSDB schema-v13 blocks/index in SeaweedFS bucket `loki-bucket`, while `loki-data:/loki` holds local working/cache/ruler state. Retention is 168h and compactor working files are local.
-- **Secrets/dependencies/security**: `S3_ACCESS_KEY` plus `seaweedfs_s3_loki_secret_key` access SeaweedFS. SeaweedFS, Alloy, Grafana, Traefik, and `infra_net` are dependencies. Gateway protection and tenant/header rules must remain consistent; do not print object-store credentials.
+- **Secrets/dependencies/security**: `S3_ACCESS_KEY` plus `seaweedfs_s3_loki_secret_key` access SeaweedFS. SeaweedFS, Alloy, Grafana, Traefik, and the declared networks are dependencies. Gateway protection and tenant/header rules must remain consistent; do not print object-store credentials.
 - **Resources/normal use**: source limits are not headroom. Render from root, validate config, verify readiness, ingest a labeled test log, query it, and monitor compactor/object-store errors.
 - **Lifecycle**: coordinate a consistent SeaweedFS bucket backup with the storage owner and preserve local recovery-relevant state/config. Stop or quiesce ingestion for a point-in-time set, upgrade through supported schema/version transitions, then verify old/new queries and retention.
 - **Upstream/license**: follow official [Loki storage](https://grafana.com/docs/loki/latest/configure/storage/), [retention](https://grafana.com/docs/loki/latest/operations/storage/retention/), and [upgrade](https://grafana.com/docs/loki/latest/setup/upgrade/) guidance. Loki is AGPL-3.0 licensed.

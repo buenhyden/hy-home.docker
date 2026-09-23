@@ -1,10 +1,10 @@
 ---
 title: "n8n Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0053"
 parent_ids:
@@ -108,7 +108,7 @@ n8n은 확장성을 위해 분산형 큐 아키텍처를 사용하며, 주요 �
 - **Profiles/source**: core services use `workflow`/`workflow-n8n`; the pair uses `dedicated-valkey`. [Compose](../../../../../infra/07-workflow/n8n/docker-compose.yml) and its selected Dockerfiles are authoritative.
 - **State flow**: PostgreSQL database `n8n` on `mng-pg` is durable workflow/execution metadata; `n8n-data`, runner data, and `custom/` hold local application, binary, and extension artifacts; Valkey carries queue coordination. Queue state is not a complete recoverable workflow history.
 - **Secrets/environment**: preserve `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, and the selected broker password. `N8N_VALKEY_HOST` and `N8N_VALKEY_SECRET` must be switched together; the profile alone leaves defaults on `mng-valkey`/`mng_valkey_password`.
-- **Dependencies/security**: PostgreSQL, selected Valkey, Traefik/OAuth2 Proxy/Keycloak, Qdrant where a workflow uses it, root CA, and `infra_net` must be ready. Task runners stay internal and use the auth token; the UI uses the gateway auth chain.
+- **Dependencies/security**: PostgreSQL, selected Valkey, Traefik/OAuth2 Proxy/Keycloak, Qdrant where a workflow uses it, root CA, and `n8n_net` must be ready. Task runners stay internal and use the auth token; the UI uses the gateway auth chain.
 - **Persistence/resources**: recover PostgreSQL and matching encryption key together with local data, custom nodes, and externally stored binary artifacts. Compose limits are source declarations, not measured headroom.
 - **Normal use/lifecycle**: render from root with `docker compose --profile workflow config --quiet`. Before backup or update, disable schedules/webhooks and external producers, drain/reconcile executions, back up PostgreSQL and artifacts consistently, upgrade with the upstream sequence, then verify credentials, a manual workflow, queue workers, webhooks, and task runners before resuming.
 - **Upstream/license**: follow the official [queue mode](https://docs.n8n.io/deploy/host-n8n/configure-n8n/scaling/enable-queue-mode/), [encryption key](https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/configuration-examples/set-a-custom-encryption-key/), [backup/restore](https://docs.n8n.io/deploy/host-n8n/keep-n8n-running/backup-and-restore/), and [update](https://docs.n8n.io/deploy/host-n8n/keep-n8n-running/update-n8n/) guidance. n8n uses its Sustainable Use License/fair-code terms; verify use against the pinned release.

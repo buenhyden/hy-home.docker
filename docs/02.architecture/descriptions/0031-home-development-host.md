@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
@@ -27,7 +27,7 @@ created: "2026-09-19"
 소유자는 [POL-0078](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)이다.
 운영 데이터를 가진 현재 호스트와 실험용 별도 Compose project를 구분한다.
 프로파일은 보안 격리 경계가 아니며 같은 Docker daemon 장애를 공유한다.
-공유 infra_net과 k3d network 연결은 기존 구현의 신뢰 경계로, 이 설계가
+공유 Compose network와 k3d network 연결은 기존 구현의 신뢰 경계로, 이 설계가
 완전한 네트워크 격리를 입증하지 않는다.
 
 ## Components

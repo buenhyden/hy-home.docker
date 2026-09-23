@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-14"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -66,7 +66,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. Traefik
 terminates TLS and applies `gateway-standard-chain@file`; Open WebUI owns
 authentication through its native Keycloak OIDC client `home-openwebui`.
 Traefik does not apply the proxy `sso-auth@file` middleware to this router.
-Open WebUI communicates internally via `infra_net` with Ollama and Qdrant.
+Open WebUI communicates internally via `ai_net` with Ollama and Qdrant.
 
 ### AI Agent Architecture
 

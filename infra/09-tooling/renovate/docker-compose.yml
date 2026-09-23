@@ -61,8 +61,5 @@ services:
         fi
 
         exec renovate
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.232
     labels:
       <<: *tier-label

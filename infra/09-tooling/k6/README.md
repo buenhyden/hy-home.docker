@@ -1,10 +1,10 @@
 ---
 title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2026-03-26"
 ---
 
@@ -77,7 +77,7 @@ k6/
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must provide root `infra_net` context because the root file includes this leaf unconditionally and the `testing` profile decides whether its service resolves.
+- Runtime rendering must provide the root network context because the root file includes this leaf unconditionally and the `testing` profile decides whether its service resolves.
 
 ## Troubleshooting
 
@@ -99,7 +99,7 @@ k6/
 | Config files | `Dockerfile`, `docker-compose.yml` |
 | Config values | profiles: `testing`; scenario and export keys: `K6_SCRIPT`, `K6_TESTID`, `K6_TREND_STATS`, `K6_PROMETHEUS_HOST`, `K6_PROMETHEUS_PORT` |
 | Compose linkage | root include active; the `testing` profile selects `k6` |
-| Networks | `infra_net` |
+| Networks | `obs_net` |
 | Volumes | `k6-data:/scripts:ro`, `k6-data` |
 | Ports | None declared; k6 is CLI-driven and publishes no host port |
 | Labels | `hy-home.tier` |

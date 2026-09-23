@@ -1,10 +1,10 @@
 ---
 title: "Neo4j"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -58,7 +58,7 @@ neo4j/
 | Config files | `docker-compose.yml` |
 | Config values | env keys are Compose-owned; exact profile: `graph` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net` |
 | Volumes | `neo4j-data:/data:rw`, `./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro`, `neo4j-data` |
 | Ports | `${NEO4J_BOLT_PORT:-7687}`, `${NEO4J_HTTP_PORT:-7474}`, `${NEO4J_HTTPS_PORT:-7473}`, `${NEO4J_METRICS_PORT:-2004}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.neo4j.rule`, `traefik.http.routers.neo4j.entrypoints`, `traefik.http.routers.neo4j.tls`, `traefik.http.services.neo4j.loadbalancer.server.port`, `traefik.http.routers.neo4j.middlewares` |

@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -39,7 +39,7 @@ remove it if no consumer is connected by the next review.
 
 ### SSRF boundary
 
-A crawler fetches whatever URL a caller sends. Because it is not on `infra_net`,
+A crawler fetches whatever URL a caller sends. Because it is not on the declared networks,
 internal databases, OpenBao, Kafka Connect and admin APIs are unreachable by
 container name. The host and LAN remain reachable through the default route, so
 restrict callers and do not treat network separation as a URL allowlist.

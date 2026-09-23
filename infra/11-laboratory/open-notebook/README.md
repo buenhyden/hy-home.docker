@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Open Notebook"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2026-05-09"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-05-09"
 
 ## Overview
 
-Open Notebook provides an admin/laboratory notebook interface for local knowledge workflows. The stack runs the `open_notebook` application and a dedicated `surrealdb` database backend for persistence, both interconnected via `infra_net`.
+Open Notebook provides an admin/laboratory notebook interface for local knowledge workflows. The stack runs the `open_notebook` application and a dedicated `surrealdb` database backend for persistence, both interconnected via `ai_net`.
 
 Lifecycle: **OPTIONAL**. Root Compose includes this definition; explicit profiles (`notebook`, `surrealdb`) control activation.
 
@@ -65,7 +65,7 @@ open-notebook/
 | Config files | `docker-compose.yml`, `surrealdb/Dockerfile`, `surrealdb/docker-entrypoint.sh` |
 | Config values | env keys: `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `OLLAMA_API_BASE`; profiles: `notebook`, `surrealdb` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `ai_net`, `edge_net` |
 | Volumes | `open-notebook-data:/app/data`, `surrealdb-data:/mydata` |
 | Ports | Loopback-only API port `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik targets web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` via `expose`; SurrealDB internal port `8000` via `expose` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
@@ -96,10 +96,10 @@ Runtime image pins are declared in [Compose](docker-compose.yml) and referenced 
 
 ### Services
 
-| Service | Profiles | Networks | Published Ports | Volumes | Secrets |
+| Service | Profiles | Networks | `ai_net`, `edge_net` | Volumes | Secrets |
 | --- | --- | --- | --- | --- | --- |
-| `open_notebook` | `notebook` | `infra_net` | `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open-notebook-data:/app/data` | `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key` |
-| `surrealdb` | `notebook`, `surrealdb` | `infra_net` | None (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
+| `open_notebook` | `notebook` | `ai_net`, `edge_net` | `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open-notebook-data:/app/data` | `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key` |
+| `surrealdb` | `notebook`, `surrealdb` | `ai_net` | None (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
 
 ### Environment Variables
 

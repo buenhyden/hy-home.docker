@@ -20,8 +20,6 @@ services:
     networks:
       edge_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.222
     depends_on:
       seaweedfs-s3: { condition: service_healthy }
     healthcheck:

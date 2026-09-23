@@ -40,8 +40,6 @@ services:
         condition: service_completed_successfully
     networks:
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.115
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -135,5 +133,3 @@ services:
       ai_net: {}
       mng_data_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.110

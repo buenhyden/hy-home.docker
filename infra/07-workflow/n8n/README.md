@@ -1,10 +1,10 @@
 ---
 title: "n8n Low-code Automation"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -56,7 +56,7 @@ n8n/
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE`, plus 31 more; profiles: `workflow`, `dev` |
 | Compose linkage | unconditional root include, profile-selected (`workflow`, `dev`), via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net` |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:rw`, `n8n-task-runner-worker-data:/home/node/.n8n:rw`, `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `n8n-valkey-data:/data:rw`, `n8n-valkey-data` |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
@@ -111,7 +111,7 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Troubleshooting
 
-- Start with the root workflow validation command because this leaf depends on root `infra_net`, Docker Secrets, and root include context.
+- Start with the root workflow validation command because this leaf depends on the root networks, Docker Secrets, and root include context.
 - Check n8n service logs and the linked runbook before changing queue or credential settings.
 
 ### Convergence contract

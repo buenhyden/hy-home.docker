@@ -1,10 +1,10 @@
 ---
 title: "Laboratory RedisInsight"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2026-03-26"
 ---
 
@@ -43,7 +43,7 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `admin`, `admin-data` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `mng_data_net` |
 | Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, plus 7 more |
@@ -88,7 +88,7 @@ labels:
 
 ## Available Scripts
 
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate RedisInsight route, image, static IP, and healthcheck.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate RedisInsight route, image, network membership, and healthcheck.
 - `docker logs --tail 100 redisinsight`: inspect logs when the service is running.
 
 ## Validation

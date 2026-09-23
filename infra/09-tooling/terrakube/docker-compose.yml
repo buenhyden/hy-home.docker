@@ -66,8 +66,6 @@ services:
       terrakube_net: {}
       mng_data_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.225
 
   terrakube-ui:
     profiles:
@@ -104,8 +102,6 @@ services:
     networks:
       edge_net: {}
       terrakube_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.226
 
   terrakube-executor:
     profiles:
@@ -165,8 +161,6 @@ services:
       terrakube_net: {}
       mng_data_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.227
     labels:
       <<: *tier-label
       traefik.enable: 'true'

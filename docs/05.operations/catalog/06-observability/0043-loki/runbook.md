@@ -1,10 +1,10 @@
 ---
 title: "Loki Readiness and Storage Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0043"
 parent_ids:
@@ -72,7 +72,7 @@ created: "2026-05-17"
 5. Grafana "no logs found"가 문제이면 Alloy ingestion path와 Grafana datasource를 확인한다.
 
    ```bash
-   rg -n 'loki.source.docker|loki.write|url = \"http://loki:3100/loki/api/v1/push\"|project_net\\|infra_net' infra/06-observability/alloy/config/config.alloy
+   rg -n 'loki.source.docker|loki.write|url = \"http://loki:3100/loki/api/v1/push\"|com_docker_compose_project' infra/06-observability/alloy/config/config.alloy
    rg -n 'name: Loki|uid: Loki|url: http://loki:3100' infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 

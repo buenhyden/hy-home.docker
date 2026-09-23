@@ -1,10 +1,10 @@
 ---
 title: "\U0001F997 Locust Load Testing Infrastructure"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-24"
 ---
 
@@ -69,7 +69,7 @@ Run these commands from the repository root and start or scale services only wit
 
 - Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect Locust.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must include root `infra_net` context because the root file includes this leaf unconditionally and only the `testing` profile resolves both services.
+- Runtime rendering must include the root network context because the root file includes this leaf unconditionally and only the `testing` profile resolves both services.
 
 ## Troubleshooting
 
@@ -91,7 +91,7 @@ Run these commands from the repository root and start or scale services only wit
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `testing`; UI port keys: `LOCUST_HOST_PORT`, `LOCUST_PORT` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | project default |
 | Volumes | `locust-data:/mnt/locust:rw`, `locust-data` |
 | Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |
 | Labels | `hy-home.tier` |

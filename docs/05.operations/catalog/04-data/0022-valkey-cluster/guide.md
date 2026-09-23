@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -37,7 +37,7 @@ The root Compose project includes
 The only selector is `valkey-cluster`. It starts `valkey-node-0` through
 `valkey-node-5`, the one-shot `valkey-cluster-init`, and
 `valkey-cluster-exporter`. The initializer forms three primaries and three
-replicas on `infra_net`.
+replicas on `lab_net`.
 
 Each node owns one bind-backed volume, `valkey0-data` through `valkey5-data`,
 resolved under `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5`. Nodes publish

@@ -109,8 +109,8 @@ services:
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE: '10'
       AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES: '3'
 
-      # Traefik 고정 주소: infra_net 172.19.0.2, edge_net 10.250.1.2 (SPEC-0180 S05)
-      FORWARDED_ALLOW_IPS: '172.19.0.2,10.250.1.2'
+      # Traefik 고정 주소: edge_net 10.250.1.2 (SPEC-0180 S05)
+      FORWARDED_ALLOW_IPS: '10.250.1.2'
 
       # 아래 command에서 생성
       REQUESTS_CA_BUNDLE: /tmp/hy-home-ca-bundle.pem
@@ -131,8 +131,6 @@ services:
       edge_net: {}
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.90
     healthcheck:
       test: [ 'CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/monitor/health' ]
       interval: 15s
@@ -165,8 +163,6 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.91
     healthcheck:
       test: [ 'CMD', 'curl', '--fail', 'http://localhost:8974/health' ]
       interval: 15s
@@ -191,8 +187,6 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.92
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"' ]
       interval: 15s
@@ -217,8 +211,6 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.93
     environment:
       <<: *airflow-common-env
       DUMB_INIT_SETSID: '0'
@@ -248,8 +240,6 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.94
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]
       interval: 15s
@@ -356,8 +346,6 @@ services:
     networks:
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.95
   # airflow-cli:
   #   extends:
   #     file: ../../common-optimizations.yml
@@ -376,8 +364,7 @@ services:
   #     - -c
   #     - airflow
   #   networks:
-  #     infra_net:
-  #       ipv4_address: 172.19.0.96
+  #     airflow_net: {}
   flower:
     profiles:
       - workflow
@@ -393,8 +380,6 @@ services:
       edge_net: {}
       airflow_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.97
     healthcheck:
       test: [ 'CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/' ]
       interval: 15s
@@ -431,8 +416,6 @@ services:
       - airflow_valkey_password
     networks:
       airflow_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.98
     restart: unless-stopped
     volumes:
       - airflow-valkey-data:/data:rw
@@ -465,8 +448,6 @@ services:
     networks:
       airflow_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.99
     restart: unless-stopped
     secrets:
       - airflow_valkey_password
@@ -506,8 +487,6 @@ services:
     networks:
       airflow_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.100
     expose:
       - '${STATSD_PROMETHEUS_PORT:-9102}'
       - '${STATSD_AIRFLOW_PORT:-9125}'

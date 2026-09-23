@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 > Scope: restore the documented hardening baseline for the profile-selected `09-tooling` compose leaves.
 
-이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, root 소유 `infra_net` 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
+이 런북은 `09-tooling` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, root 소유 선언된 network 경계, Locust worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
 
 ### Purpose
 
@@ -57,7 +57,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 3. 증상별로 복구한다.
    - Middleware drift: SonarQube/Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 복원한다.
-   - Network drift: tooling 서비스의 `infra_net` 연결과 root Compose network 정의를 복원한다.
+   - Network drift: tooling 서비스의 선언된 network 연결과 root Compose network 정의를 복원한다.
    - Locust drift: `locust-worker` command와 worker process healthcheck를 복원한다.
    - k6 drift: `k6` service name과 `k6-data:/scripts:ro` volume 계약을 복원한다.
    - Documentation drift: active docs에서 없는 worker/route/version/service-local standalone claims를 제거한다.

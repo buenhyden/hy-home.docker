@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ mongodb/
 | Config files | `docker-compose.yml` |
 | Config values | env keys are Compose-owned; exact profile for all seven services: `mongodb` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `lab_net`, `obs_net` |
 | Volumes | `mongo-key:/data/configdb:rw`, `mongodb1-data:/data/db:rw`, `mongo-key:/data/configdb:ro`, `mongodb2-data:/data/db:rw`, `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` |
 | Ports | `${MONGO_EXPRESS_PORT:-8081}`, `${MONGO_EXPORTER_PORT:-9216}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.mongo-express.rule`, `traefik.http.routers.mongo-express.entrypoints`, `traefik.http.routers.mongo-express.tls`, `traefik.http.services.mongo-express.loadbalancer.server.port`, `traefik.http.routers.mongo-express.middlewares` |

@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0091"
 parent_ids:
@@ -26,7 +26,7 @@ Activation, network placement, authentication, consumers, provider keys and remo
 ## Controls
 
 - Select only through `crawl4ai`; never add it to `ai`, `notebook` or HOME.
-- Never attach it to `infra_net`, publish a host port or add a public route.
+- Never attach it to the declared networks, publish a host port or add a public route.
 - Always run with the token secret; never pass provider keys through a tracked file.
 - Connect a consumer only by adding that consumer to `crawl4ai_net` in a
   reviewed change that also sets its token.

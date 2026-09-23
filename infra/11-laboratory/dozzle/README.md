@@ -1,10 +1,10 @@
 ---
 title: "Dozzle"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2026-03-27"
 ---
 
@@ -54,7 +54,7 @@ dozzle/
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `admin`, `admin-logs` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dozzle/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `dozzle-data:/data`, `dozzle-data` |
 | Ports | `${DOZZLE_PORT:-8080}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dozzle.rule`, `traefik.http.routers.dozzle.entrypoints`, `traefik.http.routers.dozzle.tls`, `traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.dozzle.middlewares`, `traefik.http.services.dozzle.loadbalancer.server.port` |

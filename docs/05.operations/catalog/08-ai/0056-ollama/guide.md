@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -94,7 +94,7 @@ curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 #### 5. Exporter Observability Check
 
 ```bash
-# exporter exposes metrics inside infra_net; it is not published to host.
+# exporter exposes metrics inside `ai_net`; it is not published to host.
 docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics"'
 ```
 
@@ -105,13 +105,13 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
 - **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
-- **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `infra_net` 내부 scrape 경로를 기준으로 확인한다.
+- **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `ai_net` 내부 scrape 경로를 기준으로 확인한다.
 
 ### Source-backed operating contract
 
 - **Purpose/classification**: `ollama` and `ollama-exporter` are owner-confirmed `HOME` local inference and metrics services.
 - **Profiles/source**: `ai`/`ai-llm` select Ollama and `ollama` provides the service-specific selection; [Compose](../../../../../infra/08-ai/ollama/docker-compose.yml) and its selected image declaration are authoritative.
-- **Flow/dependencies**: Open WebUI and approved clients call Ollama over `infra_net`; exporter reads its API for Prometheus. NVIDIA runtime/driver, model storage, Traefik, gateway auth, and the root CA are prerequisites. The loopback host port is an operator endpoint, while the public route remains gateway protected.
+- **Flow/dependencies**: Open WebUI and approved clients call Ollama over `ai_net`; exporter reads its API for Prometheus. NVIDIA runtime/driver, model storage, Traefik, gateway auth, and the root CA are prerequisites. The loopback host port is an operator endpoint, while the public route remains gateway protected.
 - **State/environment**: `ollama-models:/root/.ollama` holds model manifests/blobs. Preserve model name, source, digest, parameters, license, and compatibility evidence; cache presence alone is not provenance. Port/model/concurrency variables are non-secret; remote registry credentials, if used, follow the secret owner and never enter Compose output or logs.
 - **Resources/security**: Compose declares four CPUs, an 8 GiB limit, a 4 GiB reservation, and GPU access. These are source limits, not measured CPU/RAM/VRAM headroom. Do not expose an unauthenticated non-loopback API or run unreviewed model/tool content.
 - **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`, list/pull explicitly approved models, verify `/api/tags` and a representative inference, and monitor exporter/GPU signals. Before image or model migration, capture digests and model provenance, preserve the model volume or a reproducible manifest, upgrade one compatibility boundary at a time, then re-run inference and Open WebUI integration checks.

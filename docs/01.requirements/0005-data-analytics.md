@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier (04-data/analytics) Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0005"
 parent_ids: []
@@ -74,7 +74,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Risks
 
-- **Dependency**: 모든 분석 엔진은 `infra_net`, compose profile, bind-backed named volume, 그리고 서비스별 upstream dependency(Kafka, Schema Registry, Docker Secrets 등)에 의존함.
+- **Dependency**: 모든 분석 엔진은 선언된 network, compose profile, bind-backed named volume, 그리고 서비스별 upstream dependency(Kafka, Schema Registry, Docker Secrets 등)에 의존함.
 - **Risk**: 대규모 데이터 유입 시 분석 노드(Storage/Compute)의 리소스 부족 위험.
 - **Assumption**: 원본 데이터는 핵심 데이터 티어 혹은 메시징 티어를 통해 안정적으로 공급됨.
 

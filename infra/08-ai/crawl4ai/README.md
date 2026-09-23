@@ -1,10 +1,10 @@
 ---
 title: "AI Crawl4AI Crawler"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2026-09-21"
 ---
 
@@ -16,7 +16,7 @@ created: "2026-09-21"
 
 Crawl4AI fetches arbitrary URLs on request, so it can be abused for server-side
 request forgery (SSRF). It is therefore isolated on its own `crawl4ai_net`
-egress network and never joins `infra_net`. Its intended consumer is Open
+egress network and never joins another repository network. Its intended consumer is Open
 Notebook's remote-crawler setting, which is currently commented out; no service
 consumes it today. Lifecycle: **OPTIONAL**, selected only by `crawl4ai`.
 
@@ -68,7 +68,7 @@ Runtime pins are owned by the Compose declaration; the
 1. Create `secrets/tools/crawl4ai_api_token.txt` through the registered secret workflow.
 2. Start only with an approved target: `docker compose --profile crawl4ai up -d crawl4ai`.
 3. To connect Open Notebook, add `crawl4ai_net` to that service and set `CRAWL4AI_API_URL` and the
-   token in one reviewed change; do not add the crawler to `infra_net`.
+   token in one reviewed change; do not add the crawler to another repository network.
 
 ## Related Documents
 

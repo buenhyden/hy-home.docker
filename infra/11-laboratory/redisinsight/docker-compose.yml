@@ -49,6 +49,9 @@ services:
       traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
       edge_net: {}
+      # One client for every Valkey it inspects: management, the LAB cluster and
+      # the application-private stores (SPEC-0180 S05 phase 2).
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.121
+      lab_net: {}
+      n8n_net: {}
+      airflow_net: {}

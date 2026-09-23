@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-23"
 ---
 
 # Environment Constraints
@@ -34,7 +34,8 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 
 ## 2. Infrastructure Constraints
 
-- **Networking**: all inter-service traffic MUST use `infra_net`. Direct
+- **Networking**: inter-service traffic MUST stay on the repository-owned
+  Compose networks, and a service joins one only for a peer it uses. Direct
   external exposure is PROHIBITED except via authorized gateways.
 - **Storage**: use named volumes following the `[Service]-[Data]-[Volume]`
   convention.

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -30,7 +30,7 @@ docker compose --env-file .env.example --profile messaging config --services
 docker compose --env-file .env.example --profile messaging-cluster config --quiet
 ```
 
-Confirm the ten expected services, distinct broker/Connect volumes, `infra_net`,
+Confirm the ten expected services, distinct broker/Connect volumes, `kafka_net`,
 health checks, Kafbat native OIDC secret/config, standard gateway chain and
 PLAINTEXT listeners. Confirm `kafka-init` replication factor 3 is paired with the
 three-broker selector before any runtime use.
@@ -40,7 +40,7 @@ three-broker selector before any runtime use.
 1. Preconditions: `debezium-db-provision` exited `0`; `mng-pg` reports
    `SHOW wal_level` = `logical`; Connect logs `debezium.properties rendered`;
    the plugin class is listed by `GET /connector-plugins`.
-2. Registration is an approved runtime change. From a container on `infra_net`:
+2. Registration is an approved runtime change. From a container on `kafka_net`:
    `PUT /connectors/hyhome-app-postgres/config` with the tracked JSON body.
 3. Verify each state separately: `GET .../status` shows connector and task
    `RUNNING`; the log reports the snapshot completed; a test change in an

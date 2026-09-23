@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-12-03"
 ---
 
@@ -50,7 +50,7 @@ application database. `mng-valkey-data` maps to
 state. Grafana is not wired to management PostgreSQL in current Compose.
 
 PostgreSQL reads `mng_postgres_password` and `pgbackrest_cipher_pass`; init reads the service database password
-secrets; Valkey/exporter read `mng_valkey_password`. Both engines use `infra_net` and publish host bindings through the root
+secrets; Valkey/exporter read `mng_valkey_password`. Both engines use `mng_data_net` and publish host bindings through the root
 `POSTGRES_HOST_PORT` and source-spelled `VALKEY_MNG_HOST_POST` key; exporters are internal.
 PostgreSQL uses `pg_isready`, Valkey uses authenticated `PING`, exporters use HTTP
 health checks, and init is completion-gated.

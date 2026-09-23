@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-03-28"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-메시징 계층은 Kafka broker 데이터 평면과 관리 UI/API 평면을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `infra_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
+메시징 계층은 Kafka broker 데이터 평면과 관리 UI/API 평면을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `kafka_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
 
 ## System Boundaries
 
@@ -68,7 +68,7 @@ created: "2026-03-28"
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
 - Internal Path:
-  - service-to-service traffic over `infra_net`
+  - service-to-service traffic over `kafka_net`
 
 ### AI Agent Architecture
 

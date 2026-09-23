@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -62,7 +62,7 @@ keycloak/
 | Image | [Compose declaration](docker-compose.yml) |
 | Profiles | `core`, `auth`, `dev` |
 | Database | `mng-pg` |
-| Network | `infra_net` |
+| Network | `edge_net`, `mng_data_net`, `obs_net` |
 | Public Host | `keycloak.${DEFAULT_URL}` |
 | Health | management port `/health/ready` |
 | Secrets | `keycloak_db_password`, `keycloak_admin_password` |

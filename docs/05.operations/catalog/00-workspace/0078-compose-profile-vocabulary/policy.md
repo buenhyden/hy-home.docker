@@ -156,7 +156,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | mlops / data-science / analytics-engineering / cdc | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
-| crawl4ai | `infra_net`에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
+| crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
 
 ## Exceptions
 

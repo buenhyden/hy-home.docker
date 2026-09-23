@@ -1,10 +1,10 @@
 ---
 title: "postgresql-cluster"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2026-03-27"
 ---
 
@@ -45,7 +45,7 @@ created: "2026-03-27"
 ### Out of Scope
 
 - 개별 서비스 애플리케이션의 데이터 스키마(Schema) 정의
-- 외부망 직접 노출 (반드시 `infra_net` 내부망 사용)
+- 외부망 직접 노출 (반드시 선언된 내부 network 사용)
 - 클러스터 외부 수동 백업 저장소 관리
 
 ## Structure
@@ -70,7 +70,7 @@ postgresql-cluster/
 | Config files | `docker-compose.yml`, `config --quiet`, `config/haproxy.cfg.tpl` |
 | Config values | env keys: `POSTGRES_WRITE_PORT`, `POSTGRES_READ_PORT`, `POSTGRES_USER`, `POSTGRES_DB`, `PATRONI_EXPORTER_USERNAME`, `SERVICE_POSTGRES_USERNAME`, `SERVICE_POSTGRES_DB`, plus 10 more; profiles: `postgres-ha` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/relational/postgresql-cluster/docker-compose.yml` |
-| Networks | `infra_net`, `k3d-hyhome` |
+| Networks | `edge_net`, `k3d-hyhome`, `lab_net`, `obs_net` |
 | Volumes | `etcd1-data:/etcd-data:rw`, `etcd2-data:/etcd-data:rw`, `etcd3-data:/etcd-data:rw`, `./config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro`, `./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro`, `pg0-data:/home/postgres/pgdata:rw`, `./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro`, `pg1-data:/home/postgres/pgdata:rw`, plus 7 more |
 | Ports | `${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}`, `${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}`, `${HAPROXY_METRICS_PORT:-8404}`, `${POSTGRES_EXPORTER_PORT:-9187}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.haproxy-stats.rule`, `traefik.http.routers.haproxy-stats.entrypoints`, `traefik.http.routers.haproxy-stats.tls`, `traefik.http.services.haproxy-stats.loadbalancer.server.port`, `traefik.http.routers.haproxy-stats.middlewares` |

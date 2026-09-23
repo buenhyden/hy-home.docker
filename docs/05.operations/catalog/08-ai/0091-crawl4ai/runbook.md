@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -46,7 +46,7 @@ No persistent state exists; rollback is a Compose revert and restart.
 
 ## Escalation
 
-Stop on any request to attach the crawler to `infra_net` or expose it publicly.
+Stop on any request to attach the crawler to the declared networks or expose it publicly.
 
 ## Traceability
 

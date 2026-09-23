@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -60,7 +60,7 @@ terrakube/
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `ApiDataSourceType`, `DatasourceHostname`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType`, plus 43 more; profiles: `iac` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terrakube/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `mng_data_net`, `object_net`, `terrakube_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock` |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule`, plus 9 more |

@@ -62,7 +62,7 @@ created: "2026-05-10"
 
 - **Docker/Compose**: 로컬 실행 환경
 - **Secrets**: `airflow_keycloak_client_secret`, `airflow_api_jwt_secret` 등 서비스 접근 권한
-- **Network**: `infra_net` 외부 통신 가능 상태
+- **Network**: `airflow_net` 외부 통신 가능 상태
 
 ### Step-by-step Instructions
 
@@ -75,7 +75,7 @@ created: "2026-05-10"
  client secret은 `airflow_keycloak_client_secret` Docker Secret으로 전달한다.
 - API server는 시작 전에 시스템 CA와 `${DEFAULT_CERT_DIR}/rootCA.pem`을 합쳐
  임시 CA bundle을 만들고 `airflow api-server --proxy-headers`로 실행한다.
- Forwarded header 신뢰 범위는 Traefik 고정 주소 `172.19.0.2`(`infra_net`)와 `10.250.1.2`(`edge_net`)로 제한한다.
+ Forwarded header 신뢰 범위는 Traefik 고정 주소 `172.19.0.2`(`airflow_net`)와 `10.250.1.2`(`edge_net`)로 제한한다.
 - 기본 Celery broker는 `mng-valkey`다. `dedicated-valkey` profile은
   `airflow-valkey`와 exporter를 **기동만** 한다. 전용 broker를 실제로 쓰려면
   `AIRFLOW_VALKEY_HOST=airflow-valkey`와
@@ -125,7 +125,7 @@ docker compose exec airflow-apiserver airflow dags list
 - **Profiles/source**: 코어는 `workflow`/`workflow-airflow`, 전용 broker pair는 `dedicated-valkey`; authoritative source는 [Compose](../../../../../infra/07-workflow/airflow/docker-compose.yml)와 [Dockerfile](../../../../../infra/07-workflow/airflow/Dockerfile)이다.
 - **State flow**: DAGs enter through the `dags` mount; scheduler/processor persist authoritative metadata in PostgreSQL database `airflow` on `mng-pg`; Celery messages pass through the selected Valkey; workers write task logs to `airflow-logs`. Queue contents are in-flight coordination, not the durable workflow record.
 - **Secrets/environment**: preserve `airflow_db_password`, `airflow_fernet_key`, `airflow_api_jwt_secret`, `airflow_keycloak_client_secret`, and the selected broker password. `AIRFLOW_VALKEY_HOST` and `AIRFLOW_VALKEY_SECRET` must select the same broker. The Fernet key is inseparable from encrypted Connections.
-- **Dependencies/security**: `mng-pg`, the selected Valkey, Keycloak, Traefik, root CA, and `infra_net` must be ready. Native Keycloak Auth Manager protects the Airflow UI; Flower uses the gateway auth chain. Do not expose internal scheduler, worker, broker, or database ports.
+- **Dependencies/security**: `mng-pg`, the selected Valkey, Keycloak, Traefik, root CA, and `airflow_net` must be ready. Native Keycloak Auth Manager protects the Airflow UI; Flower uses the gateway auth chain. Do not expose internal scheduler, worker, broker, or database ports.
 - **Persistence/resources**: PostgreSQL metadata plus `airflow-dags`, `airflow-logs`, `airflow-plugins`, and `airflow-config` form the recovery set. Compose CPU/memory values are source limits, not measured headroom; scale only from observed scheduler/worker/DB/broker pressure.
 - **Normal use/lifecycle**: use `docker compose --profile workflow config --quiet` from the repository root, then `docker compose --profile workflow up -d`. Before upgrade, pause schedules and inbound producers, reconcile running tasks, take a consistent PostgreSQL backup through the database owner, preserve the same Fernet key and mounted artifacts, run the supported Airflow DB migration, and verify DAG parsing plus a canary DAG before resuming.
 - **Upstream/license**: follow [Airflow database setup](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet guidance](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), and [best practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html). Apache Airflow is Apache-2.0 licensed.

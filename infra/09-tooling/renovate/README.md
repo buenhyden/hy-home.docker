@@ -1,10 +1,10 @@
 ---
 title: "Renovate Implementation"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # Renovate
@@ -41,7 +41,7 @@ Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../.
 
 ## Configuration
 
-Profiles: `dependency-update`. Root Compose includes this definition; inclusion alone does not start a service. Network is `infra_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
+Profiles: `dependency-update`. Root Compose includes this definition; inclusion alone does not start a service. It uses the project default network. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
 
 ## Validation
 

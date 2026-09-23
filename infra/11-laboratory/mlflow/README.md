@@ -1,10 +1,10 @@
 ---
 title: "Laboratory MLflow Tracking Server"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2026-09-21"
 ---
 
@@ -61,7 +61,7 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 | --- | --- |
 | Profiles | `mlops`, `data-science` (both also select `mng-pg`, `mng-pg-init` and SeaweedFS for dependency closure) |
 | Start order | `mng-pg` healthy → `mng-pg-init` → `mlflow-db-provision`; `seaweedfs-buckets` completed; then `mlflow` |
-| Network / port | `infra_net`; internal `${MLFLOW_PORT:-5000}` via `expose`; no host port |
+| Network / port | `ai_net`, `edge_net`, `mng_data_net`, `object_net`; internal `${MLFLOW_PORT:-5000}` via `expose`; no host port |
 | Route | `https://mlflow.${DEFAULT_URL}` with `gateway-standard-chain`, `sso-errors`, `sso-auth` |
 | Allowed hosts | `mlflow:*`, `mlflow.${DEFAULT_URL}`, `localhost:*`, `127.0.0.1:*` (DNS-rebinding guard) |
 | Environment keys | `MLFLOW_PORT`, `MLFLOW_DB_USER`, `MLFLOW_DB_NAME`, `MLFLOW_ARTIFACT_BUCKET`, `MLFLOW_S3_ENDPOINT_URL`, `MLFLOW_S3_REGION`; admin connection uses `POSTGRES_DEFAULT_USER`, `POSTGRES_DEFAULT_DB` |

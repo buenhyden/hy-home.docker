@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -58,7 +58,7 @@ created: "2026-05-10"
 2. Pipeline component boundary를 확인한다.
 
    ```bash
-   rg -n 'discovery.docker|project_net\\|infra_net|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
+   rg -n 'discovery.docker|project_net\\|`obs_net`|loki.source.docker|loki.write|prometheus.remote_write|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
    ```
 
 3. 현재 pipeline 구조를 이해한다. `ALLOY_CONFIG_FILE`이 두 독립 파일 중 하나를
@@ -97,7 +97,7 @@ created: "2026-05-10"
 ### Common Pitfalls
 
 - **Relabeling regex**: `service_name` 또는 `scope` label이 잘못 지정되면 logs/metrics/profile query가 분산된다.
-- **Network filter**: Docker discovery는 `project_net|infra_net`만 keep한다. 다른 network의 container는 의도적으로 제외될 수 있다.
+- **Network filter**: Docker discovery는 `project_net|`obs_net``만 keep한다. 다른 network의 container는 의도적으로 제외될 수 있다.
 - **Exporter assumption**: Downstream backend가 unhealthy이면 Alloy pipeline이 정상이어도 telemetry가 보이지 않을 수 있다.
 - **Profiling assumption**: `pyroscope.write` endpoint가 있다고 해서 profile source가 자동으로 수집되는 것은 아니다.
 - **Docker socket boundary**: Docker socket and container log mounts는 read-only여야 한다.
@@ -105,7 +105,7 @@ created: "2026-05-10"
 ### Source-backed operating contract
 
 - **Purpose/classification/source**: `alloy` is the `HOME` telemetry collector selected by `obs`, `logs`, `tracing`, or `profiling`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Alloy config](../../../../../infra/06-observability/alloy/config/config.alloy) are authoritative.
-- **Flow/dependencies**: read-only Docker socket/container logs feed Loki, OTLP 4317/4318 feeds Tempo, Alloy self-metrics remote-write to Prometheus, and a Pyroscope write sink exists. Current config declares no profile source, so the sink alone does not prove profiles are collected. Loki, Tempo, Prometheus, Docker, and `infra_net` are dependencies.
+- **Flow/dependencies**: read-only Docker socket/container logs feed Loki, OTLP 4317/4318 feeds Tempo, Alloy self-metrics remote-write to Prometheus, and a Pyroscope write sink exists. Current config declares no profile source, so the sink alone does not prove profiles are collected. Loki, Tempo, Prometheus, Docker, and `obs_net` are dependencies.
 - **State/security**: config and host log mounts are read-only; Docker socket access is security-sensitive. `alloy-data:/var/lib/alloy` is mounted and the command now passes `--storage.path=/var/lib/alloy/data`; the previous command override had dropped the image default, so positions and WAL lived in the container layer and were lost on recreate. The container runs as the image's `alloy` user (UID 473) with the host docker group (`DOCKER_GID`) because root without capabilities cannot write the 473-owned state directory; the first attempt as root crash-looped on `mkdir /var/lib/alloy/data: permission denied` on 2026-09-21 and was rolled back within about three minutes. The first recreate with the fix starts without the old positions, which can re-send or skip recent Docker log lines; Loki may reject out-of-order duplicates. Config edits apply through `POST /-/reload` only when the mounted file inode is unchanged; editors that replace the file need a container restart. Changing ports or mounts needs a recreate. In-flight telemetry can be lost and is not a guaranteed recovery asset.
 - **Resources/normal use**: source CPU/memory limits are not headroom. Render at root with `docker compose --profile obs config --quiet`, run Alloy config validation, then verify downstream writes and bounded retry/WAL signals.
 - **Lifecycle**: preserve config and any component-specific verified state; drain or accept documented in-flight loss, update one pinned version, validate component compatibility, then verify logs/traces/metrics and only claim profiling when a source is present.

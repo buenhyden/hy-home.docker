@@ -1,10 +1,10 @@
 ---
 title: "Neo4j Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0033"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 [Neo4j Compose 구현](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml)을 설명한다. 현재 구현은 `OPTIONAL` 단일 Community `neo4j` 서비스, exact `graph` profile, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint와 Traefik Browser route를 사용한다.
+이 문서는 root compose에 active include된 [Neo4j Compose 구현](../../../../../infra/04-data/specialized/neo4j/docker-compose.yml)을 설명한다. 현재 구현은 `OPTIONAL` 단일 Community `neo4j` 서비스, exact `graph` profile, `edge_net`, `neo4j_password` Docker Secret, secret-aware entrypoint와 Traefik Browser route를 사용한다.
 
 ### Current implementation
 
@@ -83,7 +83,7 @@ Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route
    docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'
    ```
 
-5. 애플리케이션이 `infra_net` 내부에서 접근할 때는 `bolt://neo4j:${NEO4J_BOLT_PORT:-7687}`를 기준으로 한다. Public Bolt TCP route는 현재 compose에 선언되어 있지 않으므로 별도 gateway 변경 승인 없이는 문서화하지 않는다.
+5. 애플리케이션이 `edge_net` 내부에서 접근할 때는 `bolt://neo4j:${NEO4J_BOLT_PORT:-7687}`를 기준으로 한다. Public Bolt TCP route는 현재 compose에 선언되어 있지 않으므로 별도 gateway 변경 승인 없이는 문서화하지 않는다.
 
 ### Common Pitfalls
 

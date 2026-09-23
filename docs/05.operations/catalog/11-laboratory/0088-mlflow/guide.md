@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -56,7 +56,7 @@ memory budget.
 | Path | Control | Limitation |
 | --- | --- | --- |
 | Browser `https://mlflow.${DEFAULT_URL}` | Gateway SSO (`sso-auth`); any realm user passes | No MLflow-level user, experiment permission or group authorization |
-| SDK inside `infra_net` (`http://mlflow:5000`) | None; Host header must match `--allowed-hosts` | Any container on `infra_net` can read and write every experiment |
+| SDK inside `ai_net`, `object_net` (`http://mlflow:5000`) | None; Host header must match `--allowed-hosts` | Any container on `ai_net`, `object_net` can read and write every experiment |
 | Artifact storage | Bucket-scoped SeaweedFS identity held only by the server | Deleting runs through MLflow deletes artifacts |
 
 MLflow's documented OIDC route is the community `mlflow-oidc-auth` plugin
@@ -65,7 +65,7 @@ is **not adopted**: its compatibility with the pinned server release, the UI,
 REST API and SDK token flow, its maintenance and security review, and a
 Keycloak client with session and authorization design are all unverified. Until
 an owner-approved change proves those conditions, keep gateway SSO for the
-browser and treat `infra_net` reachability as the SDK trust boundary. Do not
+browser and treat `ai_net`, `object_net` reachability as the SDK trust boundary. Do not
 open the route without SSO to make an SDK work.
 
 ### Normal use, backup, and upgrade

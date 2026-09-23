@@ -1,10 +1,10 @@
 ---
 title: "Valkey Distributed Cluster"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-20"
 ---
 
@@ -23,7 +23,7 @@ It is intended for operators and maintainers of the Valkey LAB deployment.
 Source: [`docker-compose.yml`](docker-compose.yml). Profile: `valkey-cluster`.
 Services: `valkey-node-0` through `valkey-node-5`, one-shot
 `valkey-cluster-init`, and `valkey-cluster-exporter`. The initializer creates three
-primaries and three replicas on `infra_net`.
+primaries and three replicas on `lab_net`.
 
 ## Structure
 

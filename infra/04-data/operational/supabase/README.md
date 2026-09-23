@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -55,7 +55,7 @@ supabase/
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `supabase` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/supabase/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `supabase_net` |
 | Volumes | `${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro`, `${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage`, `${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions`, `${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql`, `${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql`, `${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql`, `${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql`, `${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data`, plus 8 more |
 | Ports | `${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp`, `${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp`, `${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000`, `${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432`, `${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543` |
 | Labels | `hy-home.tier` |

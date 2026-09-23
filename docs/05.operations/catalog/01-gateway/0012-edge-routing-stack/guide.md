@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0012"
 parent_ids: []
@@ -49,7 +49,7 @@ This guide helps the reader validate the Traefik edge router selected by `core`/
 
 ##### 1. Verify Network Contract
 
-Use the root compose validator instead of creating networks ad hoc. The root compose declares `infra_net` and the external network contracts.
+Use the root compose validator instead of creating networks ad hoc. The root compose declares the flow-scoped networks and the external network contracts.
 
 ```bash
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
@@ -81,7 +81,7 @@ Runtime start/stop/reload actions are not part of this guide. Traefik runtime wo
 
 - **Cert Name Mismatch**: Ensure `tls.yaml` points to the correct filenames in `secrets/certs/`.
 - **Port Conflicts**: Port 80 and 443 must be available on the host.
-- **Network Isolation**: Backend services must be on `infra_net` to be discovered by Traefik.
+- **Network Isolation**: Backend services must be on `edge_net`, the Traefik Docker provider network, to be discovered.
 - **Service-local Compose**: Standalone `infra/01-gateway/*/docker-compose.yml` rendering is not gateway readiness evidence because it lacks the root network/secret/dependency context.
 
 ## Common Checks

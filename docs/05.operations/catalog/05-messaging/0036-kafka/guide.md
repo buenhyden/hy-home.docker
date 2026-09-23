@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -52,7 +52,7 @@ defines ten services:
 `kafka-1-data`, `kafka-2-data`, `kafka-3-data`, and `kafka-connect-data` are
 bind-backed named volumes under `${DEFAULT_MESSAGE_BROKER_DIR}/kafka`. Broker
 listeners are currently `PLAINTEXT`, including published host listeners; there is
-no broker authentication or TLS. All services use `infra_net` and shared resource
+no broker authentication or TLS. All services use `kafka_net` and shared resource
 and health templates.
 
 Kafbat renders its native `auth.type: OAUTH2` configuration into tmpfs, reads
@@ -61,7 +61,7 @@ Traefik route uses `gateway-standard-chain@file`; the gateway is transport and
 header protection, while Kafbat itself performs authentication. No forwarding-auth gateway chain belongs on this native-OIDC route.
 The Kafka Connect REST route now adds `sso-errors`/`sso-auth`: the API can create
 connectors that resolve provider files, so anonymous gateway access was a
-credential-exfiltration path. `infra_net` peers (including Kafbat) still reach
+credential-exfiltration path. `kafka_net` peers (including Kafbat) still reach
 port 8083 directly without authentication; that internal path is a recorded gap.
 
 ### Images, configuration and resource controls

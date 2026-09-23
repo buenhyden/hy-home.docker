@@ -1,6 +1,6 @@
 ---
 title: "Tooling Tier Architecture Description"
-version: "2.0.1"
+version: "2.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ created: "2026-03-26"
 - **Consumes**:
   - 데이터 지속성 서비스 (`04-data` / PostgreSQL, SeaweedFS, Valkey)
   - 공통 인증 서비스 (`02-auth` / Keycloak)
-  - 네트워크 리소스 (`infra_net`)
+  - 네트워크 리소스 (선언된 Compose network)
 - **Does Not Own**:
   - 코어 비즈니스 애플리케이션 서비스
   - 전역 관제 및 로깅 스택 (06-observability)

@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -28,7 +28,7 @@ and mounts the operator's AWS and Azure credential directories read-only. A
 read-only credential mount still grants remote API authority.
 
 The job has no daemon healthcheck and `restart: "no"`. `template-job-low`
-defines its resource/security baseline. `infra_net` allows provider/backend
+defines its resource/security baseline. the declared networks allows provider/backend
 network access. There are no Docker secrets or published ports in this leaf.
 
 ### State and command semantics

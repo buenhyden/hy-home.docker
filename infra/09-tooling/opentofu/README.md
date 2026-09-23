@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Implementation"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # OpenTofu
@@ -35,7 +35,7 @@ Runtime pins belong to [Compose](docker-compose.yml) and its referenced build so
 
 | Service | Profiles | Networks | Host ports | Secret references |
 | --- | --- | --- | --- | --- |
-| `opentofu` | `iac` | `infra_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `opentofu` | `iac` | project default; a state backend against an in-project service (for example `seaweedfs-s3`) needs `object_net` added | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:
 

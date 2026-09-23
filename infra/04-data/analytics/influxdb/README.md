@@ -1,6 +1,6 @@
 ---
 title: "InfluxDB (TSDB)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -55,7 +55,7 @@ influxdb/
 | Config files | `docker-compose.yml` |
 | Config values | exact profile: `influxdb`; database name is an explicit write-request input, not a root environment key |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) |
-| Networks | `infra_net` |
+| Networks | `edge_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw` |
 | Ports | No host port declared; Traefik service port `${INFLUXDB_PORT:-8181}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.influxdb.rule`, `traefik.http.routers.influxdb.entrypoints`, `traefik.http.routers.influxdb.tls`, `traefik.http.routers.influxdb.middlewares`, `traefik.http.services.influxdb.loadbalancer.server.port` |

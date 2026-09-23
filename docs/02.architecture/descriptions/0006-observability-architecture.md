@@ -1,6 +1,6 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -86,7 +86,7 @@ sink는 있으나 profile source가 없으므로 end-to-end profile collection�
   - 로그: Loki SeaweedFS bucket `loki-bucket`, `retention_period: 168h`
   - 트레이스: Tempo SeaweedFS bucket `tempo-bucket`, `block_retention: 24h`
   - 프로파일: Pyroscope local filesystem backend
-- **Data Boundaries**: 모든 텔레메트리 데이터는 `infra_net` 내부망에서만 소통함을 원칙으로 한다.
+- **Data Boundaries**: 모든 텔레메트리 데이터는 `obs_net` 내부망에서만 소통함을 원칙으로 한다.
 
 ## Deployment View
 

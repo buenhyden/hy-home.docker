@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -29,7 +29,7 @@ Controls for removed broker families do not apply to the current implementation.
 
 - Select exact root profiles; never operate the leaf file as a separate Compose
   project. Treat `messaging-cluster` as same-host LAB topology.
-- Keep broker and Connect volumes distinct and preserve `infra_net`, health checks
+- Keep broker and Connect volumes distinct and preserve `kafka_net`, health checks
   and shared resource limits.
 - Current broker, controller and host listeners are PLAINTEXT. Do not claim
   transport confidentiality or client authentication. Restrict exposure and plan
@@ -49,7 +49,7 @@ Controls for removed broker families do not apply to the current implementation.
   job. Never give the connector superuser, database ownership or write grants
   beyond the `debezium_heartbeat` schema it owns for the heartbeat query.
 - Keep `FileConfigProvider` restricted by `allowed.paths` and the Connect REST
-  gateway route behind SSO. Treat direct `infra_net` access to port 8083 as a
+  gateway route behind SSO. Treat direct `kafka_net` access to port 8083 as a
   recorded gap, not an authorization control.
 - Registering, reconfiguring, restarting with a new snapshot mode or deleting a
   connector needs approval naming the connector and source database.

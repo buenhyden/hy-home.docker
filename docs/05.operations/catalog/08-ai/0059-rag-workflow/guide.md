@@ -1,10 +1,10 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0059"
 parent_ids: []
@@ -57,7 +57,7 @@ created: "2026-03-25"
 ### Common Pitfalls
 
 - `qwen3-embedding:0.6b` 모델이 Ollama에 없는데 RAG 인덱싱을 시작하는 경우.
-- Open WebUI service-local compose 파일만 단독 검증해 `infra_net` undefined 오류를 현재 구현 실패로 오해하는 경우.
+- Open WebUI service-local compose 파일만 단독 검증해 선언된 network undefined 오류를 현재 구현 실패로 오해하는 경우.
 - host localhost로 Open WebUI 또는 Qdrant 내부 endpoint를 직접 조회하는 경우. 현재 Open WebUI는 Traefik route와 container-internal healthcheck를 기준으로 한다.
 
 ## Common Checks

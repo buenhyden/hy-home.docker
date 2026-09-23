@@ -80,6 +80,34 @@ check_service_healthcheck() {
   return 0
 }
 
+# Check that a service block declares a network
+check_service_network() {
+  local compose_file="$1"
+  local service_name="$2"
+  local network_name="$3"
+
+  local block
+  block="$(
+    awk -v svc="$service_name" '
+      BEGIN { in_svc = 0; pat = "^  " svc ":" }
+      $0 ~ pat { in_svc = 1; next }
+      /^  [A-Za-z0-9_.-]+:/ && in_svc { in_svc = 0 }
+      in_svc { print }
+    ' "$compose_file"
+  )"
+
+  if [[ -z "$block" ]]; then
+    fail "Service block not found: $service_name (file: $compose_file)"
+    return 1
+  fi
+
+  if ! grep -Eq "^      ${network_name}:" <<<"$block"; then
+    fail "Network $network_name missing in service block: $service_name (file: $compose_file)"
+    return 1
+  fi
+  return 0
+}
+
 # Start a new tier check
 start_tier() {
   local tier_name="$1"

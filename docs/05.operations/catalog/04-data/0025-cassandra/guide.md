@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0025"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 [Cassandra Compose 구현](../../../../../infra/04-data/nosql/cassandra/docker-compose.yml)의 단일 `cassandra-node1`과 `cassandra-exporter`를 설명한다. 두 서비스는 모두 정확히 `cassandra` profile에 속하며 `infra_net`에서 동작한다. frozen service classification은 `LAB`이고, 한 호스트의 단일 데이터 노드이므로 quorum이나 host-level HA를 제공하지 않는다.
+이 문서는 [Cassandra Compose 구현](../../../../../infra/04-data/nosql/cassandra/docker-compose.yml)의 단일 `cassandra-node1`과 `cassandra-exporter`를 설명한다. 두 서비스는 모두 정확히 `cassandra` profile에 속하며 `lab_net`에서 동작한다. frozen service classification은 `LAB`이고, 한 호스트의 단일 데이터 노드이므로 quorum이나 host-level HA를 제공하지 않는다.
 
 ### Current implementation
 
@@ -31,7 +31,7 @@ created: "2026-05-10"
 | Consumer and data rationale | No confirmed HOME consumer; LAB wide-column evaluation for high-write/keyspace workloads. |
 | Source / updater | [Compose](../../../../../infra/04-data/nosql/cassandra/docker-compose.yml) owns image sources; dependency automation may propose changes, but operator review owns upgrades. |
 | Services / profile | `cassandra-node1`, `cassandra-exporter`; exact `cassandra`. |
-| Flow / dependency | CQL clients use the node on `infra_net`; exporter starts after node health. |
+| Flow / dependency | CQL clients use the node on `lab_net`; exporter starts after node health. |
 | Exposure / persistence | Database is internal; exporter ports are Compose-declared; `${DEFAULT_DATA_DIR}/cassandra/node1` mounts at `/bitnami/cassandra`. |
 | Environment / secrets | `CASSANDRA_USERNAME` and Compose-owned tuning keys; `cassandra_password` at `/run/secrets`. |
 | Health / resources | `nodetool status` and CQL health; node `template-stateful-high`, exporter `template-infra-low`. |

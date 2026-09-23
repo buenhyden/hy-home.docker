@@ -1,10 +1,10 @@
 ---
 title: "Nginx Proxy"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2025-11-29"
 ---
 
@@ -58,8 +58,8 @@ nginx/
 | Purpose | Nginx Proxy service leaf in `01-gateway`; services: `nginx`; root include active and the `nginx` profile selects the service, which still depends on root network context |
 | Config files | `docker-compose.yml`, `config`, `config/nginx.conf` |
 | Config values | profiles: `nginx` |
-| Compose linkage | the root [docker-compose.yml](../../../docker-compose.yml) includes this file unconditionally and the `nginx` profile selects the service; validating the file on its own still requires an explicit context for `infra_net` and backend dependencies |
-| Networks | `infra_net` |
+| Compose linkage | the root [docker-compose.yml](../../../docker-compose.yml) includes this file unconditionally and the `nginx` profile selects the service; validating the file on its own still requires an explicit context for the root networks and backend dependencies |
+| Networks | `edge_net`, `object_net` |
 | Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `${DEFAULT_CERT_DIR}:/etc/nginx/certs:ro` |
 | Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | Not declared |
@@ -108,7 +108,7 @@ healthcheck:
 
 - Run `bash scripts/hardening/check-all-hardening.sh 01-gateway` after README, compose, or config changes that affect this service.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking the service documentation ready.
-- Treat service-local standalone compose rendering as insufficient evidence because `nginx` depends on the root `infra_net` and backend services.
+- Treat service-local standalone compose rendering as insufficient evidence because `nginx` depends on the root networks and backend services.
 
 ## Troubleshooting
 

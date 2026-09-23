@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -80,7 +80,7 @@ created: "2026-05-10"
 ### Source-backed operating contract
 
 - **Purpose/classification/source**: `pyroscope` is an `OPTIONAL` continuous-profile store selected by `obs`/`profiling`; [Compose](../../../../../infra/06-observability/docker-compose.yml) and [Pyroscope config](../../../../../infra/06-observability/pyroscope/config/pyroscope.yaml) are authoritative.
-- **Flow/dependencies/security**: clients or an Alloy profile source would write profiles; Grafana queries them. Current Alloy config has a write sink but no profile source, so end-to-end collection is not proven. Traefik protects the route; Grafana, producers, storage, and `infra_net` are dependencies.
+- **Flow/dependencies/security**: clients or an Alloy profile source would write profiles; Grafana queries them. Current Alloy config has a write sink but no profile source, so end-to-end collection is not proven. Traefik protects the route; Grafana, producers, storage, and the declared networks are dependencies.
 - **State/resources**: single-node filesystem state is under `pyroscope-data:/var/lib/pyroscope`; there are no service Docker Secrets. Source resource values are limits, not measured headroom.
 - **Normal use**: render from root, verify readiness with `profilecli ready`, ingest a labeled test profile only from an approved client, and query it from Pyroscope/Grafana.
 - **Lifecycle**: stop writes and take a consistent stopped filesystem snapshot; preserve config and producer labels. Upgrade with storage-format guidance, then verify historical/new profile queries and producer compatibility.

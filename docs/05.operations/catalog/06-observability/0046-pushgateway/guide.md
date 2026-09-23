@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0046"
 parent_ids:
@@ -40,7 +40,7 @@ Pushgateway의 역할과 동작 방식을 이해하고, 배치 작업에서 메�
 ### Prerequisites
 
 - `pushgateway` service가 `obs` profile에서 실행 중이어야 한다.
-- 작업이 `infra_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
+- 작업이 `obs_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
 - Prometheus에 의존하는 dashboard or alert를 만들기 전에는 `prometheus.yml`의 Pushgateway scrape job 존재를 확인해야 한다.
 
 ### Step-by-step Instructions
@@ -97,7 +97,7 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 ### Source-backed operating contract
 
 - **Purpose/classification/source**: `pushgateway` is an `OPTIONAL` batch-metric bridge selected by `obs`/`batch-metrics`; [Compose](../../../../../infra/06-observability/docker-compose.yml) is authoritative.
-- **Flow/dependencies/security**: approved short-lived jobs push metrics; Prometheus scrapes them. Traefik protects the UI/API route, but producer authorization and metric-label discipline remain required. Prometheus, gateway/auth, and `infra_net` are dependencies.
+- **Flow/dependencies/security**: approved short-lived jobs push metrics; Prometheus scrapes them. Traefik protects the UI/API route, but producer authorization and metric-label discipline remain required. Prometheus, gateway/auth, and `obs_net` are dependencies.
 - **State**: current Compose declares no volume and no `--persistence.file`; metrics live in process memory and are lost on restart. There are no Docker Secrets. Never describe current Pushgateway contents as durable or exactly restorable.
 - **Resources/normal use**: source limits are not headroom. Render from root, start only for batch use, push a labeled test group, verify Prometheus scrape, and delete stale groups after producer completion.
 - **Lifecycle/recovery**: backup is producer definitions and metric contracts, not gateway memory. After restart/rebuild, producers repush only current valid metrics; do not replay stale observations. Upgrade with API/label compatibility checks.

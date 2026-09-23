@@ -83,8 +83,6 @@ services:
     networks:
       edge_net: {}
       ai_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.123
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -118,8 +116,6 @@ services:
       <<: *tier-label
     networks:
       ai_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.122
     healthcheck:
       test: [ "CMD", "/usr/local/bin/surreal", "is-ready", "--endpoint", "http://127.0.0.1:8000" ]
       interval: 10s

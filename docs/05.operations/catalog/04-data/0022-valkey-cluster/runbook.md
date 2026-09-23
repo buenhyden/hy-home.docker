@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -36,7 +36,7 @@ docker compose --env-file .env.example --profile valkey-cluster config --service
 ```
 
 Confirm six node services, the init job and exporter; six distinct data volumes;
-`infra_net`; the password secret; node health checks; and the 6379–6384 client and
+`lab_net`; the password secret; node health checks; and the 6379–6384 client and
 16379–16384 bus mappings. Stop if rendered paths are empty or unexpected.
 
 ### Planned backup procedure

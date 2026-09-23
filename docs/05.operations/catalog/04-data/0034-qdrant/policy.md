@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `infra_net`, no-secret state, REST/gRPC routes와 `/readyz` healthcheck다.
+이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, no-secret state, REST/gRPC routes와 `/readyz` healthcheck다.
 
 ## Policy Scope
 

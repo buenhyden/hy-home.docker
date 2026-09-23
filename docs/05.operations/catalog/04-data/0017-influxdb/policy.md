@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0017"
 parent_ids:
@@ -28,7 +28,7 @@ created: "2026-05-17"
 ## Controls
 
 - **Activation**: use root-project selection `docker compose --profile influxdb config --quiet`; starting or restarting `influxdb` is a separately approved runtime action.
-- **Network and authorization**: keep the service on `infra_net` behind the declared TLS router and gateway middleware. A `401` proves an authentication challenge, not successful authorization. Provisioning or rotating a token is outside this document.
+- **Network and authorization**: keep the service on `edge_net` behind the declared TLS router and gateway middleware. A `401` proves an authentication challenge, not successful authorization. Provisioning or rotating a token is outside this document.
 - **Retention and backup**: define database retention before enabling a consumer. A recovery point must preserve the documented local-object-store order: snapshots, database Parquet files, WAL, catalog log, then catalog checkpoint. Store it outside the live data path and record whether encryption at rest is configured; none is proven here.
 - **Resources**: retain the inherited 1 CPU/512 MiB ceiling until measured ingest, compaction, query latency, disk growth, and restore duration justify a reviewed change.
 - **Upgrade and migration**: review release notes and rehearse the candidate image against a copied recovery point. Do not substitute InfluxDB 2 backup/restore commands or Enterprise-only commands for this Core deployment.

@@ -748,17 +748,15 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(266, len(contract["public"]))
+        self.assertEqual(263, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
         self.assertEqual(58, len(contract["required"]))
-        self.assertEqual(208, len(contract["optional"]))
+        self.assertEqual(205, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
-            contract["required"]
-            | contract["optional"]
-            | contract["orphan"],
+            contract["required"] | contract["optional"] | contract["orphan"],
         )
 
     def test_environment_scanner_mutations_fail_closed_without_shell_false_positives(
@@ -779,7 +777,6 @@ class PublicSecretSchemaTests(unittest.TestCase):
         with_orphan = self.env_text + "\nUNUSED_CONTRACT_KEY=value\n"
         contract = environment_contract(self.compose_texts, with_orphan)
         self.assertIn("UNUSED_CONTRACT_KEY", contract["orphan"])
-
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = secret_contract(

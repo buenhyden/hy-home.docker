@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 `LAB` Cassandra 단일 노드와 exporter 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 `cassandra` profile, `infra_net`, Docker Secret, `${DEFAULT_DATA_DIR}/cassandra/node1` persistence다.
+이 정책은 `hy-home.docker`의 `LAB` Cassandra 단일 노드와 exporter 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 `cassandra` profile, `lab_net`, Docker Secret, `${DEFAULT_DATA_DIR}/cassandra/node1` persistence다.
 
 ## Policy Scope
 

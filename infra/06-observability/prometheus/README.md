@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2026-01-12"
 ---
 
@@ -80,7 +80,7 @@ infra/06-observability/prometheus/
 1. **PromQL Optimization**: Use Recording Rules for expensive dashboard queries.
 2. **Rule Management**: Always validate with `promtool` before applying changes.
 3. **Scrape Settings**: Global interval is `30s`; service-specific overrides such as Prometheus `15s` and cAdvisor `1m` must remain intentional.
-4. **Networking**: Scrape targets must be reachable via the `infra_net`.
+4. **Networking**: Scrape targets must be reachable on `obs_net`.
 
 ## Validation
 

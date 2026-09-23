@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
@@ -33,7 +33,7 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 
 - **Owns**:
   - Laboratory UI ingress 경계 계약(gateway chain + SSO + allowlist)
-  - `infra_net` external 네트워크 경계 계약
+  - 네트워크 경계 계약
   - 관리 UI direct host exposure 금지 계약
   - dozzle 최소권한(socket read-only) 계약
   - open-notebook UI route SSO/allowlist/large-body 경계와 Docker Secret 주입 계약

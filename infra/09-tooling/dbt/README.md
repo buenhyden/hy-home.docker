@@ -1,10 +1,10 @@
 ---
 title: "Tooling dbt Transformation Job"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2026-09-21"
 ---
 
@@ -67,7 +67,7 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 | Secret | `dbt_db_password` (PG-023); provisioning also reads `mng_postgres_password` |
 | Grants | `CONNECT` on the database, `USAGE` and `SELECT` on the source schema (plus default privileges for tables the application owner creates later), ownership of the target schema; no `CREATE` on the database |
 | Writable paths | `/tmp/dbt/{target,logs,packages}` on tmpfs; project and profiles are read-only mounts |
-| Network | `infra_net`; no port |
+| Network | `mng_data_net` |
 
 ## Validation
 

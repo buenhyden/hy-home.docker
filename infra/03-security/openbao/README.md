@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # OpenBao
@@ -34,10 +34,10 @@ Runtime pins belong to [Compose](docker-compose.yml) and its referenced build so
 
 ## Configuration
 
-| Service | Profiles | Networks | Host ports | Secret references |
+| Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |
 | --- | --- | --- | --- | --- |
-| `openbao` | `security, secrets, core, local, dev` | `k3d-hyhome, infra_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
-| `openbao-agent` | `security, secrets, core, local, dev` | `infra_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `openbao` | `security, secrets, core, local, dev` | `k3d-hyhome, secrets_net, edge_net, obs_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `openbao-agent` | `security, secrets, core, local, dev` | `secrets_net` | `No host publication` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:
 

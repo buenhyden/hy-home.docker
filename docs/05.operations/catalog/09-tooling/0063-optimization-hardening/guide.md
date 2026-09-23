@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -52,7 +52,7 @@ created: "2026-05-17"
 2. Gateway/SSO 경계 정렬
    - SonarQube/Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 네트워크 경계 표준화
-   - tooling 서비스의 `infra_net` 연결과 root Compose의 network 정의를 함께 확인한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
+   - tooling 서비스의 선언된 network 연결과 root Compose의 network 정의를 함께 확인한다. service-local compose 파일은 root network/secret context 없이 단독 config 대상으로 취급하지 않는다.
 4. 테스트 런타임 안정화
    - locust-worker healthcheck를 확인한다.
    - k6 leaf는 `k6` 단일 작업이며, `k6-data:/scripts:ro` volume 계약을 유지한다.

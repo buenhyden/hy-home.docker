@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -80,7 +80,7 @@ created: "2026-05-17"
 ### Source-backed operating contract
 
 - **Purpose/classification/source**: `node-exporter` and `cadvisor` are `HOME` host/container metric exporters selected by `obs`/`obs-host`/`dev`; [Compose](../../../../../infra/06-observability/docker-compose.yml) is authoritative.
-- **Flow/security**: Prometheus scrapes both over `infra_net`. node-exporter uses host PID and read-only root/proc/sys mounts; cAdvisor is privileged with host filesystem/device mounts including `/dev/kmsg`. These grants are the security boundary and must not be generalized as non-root isolation. cAdvisor's route remains protected; node-exporter is internal-only.
+- **Flow/security**: Prometheus scrapes both over the declared networks. node-exporter uses host PID and read-only root/proc/sys mounts; cAdvisor is privileged with host filesystem/device mounts including `/dev/kmsg`. These grants are the security boundary and must not be generalized as non-root isolation. cAdvisor's route remains protected; node-exporter is internal-only.
 - **State/secrets/resources**: neither exporter owns durable application data or Docker Secrets. Host metrics are observations, not backup content. CPU/memory declarations are source limits, not measured headroom.
 - **Normal use/lifecycle**: render from root, verify metrics endpoints internally, confirm Prometheus targets/labels, and compare cardinality/scrape cost before changing collectors. Upgrade one image at a time and verify host/container series continuity.
 - **Backup/recovery**: rebuild from tracked Compose; no service-state restore is required. Preserve dashboards/rules elsewhere and capture the pre-change target/series baseline.

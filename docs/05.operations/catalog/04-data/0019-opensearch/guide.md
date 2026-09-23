@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -35,7 +35,7 @@ created: "2026-05-10"
 | --- | --- |
 | Classification | `opensearch` is OPTIONAL; the three same-host nodes and shared Dashboards path are LAB. Same-host node count is not host HA. |
 | Source and updater | [Compose](../../../../../infra/04-data/analytics/opensearch/docker-compose.yml) and its [Dockerfile](../../../../../infra/04-data/analytics/opensearch/Dockerfile) own the engine build; Compose owns Dashboards; Renovate owns update proposals. |
-| Network and exposure | All services join `infra_net`. Primary API and Dashboards use TLS backends through Traefik and `gateway-standard-chain@file`; the cluster variant also publishes Performance Analyzer port `9600` from node1. |
+| Network and exposure | All services join the declared networks. Primary API and Dashboards use TLS backends through Traefik and `gateway-standard-chain@file`; the cluster variant also publishes Performance Analyzer port `9600` from node1. |
 | Persistence | Primary uses bind-backed `opensearch-data`; Dashboards uses `opensearch-dashboards-data`; cluster nodes use `opensearch-data1..3`. Certificates and security configuration are separate read-only mounts. |
 | Credentials | Admin, Dashboards, exporter, cookie, and OAuth client secrets are declared as applicable. Health uses the admin secret without printing it. |
 | Health and resources | Engine health requires yellow or better; Dashboards accepts `200` or `401`. Primary inherits 2 CPUs/2 GiB; each cluster node also inherits 2 CPUs/2 GiB, so selection is resource-heavy. |

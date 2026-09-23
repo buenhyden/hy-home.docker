@@ -34,8 +34,5 @@ services:
       timeout: 10s
       retries: 5
       start_period: 15s
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.7
     labels:
       <<: *tier-label

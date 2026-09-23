@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2026-01-12"
 ---
 
@@ -75,7 +75,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 
 - **Ingestion**: Standard Prometheus Pushgateway API (Port 9091).
 - **Exposure**: Accessible via `https://pushgateway.${DEFAULT_URL}` through the protected Traefik route.
-- **Network**: Integrated into `infra_net`.
+- **Network**: Integrated into `obs_net`.
 - **Persistence**: No Pushgateway persistence option is declared in the current Compose service.
 
 ## Operational Status

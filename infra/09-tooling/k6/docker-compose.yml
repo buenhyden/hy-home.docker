@@ -30,8 +30,6 @@ services:
       - k6-data:/scripts:ro
     networks:
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.252
     environment:
       # The Grafana dashboard reads k6 metrics from Prometheus remote write.
       # `obs` must already be selected; k6 declares no depends_on because

@@ -1,28 +1,28 @@
 ---
-title: "Standardize infra_net Network Product Requirements"
-version: "1.0.0"
+title: "Compose Network Segmentation Product Requirements"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0023"
 parent_ids: []
 created: "2026-04-01"
 ---
-# Standardize infra_net Network Product Requirements
+# Compose Network Segmentation Product Requirements
 
 ## Problem and Goals
 
-이 문서는 프로젝트 내 모든 인프라 서비스들을 `infra_net` 네트워크에 통합하고 구체적인 서브넷(`172.19.0.0/16`)을 보장하기 위한 제품 요구사항을 정의한다. 이를 통해 서비스 간 통신의 표준화와 예측 가능한 IP 관리를 실현한다.
+이 문서는 프로젝트 내 인프라 서비스의 Docker 네트워크 소속을 흐름 단위로 분리하고 각 네트워크의 서브넷을 보장하기 위한 제품 요구사항을 정의한다. 이를 통해 서비스 간 통신의 표준화와 예측 가능한 IP 관리를 실현한다.
 
 ### Problem Statement
 
-현재 여러 `docker-compose` 파일들이 파편화되어 있으며, 일부 서비스는 `infra_net`에 명시적으로 연결되어 있지 않거나 서브넷 설정이 모호할 수 있다. 이는 마이크로서비스 간의 통신 복잡도를 높이고 문제 해결 시 혼선이 발생할 수 있는 원인이 된다.
+여러 `docker-compose` 파일이 파편화되어 있고, 한때 모든 서비스가 단일 `infra_net` mesh를 공유해 서로 도달할 수 있었으며, 일부 서비스는 네트워크가 명시되어 있지 않거나 서브넷 설정이 모호할 수 있다. 이는 마이크로서비스 간의 통신 복잡도를 높이고 문제 해결 시 혼선이 발생할 수 있는 원인이 된다.
 
 ## Stakeholders and User Needs
 
-모든 인프라 서비스가 단일 표준 네트워크(`infra_net`)를 통해 안전하고 효율적으로 통신하며, 명확한 IP 대역 관리를 통해 네트워크 충돌을 방지하고 운영 투명성을 높인다.
+인프라 서비스가 흐름 단위로 분리된 네트워크를 통해 안전하고 효율적으로 통신하며, 명확한 IP 대역 관리를 통해 네트워크 충돌을 방지하고 운영 투명성을 높인다.
 
 ### Personas
 
@@ -31,14 +31,14 @@ created: "2026-04-01"
 
 ### Key Use Cases
 
-- **STORY-01**: 관리자는 모든 인프라 서비스가 `infra_net` 내에서 서로 통신할 수 있음을 보장받고 싶어 한다.
-- **STORY-02**: 운영자는 `172.19.0.0/16` 대역을 통해 각 서비스의 IP를 예측 가능하게 관리하고 싶어 한다.
+- **STORY-01**: 관리자는 각 서비스가 실제 사용하는 상대와만 통신할 수 있도록 네트워크 경계를 보장받고 싶어 한다.
+- **STORY-02**: 운영자는 각 network의 `10.250.x.0/24` 대역과 고정 주소 사용 여부를 예측 가능하게 관리하고 싶어 한다.
 - **STORY-03**: 기존에 설정된 `k3d-hyhome` 네트워크 연결은 그대로 유지되어 로컬 k3s 클러스터와의 연동이 중단되지 않아야 한다.
 
 ## Functional Requirements
 
-- **REQ-0023-FR-0001**: `docker-compose.yml`에 포함된 모든 활성 서비스는 `infra_net` 네트워크를 사용해야 함.
-- **REQ-0023-FR-0002**: `infra_net`의 서브넷은 반드시 `172.19.0.0/16`으로 정의되어야 함.
+- **REQ-0023-FR-0001**: 모든 활성 서비스는 실제로 사용하는 상대가 있는 네트워크에만 연결되어야 하며, 상대가 없으면 프로젝트 기본 네트워크를 사용한다.
+- **REQ-0023-FR-0002**: 각 네트워크의 서브넷은 root Compose에 `10.250.x.0/24`로 명시되어야 함.
 - **REQ-0023-FR-0003**: 기존에 정의된 `k3d-hyhome` 네트워크 설정은 수정하거나 삭제하지 않고 유지함.
 
 ## Non-functional Requirements
@@ -51,16 +51,16 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0023-FR-0001**: 모든 서비스가 `docker-compose config` 실행 시 `infra_net`을 포함하고 있음.
-- **REQ-0023-FR-0002**: `infra_net` 네트워크의 IPAM 설정이 `172.19.0.0/16` 대역을 가리킴.
+- **REQ-0023-FR-0001**: `docker-compose config` 결과에서 각 서비스의 네트워크가 선언된 흐름과 일치함.
+- **REQ-0023-FR-0002**: 각 네트워크의 IPAM 설정이 선언된 `10.250.x.0/24` 대역을 가리킴.
 
 ## Constraints
 
 - **In Scope**:
   - 루트 `docker-compose.yml` 및 `include`된 모든 `docker-compose` 파일 수정.
-  - `infra_net` 서브넷 표준화.
+  - 분리된 네트워크의 서브넷 표준화.
 - **Out of Scope**:
-  - `infra_net` 이외의 다른 네트워크(예: `project_net`)의 서브넷 변경.
+  - repository가 소유하지 않는 네트워크(예: `project_net`, `k3d-hyhome`)의 서브넷 변경.
   - 컨테이너 내부 서비스 로직 수정.
 
 ### AI Agent Requirements
@@ -75,8 +75,8 @@ N/A
 
 ## Traceability
 
-- **Architecture Description**: [infra_net architecture descriptions](../02.architecture/descriptions/0026-standardize-infra-net.md)
-- **ADR**: [infra_net standardization decision](../02.architecture/decisions/0026-standardize-infra-net.md)
+- **Architecture Description**: [Compose network segmentation architecture description](../02.architecture/descriptions/0026-standardize-infra-net.md)
+- **ADR**: [infra_net standardization decision (superseded single-mesh model)](../02.architecture/decisions/0026-standardize-infra-net.md)
 - **Spec**: [infra_net technical specification](../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
 - **Plan**: infra_net implementation plan
 - **Task**: infra_net task evidence

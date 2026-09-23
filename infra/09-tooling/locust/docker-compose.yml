@@ -25,9 +25,6 @@ services:
       - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
     volumes:
       - locust-data:/mnt/locust:rw
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.250
     command: locust -f /mnt/locust/locustfile.py --master
     healthcheck:
       test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:8089']
@@ -49,9 +46,6 @@ services:
       <<: *tier-label
     volumes:
       - locust-data:/mnt/locust:rw
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.253
     command: locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
     depends_on:
       locust-master:

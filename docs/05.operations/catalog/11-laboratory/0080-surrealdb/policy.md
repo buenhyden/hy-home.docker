@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Policy"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -22,13 +22,13 @@ This policy governs the `OPTIONAL` single-service SurrealDB deployment used by O
 
 - [Authored Compose source](../../../../../infra/11-laboratory/open-notebook/docker-compose.yml), Dockerfile, and entrypoint
 - Service `surrealdb`; exact profiles `surrealdb`, `notebook`
-- `surrealdb-data:/mydata`, loopback host mapping, `infra_net`
+- `surrealdb-data:/mydata`, loopback host mapping, `ai_net`
 - `surreal_db_password` and root/namespace/database authentication scope
 - Linked guide and runbook
 
 ## Controls
 
-- **Required**: Host exposure remains loopback-only and application traffic remains on `infra_net`; broader publication requires an approved gateway change.
+- **Required**: Host exposure remains loopback-only and application traffic remains on `ai_net`; broader publication requires an approved gateway change.
 - **Required**: SurrealDB is pinned to v2 for Open Notebook upstream compatibility. Major upgrades to SurrealDB v3 or higher are prohibited until Open Notebook officially validates support.
 - **Required**: Credentials use the Docker Secret. Documentation and evidence must not contain password values, credential-bearing URLs, raw records, or token material.
 - **Required**: Every backup identifies SurrealDB version, namespace, database, auth level, schema/data scope, export options, checksum/location, retention/expiry, and isolated restore result.

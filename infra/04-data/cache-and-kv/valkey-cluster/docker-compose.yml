@@ -86,8 +86,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.41
 
   valkey-node-1:
     <<: *valkey-node-base
@@ -106,8 +104,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.42
 
   valkey-node-2:
     <<: *valkey-node-base
@@ -126,8 +122,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.43
 
   valkey-node-3:
     <<: *valkey-node-base
@@ -146,8 +140,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.44
 
   valkey-node-4:
     <<: *valkey-node-base
@@ -166,8 +158,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.45
 
   valkey-node-5:
     <<: *valkey-node-base
@@ -186,8 +176,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.46
 
   valkey-cluster-init:
     profiles:
@@ -220,8 +208,6 @@ services:
       <<: *tier-label
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.48
   valkey-cluster-exporter:
     profiles:
       - valkey-cluster
@@ -265,7 +251,5 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.47
     labels:
       <<: *tier-label

@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-05-10"
 
 - **Required**:
   - 모든 Laboratory 라우터는 `gateway-standard-chain@file` + service별 IP allowlist + `sso-errors@file,sso-auth@file`를 적용한다.
-  - 모든 compose는 root `infra_net` context에 합류하는 service network block을 유지한다.
+  - 모든 compose는 root 선언된 network context에 합류하는 service network block을 유지한다.
   - dashboard direct host `ports` 노출을 금지한다.
   - dozzle docker socket은 read-only로 유지한다.
   - open-notebook UI route는 allowlist+large-body+SSO 경계를 유지하고, credential은 Docker Secret file로만 주입한다.

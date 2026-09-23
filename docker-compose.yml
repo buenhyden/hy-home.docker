@@ -1,16 +1,6 @@
 name: hy-home-infra
 # Hy-Home Docker Infrastructure Root
 networks:
-  infra_net:
-    name: infra_net
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
-          # Dynamic addresses come only from this range, so they never take a
-          # fixed service address from the 172.19.0.x allocation table.
-          ip_range: ${INFRA_IP_RANGE:-172.19.1.0/24}
-          gateway: ${INFRA_GATEWAY:-172.19.0.1}
   # Segmented networks (SPEC-0180 S05, AD-0026). Each carries only the flows
   # named in GDE-0077; a service joins a network only for a peer it uses.
   # Subnets are explicit so Docker's automatic pool never takes one first.

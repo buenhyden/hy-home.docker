@@ -1,10 +1,10 @@
 ---
 title: "Apache Cassandra"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -46,7 +46,7 @@ Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데�
 | :--------- | :----------------------------------- | :------------------------- |
 | Engine     | Compose-declared Cassandra image       | Main Data Node             |
 | Monitoring | Compose-declared Cassandra exporter image | Metrics Collection    |
-| Network    | `infra_net`                          | Internal Traffic Isolation |
+| Network    | `lab_net`, `obs_net` | Internal Traffic Isolation |
 | Resource   | `template-stateful-high`             | High Performance Profile   |
 
 ## Structure
@@ -65,7 +65,7 @@ cassandra/
 | Config files | `docker-compose.yml` |
 | Config values | env keys are Compose-owned; exact profile for node and exporter: `cassandra` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `lab_net`, `obs_net` |
 | Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
 | Ports | `${CASSANDRA_EXPORTER_PORT:-8080}`, `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}`, `${CASSANDRA_INTER_NODE_PORT:-7000}`, `${CASSANDRA_CLIENT_PORT:-9042}` |
 | Labels | `hy-home.tier` |

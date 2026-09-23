@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -24,7 +24,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 [CouchDB Compose 구현](../../../../../infra/04-data/nosql/couchdb/docker-compose.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 `infra_net`에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
+이 문서는 [CouchDB Compose 구현](../../../../../infra/04-data/nosql/couchdb/docker-compose.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
 
 ### Current implementation
 

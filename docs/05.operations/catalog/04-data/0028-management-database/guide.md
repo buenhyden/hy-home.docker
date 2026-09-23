@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -55,7 +55,7 @@ its previous settings until an approved recreate, which restarts every consumer
 of the management database. Logical WAL adds a small amount of WAL volume; slots
 are created only by a registered CDC connector. Valkey owns
 `mng-valkey-data` at `${DEFAULT_MANAGEMENT_DIR}/valkey`, enables AOF, and reads
-`mng_valkey_password`. Both use `infra_net`; PostgreSQL and Valkey host bindings
+`mng_valkey_password`. Both use `mng_data_net`; PostgreSQL and Valkey host bindings
 come from root environment keys. Health checks and resources come from shared
 templates.
 
@@ -69,7 +69,7 @@ init adds `SERVICE_POSTGRES_USERNAME` and `SERVICE_POSTGRES_DB`. Root port keys
 control host bindings. `mng-pg` extends `template-stateful-db-med`, `mng-valkey`
 `template-stateful-low`, init `template-job-low`, and exporters
 `template-infra-readonly-low`; engine/exporter health checks are declared. Current
-consumers connect over `infra_net`; init creates roles/databases after PostgreSQL
+consumers connect over `mng_data_net`; init creates roles/databases after PostgreSQL
 health, while exporters observe the engines.
 
 ### Static preflight

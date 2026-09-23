@@ -63,8 +63,6 @@ services:
       edge_net: {}
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.70
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
@@ -93,8 +91,6 @@ services:
     networks:
       edge_net: {}
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.71
     expose:
       - '${KIBANA_PORT:-5601}'
     volumes:
@@ -217,8 +213,6 @@ services:
       edge_net: {}
       lab_net:
         ipv4_address: 10.250.9.11
-      infra_net:
-        ipv4_address: 172.19.0.72
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
@@ -276,8 +270,6 @@ services:
     networks:
       lab_net:
         ipv4_address: 10.250.9.12
-      infra_net:
-        ipv4_address: 172.19.0.73
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s
@@ -335,8 +327,6 @@ services:
     networks:
       lab_net:
         ipv4_address: 10.250.9.13
-      infra_net:
-        ipv4_address: 172.19.0.74
     healthcheck:
       test: [ 'CMD-SHELL', "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null" ]
       interval: 15s

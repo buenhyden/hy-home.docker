@@ -1,10 +1,10 @@
 ---
 title: "Kafka Messaging"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -39,7 +39,7 @@ not registered automatically.
 ## Structure
 
 Broker and Connect state use separate bind-backed volumes under
-`${DEFAULT_MESSAGE_BROKER_DIR}/kafka`. Services join `infra_net`. Broker, controller and published broker/JMX listeners are PLAINTEXT; no broker
+`${DEFAULT_MESSAGE_BROKER_DIR}/kafka`. Services join `kafka_net`, and the routed ones also join `edge_net`. Broker, controller and published broker/JMX listeners are PLAINTEXT; no broker
 TLS/client auth is declared. Schema Registry, Connect, REST and Kafbat HTTP ports
 remain internal and selected routes use Traefik. Brokers, Schema Registry, Connect,
 REST, Kafbat and exporter declare role-specific health checks; init is a one-shot

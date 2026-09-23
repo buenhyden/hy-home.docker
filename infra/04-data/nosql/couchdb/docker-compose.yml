@@ -51,10 +51,6 @@ services:
       lab_net:
         aliases:
           - couchdb-1.infra_net
-      infra_net:
-        ipv4_address: 172.19.0.160
-        aliases:
-          - couchdb-1.infra_net
     healthcheck:
       test:
         - CMD-SHELL
@@ -104,10 +100,6 @@ services:
       lab_net:
         aliases:
           - couchdb-2.infra_net
-      infra_net:
-        ipv4_address: 172.19.0.161
-        aliases:
-          - couchdb-2.infra_net
     healthcheck:
       test:
         - CMD-SHELL
@@ -152,10 +144,6 @@ services:
       lab_net:
         aliases:
           - couchdb-3.infra_net
-      infra_net:
-        ipv4_address: 172.19.0.162
-        aliases:
-          - couchdb-3.infra_net
     healthcheck:
       test:
         - CMD-SHELL
@@ -192,8 +180,6 @@ services:
         condition: service_healthy
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.163
     secrets:
       - couchdb_password
     command: >

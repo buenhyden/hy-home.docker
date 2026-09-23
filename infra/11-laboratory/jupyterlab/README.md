@@ -1,10 +1,10 @@
 ---
 title: "Laboratory JupyterLab Workspace"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2026-09-21"
 ---
 
@@ -57,9 +57,9 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 | Field | Value |
 | --- | --- |
 | Profile | `data-science` (also selects MLflow and its dependency closure) |
-| Network / port | `infra_net`; internal `${JUPYTER_PORT:-8888}` via `expose`; no host port |
+| Network / port | `ai_net`, `edge_net`; internal `${JUPYTER_PORT:-8888}` via `expose`; no host port |
 | Route | `https://jupyter.${DEFAULT_URL}` with `gateway-standard-chain`, `sso-errors`, `sso-auth`; WebSockets pass through Traefik |
-| Authentication | Gateway SSO for the browser route **and** a Jupyter Server token from secret `jupyter_token` (AI-007), exported as `JUPYTER_TOKEN`; startup fails when it is shorter than 16 characters. An empty token is not allowed because `infra_net` peers could otherwise reach kernels, terminals and the REST API directly |
+| Authentication | Gateway SSO for the browser route **and** a Jupyter Server token from secret `jupyter_token` (AI-007), exported as `JUPYTER_TOKEN`; startup fails when it is shorter than 16 characters. An empty token is not allowed because peers on its networks could otherwise reach kernels, terminals and the REST API directly |
 | Work directory | Bind `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work` → `/home/jovyan/work`, `create_host_path: false`; create it owned by UID 1000 before first start |
 | MLflow client | `MLFLOW_TRACKING_URI=http://mlflow:${MLFLOW_PORT}` — an internal path that does not pass the gateway SSO route |
 | Object storage | No object-storage credential is injected; artifacts are uploaded through the MLflow artifact proxy |

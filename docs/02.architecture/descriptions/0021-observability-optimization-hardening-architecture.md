@@ -1,6 +1,6 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ created: "2026-03-28"
 
 요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
 
-관측성 계층은 데이터 평면(수집/저장)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어+SSO 체인을 적용하고, 데이터 평면은 `infra_net` 내부 통신으로 유지한다.
+관측성 계층은 데이터 평면(수집/저장)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어+SSO 체인을 적용하고, 데이터 평면은 `obs_net` 내부 통신으로 유지한다.
 
 ## System Boundaries
 
@@ -68,7 +68,7 @@ created: "2026-03-28"
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-*` -> target service
 - Internal Path:
-  - OTLP/log/trace traffic over `infra_net`
+  - OTLP/log/trace traffic over `obs_net`
 
 ## Data Flow
 

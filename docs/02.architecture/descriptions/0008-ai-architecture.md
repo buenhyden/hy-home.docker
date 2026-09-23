@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -50,7 +50,7 @@ created: "2026-03-26"
 품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
 
 - **Performance**: NVIDIA CUDA 가속을 통한 저지연 추론 달성. FP16/INT8 양자화 모델 활용 권장.
-- **Security**: 모든 데이터는 프로젝트 내부 네트워크(`infra_net`) 내에 머물며, Keycloak을 통한 엄격한 RBAC 적용.
+- **Security**: 모든 데이터는 프로젝트 내부 네트워크(`ai_net`) 내에 머물며, Keycloak을 통한 엄격한 RBAC 적용.
 - **Reliability**: Healthcheck를 통한 추론 엔진 상태 감시 및 자동 복구.
 - **Scalability**: 필요 시 Worker 컨테이너 증설을 통한 수평 확장(단, GPU 할당 정책 준수 필요).
 - **Observability**: `ollama-exporter`를 통해 VRAM 사용량, 모델 로드 상태, API 호출 통계 상시 모니터링.

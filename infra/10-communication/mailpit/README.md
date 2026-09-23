@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Implementation"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # Mailpit
@@ -31,7 +31,7 @@ Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../.
 
 ## Configuration
 
-Profiles: `mail-dev / local / dev`. Root Compose includes this definition; inclusion alone does not start a service. Network is `infra_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
+Profiles: `mail-dev / local / dev`. Root Compose includes this definition; inclusion alone does not start a service. Network is `edge_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
 
 ## Validation
 
