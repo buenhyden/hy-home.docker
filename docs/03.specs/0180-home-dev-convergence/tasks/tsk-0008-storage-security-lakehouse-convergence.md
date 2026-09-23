@@ -658,7 +658,7 @@ no remaining dependant.
 | Unit | Change |
 | --- | --- |
 | Services | 135 `infra_net` attachments removed across 41 Compose files; every service keeps only the networks whose peers it uses. Registry, Renovate, OpenTofu and Locust have no container peer and now use the project default network |
-| Root | the `infra_net` definition and its `172.19.0.0/16` IPAM removed; `INFRA_SUBNET`, `INFRA_IP_RANGE` and `INFRA_GATEWAY` are unused by the root project |
+| Root | the `infra_net` definition and its `172.19.0.0/16` IPAM removed, and with them the now-orphan `INFRA_SUBNET`, `INFRA_IP_RANGE` and `INFRA_GATEWAY` keys (public keys 263, optional 205) |
 | Gateway | Traefik's Docker provider network and the OAuth2 Proxy router label are `edge_net`; OAuth2 Proxy and Airflow trust only `10.250.1.2` |
 | k3d | `mng-pg` left `k3d-hyhome` (no k8s consumer named it); `mng-valkey` stays, it is measured |
 | Alloy | the Docker log filter kept only `project_net|infra_net` targets. Live check: of 56 running containers just 13 were selected and 6 were shipping, so most container logs were silently dropped after phase 1. Upstream documents that `loki.source.docker` deduplicates targets by container ID, so the network filter was never needed; it now keeps every Compose-managed container |
