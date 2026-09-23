@@ -23,3 +23,11 @@ path "secret/data/platform/notifications" {
 path "secret/metadata/platform/notifications" {
   capabilities = ["read"]
 }
+
+path "secret/data/platform/prometheus-api" {
+  capabilities = ["read"]
+}
+
+path "secret/metadata/platform/prometheus-api" {
+  capabilities = ["read"]
+}

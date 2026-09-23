@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -187,7 +187,11 @@ Alloy remote write to `/api/v1/write` and Kiali queries to
 needs that username and password, the Prometheus host name resolved to the
 Traefik bind address, and trust in the gateway certificate. Give cluster series
 a distinguishing external label such as `cluster`. The UI stays behind SSO, and
-no Prometheus host port is published.
+no Prometheus host port is published. hy-home.k8s reads the credential from
+OpenBao `secret/platform/prometheus-api` through External Secrets, so a
+password rotation also updates that entry; the
+[integration runbook](../../12-infra-net/0096-k8s-integration/runbook.md#rotating-the-prometheus-api-credential)
+covers all three places.
 
 #### Keycloak Observation
 

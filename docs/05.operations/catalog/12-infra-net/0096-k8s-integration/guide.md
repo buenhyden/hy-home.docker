@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -31,7 +31,7 @@ and repeats it after each cluster rebuild.
 | --- | --- | --- | --- |
 | External Secrets Operator | `https://openbao.hy.home.arpa` (Traefik `192.168.0.13:443`) | OpenBao Kubernetes auth, role `eso-read-platform` | [OpenBao](../../03-security/0085-openbao/guide.md) |
 | Cluster bootstrap (before ESO) | same | `k8s-bootstrap` token, two hours | OpenBao |
-| Alloy metrics (remote write) | `https://prometheus.hy.home.arpa/api/v1/write` | Basic Auth (`PROMETHEUS_API_USERNAME`, `OBS-013`) | [Prometheus](../../06-observability/0045-prometheus/guide.md) |
+| Alloy metrics (remote write), Argo Rollouts analysis | `https://prometheus.hy.home.arpa/api/v1/write`, `/api/v1/query*` | Basic Auth from OpenBao `secret/platform/prometheus-api` (source `PROMETHEUS_API_USERNAME`, `OBS-013`) | [Prometheus](../../06-observability/0045-prometheus/guide.md) |
 | Kiali queries | `https://prometheus.hy.home.arpa` (only `/api/v1/` passes) | same | Prometheus |
 | Alloy logs | `http://192.168.0.13:3100` (Loki push) | none | Loki |
 | Traces | `http://192.168.0.13:3200` (Tempo) | none | Tempo |
@@ -49,8 +49,7 @@ HOME Alloy configuration has no OTLP receiver). The native k3s route
 | Item | Where it lives | How it is handed over |
 | --- | --- | --- |
 | Gateway CA | `secrets/certs/rootCA.pem` (mkcert root, public) | copy |
-| Prometheus API user | `.env` `PROMETHEUS_API_USERNAME` | copy |
-| Prometheus API password | `secrets/observability/prometheus_api_password.txt` | protected channel, never chat |
+| Prometheus API credential | OpenBao `secret/platform/prometheus-api` (`username`, `password`), from `.env` `PROMETHEUS_API_USERNAME` and `secrets/observability/prometheus_api_password.txt` | ESO sync; no manual copy |
 | Bootstrap token | `/tmp/bao-k8s/k8s-bootstrap.token` (created by the runbook) | protected channel, used within two hours |
 | Name resolution | `openbao.hy.home.arpa`, `prometheus.hy.home.arpa` → `192.168.0.13` | cluster DNS entry |
 
@@ -67,6 +66,9 @@ the ESO service account, egress to `192.168.0.13` ports 443, 3100, 3200 and
   `/etc/hosts` has only a few `hy.home.arpa` names, so use `--resolve`.
 - In zsh, a variable holding several `curl` options is not split; write the
   options out.
+- A new Prometheus API password must also reach OpenBao
+  `secret/platform/prometheus-api`; otherwise the cluster's remote write gets
+  `401`. The runbook's rotation section does all three places together.
 
 ## Common Checks
 

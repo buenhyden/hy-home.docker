@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -71,6 +71,9 @@ config, and alert-rule surfaces.
     from `OBS-012`/`OBS-013`). It serves machine clients that cannot pass SSO,
     such as the hy-home.k8s cluster's remote write and Kiali queries. The UI
     and every other path stay behind SSO, and the admin API stays disabled.
+    `OBS-013`, `INFRA-007` and OpenBao `secret/platform/prometheus-api` rotate
+    together; a stale OpenBao entry turns the cluster's remote write into
+    `401`.
   - TSDB retention changes must be paired with
     [retention policy](../0048-telemetry-retention/policy.md), volume impact review, and plan/task
     evidence. The current compose command does not declare an explicit
