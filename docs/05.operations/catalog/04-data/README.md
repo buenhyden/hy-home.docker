@@ -1,6 +1,6 @@
 ---
 title: "Operations — 04 Data"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
@@ -38,6 +38,7 @@ four-digit subject identity. Role membership follows the current subject tree.
 | [Backup and restore](0021-backup-and-restore/guide.md) | [Guide](0021-backup-and-restore/guide.md), [Policy](0021-backup-and-restore/policy.md), [Runbook](0021-backup-and-restore/runbook.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster/guide.md) | [Guide](0022-valkey-cluster/guide.md), [Policy](0022-valkey-cluster/policy.md), [Runbook](0022-valkey-cluster/runbook.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs/guide.md) | [Guide](0024-seaweedfs/guide.md), [Policy](0024-seaweedfs/policy.md), [Runbook](0024-seaweedfs/runbook.md) |
+| [Lakehouse — Iceberg engines](0094-lakehouse/guide.md) | [Guide](0094-lakehouse/guide.md), [Policy](0094-lakehouse/policy.md), [Runbook](0094-lakehouse/runbook.md) |
 | [NoSQL — Cassandra](0025-cassandra/guide.md) | [Guide](0025-cassandra/guide.md), [Policy](0025-cassandra/policy.md), [Runbook](0025-cassandra/runbook.md) |
 | [NoSQL — CouchDB](0026-couchdb/guide.md) | [Guide](0026-couchdb/guide.md), [Policy](0026-couchdb/policy.md), [Runbook](0026-couchdb/runbook.md) |
 | [NoSQL — MongoDB](0027-mongodb/guide.md) | [Guide](0027-mongodb/guide.md), [Policy](0027-mongodb/policy.md), [Runbook](0027-mongodb/runbook.md) |
