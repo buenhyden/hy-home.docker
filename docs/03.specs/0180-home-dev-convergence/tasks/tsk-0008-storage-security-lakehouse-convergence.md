@@ -849,6 +849,11 @@ The disposable SeaweedFS rehearsal (`HYHOME_SEAWEEDFS_REHEARSAL=1`, the real
 rendered services on temporary data) passes 8/8, including the new
 `test_3_lakehouse_catalog_is_scoped_to_its_identity`.
 
+`validate-docker-compose.sh` (`lakehouse`: 7 services), catalog, hardening,
+version projection and the metadata check against `origin/main` pass. Live is
+NOT_RUN: it needs STRG-015 generated, the `.env` key, a `seaweedfs-s3`
+recreate and a `seaweedfs-table-bucket` run, each approved.
+
 Sequential review (read-only reviewer) findings and their disposition:
 
 | Finding | Disposition |
@@ -860,11 +865,6 @@ Sequential review (read-only reviewer) findings and their disposition:
 | no automated check read the Spark wrapper; S12 added no hardening line | `check_04_data` asserts the four catalog keys and forbids a wildcard or control action in the table bucket policy |
 | `AWS_REGION` unguarded, no empty admin-secret check, unconditional policy rewrite undocumented, namespace list compared as ordered, `cpus: 2.0` | fixed |
 | POL-0086 has no row for checksum-pinned build downloads (also the Gatus tarball) | deferred: pre-existing gap; the Spark README states manual ownership |
-
-`validate-docker-compose.sh` (`lakehouse`: 6 services), catalog, hardening,
-version projection and the metadata check against `origin/main` pass. Live is
-NOT_RUN: it needs STRG-015 generated, the `.env` keys, a `seaweedfs-s3`
-recreate and a `seaweedfs-buckets` run, each approved.
 
 ### k3d removal (source, owner instruction 2026-09-23)
 

@@ -2199,7 +2199,11 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         )
         services = {
             name: rendered["services"][name]
-            for name in (*SEAWEEDFS_SERVICES, "seaweedfs-buckets", "seaweedfs-table-bucket")
+            for name in (
+                *SEAWEEDFS_SERVICES,
+                "seaweedfs-buckets",
+                "seaweedfs-table-bucket",
+            )
         }
         for name, service in services.items():
             service["container_name"] = f"{cls.tag}-{name}"
@@ -2465,13 +2469,13 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         lakehouse = {"access": "lakehouse", "secret": self.consumer_secret["lakehouse"]}
         # seaweedfs-table-bucket created the bucket, its policy and namespaces.
         listed = json.loads(self.catalog("/v1/lakehouse/namespaces", **lakehouse))
-        self.assertEqual(
-            {"dev", "test"}, {".".join(ns) for ns in listed["namespaces"]}
-        )
+        self.assertEqual({"dev", "test"}, {".".join(ns) for ns in listed["namespaces"]})
         # Another identity cannot even see the table bucket.
         self.assertIn(
             '"code":404',
-            self.catalog("/v1/lakehouse/namespaces", "loki", self.consumer_secret["loki"]),
+            self.catalog(
+                "/v1/lakehouse/namespaces", "loki", self.consumer_secret["loki"]
+            ),
         )
         # The identity is limited to its bucket on the S3 side as well.
         self.assertNotEqual(
@@ -2493,13 +2497,22 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
             "text",
         ).stdout.strip()
         for command in (
-            ("put-table-bucket-policy", "--resource-policy", '{"Version":"2012-10-17","Statement":[]}'),
+            (
+                "put-table-bucket-policy",
+                "--resource-policy",
+                '{"Version":"2012-10-17","Statement":[]}',
+            ),
             ("delete-table-bucket",),
         ):
             self.assertNotEqual(
                 0,
                 self.aws(
-                    "s3tables", command[0], "--table-bucket-arn", arn, *command[1:], **lakehouse
+                    "s3tables",
+                    command[0],
+                    "--table-bucket-arn",
+                    arn,
+                    *command[1:],
+                    **lakehouse,
                 ).returncode,
                 command[0],
             )
