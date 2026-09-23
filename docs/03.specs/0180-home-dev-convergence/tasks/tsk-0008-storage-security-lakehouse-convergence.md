@@ -1121,6 +1121,45 @@ current `origin/main`), secret-metadata tests and the Flink rehearsal pass.
 failures were the two local group-write checks from this worktree's umask
 (recorded under S04), which pass after `chmod g-w` on the tracked executables.
 
+### S15 — Great Expectations (source)
+
+New leaf `infra/04-data/lakehouse/great-expectations/` under the `lakehouse`
+profile: a one-shot job built from `python` plus GX Core and the Trino
+SQLAlchemy dialect pinned in `requirements.txt` (Renovate). `hyhome-gx.py`
+builds an ephemeral context with a Trino SQL data source
+(`trino://great-expectations@trino:8080/lakehouse`) and checks each tracked
+suite in `suites/` (`<schema>.<table>` plus GX expectations) on a whole-table
+batch. The default command lists suites; `validate` exits `0` when every suite
+passes, `1` when an expectation fails and `2` when nothing could be checked.
+Usage events are off (`GX_ANALYTICS_ENABLED=false`); no port, no secret,
+UID 1000, read-only root.
+
+| Unit | Change |
+| --- | --- |
+| Service | `great-expectations` (`template-job-med`, `object_net`, depends on a healthy `trino`), suites mounted read-only |
+| Checks | hardening pins analytics off, read-only suites, no port and the job template; version projection adds the local image |
+| Documents | GDE/POL/RUN-0094, POL-0078 `lakehouse` row, `04-data` README, m0021 row |
+
+Measured before the leaf existed, against a disposable Trino with a memory
+catalog: the suite passed on two distinct rows and exited `1` after a
+duplicate key. Rehearsal (`test_3_great_expectations_passes_and_fails_through_trino`,
+isolated SeaweedFS with the HOME Trino): the tracked `lakehouse-rehearsal`
+suite passes on `test.gx_rehearsal` and the same suite exits `1` after a
+duplicate id. Error paths measured on the built image: no suites, a one-part
+table name, a mismatched `name`, malformed JSON and an unreachable Trino each
+exit `2` with the cause on stderr. A negative hardening run with analytics on
+fails on that pin. Live is NOT_RUN: it needs the S12/S13 live steps.
+
+Sequential review (read-only reviewer): no Critical.
+
+| Finding | Disposition |
+| --- | --- |
+| `validate` with no suites exited 0 | fixed: no suites is exit `2` |
+| Placement differs from the S01 design (`09-tooling`, `lakehouse_net`) | ruling added below |
+| `ProgressBarsConfig` may not exist in GX 1.x | kept: the rehearsal runs GX 1.23.1 with it, and without it the run printed progress bars |
+| m0021 lifecycle cell carried Spark's text | fixed for `great-expectations`, and for the `trino` and `flink-*` rows that had the same copy |
+| One- or three-part table names, errors sharing exit `1`, unread `name`, unused `GX_SUITES_DIR`, a needless `chmod` layer, image tag drift on a GX bump, unpinned job template | fixed: two-part check, exit `2` for errors, `name` must match, path inlined, layer removed, README step, hardening pin |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1149,6 +1188,7 @@ failures were the two local group-write checks from this worktree's umask
 | S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0093 subject |
 | S12 Spark and Iceberg | Task 10 / S12 | PASS: Compose, catalog, hardening, version projection, metadata check-changed, provisioning and secret tests; isolated catalog and Spark round trip with the scoped identity; SeaweedFS rehearsal 8/8; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0094 subject |
 | S14 Flink | Task 10 / S14 | PASS (source): Compose, catalog, hardening (with a negative), version projection, secret-metadata tests; isolated batch and checkpointed streaming inserts; SeaweedFS rehearsal 10/10; live NOT_RUN | 0094 subject |
+| S15 Great Expectations | Task 10 / S15 | PASS (source): Compose, catalog, hardening (with a negative), version projection, links, metadata; isolated pass then exit `1` on a duplicate key; exit `2` error paths; live NOT_RUN | 0094 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -1174,6 +1214,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Use the SeaweedFS built-in Iceberg REST catalog first | Present in 4.47; no extra service; one recovery set with the filer | Engine incompatibility; fallback is one external REST catalog chosen in S12 |
 | Embedded filer store on a persistent volume | Avoids a PostgreSQL dependency cycle for backups | Metadata backup needs `filer.meta.backup` or a quiesced copy |
 | Restic and pgBackRest on the other physical disk | Owner answer; no offsite target exists | Same-host loss destroys both copies; offsite stays open |
+| Great Expectations in `04-data/lakehouse` on `object_net`, not `09-tooling` on `lakehouse_net` (S01) | It is a Trino client under the lakehouse subject like the other engines, and `lakehouse_net` was never created (S12–S14 use `object_net`) | A later `lakehouse_net` split moves every lakehouse leaf together |
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items

@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-09-23"
 
 ## When to Use
 
-A Spark job, Trino or a Flink job fails, the catalog returns an error, access is denied, or a table
+A Spark job, Trino, a Flink job or a Great Expectations suite fails, the catalog returns an error, access is denied, or a table
 needs rollback after a bad write.
 
 ## Procedure
@@ -34,6 +34,9 @@ needs rollback after a bad write.
    then `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"`.
    For Flink: `docker compose --profile lakehouse logs --tail=100 flink-jobmanager flink-taskmanager`,
    then `docker compose exec flink-jobmanager /opt/flink/bin/flink list -a`.
+   For a suite: `docker compose --profile lakehouse run --rm great-expectations validate <suite>`;
+   the lines before `"success": false` name the failed expectation (exit `1`);
+   exit `2` means nothing was checked and stderr names the cause.
 2. Exit `64` from either wrapper means the `lakehouse` secret is missing or empty.
 3. `table bucket … not found` means the table bucket is missing or belongs to
    another account: re-run `seaweedfs-table-bucket`, which recreates the bucket,
@@ -91,4 +94,5 @@ reason.
 - [Spark package README](../../../../../infra/04-data/lakehouse/spark/README.md)
 - [Trino package README](../../../../../infra/04-data/lakehouse/trino/README.md)
 - [Flink package README](../../../../../infra/04-data/lakehouse/flink/README.md)
+- [Great Expectations package README](../../../../../infra/04-data/lakehouse/great-expectations/README.md)
 - [Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)

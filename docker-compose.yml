@@ -325,6 +325,7 @@ include:
   - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
   - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
   - infra/04-data/lakehouse/flink/docker-compose.yml
+  - infra/04-data/lakehouse/great-expectations/docker-compose.yml
   - infra/04-data/lakehouse/spark/docker-compose.yml
   - infra/04-data/lakehouse/trino/docker-compose.yml
   - infra/04-data/nosql/cassandra/docker-compose.yml

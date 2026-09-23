@@ -485,6 +485,12 @@ check_04_data() {
   check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
   check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
   check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
+  local gx_compose="infra/04-data/lakehouse/great-expectations/docker-compose.yml"
+  check_file "$gx_compose"
+  check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
+  check_contains "$gx_compose" "./suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
+  check_not_contains "$gx_compose" "ports:" "great-expectations must not publish a port"
+  check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
   if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
     fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
   fi

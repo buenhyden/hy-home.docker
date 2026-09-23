@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -15,6 +15,8 @@ implementation_services:
   infra/04-data/lakehouse/flink/docker-compose.yml:
   - flink-jobmanager
   - flink-taskmanager
+  infra/04-data/lakehouse/great-expectations/docker-compose.yml:
+  - great-expectations
   infra/04-data/lakehouse/spark/docker-compose.yml:
   - spark
   infra/04-data/lakehouse/trino/docker-compose.yml:
@@ -32,7 +34,7 @@ The lakehouse is OPTIONAL and selected by `lakehouse`. Tables are Apache
 Iceberg in the SeaweedFS `lakehouse` table bucket, catalogued by the SeaweedFS
 built-in Iceberg REST catalog. Spark is the batch and table-maintenance
 engine, Trino the interactive SQL engine and Flink the streaming engine, all on
-the same catalog. Iceberg is a table format, not a service.
+the same catalog; Great Expectations checks tables through Trino. Iceberg is a table format, not a service.
 
 ### Current implementation
 
@@ -78,6 +80,12 @@ the same catalog. Iceberg is a table format, not a service.
   JobManager has 1 CPU and 1.25 GiB (1 GiB Flink process), the TaskManager
   2 CPUs and 2 GiB (1.5 GiB Flink process); both run as UID 9999 with a
   read-only root.
+- **Great Expectations.** [GX Compose](../../../../../infra/04-data/lakehouse/great-expectations/docker-compose.yml)
+  is a one-shot job (GX Core with the Trino dialect) that checks each tracked
+  suite in `suites/` against its table through Trino with an ephemeral
+  context; nothing is written, and usage events are off. The default command
+  lists suites; `validate` exits `1` when an expectation fails and `2` when it
+  could not check.
 
 ### Commands and side effects
 
@@ -99,6 +107,7 @@ the same catalog. Iceberg is a table format, not a service.
 | `INSERT INTO dev.t SELECT … FROM <kafka table>` (streaming) | Runs until cancelled; commits a snapshot on each checkpoint |
 | `SET 'execution.runtime-mode' = 'batch'; INSERT INTO dev.t …` | Writes table metadata and data files once |
 | `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | Stops a job; data committed at earlier checkpoints stays |
+| `docker compose --profile lakehouse run --rm great-expectations validate [SUITE...]` | Reads tables through Trino; exit `1` on a failed expectation |
 
 ## Common Checks
 
@@ -124,3 +133,5 @@ and table recovery.
 - [Trino Iceberg connector](https://trino.io/docs/current/connector/iceberg.html)
 - [Flink](../../../../../infra/04-data/lakehouse/flink/README.md) package README
 - [Iceberg Flink connector](https://iceberg.apache.org/docs/latest/flink/)
+- [Great Expectations](../../../../../infra/04-data/lakehouse/great-expectations/README.md) package README
+- [GX Core SQL data sources](https://docs.greatexpectations.io/docs/core/connect_to_data/sql_data/)
