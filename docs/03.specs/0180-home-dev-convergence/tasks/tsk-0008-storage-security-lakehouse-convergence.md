@@ -1376,7 +1376,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #233 | S15 Great Expectations | merged |
 | #234 | S16 Superset | merged |
 | #235 | S17 Stalwart | merged |
-| this PR | Task ledger and stale evidence corrections | open |
+| #236 | Task ledger and stale evidence corrections | merged |
+| this PR | S18 route authentication and S17 review follow-ups | open |
 
 ## Rulings
 
