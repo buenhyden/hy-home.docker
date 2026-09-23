@@ -2186,6 +2186,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: hy-home/stalwart-config",
+      "tier": "10-communication",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/stalwart-config": "local-custom"
+      },
+      "images": [
+        "hy-home/stalwart-config:0.16.22-cli1.0.12-local"
+      ],
+      "compose_files": [
+        "infra/10-communication/stalwart/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+          "images": [
+            "hy-home/stalwart-config:0.16.22-cli1.0.12-local"
+          ]
+        }
+      ]
     }
   ]
 }

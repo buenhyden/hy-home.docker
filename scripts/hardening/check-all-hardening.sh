@@ -605,7 +605,12 @@ check_10_communication() {
   local mailpit_compose="infra/10-communication/mailpit/docker-compose.yml"
   check_file "$mail_compose"
   check_file "$mailpit_compose"
-  check_contains "$mail_compose" "service: template-stateful-med" "stalwart template inheritance missing"
+  check_contains "$mail_compose" "service: template-infra-readonly-med" "stalwart template inheritance missing"
+  # SPEC-0180 S17: internal-only, no relaying, secret only through the wrapper.
+  check_not_contains "$mail_compose" "ports:" "stalwart must not publish a host port"
+  check_contains "infra/10-communication/stalwart/config/plan.ndjson" '"allowRelaying":{"else":"false"' "stalwart must refuse relaying"
+  check_not_contains "$mail_compose" "STALWART_RECOVERY_ADMIN" "stalwart admin credential must come from the secret file"
+  check_service_network "$mail_compose" "stalwart" "mail_net"
   check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
   check_service_network "$mail_compose" "stalwart" "edge_net"
   check_service_healthcheck "$mail_compose" "stalwart"

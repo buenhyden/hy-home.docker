@@ -1,0 +1,4 @@
+{"@type":"upsert","object":"Domain","matchOn":["name"],"value":{"home":{"name":"__DOMAIN__","description":"hy-home internal mail domain"}}}
+{"@type":"update","object":"SystemSettings","value":{"defaultDomainId":"#home","defaultHostname":"mail.__DOMAIN__"}}
+{"@type":"reconcile","object":"NetworkListener","matchOn":["name"],"value":{"http":{"name":"http","protocol":"http","bind":{"[::]:8080":true}},"smtp":{"name":"smtp","protocol":"smtp","bind":{"[::]:25":true}},"submission":{"name":"submission","protocol":"smtp","bind":{"[::]:587":true}},"imaptls":{"name":"imaptls","protocol":"imap","bind":{"[::]:993":true},"tlsImplicit":true}}}
+{"@type":"update","object":"MtaStageRcpt","value":{"allowRelaying":{"else":"false","match":{}}}}

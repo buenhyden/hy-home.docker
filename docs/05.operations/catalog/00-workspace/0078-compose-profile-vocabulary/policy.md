@@ -67,7 +67,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
-| `mail-server` | capability | 실제 메일 송수신; 별도 DNS·운영 준비 필요 | `stalwart` | No | normal service startup | current |
+| `mail-server` | capability | 내부 전용 메일 서버; host port·relay 없음, `mail_net` 제출 | `stalwart`, `stalwart-config` | No | initialization: stalwart-config (도메인·listener·relay 금지 plan 적용; listener 변경은 재시작 후) | current |
 | `messaging` | domain | Kafka broker·schema·connect·REST·관리 UI | `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |
 | `messaging-admin` | role | Kafka 관리 UI와 직접 종속 서비스 | `kafka-1`, `schema-registry`, `kafka-connect`, `kafbat-ui` | No | normal service startup | current |
 | `messaging-broker` | role | Kafka 단일 broker·초기화·exporter | `kafka-1`, `kafka-exporter`, `kafka-init` | No | initialization: kafka-init | current |

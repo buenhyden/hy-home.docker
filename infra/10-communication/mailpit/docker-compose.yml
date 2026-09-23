@@ -41,6 +41,8 @@ services:
       retries: 3
     networks:
       edge_net: {}
+      # SMTP capture for containers that should not reach Stalwart.
+      mail_net: {}
     labels:
       <<: *tier-label
       traefik.enable: 'true'
