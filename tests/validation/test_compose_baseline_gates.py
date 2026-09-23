@@ -862,12 +862,19 @@ FEATURE_JOBS = (
         "infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql",
         {"cdc"},
     ),
+    (
+        "infra/09-tooling/pact-broker/docker-compose.yml",
+        "pact-broker-db-provision",
+        "infra/09-tooling/pact-broker/provisioning/mng-pg.sql",
+        {"contract-testing"},
+    ),
 )
 FEATURE_SECRETS = {
     "mlflow_db_password",
     "dbt_db_password",
     "debezium_postgres_password",
     "seaweedfs_s3_mlflow_secret_key",
+    "pact_broker_db_password",
 }
 
 
@@ -935,7 +942,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual(
                     set(), set(service.get("secrets", [])) & FEATURE_SECRETS
                 )
-                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium")
+                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium|pact")
 
     def test_feature_jobs_supply_every_input_without_argv_secrets(self) -> None:
         for compose, job, sql_path, profiles in FEATURE_JOBS:

@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.2.4"
+version: "1.2.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -47,7 +47,7 @@ automatic address pool cannot take one first.
 | Network | Subnet | Members | Flow |
 | --- | --- | --- | --- |
 | `edge_net` | 10.250.1.0/24, dynamic from .128/25 | Traefik (fixed .2, aliases `keycloak.`/`auth.${DEFAULT_URL}`), Nginx, OAuth2 Proxy, every routed backend | gateway → backend; backend → Traefik alias for OIDC discovery |
-| `mng_data_net` | 10.250.2.0/24 | `mng-pg`, `mng-valkey`, OAuth2 Proxy Valkey, their exporters and clients | client → PostgreSQL/Valkey |
+| `mng_data_net` | 10.250.2.0/24 | `mng-pg`, `mng-valkey`, OAuth2 Proxy Valkey, their exporters and clients (including Pact Broker) | client → PostgreSQL/Valkey |
 | `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, Nginx, bucket jobs | S3 client → object store |
 | `seaweed_internal` | 10.250.4.0/24, internal | SeaweedFS master, volume, filer, S3 | storage-internal only |
 | `obs_net` | 10.250.5.0/24 | Prometheus, Alloy, Loki, Tempo, Pyroscope, Grafana, Alertmanager, Pushgateway, exporters, every scrape target, k6 | scrape, push, datasource queries |

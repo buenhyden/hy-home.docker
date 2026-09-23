@@ -1,6 +1,6 @@
 ---
 title: "Operations — 09 Tooling"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
@@ -18,7 +18,7 @@ This domain co-locates each current tooling guide, policy, and runbook under
 its stable four-digit subject identity. Role membership follows the current
 subject tree. `tooling` selects Registry and SonarQube only; `testing` selects
 k6 and both Locust services; `iac` selects OpenTofu and all Terrakube services;
-`dependency-update` selects Renovate; `api-mock` selects WireMock. These
+`dependency-update` selects Renovate; `api-mock` selects WireMock; `contract-testing` selects the Pact Broker. These
 services are outside HOME.
 
 ## Audience
@@ -48,6 +48,7 @@ services are outside HOME.
 | [Renovate](0083-renovate/guide.md) | [Guide](0083-renovate/guide.md), [Policy](0083-renovate/policy.md), [Runbook](0083-renovate/runbook.md) |
 | [dbt](0090-dbt/guide.md) | [Guide](0090-dbt/guide.md), [Policy](0090-dbt/policy.md), [Runbook](0090-dbt/runbook.md) |
 | [WireMock](0092-wiremock/guide.md) | [Guide](0092-wiremock/guide.md), [Policy](0092-wiremock/policy.md), [Runbook](0092-wiremock/runbook.md) |
+| [Pact Broker](0093-pact-broker/guide.md) | [Guide](0093-pact-broker/guide.md), [Policy](0093-pact-broker/policy.md), [Runbook](0093-pact-broker/runbook.md) |
 
 ## How to Work in This Area
 

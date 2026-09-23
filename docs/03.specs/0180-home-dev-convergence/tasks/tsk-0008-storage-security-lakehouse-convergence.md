@@ -771,6 +771,41 @@ Sequential review (read-only reviewer) findings and their disposition:
 | catalog table split by blank lines; hard-coded 18088 in commands; redundant healthcheck redirections; inventory row missing the HOME requirement link | fixed |
 | AD-0009 lists no profile for dbt, Restic or WireMock | pre-existing drift; deferred to S19 document convergence |
 
+### S11 — Pact Broker (source)
+
+| Unit | Change |
+| --- | --- |
+| Services | `infra/09-tooling/pact-broker/`: `pact-broker-db-provision` (the shared `run-feature-provision.sh` runner with feature SQL derived from MLflow's: refuses administrator or foreign roles and foreign database owners, idempotent) and `pact-broker` (`pactfoundation/pact-broker:3.0.0-pactbroker2.121.2`, read-only template, image user `ruby`, all capabilities dropped, 512 MiB) |
+| Credentials | the image reads credentials only from the environment, so the entrypoint exports both passwords from Docker secrets into the broker process; none is declared in Compose `environment` or argv. New secrets `pact_broker_db_password` (PG-026) and `pact_broker_basic_auth_password` (AUTO-018); public keys `PACT_BROKER_DB_USER` (PG-027), `PACT_BROKER_BASIC_AUTH_USERNAME` (AUTO-019), `PACT_BROKER_DB_NAME`, `PACT_BROKER_HOST_PORT` |
+| Exposure | basic auth on the UI and whole API, public read off, only the heartbeat public; host port `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}`; no route; `PACT_DO_NOT_TRACK` disables the image's analytics ping; `mng_data_net` only |
+| Profile | new `contract-testing` (capability), added to the `mng-pg`/`mng-pg-init` dependency closure; POL-0078 row, companion row and the closure row |
+| Contracts | root include and two root secrets; `FEATURE_JOBS`/`FEATURE_SECRETS` in the provisioning contract tests; pinned counts in `test_secret_metadata_sync`; AD-0026 `mng_data_net` members; version projection +1 image; two authored m0021 rows plus the re-rendered `mng-pg-init` profile cell |
+| Documents | new subject `0093-pact-broker` (GDE/POL/RUN-0093), package README, 09-tooling infra and catalog READMEs |
+
+Evidence: `validate-docker-compose.sh` default mode 71 selections and 340
+services; `check-operations-catalog.py` PASS; version projection in sync;
+`check-all-hardening.sh` PASS; provisioning and secret-metadata tests pass.
+An isolated project (`-p s11-probe`, a stub `mng-pg` on a separately named
+network, visible placeholder secrets) ran the real definition: provisioning
+exit 0 and idempotent on re-run; broker healthy as `ruby` with a read-only root,
+`CapDrop=[ALL]` and a `127.0.0.1` binding; 401 without credentials, heartbeat
+200, 200 with credentials, a pact published (201) and read back; no secret in
+the container environment or any log; the project and its network removed.
+Live start is NOT_RUN: it needs the two secrets generated and the `.env` keys
+added, then its own approval.
+
+Sequential review (read-only reviewer) findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| the loopback binding and disabled public read had no hardening assertion | `check_09_tooling` asserts both |
+| the base-init contamination guard did not name the new feature | regex now includes `pact` |
+| the runbook named exit 64 for a missing secret; `set -e` exits 1 there | runbook distinguishes 64 (empty) from 1 (missing or unreadable) |
+| hard-coded basic-auth user in a documented command; blank line splitting the AUTO registry table | fixed |
+| Renovate's default versioning treats `-pactbroker2.121.2` as a fixed suffix, so the pin would never move | packageRule with regex versioning on the image version |
+| `PACT_BROKER_BASE_URL` unset | kept unset; POL-0093 records why and when to set it |
+| fourth near-copy of the feature-provisioning SQL prologue | deferred: a shared prologue is worth extracting the next time the refusal logic changes |
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -796,6 +831,7 @@ Sequential review (read-only reviewer) findings and their disposition:
 | S05 phase 2 live | Task 10 / S05 | PASS: 56 containers recreated, `infra_net` removed, Loki container coverage 6 → 56, SSO 302, Gatus 6/7 then 7/7 after the owner's unseal; Agent SecretID open | this Task |
 | S09 Testcontainers | Task 10 / S09 | PASS: 2/2 integration tests against the declared PostgreSQL pin after the move to `tests/validation/`; skip-without-opt-in verified; `run-ci-gate.py --profile changed` exit 0 | tests README |
 | S10 WireMock | Task 10 / S10 | PASS: Compose all selections, catalog, version projection, hardening (now asserting the loopback binding); isolated Compose rehearsal healthy and hardened; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0092 subject |
+| S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); live NOT_RUN | 0093 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence

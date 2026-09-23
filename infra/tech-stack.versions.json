@@ -75,6 +75,7 @@
         "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
         "infra/05-messaging/kafka/docker-compose.yml",
         "infra/09-tooling/dbt/docker-compose.yml",
+        "infra/09-tooling/pact-broker/docker-compose.yml",
         "infra/11-laboratory/mlflow/docker-compose.yml"
       ],
       "sources": [
@@ -104,6 +105,12 @@
         },
         {
           "compose_file": "infra/09-tooling/dbt/docker-compose.yml",
+          "images": [
+            "postgres:18.6-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/09-tooling/pact-broker/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
           ]
@@ -2015,6 +2022,28 @@
           "compose_file": "infra/09-tooling/wiremock/docker-compose.yml",
           "images": [
             "wiremock/wiremock:3.13.2-alpine"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: pactfoundation/pact-broker",
+      "tier": "09-tooling",
+      "classification": "external",
+      "repository_classifications": {
+        "pactfoundation/pact-broker": "external"
+      },
+      "images": [
+        "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2"
+      ],
+      "compose_files": [
+        "infra/09-tooling/pact-broker/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/09-tooling/pact-broker/docker-compose.yml",
+          "images": [
+            "pactfoundation/pact-broker:3.0.0-pactbroker2.121.2"
           ]
         }
       ]

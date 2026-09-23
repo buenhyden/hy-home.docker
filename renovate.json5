@@ -140,6 +140,17 @@
     },
 
     {
+      "description": "Pact Broker tags carry the image version then the broker version; order by the image version and let the broker suffix change",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "pactfoundation/pact-broker"
+      ],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-pactbroker\\d+\\.\\d+\\.\\d+$"
+    },
+
+    {
       "description": "Ignore locally built images",
       "matchDatasources": [
         "docker"
