@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -38,6 +38,10 @@ removal.
 - Trino's HTTP API has no authentication: loopback host port only, no route,
   until a reviewed change adds TLS and an authenticator. Its default start
   writes nothing.
+- Flink's REST API and UI have no authentication: loopback host port only, no
+  route, and `web.submit.enable=false` so no JAR can be uploaded through it.
+  Jobs come from the SQL client inside the JobManager container. A streaming
+  `INSERT` writes until it is cancelled; record the job ID and target table.
 - The default Spark command reads only. `expire_snapshots`,
   `remove_orphan_files` and `DROP … PURGE` delete files and need a named table
   and a recorded reason. The same holds for Trino `DROP TABLE` and its
@@ -70,4 +74,5 @@ new namespace.
 
 - [Spark Compose source](../../../../../infra/04-data/lakehouse/spark/docker-compose.yml)
 - [Trino Compose source](../../../../../infra/04-data/lakehouse/trino/docker-compose.yml)
+- [Flink Compose source](../../../../../infra/04-data/lakehouse/flink/docker-compose.yml)
 - [Compose profile vocabulary](../../00-workspace/0078-compose-profile-vocabulary/policy.md)

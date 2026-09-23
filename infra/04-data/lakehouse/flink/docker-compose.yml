@@ -1,0 +1,113 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-flink-common: &flink-common
+  profiles:
+    - lakehouse
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: hy-home/flink-iceberg:2.1.3-iceberg1.11.0-local
+  # The image user; the checkpoint directory on the host must be writable by it.
+  user: '9999:9999'
+  entrypoint:
+    - /bin/bash
+    - /opt/hyhome/hyhome-flink.sh
+  # /tmp and /run come from the read-only template.
+  tmpfs:
+    - /opt/flink/log:uid=9999,gid=9999
+  environment:
+    # SeaweedFS `lakehouse` identity (s3-identities.conf) and its table bucket
+    # policy, as for Spark and Trino.
+    AWS_ACCESS_KEY_ID: lakehouse
+    # SeaweedFS does not enforce a region; SigV4 only needs a fixed one.
+    AWS_REGION: us-east-1
+    LAKEHOUSE_CATALOG_URI: 'http://seaweedfs-s3:${SEAWEEDFS_ICEBERG_PORT:-8181}'
+    LAKEHOUSE_S3_ENDPOINT: 'http://seaweedfs-s3:${SEAWEEDFS_S3_HTTP_PORT:-8333}'
+    LAKEHOUSE_WAREHOUSE: 's3://lakehouse/'
+  volumes:
+    - ./hyhome-flink.sh:/opt/hyhome/hyhome-flink.sh:ro
+    # JobManager and TaskManager must see the same path for file checkpoints.
+    - flink-checkpoints:/opt/flink/checkpoints
+  secrets:
+    - seaweedfs_s3_lakehouse_secret_key
+  depends_on:
+    seaweedfs-s3:
+      condition: service_healthy
+    seaweedfs-table-bucket:
+      condition: service_completed_successfully
+  networks:
+    object_net: {}
+    # Kafka sources and sinks; Kafka itself is selected with its own profile.
+    kafka_net: {}
+  labels:
+    <<: *tier-label
+
+volumes:
+  # Must exist before the first start: 2770, group SECRETS_GID (RUN-0094).
+  flink-checkpoints:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/flink/checkpoints
+
+services:
+  # Session cluster for streaming and batch SQL into the Iceberg tables in the
+  # SeaweedFS REST catalog. Jobs are submitted from the SQL client inside this
+  # container; JAR upload through the REST API is disabled.
+  flink-jobmanager:
+    <<: *flink-common
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-med
+    cpus: "1.00"
+    mem_limit: 1280m
+    container_name: flink-jobmanager
+    command:
+      - /opt/flink/bin/jobmanager.sh
+      - start-foreground
+      - -D
+      - jobmanager.rpc.address=flink-jobmanager
+      - -D
+      - jobmanager.memory.process.size=1024m
+      - -D
+      - web.submit.enable=false
+      - -D
+      - execution.checkpointing.dir=file:///opt/flink/checkpoints
+    # Plain HTTP without authentication: loopback only, no Traefik route.
+    ports:
+      - '127.0.0.1:${FLINK_HOST_PORT:-18091}:8081'
+    healthcheck:
+      test: [ 'CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost:8081/overview' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+
+  flink-taskmanager:
+    <<: *flink-common
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-high
+    cpus: "2.00"
+    mem_limit: 2g
+    container_name: flink-taskmanager
+    command:
+      - /opt/flink/bin/taskmanager.sh
+      - start-foreground
+      - -D
+      - jobmanager.rpc.address=flink-jobmanager
+      - -D
+      - taskmanager.memory.process.size=1536m
+      - -D
+      - taskmanager.numberOfTaskSlots=2
+      - -D
+      - execution.checkpointing.dir=file:///opt/flink/checkpoints
+    depends_on:
+      seaweedfs-s3:
+        condition: service_healthy
+      seaweedfs-table-bucket:
+        condition: service_completed_successfully
+      flink-jobmanager:
+        condition: service_healthy

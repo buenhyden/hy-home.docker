@@ -38,7 +38,7 @@ SeaweedFS Iceberg REST catalog(`seaweedfs-s3:8181`)ì™€ `lakehouse` S3 identityë¥
 ### Out of Scope
 
 - Workers, TLS, authentication and a Traefik route.
-- Batch maintenance ([Spark](../spark/README.md)) and streaming (Flink, S14).
+- Batch maintenance ([Spark](../spark/README.md)) and streaming ([Flink](../flink/README.md)).
 
 ## Structure
 

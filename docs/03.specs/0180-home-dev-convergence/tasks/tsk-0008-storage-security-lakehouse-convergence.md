@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0008"
 parent_ids:
@@ -1073,6 +1073,54 @@ installed.
 A diagnostic in this session printed the last character of two secret files
 while checking for trailing newlines. Only a boolean should have been printed.
 
+### S14 — Flink (source)
+
+New leaf `infra/04-data/lakehouse/flink/` under the `lakehouse` profile: a
+session cluster (`flink-jobmanager`, `flink-taskmanager` with two slots) built
+from the `flink` 2.1 Java 21 image plus the Iceberg Flink runtime, the AWS
+bundle, the Kafka SQL connector and the Hadoop client, each pinned by
+SHA-256. The probe showed the Hadoop client is required
+(`ClassNotFoundException: org.apache.hadoop.conf.Configuration`) and that the
+image entrypoint needs root for `gosu`, so the services run as UID 9999
+through their own wrapper and pass Flink settings as `-D` arguments; the image
+configuration file stays untouched under a read-only root.
+
+| Unit | Change |
+| --- | --- |
+| Catalog and identity | the wrapper exports the `lakehouse` secret into each JVM and writes `CREATE CATALOG lakehouse` (SigV4, S3FileIO, path-style) to `/tmp/lakehouse.sql`; the SQL client loads it with `-i` |
+| Exposure | REST API and UI on `127.0.0.1:${FLINK_HOST_PORT:-18091}` only, no route, `web.submit.enable=false` |
+| Networks | `object_net` (catalog, S3) and `kafka_net` (`kafka-1:19092`); Kafka stays in its own profile, so it is not a dependency |
+| State | file checkpoints in `${DEFAULT_DATA_DIR}/flink/checkpoints`, shared by both containers; the operator creates it `2770` and the containers write through `SECRETS_GID` |
+| Checks | hardening pins loopback, submit off, no route and the catalog signing keys; version projection adds the local image; `FLINK_HOST_PORT` in `.env.example` (public 272, optional 213) |
+| Documents | GDE/POL/RUN-0094, POL-0078 `lakehouse` row, `04-data` README, Spark and Trino README links, m0021 rows |
+
+Rehearsal (`test_3_flink_writes_the_lakehouse_catalog`, isolated SeaweedFS,
+checkpoint directory `2770`): a batch insert and a checkpointed streaming
+insert from a bounded `datagen` source both commit, and a batch count returns
+7 rows. The full SeaweedFS rehearsal passes 10/10. A negative hardening run
+with `web.submit.enable=true` fails on that pin. Live is NOT_RUN: it needs the
+checkpoint directory, the image build and the S12 live steps, each approved.
+ksqlDB removal (S19) waits for Flink live acceptance.
+
+Sequential review (read-only reviewer): no Critical; security no findings.
+
+| Finding | Disposition |
+| --- | --- |
+| A streaming `INSERT` never commits: checkpointing is off by default and the interval is a client setting, so a JobManager `-D` cannot enable it | fixed: the wrapper's catalog file sets a 60 s interval; guide and README say so |
+| m0021 recovery cells for `flink-*` carried Spark's "holds no state" text | fixed: they name the checkpoint directory as recoverable job state |
+| Rehearsal did not pin `SECRETS_GID`, so UID 9999 depended on the host GID | fixed: the render environment sets it to the test user's group |
+| `install -d` gives the operator's primary group, not `SECRETS_GID` | fixed: `-g "${SECRETS_GID:-1000}"` in README and RUN-0094 |
+| TaskManager took its limits implicitly from the template | fixed: explicit 2 CPUs / 2 GiB |
+| Bind volume had no "must exist" note | fixed |
+| A bare `sql-client.sh` has no catalog or credentials | fixed: README troubleshooting line |
+| List `/tmp` and `/run` explicitly | not applied: Compose rejects the duplicate `/tmp` mount from the template (`target /tmp already mounted`) |
+
+After the fixes: hardening, Compose, catalog, links, metadata (against the
+current `origin/main`), secret-metadata tests and the Flink rehearsal pass.
+`run-ci-gate.py --profile changed` passed its 487-test document suite; its only
+failures were the two local group-write checks from this worktree's umask
+(recorded under S04), which pass after `chmod g-w` on the tracked executables.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1100,6 +1148,7 @@ while checking for trailing newlines. Only a boolean should have been printed.
 | S10 WireMock | Task 10 / S10 | PASS: Compose all selections, catalog, version projection, hardening (now asserting the loopback binding); isolated Compose rehearsal healthy and hardened; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0092 subject |
 | S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0093 subject |
 | S12 Spark and Iceberg | Task 10 / S12 | PASS: Compose, catalog, hardening, version projection, metadata check-changed, provisioning and secret tests; isolated catalog and Spark round trip with the scoped identity; SeaweedFS rehearsal 8/8; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0094 subject |
+| S14 Flink | Task 10 / S14 | PASS (source): Compose, catalog, hardening (with a negative), version projection, secret-metadata tests; isolated batch and checkpointed streaming inserts; SeaweedFS rehearsal 10/10; live NOT_RUN | 0094 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
