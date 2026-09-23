@@ -94,6 +94,9 @@ secrets/**/*.custody
 # SeaweedFS gRPC CA and component keys (bin/gen-grpc-certs.sh)
 secrets/certs/seaweedfs/
 secrets/SENSITIVE_ENV_VARS.md
+# Operator-local registry/.env backups and quarantined retired credential files
+secrets/.backup-*/
+secrets/.retired/
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep

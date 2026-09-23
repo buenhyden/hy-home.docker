@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -23,12 +23,12 @@ Use for `openbao openbao-agent` readiness checks and approved targeted deploymen
 1. Validate the selected profile with the existing Compose validator; never print a private rendered model.
 2. Run this bounded read-only check:
 
-```bash
-docker compose exec -T openbao bao status
-```
+   ```bash
+   docker compose exec -T openbao bao status
+   ```
 
-1. Confirm initialized/unsealed status separately, then verify destination existence and permissions without reading contents. AppRole provisioning and unseal require the owner-controlled credential procedure.
-2. If deployment is approved, name only these services and verify initialization jobs and daemon readiness separately. Stop on an unexpected mount or failed check; do not broaden to the whole stack.
+3. Confirm initialized/unsealed status separately, then verify destination existence and permissions without reading contents. AppRole provisioning and unseal require the owner-controlled credential procedure.
+4. If deployment is approved, name only these services and verify initialization jobs and daemon readiness separately. Stop on an unexpected mount or failed check; do not broaden to the whole stack.
 
 [Implementation](../../../../../infra/03-security/openbao/docker-compose.yml) and [version projection](../../../../../infra/tech-stack.versions.json) own runtime pins.
 
@@ -48,7 +48,9 @@ Git-ignored, never mounted into a container). This is an explicit exception to
 separate custody: anyone who can read that file can unseal OpenBao. Unseal from
 an interactive terminal (`docker compose exec openbao bao operator unseal`) and
 paste one share at the hidden prompt; never pass a share as an argument. The
-legacy Vault files in the same directory cannot unseal OpenBao.
+private registry keeps only a placeholder for SEC-003; the file is the single
+copy. The legacy Vault files cannot unseal OpenBao and were moved out of the
+live tree to `secrets/.retired/2026-09-23/security/` pending disposal.
 
 The `hy-home-renderer` AppRole uses the
 [renderer policy](../../../../../infra/03-security/openbao/config/policies/renderer.hcl):
@@ -154,6 +156,61 @@ The current CLI `bao operator generate-root` uses the authenticated API. The
 and [authenticated API](https://openbao.org/docs/api/system/generate-root-token/)
 explain this compatibility boundary. Routine unseal is distinct from login and
 must not be confused with administrator authorization.
+
+### hy-home.k8s Kubernetes Auth
+
+External Secrets Operator in the hy-home.k8s cluster authenticates with the
+Kubernetes auth method and reads only `secret/data/platform/*` through
+[eso-read-platform](../../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl).
+The cluster reaches OpenBao at `https://openbao.hy.home.arpa` through Traefik;
+do not add SSO or an IP allowlist to that route. OpenBao reaches the k3d API
+server at `https://192.168.0.13:6550`. Secret values go through stdin or a
+file, never command arguments.
+
+**Once, in an approved root session** (root was revoked, so this follows
+[Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)
+and ends by revoking the temporary root):
+
+```bash
+bao auth enable kubernetes
+bao policy write eso-read-platform eso-read-platform.hcl
+bao policy write k8s-bootstrap     k8s-bootstrap.hcl
+bao policy write hy-home-operator  operator.hcl
+bao write auth/kubernetes/role/eso-read-platform \
+  bound_service_account_names=external-secrets \
+  bound_service_account_namespaces=external-secrets \
+  audience=vault token_policies=eso-read-platform token_ttl=1h
+bao write auth/token/roles/k8s-bootstrap \
+  allowed_policies=k8s-bootstrap orphan=true token_ttl=2h token_max_ttl=2h
+# Required: the Argo CD Valkey password, read from the mng-valkey secret file.
+bao kv put secret/platform/argocd valkey_password=@secrets/db/valkey/mng_password.txt
+# Optional, only when k8s apps use them:
+#   secret/platform/postgres-app {db_name,username,password}
+#   secret/platform/notifications {slack_token}
+```
+
+Then confirm with a human OIDC login that `hy-home-operator` can update
+`auth/kubernetes/config` and create a `k8s-bootstrap` token, and nothing more.
+
+**On every cluster rebuild, as the OIDC operator** (the API server CA changes):
+
+```bash
+export BAO_ADDR=https://openbao.hy.home.arpa
+bao login -method=oidc -path=oidc role=home-admin
+kubectl config view --raw --minify \
+  -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/k3d-ca.crt
+bao write auth/kubernetes/config kubernetes_host=https://192.168.0.13:6550 \
+  kubernetes_ca_cert=@/tmp/k3d-ca.crt disable_local_ca_jwt=true
+rm -f /tmp/k3d-ca.crt
+bao write -field=token auth/token/create/k8s-bootstrap >"$BOOTSTRAP_TOKEN_FILE"   # 0600, hand over, never print
+```
+
+The UI equivalent is Access → Auth Methods → kubernetes → Configure. Without a
+`token_reviewer_jwt`, OpenBao reviews each login with the client's own JWT, so
+the External Secrets service account needs `system:auth-delegator` in the
+cluster (hy-home.k8s owns that binding). Verify with a login from the cluster;
+record only allow/deny results. The host has no `bao` CLI: run it from an
+operator workstation or inside the container with the same stdin/file rules.
 
 ### No Administrative Identity: Explicit Break-glass Recovery
 
