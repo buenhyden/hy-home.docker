@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.4.2"
+version: "0.5.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -159,27 +159,56 @@ must not be confused with administrator authorization.
 
 ### hy-home.k8s Kubernetes Auth
 
-External Secrets Operator in the hy-home.k8s cluster authenticates with the
+External Secrets Operator (ESO) in the hy-home.k8s cluster logs in with the
 Kubernetes auth method and reads only `secret/data/platform/*` through
 [eso-read-platform](../../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl).
 The cluster reaches OpenBao at `https://openbao.hy.home.arpa` through Traefik;
 do not add SSO or an IP allowlist to that route. OpenBao reaches the k3d API
-server at `https://192.168.0.13:6550`. Secret values go through stdin or a
-file, never command arguments.
+server at `https://192.168.0.13:6550`.
 
-The host has no `bao` CLI. Run a throwaway client container as the host user
-(so it can read the mounted files), on the host network (so the OIDC callback
-on `localhost:8250` and `/etc/hosts` work; tunnel port 8250 when the browser is
-elsewhere). Type each command on one line: pasted line continuations are easy
-to break, and a broken `role` write silently drops arguments.
+| When | Steps | Identity |
+| --- | --- | --- |
+| First setup, or a lost auth mount, policy or role | 1, 2, 3, 4, 6 | temporary root (quorum), then OIDC operator |
+| Every hy-home.k8s cluster rebuild (new API server CA) | 1, 2, 3, 5, 6 | OIDC operator (`home-admin`) |
+
+Rules for every step: type each command on one line (a pasted line
+continuation can silently drop arguments); secret values go through a file or
+the hidden prompt, never an argument or the screen; record only names,
+booleans and non-secret fields.
+
+#### Prerequisites
+
+- OpenBao is initialized and unsealed (`docker compose exec -T openbao bao status`).
+- The operator can complete the OIDC browser login for role `home-admin`. When
+  the browser runs on another machine, forward port 8250 first:
+  `ssh -L 8250:localhost:8250 <host>`.
+- The k3d cluster `hyhome` exists and `k3d`/`kubectl` work on the host.
+- For step 4 only: an approved root session and two distinct unseal shares
+  from `secrets/security/openbao_unseal_keys.txt`.
+
+#### Step 1. Prepare the host
+
+Run from the repository root. This writes the new cluster CA (public) into a
+private working directory.
 
 ```bash
 umask 077; mkdir -p /tmp/bao-k8s
 KUBECONFIG=$(k3d kubeconfig write hyhome) kubectl config view --raw --minify -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/bao-k8s/k3d-ca.crt
+```
+
+#### Step 2. Start the client container
+
+The host has no `bao` CLI. Run a throwaway client as the host user, so it can
+read the mounted files and write into `/tmp/bao-k8s`, on the host network, so
+the OIDC callback on `localhost:8250` and the host's `/etc/hosts` work.
+
+```bash
 docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/valkey/mng_password.txt:/s/valkey:ro" -v /tmp/bao-k8s:/s/k8s --entrypoint sh openbao/openbao:2.6.2
 ```
 
-Inside, log in as the operator and take a snapshot first:
+All remaining commands run inside this container.
+
+#### Step 3. Log in as the operator and take a snapshot
 
 ```sh
 umask 077; mkdir -p /tmp/c
@@ -187,10 +216,13 @@ bao login -no-print -method=oidc -path=oidc role=home-admin
 bao operator raft snapshot save /s/k8s/pre-change.snap
 ```
 
-**Once, in an approved root session.** Generate a temporary root with two
-distinct shares typed at the hidden prompt (an empty Enter returns
-`key is required`), pass it per command rather than exporting it, and revoke
-it at the end:
+Open the printed URL and finish the Keycloak login. Do not continue without
+the snapshot.
+
+#### Step 4. One-time setup with a temporary root
+
+4.1 Generate a temporary root. At each hidden prompt paste a different share;
+an empty Enter fails with `key is required`.
 
 ```sh
 bao operator generate-root -init -format=json > /tmp/c/init.json
@@ -199,45 +231,105 @@ bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p1.json
 bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p2.json
 ENC=$(sed -n 's/.*"encoded_token": *"\([^"]*\)".*/\1/p' /tmp/c/p2.json); bao operator generate-root -decode="$ENC" -otp="$OTP" > /tmp/c/root
 R() { BAO_TOKEN="$(cat /tmp/c/root)" bao "$@"; }
+```
+
+`R` passes the root per command, so it is never exported into the shell.
+
+4.2 Enable the method and write policies, roles and the required KV entry.
+
+```sh
 R auth list -format=json | grep -q '"kubernetes/"' || R auth enable kubernetes
 R policy write eso-read-platform /policies/eso-read-platform.hcl
 R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
 R policy write hy-home-operator /policies/operator.hcl
 R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1h
-R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
 R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
-R token revoke -self
-R token lookup >/dev/null 2>&1 && echo "ROOT STILL VALID" || echo "root revoked"
 ```
 
-`secret/platform/argocd` is required (the Argo CD Valkey password, from the
-mng-valkey secret file). Add `secret/platform/postgres-app`
+`secret/platform/argocd` (the Argo CD Valkey password, from the mng-valkey
+secret file) is required. Add `secret/platform/postgres-app`
 `{db_name,username,password}` and `secret/platform/notifications`
-`{slack_token}` in a later root session only when k8s apps use them.
+`{slack_token}` in the same way only when k8s apps use them.
 
-**On every cluster rebuild, as the OIDC operator** (the API server CA
-changes; refresh `k3d-ca.crt` on the host first):
+4.3 Verify, then revoke the root.
+
+```sh
+R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
+R read -field=token_explicit_max_ttl auth/token/roles/k8s-bootstrap
+R token revoke -self
+R token lookup >/dev/null 2>&1 && echo "ROOT STILL VALID" || echo "root revoked"
+bao operator generate-root -status | grep -i started
+```
+
+Expect `[external-secrets]`, `7200`, `root revoked` and `Started false`.
+Continue with step 5 to point the method at the cluster.
+
+#### Step 5. Point Kubernetes auth at the cluster and issue a bootstrap token
+
+5.1 Configure the method with the CA from step 1.
 
 ```sh
 bao write auth/kubernetes/config kubernetes_host=https://192.168.0.13:6550 kubernetes_ca_cert=@/s/k8s/k3d-ca.crt disable_local_ca_jwt=true
 bao read -field=kubernetes_host auth/kubernetes/config
-bao write -field=token auth/token/create/k8s-bootstrap ttl=2h explicit_max_ttl=2h > /s/k8s/k8s-bootstrap.token
-T="$(cat /s/k8s/k8s-bootstrap.token)"; BAO_TOKEN="$T" bao token lookup -format=json | grep -E '"(ttl|explicit_max_ttl)"'; unset T
 ```
 
-Token roles ignore `token_ttl`/`token_max_ttl` (the role write only warns), so
-the role caps lifetime with `token_explicit_max_ttl`, and each request also
-asks for two hours. The lookup runs as the token itself (the operator has no
-`auth/token/lookup`); both values must be at most `7200`. Hand the token file
-to hy-home.k8s and delete it; never print it. Move the snapshot to protected
-custody.
+Expect `https://192.168.0.13:6550`.
 
-The UI equivalent is Access → Auth Methods → kubernetes → Configure. Without a
-`token_reviewer_jwt`, OpenBao reviews each login with the client's own JWT, so
-the External Secrets service account needs `system:auth-delegator` in the
-cluster (hy-home.k8s owns that binding). Verify with a login from the cluster;
-record only allow/deny results.
+5.2 Issue the bootstrap token into a file. The request also asks for two
+hours, which holds even if the role cap is missing.
+
+```sh
+bao write -field=token auth/token/create/k8s-bootstrap ttl=2h explicit_max_ttl=2h > /s/k8s/k8s-bootstrap.token
+```
+
+5.3 Verify as the token itself (the operator has no `auth/token/lookup`).
+
+```sh
+T="$(cat /s/k8s/k8s-bootstrap.token)"
+BAO_TOKEN="$T" bao token lookup -format=json | grep -E '"(policies|orphan|ttl|explicit_max_ttl)"' -A2
+BAO_TOKEN="$T" bao read -format=json secret/data/platform/argocd >/dev/null 2>&1 && echo "argocd read: allowed" || echo "argocd read: DENIED"
+BAO_TOKEN="$T" bao read -format=json secret/data/hy-home/02-auth/keycloak >/dev/null 2>&1 && echo "keycloak read: LEAK" || echo "keycloak read: denied"
+unset T
+exit
+```
+
+Expect policies `default` and `k8s-bootstrap`, orphan `true`, `ttl` and
+`explicit_max_ttl` at most `7200`, `argocd read: allowed` and
+`keycloak read: denied`. If any differ, revoke the token (see
+Troubleshooting) and stop.
+
+#### Step 6. Hand off and clean up
+
+On the host:
+
+1. Give `/tmp/bao-k8s/k8s-bootstrap.token` to hy-home.k8s through a protected
+   channel; it must be used within two hours.
+2. Move `/tmp/bao-k8s/pre-change.snap` to protected custody.
+3. `rm -f /tmp/bao-k8s/k8s-bootstrap.token`, then `rmdir` the directory once
+   it is empty.
+4. Record in the current Task: date, which steps ran, and the expected
+   outputs from 4.3 and 5.3; never the token, shares or KV values.
+
+The cluster side owns three prerequisites: the ESO service account
+(`external-secrets/external-secrets`) needs a `system:auth-delegator`
+ClusterRoleBinding, because without `token_reviewer_jwt` OpenBao reviews each
+login with the client's own JWT; cluster DNS must resolve
+`openbao.hy.home.arpa` to `192.168.0.13`; and the cluster must trust the mkcert
+root CA. Confirm an ESO login from the cluster and record only allow/deny.
+The UI equivalent of 5.1 is Access → Auth Methods → kubernetes → Configure.
+
+#### Troubleshooting
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| `permission denied` on `/s/k8s/...` | the container ran as its own user | restart it with `--user "$(id -u):$(id -g)"` (step 2) |
+| `key is required` | empty input at the share prompt | rerun the same `-nonce` command and paste a share |
+| `bound_service_account_namespaces can not be empty` | a line continuation dropped arguments | rerun the role write as one line |
+| `Must supply data or use -force` | `auth/token/create/<role>` without parameters | include `ttl=2h explicit_max_ttl=2h` (step 5.2) |
+| `403 permission denied` on `bao token lookup <token>` | the operator cannot look up other tokens | look up as the token itself (step 5.3) |
+| bootstrap token TTL about 32 days | token roles ignore `token_ttl`/`token_max_ttl` | revoke it: `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`; reissue with step 5.2; fix the role with `token_explicit_max_ttl=2h` in the next root session |
+| `ROOT STILL VALID` | revocation failed | stop and escalate; do not close the session |
 
 ### No Administrative Identity: Explicit Break-glass Recovery
 
