@@ -74,6 +74,11 @@ networks:
     ipam:
       config:
         - subnet: 10.250.13.0/24
+  mail_net:
+    name: mail_net
+    ipam:
+      config:
+        - subnet: 10.250.14.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}

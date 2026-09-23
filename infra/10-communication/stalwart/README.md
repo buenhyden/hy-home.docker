@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Server"
-version: "1.0.1"
+version: "2.0.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-12-03"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-12-03"
 
 ## Overview
 
-Stalwart는 실제 메일 송수신을 위한 선택형 서비스다. `mail-server` profile에서만 선택되며 운영 subject는 `0070-mail`이다. 개발 캡처는 [Mailpit](../mailpit/README.md) 및 subject `0084-mailpit`이 담당한다.
+Stalwart는 내부 전용 메일 서버다. host port와 relay가 없고 `mail_net`의 컨테이너만 메일을 제출한다. `mail-server` profile에서만 선택되며 운영 subject는 `0070-mail`이다. 개발 캡처는 [Mailpit](../mailpit/README.md) 및 subject `0084-mailpit`이 담당한다.
 
 ## Audience
 
@@ -24,7 +24,19 @@ Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언�
 
 ## Structure
 
-[docker-compose.yml](docker-compose.yml)이 단일 `stalwart` 서비스를 정의한다. 루트 [docker-compose.yml](../../../docker-compose.yml)이 leaf를 include한다.
+```text
+stalwart/
+├── README.md
+├── docker-compose.yml     # stalwart, stalwart-config
+└── config/
+    ├── config.json        # datastore only (RocksDB in /var/lib/stalwart)
+    ├── plan.ndjson        # domain, four listeners, no relaying
+    ├── start.sh           # recovery admin from the secret, then the server
+    ├── apply-plan.sh      # renders DEFAULT_URL and applies the plan
+    └── Dockerfile         # server image plus the pinned stalwart-cli
+```
+
+루트 [docker-compose.yml](../../../docker-compose.yml)이 leaf를 include한다.
 
 ## How to Work in This Area
 
@@ -36,15 +48,16 @@ Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언�
 | --- | --- |
 | Profile | `mail-server` |
 | Image | [Compose](docker-compose.yml); [derived Compose image projection](../../tech-stack.versions.json) |
-| Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/opt/stalwart` |
-| Certificates | `${DEFAULT_CERT_DIR}` → `/opt/stalwart/certs:ro` |
-| Secret | `stalwart_password` → `/run/secrets/stalwart_password`; 원문 출력 금지 |
-| Host ports | `SMTP_HOST_PORT`, `SUBMISSION_HOST_PORT`, `SMTPS_HOST_PORT`, `IMAPS_HOST_PORT`, `MANAGESIEVE_HOST_PORT` |
-| UI | `mail.${DEFAULT_URL}` → `${STALWART_PORT:-8080}`, Traefik SSO 보호 |
+| Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/var/lib/stalwart` (빈 디렉터리로 준비; 첫 기동 때 image 사용자 UID 2000 소유가 됨) |
+| Configuration | `config/plan.ndjson`을 `stalwart-config`가 적용; listener 변경은 다음 재시작부터 |
+| Secret | `stalwart_password` (COMM-006) → recovery admin; Compose에 credential 없음 |
+| Host ports | 없음. SMTP 25·submission 587·IMAPS 993은 `mail_net` 전용 |
+| Relay | 없음 (`allowRelaying = false`); 설정 도메인 밖 수신자는 `550 5.1.2` |
+| UI | `mail.${DEFAULT_URL}` → 8080, Traefik SSO 보호 |
 
 ## Service Readiness
 
-서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. SMTP TCP healthcheck는 외부 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 [Mailpit 가이드 — 문서 인덱스](../../../docs/README.md) (`GDE-0084`)를 따른다.
+서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 [Mailpit 가이드 — 문서 인덱스](../../../docs/README.md) (`GDE-0084`)를 따른다.
 
 ## Validation
 
@@ -53,6 +66,7 @@ Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언�
 ```bash
 docker compose --env-file .env.example --profile mail-server config --services
 bash scripts/hardening/check-all-hardening.sh 10-communication
+HYHOME_MAIL_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StalwartRehearsalTests
 ```
 
 ## Troubleshooting

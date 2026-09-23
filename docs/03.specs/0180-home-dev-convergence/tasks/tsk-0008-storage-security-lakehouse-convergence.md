@@ -1210,6 +1210,41 @@ Sequential review (read-only reviewer): no Critical.
 
 The Keycloak userinfo round trip is unverified until the live login.
 
+### S17 — Stalwart as configured internal mail (source)
+
+The tracked leaf could not start on its pinned image: v0.16 has no
+`stalwart-mail` binary, keeps its datastore in `/var/lib/stalwart` and reads
+only the datastore location from `config.json`; listeners, domains and relay
+policy live in the datastore and are set through the management API. The leaf
+also published SMTP, submission, SMTPS, IMAPS and ManageSieve on every host
+interface, against the owner's internal-only answer.
+
+| Unit | Change |
+| --- | --- |
+| Server | image user (UID 2000), read-only root, `cap_drop: ALL` plus `NET_BIND_SERVICE` (the binary carries that file capability and cannot exec without it under `no-new-privileges`); no host port; `edge_net` for the routed admin UI and new `mail_net` (10.250.14.0/24) for SMTP |
+| Configuration | `config/config.json` (RocksDB datastore) and `config/plan.ndjson` applied by the one-shot `stalwart-config` (server image plus pinned `stalwart-cli` 1.0.12, which ships without a shell): domain `${DEFAULT_URL}`, host `mail.${DEFAULT_URL}`, listeners reconciled to SMTP 25, submission 587, IMAPS 993, HTTP 8080, `allowRelaying = false` |
+| Secret | `stalwart_password` (COMM-006) becomes `STALWART_RECOVERY_ADMIN` inside the server and job processes only; the Compose file has no credential |
+| Mailpit | also joins `mail_net` for container SMTP capture |
+| Env | ten unused host-port keys and `STALWART_PORT` removed from `.env.example` (public 264, optional 205) |
+| Checks | hardening pins no host port, the relay rule, no credential variable, `mail_net` and the read-only template |
+| Documents | GDE/POL/RUN-0070 v2, Stalwart and tier READMEs, POL-0078 `mail-server`, AD-0026 network table, m0021 rows, version projection |
+
+Measured on a throwaway server: a fresh datastore listens on 25, 443, 465,
+993, 995, 4190 and 8080. After the plan and one restart it listens on 25, 587,
+993 and 8080 only; a second apply converges (`0 failed`). An empty named
+volume takes the image directory's owner (UID 2000) on first mount, so a
+forced UID 1000 failed with `Permission denied` on the RocksDB `LOG`; the
+server now runs as the image user. Rehearsal (`StalwartRehearsalTests`,
+rendered HOME services on an internal network): plan applied twice, restart,
+exactly those four listeners, `220 mail.rehearsal.test`, `550 5.1.2 Relay not
+allowed` for an external recipient, the local domain recognised, and the admin
+secret absent from the logs.
+
+TLS on 587/993 uses Stalwart's default certificate until a Certificate object
+is configured. Live is NOT_RUN: the data directory, the image build, the plan
+and a restart are the owner's, each approved. Native OIDC for the admin UI
+stays with S18 (Task 0007 item 6).
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1240,6 +1275,7 @@ The Keycloak userinfo round trip is unverified until the live login.
 | S14 Flink | Task 10 / S14 | PASS (source): Compose, catalog, hardening (with a negative), version projection, secret-metadata tests; isolated batch and checkpointed streaming inserts; SeaweedFS rehearsal 10/10; live NOT_RUN | 0094 subject |
 | S15 Great Expectations | Task 10 / S15 | PASS (source): Compose, catalog, hardening (with a negative), version projection, links, metadata; isolated pass then exit `1` on a duplicate key; exit `2` error paths; live NOT_RUN | 0094 subject |
 | S16 Superset | Task 10 / S16 | PASS (source): Compose, catalog, hardening (with a negative), projection, links, metadata, feature-job and secret-metadata tests; isolated provisioning, idempotent init, health, `401`, OIDC option, no credential in env; PostgreSQL rehearsal 6/6; live NOT_RUN | 0097 subject |
+| S17 Stalwart | Task 10 / S17 | PASS (source): Compose (`mail-server`, `dev`), catalog, hardening, projection, links, metadata, network and secret-metadata tests; rehearsal: four listeners after restart, relay refused, idempotent plan, no secret in logs; live NOT_RUN | 0070 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence

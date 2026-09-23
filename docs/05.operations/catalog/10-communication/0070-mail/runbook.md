@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Runbook"
-version: "1.1.0"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0070"
 parent_ids:
@@ -29,8 +29,11 @@ approved upgrade. Work from the root and use synthetic mail only.
    docker compose --profile mail-server logs --tail=200 stalwart
    ```
 
-2. Separate management UI, SMTP/submission, IMAPS, ManageSieve, DNS, and remote
-   delivery symptoms. Redact addresses, subjects, bodies, tokens, and credentials.
+2. Separate management UI, SMTP/submission, IMAPS and configuration symptoms.
+   A listener that is missing or extra after a restart means the plan did not
+   apply: `docker compose --profile mail-server run --rm stalwart-config`,
+   then restart `stalwart`. Relay attempts must answer `550 5.1.2 Relay not
+   allowed`. Redact addresses, subjects, bodies, tokens, and credentials.
 3. Verify listener certificate/SNI, auth and relay policy, DNS records, disk, and
    actual configured storage backends. Do not treat an SMTP socket as safe relay.
 4. Restart only Stalwart after storage/listener checks. Verify relay denial and
@@ -42,7 +45,8 @@ approved upgrade. Work from the root and use synthetic mail only.
    DKIM custody. Block new submissions and drain or record the queue.
 2. Use the running version's documented CLI snapshot/export for management
    objects when supported, and each backend's consistent backup. If local-only
-   storage lacks an online snapshot, stop Stalwart and copy all of `/opt/stalwart`.
+   storage lacks an online snapshot, stop Stalwart and copy all of `/var/lib/stalwart`
+   (`stalwart --export <path>` with the server stopped is the native export).
 3. Restore to isolated storage and a non-delivery hostname/network with outbound
    SMTP blocked. Supply replacement credentials and certificates.
 4. Verify config/account/mailbox counts, synthetic IMAP retrieval, auth/relay
@@ -73,7 +77,7 @@ mail in a test, DNS/reputation issues, or incompatible schema/license behavior.
 
 - [Guide](guide.md) (`GDE-0070`)
 - [Policy](policy.md) (`POL-0070`)
-- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml)
+- [Stalwart Compose](../../../../../infra/10-communication/stalwart/docker-compose.yml) and [derived version projection](../../../../../infra/tech-stack.versions.json)
 
 ## Related Documents
 

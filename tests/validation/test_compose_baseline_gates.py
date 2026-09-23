@@ -3176,3 +3176,112 @@ class ConftestPolicyGateTests(unittest.TestCase):
         rules = {p.stem for p in policy.glob("*.rego") if not p.stem.endswith("_test")}
         tests = {p.stem.removesuffix("_test") for p in policy.glob("*_test.rego")}
         self.assertEqual(rules, tests)
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_MAIL_REHEARSAL") == "1",
+    "set HYHOME_MAIL_REHEARSAL=1 to run the disposable Stalwart rehearsal (needs Docker)",
+)
+class StalwartRehearsalTests(unittest.TestCase):
+    """SPEC-0180 S17: the rendered HOME services on an internal network."""
+
+    SERVICES = ("stalwart", "stalwart-config")
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.tag = f"hymail{os.getpid()}"
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.tmp.cleanup)
+        cls.dir = Path(cls.tmp.name)
+        (cls.dir / "data/stalwart/data").mkdir(parents=True)
+        # The datastore belongs to the image user; delete it as that user
+        # after the containers are gone (cleanups run last-in, first-out).
+        cls.addClassCleanup(
+            subprocess.run,
+            ["docker", "run", "--rm", "--entrypoint", "find", "-v",
+             f"{cls.dir / 'data/stalwart'}:/d", "stalwartlabs/stalwart:v0.16.22",
+             "/d/data", "-mindepth", "1", "-delete"],
+            capture_output=True, check=False,
+        )
+        cls.secret = "Rehearsal" + os.urandom(6).hex()
+        (cls.dir / "stalwart_password.txt").write_text(cls.secret + "\n", encoding="utf-8")
+        (cls.dir / "stalwart_password.txt").chmod(0o640)
+        env = {
+            **os.environ,
+            "DEFAULT_COMMUNICATION_DIR": str(cls.dir / "data"),
+            "DEFAULT_URL": "rehearsal.test",
+            "SECRETS_GID": str(os.getgid()),
+        }
+        rendered = json.loads(
+            subprocess.run(
+                ["docker", "compose", "--env-file", ".env.example", "--profile",
+                 "mail-server", "config", "--format", "json", *cls.SERVICES],
+                cwd=ROOT, env=env, check=True, capture_output=True, text=True,
+            ).stdout
+        )
+        services = {name: rendered["services"][name] for name in cls.SERVICES}
+        for name, service in services.items():
+            service["container_name"] = f"{cls.tag}-{name}"
+            service["labels"] = {}
+            service["networks"] = {"mail": {}}
+            service.pop("profiles", None)
+        volume = rendered["volumes"]["stalwart-data"]
+        volume.pop("name", None)
+        cls.model = {
+            "name": cls.tag,
+            "services": services,
+            "networks": {"mail": {"internal": True}},
+            "volumes": {"stalwart-data": volume},
+            "secrets": {"stalwart_password": {"file": str(cls.dir / "stalwart_password.txt")}},
+        }
+        (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
+        cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
+        started = cls.compose("up", "-d", "--wait", "--wait-timeout", "120", "stalwart")
+        if started.returncode != 0:
+            raise AssertionError(started.stderr + cls.compose("logs", "--tail", "40").stdout)
+
+    @classmethod
+    def compose(cls, *args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["docker", "compose", "-p", cls.tag, "-f", str(cls.dir / "compose.json"), *args],
+            capture_output=True, text=True, check=False, timeout=600,
+        )
+
+    def listening(self) -> set[int]:
+        table = self.compose("exec", "-T", "stalwart", "cat", "/proc/net/tcp", "/proc/net/tcp6").stdout
+        ports = set()
+        for line in table.splitlines()[1:]:
+            fields = line.split()
+            if len(fields) > 3 and fields[3] == "0A" and not fields[1].startswith("0100007F"):
+                if fields[1].startswith("0B00007F"):
+                    continue
+                ports.add(int(fields[1].rsplit(":", 1)[1], 16))
+        return ports
+
+    def smtp(self, *rcpt: str) -> str:
+        script = "".join(
+            ["EHLO sender.rehearsal.test\r\n", "MAIL FROM:<a@example.org>\r\n"]
+            + [f"RCPT TO:<{r}>\r\n" for r in rcpt]
+            + ["QUIT\r\n"]
+        )
+        return subprocess.run(
+            ["docker", "run", "--rm", "-i", "--network", f"{self.tag}_mail",
+             "alpine:3", "nc", "-w", "5", f"{self.tag}-stalwart", "25"],
+            input=script, capture_output=True, text=True, check=False, timeout=60,
+        ).stdout
+
+    def test_plan_makes_the_server_internal_only(self) -> None:
+        for _ in range(2):  # the second run must converge, not fail
+            applied = self.compose("run", "--rm", "--no-deps", "stalwart-config")
+            self.assertEqual(0, applied.returncode, applied.stdout + applied.stderr)
+            self.assertIn("(0 failed)", applied.stdout + applied.stderr)
+        restarted = self.compose("restart", "stalwart")
+        self.assertEqual(0, restarted.returncode, restarted.stderr)
+        self.assertEqual(0, self.compose("up", "-d", "--wait", "--wait-timeout", "120", "stalwart").returncode)
+        self.assertEqual({25, 587, 993, 8080}, self.listening())
+        replies = self.smtp("x@example.com", "nobody@rehearsal.test")
+        self.assertIn("220 mail.rehearsal.test", replies)
+        self.assertIn("550 5.1.2 Relay not allowed", replies)
+        self.assertIn("Mailbox does not exist", replies)
+        logs = self.compose("logs", "--no-color").stdout
+        self.assertNotIn(self.secret, logs)
