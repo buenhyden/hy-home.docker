@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # Agent Quality and Security Standards
@@ -36,7 +36,7 @@ Quality dimensions:
 - Identity and access: centralized authentication via Keycloak (OIDC/SAML), and
   least-privilege RBAC/ABAC at API and data layers.
 - Secrets management: plaintext credentials in source-controlled configs are
-  prohibited; Docker secrets and/or a Vault-backed secret flow are mandatory.
+  prohibited; Docker secrets and/or an OpenBao-backed secret flow are mandatory.
 - Container hardening, mandatory where compatible: non-root runtime,
   `no-new-privileges`, minimal capabilities, read-only mounts for static
   config, and secret injection by file rather than image layer or plaintext

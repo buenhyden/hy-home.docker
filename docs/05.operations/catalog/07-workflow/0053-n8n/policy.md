@@ -1,10 +1,10 @@
 ---
 title: "n8n Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0053"
 parent_ids:
@@ -34,7 +34,7 @@ created: "2026-05-17"
 - **Allowed**:
   - UI Export/API 기반 workflow JSON 백업 절차 문서화.
   - `./custom` 경로를 통한 사용자 정의 노드 추가, 단 보안 검토와 재검증 후 적용.
-  - n8n workflow Git backup/Vault credential 연계의 단계적 강화.
+  - n8n workflow Git backup/OpenBao credential 연계의 단계적 강화.
 - **Disallowed**:
   - plaintext credential, token, workflow secret 원문 문서화.
   - 승인 없는 gateway/SSO middleware 완화.

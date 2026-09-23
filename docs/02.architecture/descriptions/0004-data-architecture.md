@@ -1,6 +1,6 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -28,7 +28,7 @@ created: "2026-03-26"
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
 
 - **Owns**: 데이터베이스 인스턴스, 스토리지 볼륨, 백업 데이터, 데이터 전용 네트워크(`infra_net`).
-- **Consumes**: Docker Secrets, Vault 시크릿, 시스템 리소스(CPU/RAM/Storage).
+- **Consumes**: Docker Secrets, OpenBao 시크릿, 시스템 리소스(CPU/RAM/Storage).
 - **Does Not Own**: 애플리케이션 비즈니스 코드, 사용자 UI, 네트워크 외부 노출(Gateway 담당).
 - **Non-goals**: 실시간 대시보드 시각화 (Observability 티어에서 담당).
 

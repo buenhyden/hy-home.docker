@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-05-17"
 
 - **Required**:
   - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
-  - 민감 정보는 반드시 Secret Backend(Docker Secrets/Vault) 및 Airflow Connections를 통해 관리함.
+  - 민감 정보는 반드시 Secret Backend(Docker Secrets/OpenBao) 및 Airflow Connections를 통해 관리함.
   - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
   - 인증 manager는 Keycloak auth manager를 사용하고, client secret은
     `airflow_keycloak_client_secret` Docker Secret으로만 주입함.

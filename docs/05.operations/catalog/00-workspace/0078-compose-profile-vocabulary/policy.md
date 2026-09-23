@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.5.1"
+version: "1.5.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -60,7 +60,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
 | `ksql` | automation | 명시적 스트림 SQL 실험 도구; datagen 컨테이너는 readiness 확인 후 대기 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | 현재 자동 데이터 생성 없음; 생성 명령 추가 시 synthetic data 부수 효과 검토 | current |
-| `legacy-vault` | lifecycle | 기존 Vault 마이그레이션 전용; HOME 제외 | `vault`, `vault-agent` | No | normal service startup | MIGRATE |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `mail-dev` | capability | 개발 SMTP 캡처 | `mailpit` | No | normal service startup | current |
@@ -148,7 +147,6 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
 | messaging-cluster | 현재 선언이 kafka-1도 포함; quorum·지속성 검증은 별도이며 물리 HA가 아님 |
 | opensearch with opensearch-cluster | 대체 토폴로지; 기본 port 충돌을 피하고 dashboards endpoint를 일치시킴 |
-| legacy-vault with HOME | 정상 HOME에서 제외; 보존된 상태의 migration 승인 후에만 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
 | ksql | 현재 datagen 명령은 readiness 확인 후 대기하며 자동 생성하지 않음; 생성 명령 추가 시 대상·실행량을 명시 |

@@ -612,6 +612,44 @@ Owner approved container removal and secret deletion.
 | Prometheus | a HUP reload dropped the `Minio_alerts` group, so no false `MinioServiceDown` fires. The scrape job survives the reload because `prometheus.dev.yml` is a single-file bind mount and the edit replaced the host inode; the container still reads the old file and shows a down `minio` target until it is recreated |
 | Consumers | `seaweedfs-*`, `infra-loki`, `infra-tempo` and `mlflow` healthy after the removal |
 
+### S08 — Vault removal (source)
+
+Vault and `vault-agent` were not running and had no consumer; OpenBao is the
+HOME secret authority. The preserved data path and seal material stay.
+
+| Unit | Change |
+| --- | --- |
+| Compose | `infra/03-security/vault/` (server, agent, `vault.hcl`, `vault-agent.hcl`, ten Agent templates) and the root include removed; the `legacy-vault` profile and its POL-0078 rows go with it (the profile-category vocabulary entry stays, as a checker test uses it) |
+| Secrets | `SEC-001` (`secrets/security/vault_token.txt`) removed from the registry; counts 266 public, 107 rows; `migration_only` is now empty |
+| Environment | `VAULT_PORT` and `VAULT_CLUSTER_PORT` removed from `.env.example` |
+| Hardening | `check_03_security` rewrote its Vault assertions for OpenBao (image from the registry, Agent output mount, gateway chain, `infra_net` and k3d addresses, Raft, mlock, TLS and telemetry from `BAO_LOCAL_CONFIG`, AppRole paths, templates, healthchecks); the full run passes |
+| Observability | Grafana `vault-hcp.json` (HCP cloud, needs a `cluster_id` this host never had) removed. `vaults.json` and `alert_rules.vault.yml` stay: OpenBao keeps the `vault_` metric prefix, verified live (263 `vault_*` series, `openbao` target up) |
+| Catalog | 0016-vault preserved under `docs/98.archive/superseded/` with `superseded_by` GDE/POL/RUN-0085 and three Retention Catalog rows (source `a797331dc`); m0021 rows removed and the inventory regenerated; tech-stack projection resynced |
+| Documents | REQ-0003 now names OpenBao throughout; descriptions 0003/0004/0018/0026/0031, the 03-security README and index, governance quality standards, Prometheus and workflow subjects, and `infra/README.md` follow; Task 0001 rows cite `GDE-0016` as an identifier instead of a link |
+
+Sequential review findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| `Security/vault.json` (28 panels) queries `up{job="vault"}`, the job this change removes, and `Security/openbao.json` is the same dashboard ported | removed; only `Infrastructure/vaults.json` and `alert_rules.vault.yml`, which are metric-name based, stay |
+| AD-0003 still called Vault a retained component and described OpenBao/Vault coexistence, contradicting the rewritten REQ-0003 it pairs with | rewritten |
+| `secrets/README.md` still called `SEC-001` a public-schema exception, so a prune run would now silently target that private row | rewritten with the prune warning |
+| `docs/05.operations/catalog/03-security/README.md`: removing the Vault row left a blank line inside the Structure table, breaking it; scope text still claimed a Vault subject | fixed |
+| `infra/03-security/README.md` still advertised a `vault.${DEFAULT_URL}` UI route | fixed |
+| `common-optimizations.exceptions.json` kept `vault` and `vault-agent` secret exemptions; a future service of that name would inherit them | removed |
+| `migration_only` classification had no compose file left, making its mutation test vacuous | the classification and its test removed; the suite is now a four-way split |
+| m0021 ruling cell contradicted itself ("removed" then "retain MIGRATE-only") | rewritten |
+
+Left as found: REQ-0003 keeps `FR-0004 Audit Logging` and `NFR-0007` local API
+caching, which the declared OpenBao configuration does not implement (no audit
+device, no Agent cache stanza), and no service mounts `openbao-agent-out`. These
+predate S08 and belong to the OpenBao subject owner.
+
+Kept deliberately: ADR-0003 and ADR-0018 record the decisions of their time and
+are not rewritten; `examples/operations/compose-core-readiness/` keeps its own
+self-contained Vault rig, which names no repository package; the Restic state
+set still backs up `security/vault`.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -680,4 +718,5 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
-- Legacy Vault data (`vault/data`, 28 KB) and `vault_unseal_keys.legacy.txt` disposition (owner approval).
+- Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).
+- `examples/operations/compose-core-readiness/` still demonstrates a Vault-based readiness rig; restate it on OpenBao or declare it intentionally generic (owner).

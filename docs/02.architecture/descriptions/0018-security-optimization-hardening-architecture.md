@@ -1,10 +1,10 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
@@ -26,8 +26,6 @@ Maintainer, service owner, operator는 secret 원본, rendered output, health,
   소유한다.
 - Gateway는 외부 TLS 종료와 routing을 소유하며 OpenBao 내부 secret lifecycle을
   소유하지 않는다.
-- Vault와 Vault Agent는 `legacy-vault`의 MIGRATE 전용 export/rollback
-  custody이며 새 secret authority가 아니다.
 - 애플리케이션별 설정 파싱과 외부 KMS/HSM 운영은 이 아키텍처 밖이다.
 
 ## Components
@@ -69,6 +67,5 @@ ADR 없이는 current topology로 간주하지 않는다.
 - [SPEC-0003](0003-security-architecture.md)
 - [OpenBao policy](../../05.operations/catalog/03-security/0085-openbao/policy.md)
 - [OpenBao runbook](../../05.operations/catalog/03-security/0085-openbao/runbook.md)
-- [Legacy Vault policy](../../05.operations/catalog/03-security/0016-vault/policy.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

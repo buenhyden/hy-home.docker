@@ -1,10 +1,10 @@
 ---
 title: "Security Tier Architecture Description"
-version: "2.0.0"
+version: "2.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0003"
 parent_ids:
@@ -17,8 +17,8 @@ created: "2026-03-26"
 ## Context and Stakeholders
 
 `03-security` owns machine-secret storage and rendering. OpenBao plus
-`openbao-agent` is the canonical HOME implementation. Vault plus `vault-agent`
-is retained only for explicit legacy migration/recovery. Security operators own
+`openbao-agent` is the canonical HOME implementation; Vault and `vault-agent`
+were removed in SPEC-0180 S08. Security operators own
 seal/unseal custody, policy, authentication methods, snapshots, and migration;
 consumer tiers own the least-privilege paths they request.
 
@@ -27,9 +27,7 @@ consumer tiers own the least-privilege paths they request.
 - **OpenBao:** selected by `core`, `dev`, `local`, `security`, or `secrets`;
   single-node integrated Raft storage; AppRole Agent rendering; native Keycloak
   OIDC for humans; Traefik UI route.
-- **Legacy Vault:** selected only by `legacy-vault`; separate Raft data and Agent
-  paths; not part of HOME or ordinary security startup.
-- **Storage:** OpenBao and Vault data paths must never be shared. Raft snapshots
+- **Storage:** Raft snapshots
   protect stored state; Shamir/unseal or recovery custody protects access to it.
 - **Credentials:** root tokens, unseal shares, AppRole RoleID/SecretID, Agent
   tokens, OIDC client secret, and rendered values remain outside Git and evidence.
@@ -47,7 +45,6 @@ flowchart LR
   Agent[openbao-agent] -->|AppRole| OpenBao
   OpenBao --> Raft[(OpenBao Raft data)]
   Agent --> Rendered
-  Legacy[legacy Vault + Agent] --> LegacyRaft[(separate Vault Raft data)]
 ```
 
 The OpenBao Agent reads AppRole material from mounted secret files, obtains a
@@ -66,10 +63,9 @@ unseal shares follow a separate custodial path and never enter the snapshot.
 ## Deployment View
 
 The root Compose project owns shared networks, secrets, and selection. Runtime
-commands name `openbao`/`openbao-agent` or `vault`/`vault-agent`; leaf-only Compose
-execution is not valid root-stack readiness evidence. OpenBao and legacy Vault can
-coexist only with distinct addresses, ports, storage, and consumer assignments
-during a controlled migration.
+commands name `openbao`/`openbao-agent`; leaf-only Compose
+execution is not valid root-stack readiness evidence. The preserved Vault data
+path stays out of service and must never share storage with OpenBao.
 
 ## Quality Attributes
 
@@ -86,13 +82,12 @@ during a controlled migration.
 
 ## Traceability
 
-Operational detail lives in [OpenBao operations](../../05.operations/catalog/03-security/0085-openbao/guide.md)
-and [legacy Vault operations](../../05.operations/catalog/03-security/0016-vault/guide.md).
+Operational detail lives in [OpenBao operations](../../05.operations/catalog/03-security/0085-openbao/guide.md).
 
 ## Related Documents
 
 - [Security requirement](../../01.requirements/0003-security.md)
-- [Vault decision record](../decisions/0003-vault-as-secrets-manager.md)
+- [Central secrets manager decision](../decisions/0003-vault-as-secrets-manager.md)
 - [Current convergence Spec](../../03.specs/0180-home-dev-convergence/spec.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the

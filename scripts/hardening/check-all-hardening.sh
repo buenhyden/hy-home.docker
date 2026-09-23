@@ -380,53 +380,50 @@ check_03_security() {
   local tier="03-security"
   start_tier "$tier"
 
-  local compose_file="infra/03-security/vault/docker-compose.yml"
-  local vault_hcl="infra/03-security/vault/config/vault.hcl"
-  local agent_hcl="infra/03-security/vault/config/vault-agent.hcl"
-  local templates_dir="infra/03-security/vault/config/templates"
+  local compose_file="infra/03-security/openbao/docker-compose.yml"
+  local agent_hcl="infra/03-security/openbao/config/agent.hcl"
+  local templates_dir="infra/03-security/openbao/config/templates"
   local requirement_file="docs/01.requirements/0003-security.md"
 
-  local vault_image
-  local vault_compose_image
+  local openbao_image
+  local openbao_compose_image
 
   check_file "$compose_file"
-  check_file "$vault_hcl"
   check_file "$agent_hcl"
   check_file "$requirement_file"
 
-  check_contains "$compose_file" "service: template-stateful-med" "vault compose template inheritance missing"
-  vault_image="$(registry_component_image "Vault")"
-  vault_compose_image="$(compose_service_image "$compose_file" "vault")"
-  if [[ "$vault_compose_image" != "$vault_image" ]]; then
-    fail "vault image tag mismatch"
+  check_contains "$compose_file" "service: template-stateful-med" "openbao compose template inheritance missing"
+  openbao_image="$(registry_component_image "OpenBao")"
+  openbao_compose_image="$(compose_service_image "$compose_file" "openbao")"
+  if [[ "$openbao_compose_image" != "$openbao_image" ]]; then
+    fail "openbao image tag mismatch"
   fi
-  check_contains "$compose_file" "vault-agent:" "vault-agent service missing"
-  check_contains "$compose_file" "vault-agent-out:" "vault-agent output volume missing"
-  check_contains "$compose_file" "vault-agent-out:/vault/out" "vault-agent output mount missing"
-  check_contains "$compose_file" "traefik.http.routers.vault.middlewares: gateway-standard-chain@file" "vault gateway chain mismatch"
-  check_contains "$compose_file" "k3d-hyhome:" "vault k3d-hyhome network missing"
-  check_contains "$compose_file" "ipv4_address: 172.18.0.8" "vault k3d-hyhome IP mismatch"
-  check_contains "$compose_file" "ipv4_address: 172.19.0.9" "vault infra_net IP mismatch"
-  check_contains "$compose_file" "ipv4_address: 172.19.0.10" "vault-agent infra_net IP mismatch"
-  check_contains "$vault_hcl" "storage \"raft\"" "vault raft storage missing"
-  check_contains "$vault_hcl" "disable_mlock = true" "vault mlock runtime contract mismatch"
-  check_contains "$vault_hcl" "tls_disable = 1" "vault internal HTTP listener mismatch"
-  check_contains "$vault_hcl" "prometheus_retention_time = \"30s\"" "vault telemetry retention mismatch"
-  check_contains "$agent_hcl" "role_id_file_path" "vault-agent AppRole role_id path missing"
-  check_contains "$agent_hcl" "secret_id_file_path" "vault-agent AppRole secret_id path missing"
-  check_contains "$agent_hcl" "destination = \"/vault/out" "vault-agent output destination missing"
-  check_contains "$agent_hcl" "static_secret_render_interval = \"5m\"" "vault-agent static secret render interval mismatch"
-  check_not_contains "$agent_hcl" "secret/data/example" "vault-agent placeholder secret path"
+  check_contains "$compose_file" "openbao-agent:" "openbao-agent service missing"
+  check_contains "$compose_file" "openbao-agent-out:" "openbao-agent output volume missing"
+  check_contains "$compose_file" "openbao-agent-out:/openbao/out" "openbao-agent output mount missing"
+  check_contains "$compose_file" "traefik.http.routers.openbao.middlewares: gateway-standard-chain@file" "openbao gateway chain mismatch"
+  check_contains "$compose_file" "ipv4_address: 172.18.0.17" "openbao k3d-hyhome IP mismatch"
+  check_contains "$compose_file" "ipv4_address: 172.19.0.17" "openbao infra_net IP mismatch"
+  check_contains "$compose_file" "ipv4_address: 172.19.0.18" "openbao-agent infra_net IP mismatch"
+  check_contains "$compose_file" '"storage":{"raft"' "openbao raft storage missing"
+  check_contains "$compose_file" '"disable_mlock":true' "openbao mlock runtime contract mismatch"
+  check_contains "$compose_file" '"tls_disable":true' "openbao internal HTTP listener mismatch"
+  check_contains "$compose_file" '"prometheus_retention_time":"30s"' "openbao telemetry retention mismatch"
+  check_contains "$agent_hcl" "role_id_file_path" "openbao-agent AppRole role_id path missing"
+  check_contains "$agent_hcl" "secret_id_file_path" "openbao-agent AppRole secret_id path missing"
+  check_contains "$agent_hcl" 'destination = "/openbao/out' "openbao-agent output destination missing"
+  check_contains "$agent_hcl" 'static_secret_render_interval = "5m"' "openbao-agent static secret render interval mismatch"
+  check_not_contains "$agent_hcl" "secret/data/example" "openbao-agent placeholder secret path"
   check_contains "$requirement_file" "../02.architecture/descriptions/0003-security-architecture.md" "tier 03 requirement trace link missing"
 
   local template_file
   for template_file in "$templates_dir"/*.ctmpl; do
     check_file "$template_file"
-    check_not_contains "$template_file" "secret/data/example" "vault template placeholder secret path"
+    check_not_contains "$template_file" "secret/data/example" "openbao template placeholder secret path"
   done
 
-  check_service_healthcheck "$compose_file" "vault"
-  check_service_healthcheck "$compose_file" "vault-agent"
+  check_service_healthcheck "$compose_file" "openbao"
+  check_service_healthcheck "$compose_file" "openbao-agent"
 }
 
 # --- Tier 04: Data ---

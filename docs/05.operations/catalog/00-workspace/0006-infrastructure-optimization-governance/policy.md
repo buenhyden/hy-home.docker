@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -110,8 +110,6 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 - [openbao](../../../../../infra/03-security/openbao/README.md): 현재 HOME secret authority의 single-node Raft 복구, auto-unseal(KMS/HSM), remote audit와 최소 권한 운영을 단계적으로 검토
   ([OPER](../../03-security/0085-openbao/guide.md), [RUN](../../03-security/0085-openbao/runbook.md))
-- [vault](../../../../../infra/03-security/vault/README.md): `legacy-vault` MIGRATE 전용 export/rollback custody를 보존하고 신규 서비스 연계나 current authority로 사용하지 않음
-  ([OPER](../../03-security/0016-vault/guide.md), [RUN](../../03-security/0016-vault/runbook.md))
 
 #### 04-data
 

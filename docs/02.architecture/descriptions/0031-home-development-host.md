@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -43,7 +43,7 @@ created: "2026-09-19"
 | DEV | Mail capture and explicit update/IaC jobs | jobs run only for a named operation |
 | OPTIONAL | Additional application databases, analytics and tracing | enable only for a known consumer |
 | LAB | Multi-node database, broker and storage variants | rehearsal topology, not physical fault isolation |
-| MIGRATE | Vault and superseded tooling | preserve data and references until migration acceptance |
+| MIGRATE | superseded tooling awaiting acceptance | preserve data and references until migration acceptance |
 
 ## Data Flow
 

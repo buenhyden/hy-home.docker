@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Surface"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -46,7 +46,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | :--- | :--- | :--- | :--- |
 | **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / optional; see disposition |
 | **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / optional; see disposition |
-| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME bootstrap; Vault is legacy migration |
+| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME bootstrap |
 | **04** | **Data** | [mng-db](./04-data/operational/mng-db), [SeaweedFS](./04-data/lake-and-object/seaweedfs), [Qdrant](./04-data/specialized/qdrant) | HOME / optional; see disposition |
 | **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Optional; cluster is LAB |
 | **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / optional; see disposition |
@@ -136,7 +136,7 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 infra/
 ├── 01-gateway/        # Edge Routing & SSL Ingress
 ├── 02-auth/           # SSO, IAM, and OAuth2 Proxy
-├── 03-security/       # OpenBao; Vault migration surface
+├── 03-security/       # OpenBao
 ├── 04-data/           # Persistence (SQL, NoSQL, Object)
 ├── 05-messaging/      # Event Streaming (Kafka)
 ├── 06-observability/  # Monitoring, Logging, Tracing
