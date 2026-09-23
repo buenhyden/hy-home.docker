@@ -831,7 +831,7 @@ Sequential review (read-only reviewer) findings and their disposition:
 | S05 phase 2 live | Task 10 / S05 | PASS: 56 containers recreated, `infra_net` removed, Loki container coverage 6 → 56, SSO 302, Gatus 6/7 then 7/7 after the owner's unseal; Agent SecretID open | this Task |
 | S09 Testcontainers | Task 10 / S09 | PASS: 2/2 integration tests against the declared PostgreSQL pin after the move to `tests/validation/`; skip-without-opt-in verified; `run-ci-gate.py --profile changed` exit 0 | tests README |
 | S10 WireMock | Task 10 / S10 | PASS: Compose all selections, catalog, version projection, hardening (now asserting the loopback binding); isolated Compose rehearsal healthy and hardened; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0092 subject |
-| S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); live NOT_RUN | 0093 subject |
+| S11 Pact Broker | Task 10 / S11 | PASS: Compose all selections, catalog, version projection, hardening, provisioning and secret-metadata tests; isolated rehearsal (auth, publish, secret hygiene, idempotent provisioning); review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0093 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
