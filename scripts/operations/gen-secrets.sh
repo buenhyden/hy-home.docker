@@ -363,6 +363,12 @@ collect_secret_values() {
             new_value="$ROW_VALUE"
         fi
 
+        # A multi-line value (SEC-003's unseal shares) would split the table
+        # row; it stays only in its file and the registry keeps the placeholder.
+        if [[ "$new_value" == *$'\n'* ]]; then
+            continue
+        fi
+
         if [[ -n "$new_value" ]]; then
             SECRET_VALUES["$ROW_ID"]="$new_value"
             if [[ -n "$full_path" && ( ! -f "$full_path" || ! -s "$full_path" ) ]]; then
