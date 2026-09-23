@@ -47,13 +47,9 @@ Configurations in this directory are hot-reloaded by Traefik without requiring a
 
 ```text
 infra/01-gateway/traefik/dynamic/
-├── adminer-k3d.yaml  # 구성 파일
-├── argocd-k3d.yaml  # 구성 파일
-├── headlamp-k3d.yaml  # 구성 파일
-├── kiali-k3d.yaml  # 구성 파일
+├── k3s.yml  # native k3s NodePort route
 ├── middleware.yml  # 구성 파일
 ├── README.md  # This file
-├── rollouts-k3d.yaml  # 구성 파일
 └── tls.yaml  # 구성 파일
 ```
 
