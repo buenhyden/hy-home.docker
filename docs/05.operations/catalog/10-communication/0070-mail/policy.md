@@ -31,7 +31,15 @@ retention, backup/restore, license/upgrade, and removal.
 - **Network/auth:** no host port; SMTP and IMAP are reachable only on
   `mail_net`. The tracked plan owns the listener set (reconciled) and keeps
   `allowRelaying = false`; a listener or relay change is a reviewed plan
-  change, never a UI edit. Gateway SSO covers only the web UI.
+  change, never a UI edit. Gateway SSO covers only the routed web UI: members
+  of `mail_net` reach the management API and JMAP on 8080 and IMAPS on 993
+  directly, so `mail_net` membership is the trust boundary and adding a member
+  is a reviewed change like a listener change.
+- **Fallback admin:** the recovery admin from `stalwart_password` stays
+  enabled on every start and bypasses any directory or OIDC login, including
+  a later native OIDC for the admin UI. Rotate it by replacing the secret
+  file, restarting `stalwart` and re-running `stalwart-config` (the job signs
+  in with the same value). Interactive use of that account is an escalation.
 - **Secrets/data:** keep admin, mailbox, DKIM, TLS, and backend credentials out of
   source/logs; the recovery admin comes only from the `stalwart_password`
   secret file. Treat mailbox content and metadata as sensitive personal data.
@@ -42,7 +50,7 @@ retention, backup/restore, license/upgrade, and removal.
   backend, certificate/key custody, and DNS/DKIM state. Restore with outbound
   delivery blocked and synthetic validation.
 - **Resources:** measure queue, storage growth, indexing, and protocol load before
-  changing the stateful-medium baseline.
+  changing the read-only infra-medium baseline.
 - **Upgrade/license:** verify the chosen upstream license and release/storage
   migrations; test backup restore and listeners before promotion.
 - **Removal:** export mailboxes/config, revoke DNS/routes/keys in a controlled

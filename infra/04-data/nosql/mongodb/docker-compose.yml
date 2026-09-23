@@ -173,6 +173,8 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongodb_root_password
       ME_CONFIG_MONGODB_SERVER: mongodb-rep1,mongodb-rep2,mongodb-arbiter
       ME_CONFIG_MONGODB_REPLICA_SET: MyReplicaSet
+      # mongo-express 1.x ignores the credentials below unless this is true.
+      ME_CONFIG_BASICAUTH: 'true'
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_basicauth_password
     expose:

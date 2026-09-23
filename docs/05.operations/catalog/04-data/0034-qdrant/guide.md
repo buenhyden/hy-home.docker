@@ -74,16 +74,16 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 3. REST health route를 확인한다.
 
    ```bash
-   curl -fsS "https://qdrant.${DEFAULT_URL}/readyz"
+   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'
    ```
 
 4. collection inventory 같은 read-only API만 일반 점검에 사용한다.
 
    ```bash
-   curl -fsS "https://qdrant.${DEFAULT_URL}/collections"
+   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\n\r\n" >&3; cat <&3'
    ```
 
-5. gRPC는 Traefik TCP route `qdrant-grpc.${DEFAULT_URL}`와 `${QDRANT_GRPC_PORT:-6334}` 기준이다. gRPC client 설정은 application 문서에서 관리한다.
+5. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고(Qdrant에 API key 없음) gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다.
 
 ### Common Pitfalls
 
@@ -96,8 +96,8 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 - `docker compose --profile qdrant config --quiet`
 - `docker compose ps qdrant`
-- `curl -fsS "https://qdrant.${DEFAULT_URL}/readyz"`
-- `curl -fsS "https://qdrant.${DEFAULT_URL}/collections"`
+- `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'`
+- `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\n\r\n" >&3; cat <&3'`
 
 ## Runbook Handoff
 

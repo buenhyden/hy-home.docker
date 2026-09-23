@@ -58,7 +58,7 @@ automatic address pool cannot take one first.
 | `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Open WebUI, Qdrant, Open Notebook, SurrealDB, JupyterLab, MLflow | AI clients → model, vector and tracking backends |
 | `lab_net` | 10.250.9.0/24 | LAB clusters (Valkey, PostgreSQL/etcd, Cassandra, CouchDB, MongoDB, StarRocks) and OpenSearch nodes | cluster-internal and init jobs |
 | `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
-| `mail_net` | 10.250.14.0/24 | Stalwart, its config job, Mailpit and SMTP senders | SMTP submission (25/587) to Stalwart or capture on Mailpit 1025 |
+| `mail_net` | 10.250.14.0/24 | Stalwart, its config job, Mailpit and SMTP senders | SMTP 25/587 and IMAPS 993 to Stalwart, capture on Mailpit 1025; Stalwart management/JMAP on 8080 is also reachable here without the gateway SSO chain |
 | `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
 
 Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the

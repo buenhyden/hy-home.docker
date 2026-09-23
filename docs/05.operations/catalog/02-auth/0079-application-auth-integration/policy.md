@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -41,6 +41,9 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
+- 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
+  Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
+  (`RouteAuthContractTests`).
 - Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.

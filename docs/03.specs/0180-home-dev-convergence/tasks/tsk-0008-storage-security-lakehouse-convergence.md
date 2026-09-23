@@ -1247,6 +1247,46 @@ is configured. Live is NOT_RUN: the data directory, the image build, the plan
 and a restart are the owner's, each approved. Native OIDC for the admin UI
 stays with S18 (Task 0007 item 6).
 
+### S18 — Route authentication alignment (source)
+
+All 49 Traefik HTTP routers were classified by what a request that passes
+Traefik meets (`gateway-standard-chain@file` is only retry and circuit
+breaker). Four reached an application with no identity check:
+
+| Route | Profile | Finding | Change |
+| --- | --- | --- | --- |
+| `qdrant` | HOME (`ai`) | no API key; full read, write, delete and snapshots | SSO chain; the gRPC TCP route (which also carried an HTTP middleware Traefik cannot apply) removed |
+| `kafka-rest` | `messaging` | REST Proxy without authentication | SSO chain |
+| `schema-registry` | `messaging` | register or delete schemas without authentication | SSO chain |
+| `mongo-express` | `mongodb` | credentials set but ignored: 1.x reads them only with `ME_CONFIG_BASICAUTH=true` (image `config.default.js`), leaving database admin open | `ME_CONFIG_BASICAUTH: 'true'` |
+
+`grafana-static` (two static files) stays open by design. The cluster
+variant of the `opensearch` router had no middleware; it now has the same
+chain as the single-node route. Containers keep using service names on their
+networks, so no internal client changes.
+
+`RouteAuthContractTests` fails when a router has neither the SSO chain nor
+an entry in its named list (native OIDC, identity provider, application or
+gateway credentials, SigV4, static), when the list goes stale, when a router
+has no middleware, or when any TCP router exists; GDE-0079 carries the same
+matrix. A negative run with the Kafka routes reverted fails and names both.
+The Open Notebook row in GDE-0079 said ForwardAuth was kept, but the router
+has not used it since `b90b74837`; the row now states the IP allowlist and
+application password.
+
+Also closed here, from the S17 review (merged before its review returned):
+the `mail_net` trust boundary (management API and IMAPS are reachable there
+without the gateway SSO chain) and the permanent fallback admin with its
+rotation sequence in POL-0070 and AD-0026; the unused
+`STALWART_HEALTHCHECK_URL`; paired-name comments; the template wording; the
+test file's `__main__` guard moved to the end so every class is collected.
+
+Open owner decisions, unchanged: `allowed_groups`, the Stalwart admin UI
+OIDC (its OIDC backend validates bearer tokens and does not start a browser
+login), Terrakube proxy removal, and a Qdrant API key (would also need every
+client configured). Live is NOT_RUN: each changed service needs a recreate to
+pick up its labels or environment.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1278,6 +1318,7 @@ stays with S18 (Task 0007 item 6).
 | S15 Great Expectations | Task 10 / S15 | PASS (source): Compose, catalog, hardening (with a negative), version projection, links, metadata; isolated pass then exit `1` on a duplicate key; exit `2` error paths; live NOT_RUN | 0094 subject |
 | S16 Superset | Task 10 / S16 | PASS (source): Compose, catalog, hardening (with a negative), projection, links, metadata, feature-job and secret-metadata tests; isolated provisioning, idempotent init, health, `401`, OIDC option, no credential in env; PostgreSQL rehearsal 6/6; live NOT_RUN | 0097 subject |
 | S17 Stalwart | Task 10 / S17 | PASS (source): Compose (`mail-server`, `dev`), catalog, hardening, projection, links, metadata, network and secret-metadata tests; rehearsal: four listeners after restart, relay refused, idempotent plan, no secret in logs; live NOT_RUN | 0070 subject |
+| S18 route authentication | Task 10 / S18 | PASS (source): route contract test (with a negative), Compose, catalog, hardening, links, metadata; four open routes closed; live NOT_RUN | GDE/POL-0079 |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -1335,7 +1376,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #233 | S15 Great Expectations | merged |
 | #234 | S16 Superset | merged |
 | #235 | S17 Stalwart | merged |
-| this PR | Task ledger and stale evidence corrections | open |
+| #236 | Task ledger and stale evidence corrections | merged |
+| this PR | S18 route authentication and S17 review follow-ups | open |
 
 ## Rulings
 

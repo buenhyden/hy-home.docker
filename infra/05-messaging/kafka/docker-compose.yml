@@ -125,7 +125,8 @@ services:
       traefik.http.routers.schema-registry.rule: Host(`schema-registry.${DEFAULT_URL}`)
       traefik.http.routers.schema-registry.entrypoints: websecure
       traefik.http.routers.schema-registry.tls: 'true'
-      traefik.http.routers.schema-registry.middlewares: gateway-standard-chain@file
+      # No authentication in Schema Registry; clients use schema-registry on kafka_net.
+      traefik.http.routers.schema-registry.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.schema-registry.loadbalancer.server.port: ${SCHEMA_REGISTRY_PORT:-8081}
     depends_on:
       kafka-1:
@@ -332,7 +333,8 @@ services:
       traefik.http.routers.kafka-rest.rule: Host(`kafka-rest.${DEFAULT_URL}`)
       traefik.http.routers.kafka-rest.entrypoints: websecure
       traefik.http.routers.kafka-rest.tls: 'true'
-      traefik.http.routers.kafka-rest.middlewares: gateway-standard-chain@file
+      # No authentication in the REST Proxy; clients use kafka-rest on kafka_net.
+      traefik.http.routers.kafka-rest.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.kafka-rest.loadbalancer.server.port: ${KAFKA_REST_PROXY_PORT:-8082}
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy

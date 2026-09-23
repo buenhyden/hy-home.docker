@@ -22,7 +22,7 @@ created: "2026-05-17"
 
 - `infra/04-data/specialized/qdrant/docker-compose.yml`
 - `qdrant` service and `qdrant-data` volume
-- REST route `qdrant.${DEFAULT_URL}` and gRPC route `qdrant-grpc.${DEFAULT_URL}`
+- REST route `qdrant.${DEFAULT_URL}` behind SSO (`sso-auth@file`) because Qdrant has no API key; no gRPC route
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
 - Linked guide and runbook under `docs/05.operations`
 
