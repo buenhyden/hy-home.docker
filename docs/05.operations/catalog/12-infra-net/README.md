@@ -1,6 +1,6 @@
 ---
 title: "Operations — 12 Infra Net"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
@@ -14,8 +14,9 @@ layer: "operations"
 
 ## Overview
 
-This domain co-locates the existing guide, policy, and runbook under the current
-`0077-ip-address-management` subject directory. The three roles preserve their
+This domain co-locates the guide, policy, and runbook of the Compose network
+membership subject (`0077`) and of the hy-home.k8s integration (`0096`), the
+host-address contract with the k3d cluster. The three roles preserve their
 separate usage, control, and procedure responsibilities.
 
 ## Audience
@@ -34,6 +35,7 @@ separate usage, control, and procedure responsibilities.
 | Subject | Available documents |
 | --- | --- |
 | [Compose network membership](0077-ip-address-management/guide.md) | [Guide](0077-ip-address-management/guide.md), [Policy](0077-ip-address-management/policy.md), [Runbook](0077-ip-address-management/runbook.md) |
+| [hy-home.k8s integration](0096-k8s-integration/guide.md) | [Guide](0096-k8s-integration/guide.md), [Policy](0096-k8s-integration/policy.md), [Runbook](0096-k8s-integration/runbook.md) |
 
 ## How to Work in This Area
 
