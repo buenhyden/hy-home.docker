@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 ---
 
 # ComfyUI
@@ -34,9 +34,9 @@ Runtime pins belong to [Compose](docker-compose.yml) and its referenced build so
 
 ## Configuration
 
-| Service | Profiles | Networks | Host ports | Secret references |
+| Service | Profiles | Networks | `edge_net` | Secret references |
 | --- | --- | --- | --- | --- |
-| `comfyui` | `ai, ai-image` | `infra_net` | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | No Compose Secret grant; inspect configured bootstrap file metadata |
+| `comfyui` | `ai, ai-image` | `ai_net` | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | No Compose Secret grant; inspect configured bootstrap file metadata |
 
 Persistence:
 

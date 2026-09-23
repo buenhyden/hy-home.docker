@@ -206,8 +206,6 @@ services:
       edge_net: {}
       seaweed_internal: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.143
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_S3_HTTP_PORT:-8333}/healthz || exit 1' ]
       interval: 15s

@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -104,7 +104,7 @@ Run these read-only checks from the repository root. Starting or changing SonarQ
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD_FILE`, `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; profiles: `tooling`, `sast` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `mng_data_net` |
 | Volumes | `sonarqube-data-volume:/opt/sonarqube/data:rw`, `sonarqube-logs-volume:/opt/sonarqube/logs:rw`, `sonarqube-data-volume`, `sonarqube-logs-volume` |
 | Ports | `${SONARQUBE_PORT:-9000}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.sonarqube.rule`, `traefik.http.routers.sonarqube.entrypoints`, `traefik.http.routers.sonarqube.tls`, `traefik.http.routers.sonarqube.middlewares`, `traefik.http.services.sonarqube.loadbalancer.server.port` |

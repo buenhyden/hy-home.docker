@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0006"
 parent_ids: []
@@ -81,7 +81,7 @@ No separately numbered solution-independent external interface requirement was i
 
 - **Risks**: Kafka 노드 장애 시 파티션 리밸런싱 지연 가능성. 스키마 변경 시 하위 호환성 위반 위험.
 - **Dependencies**: 인증 및 권한 관리를 위해 `02-auth` 계층에 의존한다. ksqlDB consumer/processing boundary는 `04-data/analytics/ksql`에 의존한다.
-- **Assumptions**: 모든 노드는 `infra_net` 내에서 통신하며 전용 볼륨에 데이터를 저장한다.
+- **Assumptions**: 모든 노드는 `kafka_net` 내에서 통신하며 전용 볼륨에 데이터를 저장한다.
 
 ## Traceability
 

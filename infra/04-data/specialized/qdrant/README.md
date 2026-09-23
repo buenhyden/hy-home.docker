@@ -1,10 +1,10 @@
 ---
 title: "Qdrant"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -57,7 +57,7 @@ qdrant/
 | Config files | `docker-compose.yml` |
 | Config values | env keys are Compose-owned; exact profiles: `ai`, `ai-llm`, `qdrant` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/qdrant/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `ai_net`, `edge_net`, `obs_net` |
 | Volumes | `qdrant-data:/qdrant/storage:rw`, `qdrant-data` |
 | Ports | `${QDRANT_PORT:-6333}`, `${QDRANT_GRPC_PORT:-6334}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port`, `traefik.tcp.routers.qdrant-grpc.rule`, plus 5 more |

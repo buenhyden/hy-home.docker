@@ -88,8 +88,6 @@ services:
     networks:
       kafka_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.30
     labels:
       <<: *tier-label
 
@@ -154,8 +152,6 @@ services:
     networks:
       edge_net: {}
       kafka_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.33
 
   kafka-connect:
     profiles:
@@ -268,8 +264,6 @@ services:
       edge_net: {}
       kafka_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.34
 
   # Feature-owned CDC source provisioning: dedicated replication role, read
   # grants and the publication the connector consumes. Names must match
@@ -314,8 +308,6 @@ services:
         condition: service_completed_successfully
     networks:
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.40
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -374,8 +366,6 @@ services:
     networks:
       edge_net: {}
       kafka_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.35
 
   kafbat-ui:
     profiles:
@@ -481,8 +471,6 @@ services:
     networks:
       edge_net: {}
       kafka_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.36
 
   kafka-exporter:
     profiles:
@@ -518,8 +506,6 @@ services:
     networks:
       kafka_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.37
 
   kafka-init:
     profiles:
@@ -555,8 +541,6 @@ services:
       <<: *tier-label
     networks:
       kafka_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.38
 
   kafka-2:
     profiles:
@@ -605,8 +589,6 @@ services:
     networks:
       kafka_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.31
 
   kafka-3:
     profiles:
@@ -655,5 +637,3 @@ services:
     networks:
       kafka_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.32

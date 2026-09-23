@@ -86,8 +86,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.50
     labels:
       <<: *tier-label
 
@@ -126,8 +124,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.51
     labels:
       <<: *tier-label
 
@@ -168,8 +164,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.52
 
   pg-router:
     profiles:
@@ -228,8 +222,6 @@ services:
       edge_net: {}
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.11
       k3d-hyhome:
         ipv4_address: 172.18.0.15
 
@@ -281,8 +273,6 @@ services:
       - service_postgres_password
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.53
     labels:
       <<: *tier-label
 
@@ -327,8 +317,6 @@ services:
       <<: *tier-label
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.54
 
   pg-1:
     profiles:
@@ -371,8 +359,6 @@ services:
       <<: *tier-label
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.55
 
   pg-2:
     profiles:
@@ -415,8 +401,6 @@ services:
       <<: *tier-label
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.56
 
   pg-0-exporter:
     profiles:
@@ -455,8 +439,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.57
 
   pg-1-exporter:
     profiles:
@@ -495,8 +477,6 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.58
 
   pg-2-exporter:
     profiles:
@@ -535,5 +515,3 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.59

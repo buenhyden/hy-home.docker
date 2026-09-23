@@ -1,6 +1,6 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -27,7 +27,7 @@ created: "2026-03-26"
 
 이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
 
-- **Owns**: 데이터베이스 인스턴스, 스토리지 볼륨, 백업 데이터, 데이터 전용 네트워크(`infra_net`).
+- **Owns**: 데이터베이스 인스턴스, 스토리지 볼륨, 백업 데이터, 데이터 전용 네트워크(`mng_data_net`, `lab_net`).
 - **Consumes**: Docker Secrets, OpenBao 시크릿, 시스템 리소스(CPU/RAM/Storage).
 - **Does Not Own**: 애플리케이션 비즈니스 코드, 사용자 UI, 네트워크 외부 노출(Gateway 담당).
 - **Non-goals**: 실시간 대시보드 시각화 (Observability 티어에서 담당).
@@ -39,7 +39,7 @@ created: "2026-03-26"
 품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
 
 - **Performance**: Valkey 클러스터를 통한 밀리초 단위 응답 보장.
-- **Security**: `infra_net` 격리 및 Docker Secrets 기반 인증.
+- **Security**: 흐름별 network 격리 및 Docker Secrets 기반 인증.
 - **Reliability**: Patroni/Etcd 기반의 자동 장애 조치(Failover).
 - **Scalability**: 데이터 샤딩 및 노드 확장이 용이한 마이크로서비스 친화적 구성.
 - **Observability**: Prometheus Exporter를 통한 실시간 상태 모니터링.
@@ -59,7 +59,7 @@ graph TD
         APP[Applications]
     end
 
-    subgraph "04-data Tier (infra_net)"
+    subgraph "04-data Tier"
         ROUTER[pg-router HAProxy]
         V_CLSTR[Valkey Cluster 6-nodes]
         OBJ[SeaweedFS S3]

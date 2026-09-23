@@ -22,8 +22,6 @@ services:
       - mongo-key:/data/configdb:rw
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.176
     command: >
       /bin/sh -c "
         if [ ! -f /data/configdb/mongodb.key ]; then
@@ -62,8 +60,6 @@ services:
       start_period: 15s
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.170
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -98,8 +94,6 @@ services:
       start_period: 15s
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.171
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -123,8 +117,6 @@ services:
     command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.172
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -145,8 +137,6 @@ services:
       - /tmp
     networks:
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.173
     depends_on:
       mongodb-rep1:
         condition: service_healthy
@@ -198,8 +188,6 @@ services:
     networks:
       edge_net: {}
       lab_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.174
     depends_on:
       mongo-init:
         condition: service_completed_successfully
@@ -231,5 +219,3 @@ services:
     networks:
       lab_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.175

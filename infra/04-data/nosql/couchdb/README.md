@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -47,7 +47,7 @@ CouchDB는 데이터 동기화 및 복제에 특화된 문서 지향 NoSQL 데�
 | Engine     | Compose-declared CouchDB image | Cluster Nodes             |
 | Init Job   | Compose-declared curl image    | Bootstrap Automation      |
 | Proxy      | `traefik`                  | HTTP API & TLS Termination |
-| Network    | `infra_net`                | Erlang Distribution        |
+| Network    | `edge_net`, `lab_net` | Erlang Distribution        |
 
 ## Structure
 
@@ -65,7 +65,7 @@ couchdb/
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `COUCHDB_USER`, `NODENAME`; profiles: `couchdb` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `edge_net`, `lab_net` |
 | Volumes | `couchdb1-data:/opt/couchdb/data:rw`, `couchdb2-data:/opt/couchdb/data:rw`, `couchdb3-data:/opt/couchdb/data:rw`, `couchdb1-data`, `couchdb2-data`, `couchdb3-data` |
 | Ports | `${COUCHDB_PORT:-5984}`, `${COUCHDB_ERLANG_MAPPER_PORT:-4369}`, `${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.couchdb.rule`, `traefik.http.routers.couchdb.entrypoints`, `traefik.http.routers.couchdb.tls`, `traefik.http.routers.couchdb.service`, `traefik.http.routers.couchdb.middlewares`, `traefik.http.services.couchdb-cluster.loadbalancer.server.port`, plus 2 more |

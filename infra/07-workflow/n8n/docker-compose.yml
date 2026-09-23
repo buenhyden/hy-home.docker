@@ -113,8 +113,6 @@ services:
       n8n_net: {}
       mng_data_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.80
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1' ]
       interval: 30s
@@ -157,8 +155,6 @@ services:
     networks:
       n8n_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.81
     command: worker
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://127.0.0.1:${N8N_BROKER_PORT:-5679}/healthz || exit 1' ]
@@ -191,8 +187,6 @@ services:
       - n8n-task-runner-data:/home/node/.n8n:rw
     networks:
       n8n_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.82
     secrets:
       - n8n_runner_auth_token
     healthcheck:
@@ -221,8 +215,6 @@ services:
       N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
     networks:
       n8n_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.83
     expose:
       - ${N8N_TASK_RUNNER_PORT:-5680}
     secrets:
@@ -249,8 +241,6 @@ services:
     user: '999:999'
     networks:
       n8n_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.84
     secrets:
       - n8n_valkey_password
     restart: unless-stopped
@@ -282,8 +272,6 @@ services:
     networks:
       n8n_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.85
     tmpfs:
       - /tmp
     expose:

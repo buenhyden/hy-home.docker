@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:
@@ -28,7 +28,7 @@ created: "2026-03-26"
 - **Identifier**: `Architecture Description-0012`
 - **Domain**: Data Architecture (Analytics)
 - **Primary Tech Stack**: InfluxDB 3 Core, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
-- **Connectivity**: Private isolated `infra_net`.
+- **Connectivity**: private isolated Compose networks.
 
 ## System Boundaries
 
@@ -76,7 +76,7 @@ graph LR
         PG[PostgreSQL]
     end
 
-    subgraph "Analytics Tier (infra_net)"
+    subgraph "Analytics Tier"
         KSQL[ksqlDB Engine]
         INFLUX[InfluxDB TSDB]
         OS[OpenSearch Logs]
@@ -94,7 +94,7 @@ graph LR
 
 ### Infrastructure Strategy
 
-- **Networking**: 모든 서비스는 `infra_net`을 사용하지만 호스트 노출 방식은 서비스별 Compose 선언을 따른다. OpenSearch와 OpenSearch Dashboards HTTP 경로는 Traefik을 사용한다. ksqlDB는 `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}`, StarRocks FE는 `9030:9030`과 `8030:8030`, StarRocks BE는 `8040:8040`, OpenSearch cluster의 node1은 Performance Analyzer `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`을 호스트에 게시한다. 이 포트들은 Gateway 전용 노출로 간주하지 않는다.
+- **Networking**: 모든 서비스는 선언된 network를 사용하지만 호스트 노출 방식은 서비스별 Compose 선언을 따른다. OpenSearch와 OpenSearch Dashboards HTTP 경로는 Traefik을 사용한다. ksqlDB는 `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}`, StarRocks FE는 `9030:9030`과 `8030:8030`, StarRocks BE는 `8040:8040`, OpenSearch cluster의 node1은 Performance Analyzer `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`을 호스트에 게시한다. 이 포트들은 Gateway 전용 노출로 간주하지 않는다.
 - **Storage Bindings**:
   - InfluxDB, ksqlDB, OpenSearch, OpenSearch Dashboards, StarRocks FE/BE는 bind-backed named volume을 사용한다.
   - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/ksql`, `${DEFAULT_DATA_DIR}/opensearch`, `${DEFAULT_DATA_DIR}/starrocks` 계열이다.

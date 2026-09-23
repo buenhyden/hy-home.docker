@@ -1,6 +1,6 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -61,7 +61,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Config files | `docker-compose.yml` |
 | Config values | Uses non-secret S3 access key IDs (`loki`, `tempo`), Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml`. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, and `CADVISOR_MEM_LIMIT` select the topology that used to be a second file. |
-| Networks | `infra_net`, `k3d-hyhome` |
+| Networks | `edge_net`, `k3d-hyhome`, `mng_data_net`, `object_net`, `obs_net` |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
@@ -120,7 +120,7 @@ Runtime image pins are declared in [Compose](docker-compose.yml). The [derived C
 - **Persistence**: Loki and Tempo use SeaweedFS (`04-data`) as the S3-compatible object store; Prometheus and Pyroscope use local bind-backed volumes.
 - **Auth**: Grafana is integrated with Keycloak (`02-auth`) for OAuth2 SSO.
 - **OpenBao metrics**: Prometheus source configuration declares only the dedicated `openbao_token` Docker Secret and the OpenBao `prometheus` policy. The secret contract is staged and unprovisioned; the historic live-Vault-down/no-OpenBao-loaded observation remains separate from current source readiness. A tracked source change does not prove the running Prometheus loaded the job or that the target is healthy.
-- **Networking**: All telemetry traffic flows through the `infra_net`.
+- **Networking**: All telemetry traffic flows through `obs_net`.
 
 ## Testing
 

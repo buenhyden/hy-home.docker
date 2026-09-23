@@ -1,10 +1,10 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -52,9 +52,9 @@ ollama/
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; profiles: `ai`, `dev` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `ai_net`, `edge_net`, `obs_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
-| Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` for Ollama API; exporter exposes `${OLLAMA_EXPORTER_PORT:-8000}` inside `infra_net` |
+| Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` for Ollama API; exporter exposes `${OLLAMA_EXPORTER_PORT:-8000}` inside `ai_net` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ollama`, `ollama-exporter` |
@@ -77,7 +77,7 @@ ollama/
 ## Troubleshooting
 
 - Start with `bash scripts/hardening/check-all-hardening.sh 08-ai` to confirm AI compose contracts.
-- Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
+- Do not run this service-local compose file as a standalone config check; it depends on the root network context.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For model loading errors: verify the model name with `ollama list` and confirm sufficient disk space for model storage.
 - For API errors: check `docker logs --tail=200 ollama` and confirm the API port binding matches client configuration.

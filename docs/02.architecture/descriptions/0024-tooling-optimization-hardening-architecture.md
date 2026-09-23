@@ -1,6 +1,6 @@
 ---
 title: "09-Tooling Optimization Hardening Architecture Description"
-version: "2.0.2"
+version: "2.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 
 - **Owns**:
   - tooling 공개 라우터 gateway/SSO 경계 계약
-  - tooling 네트워크 경계(`infra_net` external) 계약
+  - tooling 네트워크 경계 계약
   - 테스트 도구(locust/k6) runtime 안정성 계약
   - tooling 하드닝 CI 정책 게이트
   - 09-tooling 카탈로그 확장 로드맵

@@ -35,8 +35,6 @@ services:
       LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.179
     labels:
       <<: *tier-label
     healthcheck:
@@ -74,8 +72,6 @@ services:
       DASHBOARD_PASSWORD_FILE: /run/secrets/supabase_dashboard_password
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.180
     labels:
       <<: *tier-label
     healthcheck:
@@ -111,8 +107,6 @@ services:
       GOTRUE_SMTP_PASS_FILE: /run/secrets/supabase_smtp_password
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.181
     labels:
       <<: *tier-label
     healthcheck:
@@ -146,8 +140,6 @@ services:
       PGRST_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.182
     labels:
       <<: *tier-label
     healthcheck:
@@ -182,8 +174,6 @@ services:
       SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.183
     labels:
       <<: *tier-label
     healthcheck:
@@ -224,8 +214,6 @@ services:
       DATABASE_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.184
     labels:
       <<: *tier-label
     healthcheck:
@@ -250,8 +238,6 @@ services:
       - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.185
     labels:
       <<: *tier-label
     healthcheck:
@@ -283,8 +269,6 @@ services:
       CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.186
     labels:
       <<: *tier-label
     healthcheck:
@@ -320,8 +304,6 @@ services:
       SUPABASE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.187
     labels:
       <<: *tier-label
     healthcheck:
@@ -353,8 +335,6 @@ services:
       LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.188
     labels:
       <<: *tier-label
     healthcheck:
@@ -395,8 +375,6 @@ services:
       JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.189
     labels:
       <<: *tier-label
     healthcheck:
@@ -421,8 +399,6 @@ services:
     command: [ '--config', '/etc/vector/vector.yml' ]
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.190
     labels:
       <<: *tier-label
     healthcheck:
@@ -464,8 +440,6 @@ services:
       VAULT_ENC_KEY_FILE: /run/secrets/supabase_vault_enc_key
     networks:
       supabase_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.191
     labels:
       <<: *tier-label
     healthcheck:

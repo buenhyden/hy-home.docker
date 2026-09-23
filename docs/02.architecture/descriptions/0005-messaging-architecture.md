@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -34,7 +34,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - **Reliability:** health checks, explicit persistent broker/Connect volumes and
   complete topic/offset/schema/connector recovery. Three brokers on one host do
   not provide host availability.
-- **Security:** services remain on `infra_net`; Kafbat uses native OIDC/RBAC.
+- **Security:** services remain on `kafka_net`; Kafbat uses native OIDC/RBAC.
   Current broker/controller/host listeners are PLAINTEXT, a known boundary that
   excludes sensitive or untrusted traffic until a planned TLS/SASL change.
 - **Operability:** exact root profiles and static rendering; named workload,

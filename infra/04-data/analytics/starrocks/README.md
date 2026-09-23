@@ -1,10 +1,10 @@
 ---
 title: "StarRocks (OLAP Warehouse)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2026-03-26"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Overview
 
-`starrocks` 스택은 서브-세컨드 OLAP 쿼리 및 대규모 데이터 웨어하우징을 위해 같은 host의 FE/BE pair를 제공한다. `infra_net`과 통합되지만 host-level HA를 제공하지 않는다.
+`starrocks` 스택은 서브-세컨드 OLAP 쿼리 및 대규모 데이터 웨어하우징을 위해 같은 host의 FE/BE pair를 제공한다. `lab_net`에 통합되지만 host-level HA를 제공하지 않는다.
 
 ## Audience
 
@@ -55,7 +55,7 @@ starrocks/
 | Config files | `docker-compose.yml` |
 | Config values | exact profile: `starrocks` |
 | Compose linkage | root include active; the `starrocks` profile selects `starrocks-fe` and `starrocks-be` |
-| Networks | `infra_net` |
+| Networks | `lab_net` |
 | Volumes | `starrocks-fe-data:/opt/starrocks/fe/meta:rw`, `starrocks-be-data:/opt/starrocks/be/storage:rw`, `starrocks-fe-data`, `starrocks-be-data` |
 | Ports | `9030:9030`, `8030:8030`, `8040:8040` |
 | Labels | `hy-home.tier` |

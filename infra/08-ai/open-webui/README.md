@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -54,7 +54,7 @@ open-webui/
 | Config files | `docker-compose.yml`, `docker-entrypoint.sh` |
 | Config values | env keys: `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `ai_net`, `edge_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
@@ -73,7 +73,7 @@ open-webui/
 ## Troubleshooting
 
 - Start with `bash scripts/hardening/check-all-hardening.sh 08-ai` to confirm Open WebUI hardening contracts.
-- Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
+- Do not run this service-local compose file as a standalone config check; it depends on the root network context.
 - Check Open WebUI logs and the linked runbook before changing RAG, auth, or model endpoint settings.
 
 ### Convergence contract

@@ -50,5 +50,3 @@ services:
     networks:
       edge_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.121

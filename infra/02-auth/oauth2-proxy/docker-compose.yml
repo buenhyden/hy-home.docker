@@ -46,7 +46,7 @@ services:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`) && PathPrefix(`/oauth2`)
-      traefik.docker.network: infra_net
+      traefik.docker.network: edge_net
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
       traefik.http.routers.oauth2-proxy.service: oauth2-proxy-svc
       traefik.http.routers.oauth2-proxy.tls: 'true'
@@ -55,8 +55,6 @@ services:
     networks:
       edge_net: {}
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.4
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1' ]
       interval: 30s
@@ -80,8 +78,6 @@ services:
       - oauth2_valkey_password
     networks:
       mng_data_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.5
     restart: unless-stopped
     volumes:
       # 공통 valkey.conf
@@ -113,8 +109,6 @@ services:
     networks:
       mng_data_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.6
     restart: unless-stopped
     secrets:
       - oauth2_valkey_password

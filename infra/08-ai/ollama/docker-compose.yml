@@ -59,8 +59,6 @@ services:
       edge_net: {}
       ai_net: {}
       # openclaw_default:
-      infra_net:
-        ipv4_address: 172.19.0.201
     healthcheck:
       test: [ 'CMD-SHELL', 'ollama list >/dev/null 2>&1 || exit 1' ]
       interval: 30s
@@ -88,8 +86,6 @@ services:
     networks:
       ai_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.211
     labels:
       <<: *tier-label
     depends_on:

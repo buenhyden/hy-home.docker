@@ -1,10 +1,10 @@
 ---
 title: "NoSQL Infrastructure (04-data/nosql)"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2026-03-27"
 ---
 
@@ -32,7 +32,7 @@ created: "2026-03-27"
 - Apache Cassandra 단일 노드와 exporter
 - CouchDB 3노드 cluster-init 구성
 - MongoDB replica set, Mongo Express, exporter 구성
-- 각 엔진별 Docker Secret, 볼륨, `infra_net`, operations 문서 연결
+- 각 엔진별 Docker Secret, 볼륨, network 소속, operations 문서 연결
 
 ### Out of Scope
 

@@ -1,10 +1,10 @@
 ---
 title: "Gatus Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 ---
 
 # Gatus
@@ -36,7 +36,7 @@ Upstream build pins belong to [Dockerfile](Dockerfile); runtime configuration be
 
 ## Configuration
 
-Profiles: `availability / obs / dev`. Root Compose includes this definition; inclusion alone does not start a service. Network is `infra_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
+Profiles: `availability / obs / dev`. Root Compose includes this definition; inclusion alone does not start a service. Networks are `edge_net` and `obs_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
 
 The confidential client ID is `home-gatus`, and its exact callback is
 `https://status.<domain>/authorization-code/callback`. The client secret is

@@ -25,7 +25,7 @@ services:
     secrets:
       - jupyter_token
     # Jupyter Server reads JUPYTER_TOKEN; an empty token would leave kernels,
-    # terminals and the REST API open to every container on infra_net.
+    # terminals and the REST API open to every container sharing its networks.
     command:
       - /bin/bash
       - -ec
@@ -80,5 +80,3 @@ services:
     networks:
       edge_net: {}
       ai_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.111

@@ -2,7 +2,7 @@ x-tier-label: &tier-label
   hy-home.tier: ai
 
 # Crawl4AI fetches arbitrary URLs, so it is an SSRF-capable service. It runs on
-# its own egress network and never joins infra_net: internal databases, secret
+# its own egress network and never joins another repository network: internal databases, secret
 # stores and admin APIs are not reachable from the crawler. A consumer that
 # needs it (for example Open Notebook's CRAWL4AI_API_URL) must join
 # crawl4ai_net explicitly in the same reviewed change.

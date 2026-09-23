@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2026-03-19"
 ---
 
@@ -15,9 +15,9 @@ created: "2026-03-19"
 
 ## Overview
 
-이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. `infra_net`의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
+이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 같은 network의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
 
-The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its host endpoint is bound to `127.0.0.1` and is unauthenticated HTTP; containers on `infra_net` can also reach it without authentication. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
+The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its host endpoint is bound to `127.0.0.1` and is unauthenticated HTTP; containers on the same network can also reach it without authentication. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
 
 ## Audience
 
@@ -102,7 +102,7 @@ Run these read-only checks from the repository root. Starting or changing Regist
 | Config files | `docker-compose.yml` |
 | Config values | profiles: `tooling`, `registry` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | project default |
 | Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
 | Ports | `127.0.0.1:${REGISTRY_PORT:-5000}:5000` |
 | Labels | `hy-home.tier` |

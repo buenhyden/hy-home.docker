@@ -650,6 +650,25 @@ are not rewritten; `examples/operations/compose-core-readiness/` keeps its own
 self-contained Vault rig, which names no repository package; the Restic state
 set still backs up `security/vault`.
 
+### S05 phase 2 — `infra_net` removal (source)
+
+Phase 1 is live and verified, MinIO and Vault are gone, so the shared mesh has
+no remaining dependant.
+
+| Unit | Change |
+| --- | --- |
+| Services | 135 `infra_net` attachments removed across 41 Compose files; every service keeps only the networks whose peers it uses. Registry, Renovate, OpenTofu and Locust have no container peer and now use the project default network |
+| Root | the `infra_net` definition and its `172.19.0.0/16` IPAM removed; `INFRA_SUBNET`, `INFRA_IP_RANGE` and `INFRA_GATEWAY` are unused by the root project |
+| Gateway | Traefik's Docker provider network and the OAuth2 Proxy router label are `edge_net`; OAuth2 Proxy and Airflow trust only `10.250.1.2` |
+| k3d | `mng-pg` left `k3d-hyhome` (no k8s consumer named it); `mng-valkey` stays, it is measured |
+| Alloy | the Docker log filter kept only `project_net|infra_net` targets. Live check: of 56 running containers just 13 were selected and 6 were shipping, so most container logs were silently dropped after phase 1. Upstream documents that `loki.source.docker` deduplicates targets by container ID, so the network filter was never needed; it now keeps every Compose-managed container |
+| Hardening | eleven fixed-address assertions covered `infra_net` addresses that no longer exist; each became a membership assertion for the network the service actually uses |
+| Documents | AD-0026 and REQ-0023 rewrote the single-mesh model as flow-scoped networks and dropped the `172.19.0.x` allocation table; GDE/POL/RUN-0077 now govern membership rather than fixed-address assignment; `.agents` environment constraints, nine architecture descriptions, five requirements and 40 package READMEs follow, with README network rows generated from the Compose files |
+
+Live application is a separate approved step: removing a network from a
+service requires recreating it, and CouchDB's Erlang node names keep working
+only through the `lab_net` aliases phase 1 added.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -716,6 +735,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
 - Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
+- `examples/operations/compose-core-readiness/` keeps `INFRA_SUBNET`/`INFRA_GATEWAY` and its own Vault rig; restate the example or declare it intentionally generic (owner).
+- Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).

@@ -97,8 +97,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.20
       k3d-hyhome:
         ipv4_address: 172.18.0.10
 
@@ -147,8 +145,6 @@ services:
       edge_net: {}
       obs_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.21
       k3d-hyhome:
         ipv4_address: 172.18.0.13
 
@@ -197,8 +193,6 @@ services:
       edge_net: {}
       obs_net: {}
       object_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.22
       k3d-hyhome:
         ipv4_address: 172.18.0.12
 
@@ -265,8 +259,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.23
       k3d-hyhome:
         ipv4_address: 172.18.0.11
 
@@ -379,8 +371,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.24
       k3d-hyhome:
         ipv4_address: 172.18.0.14
 
@@ -419,8 +409,6 @@ services:
       start_period: 10s
     networks:
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.19
     labels:
       <<: *tier-label
 
@@ -471,8 +459,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.25
 
   gatus:
     profiles:
@@ -523,8 +509,6 @@ services:
       edge_net: {}
       mng_data_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.231
 
   pyroscope:
     profiles:
@@ -561,8 +545,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.26
 
   alertmanager:
     profiles:
@@ -608,8 +590,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.27
 
   pushgateway:
     profiles:
@@ -644,8 +624,6 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.28
 
   dcgm-exporter:
     profiles:
@@ -674,8 +652,6 @@ services:
 
     networks:
       obs_net: {}
-      infra_net:
-        ipv4_address: 172.19.0.112
 
     labels:
       <<: *tier-label

@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-23"
 created: "2026-01-12"
 ---
 
@@ -115,7 +115,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
 | Compose linkage | Declared in `../docker-compose.yml`, which the root file includes unconditionally; `tempo` resolves under the `obs` and `dev` profiles |
-| Networks | `infra_net`, `k3d-hyhome` |
+| Networks | `edge_net`, `k3d-hyhome`, `object_net`, `obs_net` |
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |

@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "requirements"
 artifact_id: "REQ-0011"
 parent_ids: []
@@ -55,7 +55,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Acceptance Criteria
 
 - **REQ-0011-FR-0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
-- **REQ-0011-FR-0002**: optional mail compose가 valid `infra_net` 주소, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
+- **REQ-0011-FR-0002**: optional mail compose가 valid network 소속, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
 - **REQ-0011-FR-0003**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
 
 ## Constraints

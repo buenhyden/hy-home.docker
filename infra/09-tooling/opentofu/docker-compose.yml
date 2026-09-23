@@ -34,8 +34,5 @@ services:
       - $HOME/.azure:/root/.azure:ro
     working_dir: /workspace
     entrypoint: ['tofu']
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.224
     labels:
       <<: *tier-label

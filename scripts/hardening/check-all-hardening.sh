@@ -325,14 +325,15 @@ check_02_auth() {
   check_contains "$keycloak_compose" "/run/secrets/keycloak_admin_password" "keycloak admin secret injection mismatch"
   check_contains "$keycloak_compose" "/run/secrets/keycloak_db_password" "keycloak db secret injection mismatch"
   check_contains "$keycloak_compose" "traefik.http.routers.keycloak.middlewares: gateway-standard-chain@file" "keycloak gateway chain mismatch"
-  check_contains "$keycloak_compose" "ipv4_address: 172.19.0.3" "keycloak infra_net IP mismatch"
+  check_contains "$keycloak_compose" "edge_net: {}" "keycloak edge_net membership missing"
+  check_contains "$keycloak_compose" "mng_data_net: {}" "keycloak mng_data_net membership missing"
 
   check_contains "$oauth_full_compose" "service: template-infra-readonly-med" "root-active oauth2-proxy compose template mismatch"
   check_contains "$oauth_full_compose" 'dockerfile: ${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}' "root-active oauth2-proxy must default to the dev Dockerfile"
   check_contains "$oauth_full_compose" 'OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://${OAUTH2_PROXY_VALKEY_HOST:-mng-valkey}:6379' "root-active oauth2-proxy must default to the shared valkey"
   check_contains "$oauth_full_compose" "- mng_valkey_password" "root-active oauth2-proxy mng valkey secret missing"
   check_contains "$oauth_full_compose" "traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file" "root-active oauth2-proxy gateway chain mismatch"
-  check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.4" "root-active oauth2-proxy infra_net IP mismatch"
+  check_contains "$oauth_full_compose" "edge_net: {}" "root-active oauth2-proxy edge_net membership missing"
   check_not_contains "$oauth_full_compose" "v7.14.2" "root-active oauth2-proxy stale image reference"
 
   check_contains "$oauth_full_compose" "- oauth2_valkey_password" "dedicated-valkey oauth2-proxy secret missing"
@@ -344,8 +345,7 @@ check_02_auth() {
   if [[ "$(compose_service_image "$oauth_full_compose" "oauth2-proxy-valkey-exporter")" != "$(registry_component_image "Valkey Exporter")" ]]; then
     fail "oauth2-proxy valkey exporter registry drift"
   fi
-  check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.5" "oauth2-proxy valkey infra_net IP mismatch"
-  check_contains "$oauth_full_compose" "ipv4_address: 172.19.0.6" "oauth2-proxy valkey exporter infra_net IP mismatch"
+  check_contains "$oauth_full_compose" "mng_data_net: {}" "oauth2-proxy valkey mng_data_net membership missing"
 
   local oauth_source_image oauth_dev_source_image
   oauth_source_image="$(awk '$1 == "FROM" && $NF == "src" {print $2}' "$oauth_dockerfile")"
@@ -403,8 +403,7 @@ check_03_security() {
   check_contains "$compose_file" "openbao-agent-out:/openbao/out" "openbao-agent output mount missing"
   check_contains "$compose_file" "traefik.http.routers.openbao.middlewares: gateway-standard-chain@file" "openbao gateway chain mismatch"
   check_contains "$compose_file" "ipv4_address: 172.18.0.17" "openbao k3d-hyhome IP mismatch"
-  check_contains "$compose_file" "ipv4_address: 172.19.0.17" "openbao infra_net IP mismatch"
-  check_contains "$compose_file" "ipv4_address: 172.19.0.18" "openbao-agent infra_net IP mismatch"
+  check_contains "$compose_file" "secrets_net: {}" "openbao secrets_net membership missing"
   check_contains "$compose_file" '"storage":{"raft"' "openbao raft storage missing"
   check_contains "$compose_file" '"disable_mlock":true' "openbao mlock runtime contract mismatch"
   check_contains "$compose_file" '"tls_disable":true' "openbao internal HTTP listener mismatch"
@@ -530,7 +529,7 @@ check_10_communication() {
   check_file "$mailpit_compose"
   check_contains "$mail_compose" "service: template-stateful-med" "stalwart template inheritance missing"
   check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
-  check_contains "$mail_compose" "ipv4_address: 172.19.0.228" "stalwart infra_net IP mismatch"
+  check_contains "$mail_compose" "edge_net: {}" "stalwart edge_net membership missing"
   check_service_healthcheck "$mail_compose" "stalwart"
   check_contains "$mailpit_compose" "traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "mailpit UI auth missing"
   check_contains "$mailpit_compose" '127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}' "mailpit UI publication must be loopback"
@@ -578,7 +577,7 @@ check_11_laboratory() {
   if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
     fail "dozzle image tag mismatch"
   fi
-  check_contains "$dozzle_compose" "ipv4_address: 172.19.0.221" "dozzle infra_net IP mismatch"
+  check_contains "$dozzle_compose" "edge_net:" "dozzle edge_net membership missing"
 
   # Owner decision b90b74837: Open Notebook relies on its own password plus the
   # admin CIDR allowlist instead of shared SSO; see POL-0073.
@@ -587,15 +586,14 @@ check_11_laboratory() {
   check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
   check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"
-  check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.122" "surrealdb infra_net IP mismatch"
-  check_contains "$open_notebook_compose" "ipv4_address: 172.19.0.123" "open-notebook infra_net IP mismatch"
+  check_contains "$open_notebook_compose" "ai_net: {}" "open-notebook ai_net membership missing"
 
   if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
     fail "redisinsight registry drift"
   fi
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
-  check_contains "$redisinsight_compose" "ipv4_address: 172.19.0.121" "redisinsight infra_net IP mismatch"
+  check_contains "$redisinsight_compose" "mng_data_net: {}" "redisinsight mng_data_net membership missing"
 
   check_service_healthcheck "$dozzle_compose" "dozzle"
   check_service_healthcheck "$open_notebook_compose" "surrealdb"

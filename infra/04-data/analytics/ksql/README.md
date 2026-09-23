@@ -1,10 +1,10 @@
 ---
 title: "ksqlDB"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 created: "2025-11-12"
 ---
 
@@ -56,7 +56,7 @@ ksql/
 | Config files | `docker-compose.yml` |
 | Config values | env keys are Compose-owned; exact profile for all three services: `ksql` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `kafka_net` |
 | Volumes | `ksqldb-data-volume:/var/lib/ksql:rw`, `ksqldb-data-volume` |
 | Ports | `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}` |
 | Labels | `hy-home.tier` |

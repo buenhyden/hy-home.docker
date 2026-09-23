@@ -1,10 +1,10 @@
 ---
-title: "0012 Standardize Infra Net Runbook"
-version: "1.0.0"
+title: "Compose Network Membership Runbook"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -12,21 +12,21 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# 0012 Standardize Infra Net Runbook
+# Compose Network Membership Runbook
 
 ## Overview
 
-> Scope: 신규 서비스 추가 또는 기존 서비스 IP 변경 시 `infra_net` mapping과 compose 구조를 검증한다.
+> Scope: 신규 서비스 추가 또는 기존 서비스의 network 소속·주소 변경 시 선언과 compose 구조를 검증한다.
 
-이 런북은 `infra_net` 서브넷 내 신규 서비스 추가 및 기존 서비스 IP 변경 시의 운영 절차를 정의한다. 서브넷 정합성 유지와 충돌 방지가 주 목적이다.
+이 런북은 신규 서비스 추가 및 기존 서비스의 network 소속·고정 주소 변경 시의 운영 절차를 정의한다. 선언 정합성 유지와 충돌 방지가 주 목적이다.
 
 ### Purpose
 
-신속하고 정확하게 서브넷 내 고정 IP를 할당하거나 기존 설정의 오구성을 수정한다.
+서비스를 필요한 network에만 연결하고, 필요한 경우에만 고정 주소를 부여하거나 기존 오구성을 수정한다.
 
 ## When to Use
 
-- 서비스의 `networks` 설정을 표준 딕셔너리 포맷으로 전환할 때.
+- 서비스의 `networks` 설정을 흐름에 맞게 바꿀 때.
 - 신규 인프라 서비스를 인공지능 홈 시스템에 통합할 때.
 - 네트워크 충돌 발생 시 원인 분석 및 IP 재배치.
 
@@ -35,36 +35,36 @@ created: "2026-05-10"
 ### Checklist
 
 - [ ] 대상 서비스의 `infra/` 내 `docker-compose.yml` 경로 확인.
-- [ ] 현재 서브넷(`172.19.0.0/16`) 내 가용 IP 대역 확인 (AD-0026 참조).
+- [ ] 서비스가 실제로 쓰는 peer와 그 network 확인 (AD-0026 **Networks** 참조).
 - [ ] 중복 사용 여부 사전 검증 (`rg -n "ipv4_address:" infra docker-compose.yml`).
 - [ ] 런타임 환경을 조회하거나 변경해야 하는 경우 승인된 test/staging 대상인지 확인.
 
 ### Steps
 
-1. **IP 선정**: `docs/02.architecture/descriptions/0026-standardize-infra-net.md`의 **Components** 표에서 비어있는 영역을 선택함.
+1. **network 선정**: `docs/02.architecture/descriptions/0026-standardize-infra-net.md`의 **Networks** 표에서 필요한 flow의 network를 고른다.
 2. **Compose 파일 수정**:
 
    ```yaml
    networks:
-     infra_net:
-       ipv4_address: 172.19.0.7 # registry example from the authoritative table
+     edge_net: {}
+     obs_net: {}
    ```
 
-3. **대상 IP 치환 확인**: 실제 변경 대상에는 registry 예시 값을 남기지 않고 authoritative table의 해당 서비스 IP를 사용했는지 확인한다.
-4. **구문 검증**: repository root에서 `bash scripts/validation/validate-docker-compose.sh`를 실행하여 root `infra_net` 컨텍스트에서 YAML 유효성을 확인.
+3. **고정 주소 확인**: 다른 곳이 그 주소를 신뢰하는 경우에만 `ipv4_address`를 쓰고 사유를 주석으로 남긴다. 그 외에는 dynamic 주소를 쓴다.
+4. **구문 검증**: repository root에서 `bash scripts/validation/validate-docker-compose.sh`를 실행하여 root network 컨텍스트에서 YAML 유효성을 확인.
 5. **Profile 검증**: 변경한 tier가 기본 `core` profile 밖이면 `HYHOME_COMPOSE_PROFILES`에 해당 profile을 지정해 검증을 반복한다.
-6. **런타임 검증**: 승인된 test/staging 환경에서 이미 실행 중인 컨테이너만 `docker inspect <container_name>`으로 실제 할당 결과와 authoritative table을 대조한다.
+6. **런타임 검증**: 승인된 test/staging 환경에서 이미 실행 중인 컨테이너만 `docker inspect <container_name>`으로 실제 할당 결과와 선언을 대조한다.
 
 ### Verification Steps
 
 - [ ] `bash scripts/validation/validate-docker-compose.sh` 결과가 성공한다.
 - [ ] 변경한 profile 검증 결과가 성공한다.
-- [ ] 승인된 실행 환경에서 `docker network inspect infra_net` 결과가 authoritative table과 일치한다.
+- [ ] 승인된 실행 환경에서 `docker network inspect <network>` 결과가 선언과 일치한다.
 
 ### Evidence
 
-- **Signals**: compose validation 실패, runtime IP 충돌, `docker inspect` 결과와 authoritative table의 불일치.
-- **Evidence to Capture**: validation 명령과 결과, `rg -n "infra_net|ipv4_address:" infra docker-compose.yml` 결과, runtime 검증을 수행한 경우 `docker network inspect infra_net` 요약.
+- **Signals**: compose validation 실패, runtime IP 충돌, `docker inspect` 결과와 선언과의 불일치.
+- **Evidence to Capture**: validation 명령과 결과, `rg -n "ipv4_address:" infra docker-compose.yml` 결과, runtime 검증을 수행한 경우 `docker network inspect <network>` 요약.
 
 ### Safe Rollback or Recovery Procedure
 
@@ -97,7 +97,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 ## Traceability
 
 - Declared parent: [0012 Standardize Infra Net Usage Guide](guide.md) (`GDE-0077`)
-- Governing authority: [infra_net Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- Governing authority: [Compose Network Segmentation Architecture Description](../../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
 - Subject peers: [Guide](guide.md) (`GDE-0077`), [Policy](policy.md) (`POL-0077`)
 
 ## Related Documents
@@ -105,4 +105,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../../README.md)
 - [Usage guide](guide.md)
 - [Operations policy](policy.md)
-- [infra_net architecture and allocation map](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- [Compose network segmentation architecture](../../../../02.architecture/descriptions/0026-standardize-infra-net.md)
