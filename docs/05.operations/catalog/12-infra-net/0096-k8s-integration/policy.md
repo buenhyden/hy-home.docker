@@ -82,5 +82,6 @@ upgrade, and when a credential is rotated.
 
 ## Related Documents
 
-- [OpenBao policies](../../../../../infra/03-security/openbao/config/policies/)
+- [OpenBao ESO read policy](../../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl)
+- [OpenBao operator policy](../../../../../infra/03-security/openbao/config/policies/operator.hcl)
 - [Prometheus policy](../../06-observability/0045-prometheus/policy.md)
