@@ -50,7 +50,7 @@ stalwart/
 | Image | [Compose](docker-compose.yml); [derived Compose image projection](../../tech-stack.versions.json) |
 | Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/var/lib/stalwart` (빈 디렉터리로 준비; 첫 기동 때 image 사용자 UID 2000 소유가 됨) |
 | Configuration | `config/plan.ndjson`을 `stalwart-config`가 적용; listener 변경은 다음 재시작부터 |
-| Secret | `stalwart_password` (COMM-006) → recovery admin; Compose에 credential 없음 |
+| Secret | `stalwart_password` (COMM-006) → recovery admin; Compose에 credential 없음. 한 줄, `:` 없는 값이어야 함(`user:password`로 조합) |
 | Host ports | 없음. SMTP 25·submission 587·IMAPS 993은 `mail_net` 전용 |
 | Relay | 없음 (`allowRelaying = false`); 설정 도메인 밖 수신자는 SMTP `550`(`Relay not allowed`) |
 | UI | `mail.${DEFAULT_URL}` → 8080, Traefik SSO 보호 |

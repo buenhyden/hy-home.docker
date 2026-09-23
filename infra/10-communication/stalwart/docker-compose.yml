@@ -32,8 +32,8 @@ services:
       - /bin/sh
       - /opt/hyhome/start.sh
     environment:
+      # Same name as STALWART_USER in stalwart-config below.
       STALWART_ADMIN_USER: admin
-      STALWART_HEALTHCHECK_URL: http://127.0.0.1:8080/healthz/live
     volumes:
       - stalwart-data:/var/lib/stalwart:rw
       - ./config/config.json:/etc/stalwart/config.json:ro
@@ -81,6 +81,7 @@ services:
       HOME: /tmp
       DEFAULT_URL: '${DEFAULT_URL}'
       STALWART_URL: http://stalwart:8080
+      # Same name as STALWART_ADMIN_USER in stalwart above.
       STALWART_USER: admin
     volumes:
       - ./config/apply-plan.sh:/opt/hyhome/apply-plan.sh:ro

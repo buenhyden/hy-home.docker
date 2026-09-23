@@ -28,7 +28,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 
 - `qdrant`가 unhealthy, stopped, or missing 상태일 때
 - `/readyz`가 200 응답을 반환하지 않을 때
-- REST route `qdrant.${DEFAULT_URL}` 또는 gRPC route `qdrant-grpc.${DEFAULT_URL}` 경계를 확인해야 할 때
+- REST route `qdrant.${DEFAULT_URL}`(SSO 뒤) 경계를 확인해야 할 때
 - Qdrant operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ## Procedure
@@ -63,13 +63,13 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 4. REST readiness를 확인한다.
 
    ```bash
-   curl -fsS "https://qdrant.${DEFAULT_URL}/readyz"
+   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'
    ```
 
 5. read-only collection inventory를 확인한다.
 
    ```bash
-   curl -fsS "https://qdrant.${DEFAULT_URL}/collections"
+   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\n\r\n" >&3; cat <&3'
    ```
 
 6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
@@ -88,7 +88,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 
 - **Logs**: `docker compose logs --tail=120 qdrant`
 - **Health**: `/readyz` and compose healthcheck
-- **Route**: Traefik HTTP labels on `qdrant` and TCP labels on `qdrant-grpc`
+- **Route**: Traefik HTTP labels on `qdrant` with SSO; no gRPC route
 - **Config**: `docker compose --profile qdrant config --quiet`
 
 ### Safe Rollback or Recovery Procedure

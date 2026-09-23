@@ -55,17 +55,10 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      # REST
+      # REST and dashboard for people. Qdrant has no API key here, so the route
+      # is behind SSO; containers use qdrant:6333 on ai_net (SPEC-0180 S18).
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
-      traefik.http.routers.qdrant.middlewares: gateway-standard-chain@file
+      traefik.http.routers.qdrant.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
-      # gRPC가 필요하면 TCP router를 별도 구성
-      # 예: qdrant-grpc.${DEFAULT_URL} 로 분리
-      traefik.tcp.routers.qdrant-grpc.rule: HostSNI(`qdrant-grpc.${DEFAULT_URL}`)
-      traefik.tcp.routers.qdrant-grpc.entrypoints: websecure
-      traefik.tcp.routers.qdrant-grpc.tls: 'true'
-      traefik.tcp.routers.qdrant-grpc.service: qdrant-grpc-svc
-      traefik.tcp.routers.qdrant-grpc.middlewares: gateway-standard-chain@file
-      traefik.tcp.services.qdrant-grpc-svc.loadbalancer.server.port: '${QDRANT_GRPC_PORT:-6334}'

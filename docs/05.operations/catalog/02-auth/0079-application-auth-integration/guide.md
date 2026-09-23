@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.3.0"
+version: "0.4.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -237,7 +237,7 @@ OAuth2 Proxy 뒤에 있다는 사실만으로 애플리케이션 권한 모델�
 | Flower | [공식 인증 안내](https://flower.readthedocs.io/en/latest/auth.html)는 provider별 OAuth와 custom handler 제공; generic Keycloak OIDC 계약 없음 | custom 인증 코드 추가 없이 ForwardAuth 유지 |
 | Stalwart WebUI | [OIDC backend](https://stalw.art/docs/auth/backend/oidc/)는 클라이언트가 제시한 bearer token 검증; 서버가 browser OIDC를 시작하지 않음 | mail/JMAP OIDC 지원을 WebUI SSO로 오인하지 않고 gateway 유지 |
 | RedisInsight | [공식 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)에서 UI OIDC 연동 설정 미확인; DB 연결 인증과 구분 | native 지원 미검증으로 유지; 불가능하다고 단정하지 않음 |
-| Open Notebook | [upstream OIDC 요청](https://github.com/lfnovo/open-notebook/issues/607)과 현재 배포의 password 인증 | native 계약 미확인, 유지 |
+| Open Notebook | [upstream OIDC 요청](https://github.com/lfnovo/open-notebook/issues/607)과 현재 배포의 password 인증 | native 계약 미확인; router는 ForwardAuth 없이 IP allowlist와 앱 password (2026-09 `b90b74837`) |
 | ComfyUI | [custom OIDC 요청](https://github.com/Comfy-Org/ComfyUI/issues/12558); Comfy 계정 로그인과 Keycloak 연동은 별개 | 유지 |
 | Mailpit, Ollama | [Mailpit HTTP 인증](https://mailpit.axllent.org/docs/configuration/http/), [Ollama 인증](https://docs.ollama.com/api/authentication)은 native Keycloak browser login 모델이 아님 | 유지 |
 | SonarQube Community | [공식 인증 목록](https://docs.sonarsource.com/sonarqube-server/2025.4/instance-administration/authentication/overview/)의 SAML/위임 인증과 OIDC를 구분 | 설치판에서 native OIDC 미확인, 유지 |
@@ -410,6 +410,36 @@ old callback URL을 재사용하지 않고 `/auth/login`에서 새 flow를 시�
 
 `/ui/auth/me` 등은 200인데 Pool/DAG/Asset만 403이면 authentication이 아니라
 Keycloak resource authorization 문제다.
+
+### Route Authentication Matrix
+
+Every Traefik HTTP router either carries `sso-errors@file,sso-auth@file` or
+appears below with the authentication that replaces it. There are no TCP
+routers, because ForwardAuth cannot protect them.
+`RouteAuthContractTests` in `tests/validation/test_compose_baseline_gates.py`
+fails when a router is neither, when this list names a router that no longer
+exists or now uses SSO, or when a router has no middleware at all (except
+`grafana-static`).
+
+| Router | Authentication without the SSO chain |
+| --- | --- |
+| `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao`, `superset` | native OIDC (Dozzle also IP allowlist) |
+| `keycloak`, `oauth2-proxy` | the identity provider and the ForwardAuth service |
+| `couchdb`, `haproxy-stats`, `neo4j` | application admin credentials |
+| `influxdb` | InfluxDB token (auth on by default) |
+| `mongo-express` | mongo-express basic auth (`ME_CONFIG_BASICAUTH=true`) |
+| `open-notebook` | application password and IP allowlist |
+| `opensearch` (both variants), `opensearch-dashboards` | OpenSearch security plugin |
+| `dashboard` (Traefik), `prometheus-api` | Traefik basic auth |
+| `s3` | S3 SigV4 identities |
+| `grafana-static` | none: two static files only |
+
+On 2026-09-24 (SPEC-0180 S18) four routes that reached an application with no
+identity check were closed: `qdrant` (HOME, no API key) and the Kafka
+`kafka-rest` and `schema-registry` APIs now use the SSO chain; `mongo-express`
+now enables the basic auth its credentials were meant for. The Qdrant gRPC
+TCP route was removed. Containers keep using the service names on their
+networks.
 
 ### 서비스별 정적 검증
 

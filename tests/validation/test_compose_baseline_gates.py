@@ -3147,9 +3147,6 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             self.assertIn(f"network.publish_host={address}", node["environment"])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class ConftestPolicyGateTests(unittest.TestCase):
     """The Conftest CI gate runs the declared job, and the job stays isolated."""
@@ -3285,3 +3282,79 @@ class StalwartRehearsalTests(unittest.TestCase):
         self.assertIn("Mailbox does not exist", replies)
         logs = self.compose("logs", "--no-color").stdout
         self.assertNotIn(self.secret, logs)
+
+
+# SPEC-0180 S18: every routed service without the SSO ForwardAuth chain must
+# name its own authentication. Keep in step with the route matrix in GDE-0079.
+ROUTES_WITHOUT_SSO = {
+    # Native OIDC (POL-0079 native list)
+    "airflow": "native-oidc",
+    "dozzle": "native-oidc",
+    "gatus": "native-oidc",
+    "grafana": "native-oidc",
+    "kafka-ui": "native-oidc",
+    "open-webui": "native-oidc",
+    "openbao": "native-oidc",
+    "superset": "native-oidc",
+    # The identity provider and the ForwardAuth service themselves
+    "keycloak": "identity-provider",
+    "oauth2-proxy": "identity-provider",
+    # Application or gateway credentials
+    "couchdb": "app-credentials",
+    "dashboard": "gateway-basic-auth",
+    "haproxy-stats": "app-credentials",
+    "influxdb": "app-token",
+    "mongo-express": "app-basic-auth",
+    "neo4j": "app-credentials",
+    "open-notebook": "app-password-and-ip-allowlist",
+    "opensearch": "security-plugin",
+    "opensearch-dashboards": "security-plugin",
+    "prometheus-api": "gateway-basic-auth",
+    # Signed machine API
+    "s3": "sigv4",
+    # Two static files (favicon, robots.txt)
+    "grafana-static": "static-only",
+}
+
+
+class RouteAuthContractTests(unittest.TestCase):
+    @staticmethod
+    def routers() -> dict[str, set[str]]:
+        import yaml
+
+        found: dict[str, set[str]] = {}
+        for path in sorted((ROOT / "infra").rglob("docker-compose.yml")):
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for service in (data.get("services") or {}).values():
+                labels = service.get("labels") or {}
+                if isinstance(labels, list):
+                    labels = dict(item.split("=", 1) for item in labels if "=" in item)
+                for key, value in labels.items():
+                    parts = key.split(".")
+                    if len(parts) > 3 and parts[:3] == ["traefik", "http", "routers"]:
+                        chain = found.setdefault(parts[3], set())
+                        if parts[4:] == ["middlewares"]:
+                            chain.update(str(value).split(","))
+                    if key.startswith("traefik.tcp.routers."):
+                        found.setdefault("tcp:" + key.split(".")[3], set())
+        return found
+
+    def test_every_router_is_behind_sso_or_names_its_authentication(self) -> None:
+        routers = self.routers()
+        self.assertFalse([r for r in routers if r.startswith("tcp:")], "TCP routes cannot use ForwardAuth")
+        unexplained = sorted(
+            r for r, chain in routers.items()
+            if "sso-auth@file" not in chain and r not in ROUTES_WITHOUT_SSO
+        )
+        self.assertEqual([], unexplained)
+        stale = sorted(
+            r for r in ROUTES_WITHOUT_SSO
+            if r not in routers or "sso-auth@file" in routers[r]
+        )
+        self.assertEqual([], stale)
+        bare = sorted(r for r, chain in routers.items() if not chain and ROUTES_WITHOUT_SSO.get(r) != "static-only")
+        self.assertEqual([], bare)
+
+
+if __name__ == "__main__":
+    unittest.main()

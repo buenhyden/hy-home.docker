@@ -90,7 +90,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
    mongodb://<user>:<password>@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin
    ```
 
-5. 관리 UI는 `mongo-express`가 제공하며 Traefik route `https://mongo-express.${DEFAULT_URL}`를 사용한다. 직접 host port publish는 현재 compose에 없다.
+5. 관리 UI는 `mongo-express`가 제공하며 Traefik route `https://mongo-express.${DEFAULT_URL}`를 사용한다. `ME_CONFIG_BASICAUTH=true`로 basic auth가 켜져 있어야 하며(mongo-express 1.x는 이 값 없이 자격 증명을 무시한다), 직접 host port publish는 현재 compose에 없다.
 
 ### Common Pitfalls
 
