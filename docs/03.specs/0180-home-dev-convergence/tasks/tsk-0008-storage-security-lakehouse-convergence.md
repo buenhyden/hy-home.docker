@@ -1025,7 +1025,8 @@ results only, no values.
 | --- | --- |
 | Session 1 (temporary root) | `kubernetes` auth enabled; policies `eso-read-platform`, `k8s-bootstrap`, `hy-home-operator` written; token role `k8s-bootstrap`; `secret/platform/argocd` version 1; root revoked (lookup rejected), generate-root not started. The ESO role write lost its namespace argument to a broken line continuation, and the snapshot, CA read and token write failed with permission denied because the container ran as its own non-root user |
 | Session 2 (`--user` = host uid, one-line commands) | snapshot `pre-k8s-role.snap` taken before root; role `eso-read-platform` bound to `external-secrets/external-secrets`; root revoked (lookup rejected); `auth/kubernetes/config` host `https://192.168.0.13:6550` with the new cluster CA, as the OIDC operator |
-| Bootstrap token | first write needed `-force`; reissued by the operator (pending confirmation) |
+| Bootstrap token | first write needed `-force`. The reissued token had policies `default`, `k8s-bootstrap`, orphan `true`, read `platform/argocd` allowed and `hy-home/02-auth/keycloak` denied, but a TTL of about 32 days: token roles ignore `token_ttl`/`token_max_ttl`, so the role had no cap. That token revokes itself; the operator reissues with `ttl=2h explicit_max_ttl=2h` |
+| Pending | next root session: `auth/token/roles/k8s-bootstrap` `token_explicit_max_ttl=2h` |
 
 RUN-0085 now carries the commands as run: host preparation, the client
 container with `--user`, one-line commands, root passed per command through a

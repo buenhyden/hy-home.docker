@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -205,7 +205,7 @@ R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
 R policy write hy-home-operator /policies/operator.hcl
 R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1h
 R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
-R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_ttl=2h token_max_ttl=2h
+R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_explicit_max_ttl=2h
 R kv put secret/platform/argocd valkey_password=@/s/valkey
 R token revoke -self
 R token lookup >/dev/null 2>&1 && echo "ROOT STILL VALID" || echo "root revoked"
@@ -222,10 +222,14 @@ changes; refresh `k3d-ca.crt` on the host first):
 ```sh
 bao write auth/kubernetes/config kubernetes_host=https://192.168.0.13:6550 kubernetes_ca_cert=@/s/k8s/k3d-ca.crt disable_local_ca_jwt=true
 bao read -field=kubernetes_host auth/kubernetes/config
-bao write -force -field=token auth/token/create/k8s-bootstrap > /s/k8s/k8s-bootstrap.token
+bao write -field=token auth/token/create/k8s-bootstrap ttl=2h explicit_max_ttl=2h > /s/k8s/k8s-bootstrap.token
+T="$(cat /s/k8s/k8s-bootstrap.token)"; BAO_TOKEN="$T" bao token lookup -format=json | grep -E '"(ttl|explicit_max_ttl)"'; unset T
 ```
 
-`-force` is required because the token role takes no data. Hand the token file
+Token roles ignore `token_ttl`/`token_max_ttl` (the role write only warns), so
+the role caps lifetime with `token_explicit_max_ttl`, and each request also
+asks for two hours. The lookup runs as the token itself (the operator has no
+`auth/token/lookup`); both values must be at most `7200`. Hand the token file
 to hy-home.k8s and delete it; never print it. Move the snapshot to protected
 custody.
 
