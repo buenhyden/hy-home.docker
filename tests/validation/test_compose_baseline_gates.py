@@ -3314,45 +3314,70 @@ ROUTES_WITHOUT_SSO = {
     "s3": "sigv4",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
+    # File-provider catch-all to the former k3s ingress; no gateway auth.
+    # Removal is an open owner decision (k3s change).
+    "k3s-ingress": "unauthenticated-legacy-k3s",
 }
 
 
 class RouteAuthContractTests(unittest.TestCase):
     @staticmethod
-    def routers() -> dict[str, set[str]]:
+    def routers() -> list[tuple[str, str, set[str] | None]]:
+        """Every HTTP/TCP router declaration as (source, name, chain).
+
+        Declarations are kept apart: two services may declare the same router
+        name, and a merged chain would hide one that lost its middleware.
+        A TCP router has chain None.
+        """
         import yaml
 
-        found: dict[str, set[str]] = {}
+        found: list[tuple[str, str, set[str] | None]] = []
         for path in sorted((ROOT / "infra").rglob("docker-compose.yml")):
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            for service in (data.get("services") or {}).values():
+            for service_name, service in (data.get("services") or {}).items():
                 labels = service.get("labels") or {}
                 if isinstance(labels, list):
                     labels = dict(item.split("=", 1) for item in labels if "=" in item)
+                chains: dict[str, set[str] | None] = {}
                 for key, value in labels.items():
                     parts = key.split(".")
-                    if len(parts) > 3 and parts[:3] == ["traefik", "http", "routers"]:
-                        chain = found.setdefault(parts[3], set())
+                    if len(parts) > 4 and parts[:3] == ["traefik", "http", "routers"]:
+                        chain = chains.setdefault(parts[3], set())
                         if parts[4:] == ["middlewares"]:
                             chain.update(str(value).split(","))
-                    if key.startswith("traefik.tcp.routers."):
-                        found.setdefault("tcp:" + key.split(".")[3], set())
+                    elif len(parts) > 4 and parts[:3] == ["traefik", "tcp", "routers"]:
+                        chains["tcp:" + parts[3]] = None
+                source = f"{path.relative_to(ROOT)}:{service_name}"
+                found += [(source, name, chain) for name, chain in chains.items()]
+        dynamic = ROOT / "infra/01-gateway/traefik/dynamic"
+        for path in sorted([*dynamic.glob("*.yml"), *dynamic.glob("*.yaml")]):
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            source = str(path.relative_to(ROOT))
+            for name, router in ((data.get("http") or {}).get("routers") or {}).items():
+                found.append((source, name, set(router.get("middlewares") or [])))
+            for name in (data.get("tcp") or {}).get("routers") or {}:
+                found.append((source, "tcp:" + name, None))
         return found
 
     def test_every_router_is_behind_sso_or_names_its_authentication(self) -> None:
         routers = self.routers()
-        self.assertFalse([r for r in routers if r.startswith("tcp:")], "TCP routes cannot use ForwardAuth")
+        tcp = [(src, name) for src, name, chain in routers if chain is None]
+        self.assertEqual([], tcp, "TCP routes cannot use ForwardAuth")
         unexplained = sorted(
-            r for r, chain in routers.items()
-            if "sso-auth@file" not in chain and r not in ROUTES_WITHOUT_SSO
+            (src, name)
+            for src, name, chain in routers
+            if "sso-auth@file" not in chain and name not in ROUTES_WITHOUT_SSO
         )
         self.assertEqual([], unexplained)
-        stale = sorted(
-            r for r in ROUTES_WITHOUT_SSO
-            if r not in routers or "sso-auth@file" in routers[r]
+        exempt = {name for _, name, chain in routers if "sso-auth@file" not in chain}
+        self.assertEqual([], sorted(set(ROUTES_WITHOUT_SSO) - exempt), "stale entries")
+        bare = sorted(
+            (src, name)
+            for src, name, chain in routers
+            if not chain
+            and ROUTES_WITHOUT_SSO.get(name)
+            not in {"static-only", "unauthenticated-legacy-k3s"}
         )
-        self.assertEqual([], stale)
-        bare = sorted(r for r, chain in routers.items() if not chain and ROUTES_WITHOUT_SSO.get(r) != "static-only")
         self.assertEqual([], bare)
 
 

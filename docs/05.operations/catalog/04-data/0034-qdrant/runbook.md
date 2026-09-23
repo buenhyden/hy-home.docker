@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: Triage root-active Qdrant service health, REST/gRPC route assumptions, persistence path, and evidence capture without destructive data actions.
+> Scope: Triage root-active Qdrant service health, REST route (SSO) assumptions, persistence path, and evidence capture without destructive data actions.
 
 이 런북은 health triage와 별도 승인 후 수행할 Qdrant snapshot의 격리 복원 rehearsal 계약을 제공한다. 이번 변경에서 snapshot create/recover API나 storage mutation은 실행하지 않았다.
 
 ### Purpose
 
-Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC Traefik route, snapshot path evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
+Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 REST Traefik route, snapshot path evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
 
 ## When to Use
 
@@ -63,6 +63,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 4. REST readiness를 확인한다.
 
    ```bash
+   # 6333 is the default QDRANT_PORT; substitute it if changed.
    docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'
    ```
 
@@ -117,7 +118,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, REST/gRPC T
 
 - Capture command names, pass/fail status, service state, image tag, sanitized logs, route labels, and readiness summary.
 - Do not capture vector payloads, collection data, credentials, or mutation API bodies.
-- Record whether the issue involves container health, REST route, gRPC route, persistence, or snapshot-path symptoms.
+- Record whether the issue involves container health, REST route, in-network gRPC, persistence, or snapshot-path symptoms.
 
 ## Rollback or Recovery
 

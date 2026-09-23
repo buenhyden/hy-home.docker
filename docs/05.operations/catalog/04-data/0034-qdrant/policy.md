@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, no-secret state, REST/gRPC routes와 `/readyz` healthcheck다.
+이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, no-secret state, SSO 뒤의 REST route와 `/readyz` healthcheck다.
 
 ## Policy Scope
 
@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 - **Required**: Documentation must describe Qdrant as a single unprivileged service, not as a cluster.
 - **Required**: Secret guidance must state the current no-secret compose state. API-key requirements require a compose change before being documented as active policy.
-- **Required**: External access guidance must stay behind declared Traefik REST/TCP routes and must not imply host port publishing.
+- **Required**: External access guidance must stay behind the declared SSO REST route and must not imply host port publishing or a gRPC route.
 - **Required**: Persistence and snapshot-path wording must match `qdrant-data:/qdrant/storage:rw` and `/qdrant/storage/snapshots`.
 - **Required**: Backup inventory records collection or full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention and restore evidence. Snapshot files remain protected even though current Compose lacks API authentication.
 - **Required**: Restore rehearsal uses a fresh isolated target with same minor or next minor compatibility, absent target collection unless an explicitly reviewed force action applies, and approximately twice the snapshot size in free disk.

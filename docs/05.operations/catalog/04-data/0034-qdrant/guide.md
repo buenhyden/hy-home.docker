@@ -21,7 +21,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, REST route, gRPC TCP route와 `/readyz` healthcheck를 사용한다.
+이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
 
 ### Current implementation
 
@@ -30,7 +30,7 @@ created: "2026-05-10"
 | Consumer and data rationale | HOME vector storage for AI/RAG consumers under `ai` and `ai-llm`; `qdrant` supports direct selection. |
 | Source / updater | [Compose](../../../../../infra/04-data/specialized/qdrant/docker-compose.yml) owns the image source; compatibility review owns snapshot/version changes. |
 | Services / profiles | Single `qdrant`; exact `ai`, `ai-llm`, `qdrant`. |
-| Flow / exposure | REST through Traefik HTTPS and gRPC through Traefik TCP; no host publication. |
+| Flow / exposure | REST through Traefik HTTPS behind SSO; gRPC only in-network on `qdrant:6334`; no host publication. |
 | Persistence / environment | `qdrant-data:/qdrant/storage`, snapshots under `/qdrant/storage/snapshots`; service ports/path are Compose environment keys. |
 | Secrets / security | No API-key secret is declared; authentication requirements require an implementation change. |
 | Health / resources | `/readyz`; `template-stateful-med`. |
@@ -54,7 +54,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 ### Prerequisites
 
 - 루트 [docker-compose.yml](../../../../../docker-compose.yml)에 `infra/04-data/specialized/qdrant/docker-compose.yml`가 active include인지 확인한다.
-- `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `QDRANT_PORT`, `QDRANT_GRPC_PORT` 값이 로컬 환경과 맞아야 한다.
+- `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `QDRANT_PORT`, `QDRANT_GRPC_PORT` 값이 로컬 환경과 맞아야 한다. 아래 명령의 `6333`은 기본 `QDRANT_PORT`이며, 바꿨다면 그 값으로 바꿔 쓴다.
 - 현재 compose에는 Qdrant API-key secret이 선언되어 있지 않다. 인증 정책을 추가하려면 compose, policy, guide, runbook을 같은 변경 단위로 갱신한다.
 
 ### Step-by-step Instructions
@@ -87,7 +87,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 ### Common Pitfalls
 
-- 현재 compose는 host port publish가 아니라 Traefik REST/TCP route와 internal expose를 사용한다.
+- 현재 compose는 host port publish가 아니라 SSO 뒤의 Traefik REST route와 internal expose를 사용한다.
 - Qdrant API-key secret은 현재 선언되어 있지 않다. 인증이 필요한 요구사항은 compose와 operations 문서를 함께 변경해야 한다.
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.

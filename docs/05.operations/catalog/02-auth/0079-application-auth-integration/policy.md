@@ -37,13 +37,14 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
   하나를 주 인증 경로로 명시한다.
-- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus, Superset이다.
+- 현재 Native OIDC 서비스는 Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Open WebUI, Gatus, Superset이다.
 - Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
-  (`RouteAuthContractTests`).
+  (`RouteAuthContractTests`). 예외는 file provider의 `k3s-ingress` 하나이며,
+  제거 여부는 owner 결정으로 남아 있다.
 - Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret으로 주입한다. OpenBao native
   OIDC secret은 승인된 절차로 auth backend에 저장한다. 비밀값은 공개 설정에 넣지 않는다.

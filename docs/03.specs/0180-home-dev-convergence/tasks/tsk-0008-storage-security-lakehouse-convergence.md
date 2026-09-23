@@ -1249,7 +1249,8 @@ stays with S18 (Task 0007 item 6).
 
 ### S18 — Route authentication alignment (source)
 
-All 49 Traefik HTTP routers were classified by what a request that passes
+All 50 Traefik HTTP router declarations (49 Compose labels and the
+file-provider `k3s-ingress`) were classified by what a request that passes
 Traefik meets (`gateway-standard-chain@file` is only retry and circuit
 breaker). Four reached an application with no identity check:
 
@@ -1273,6 +1274,18 @@ matrix. A negative run with the Kafka routes reverted fails and names both.
 The Open Notebook row in GDE-0079 said ForwardAuth was kept, but the router
 has not used it since `b90b74837`; the row now states the IP allowlist and
 application password.
+
+Independent review (3 Important, 4 Minor, all fixed): the test missed the
+file-provider router `k3s-ingress`, which has no gateway authentication, and
+merged router names, so dropping the `opensearch-node1` chain would have
+passed while the single-node declaration kept it. It now reads
+`infra/01-gateway/traefik/dynamic/` and checks each declaration; the same
+`opensearch-node1` mutation fails and names that service. `k3s-ingress` is
+listed as unauthenticated and deferred to the owner. The Qdrant guide,
+policy, runbook and README still described the gRPC route; the Kafka REST
+comment named the router instead of the service; POL-0079's native list
+lacked Dozzle and Grafana. The mongo-express premise still needs its live
+proof: an unauthenticated request returning 401 after the recreate.
 
 Also closed here, from the S17 review (merged before its review returned):
 the `mail_net` trust boundary (management API and IMAPS are reachable there
@@ -1390,6 +1403,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- File-provider router `k3s-ingress` (`infra/01-gateway/traefik/dynamic/k3s.yml`) forwards `*.k8s.` hosts to the former k3s ingress with no gateway authentication; GDE-0096 says it is unrelated to the current cluster. Remove it or put it behind SSO (owner; k3s change).
+- `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).
 
 - ~~Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).~~ Closed 2026-09-23: the row was replaced by the example placeholder after a private equality check (secret cleanup section).
 - Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).
