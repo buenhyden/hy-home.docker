@@ -518,6 +518,10 @@ check_09_tooling() {
   local sonarqube_compose="infra/09-tooling/sonarqube/docker-compose.yml"
   check_file "$sonarqube_compose"
   check_contains "$sonarqube_compose" "sso-auth@file" "sonarqube sso missing"
+
+  local wiremock_compose="infra/09-tooling/wiremock/docker-compose.yml"
+  check_file "$wiremock_compose"
+  check_contains "$wiremock_compose" '127.0.0.1:${WIREMOCK_HOST_PORT:-18088}:8080' "wiremock admin API publication must be loopback"
 }
 
 # --- Tier 10: Communication ---

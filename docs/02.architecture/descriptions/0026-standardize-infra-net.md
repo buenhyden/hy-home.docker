@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.2.3"
+version: "1.2.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -60,7 +60,8 @@ automatic address pool cannot take one first.
 | `k3d-hyhome` | external | Traefik, Prometheus, Alloy, Loki, Tempo, Grafana, `mng-valkey`, OpenBao, `pg-router` | measured k8s consumers |
 
 Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the
-project default network. `restic` and `backup-sqlite-export` keep
+project default network. WireMock also uses it until a named consumer exists;
+that network is then its trust boundary, and the consumer gets a scoped network. `restic` and `backup-sqlite-export` keep
 `network_mode: none`. Stalwart and Mailpit are on `edge_net`; a dedicated mail network is added in S17.
 
 ## Data Flow

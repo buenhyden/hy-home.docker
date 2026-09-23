@@ -1,6 +1,6 @@
 ---
 title: "09-tooling: Tooling Tier"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -25,6 +25,7 @@ The current map is exact:
 | `dependency-update` | `renovate` | one-shot remote repository maintenance |
 | `analytics-engineering` | `dbt-db-provision`, `dbt` (plus `mng-pg`, `mng-pg-init`) | one-shot transformation job; `run`/`build` write the target schema |
 | `backup` | `restic`, `backup-sqlite-export` | one-shot backup jobs driven by the host timer |
+| `api-mock` | `wiremock` | HTTP stub server for development and tests; loopback-only admin API |
 
 `tooling` does not select IaC or load generation. Terraform and Syncthing runtime
 were removed; OpenTofu is the current CLI engine. None of these services is part
@@ -54,6 +55,8 @@ documentation agents responsible for the tooling profile contract.
   A live job can create remote branches/PRs and needs explicit authorization.
 - [Restic](restic/README.md) snapshots data-disk files, consistent exports,
   `secrets/` and `.env` into two cross-disk repositories under a host timer.
+- [WireMock](wiremock/README.md) serves tracked, synthetic HTTP stubs. Its
+  admin API is unauthenticated, so the host port is bound to loopback only.
 
 ## Structure
 
@@ -68,6 +71,7 @@ documentation agents responsible for the tooling profile contract.
 ├── renovate/    # dependency-update job
 ├── dbt/         # analytics-engineering transformation job
 ├── restic/      # backup jobs, exclude lists, host orchestrator and timer
+├── wiremock/    # HTTP stub server and tracked mappings
 └── README.md
 ```
 
@@ -75,7 +79,7 @@ documentation agents responsible for the tooling profile contract.
 
 Use the [documentation index](../../docs/README.md), then the exact Stage 05
 subjects under `docs/05.operations/catalog/09-tooling/` (`0061`, `0062`, `0065`,
-`0066`, `0069`, `0082`, `0083`). Run from the repository root:
+`0066`, `0069`, `0082`, `0083`, `0090`, `0092`). Run from the repository root:
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 09-tooling

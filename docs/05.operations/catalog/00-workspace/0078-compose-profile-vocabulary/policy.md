@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.5.2"
+version: "1.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -43,6 +43,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
 | `analytics-engineering` | capability | dbt 변환 작업과 feature 소유 DB 권한 준비; 명시적 명령만 쓰기 수행 | `mng-pg`, `mng-pg-init`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
+| `api-mock` | capability | 개발·테스트용 HTTP stub 서버; tracked mapping만 제공 | `wiremock` | No | normal service startup; admin API는 loopback 전용 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `backup` | automation | Restic 백업·SQLite export 작업; host timer와 명시적 명령만 실행 | `restic`, `backup-sqlite-export` | No | backup repository and export staging writes when run | current |
@@ -157,6 +158,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
+| api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
 
 ## Exceptions
 
