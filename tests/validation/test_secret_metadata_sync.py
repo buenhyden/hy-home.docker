@@ -756,9 +756,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertEqual(208, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
-            contract["required"]
-            | contract["optional"]
-            | contract["orphan"],
+            contract["required"] | contract["optional"] | contract["orphan"],
         )
 
     def test_environment_scanner_mutations_fail_closed_without_shell_false_positives(
@@ -779,7 +777,6 @@ class PublicSecretSchemaTests(unittest.TestCase):
         with_orphan = self.env_text + "\nUNUSED_CONTRACT_KEY=value\n"
         contract = environment_contract(self.compose_texts, with_orphan)
         self.assertIn("UNUSED_CONTRACT_KEY", contract["orphan"])
-
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = secret_contract(
