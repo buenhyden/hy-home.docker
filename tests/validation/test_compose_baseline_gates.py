@@ -3131,6 +3131,19 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         airflow = self._services()["airflow-apiserver"]["environment"]
         self.assertIn("10.250.1.2", airflow["FORWARDED_ALLOW_IPS"].split(","))
 
+    def test_no_service_pins_keycloak_to_the_host_gateway(self) -> None:
+        # Traefik publishes only on TRAEFIK_BIND_IP, so host-gateway has no
+        # listener on 443; containers reach Keycloak through the edge_net alias.
+        pinned = sorted(
+            name
+            for name, service in self._services().items()
+            if any(
+                "keycloak." in str(host) or "auth." in str(host)
+                for host in service.get("extra_hosts") or []
+            )
+        )
+        self.assertEqual([], pinned)
+
     def test_servers_do_not_bind_to_one_network_address(self) -> None:
         # A multi-homed server bound to its own name listens only on the
         # network that name happens to resolve on.
