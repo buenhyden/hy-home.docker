@@ -14,7 +14,7 @@
   ],
 
   "pip_requirements": {
-    "description": "Only image-local Python pins under infra/ belong to Renovate; scripts/ CI requirements keep their existing manual ownership",
+    "description": "Only image-local Python pins under infra/ belong to Renovate; the scripts/ CI requirements and tests/requirements-integration.txt keep their existing manual ownership",
     "managerFilePatterns": [
       "/^infra\\/.+\\/requirements\\.txt$/"
     ]

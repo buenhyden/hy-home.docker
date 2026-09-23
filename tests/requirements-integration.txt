@@ -1,0 +1,3 @@
+# Opt-in dependencies for tests/integration/. These need a Docker daemon and
+# are never installed by the CI validation profiles.
+testcontainers[postgres]>=4.9,<5.0

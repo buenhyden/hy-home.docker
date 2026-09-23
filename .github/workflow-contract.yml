@@ -734,6 +734,7 @@
         "tests.validation.test_compose_baseline_gates",
         "tests.validation.test_openwebui_oidc_entrypoint",
         "tests.validation.test_gatus_oidc",
+        "tests.validation.test_mng_pg_init_sql",
         "-v"
       ],
       "cwd": ".",

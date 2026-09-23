@@ -699,16 +699,46 @@ so the `lab_net` aliases were not exercised live.
 | Reachability | `redisinsight` resolves `mng-valkey`; `n8n-valkey` and `airflow-valkey` do not resolve because the `dedicated-valkey` profile is not running. `mlflow` resolves `seaweedfs-s3`, `alloy` resolves `loki` |
 | Gatus | 6 of 7 endpoints up; `OpenBao` is the one down |
 
-OpenBao sealed on restart, which is what a Shamir seal does and which this step
-did not anticipate. The unseal ceremony is the owner-controlled procedure in
-RUN-0085: two of three shares pasted at the hidden prompt of
-`docker compose exec openbao bao operator unseal`. The Agent additionally needs a
-fresh AppRole SecretID, because a SecretID is single-use and the Agent deletes
-its file after reading it; until then it logs `no known secret ID`. No running
-consumer broke — the rendered Agent outputs persist in the
-`openbao-agent-out` volume — but `sys/metrics` returns 503 while sealed, so the
-`openbao` scrape target and the Gatus endpoint stay down. Recorded as a
-deferred item for the owner.
+OpenBao sealed on restart, as it did at the phase 1 apply, and the plan should
+have named the unseal ceremony as part of this step rather than leaving it to
+be discovered. The owner unsealed it the same day: `sealed=false`, the
+`openbao` scrape target returned to `up=1`. The Agent still needs a fresh
+AppRole SecretID, because a SecretID is single-use and the Agent deletes its
+file after reading it; until then it logs `no known secret ID`. No running
+consumer broke — the rendered Agent outputs persist in the `openbao-agent-out`
+volume. The SecretID delivery stays with the owner under RUN-0085.
+
+### S09 — Testcontainers (source)
+
+Testcontainers is a test library, not a service, so S09 adds no Compose file,
+no profile row and no m0021 inventory row. The S01 target structure reserved
+`tests/integration/`, but the CI gate adapter admits only `tests.validation`
+and `tests.lib` modules and every test module must be reachable from the full
+profile, so the test lives in `tests/validation/` and joins the
+`compose-baseline-regressions` suite, where it reports as skipped.
+
+| Unit | Change |
+| --- | --- |
+| Subject | `mng-pg-init`'s bootstrap SQL. `test_compose_baseline_gates.py` already proves statically that the job passes every `psql` variable the script reads; nothing proved the script runs. The file is `\gexec` and `\connect` meta-commands that only `psql` executes, and the job reruns on every `core` start, so a non-idempotent statement fails the stack instead of a gate |
+| Test | `tests/validation/test_mng_pg_init_sql.py`: starts PostgreSQL through Testcontainers, runs the real SQL twice with the same variables the job passes, then asserts the five feature roles, the service role, their databases and each database's owner |
+| Image pin | read from `services.mng-pg-init.image` in the Compose file, so the test cannot drift from the declaration it exercises |
+| Opt-in | skips unless `HYHOME_INTEGRATION=1` and `testcontainers` is importable, so `unittest discover -s tests` stays runnable with no Docker daemon and the CI profiles, which do not install the dependency, are unaffected |
+| Dependencies | `tests/requirements-integration.txt`. Renovate's `pip_requirements` manager covers only `infra/**/requirements.txt`, so this file is manually owned like `scripts/requirements.txt`; the Renovate description now says so |
+| Documents | `tests/README.md` gains the structure row and an opt-in run section (1.0.3 → 1.1.0) |
+
+Evidence: 2/2 pass against the declared `postgres:18.6-alpine` in 18s; the same
+discovery skips both with a reason when the opt-in is absent. The host has no
+`pip`, so the real run used a `python:3.12` container with the Docker socket,
+`--network host` and the repository bind-mounted at its own absolute path.
+
+Sequential review findings and their disposition:
+
+| Finding | Disposition |
+| --- | --- |
+| a generated random password would repeat the GitGuardian false positive that PR #200 hit | one visible placeholder constant, with a comment saying why an empty password is not an option |
+| a hard-coded image tag would drift from the job it claims to exercise | the tag is read from the Compose declaration |
+| a new dependency surface with no named update owner breaks the Behavior Contract | Renovate's `pip_requirements` description names it as manually owned |
+| the changed gate failed `test_every_test_module_is_reachable_from_the_full_profile`: the module was in no suite, and a `tests.integration` module is outside the adapter grammar | moved to `tests/validation/` and registered in `leaf.compose-baseline-regressions`, not a widened adapter grammar |
 
 ## Verification Evidence
 
@@ -731,6 +761,9 @@ deferred item for the owner.
 | S05 phase 1 live | Task 10 / S05 | PASS with one open item: 53 services recreated and healthy, SSO and forwarded headers verified; OpenBao sealed until the owner unseals | this Task |
 | S06 source and rehearsal | Task 10 / S06 | PASS: 6/6 `SeaweedfsRehearsalTests`, 2/2 `SeaweedfsContractTests`, secret registry 110 rows (STRG-007–010) | GDE/POL/RUN-0024 |
 | S06 HOME activation | Task 10 / S06 | PASS: healthy, anonymous refused, admin bucket round trip, only S3 routed, isolated internals, SeaweedFS set in the Restic snapshot; registry Value cells pending the owner's `SEC-003` repair | RUN-0024 |
+| S05 phase 2 source | Task 10 / S05 | PASS: 135 attachments removed across 41 Compose files, `infra_net` and its env keys gone, 13 `check_service_network` assertions replace the fixed-address ones; review findings fixed | this Task, AD-0026 |
+| S05 phase 2 live | Task 10 / S05 | PASS: 56 containers recreated, `infra_net` removed, Loki container coverage 6 → 56, SSO 302, Gatus 6/7 then 7/7 after the owner's unseal; Agent SecretID open | this Task |
+| S09 Testcontainers | Task 10 / S09 | PASS: 2/2 integration tests against the declared PostgreSQL pin after the move to `tests/validation/`; skip-without-opt-in verified; `run-ci-gate.py --profile changed` exit 0 | tests README |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -777,7 +810,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 - Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
 - `examples/operations/compose-core-readiness/` keeps `INFRA_SUBNET`/`INFRA_GATEWAY` and its own Vault rig; restate the example or declare it intentionally generic (owner).
-- OpenBao is sealed after the S05 phase 2 recreate: two of three Shamir shares must be pasted at the hidden prompt of `docker compose exec openbao bao operator unseal`, and the Agent then needs a fresh single-use AppRole SecretID. `sys/metrics` returns 503 until both are done, so the `openbao` scrape target and the Gatus endpoint stay down (owner).
+- OpenBao Agent has no SecretID after the S05 phase 2 recreate: a SecretID is single-use and the Agent deletes its file after reading it, so every Agent restart needs a fresh one delivered through the RUN-0085 protected channel. Until then the Agent logs `no known secret ID` and renders nothing new (owner).
+- Every OpenBao restart costs an unseal ceremony and an Agent SecretID delivery, and this has now interrupted two approved recreates. Decide whether that stays manual or moves to an auto-unseal seal (OpenBao subject owner).
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
 - `hy-home.k8s` External Secrets store repoint from Vault `.8` to OpenBao (other repository).
