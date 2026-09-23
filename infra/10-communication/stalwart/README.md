@@ -52,7 +52,7 @@ stalwart/
 | Configuration | `config/plan.ndjson`을 `stalwart-config`가 적용; listener 변경은 다음 재시작부터 |
 | Secret | `stalwart_password` (COMM-006) → recovery admin; Compose에 credential 없음 |
 | Host ports | 없음. SMTP 25·submission 587·IMAPS 993은 `mail_net` 전용 |
-| Relay | 없음 (`allowRelaying = false`); 설정 도메인 밖 수신자는 `550 5.1.2` |
+| Relay | 없음 (`allowRelaying = false`); 설정 도메인 밖 수신자는 SMTP `550`(`Relay not allowed`) |
 | UI | `mail.${DEFAULT_URL}` → 8080, Traefik SSO 보호 |
 
 ## Service Readiness

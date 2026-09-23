@@ -32,8 +32,8 @@ approved upgrade. Work from the root and use synthetic mail only.
 2. Separate management UI, SMTP/submission, IMAPS and configuration symptoms.
    A listener that is missing or extra after a restart means the plan did not
    apply: `docker compose --profile mail-server run --rm stalwart-config`,
-   then restart `stalwart`. Relay attempts must answer `550 5.1.2 Relay not
-   allowed`. Redact addresses, subjects, bodies, tokens, and credentials.
+   then restart `stalwart`. Relay attempts must be refused with SMTP `550` and
+   `Relay not allowed`. Redact addresses, subjects, bodies, tokens, and credentials.
 3. Verify listener certificate/SNI, auth and relay policy, DNS records, disk, and
    actual configured storage backends. Do not treat an SMTP socket as safe relay.
 4. Restart only Stalwart after storage/listener checks. Verify relay denial and
