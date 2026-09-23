@@ -1,10 +1,10 @@
 ---
 title: "Tooling Tier Architecture Description"
-version: "2.0.2"
+version: "2.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -82,7 +82,10 @@ created: "2026-03-26"
   profile이 서비스를 선택한다. `tooling`은 Registry와 SonarQube만,
   `testing`은 k6와 Locust master/worker 모두, `iac`은 OpenTofu와 Terrakube
   API/UI/executor 모두, `dependency-update`는 Renovate만 선택한다. `registry`
-  와 `sast`는 해당 단일 역할을 선택한다. 이 도구들은 HOME에 포함되지 않는다.
+  와 `sast`는 해당 단일 역할을 선택한다. `analytics-engineering`은 dbt와 그
+  DB provisioning 작업, `contract-testing`은 Pact Broker와 그 DB provisioning
+  작업, `api-mock`은 WireMock, `backup`은 Restic과 SQLite export 작업,
+  `policy-check`는 Conftest 작업만 선택한다. 이 도구들은 HOME에 포함되지 않는다.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability
