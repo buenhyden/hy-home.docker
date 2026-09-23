@@ -35,6 +35,7 @@ documented operating boundaries.
 | [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
 | [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
 | [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`, `seaweedfs`, `storage-seaweedfs` | HOME | S3 store that replaced MinIO (S07) and serves the Iceberg REST catalog (S12); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
+| [`analytics/superset`](analytics/superset/README.md) | `bi` | OPTIONAL | Superset BI web with Keycloak native OIDC; metadata in `mng-pg`; queries the lakehouse through Trino |
 | [`lakehouse/flink`](lakehouse/flink/README.md) | `lakehouse` | OPTIONAL | Flink session cluster for streaming and batch SQL into the SeaweedFS Iceberg catalog; Kafka on `kafka_net`; loopback REST only |
 | [`lakehouse/great-expectations`](lakehouse/great-expectations/README.md) | `lakehouse` | OPTIONAL | One-shot GX Core job checking Iceberg tables through Trino against tracked suites |
 | [`lakehouse/trino`](lakehouse/trino/README.md) | `lakehouse` | OPTIONAL | Single-node Trino SQL engine on the SeaweedFS Iceberg catalog; loopback HTTP only |

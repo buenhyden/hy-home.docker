@@ -1,0 +1,126 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-superset-common: &superset-common
+  profiles:
+    - bi
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: hy-home/superset:6.1.0-local
+  environment:
+    DEFAULT_URL: '${DEFAULT_URL}'
+    SUPERSET_DB_HOST: mng-pg
+    SUPERSET_DB_PORT: '${POSTGRES_PORT:-5432}'
+    SUPERSET_DB_USER: '${SUPERSET_DB_USER:-superset}'
+    SUPERSET_DB_NAME: '${SUPERSET_DB_NAME:-superset}'
+    SUPERSET_OIDC_CLIENT_ID: '${SUPERSET_OIDC_CLIENT_ID:-home-superset}'
+  # SUPERSET_HOME holds logs and uploads only; the metadata lives in mng-pg.
+  # /tmp (CA bundle) and /run come from the read-only templates.
+  tmpfs:
+    - /app/superset_home:uid=1000,gid=1000
+  volumes:
+    - ./superset_config.py:/app/pythonpath/superset_config.py:ro
+    - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+  secrets:
+    - superset_secret_key
+    - superset_db_password
+    - superset_oidc_client_secret
+  labels:
+    <<: *tier-label
+
+services:
+  # Feature-owned metadata database provisioning on mng-pg.
+  superset-db-provision:
+    profiles:
+      - bi
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: superset-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: SUPERSET_DB_USER SUPERSET_DB_NAME
+      PROVISION_SECRETS: SUPERSET_DB_PASSWORD=/run/secrets/superset_db_password
+      SUPERSET_DB_USER: '${SUPERSET_DB_USER:-superset}'
+      SUPERSET_DB_NAME: '${SUPERSET_DB_NAME:-superset}'
+    volumes:
+      - ../../operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - superset_db_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      mng-pg-init:
+        condition: service_completed_successfully
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  # Schema migration, default roles and permissions, and the `lakehouse`
+  # database entry (Trino). Idempotent; re-run after an image upgrade.
+  superset-init:
+    <<: *superset-common
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-med
+    container_name: superset-init
+    entrypoint:
+      - /bin/sh
+      - -ec
+    command:
+      - |
+        superset db upgrade
+        superset init
+        superset set-database-uri --database_name lakehouse --uri 'trino://superset@trino:8080/lakehouse'
+    depends_on:
+      superset-db-provision:
+        condition: service_completed_successfully
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  superset:
+    <<: *superset-common
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-med
+    mem_limit: 1g
+    container_name: superset
+    healthcheck:
+      test: [ 'CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost:8088/health' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    networks:
+      edge_net: {}
+      mng_data_net: {}
+      # Trino, when the `lakehouse` profile is also selected.
+      object_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.superset.rule: Host(`superset.${DEFAULT_URL}`)
+      traefik.http.routers.superset.entrypoints: websecure
+      traefik.http.routers.superset.tls: 'true'
+      traefik.http.routers.superset.middlewares: gateway-standard-chain@file
+      traefik.http.services.superset.loadbalancer.server.port: '8088'

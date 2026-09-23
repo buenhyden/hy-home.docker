@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.2.0"
+version: "0.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-23"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -37,8 +37,8 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
   하나를 주 인증 경로로 명시한다.
-- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus다.
-- Airflow/Kafbat/OpenBao/Open WebUI/Gatus Traefik router는 `gateway-standard-chain@file`만 사용한다.
+- 현재 Native OIDC 서비스는 Airflow, Kafbat UI, OpenBao, Open WebUI, Gatus, Superset이다.
+- Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
 - Open WebUI, Gatus, Terrakube의 ForwardAuth 제거는 Task 0004의 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
@@ -88,7 +88,7 @@ bash scripts/hardening/check-all-hardening.sh 08-ai
 
 추가 검증:
 
-- Airflow/Kafbat/OpenBao/Open WebUI/Gatus router = gateway-only; Gatus는 외부 metrics 제외
+- Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset router = gateway-only; Gatus는 외부 metrics 제외
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
 - Compose client secret Docker Secret mapping

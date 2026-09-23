@@ -868,6 +868,12 @@ FEATURE_JOBS = (
         "infra/09-tooling/pact-broker/provisioning/mng-pg.sql",
         {"contract-testing"},
     ),
+    (
+        "infra/04-data/analytics/superset/docker-compose.yml",
+        "superset-db-provision",
+        "infra/04-data/analytics/superset/provisioning/mng-pg.sql",
+        {"bi"},
+    ),
 )
 FEATURE_SECRETS = {
     "mlflow_db_password",
@@ -875,6 +881,7 @@ FEATURE_SECRETS = {
     "debezium_postgres_password",
     "seaweedfs_s3_mlflow_secret_key",
     "pact_broker_db_password",
+    "superset_db_password",
 }
 
 
@@ -942,7 +949,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual(
                     set(), set(service.get("secrets", [])) & FEATURE_SECRETS
                 )
-                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium|pact")
+                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium|pact|superset")
 
     def test_feature_jobs_supply_every_input_without_argv_secrets(self) -> None:
         for compose, job, sql_path, profiles in FEATURE_JOBS:
@@ -1165,6 +1172,10 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             "mlflow_db_password": "ml'quote\\slash pw",
             "dbt_db_password": "dbt-synthetic",
             "debezium_postgres_password": "dbz-synthetic",
+            "superset_db_password": "ss'quote\\slash@pw",
+            "superset_secret_key": "synthetic-superset-signing-key",
+            "superset_oidc_client_secret": "synthetic-oidc",
+            "rootCA.pem": "not used offline",
         }.items():
             cls.write_secret(name, value)
         cls.base_init()
@@ -1387,6 +1398,67 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         self.assertEqual(
             "1", self.sql("SELECT 1", "app_db", "app_user", "f").stdout.strip()
         )
+
+    def test_6_superset_migrates_and_serves_on_its_own_database(self) -> None:
+        # SPEC-0180 S16: provisioning, the init job's own command twice, then
+        # the web server; the password carries a quote, a backslash and an @.
+        self.assertEqual(0, self.provision("superset-db-provision").returncode)
+        compose = "infra/04-data/analytics/superset/docker-compose.yml"
+        init = _compose_service(compose, "superset-init")
+        image = init["image"]
+        built = subprocess.run(
+            ["docker", "build", "-q", "-t", image, str(ROOT / "infra/04-data/analytics/superset")],
+            capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(0, built.returncode, built.stderr)
+        env = {key: _default(str(value)) for key, value in init["environment"].items()}
+        env.update(DEFAULT_URL="rehearsal.invalid", SUPERSET_DB_HOST=f"{self.tag}-db")
+        base = ["docker", "run", "--network", self.tag, "--read-only",
+                "--tmpfs", "/tmp", "--tmpfs", "/app/superset_home:uid=1000,gid=1000",
+                "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+                "-v", f"{self.secrets}:/run/secrets:ro",
+                "-v", f"{self.secrets / 'rootCA.pem'}:/etc/ssl/certs/hy-home-rootCA.pem:ro",
+                "-v", f"{ROOT / compose.rsplit('/', 1)[0]}/superset_config.py:/app/pythonpath/superset_config.py:ro"]
+        for key, value in env.items():
+            base += ["-e", f"{key}={value}"]
+        for _ in range(2):
+            ran = subprocess.run(
+                [*base[:2], "--rm", *base[2:], "--entrypoint", init["entrypoint"][0],
+                 image, *init["entrypoint"][1:], *init["command"]],
+                capture_output=True, text=True, timeout=600, check=False,
+            )
+            self.assertEqual(0, ran.returncode, ran.stdout[-2000:] + ran.stderr[-2000:])
+        self.assertEqual(
+            "lakehouse|trino://superset@trino:8080/lakehouse",
+            self.sql("SELECT database_name, sqlalchemy_uri FROM dbs", "superset",
+                     "superset", "ss'quote\\slash@pw").stdout.strip(),
+        )
+        web = f"{self.tag}-superset"
+        self.addCleanup(subprocess.run, ["docker", "rm", "-f", web], capture_output=True)
+        started = subprocess.run([*base[:2], "-d", "--name", web, *base[2:], image],
+                                 capture_output=True, text=True, check=False)
+        self.assertEqual(0, started.returncode, started.stderr)
+
+        def curl(path: str) -> str:
+            return subprocess.run(
+                ["docker", "exec", web, "curl", "-s", "-o", "/dev/null", "-w",
+                 "%{http_code}", f"http://localhost:8088{path}"],
+                capture_output=True, text=True, check=False,
+            ).stdout
+
+        for _ in range(60):
+            if curl("/health") == "200":
+                break
+            subprocess.run(["sleep", "3"], check=True)
+        self.assertEqual("200", curl("/health"))
+        self.assertEqual("401", curl("/api/v1/database/"))
+        login = subprocess.run(["docker", "exec", web, "curl", "-s", "http://localhost:8088/login/"],
+                               capture_output=True, text=True, check=False).stdout
+        self.assertIn("keycloak", login)
+        environ = subprocess.run(["docker", "exec", web, "env"],
+                                 capture_output=True, text=True, check=False).stdout
+        self.assertNotIn("slash@pw", environ)
+        self.assertNotIn("synthetic-oidc", environ)
 
     def test_2_invalid_inputs_fail_before_any_change(self) -> None:
         cases = {

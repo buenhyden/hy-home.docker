@@ -47,6 +47,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `backup` | automation | Restic 백업·SQLite export 작업; host timer와 명시적 명령만 실행 | `restic`, `backup-sqlite-export` | No | backup repository and export staging writes when run | current |
+| `bi` | capability | Superset BI 웹과 feature 소유 metadata DB; Keycloak native OIDC | `mng-pg`, `mng-pg-init`, `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); Trino는 `lakehouse` profile로 함께 선택 | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |
 | `cdc` | capability | Debezium PostgreSQL CDC 원천 준비와 Connect worker | `mng-pg`, `mng-pg-init`, `kafka-1`, `schema-registry`, `kafka-connect`, `debezium-db-provision` | No | initialization: debezium-db-provision (복제 role·grant·publication); connector 등록·snapshot은 별도 승인 | current |
@@ -157,12 +158,13 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
-| mlops / data-science / analytics-engineering / cdc / contract-testing | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
+| mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
 | contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
 | lakehouse | `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Kafka는 별도 profile로 선택. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
+| bi | native OIDC 서비스이므로 router는 `gateway-standard-chain@file`만 사용하고 host port 없음; 가입 사용자는 `Gamma`(데이터 접근 없음) |
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
 
 ## Exceptions

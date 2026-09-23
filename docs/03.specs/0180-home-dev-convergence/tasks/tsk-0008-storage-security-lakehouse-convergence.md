@@ -1160,6 +1160,56 @@ Sequential review (read-only reviewer): no Critical.
 | m0021 lifecycle cell carried Spark's text | fixed for `great-expectations`, and for the `trino` and `flink-*` rows that had the same copy |
 | One- or three-part table names, errors sharing exit `1`, unread `name`, unused `GX_SUITES_DIR`, a needless `chmod` layer, image tag drift on a GX bump, unpinned job template | fixed: two-part check, exit `2` for errors, `name` must match, path inlined, layer removed, README step, hardening pin |
 
+### S16 — Superset with Keycloak OIDC (source)
+
+New leaf `infra/04-data/analytics/superset/` under a new `bi` profile and a new
+Stage 05 subject `04-data/0097-superset`. The image is `apache/superset` plus
+the PostgreSQL driver, Authlib and the Trino dialect (`requirements.txt`,
+Renovate). `superset-db-provision` creates the feature-owned role and database
+on `mng-pg` through the shared runner; `superset-init` migrates, syncs roles
+and registers `lakehouse` as `trino://superset@trino:8080/lakehouse`; the web
+server runs one gunicorn process behind Traefik.
+
+| Unit | Change |
+| --- | --- |
+| Login | Flask-AppBuilder OAuth with provider `keycloak` (client `home-superset`, PKCE S256, userinfo at `<realm>/protocol/openid-connect/userinfo`); registration role `Gamma`; router `gateway-standard-chain@file` only (POL-0079 native OIDC list) |
+| Secrets | PG-028 database password, PG-029 user, IAM-013 client secret, AUTO-020 signing key; all Docker secret files read by `superset_config.py`. The migration engine reads only the URI, so the URI with the password is built in memory (`URL.create`); nothing puts a credential in the environment or argv |
+| Trust | public CAs plus the local root CA written to `/tmp` for the Keycloak calls |
+| Checks | hardening pins OIDC, `Gamma`, PKCE, the file-based key, no key variable and no port; feature-job contract and secret-metadata tests (public 275, optional 216, declarations 86, rows 119); version projection |
+| Documents | GDE/POL/RUN-0097 (Keycloak client spec and first admin), POL-0078 `bi`, POL/GDE-0079 client matrix, `04-data` READMEs, m0021 rows |
+
+Rehearsal (`FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`,
+throwaway PostgreSQL on an internal network, a database password with a quote,
+a backslash and an `@`): provisioning, the init job's own command twice, the
+`lakehouse` row in `dbs`, `/health` `200`, anonymous `/api/v1/database/`
+`401`, the Keycloak option on `/login/`, and no password or client secret in
+the container environment. The class passes 6/6. A negative hardening run with
+registration role `Admin` fails on that pin. The first probe showed the
+migration engine ignores `SQLALCHEMY_ENGINE_OPTIONS` (`fe_sendauth: no
+password supplied`), which is why the URI carries the password.
+
+Live is NOT_RUN: the Keycloak client `home-superset` (a remote change),
+IAM-013, secret generation, the image build and the first admin are the
+owner's, each approved. Group-based access (`allowed_groups`) stays an open
+owner decision; until then any realm user can log in as `Gamma`.
+
+Sequential review (read-only reviewer): no Critical.
+
+| Finding | Disposition |
+| --- | --- |
+| No hardening control for the router chain | fixed: gateway chain pinned, `sso-auth` refused |
+| CA bundle rewritten in place on every config import | fixed: staged per process and replaced atomically |
+| Missing secret or root CA surfaced as a bare traceback | fixed: named `superset: … is missing or not a file` error |
+| Authlib pinned over the image's own copy | kept: the base image has no Authlib (`ModuleNotFoundError` in the probe); comment added |
+| Rate-limit store line repeats the default | removed |
+| POL-0078 closure row lacked `bi` | fixed |
+| Runbook `exec` without `--profile bi`; throwaway admin password in argv | fixed: profile added; the password is unusable without form login and is not kept |
+| `/tmp` arrives only from the template | comment added (same as Flink) |
+| `ENABLE_PROXY_FIX` trusts forwarded headers from any `edge_net` peer | not changed: repository-wide pattern; belongs to the network-flow policy |
+| `superset-init` holds the client secret it does not use | not changed: the shared config reads it at import |
+
+The Keycloak userinfo round trip is unverified until the live login.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -1189,6 +1239,7 @@ Sequential review (read-only reviewer): no Critical.
 | S12 Spark and Iceberg | Task 10 / S12 | PASS: Compose, catalog, hardening, version projection, metadata check-changed, provisioning and secret tests; isolated catalog and Spark round trip with the scoped identity; SeaweedFS rehearsal 8/8; review findings applied; `run-ci-gate.py --profile changed` exit 0; live NOT_RUN | 0094 subject |
 | S14 Flink | Task 10 / S14 | PASS (source): Compose, catalog, hardening (with a negative), version projection, secret-metadata tests; isolated batch and checkpointed streaming inserts; SeaweedFS rehearsal 10/10; live NOT_RUN | 0094 subject |
 | S15 Great Expectations | Task 10 / S15 | PASS (source): Compose, catalog, hardening (with a negative), version projection, links, metadata; isolated pass then exit `1` on a duplicate key; exit `2` error paths; live NOT_RUN | 0094 subject |
+| S16 Superset | Task 10 / S16 | PASS (source): Compose, catalog, hardening (with a negative), projection, links, metadata, feature-job and secret-metadata tests; isolated provisioning, idempotent init, health, `401`, OIDC option, no credential in env; PostgreSQL rehearsal 6/6; live NOT_RUN | 0097 subject |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence

@@ -491,6 +491,19 @@ check_04_data() {
   check_contains "$gx_compose" "./suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
   check_not_contains "$gx_compose" "ports:" "great-expectations must not publish a port"
   check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
+  # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
+  local superset_compose="infra/04-data/analytics/superset/docker-compose.yml"
+  local superset_config="infra/04-data/analytics/superset/superset_config.py"
+  check_file "$superset_compose"
+  check_file "$superset_config"
+  check_contains "$superset_config" "AUTH_TYPE = AUTH_OAUTH" "superset must log in through Keycloak OIDC"
+  check_contains "$superset_config" 'AUTH_USER_REGISTRATION_ROLE = "Gamma"' "superset self-registration must grant no data access"
+  check_contains "$superset_config" '"code_challenge_method": "S256"' "superset OIDC must use PKCE"
+  check_contains "$superset_config" 'SECRET_KEY = _secret("superset_secret_key")' "superset signing key must come from a secret file"
+  check_not_contains "$superset_compose" "SUPERSET_SECRET_KEY" "superset signing key must not be an environment variable"
+  check_not_contains "$superset_compose" "ports:" "superset must be reached only through Traefik"
+  check_contains "$superset_compose" "traefik.http.routers.superset.middlewares: gateway-standard-chain@file" "superset native oidc gateway chain missing"
+  check_not_contains "$superset_compose" "sso-auth" "superset double-auth middleware must not be enabled"
   if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
     fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
   fi
