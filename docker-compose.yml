@@ -278,6 +278,8 @@ secrets:
   # ── Crawl4AI ───────────────────────────────────────────────────
   crawl4ai_api_token:
     file: ./secrets/tools/crawl4ai_api_token.txt
+  qdrant_api_key:
+    file: ./secrets/data/qdrant_api_key.txt
   # ── Web Scraper (Playwright) ─────────────────────────────────
 
   mlflow_db_password:

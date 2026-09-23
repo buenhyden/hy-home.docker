@@ -746,6 +746,7 @@ class MailpitHealthContractTests(unittest.TestCase):
                 "scripts/hardening/check-all-hardening.sh",
                 "scripts/lib/hardening-lib.sh",
                 "infra/10-communication/stalwart/docker-compose.yml",
+                "infra/10-communication/stalwart/config/plan.ndjson",
                 "infra/10-communication/mailpit/docker-compose.yml",
             ):
                 target = root / name
@@ -3379,6 +3380,27 @@ class RouteAuthContractTests(unittest.TestCase):
             not in {"static-only", "unauthenticated-legacy-k3s"}
         )
         self.assertEqual([], bare)
+
+
+
+class QdrantApiKeyContractTests(unittest.TestCase):
+    def test_qdrant_requires_its_key_and_prometheus_sends_it(self) -> None:
+        import yaml
+
+        compose = ROOT / "infra/04-data/specialized/qdrant/docker-compose.yml"
+        services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
+        service = services["qdrant"]
+        self.assertIn("qdrant_api_key", service["secrets"])
+        script = service["command"][-1]
+        self.assertIn("</run/secrets/qdrant_api_key", script)
+        self.assertIn("export QDRANT__SERVICE__API_KEY", script)
+        self.assertIn("exec ./entrypoint.sh", script)
+        for name in ("prometheus.yml", "prometheus.dev.yml"):
+            config = ROOT / "infra/06-observability/prometheus/config" / name
+            jobs = yaml.safe_load(config.read_text(encoding="utf-8"))["scrape_configs"]
+            job = next(j for j in jobs if j["job_name"] == "qdrant")
+            key_file = job.get("bearer_token_file")
+            self.assertEqual("/run/secrets/qdrant_api_key", key_file, name)
 
 
 if __name__ == "__main__":

@@ -61,7 +61,7 @@ qdrant/
 | Volumes | `qdrant-data:/qdrant/storage:rw`, `qdrant-data` |
 | Ports | `${QDRANT_PORT:-6333}`, `${QDRANT_GRPC_PORT:-6334}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port` |
-| Secret refs | Not declared |
+| Secret refs | `qdrant_api_key` |
 | Healthcheck | Compose healthcheck declared for `qdrant` |
 | Operations | Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`), Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -85,7 +85,7 @@ qdrant/
 
 ## Validation
 
-Classification is `HOME`. Current Compose declares no Qdrant API-key secret. Snapshot recovery uses a fresh same-minor or next-minor target, an absent destination collection unless force is separately approved, and roughly twice the snapshot size in free disk. Owning artifacts are `GDE-0034`, `POL-0034`, and `RUN-0034`.
+Classification is `HOME`. Qdrant requires the API key from `qdrant_api_key` (AI-008); only the health endpoints answer without it. Snapshot recovery uses a fresh same-minor or next-minor target, an absent destination collection unless force is separately approved, and roughly twice the snapshot size in free disk. Owning artifacts are `GDE-0034`, `POL-0034`, and `RUN-0034`.
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Qdrant.
 - Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep Qdrant documentation and operation links synchronized.

@@ -42,6 +42,19 @@ services:
 
     volumes:
       - qdrant-data:/qdrant/storage:rw
+    secrets:
+      - qdrant_api_key
+    # Qdrant reads the key only from the environment. With it set, every REST
+    # and gRPC call needs `api-key` or `Authorization: Bearer`; /readyz,
+    # /livez and /healthz stay open for the healthcheck.
+    command:
+      - /bin/bash
+      - -ec
+      - |
+        QDRANT__SERVICE__API_KEY="$$(tr -d '\r\n' </run/secrets/qdrant_api_key)"
+        [ "$${#QDRANT__SERVICE__API_KEY}" -ge 16 ] || { echo 'qdrant: qdrant_api_key must be at least 16 characters' >&2; exit 64; }
+        export QDRANT__SERVICE__API_KEY
+        exec ./entrypoint.sh
     networks:
       edge_net: {}
       ai_net: {}
@@ -55,8 +68,8 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      # REST and dashboard for people. Qdrant has no API key here, so the route
-      # is behind SSO; containers use qdrant:6333 on ai_net (SPEC-0180 S18).
+      # REST and dashboard for people, behind SSO; the API key is still needed
+      # past it. Containers use qdrant:6333 on ai_net with the key.
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'

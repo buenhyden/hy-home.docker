@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.4.0"
+version: "0.5.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -41,6 +41,8 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset Traefik router는 `gateway-standard-chain@file`만 사용한다.
 - Flower/n8n 등 ForwardAuth 대상은 승인된 `sso-errors@file,sso-auth@file`
   chain을 유지한다.
+- OAuth2 Proxy는 `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만
+  통과시킨다. 그룹을 넓히는 것은 owner 승인이 필요한 변경이다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
   (`RouteAuthContractTests`). 예외는 file provider의 `k3s-ingress` 하나이며,

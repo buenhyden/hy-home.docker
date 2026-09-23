@@ -140,6 +140,7 @@ scrape_configs:
 
   - job_name: "qdrant"
     metrics_path: /metrics
+    bearer_token_file: /run/secrets/qdrant_api_key
     static_configs:
       - targets: ["qdrant:6333"]
         labels:

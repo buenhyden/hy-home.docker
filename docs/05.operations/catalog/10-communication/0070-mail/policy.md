@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Operations Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0070"
 parent_ids:
@@ -40,6 +40,10 @@ retention, backup/restore, license/upgrade, and removal.
   a later native OIDC for the admin UI. Rotate it by replacing the secret
   file, restarting `stalwart` and re-running `stalwart-config` (the job signs
   in with the same value). Interactive use of that account is an escalation.
+- **Admin UI login:** gateway SSO, then the Stalwart admin login (owner
+  decision 2026-09-24). Stalwart's OIDC directory would replace the password
+  backend for every account, so IMAP and SMTP clients would need App
+  Passwords; it is not adopted.
 - **Secrets/data:** keep admin, mailbox, DKIM, TLS, and backend credentials out of
   source/logs; the recovery admin comes only from the `stalwart_password`
   secret file. Treat mailbox content and metadata as sensitive personal data.

@@ -1294,11 +1294,70 @@ rotation sequence in POL-0070 and AD-0026; the unused
 `STALWART_HEALTHCHECK_URL`; paired-name comments; the template wording; the
 test file's `__main__` guard moved to the end so every class is collected.
 
-Open owner decisions, unchanged: `allowed_groups`, the Stalwart admin UI
+Open owner decisions at S18 (decided in S19): `allowed_groups`, the Stalwart admin UI
 OIDC (its OIDC backend validates bearer tokens and does not start a browser
 login), Terrakube proxy removal, and a Qdrant API key (would also need every
 client configured). Live is NOT_RUN: each changed service needs a recreate to
 pick up its labels or environment.
+
+### S19 — Convergence and the approval-gated live list (source)
+
+**Removals.** ksqlDB and StarRocks stay: the S01 rulings remove them only
+after Flink and Trino live acceptance, and both are NOT_RUN. Nothing else
+from S01's duplicate list remains in source (MinIO in S07, Vault in S08,
+`infra_net` in S05 phase 2, k3d in its own change).
+
+**Template ledger.** S02 read all 40 registered templates and found no gap
+for the planned tools. S10–S17 added thirteen services (Conftest one more) with the existing
+package README, guide, policy and runbook shapes; none needed a new heading
+or field. One validator false positive was met: the runtime-version check
+reads an SMTP enhanced status code such as the relay refusal's as a version
+pin (S17), worked around by naming the refusal in words (deferred below).
+
+**Documents.** AD-0009 now names the `analytics-engineering`,
+`contract-testing`, `api-mock`, `backup` and `policy-check` profiles (the
+drift recorded in S10).
+
+**Env and secret metadata.** Public `.env.example`, the example registry and
+the root secret declarations agree (`test_secret_metadata_sync`). The private
+copies change only on the owner's run: `gen-secrets.sh --sync-metadata-check`,
+then `--sync-metadata` for the Superset rows (PG-028, PG-029, IAM-013,
+AUTO-020) and `--sync-metadata-prune` for the eleven Stalwart port keys
+removed in S17.
+
+**Owner auth decisions (2026-09-24).** The four open decisions were
+verified against source, running containers and upstream documentation, then
+decided by the owner:
+
+| Decision | Verified basis | Source change |
+| --- | --- | --- |
+| OAuth2 Proxy `allowed_groups = ["/admins"]` | the allowlist was commented and `email_domains=["*"]`, so every realm user passed every SSO route; the realm has one human user, in `/admins`; Kafbat already maps the full-path `/admins` from the same `groups` claim | config, hardening guard, GDE/POL-0079 |
+| Stalwart admin UI keeps gateway SSO plus its own admin login | Stalwart's OIDC directory replaces the password backend for every account, so IMAP/SMTP clients would need App Passwords | POL-0070 records the decision; item closed |
+| Terrakube at `iac` activation | not running; API and UI reuse the OAuth2 Proxy client id; the API route's ForwardAuth blocks Terraform CLI and API-token calls | compose comment, README, GDE-0079 row |
+| Qdrant API key | zero collections; the only real client is the Prometheus scrape (Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so it uses its default store); `edge_net` members could write without authentication | `qdrant_api_key` (AI-008), start script, Prometheus `bearer_token_file` in both configs, `QdrantApiKeyContractTests`, Qdrant docs |
+
+Qdrant rehearsal with a synthetic key on `qdrant/qdrant:v1.19.1-unprivileged`:
+`/readyz` 200 without the key (the healthcheck is unchanged), `/metrics` and
+`/collections` 401 without it, `/metrics` 200 with `Authorization: Bearer`.
+
+The Mailpit hardening test failed on main since S17: its fixture tree lacked
+the Stalwart plan, so the Stalwart relay guard failed before the Mailpit check.
+The fixture now copies `plan.ndjson`.
+
+**Approval-gated live list** (each step separately approved; none run):
+
+| Stage | Live steps |
+| --- | --- |
+| S10 WireMock, S11 Pact Broker | start on their profiles; Pact Broker needs its DB provisioning |
+| S12 Spark, S13 Trino, S14 Flink, S15 Great Expectations | STRG-015 and the `.env` key, `seaweedfs-s3` recreate, `seaweedfs-table-bucket`; Flink checkpoint directory (`2770`, group `SECRETS_GID`) and image build |
+| S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin |
+| S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart |
+| S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running |
+| S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must pass. If it returns 403, the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) |
+| S19 Qdrant key | generate AI-008 (`gen-secrets.sh`), recreate `qdrant` and `prometheus` (a new secret mount needs a recreate, not a reload); `/collections` 401 without the key, `up{job="qdrant"}` 1 |
+| Terrakube | at `iac` activation: Keycloak client `home-terrakube` (remote), drop the API ForwardAuth, audience/RBAC acceptance |
+| hy-home.k8s | RUN-0096 Session 3 (Prometheus API KV, token-role cap) and phase 5 after a k3d rebuild; disconnect the six containers from the orphaned `k3d-hyhome` network |
+| Acceptance | Flink and Trino live acceptance, then the ksqlDB and StarRocks removals |
 
 ## Verification Evidence
 
@@ -1332,6 +1391,7 @@ pick up its labels or environment.
 | S16 Superset | Task 10 / S16 | PASS (source): Compose, catalog, hardening (with a negative), projection, links, metadata, feature-job and secret-metadata tests; isolated provisioning, idempotent init, health, `401`, OIDC option, no credential in env; PostgreSQL rehearsal 6/6; live NOT_RUN | 0097 subject |
 | S17 Stalwart | Task 10 / S17 | PASS (source): Compose (`mail-server`, `dev`), catalog, hardening, projection, links, metadata, network and secret-metadata tests; rehearsal: four listeners after restart, relay refused, idempotent plan, no secret in logs; live NOT_RUN | 0070 subject |
 | S18 route authentication | Task 10 / S18 | PASS (source): route contract test (with a negative), Compose, catalog, hardening, links, metadata; four open routes closed; live NOT_RUN | GDE/POL-0079 |
+| S19 convergence | Task 10 / S19 | PASS (source): AD-0009 profile drift closed; template ledger no gap; removals held for live acceptance; live list consolidated | this Task |
 | Offsite recovery | Task 10 / S03 | NOT_RUN: no offsite target (owner) | POL-0021 control 1 |
 
 ## Review Evidence
@@ -1390,7 +1450,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #234 | S16 Superset | merged |
 | #235 | S17 Stalwart | merged |
 | #236 | Task ledger and stale evidence corrections | merged |
-| this PR | S18 route authentication and S17 review follow-ups | open |
+| #237 | S18 route authentication and S17 review follow-ups | merged |
+| #238 | S18 independent review fixes (#237 merged before the review returned) | merged |
+| this PR | S19 convergence and the four owner auth decisions | open |
 
 ## Rulings
 
@@ -1403,6 +1465,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | Remove `mng-pg` from `k3d-hyhome` | No k8s consumer names it | An unrecorded k8s client loses access; re-adding is one line |
 
 ## Deferred Items
+
+- Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
 - File-provider router `k3s-ingress` (`infra/01-gateway/traefik/dynamic/k3s.yml`) forwards `*.k8s.` hosts to the former k3s ingress with no gateway authentication; GDE-0096 says it is unrelated to the current cluster. Remove it or put it behind SSO (owner; k3s change).
 - `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).
@@ -1428,6 +1492,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Every OpenBao restart costs an unseal ceremony and an Agent SecretID delivery, and this has now interrupted two approved recreates. Decide whether that stays manual or moves to an auto-unseal seal (OpenBao subject owner).
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
+- The runtime-version check reads SMTP enhanced status codes (for example the relay refusal) as version pins; narrow its pattern or allow a status-code context (governance tooling owner).
 - Alloy HOME config has no OTLP receiver while `4317/4318` stay published; add one when hy-home.k8s sends traces or logs over OTLP (observability owner).
 - ~~`hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).~~ Closed 2026-09-23: the cluster reaches OpenBao through the host route in the hy-home.k8s integration runbook (RUN-0096), with Kubernetes auth and the `eso-read-platform` role.
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).

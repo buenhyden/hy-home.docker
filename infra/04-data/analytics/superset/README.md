@@ -39,7 +39,9 @@ PKCE)로만 합니다. 처음 로그인한 사용자는 데이터 접근이 없�
 ### Out of Scope
 
 - Celery workers, alerts and reports, thumbnails and a shared cache.
-- Group-based access (`allowed_groups`), an open owner decision.
+- Group-based role mapping. Superset logs in through native OIDC, so the
+  OAuth2 Proxy `/admins` allowlist does not apply; the owner kept Gamma sign-up
+  with roles granted by an Admin (2026-09-24).
 
 ## Structure
 
