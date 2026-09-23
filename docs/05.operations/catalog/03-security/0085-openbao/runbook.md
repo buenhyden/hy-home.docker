@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -167,50 +167,73 @@ do not add SSO or an IP allowlist to that route. OpenBao reaches the k3d API
 server at `https://192.168.0.13:6550`. Secret values go through stdin or a
 file, never command arguments.
 
-**Once, in an approved root session** (root was revoked, so this follows
-[Human Login and Normal Root Recovery](#human-login-and-normal-root-recovery)
-and ends by revoking the temporary root):
+The host has no `bao` CLI. Run a throwaway client container as the host user
+(so it can read the mounted files), on the host network (so the OIDC callback
+on `localhost:8250` and `/etc/hosts` work; tunnel port 8250 when the browser is
+elsewhere). Type each command on one line: pasted line continuations are easy
+to break, and a broken `role` write silently drops arguments.
 
 ```bash
-bao auth enable kubernetes
-bao policy write eso-read-platform eso-read-platform.hcl
-bao policy write k8s-bootstrap     k8s-bootstrap.hcl
-bao policy write hy-home-operator  operator.hcl
-bao write auth/kubernetes/role/eso-read-platform \
-  bound_service_account_names=external-secrets \
-  bound_service_account_namespaces=external-secrets \
-  audience=vault token_policies=eso-read-platform token_ttl=1h
-bao write auth/token/roles/k8s-bootstrap \
-  allowed_policies=k8s-bootstrap orphan=true token_ttl=2h token_max_ttl=2h
-# Required: the Argo CD Valkey password, read from the mng-valkey secret file.
-bao kv put secret/platform/argocd valkey_password=@secrets/db/valkey/mng_password.txt
-# Optional, only when k8s apps use them:
-#   secret/platform/postgres-app {db_name,username,password}
-#   secret/platform/notifications {slack_token}
+umask 077; mkdir -p /tmp/bao-k8s
+KUBECONFIG=$(k3d kubeconfig write hyhome) kubectl config view --raw --minify -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/bao-k8s/k3d-ca.crt
+docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/valkey/mng_password.txt:/s/valkey:ro" -v /tmp/bao-k8s:/s/k8s --entrypoint sh openbao/openbao:2.6.2
 ```
 
-Then confirm with a human OIDC login that `hy-home-operator` can update
-`auth/kubernetes/config` and create a `k8s-bootstrap` token, and nothing more.
+Inside, log in as the operator and take a snapshot first:
 
-**On every cluster rebuild, as the OIDC operator** (the API server CA changes):
-
-```bash
-export BAO_ADDR=https://openbao.hy.home.arpa
-bao login -method=oidc -path=oidc role=home-admin
-kubectl config view --raw --minify \
-  -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d >/tmp/k3d-ca.crt
-bao write auth/kubernetes/config kubernetes_host=https://192.168.0.13:6550 \
-  kubernetes_ca_cert=@/tmp/k3d-ca.crt disable_local_ca_jwt=true
-rm -f /tmp/k3d-ca.crt
-bao write -field=token auth/token/create/k8s-bootstrap >"$BOOTSTRAP_TOKEN_FILE"   # 0600, hand over, never print
+```sh
+umask 077; mkdir -p /tmp/c
+bao login -no-print -method=oidc -path=oidc role=home-admin
+bao operator raft snapshot save /s/k8s/pre-change.snap
 ```
+
+**Once, in an approved root session.** Generate a temporary root with two
+distinct shares typed at the hidden prompt (an empty Enter returns
+`key is required`), pass it per command rather than exporting it, and revoke
+it at the end:
+
+```sh
+bao operator generate-root -init -format=json > /tmp/c/init.json
+NONCE=$(sed -n 's/.*"nonce": *"\([^"]*\)".*/\1/p' /tmp/c/init.json); OTP=$(sed -n 's/.*"otp": *"\([^"]*\)".*/\1/p' /tmp/c/init.json)
+bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p1.json
+bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p2.json
+ENC=$(sed -n 's/.*"encoded_token": *"\([^"]*\)".*/\1/p' /tmp/c/p2.json); bao operator generate-root -decode="$ENC" -otp="$OTP" > /tmp/c/root
+R() { BAO_TOKEN="$(cat /tmp/c/root)" bao "$@"; }
+R auth list -format=json | grep -q '"kubernetes/"' || R auth enable kubernetes
+R policy write eso-read-platform /policies/eso-read-platform.hcl
+R policy write k8s-bootstrap /policies/k8s-bootstrap.hcl
+R policy write hy-home-operator /policies/operator.hcl
+R write auth/kubernetes/role/eso-read-platform bound_service_account_names=external-secrets bound_service_account_namespaces=external-secrets audience=vault token_policies=eso-read-platform token_ttl=1h
+R read -field=bound_service_account_namespaces auth/kubernetes/role/eso-read-platform
+R write auth/token/roles/k8s-bootstrap allowed_policies=k8s-bootstrap orphan=true token_ttl=2h token_max_ttl=2h
+R kv put secret/platform/argocd valkey_password=@/s/valkey
+R token revoke -self
+R token lookup >/dev/null 2>&1 && echo "ROOT STILL VALID" || echo "root revoked"
+```
+
+`secret/platform/argocd` is required (the Argo CD Valkey password, from the
+mng-valkey secret file). Add `secret/platform/postgres-app`
+`{db_name,username,password}` and `secret/platform/notifications`
+`{slack_token}` in a later root session only when k8s apps use them.
+
+**On every cluster rebuild, as the OIDC operator** (the API server CA
+changes; refresh `k3d-ca.crt` on the host first):
+
+```sh
+bao write auth/kubernetes/config kubernetes_host=https://192.168.0.13:6550 kubernetes_ca_cert=@/s/k8s/k3d-ca.crt disable_local_ca_jwt=true
+bao read -field=kubernetes_host auth/kubernetes/config
+bao write -force -field=token auth/token/create/k8s-bootstrap > /s/k8s/k8s-bootstrap.token
+```
+
+`-force` is required because the token role takes no data. Hand the token file
+to hy-home.k8s and delete it; never print it. Move the snapshot to protected
+custody.
 
 The UI equivalent is Access → Auth Methods → kubernetes → Configure. Without a
 `token_reviewer_jwt`, OpenBao reviews each login with the client's own JWT, so
 the External Secrets service account needs `system:auth-delegator` in the
 cluster (hy-home.k8s owns that binding). Verify with a login from the cluster;
-record only allow/deny results. The host has no `bao` CLI: run it from an
-operator workstation or inside the container with the same stdin/file rules.
+record only allow/deny results.
 
 ### No Administrative Identity: Explicit Break-glass Recovery
 
