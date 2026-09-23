@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.0.3"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-23"
 created: "2026-02-21"
 ---
 
@@ -49,7 +49,8 @@ created: "2026-02-21"
 tests/
 ├── README.md  # This file
 ├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
-└── validation/        # validation/entrypoint 및 실행-context 테스트
+├── validation/        # validation/entrypoint 및 실행-context 테스트
+└── requirements-integration.txt  # opt-in 통합 테스트 전용 의존성 (수동 갱신)
 ```
 
 고정 입력 디렉터리는 없습니다. 현재 픽스처는 `_fixtures.py` 형태의 builder
@@ -66,6 +67,29 @@ tests/
    `tests/validation/`에 둡니다.
 4. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
 5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
+
+### 통합 테스트 (opt-in)
+
+`tests/validation/test_mng_pg_init_sql.py`처럼 실제 컨테이너를 띄워야만
+증명되는 계약은 opt-in 통합 테스트로 둡니다. CI gate adapter는
+`tests.validation`과 `tests.lib` 모듈만 받으므로 별도 디렉터리를 만들지 않고,
+모든 테스트 모듈처럼 full profile suite에 등록합니다.
+Testcontainers가 컨테이너 수명주기를 소유하며, 대상 이미지 pin은 테스트가
+Compose 선언에서 직접 읽으므로 따로 고정하지 않습니다.
+
+기본 discovery에서는 항상 skip합니다. 실행하려면 Docker daemon과 opt-in이
+모두 필요합니다.
+
+```bash
+pip install -r tests/requirements-integration.txt
+HYHOME_INTEGRATION=1 PYTHONPATH=. python3 -m unittest tests.validation.test_mng_pg_init_sql
+```
+
+`HYHOME_INTEGRATION`이 `1`이 아니거나 `testcontainers`가 설치되어 있지 않으면
+suite는 사유와 함께 skip하므로, daemon이 없는 환경에서도 전체 discovery가
+그대로 동작합니다. CI validation profile은 이 의존성을 설치하지 않으므로
+등록된 suite에서도 skip으로 보고되고 게이트를 막지 않습니다. `requirements-integration.txt`는
+Renovate 범위 밖이고 `scripts/requirements.txt`와 같은 수동 갱신 대상입니다.
 
 운영 rehearsal의 재사용 입력은 `examples/operations/`가 소유합니다.
 단일 필드 오류 입력은 테스트 builder로 만들며, production은 `tests/`를
