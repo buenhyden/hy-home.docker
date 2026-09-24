@@ -1,14 +1,16 @@
 ---
 title: "04-Data Hardening Gate and Staged Expansion"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "ADR-0040"
 parent_ids:
 - "AD-0019"
+supersedes:
+- "ADR-0019"
 created: "2026-09-24"
 ---
 
@@ -26,8 +28,6 @@ backup/recovery 확장은 정책과 절차로 단계적으로 도입하기로 �
 막는 자동 검증 gate가 필요하다.
 
 ## Decision
-
-수락되면 이 ADR은 ADR-0019를 supersede한다.
 
 - 즉시 하드닝 항목은 Compose 계약으로 구현하고 gate로 지킨다.
   - `supabase` 핵심 서비스 healthcheck 계약
@@ -75,7 +75,7 @@ gate와 현재 저장소 구성이다. 기록되지 않은 런타임 상태는 �
 
 ## Related Documents
 
-- **Superseded on acceptance**: [ADR-0019](0019-data-hardening-and-ha-expansion-strategy.md)
+- **Superseded ADR**: `ADR-0019` (`docs/98.archive/superseded/`에 보존)
 - **Architecture Description**: [0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Requirements**: [0004-data.md](../../01.requirements/0004-data.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md), [ADR-0039](0039-analytics-engines-after-lakehouse-convergence.md)

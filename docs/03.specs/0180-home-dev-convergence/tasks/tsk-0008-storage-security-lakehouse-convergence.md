@@ -1324,6 +1324,15 @@ already a no-op with no consumer, so this is a source-only removal with no
 live cutover step. ADR-0015 and ADR-0019 keep their original Context and
 Decision text and gain a `## Follow-up` note naming Flink and Trino as the
 current replacements, per the repository's no-rewrite-history convention.
+The owner then chose supersession: ADR-0039 (analytics engines after the
+lakehouse convergence) and ADR-0040 (the 04-data hardening gate restated
+without ksqlDB) were proposed in #249 and accepted in the follow-up PR, which
+moves ADR-0015 and ADR-0019 to `docs/98.archive/superseded/02.architecture/decisions/`
+with `superseded_by` and two ledger rows. REQ-0005 was reviewed with them: its
+scope now covers InfluxDB, OpenSearch, Flink and Trino, stream processing
+and SQL/OLAP are restated engine-neutrally as FR 0005 and 0006 (acceptance
+cites the 2026-09-24 live run), and FR numbers 0002 and 0004 are retired
+into `reserved_history`.
 
 **Template ledger.** S02 read all 40 registered templates and found no gap
 for the planned tools. S10–S17 added thirteen services (Conftest one more) with the existing
@@ -1523,7 +1532,10 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #243 | Private secret registry mirrors the public one except values | merged |
 | #244 | Multi-line secret files stay out of the registry; remaining live activation | merged |
 | #245 | Real-lineage identity tests pinned to a fixed commit (CI bound) | merged |
-| this PR | ksqlDB and StarRocks removal; Superset live record | open |
+| #246 | ksqlDB and StarRocks removal; Superset live record | merged |
+| #247 | RUN-0096 snapshot custody | merged |
+| #249 | ADR-0039/0040 proposed; REQ-0005 restated | merged |
+| this PR | ADR-0039/0040 accepted; ADR-0015/0019 superseded | open |
 
 ## Rulings
 

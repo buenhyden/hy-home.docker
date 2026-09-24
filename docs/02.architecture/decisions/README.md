@@ -51,7 +51,9 @@ docs/02.architecture/decisions/
 ### Current Inventory
 
 - `ADR-0001`부터 `ADR-0011`: 기본 tier와 service selection decisions.
-- `ADR-0015`부터 `ADR-0026`: analytics, hardening, HA와 network decisions.
+- `ADR-0015`, `ADR-0019`: ADR-0039, ADR-0040이 각각 supersede한 analytics engine과
+  04-data hardening decisions.
+- `ADR-0016`부터 `ADR-0026`(0019 제외): analytics, hardening, HA와 network decisions.
 - `ADR-0027`:
   ADR-0029가 supersede한 Stage 00 adapter decision.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
@@ -88,10 +90,10 @@ docs/02.architecture/decisions/
   proposed decision.
 - [`ADR-0039`](./0039-analytics-engines-after-lakehouse-convergence.md):
   InfluxDB와 OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의
-  Trino가 맡는 proposed decision. 수락 시 ADR-0015를 supersede한다.
+  Trino가 맡는 accepted decision. ADR-0015를 supersede한다.
 - [`ADR-0040`](./0040-data-hardening-gate-and-staged-expansion.md):
-  04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 proposed
-  decision. 수락 시 ADR-0019를 supersede한다.
+  04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 accepted
+  decision. ADR-0019를 supersede한다.
 
 ## How to Work in This Area
 

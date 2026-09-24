@@ -1,14 +1,15 @@
 ---
 title: "Specialized Analytics Engines Selection"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "ADR-0015"
 parent_ids:
 - "AD-0012"
+superseded_by: "ADR-0039"
 created: "2026-03-26"
 ---
 # ADR-0015: Specialized Analytics Engines Selection

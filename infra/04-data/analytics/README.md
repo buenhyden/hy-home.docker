@@ -58,7 +58,7 @@ analytics/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. 신규 분석 엔진 추가 시 반드시 **ADR-0015** 기술 선택 기록을 먼저 확인한다.
+1. 신규 분석 엔진 추가 시 반드시 **ADR-0039** 기술 선택 기록(ADR-0015를 대체)을 먼저 확인한다.
 2. 각 엔진 구성 변경 시 network 소속 규약(GDE-0077)을 준수한다.
 3. 운영 절차 변경 시 관련 guide/policy/runbook(`docs/05.operations/catalog/04-data/`)을 함께 갱신한다.
 4. Docker Secrets는 compose에 선언된 서비스에서만 current implementation evidence로 취급한다. InfluxDB and OpenSearch declare secrets.

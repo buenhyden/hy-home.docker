@@ -83,6 +83,6 @@ No separately numbered solution-independent external interface requirement was i
 ## Traceability
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
-- **ADR**: [0015-analytics-engine-selection.md](../02.architecture/decisions/0015-analytics-engine-selection.md)
+- **ADR**: [0039-analytics-engines-after-lakehouse-convergence.md](../02.architecture/decisions/0039-analytics-engines-after-lakehouse-convergence.md) (supersedes ADR-0015)
 - **Spec**: [SPEC-0180](../03.specs/0180-home-dev-convergence/spec.md) (lakehouse 도입과 ksqlDB·StarRocks 제거)
 - **Guide**: [README.md](../05.operations/catalog/04-data/README.md)
