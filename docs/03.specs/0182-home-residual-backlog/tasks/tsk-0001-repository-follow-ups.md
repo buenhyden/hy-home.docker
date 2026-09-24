@@ -1,8 +1,8 @@
 ---
 title: "Repository Follow-ups"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "specs"

@@ -1,8 +1,8 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "specs"
@@ -70,7 +70,8 @@ are applied in the same PR. The owner's approval follows.
 
 | PR | Scope | State |
 | --- | --- | --- |
-| this PR | SPEC-0182 to review; Plan and three Tasks | open |
+| #261 | SPEC-0182 to review; Plan and three Tasks | merged |
+| this PR | SPEC-0182 Spec and Plan approved; Tasks ready | open |
 
 ## Rulings
 
