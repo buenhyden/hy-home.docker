@@ -1189,6 +1189,30 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         )
         self.assertEqual([], self.findings(body))
 
+    def test_smtp_status_codes_and_section_numbers_are_not_runtime_literals(
+        self,
+    ) -> None:
+        for line in (
+            "550 5.7.1 Relay not allowed",
+            "The SMTP reply 5.7.1 means the relay was rejected.",
+            "5.4.3 Verify the token role",
+            "## 5.4.3 Verify the token role",
+            "- 5.4.3 Verify the token role",
+            "See section 5.4.3 for the token role.",
+            "Repeat step 5.4.3 after the restart.",
+            "See § 5.4.3.",
+            "5.4.3 단계에서 토큰 역할을 확인한다.",
+            "토큰 역할은 5.4.3 절을 따른다.",
+        ):
+            with self.subTest(line=line):
+                self.assertEqual([], self.findings(self.POINTER + line + "\n"))
+        for line in ("ExampleDB 3.9.8", "Upgrade ExampleDB to 3.9.8 in section 2."):
+            with self.subTest(line=line):
+                self.assertIn(
+                    "runtime-version-literal",
+                    {f.code for f in self.findings(self.POINTER + line + "\n")},
+                )
+
     def test_nonnumeric_image_tags_do_not_turn_ordinary_prose_into_literals(
         self,
     ) -> None:
