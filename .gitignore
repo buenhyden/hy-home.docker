@@ -91,6 +91,7 @@ secrets/certs/*.crt
 secrets/certs/*.p12
 secrets/**/*.txt
 secrets/**/*.custody
+secrets/**/*.snap
 # SeaweedFS gRPC CA and component keys (bin/gen-grpc-certs.sh)
 secrets/certs/seaweedfs/
 secrets/SENSITIVE_ENV_VARS.md

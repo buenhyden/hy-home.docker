@@ -127,13 +127,33 @@ sleep 45   # one scrape interval after the recreate
 docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22openbao%22%7D' | grep -o '"value":\[[^]]*\]'
 ```
 
-Expected: value `"1"`. Then, back in the root session, revoke the previous
-token by the accessor in `secrets/security/openbao_metrics_token.custody`
-(`R token revoke -accessor <accessor>`), and on the host move
-`/tmp/bao-k8s/metrics.custody` over that custody file with mode `0600` after
-checking it is not empty (`test -s`). Then end the root session with the
-integration runbook's root revocation step (`root revoked`, `Started false`).
-Prometheus publishes no host port, so the check runs inside its container.
+Expected: value `"1"`. Prometheus publishes no host port, so the check runs
+inside its container. The custody file holds `accessor=`, `expires=`,
+`issued=` and `policy=` lines. Stage the old one for the container, revoke by
+it in the root session, then write the new one in the same form:
+
+```bash
+install -m 600 secrets/security/openbao_metrics_token.custody /tmp/bao-k8s/old.custody
+```
+
+```sh
+R token revoke -accessor "$(sed -n 's/^accessor=//p' /s/k8s/old.custody)"
+R token lookup-accessor "$(sed -n 's/^accessor=//p' /s/k8s/old.custody)" >/dev/null 2>&1 && echo "old: STILL VALID" || echo "old: revoked"
+```
+
+```bash
+umask 077
+A=$(sed -n 's/.*"accessor": *"\([^"]*\)".*/\1/p' /tmp/bao-k8s/metrics.custody)
+E=$(sed -n 's/.*"expire_time": *"\([^"]*\)".*/\1/p' /tmp/bao-k8s/metrics.custody)
+[ -n "$A" ] && [ -n "$E" ] && printf 'accessor=%s\nexpires=%s\nissued=%s\npolicy=prometheus\n' "$A" "$E" "$(date -u +%FT%TZ)" >secrets/security/.openbao_metrics_token.custody.new
+test -s secrets/security/.openbao_metrics_token.custody.new && mv secrets/security/.openbao_metrics_token.custody.new secrets/security/openbao_metrics_token.custody
+unset A E; sed -n 's/^expires=//p' secrets/security/openbao_metrics_token.custody
+rm -f /tmp/bao-k8s/old.custody /tmp/bao-k8s/metrics.custody
+```
+
+Expected: `old: revoked`, then the new expiry date (not a secret; record it).
+Then end the root session with the integration runbook's root revocation
+step (`root revoked`, `Started false`).
 
 Before an Agent restart, an authorized operator must deliver a fresh SecretID
 through a protected channel. Stop only the Agent while placing RoleID/SecretID
