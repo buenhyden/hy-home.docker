@@ -17,7 +17,7 @@ created: "2026-09-24"
 ## Overview
 
 Hold the SPEC-0180 residuals that the owner did not put in
-[SPEC-0181](../0181-home-residual-operations/spec.md) on 2026-09-24:
+[SPEC-0181](../../98.archive/completed/03.specs/0181-home-residual-operations/spec.md) on 2026-09-24:
 recovery rehearsals and custody design, authentication acceptance, legacy
 data, runtime follow-ups and repository follow-ups. This package tracks them
 until the owner orders them into work or retires them.
@@ -95,7 +95,7 @@ them. Do not treat a rehearsal on synthetic data as a HOME recovery result.
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [SPEC-0181](../0181-home-residual-operations/spec.md)
+- [SPEC-0181](../../98.archive/completed/03.specs/0181-home-residual-operations/spec.md)
 
 ## Open Questions
 
