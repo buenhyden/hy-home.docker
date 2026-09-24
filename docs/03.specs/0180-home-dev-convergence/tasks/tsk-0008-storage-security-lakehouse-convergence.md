@@ -1515,7 +1515,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 ## Deferred Items
 
-- CI `validation-changed` now fails on every PR: the allocation-transition identity scan exceeds `MAX_TRANSITION_GIT_OUTPUT_BYTES` (64 MiB) — the growth recorded above has reached the bound (first seen on #243). Bound the per-fork `git grep` in `identity_history.validate_allocation_transition` (governance tooling owner).
+- ~~CI `validation-changed` fails on every PR: the identity scan exceeds its 64 MiB bound (first seen on #243).~~ Closed 2026-09-24: only the two real-lineage unit tests scanned from the approved baseline to a moving HEAD; the gate itself scans the PR's own merges. The tests now run on a detached checkout of a fixed commit (#141): 23.2 MiB and 20 s, constant.
 
 - ~~Private `secrets/SENSITIVE_ENV_VARS.md` SEC-003 row split across lines, blocking `--sync-metadata` (owner).~~ Closed 2026-09-24: restored to the public placeholder and synced (S19 live apply). It has broken this way twice; keep unseal shares only in their file.
 
@@ -1541,7 +1541,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - SeaweedFS has no Prometheus scrape job or alerts; MinIO's were removed with it. Add S3 `-metricsPort` on a network Prometheus reaches, a job and down/capacity alerts (observability owner).
 - `secrets/storage/minio_*.txt` stay on disk after removal; delete them with the MinIO data disposition (owner).
 
-- Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).
+- ~~Identity transition scan grows about 0.25 MiB per merged fork against its 64 MiB budget (48.5 MiB after the S07b blob cache); bound the per-fork tree grep before it is reached again (governance tooling owner).~~ Closed 2026-09-24 with the pinned-lineage tests above.
 - `examples/operations/compose-core-readiness/` keeps `INFRA_SUBNET`/`INFRA_GATEWAY` and its own Vault rig; restate the example or declare it intentionally generic (owner).
 - OpenBao Agent has no SecretID after the S05 phase 2 recreate: a SecretID is single-use and the Agent deletes its file after reading it, so every Agent restart needs a fresh one delivered through the RUN-0085 protected channel. Until then the Agent logs `no known secret ID` and renders nothing new (owner).
 - Every OpenBao restart costs an unseal ceremony and an Agent SecretID delivery, and this has now interrupted two approved recreates. Decide whether that stays manual or moves to an auto-unseal seal (OpenBao subject owner).
