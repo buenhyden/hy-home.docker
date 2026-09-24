@@ -1,10 +1,10 @@
 ---
 title: "CI Quality Version Alignment and Workflow Audit"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0006"
 parent_ids:
@@ -166,8 +166,8 @@ separate from Zizmor because the two cover different security concerns.
 | Actionlint | Not run | Absent from PATH and the pinned local validation tools; no install attempted; registered workflow validator is the local static workflow authority |
 | Hosted `validation-changed` at delivery head | Pending | Required before synchronization evidence can be final; no rerun is claimed |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
-| --- | --- | --- |
+| Criterion | Work unit | Result at the time | Owner |
+| --- | --- | --- | --- |
 | Hadolint execution uses the declared release tag | G — validators and review | Local repair and regression pass; hosted verification pending | Pre-commit configuration and regression test |
 | CI/CD candidates distinguish overlap from duplication | G — validators and review | Inventory and priorities recorded; no deletion proposed | Workflow contract and GitHub governance |
 | Hosted and local evidence remain separate | G — validators and review | Pending hosted verification documented | Current Task and PR checks |
@@ -213,6 +213,8 @@ separate from Zizmor because the two cover different security concerns.
 | Require evidence before workflow deletion | No tracked workflow has obsolescence proof | Consolidation remains a proposal |
 
 ## Deferred Items
+
+Closure (2026-09-24): PR #170 merged on 2026-09-20 and its hosted `validation-changed` run passed, so the pending hosted verification above is closed. The remote protection, workflow cleanup, pre-commit update ownership, digest maintenance, caching and workflow retention follow-ups below move to [SPEC-0181](../../0181-home-residual-operations/spec.md).
 
 - Hosted validation remains pending until the authorized push. Remote protection
   changes and any additional remote workflow cleanup beyond the completed

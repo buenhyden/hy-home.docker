@@ -1,8 +1,8 @@
 ---
 title: "Storage, Secret Custody, Network and Lakehouse Convergence"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
@@ -1390,7 +1390,7 @@ The Mailpit hardening test failed on main since S17: its fixture tree lacked
 the Stalwart plan, so the Stalwart relay guard failed before the Mailpit check.
 The fixture now copies `plan.ndjson`.
 
-**Approval-gated live list** (each step separately approved; none run):
+**Approval-gated live list** (each step separately approved; none run when written; the Done marks and the live sections below record what ran later):
 
 | Stage | Live steps |
 | --- | --- |
@@ -1428,13 +1428,16 @@ The fixture now copies `plan.ndjson`.
 | S12–S15 lakehouse | `seaweedfs-s3` recreated for the `lakehouse` identity (Loki and Tempo showed no S3 errors); table bucket and `dev`/`test` namespaces created; Spark lists both; Trino healthy on loopback; Flink checkpoint directory `2770`; Flink batch INSERT and a checkpointed streaming INSERT into `test.gx_rehearsal` (23 rows) finished; Trino reads 23 rows; Great Expectations suite `lakehouse-rehearsal` exit 0, three expectations true. **Flink and Trino live acceptance: PASS** |
 | Operations checkout modes | 47 tracked files `0600` and 6 directories `0700` from pulls run with a restrictive umask; Flink could not read its start script and the rebuilt GX image copied an unreadable script. Restored `644`/`755` (Git reports no change), images rebuilt; later pulls use umask `022` |
 | Secret registry parity (owner rule) | #243 merged; `0600` backups, then `--sync-metadata-prune`: the private registry equals the public one except value cells (209 lines each) and `.env` has exactly the public key set (the 11 retired Stalwart keys removed) |
-| Superset secrets | PG-028 and AUTO-020 generated (0640). The generation run copied the three-line SEC-003 unseal-share file into its table cell and split the row again, which is how SEC-003 broke twice before; the registry was rebuilt from the public text with SEC-003 back to its placeholder and the copy holding the shares was shredded. Generation now skips multi-line values (this PR) |
+| Superset secrets | PG-028 and AUTO-020 generated (0640). The generation run copied the three-line SEC-003 unseal-share file into its table cell and split the row again, which is how SEC-003 broke twice before; the registry was rebuilt from the public text with SEC-003 back to its placeholder and the copy holding the shares was shredded. Generation now skips multi-line values (#244) |
 | S16 Superset | **Pass.** The owner created `home-superset`; four settings differed from RUN-0097 (redirect URI and web origin with the typo `hy.hom.arpa`, a service account enabled, no PKCE) and were corrected with the secret unchanged (the IAM-013 file's hash equals Keycloak's; mode set to `0640`). Generation filled the registry, which now differs from the public file only in value cells (SEC-003 empty by design). Image built; `superset-db-provision` and `superset-init` exit 0 (`--no-deps`); `superset` healthy; `/health` 200; `/login/keycloak` redirects to `home-superset` with the right redirect URI; Admin created for the `/admins` user before first login; the owner's OIDC login reached Superset as `Admin`. The browser's `service-worker.js` request is a harmless 404 |
 | RUN-0096 Session 3 | owner-run (OIDC browser login and a temporary root from unseal shares). Evidence it may already be done: `kiali-grafana-auth` and both `prometheus-api-auth` ExternalSecrets are synced; only the owner can confirm the `k8s-bootstrap` role cap (`7200`) |
 
 ## Verification Evidence
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+Rows record each stage's result when it closed; `live NOT_RUN` rows for S10–S19
+were later run, and their results are in the live sections of the Work Log.
+
+| Stage check | Plan unit | Result at the time | Owner |
 | --- | --- | --- | --- |
 | S00 inventory and live state | Task 10 / S00 | PASS: four-column state, consumers and requirement trace recorded above | this Task |
 | S01 target design | Task 10 / S01 | PASS (design): tree, duplicate rulings, interfaces, networks, order | this Task |
@@ -1537,7 +1540,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #249 | ADR-0039/0040 proposed; REQ-0005 restated | merged |
 | #248 | Alloy HOME OTLP receiver forwarding traces to Tempo | merged |
 | #250 | ADR-0039/0040 accepted; ADR-0015/0019 superseded; ruff format fix | merged |
-| this PR | Alloy OTLP live record | open |
+| #251 | Alloy OTLP live record | merged |
+| this PR | SPEC-0180 to review, SPEC-0181 draft | open |
 
 ## Rulings
 
@@ -1551,7 +1555,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 
 ## Deferred Items
 
-- ~~CI `validation-changed` fails on every PR: the identity scan exceeds its 64 MiB bound (first seen on #243).~~ Closed 2026-09-24: only the two real-lineage unit tests scanned from the approved baseline to a moving HEAD; the gate itself scans the PR's own merges. The tests now run on a detached checkout of a fixed commit (#141): 23.2 MiB and 20 s, constant.
+Closure (2026-09-24): the open items below, the Terrakube and RUN-0096 rows of the live list and the offsite and PITR gaps in Verification Evidence move to [SPEC-0181](../../0181-home-residual-operations/spec.md). Struck items are closed here. The Alloy log gap is lost history, accepted as a residual in the Spec's completion basis.
+
+- ~~CI `validation-changed` fails on every PR: the identity scan exceeds its 64 MiB bound (first seen on #243).~~ Closed 2026-09-24: only the two real-lineage unit tests scanned from the approved baseline to a moving HEAD; the gate itself scans the PR's own merges. The tests now run on a detached checkout of a fixed commit (#245): 23.2 MiB and 20 s, constant.
 
 - ~~Private `secrets/SENSITIVE_ENV_VARS.md` SEC-003 row split across lines, blocking `--sync-metadata` (owner).~~ Closed 2026-09-24: restored to the public placeholder and synced (S19 live apply). It has broken this way twice; keep unseal shares only in their file.
 

@@ -45,7 +45,8 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 
 | ID | Package | Current roles |
 | --- | --- | --- |
-| SPEC-0180 | [Home and Development Server Convergence](0180-home-dev-convergence/spec.md) | draft; owner-requested audit and implementation; [Plan](0180-home-dev-convergence/plan.md), [Task](0180-home-dev-convergence/tasks/tsk-0001-home-dev-convergence.md) |
+| SPEC-0181 | [HOME Residual Operations](0181-home-residual-operations/spec.md) | draft; open items SPEC-0180 recorded as residual risk |
+| SPEC-0180 | [Home and Development Server Convergence](0180-home-dev-convergence/spec.md) | review; S00–S19 delivered, completion in progress; [Plan](0180-home-dev-convergence/plan.md), [current Task](0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md) |
 | SPEC-0093 | [Documentation Taxonomy Migration](../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md) | completed, preserved under the archive |
 | SPEC-0094 | [Harness and Agent-first Engineering](../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) | completed, preserved under the archive |
 | SPEC-0095 | [Infrastructure, Secrets, and Documentation Refresh](../98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md) | completed, preserved under the archive |

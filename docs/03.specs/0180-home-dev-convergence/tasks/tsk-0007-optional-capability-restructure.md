@@ -1,10 +1,10 @@
 ---
 title: "Optional Capability Restructure and CI Recovery"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0007"
 parent_ids:
@@ -563,6 +563,8 @@ verified patch-equivalent to main (`git cherry`) before deletion.
 | MLflow OIDC plugin not adopted | Compatibility and maintenance unverified | SDK path stays unauthenticated inside `infra_net` |
 
 ## Deferred Items
+
+Closure (2026-09-24): from item 6, `allowed_groups` and the Stalwart OIDC decision closed in Task 0008 S19; the SSO route matrix and Terrakube move to [SPEC-0181](../../0181-home-residual-operations/spec.md). Item 3's plan for tightening mode-664 host secret files and item 7 (Renovate units by copy; reboot, backup and isolated restore rehearsals for MLflow, JupyterLab and CDC; unverified RPO/RTO ceilings) move to [SPEC-0181](../../0181-home-residual-operations/spec.md).
 
 Each item needs the named approval. Items 1–5 were executed under the owner
 approval of 2026-09-21 (see Activation evidence); items 6 and 7 remain open

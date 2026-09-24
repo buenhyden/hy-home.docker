@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180"
 parent_ids:
@@ -24,11 +24,11 @@ separately approved concrete target.
 
 ## Boundaries and Inputs
 
-The current comparison baseline is main at
+The first follow-up round's comparison baseline was main at
 `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` on 2026-09-20. The original
 `d1e6ded52808b02392c52472d5416518a3b959d6` baseline remains historical evidence
-in Task 0001. Implementation uses the isolated
-`codex/home-dev-convergence-followup` worktree; this follow-up closes measured
+in Task 0001. That round used the isolated
+`codex/home-dev-convergence-followup` worktree and closed measured
 gaps instead of repeating already delivered changes. Inputs are tracked implementation,
 rendered safe Compose summaries, executable checks, authorized read-only host
 observations and official upstream references, in that order. The existing
@@ -51,6 +51,22 @@ Testcontainers, WireMock, Pact Broker, Spark with Iceberg, Trino, Flink,
 Great Expectations, Superset and a configured internal Stalwart, all as opt-in
 profiles. Deleting legacy data or credentials, live cutovers and restarts keep
 their separate approvals. Task 0008 owns stage records, evidence and rulings.
+
+### Completion basis (owner decision 2026-09-24)
+
+S00–S19 passed and their approved live steps ran between 2026-09-22 and
+2026-09-24. The owner chose
+to complete this package with the remaining live and recovery work recorded as
+residual risk rather than keep it open. Criterion 8 asks that approved runtime
+evidence be distinguished from pending and unverified evidence; Task 0008 makes
+that distinction item by item, so offsite backup, PostgreSQL point-in-time
+recovery on HOME data, reboot and restore rehearsals and the other open items
+count as recorded gaps, not as delivered verification. Those items, and the
+code follow-ups found during S00–S19, move to
+[SPEC-0181](../0181-home-residual-operations/spec.md), which starts as a draft.
+One gap cannot be closed: Alloy shipped logs for only 6 of 56 containers
+between the S05 phase 1 and phase 2 live applies, and those logs are lost; it
+is accepted as a recorded residual.
 
 ## Behavior Contract
 
@@ -85,9 +101,10 @@ maintenance jobs. Introduce a home selector only if evidence justifies it.
 
 The current Plan assigns bounded A–G/R work units with explicit file ownership and
 interfaces. Each implementation unit receives specification and quality/security
-review, correction and scoped re-review. Task 0005 owns the acceptance matrix,
-execution ledger, check outcomes and rulings; temporary coordination files are
-not an additional authority.
+review, correction and scoped re-review. Task 0005 owned the acceptance matrix,
+execution ledger, check outcomes and rulings for its round; Tasks 0007 and 0008
+own the later rounds. Temporary coordination files are not an additional
+authority.
 
 ## Interfaces and Data
 
@@ -138,6 +155,7 @@ Task 0002. A failed or unexecuted check is never recorded as PASS.
 - [CI quality alignment](tasks/tsk-0006-ci-quality-version-alignment.md)
 - [Optional capability restructure](tasks/tsk-0007-optional-capability-restructure.md)
 - [Current Task](tasks/tsk-0008-storage-security-lakehouse-convergence.md)
+- [Follow-up: HOME residual operations](../0181-home-residual-operations/spec.md)
 
 ## Open Questions
 

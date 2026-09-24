@@ -1,8 +1,8 @@
 ---
 title: "Home and Development Server Convergence Execution"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
@@ -68,7 +68,7 @@ provider; applicable governance; public configuration and metadata only.
 | `git rev-parse HEAD` | 0 | baseline above |
 | `git switch -c codex/home-dev-convergence` | 0 | isolated branch created |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Criterion | Work unit | Result at the time | Owner |
 | --- | --- | --- | --- |
 | 1 | W1 | source inventory and read-only runtime measured | implementation and operations |
 | 2 | W1 | primary-source matrix recorded; installed compatibility/restore unverified | Stage 90 |
@@ -783,6 +783,8 @@ sync is limited to preserving values and aligning metadata without output.
 Runtime targets and recovery must be reviewed before deployment approval.
 
 ## Deferred Items
+
+Closure (2026-09-24): PR #167 merged on 2026-09-19 with its last hosted `validation-changed` run failing; later main runs pass. So the hosted-CI and draft-PR states above are historical. Broader runtime acceptance from criterion 8 moves to [SPEC-0181](../../0181-home-residual-operations/spec.md).
 
 No scope dropped. Runtime acceptance and required hosted CI remain outstanding.
 
