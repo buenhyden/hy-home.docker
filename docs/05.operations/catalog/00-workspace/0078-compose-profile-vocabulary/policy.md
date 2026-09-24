@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.8.0"
+version: "1.8.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -62,7 +62,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
-| `ksql` | automation | 명시적 스트림 SQL 실험 도구; datagen 컨테이너는 readiness 확인 후 대기 | `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`, `kafka-1`, `schema-registry` | No | 현재 자동 데이터 생성 없음; 생성 명령 추가 시 synthetic data 부수 효과 검토 | current |
 | `lakehouse` | capability | Iceberg 테이블 batch·유지보수 작업, SQL 조회, streaming 적재, 데이터 품질 검사와 SeaweedFS REST catalog 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-buckets, seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만, 쓰기는 명시적 `run` | current |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
@@ -96,7 +95,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `seaweedfs` | capability | 분산 파일·S3 호환 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `secrets` | role | OpenBao secret 관리·Agent | `openbao`, `openbao-agent` | No | normal service startup | current |
 | `security` | domain | OpenBao 보안 기반 | `openbao`, `openbao-agent` | No | normal service startup | current |
-| `starrocks` | capability | 분석용 warehouse | `starrocks-fe`, `starrocks-be` | No | normal service startup | current |
 | `storage` | role | HOME 단일 object 저장소와 bucket 초기화 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `supabase` | capability | 자체 호스팅 앱 backend 전체 구성 | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | normal service startup | current |
@@ -154,7 +152,6 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | opensearch with opensearch-cluster | 대체 토폴로지; 기본 port 충돌을 피하고 dashboards endpoint를 일치시킴 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
 | testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
-| ksql | 현재 datagen 명령은 readiness 확인 후 대기하며 자동 생성하지 않음; 생성 명령 추가 시 대상·실행량을 명시 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |

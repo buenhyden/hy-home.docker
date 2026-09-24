@@ -38,7 +38,6 @@ services:
       - messaging-connect
       - messaging-rest
       - messaging-admin
-      - ksql
       - cdc
     extends:
       file: ../../common-optimizations.yml
@@ -98,7 +97,6 @@ services:
       - messaging-connect
       - messaging-rest
       - messaging-admin
-      - ksql
       - cdc
     extends:
       file: ../../common-optimizations.yml

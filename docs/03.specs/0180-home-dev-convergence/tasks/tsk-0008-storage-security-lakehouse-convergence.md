@@ -1307,6 +1307,24 @@ after Flink and Trino live acceptance, and both are NOT_RUN. Nothing else
 from S01's duplicate list remains in source (MinIO in S07, Vault in S08,
 `infra_net` in S05 phase 2, k3d in its own change).
 
+**ksqlDB and StarRocks removal (source, 2026-09-24).** Flink and Trino live
+acceptance PASSED the same day (Flink batch and checkpointed streaming
+inserts; a Trino read verified through Great Expectations against the
+SeaweedFS Iceberg catalog). Per the S01 rulings above, ksqlDB and StarRocks
+are removed: `infra/04-data/analytics/ksql/` and
+`infra/04-data/analytics/starrocks/` are deleted, their root `docker-compose.yml`
+includes and `.env.example` `KSQLDB_*` keys are gone, the `ksql` Compose
+profile and its `kafka-1`/`schema-registry` membership and kafbat-ui RBAC
+resource are removed, and GDE/POL/RUN-0018 (ksqlDB) and GDE/POL/RUN-0020
+(StarRocks) move to `docs/98.archive/superseded/05.operations/catalog/04-data/`
+with `status: superseded` and `superseded_by` pointing at GDE/POL/RUN-0094
+(the Flink/Trino lakehouse subject). Neither service was ever deployed on this
+host (no host data directory or volume existed), and `ksql-datagen` was
+already a no-op with no consumer, so this is a source-only removal with no
+live cutover step. ADR-0015 and ADR-0019 keep their original Context and
+Decision text and gain a `## Follow-up` note naming Flink and Trino as the
+current replacements, per the repository's no-rewrite-history convention.
+
 **Template ledger.** S02 read all 40 registered templates and found no gap
 for the planned tools. S10–S17 added thirteen services (Conftest one more) with the existing
 package README, guide, policy and runbook shapes; none needed a new heading
@@ -1501,7 +1519,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #239 | S19 convergence and the four owner auth decisions | merged |
 | #240 | `k3s-ingress` removal and the S19 review fixes (#239 merged before both) | merged |
 | #241 | S19 live apply and the OAuth2 Proxy Keycloak route fix | merged |
-| this PR | S19 live close: owner login and private registry repair | open |
+| #242 | S19 live close: owner login and private registry repair | merged |
+| this PR | ksqlDB and StarRocks removal | open |
 
 ## Rulings
 

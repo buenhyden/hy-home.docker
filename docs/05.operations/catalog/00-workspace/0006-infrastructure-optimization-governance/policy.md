@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -116,12 +116,8 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - Analytics
   - [influxdb](../../../../../infra/04-data/analytics/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
     ([OPER](../../04-data/0017-influxdb/guide.md), [RUN](../../04-data/0017-influxdb/runbook.md))
-  - [ksqldb](../../../../../infra/04-data/analytics/ksql/README.md): Kafka 토픽 스키마/호환성 게이트, state store 복구 시간 목표(RTO) 정의
-    ([OPER](../../04-data/0018-ksqldb/guide.md), [RUN](../../04-data/0018-ksqldb/runbook.md))
   - [opensearch](../../../../../infra/04-data/analytics/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../../04-data/0019-opensearch/guide.md), [RUN](../../04-data/0019-opensearch/runbook.md))
-  - [warehouses](../../../../../infra/04-data/analytics/starrocks/README.md): 배치 윈도우/리소스 큐 정책, 메타스토어 백업 주기 명시
-    ([OPER](../../04-data/0020-starrocks/guide.md), [RUN](../../04-data/0020-starrocks/runbook.md))
 - Cache & KV
   - [valkey-cluster](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
     ([OPER](../../04-data/0022-valkey-cluster/guide.md), [RUN](../../04-data/0022-valkey-cluster/runbook.md))

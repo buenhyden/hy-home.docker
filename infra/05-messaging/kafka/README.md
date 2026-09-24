@@ -1,10 +1,10 @@
 ---
 title: "Kafka Messaging"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 created: "2025-11-12"
 ---
 
@@ -24,7 +24,7 @@ It is intended for operators and maintainers of Kafka and its companion services
 `kafka-3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`,
 `kafka-exporter`, `kafka-init` and `debezium-db-provision`. Root selectors include
 `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`,
-`messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql` and `cdc`; brokers 2
+`messaging-connect`, `messaging-rest`, `messaging-admin` and `cdc`; brokers 2
 and 3 belong only to `messaging-cluster`. `cdc` selects the broker, Schema Registry,
 Connect and the CDC source provisioning job.
 

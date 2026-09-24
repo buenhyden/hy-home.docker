@@ -1,14 +1,15 @@
 ---
 title: "ksqlDB Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "RUN-0018"
 parent_ids:
 - "GDE-0018"
+superseded_by: "RUN-0094"
 created: "2026-05-17"
 ---
 
