@@ -100,3 +100,36 @@ prometheus.remote_write "local_prom" {
     url = "http://prometheus:9090/api/v1/write"
   }
 }
+
+/*****************************************************************
+ * 3. TRACING PIPELINE (Tempo)
+ *****************************************************************/
+// OTLP trace 수신(4317 gRPC, 4318 HTTP). hy-home.k8s의 Istio가
+// 192.168.0.13:4317로 보낸다. Compose가 두 port를 host에 공개한다.
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    traces = [otelcol.processor.batch.default.input]
+  }
+}
+
+otelcol.processor.batch "default" {
+  output {
+    traces = [otelcol.exporter.otlp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
+  }
+}

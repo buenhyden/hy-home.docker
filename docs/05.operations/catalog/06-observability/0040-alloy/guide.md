@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -67,12 +67,12 @@ created: "2026-05-10"
 
    | 파일 | 선택 | 포함 pipeline | 빠진 것 |
    | --- | --- | --- | --- |
-   | `config.home.alloy` | `.env.example` 기본값 | Docker 로그 → Loki, Alloy self-metrics → Prometheus | OTLP receiver, Tempo exporter, Pyroscope writer |
+   | `config.home.alloy` | `.env.example` 기본값 | Docker 로그 → Loki, Alloy self-metrics → Prometheus, OTLP trace(4317/4318) → Tempo | Pyroscope writer |
    | `config.alloy` | 변수 미설정 시 Compose 기본값 | 아래 전체 목록 | 없음 |
 
-   `tracing`/`profiling` profile은 Alloy·Tempo·Pyroscope를 기동하지만 home 설정에서는
-   OTLP 4317/4318 host port가 열려도 받는 receiver가 없다. trace·profile 수집이
-   필요하면 `ALLOY_CONFIG_FILE=config.alloy`로 전환한다. profile 선택은 수신을
+   home 설정도 OTLP trace를 받아 Tempo로 보낸다. hy-home.k8s의 Istio trace가
+   `192.168.0.13:4317`로 들어온다. profile 수집이 필요하면
+   `ALLOY_CONFIG_FILE=config.alloy`로 전환한다. profile 선택은 수신을
    증명하지 않으며 profile → config → receiver → source → backend → Grafana 조회를
    각각 확인한다. 아래 목록은 전체 설정(`config.alloy`) 기준이다.
 
