@@ -838,6 +838,17 @@ _CALENDAR_DATE_LABEL = re.compile(
     r"\b(?:date|dated|updated|reviewed)\b|날짜|기준일|검토일", re.I
 )
 _DOTTED_CALENDAR_DATE = re.compile(r"(?<!\d)(?:19|20)\d{2}\.\d{1,2}\.\d{1,2}(?!\d)")
+_SMTP_CONTEXT = re.compile(
+    r"(?<!\d)[245]\d\d\s|\b(?:smtp|dsn|bounce|reject|relay|(?:enhanced\s+)?status\s+code)",
+    re.I,
+)
+_SMTP_ENHANCED_STATUS = re.compile(r"(?<![\w.])[245]\.\d{1,3}\.\d{1,3}(?![\w]|\.\d)")
+_SECTION_NUMBER = re.compile(
+    r"^(\s*(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+)?)\d+(?:\.\d+)+(?=\s)|"
+    r"(?:\b(?:section|sec\.|steps?)|§|절|단계|항)\s*\d+(?:\.\d+)+|"
+    r"\d+(?:\.\d+)+(?=\s*(?:절|단계|항))",
+    re.I,
+)
 _RUNTIME_COMPOSE_SOURCE = re.compile(
     r"(?:^|.*/)(?:docker-)?compose(?:[.-][^/]*)?\.ya?ml$"
 )
@@ -1063,6 +1074,9 @@ def _runtime_literal_line(line: str, entries, *, owned_context: bool = True) -> 
         if _CALENDAR_DATE_LABEL.search(line)
         else line
     )
+    if _SMTP_CONTEXT.search(prose):
+        prose = _SMTP_ENHANCED_STATUS.sub("", prose)
+    prose = _SECTION_NUMBER.sub(lambda match: match[1] or "", prose)
     for entry in entries:
         if _RUNTIME_PATCH.search(prose) and (
             owned_context
