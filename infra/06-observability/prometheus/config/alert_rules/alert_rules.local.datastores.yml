@@ -198,3 +198,36 @@ groups:
           summary: 'Qdrant 파일 디스크립터 사용률 80% 초과'
           description: 'Qdrant 프로세스의 FD 사용률이 80%를 초과했습니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+
+  # ============================================================================
+  # [7] Object Storage (SeaweedFS)
+  # ============================================================================
+  - name: seaweedfs_alerts
+    rules:
+
+      - alert: SeaweedFSS3Down
+        expr: up{job="seaweedfs-s3"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          domain: datastore
+        annotations:
+          summary: 'SeaweedFS S3 게이트웨이 다운'
+          description: 'SeaweedFS S3 {{ $labels.instance }} 메트릭(9327)이 2분 이상 응답하지 않습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md'
+
+      # The volume data lives under ${DEFAULT_DATA_DIR}/seaweedfs/volume, whose
+      # filesystem is mounted at /home/hyunyoun/storage on this host. Change the
+      # mountpoint if DEFAULT_MOUNT_VOLUME_PATH moves to another filesystem.
+      - alert: SeaweedFSDataDiskLow
+        expr: |
+          node_filesystem_avail_bytes{job="node-exporter",mountpoint="/home/hyunyoun/storage"}
+            / node_filesystem_size_bytes{job="node-exporter",mountpoint="/home/hyunyoun/storage"} < 0.15
+        for: 10m
+        labels:
+          severity: warning
+          domain: datastore
+        annotations:
+          summary: 'SeaweedFS 데이터 디스크 여유 공간 15% 미만'
+          description: '{{ $labels.mountpoint }} 여유 공간이 {{ $value | humanizePercentage }} 입니다. 볼륨 서버는 20GiB 미만에서 쓰기를 멈춥니다(-minFreeSpace).'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md'

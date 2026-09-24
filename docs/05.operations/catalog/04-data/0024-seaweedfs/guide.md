@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -43,6 +43,12 @@ State is on the data disk: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`
 and `/filer` (the embedded leveldb2 store). Master, volume and filer are only
 on `seaweed_internal`. S3 also joins `object_net` for clients and `edge_net`
 for the `s3.${DEFAULT_URL}` route.
+
+Only S3 serves Prometheus metrics (`-metricsPort=9327`); Prometheus scrapes
+`seaweedfs-s3:9327` over `edge_net` as job `seaweedfs-s3`. Master, volume and
+filer stay unscraped on the internal network. Alerts: `SeaweedFSS3Down`
+(target down 2m) and `SeaweedFSDataDiskLow` (data-disk filesystem under 15%
+free for 10m, from node-exporter).
 
 ### Consumers, buckets and migration
 

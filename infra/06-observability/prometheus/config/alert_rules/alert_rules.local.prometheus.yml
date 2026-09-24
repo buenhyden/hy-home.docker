@@ -40,8 +40,7 @@ groups:
         # expr: sum by (job) (up{job=~"postgres-cluster|manage
         #   postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|haproxy|keycloak|opensearch-exporter"})
         #   == 0
-        expr: sum by (job) (up{job=~"postgres-cluster|manage
-          postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|haproxy|keycloak|opensearch-exporter"})
+        expr: sum by (job) (up{job=~"postgres-cluster|manage-postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|seaweedfs-s3|haproxy|keycloak|opensearch-exporter"})
           == 0
         for: 10m
         labels:

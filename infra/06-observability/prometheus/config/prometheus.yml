@@ -140,9 +140,15 @@ scrape_configs:
 
   - job_name: "qdrant"
     metrics_path: /metrics
-    bearer_token_file: /run/secrets/qdrant_api_key
+    bearer_token_file: /run/secrets/qdrant_read_only_api_key
     static_configs:
       - targets: ["qdrant:6333"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "seaweedfs-s3"
+    static_configs:
+      - targets: ["seaweedfs-s3:9327"]
         labels:
           domain: "datastores"
 

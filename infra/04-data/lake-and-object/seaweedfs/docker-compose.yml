@@ -185,8 +185,9 @@ services:
     # The Iceberg REST catalog serves table buckets and signs with the same
     # S3 identities (SigV4); it has no route and stays on object_net. Lance
     # stays off, and the embedded IAM API is off because identities come from
-    # the config file.
-    command: [ 's3', '-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_S3_HTTP_PORT:-8333}', '-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}', '-port.lance=0', '-iam=false' ]
+    # the config file. -metricsPort serves Prometheus metrics on edge_net only;
+    # master/volume/filer stay unscraped on seaweed_internal.
+    command: [ 's3', '-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_S3_HTTP_PORT:-8333}', '-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}', '-port.lance=0', '-iam=false', '-metricsPort=9327' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
