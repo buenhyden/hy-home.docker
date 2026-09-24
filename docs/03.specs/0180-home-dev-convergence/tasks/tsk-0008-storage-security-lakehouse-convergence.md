@@ -1472,6 +1472,11 @@ were later run, and their results are in the live sections of the Work Log.
 
 ## Review Evidence
 
+Completion approval (2026-09-24): two independent read-only reviews of the Spec,
+Plan and Tasks ran before approval, one on specification and traceability and
+one on evidence honesty and security. Both returned APPROVE WITH FIXES; every
+finding was fixed in #252. The owner then approved the Spec and Plan.
+
 Each stage from S12 on was reviewed by an independent read-only reviewer
 before its PR; the findings and their dispositions are in the stage sections
 above (S12, S13, S14, S15, S16). S17 was merged before its review returned;
@@ -1541,7 +1546,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #248 | Alloy HOME OTLP receiver forwarding traces to Tempo | merged |
 | #250 | ADR-0039/0040 accepted; ADR-0015/0019 superseded; ruff format fix | merged |
 | #251 | Alloy OTLP live record | merged |
-| this PR | SPEC-0180 to review, SPEC-0181 draft | open |
+| #252 | SPEC-0180 to review, SPEC-0181 draft, review fixes | merged |
+| this PR | SPEC-0180 Spec and Plan approved | open |
 
 ## Rulings
 
