@@ -950,7 +950,9 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual(
                     set(), set(service.get("secrets", [])) & FEATURE_SECRETS
                 )
-                self.assertNotRegex(_runner_text(service), r"mlflow|dbt|debezium|pact|superset")
+                self.assertNotRegex(
+                    _runner_text(service), r"mlflow|dbt|debezium|pact|superset"
+                )
 
     def test_feature_jobs_supply_every_input_without_argv_secrets(self) -> None:
         for compose, job, sql_path, profiles in FEATURE_JOBS:
@@ -1408,43 +1410,100 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         init = _compose_service(compose, "superset-init")
         image = init["image"]
         built = subprocess.run(
-            ["docker", "build", "-q", "-t", image, str(ROOT / "infra/04-data/analytics/superset")],
-            capture_output=True, text=True, check=False,
+            [
+                "docker",
+                "build",
+                "-q",
+                "-t",
+                image,
+                str(ROOT / "infra/04-data/analytics/superset"),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
         )
         self.assertEqual(0, built.returncode, built.stderr)
         env = {key: _default(str(value)) for key, value in init["environment"].items()}
         env.update(DEFAULT_URL="rehearsal.invalid", SUPERSET_DB_HOST=f"{self.tag}-db")
-        base = ["docker", "run", "--network", self.tag, "--read-only",
-                "--tmpfs", "/tmp", "--tmpfs", "/app/superset_home:uid=1000,gid=1000",
-                "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
-                "-v", f"{self.secrets}:/run/secrets:ro",
-                "-v", f"{self.secrets / 'rootCA.pem'}:/etc/ssl/certs/hy-home-rootCA.pem:ro",
-                "-v", f"{ROOT / compose.rsplit('/', 1)[0]}/superset_config.py:/app/pythonpath/superset_config.py:ro"]
+        base = [
+            "docker",
+            "run",
+            "--network",
+            self.tag,
+            "--read-only",
+            "--tmpfs",
+            "/tmp",
+            "--tmpfs",
+            "/app/superset_home:uid=1000,gid=1000",
+            "--cap-drop",
+            "ALL",
+            "--security-opt",
+            "no-new-privileges",
+            "-v",
+            f"{self.secrets}:/run/secrets:ro",
+            "-v",
+            f"{self.secrets / 'rootCA.pem'}:/etc/ssl/certs/hy-home-rootCA.pem:ro",
+            "-v",
+            f"{ROOT / compose.rsplit('/', 1)[0]}/superset_config.py:/app/pythonpath/superset_config.py:ro",
+        ]
         for key, value in env.items():
             base += ["-e", f"{key}={value}"]
         for _ in range(2):
             ran = subprocess.run(
-                [*base[:2], "--rm", *base[2:], "--entrypoint", init["entrypoint"][0],
-                 image, *init["entrypoint"][1:], *init["command"]],
-                capture_output=True, text=True, timeout=600, check=False,
+                [
+                    *base[:2],
+                    "--rm",
+                    *base[2:],
+                    "--entrypoint",
+                    init["entrypoint"][0],
+                    image,
+                    *init["entrypoint"][1:],
+                    *init["command"],
+                ],
+                capture_output=True,
+                text=True,
+                timeout=600,
+                check=False,
             )
             self.assertEqual(0, ran.returncode, ran.stdout[-2000:] + ran.stderr[-2000:])
         self.assertEqual(
             "lakehouse|trino://superset@trino:8080/lakehouse",
-            self.sql("SELECT database_name, sqlalchemy_uri FROM dbs", "superset",
-                     "superset", "ss'quote\\slash@pw").stdout.strip(),
+            self.sql(
+                "SELECT database_name, sqlalchemy_uri FROM dbs",
+                "superset",
+                "superset",
+                "ss'quote\\slash@pw",
+            ).stdout.strip(),
         )
         web = f"{self.tag}-superset"
-        self.addCleanup(subprocess.run, ["docker", "rm", "-f", web], capture_output=True)
-        started = subprocess.run([*base[:2], "-d", "--name", web, *base[2:], image],
-                                 capture_output=True, text=True, check=False)
+        self.addCleanup(
+            subprocess.run, ["docker", "rm", "-f", web], capture_output=True
+        )
+        started = subprocess.run(
+            [*base[:2], "-d", "--name", web, *base[2:], image],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
         self.assertEqual(0, started.returncode, started.stderr)
 
         def curl(path: str) -> str:
             return subprocess.run(
-                ["docker", "exec", web, "curl", "-s", "-o", "/dev/null", "-w",
-                 "%{http_code}", f"http://localhost:8088{path}"],
-                capture_output=True, text=True, check=False,
+                [
+                    "docker",
+                    "exec",
+                    web,
+                    "curl",
+                    "-s",
+                    "-o",
+                    "/dev/null",
+                    "-w",
+                    "%{http_code}",
+                    f"http://localhost:8088{path}",
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
             ).stdout
 
         for _ in range(60):
@@ -1453,11 +1512,16 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             subprocess.run(["sleep", "3"], check=True)
         self.assertEqual("200", curl("/health"))
         self.assertEqual("401", curl("/api/v1/database/"))
-        login = subprocess.run(["docker", "exec", web, "curl", "-s", "http://localhost:8088/login/"],
-                               capture_output=True, text=True, check=False).stdout
+        login = subprocess.run(
+            ["docker", "exec", web, "curl", "-s", "http://localhost:8088/login/"],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout
         self.assertIn("keycloak", login)
-        environ = subprocess.run(["docker", "exec", web, "env"],
-                                 capture_output=True, text=True, check=False).stdout
+        environ = subprocess.run(
+            ["docker", "exec", web, "env"], capture_output=True, text=True, check=False
+        ).stdout
         self.assertNotIn("slash@pw", environ)
         self.assertNotIn("synthetic-oidc", environ)
 
@@ -2340,10 +2404,22 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         cls.addClassCleanup(
             subprocess.run,
             [
-                "docker", "run", "--rm", "--user", "9999:9999",
-                "--group-add", str(os.getgid()), "--entrypoint", "find",
-                "-v", f"{cls.dir / 'data/flink/checkpoints'}:/c",
-                services["flink-jobmanager"]["image"], "/c", "-mindepth", "1", "-delete",
+                "docker",
+                "run",
+                "--rm",
+                "--user",
+                "9999:9999",
+                "--group-add",
+                str(os.getgid()),
+                "--entrypoint",
+                "find",
+                "-v",
+                f"{cls.dir / 'data/flink/checkpoints'}:/c",
+                services["flink-jobmanager"]["image"],
+                "/c",
+                "-mindepth",
+                "1",
+                "-delete",
             ],
             capture_output=True,
         )
@@ -2662,9 +2738,17 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         def sql(script: str) -> str:
             result = subprocess.run(
                 [
-                    "docker", "compose", "-p", self.tag,
-                    "-f", str(self.dir / "compose.json"),
-                    "exec", "-T", "flink-jobmanager", "bash", "-c",
+                    "docker",
+                    "compose",
+                    "-p",
+                    self.tag,
+                    "-f",
+                    str(self.dir / "compose.json"),
+                    "exec",
+                    "-T",
+                    "flink-jobmanager",
+                    "bash",
+                    "-c",
                     "cat >/tmp/job.sql && bash /opt/hyhome/hyhome-flink.sh"
                     " /opt/flink/bin/sql-client.sh -i /tmp/lakehouse.sql -f /tmp/job.sql",
                 ],
@@ -2672,6 +2756,7 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
                 "SET 'sql-client.execution.result-mode' = 'tableau';\n" + script,
                 capture_output=True,
                 text=True,
+                check=False,
                 timeout=300,
             )
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -2710,13 +2795,19 @@ class SeaweedfsRehearsalTests(unittest.TestCase):
         self.assertEqual(0, started.returncode, started.stderr)
 
         def sql(statement: str) -> None:
-            result = self.compose("exec", "-T", "trino", "trino", "--execute", statement)
+            result = self.compose(
+                "exec", "-T", "trino", "trino", "--execute", statement
+            )
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
         def gx() -> subprocess.CompletedProcess[str]:
             return self.compose(
-                "run", "--rm", "--no-deps", "great-expectations",
-                "validate", "lakehouse-rehearsal",
+                "run",
+                "--rm",
+                "--no-deps",
+                "great-expectations",
+                "validate",
+                "lakehouse-rehearsal",
             )
 
         table = "lakehouse.test.gx_rehearsal"
@@ -3161,7 +3252,6 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             self.assertIn(f"network.publish_host={address}", node["environment"])
 
 
-
 class ConftestPolicyGateTests(unittest.TestCase):
     """The Conftest CI gate runs the declared job, and the job stays isolated."""
 
@@ -3209,13 +3299,27 @@ class StalwartRehearsalTests(unittest.TestCase):
         # after the containers are gone (cleanups run last-in, first-out).
         cls.addClassCleanup(
             subprocess.run,
-            ["docker", "run", "--rm", "--entrypoint", "find", "-v",
-             f"{cls.dir / 'data/stalwart'}:/d", "stalwartlabs/stalwart:v0.16.22",
-             "/d/data", "-mindepth", "1", "-delete"],
-            capture_output=True, check=False,
+            [
+                "docker",
+                "run",
+                "--rm",
+                "--entrypoint",
+                "find",
+                "-v",
+                f"{cls.dir / 'data/stalwart'}:/d",
+                "stalwartlabs/stalwart:v0.16.22",
+                "/d/data",
+                "-mindepth",
+                "1",
+                "-delete",
+            ],
+            capture_output=True,
+            check=False,
         )
         cls.secret = "Rehearsal" + os.urandom(6).hex()
-        (cls.dir / "stalwart_password.txt").write_text(cls.secret + "\n", encoding="utf-8")
+        (cls.dir / "stalwart_password.txt").write_text(
+            cls.secret + "\n", encoding="utf-8"
+        )
         (cls.dir / "stalwart_password.txt").chmod(0o640)
         env = {
             **os.environ,
@@ -3225,9 +3329,23 @@ class StalwartRehearsalTests(unittest.TestCase):
         }
         rendered = json.loads(
             subprocess.run(
-                ["docker", "compose", "--env-file", ".env.example", "--profile",
-                 "mail-server", "config", "--format", "json", *cls.SERVICES],
-                cwd=ROOT, env=env, check=True, capture_output=True, text=True,
+                [
+                    "docker",
+                    "compose",
+                    "--env-file",
+                    ".env.example",
+                    "--profile",
+                    "mail-server",
+                    "config",
+                    "--format",
+                    "json",
+                    *cls.SERVICES,
+                ],
+                cwd=ROOT,
+                env=env,
+                check=True,
+                capture_output=True,
+                text=True,
             ).stdout
         )
         services = {name: rendered["services"][name] for name in cls.SERVICES}
@@ -3243,27 +3361,48 @@ class StalwartRehearsalTests(unittest.TestCase):
             "services": services,
             "networks": {"mail": {"internal": True}},
             "volumes": {"stalwart-data": volume},
-            "secrets": {"stalwart_password": {"file": str(cls.dir / "stalwart_password.txt")}},
+            "secrets": {
+                "stalwart_password": {"file": str(cls.dir / "stalwart_password.txt")}
+            },
         }
         (cls.dir / "compose.json").write_text(json.dumps(cls.model), encoding="utf-8")
         cls.addClassCleanup(cls.compose, "down", "-v", "--timeout", "5")
         started = cls.compose("up", "-d", "--wait", "--wait-timeout", "120", "stalwart")
         if started.returncode != 0:
-            raise AssertionError(started.stderr + cls.compose("logs", "--tail", "40").stdout)
+            raise AssertionError(
+                started.stderr + cls.compose("logs", "--tail", "40").stdout
+            )
 
     @classmethod
     def compose(cls, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            ["docker", "compose", "-p", cls.tag, "-f", str(cls.dir / "compose.json"), *args],
-            capture_output=True, text=True, check=False, timeout=600,
+            [
+                "docker",
+                "compose",
+                "-p",
+                cls.tag,
+                "-f",
+                str(cls.dir / "compose.json"),
+                *args,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=600,
         )
 
     def listening(self) -> set[int]:
-        table = self.compose("exec", "-T", "stalwart", "cat", "/proc/net/tcp", "/proc/net/tcp6").stdout
+        table = self.compose(
+            "exec", "-T", "stalwart", "cat", "/proc/net/tcp", "/proc/net/tcp6"
+        ).stdout
         ports = set()
         for line in table.splitlines()[1:]:
             fields = line.split()
-            if len(fields) > 3 and fields[3] == "0A" and not fields[1].startswith("0100007F"):
+            if (
+                len(fields) > 3
+                and fields[3] == "0A"
+                and not fields[1].startswith("0100007F")
+            ):
                 if fields[1].startswith("0B00007F"):
                     continue
                 ports.add(int(fields[1].rsplit(":", 1)[1], 16))
@@ -3276,9 +3415,25 @@ class StalwartRehearsalTests(unittest.TestCase):
             + ["QUIT\r\n"]
         )
         return subprocess.run(
-            ["docker", "run", "--rm", "-i", "--network", f"{self.tag}_mail",
-             "alpine:3", "nc", "-w", "5", f"{self.tag}-stalwart", "25"],
-            input=script, capture_output=True, text=True, check=False, timeout=60,
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network",
+                f"{self.tag}_mail",
+                "alpine:3",
+                "nc",
+                "-w",
+                "5",
+                f"{self.tag}-stalwart",
+                "25",
+            ],
+            input=script,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
         ).stdout
 
     def test_plan_makes_the_server_internal_only(self) -> None:
@@ -3288,7 +3443,12 @@ class StalwartRehearsalTests(unittest.TestCase):
             self.assertIn("(0 failed)", applied.stdout + applied.stderr)
         restarted = self.compose("restart", "stalwart")
         self.assertEqual(0, restarted.returncode, restarted.stderr)
-        self.assertEqual(0, self.compose("up", "-d", "--wait", "--wait-timeout", "120", "stalwart").returncode)
+        self.assertEqual(
+            0,
+            self.compose(
+                "up", "-d", "--wait", "--wait-timeout", "120", "stalwart"
+            ).returncode,
+        )
         self.assertEqual({25, 587, 993, 8080}, self.listening())
         replies = self.smtp("x@example.com", "nobody@rehearsal.test")
         self.assertIn("220 mail.rehearsal.test", replies)
@@ -3385,8 +3545,7 @@ class RouteAuthContractTests(unittest.TestCase):
         bare = sorted(
             (src, name)
             for src, name, chain in routers
-            if not chain
-            and ROUTES_WITHOUT_SSO.get(name) != "static-only"
+            if not chain and ROUTES_WITHOUT_SSO.get(name) != "static-only"
         )
         self.assertEqual([], bare)
 

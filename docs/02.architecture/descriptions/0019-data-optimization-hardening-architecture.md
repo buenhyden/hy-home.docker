@@ -1,6 +1,6 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.0.3"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ Requirement와 ADR을 통해 도입한다.
 ## Traceability
 
 - [REQ-0004](../../01.requirements/0004-data.md)
-- [ADR-0019](../decisions/0019-data-hardening-and-ha-expansion-strategy.md)
+- [ADR-0040](../decisions/0040-data-hardening-gate-and-staged-expansion.md) (supersedes ADR-0019)
 - [SPEC-0004](0004-data-architecture.md)
 - [Data hardening guide](../../05.operations/catalog/04-data/0030-optimization-hardening/guide.md)
 - [Data hardening policy](../../05.operations/catalog/04-data/0030-optimization-hardening/policy.md)

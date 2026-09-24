@@ -76,7 +76,10 @@ OAUTH_PROVIDERS = [
             "client_secret": _secret("superset_oidc_client_secret"),
             "server_metadata_url": f"{_realm}/.well-known/openid-configuration",
             "api_base_url": f"{_realm}/protocol/",
-            "client_kwargs": {"scope": "openid email profile", "code_challenge_method": "S256"},
+            "client_kwargs": {
+                "scope": "openid email profile",
+                "code_challenge_method": "S256",
+            },
         },
     }
 ]

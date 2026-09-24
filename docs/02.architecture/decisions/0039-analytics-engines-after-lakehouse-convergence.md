@@ -1,14 +1,16 @@
 ---
 title: "Analytics Engines after Lakehouse Convergence"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "ADR-0039"
 parent_ids:
 - "AD-0012"
+supersedes:
+- "ADR-0015"
 created: "2026-09-24"
 ---
 
@@ -29,8 +31,6 @@ INSERT와 checkpoint를 거치는 streaming INSERT로 table을 썼고, Trino가 
 배포된 적이 없고 host data나 volume도 없었다.
 
 ## Decision
-
-수락되면 이 ADR은 ADR-0015를 supersede한다.
 
 - **시계열**: InfluxDB 3 Core 단일 deployment를 유지한다(ADR-0015와 같다).
 - **로그·검색**: OpenSearch 3.x를 유지한다(ADR-0015와 같다).
@@ -85,7 +85,7 @@ acceptance 기록과 현재 저장소 구성이다. 기록되지 않은 런타�
 
 ## Related Documents
 
-- **Superseded on acceptance**: [ADR-0015](0015-analytics-engine-selection.md)
+- **Superseded ADR**: `ADR-0015` (`docs/98.archive/superseded/`에 보존)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
 - **Requirements**: [0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **Lakehouse policy**: [POL-0094](../../05.operations/catalog/04-data/0094-lakehouse/policy.md)

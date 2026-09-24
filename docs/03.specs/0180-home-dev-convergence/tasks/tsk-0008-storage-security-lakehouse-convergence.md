@@ -1324,6 +1324,15 @@ already a no-op with no consumer, so this is a source-only removal with no
 live cutover step. ADR-0015 and ADR-0019 keep their original Context and
 Decision text and gain a `## Follow-up` note naming Flink and Trino as the
 current replacements, per the repository's no-rewrite-history convention.
+The owner then chose supersession: ADR-0039 (analytics engines after the
+lakehouse convergence) and ADR-0040 (the 04-data hardening gate restated
+without ksqlDB) were proposed in #249 and accepted in the follow-up PR, which
+moves ADR-0015 and ADR-0019 to `docs/98.archive/superseded/02.architecture/decisions/`
+with `superseded_by` and two ledger rows. REQ-0005 was reviewed with them: its
+scope now covers InfluxDB, OpenSearch, Flink and Trino, stream processing
+and SQL/OLAP are restated engine-neutrally as FR 0005 and 0006 (acceptance
+cites the 2026-09-24 live run), and FR numbers 0002 and 0004 are retired
+into `reserved_history`.
 
 **Template ledger.** S02 read all 40 registered templates and found no gap
 for the planned tools. S10–S17 added thirteen services (Conftest one more) with the existing
@@ -1523,7 +1532,10 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #243 | Private secret registry mirrors the public one except values | merged |
 | #244 | Multi-line secret files stay out of the registry; remaining live activation | merged |
 | #245 | Real-lineage identity tests pinned to a fixed commit (CI bound) | merged |
-| this PR | ksqlDB and StarRocks removal; Superset live record | open |
+| #246 | ksqlDB and StarRocks removal; Superset live record | merged |
+| #247 | RUN-0096 snapshot custody | merged |
+| #249 | ADR-0039/0040 proposed; REQ-0005 restated | merged |
+| this PR | ADR-0039/0040 accepted; ADR-0015/0019 superseded | open |
 
 ## Rulings
 
@@ -1546,7 +1558,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
 - ~~File-provider router `k3s-ingress` forwards `*.k8s.` hosts to the native k3s NodePort with no gateway authentication (owner).~~ Closed 2026-09-24: removed in S19 on the owner's decision.
-- `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).
+- ~~`test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).~~ Closed 2026-09-24: CI does run `ruff format` on changed-Python PRs (#249 failed on it); the test file, `superset_config.py` and `hyhome-gx.py` are formatted and the call has `check=False`.
 
 - ~~Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).~~ Closed 2026-09-23: the row was replaced by the example placeholder after a private equality check (secret cleanup section).
 - Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).

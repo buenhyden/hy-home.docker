@@ -1,6 +1,6 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.0.2"
+version: "1.1.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -127,7 +127,7 @@ The existing infrastructure strategy section defines the deployment boundary for
 ## Related Documents
 
 - **PRD**: [005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
-- **ADR**: [0015-analytics-engine-selection.md](../decisions/0015-analytics-engine-selection.md)
+- **ADR**: [0039-analytics-engines-after-lakehouse-convergence.md](../decisions/0039-analytics-engines-after-lakehouse-convergence.md) (supersedes ADR-0015)
 - **Specs**: [spec.md](0012-data-analytics-architecture.md)
 - **Guides**: [README.md](../../05.operations/catalog/04-data/README.md)
 
