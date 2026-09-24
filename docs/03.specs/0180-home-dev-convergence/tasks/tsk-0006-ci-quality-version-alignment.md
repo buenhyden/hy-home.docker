@@ -1,8 +1,8 @@
 ---
 title: "CI Quality Version Alignment and Workflow Audit"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

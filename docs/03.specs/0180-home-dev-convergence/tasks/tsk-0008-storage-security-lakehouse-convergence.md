@@ -1,8 +1,8 @@
 ---
 title: "Storage, Secret Custody, Network and Lakehouse Convergence"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
@@ -1547,7 +1547,8 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #250 | ADR-0039/0040 accepted; ADR-0015/0019 superseded; ruff format fix | merged |
 | #251 | Alloy OTLP live record | merged |
 | #252 | SPEC-0180 to review, SPEC-0181 draft, review fixes | merged |
-| this PR | SPEC-0180 Spec and Plan approved | open |
+| #253 | SPEC-0180 Spec and Plan approved | merged |
+| this PR | SPEC-0180 active; Tasks in progress for completion | open |
 
 ## Rulings
 
