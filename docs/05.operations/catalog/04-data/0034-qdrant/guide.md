@@ -88,7 +88,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 ### Common Pitfalls
 
 - 현재 compose는 host port publish가 아니라 SSO 뒤의 Traefik REST route와 internal expose를 사용한다.
-- 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI의 `VECTOR_DB_URL`은 `VECTOR_DB`가 설정되지 않아 쓰이지 않는다.
+- 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
 

@@ -64,7 +64,7 @@ created: "2026-03-26"
 시스템은 하이브리드 구조로 운영된다.
 
 1. **Inference Layer (Backend)**: Ollama가 모델 저장소와 GPU를 직접 제어하며 OpenAI 호환 API를 제공한다.
-2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI가 채팅 UI와 더불어 Qdrant와 연동된 RAG 로직(Embedding → Search → Augment)을 수행한다.
+2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI가 채팅 UI와 더불어 RAG 로직(Embedding → Search → Augment)을 수행한다. 벡터는 Open WebUI 로컬 저장소에 두며 Qdrant는 쓰지 않는다(`VECTOR_DB` 미설정).
 
 ### AI Agent Architecture
 

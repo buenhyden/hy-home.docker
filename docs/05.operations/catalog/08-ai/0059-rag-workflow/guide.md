@@ -17,7 +17,7 @@ created: "2026-03-25"
 
 ### Overview
 
-이 가이드는 Open WebUI가 Ollama 임베딩 모델과 Qdrant를 사용해 문서를 벡터화하고 검색 컨텍스트를 생성하는 RAG 사용 흐름을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`의 `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL` 환경변수로 정의된다.
+이 가이드는 Open WebUI가 Ollama 임베딩 모델로 문서를 벡터화하고 검색 컨텍스트를 생성하는 RAG 사용 흐름을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`의 `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL` 환경변수로 정의된다. `VECTOR_DB`를 설정하지 않으므로 벡터는 Open WebUI 기본 로컬 저장소(`open-webui` 데이터 볼륨)에 저장되며 Qdrant는 쓰지 않는다(SPEC-0182에서 쓰이지 않던 `VECTOR_DB_URL`을 제거했다).
 
 ### Usage Type
 
@@ -32,39 +32,36 @@ created: "2026-03-25"
 
 ### Purpose
 
-- Open WebUI에서 문서 업로드, 임베딩, Qdrant 저장, 검색 컨텍스트 주입 흐름을 이해한다.
+- Open WebUI에서 문서 업로드, 임베딩, 로컬 벡터 저장, 검색 컨텍스트 주입 흐름을 이해한다.
 - RAG 연결성 점검은 현재 compose env와 선택한 profile 경계에 맞춰 수행한다.
 - 장애 대응과 rollback은 Open WebUI runbook으로 넘긴다.
 
 ### Prerequisites
 
 - root `docker-compose.yml`은 AI compose 파일을 무조건 include하므로, `ai` profile을 선택해야 기동된다.
-- `qdrant`는 root-active `infra/04-data/specialized/qdrant/docker-compose.yml`의 `ai` 또는 `data` profile로 기동 가능해야 한다.
-- `RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b` 모델이 Ollama에 준비되어야 한다.
+- Compose가 선언한 `RAG_EMBEDDING_MODEL` 모델이 Ollama에 준비되어야 한다.
 
 ### Step-by-step Instructions
 
 1. Open WebUI compose env가 현재 계약과 일치하는지 확인한다.
    - `OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434}`
-   - `VECTOR_DB_URL=http://qdrant:${QDRANT_PORT:-6333}`
    - `RAG_EMBEDDING_ENGINE=ollama`
-   - `RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b`
+   - `RAG_EMBEDDING_MODEL`은 Compose 선언 값
 2. Open WebUI에서 PDF, Markdown, 텍스트 문서를 업로드한다.
-3. Open WebUI가 Ollama 임베딩 엔진으로 문서를 벡터화하고 Qdrant에 저장하는지 확인한다.
+3. Open WebUI가 Ollama 임베딩 엔진으로 문서를 벡터화해 로컬 벡터 저장소에 저장하는지 확인한다.
 4. 업로드 문서를 지정해 질문하고, 답변에 검색 컨텍스트가 반영되는지 확인한다.
 5. 인덱싱 실패나 연결 실패가 반복되면 Open WebUI runbook으로 handoff한다.
 
 ### Common Pitfalls
 
-- `qwen3-embedding:0.6b` 모델이 Ollama에 없는데 RAG 인덱싱을 시작하는 경우.
+- 선언된 임베딩 모델이 Ollama에 없는데 RAG 인덱싱을 시작하는 경우.
 - Open WebUI service-local compose 파일만 단독 검증해 선언된 network undefined 오류를 현재 구현 실패로 오해하는 경우.
-- host localhost로 Open WebUI 또는 Qdrant 내부 endpoint를 직접 조회하는 경우. 현재 Open WebUI는 Traefik route와 container-internal healthcheck를 기준으로 한다.
+- host localhost로 Open WebUI 내부 endpoint를 직접 조회하는 경우. 현재 Open WebUI는 Traefik route와 container-internal healthcheck를 기준으로 한다.
 
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-- Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections`
 
 ## Runbook Handoff
 

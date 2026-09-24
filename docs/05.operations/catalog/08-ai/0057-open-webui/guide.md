@@ -37,18 +37,16 @@ created: "2026-05-10"
 ### Purpose
 
 - Open WebUI의 핵심 사용 흐름(접속, 인증, 모델 선택, 채팅)을 표준화한다.
-- RAG 인덱싱 및 질의 흐름을 `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 기준으로 이해한다.
+- RAG 인덱싱 및 질의 흐름을 `OLLAMA_BASE_URL`, `RAG_EMBEDDING_MODEL` 기준으로 이해한다. `VECTOR_DB`가 없으므로 벡터는 Open WebUI 로컬 저장소에 있다.
 - 장애 징후를 빠르게 식별하고 런북으로 연결한다.
 
 ### Prerequisites
 
 - root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai` profile을 선택해야 한다.
-- `open-webui`, `ollama`, `qdrant` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
+- `open-webui`, `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - `ollama` 컨테이너가 `http://ollama:${OLLAMA_PORT:-11434}`로 접근 가능해야 한다.
-- `qdrant` 컨테이너가 `http://qdrant:${QDRANT_PORT:-6333}`로 접근 가능해야 한다.
 - Open WebUI 환경변수 확인:
   - `OLLAMA_BASE_URL`
-  - `VECTOR_DB_URL`
   - `RAG_EMBEDDING_MODEL` (현재 값은 Compose 선언 확인)
 - Keycloak의 전용 `home-openwebui` client와 native OIDC 경로가 정상이어야 한다.
   이 서비스는 `sso-auth@file`을 사용하지 않는다.
@@ -72,7 +70,7 @@ created: "2026-05-10"
 #### 3. RAG Document Indexing
 
 1. 문서 업로드 메뉴에서 PDF/TXT 문서를 업로드한다.
-2. Open WebUI가 `RAG_EMBEDDING_MODEL`로 임베딩 생성 후 Qdrant에 저장하는지 확인한다.
+2. Open WebUI가 `RAG_EMBEDDING_MODEL`로 임베딩을 만들어 로컬 벡터 저장소에 저장하는지 확인한다.
 3. 업로드된 문서를 지정하여 질의하고, 답변에 문서 근거가 반영되는지 확인한다.
 
 #### 4. Quick Connectivity Checks
@@ -84,8 +82,6 @@ docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-808
 ## Open WebUI -> Ollama connectivity (컨테이너 내부)
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
-## Open WebUI -> Qdrant connectivity (컨테이너 내부)
-docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
 
 ### 5. Advanced Settings
@@ -97,7 +93,6 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 ### Common Pitfalls
 
 - **Ollama 연결 실패**: `OLLAMA_BASE_URL` 오타 또는 `ollama` 비정상 상태.
-- **Qdrant 연결 실패**: `VECTOR_DB_URL` 오타, 네트워크 미연결, Qdrant 다운.
 - **임베딩 모델 누락**: `RAG_EMBEDDING_MODEL`이 Ollama에 준비되지 않아 인덱싱 실패.
 - **VRAM OOM**: 동시 인덱싱/추론 증가로 응답 지연 또는 실패.
 - **SSO 문제**: 인증 미들웨어/리디렉션 설정 불일치로 접근 실패.
@@ -106,8 +101,8 @@ docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collec
 
 - **Purpose/classification**: `open-webui` is an owner-confirmed `HOME` chat/RAG interface.
 - **Profiles/source**: `ai`/`ai-llm` select the service. [Compose](../../../../../infra/08-ai/open-webui/docker-compose.yml), its selected image, and startup environment are authoritative.
-- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama and Qdrant over `ai_net`. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
-- **State/secrets**: `open-webui:/app/backend/data` contains the default SQLite database, uploads, chat/user state, and application data. Preserve `openwebui_oidc_client_secret`, session/auth secrets declared by Compose, the root CA, and the corresponding Qdrant snapshot owned by [RUN-0034](../../04-data/0034-qdrant/runbook.md). Never expose values in rendered config or logs.
+- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama over `ai_net` and keeps vectors in its local store. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
+- **State/secrets**: `open-webui:/app/backend/data` contains the default SQLite database, uploads, chat/user state, and application data. Preserve `openwebui_oidc_client_secret`, session/auth secrets declared by Compose, the root CA. RAG vectors live in the same data volume, so no separate vector-store backup applies. Never expose values in rendered config or logs.
 - **Resources/security**: Compose values are source limits, not measured headroom. Keep the UI behind native OIDC and the gateway standard chain; do not enable local password/signup paths as an incident workaround.
 - **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`; verify health, OIDC login, Ollama model listing, and a controlled RAG query. Stop Open WebUI before a consistent SQLite/data-volume backup. For upgrades, preserve the volume and matching secrets, review upstream migrations, update one version boundary, then verify identities/chats/uploads/OIDC and coordinate Qdrant recovery separately.
 - **Upstream/license**: follow official [environment configuration](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [updates/backups](https://docs.openwebui.com/getting-started/updating/), and [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) guidance. Verify the license terms of the pinned Open WebUI release before redistribution or modified deployment.

@@ -66,7 +66,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. Traefik
 terminates TLS and applies `gateway-standard-chain@file`; Open WebUI owns
 authentication through its native Keycloak OIDC client `home-openwebui`.
 Traefik does not apply the proxy `sso-auth@file` middleware to this router.
-Open WebUI communicates internally via `ai_net` with Ollama and Qdrant.
+Open WebUI communicates internally via `ai_net` with Ollama; RAG vectors stay in its local store.
 
 ### AI Agent Architecture
 
@@ -84,8 +84,8 @@ Open WebUI communicates internally via `ai_net` with Ollama and Qdrant.
 
 - **Key Entities / Flows**:
   - User Input -> Open WebUI -> Ollama (Inference).
-  - Document Upload -> Open WebUI -> Ollama (Embedding) -> Qdrant (Storage).
-  - Query -> Open WebUI -> Qdrant (Retrieval) -> Context + Prompt -> Ollama (Generation).
+  - Document Upload -> Open WebUI -> Ollama (Embedding) -> local vector store (Storage).
+  - Query -> Open WebUI -> local vector store (Retrieval) -> Context + Prompt -> Ollama (Generation).
 - **Storage Strategy**:
   - `/app/backend/data` (default SQLite database, chat/user state, uploads and application data).
 - **Data Boundaries**:
