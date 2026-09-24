@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.3.8"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-24"
 layer: "architecture"
 ---
 
@@ -43,6 +43,8 @@ docs/02.architecture/decisions/
 ├── 0036-archive-occupancy-citation-and-frozen-identity.md
 ├── 0037-package-disposition-wait-and-task-cancellation.md
 ├── 0038-selective-native-oidc-for-native-auth-apps.md
+├── 0039-analytics-engines-after-lakehouse-convergence.md
+├── 0040-data-hardening-gate-and-staged-expansion.md
 └── README.md
 ```
 
@@ -84,6 +86,12 @@ docs/02.architecture/decisions/
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
   proposed decision.
+- [`ADR-0039`](./0039-analytics-engines-after-lakehouse-convergence.md):
+  InfluxDB와 OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의
+  Trino가 맡는 proposed decision. 수락 시 ADR-0015를 supersede한다.
+- [`ADR-0040`](./0040-data-hardening-gate-and-staged-expansion.md):
+  04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 proposed
+  decision. 수락 시 ADR-0019를 supersede한다.
 
 ## How to Work in This Area
 
