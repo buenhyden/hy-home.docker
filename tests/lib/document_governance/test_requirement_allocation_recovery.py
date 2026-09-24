@@ -17,7 +17,7 @@ from scripts.lib.document_governance.registry import (
 )
 
 PATH = "docs/01.requirements/0012-laboratory.md"
-TASK = "docs/03.specs/0180-home-dev-convergence/tasks/tsk-0001-home-dev-convergence.md"
+TASK = "docs/98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0001-home-dev-convergence.md"
 REG = "docs/99.templates/registry.json"
 FIELD = "requirement_allocation_recovery_decisions"
 

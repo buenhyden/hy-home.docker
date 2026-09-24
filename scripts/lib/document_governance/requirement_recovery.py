@@ -22,8 +22,9 @@ FIELD = "requirement_allocation_recovery_decisions"
 REQUIREMENT_PATH = "docs/01.requirements/0012-laboratory.md"
 REGISTRY_PATH = "docs/99.templates/registry.json"
 ALLOCATION = "REQ-0012.FR"
+# The owning package may sit in Stage 03 or, once completed, in the archive.
 TASK_PATH = re.compile(
-    r"docs/03\.specs/(?P<spec>[0-9]{4})-[a-z0-9][a-z0-9-]*/tasks/tsk-(?P<task>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
+    r"docs/(?:98\.archive/completed/)?03\.specs/(?P<spec>[0-9]{4})-[a-z0-9][a-z0-9-]*/tasks/tsk-(?P<task>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
 EXPECTED_PINS = {
     "comparison_base_commit": "d1e6ded52808b02392c52472d5416518a3b959d6",
@@ -31,7 +32,8 @@ EXPECTED_PINS = {
     "valid_predecessor_commit": "b66da447f68993dd9bddfd100bdd4c4b90d19be4",
 }
 EXPECTED_TASK = (
-    "docs/03.specs/0180-home-dev-convergence/tasks/tsk-0001-home-dev-convergence.md"
+    "docs/98.archive/completed/03.specs/0180-home-dev-convergence/tasks/"
+    "tsk-0001-home-dev-convergence.md"
 )
 PIN_FIELDS = tuple(EXPECTED_PINS)
 FIXED = {
@@ -69,7 +71,14 @@ def _regular_text(root, path):
 def _decision(root):
     rows = []
     total = 0
-    paths = _git(root, "ls-files", "-z", "--", "docs/03.specs").split("\0")
+    paths = _git(
+        root,
+        "ls-files",
+        "-z",
+        "--",
+        "docs/03.specs",
+        "docs/98.archive/completed/03.specs",
+    ).split("\0")
     for path in filter(None, paths):
         match = TASK_PATH.fullmatch(path)
         if match is None:
