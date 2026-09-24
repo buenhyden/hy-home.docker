@@ -1,8 +1,8 @@
 ---
 title: "OpenBao and hy-home.k8s Integration Operations Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

@@ -1,8 +1,8 @@
 ---
 title: "OpenBao and hy-home.k8s Integration Operations"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
@@ -77,7 +77,8 @@ here. The owner approved the Spec and Plan on 2026-09-24.
 | PR | Scope | State |
 | --- | --- | --- |
 | #256 | SPEC-0181 narrowed and put to review; Plan and Task; W1; SPEC-0182 draft | merged |
-| this PR | SPEC-0181 Spec and Plan approved; Task ready | open |
+| #257 | SPEC-0181 Spec and Plan approved; Task ready | merged |
+| this PR | SPEC-0181 active; Task in progress for the owner session | open |
 
 ## Rulings
 
