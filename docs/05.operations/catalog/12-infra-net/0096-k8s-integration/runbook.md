@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -182,7 +182,9 @@ bao operator raft snapshot save /s/k8s/pre-change.snap   # or a name for the cha
 ```
 
 Expected: the browser login succeeds and the snapshot file exists. Do not
-continue without it.
+continue without it. `/s/k8s` is the host's `/tmp/bao-k8s`, so the snapshot
+exists only there until Phase 8 moves it; never delete that directory as a
+whole.
 
 5.4 **Temporary root** (first setup, or an additional application). This needs
 an approved root session and two distinct unseal shares from
@@ -326,9 +328,15 @@ metrics NodePorts.
 
 ```bash
 rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token
-mv /tmp/bao-k8s/pre-change.snap <protected custody>/
+install -d -m 700 secrets/backup/openbao
+mv /tmp/bao-k8s/*.snap secrets/backup/openbao/
 rmdir /tmp/bao-k8s 2>/dev/null || ls -l /tmp/bao-k8s
 ```
+
+`secrets/backup/` is git-ignored and owner-only. It is an interim copy on the
+same host: copy the snapshot to separate offline custody as the
+[backup and restore policy](../../04-data/0021-backup-and-restore/policy.md)
+requires, then keep or delete the host copy by that policy's retention.
 
 After the results check out, delete the Phase 2 backup directory. In the
 current Task, record the date, the phases run, and the expected outputs of
@@ -419,8 +427,9 @@ situation from "When to Use" applied.
 
 - **Prometheus API:** remove the `prometheus-api` router labels and recreate
   Prometheus. The UI route is unaffected.
-- **OpenBao:** the snapshot from 5.3 is the recovery point; restore it only
-  through the isolated procedure in the OpenBao runbook.
+- **OpenBao:** the snapshot from 5.3 (`secrets/backup/openbao/` or its offline
+  copy) is the recovery point; restore it only through the isolated procedure
+  in the OpenBao runbook.
 - **Bootstrap token:** revoke it by itself (see Troubleshooting).
 - **Private registry and `.env`:** restore from the Phase 2 backup.
 
