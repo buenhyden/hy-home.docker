@@ -735,6 +735,7 @@
         "tests.validation.test_openwebui_oidc_entrypoint",
         "tests.validation.test_gatus_oidc",
         "tests.validation.test_mng_pg_init_sql",
+        "tests.validation.test_service_wiring_contracts",
         "-v"
       ],
       "cwd": ".",

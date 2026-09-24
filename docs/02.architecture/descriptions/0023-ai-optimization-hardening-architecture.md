@@ -72,7 +72,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - Client -> Traefik(websecure) -> ollama/chat routers -> Ollama/Open WebUI
 - **Inference/RAG plane**:
   - Open WebUI -> Ollama (generation + embedding)
-  - Open WebUI -> Qdrant (vector retrieval)
+  - Open WebUI -> its local vector store (vector retrieval)
 - **Control plane**:
   - SSO middleware, 정책 게이트 script/CI, 운영 문서(guides/policies/runbooks)
 
@@ -95,7 +95,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 - **Runtime / Platform**: Docker Compose (`infra/08-ai/*`)
 - **Deployment Model**:
   - Ollama + exporter
-  - Open WebUI (stateful) + ollama/qdrant dependency
+  - Open WebUI (stateful) + ollama dependency
 - **Operational Evidence**:
   - root-active compose validation through `scripts/validation/validate-docker-compose.sh`
   - optional AI compose contract checks through `scripts/hardening/check-all-hardening.sh 08-ai`

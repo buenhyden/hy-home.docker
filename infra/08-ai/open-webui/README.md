@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local LLMs. Beyond simple chat, it acts as a RAG (Retrieval-Augmented Generation) orchestrator, integrating with Qdrant for vector document search and Ollama for embedding generation.
+Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local LLMs. Beyond simple chat, it acts as a RAG (Retrieval-Augmented Generation) orchestrator, using its built-in local vector store for document search and Ollama for embedding generation.
 
 ## Audience
 
@@ -29,13 +29,13 @@ Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local L
 ### In Scope
 
 - `docker-compose.yml`: Interface & RAG backend orchestration.
-- RAG configuration: Embedding model and Vector DB connectivity.
+- RAG configuration: embedding model; vectors stay in Open WebUI's local store (`VECTOR_DB` unset).
 - Traefik routing and native OIDC configuration.
 
 ### Out of Scope
 
 - Model weights: Managed in [ollama](../ollama/README.md).
-- Vector persistence: Managed in [qdrant](../../04-data/specialized/qdrant/README.md).
+- Vector persistence: Open WebUI's local store in its data volume; Qdrant is not used.
 
 ## Structure
 
@@ -52,7 +52,7 @@ open-webui/
 | --- | --- |
 | Purpose | Open WebUI service leaf in `08-ai`; services: `open-webui`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
 | Config files | `docker-compose.yml`, `docker-entrypoint.sh` |
-| Config values | env keys: `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
+| Config values | env keys: `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
 | Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
 | Networks | `ai_net`, `edge_net` |
 | Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
@@ -68,7 +68,7 @@ open-webui/
 
 1. Read the Open WebUI Interface & RAG Guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`).
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
-3. Verify connection to Ollama and Qdrant before document indexing.
+3. Verify the connection to Ollama before document indexing.
 
 ## Troubleshooting
 
@@ -121,7 +121,6 @@ one-key configuration updates and recovery.
 | Variable | Required | Description |
 | :--- | :---: | :--- |
 | `OLLAMA_BASE_URL` | Yes | Endpoint for Ollama API. |
-| `VECTOR_DB_URL` | Yes | Endpoint for Qdrant vector store. |
 | `RAG_EMBEDDING_MODEL` | Yes | Model used for document indexing; the current value is owned by Compose. |
 
 ## Change Impact
