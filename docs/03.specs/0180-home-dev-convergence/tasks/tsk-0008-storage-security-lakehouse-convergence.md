@@ -1565,7 +1565,10 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #251 | Alloy OTLP live record | merged |
 | #252 | SPEC-0180 to review, SPEC-0181 draft, review fixes | merged |
 | #253 | SPEC-0180 Spec and Plan approved | merged |
-| this PR | SPEC-0180 active; Tasks in progress; completion receipt | open |
+| #254 | SPEC-0180 active; Tasks in progress; completion receipt (the last change to these bodies) | merged |
+
+The next PR completes SPEC-0180 and moves this package to
+`docs/98.archive/completed/03.specs/`; it changes only lifecycle fields here.
 
 ## Rulings
 
