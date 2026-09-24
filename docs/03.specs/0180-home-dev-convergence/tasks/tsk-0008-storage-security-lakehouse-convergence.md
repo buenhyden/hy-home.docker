@@ -1434,6 +1434,23 @@ The fixture now copies `plan.ndjson`.
 
 ## Verification Evidence
 
+Completion receipt for SPEC-0180 (criteria 1–9, Plan work units W1–W9). Each
+cell cites where the evidence lives; open live and recovery work is recorded as
+residual risk under the owner's decision in the Spec's completion basis.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: 140-service inventory and disposition matrix reviewed (Task 0005, units A and R); S00 four-column state, consumers and requirement trace (this Task, S00) | [m0021 inventory](../../../../docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md) |
+| 2 | W1 | PASS: primary-source matrix (Task 0001); upstream-checked decisions for each added service and the four S19 authentication decisions (this Task, S10–S19) | N/A: evidence stays in Tasks 0001 and 0008 |
+| 3 | W2 | PASS: Compose 72 selections/318 services with catalog and port checks (S03 accumulated gates), network segmentation contract tests (S05), AD-0009 profile drift closed (S19) | [POL-0078](../../../../docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md) |
+| 4 | W3 | PASS: D unit review of the template and heading contracts (Task 0005); S02 and S19 template ledger found no gap across S10–S17 | [Stage 99 templates](../../../../docs/99.templates/README.md) |
+| 4 | W4 | PASS: README and Stage 05 convergence reviewed (Task 0005, unit E); each added service ships its Guide/Policy/Runbook with operations-catalog PASS (S10–S17) | [check-operations-catalog.py](../../../../scripts/validation/check-operations-catalog.py) |
+| 5 | W5 | PASS: C unit review with focused and full tests and both strict Renovate validators exit 0 (Task 0005); Hadolint release-tag repair (Task 0006); version projection checks per stage (S10–S17) | [0086 policy](../../../../docs/05.operations/catalog/00-workspace/0086-dependency-version-management/policy.md) |
+| 6 | W6 | PASS: secret metadata sync tests; private registry equals the public one except value cells and `.env` has the public key set after `--sync-metadata-prune` (#243, #244); no value in output | [gen-secrets.sh](../../../../scripts/operations/gen-secrets.sh) |
+| 7 | W7 | PASS: stage and accumulated gates with exit codes (S03–S19) and `run-ci-gate.py --profile changed` exit 0; hosted failures at the #167–#169 merges are recorded as limitations in Tasks 0001, 0002 and 0005 | [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) |
+| 8 | W8 | PASS: live results (S03, S05, S06, S07, S10–S19 and the Alloy OTLP apply) kept apart from NOT_RUN rows (offsite, PITR on HOME data) and the gaps carried by SPEC-0181; this is the distinction the criterion asks for, not full recovery proof | [RUN-0021](../../../../docs/05.operations/catalog/04-data/0021-backup-and-restore/runbook.md) |
+| 9 | W9 | PASS: every PR in the Commit Ledgers of Tasks 0001–0008 merged with residual risks, limitations and recovery recorded; the follow-up Spec carries what stays open | [SPEC-0181](../../0181-home-residual-operations/spec.md) |
+
 Rows record each stage's result when it closed; `live NOT_RUN` rows for S10–S19
 were later run, and their results are in the live sections of the Work Log.
 
@@ -1548,7 +1565,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #251 | Alloy OTLP live record | merged |
 | #252 | SPEC-0180 to review, SPEC-0181 draft, review fixes | merged |
 | #253 | SPEC-0180 Spec and Plan approved | merged |
-| this PR | SPEC-0180 active; Tasks in progress for completion | open |
+| this PR | SPEC-0180 active; Tasks in progress; completion receipt | open |
 
 ## Rulings
 
