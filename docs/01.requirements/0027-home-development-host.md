@@ -63,7 +63,7 @@ created: "2026-09-19"
 ## Traceability
 
 - [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
-- [Convergence Specification](../03.specs/0180-home-dev-convergence/spec.md)
+- [Convergence Specification](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 
 ## Risks
 

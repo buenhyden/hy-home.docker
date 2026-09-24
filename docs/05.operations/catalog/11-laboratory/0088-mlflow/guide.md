@@ -97,7 +97,7 @@ restore and upgrade.
 - [Policy](policy.md) (`POL-0088`)
 - [Runbook](runbook.md) (`RUN-0088`)
 - [Laboratory architecture](../../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- [Current Task](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md)
+- [Current Task](../../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md)
 
 ## Related Documents
 

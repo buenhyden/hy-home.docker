@@ -83,6 +83,6 @@ N/A
 ## Traceability
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
-- [Current convergence Spec](../03.specs/0180-home-dev-convergence/spec.md)
-- [Current convergence Plan](../03.specs/0180-home-dev-convergence/plan.md)
+- [Current convergence Spec](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- [Current convergence Plan](../98.archive/completed/03.specs/0180-home-dev-convergence/plan.md)
 - **ADR**: [0009-tooling-services.md](../02.architecture/decisions/0009-tooling-services.md)

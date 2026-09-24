@@ -95,7 +95,7 @@ created: "2026-03-26"
 ## Related Documents
 
 - **PRD**: [010-tooling.md](../../01.requirements/0010-tooling.md)
-- [Current convergence Spec](../../03.specs/0180-home-dev-convergence/spec.md)
+- [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [OpenTofu operations](../../05.operations/catalog/09-tooling/0082-opentofu/guide.md)
 - [Terraform migration handoff](../../05.operations/catalog/09-tooling/0068-terraform/guide.md)
 - **ADR**: [0009-tooling-services.md](../decisions/0009-tooling-services.md)

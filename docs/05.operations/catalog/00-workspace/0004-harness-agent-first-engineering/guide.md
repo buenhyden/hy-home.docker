@@ -75,7 +75,7 @@ preserves the gate set, job identities, `SKIP` ownership, and changed/full
 separation. Hosted verification remains required.
 
 The 2026-09-20 PR #169 incident and the resulting Hadolint alignment are
-recorded in [SPEC-0180 Task 0006](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md).
+recorded in [SPEC-0180 Task 0006](../../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md).
 It distinguishes the failed hosted revision from local evidence and from future
 GitHub Actions consolidation proposals.
 

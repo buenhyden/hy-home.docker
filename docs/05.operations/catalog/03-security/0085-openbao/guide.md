@@ -102,7 +102,7 @@ secrets are different controls:
 
 The server uses three Shamir shares with threshold two. Human OIDC acceptance,
 renderer checks and the corrected recovery procedure are recorded in the
-[current follow-up Task](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md).
+[current follow-up Task](../../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md).
 Snapshot creation and server restart/unseal were verified; isolated restore and
 offline transfer of the shares remain separate operator responsibilities.
 

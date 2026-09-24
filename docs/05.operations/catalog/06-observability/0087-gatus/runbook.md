@@ -39,7 +39,7 @@ the metrics prefix. The original `config.yaml` is preserved for configuration
 rollback. Changing a live bind-mounted file
 can affect the running service immediately. Do not edit the live file to prepare
 an unapproved transition. Current rollout status belongs to
-[Task 0004](../../../../03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md).
+[Task 0004](../../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md).
 
 The client is `home-gatus` with exact callback
 `https://status.${DEFAULT_URL}/authorization-code/callback`, confidential code

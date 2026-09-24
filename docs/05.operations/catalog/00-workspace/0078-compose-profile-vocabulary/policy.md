@@ -193,7 +193,7 @@ python3 scripts/validation/check-operations-catalog.py
 ## Traceability
 
 - [Workspace catalog](../README.md)
-- [Convergence specification](../../../../03.specs/0180-home-dev-convergence/spec.md)
+- [Convergence specification](../../../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [Runtime version projection](../../../../../infra/tech-stack.versions.json)
 - [Original enablement decision](../../../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
 - [Sibling resolution](../../../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
