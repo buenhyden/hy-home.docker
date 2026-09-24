@@ -1,8 +1,8 @@
 ---
 title: "Optional Capability Restructure and CI Recovery"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

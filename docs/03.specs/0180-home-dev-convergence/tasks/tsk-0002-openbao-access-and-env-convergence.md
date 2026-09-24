@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Access and Private Schema Convergence"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

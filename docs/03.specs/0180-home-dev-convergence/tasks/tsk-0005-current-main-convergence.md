@@ -1,8 +1,8 @@
 ---
 title: "Current Main Home and Development Convergence"
-version: "0.4.5"
+version: "0.4.6"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

@@ -1,8 +1,8 @@
 ---
 title: "Home and Development Server Convergence Specification"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
