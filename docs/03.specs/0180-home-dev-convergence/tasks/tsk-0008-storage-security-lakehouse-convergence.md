@@ -1535,7 +1535,9 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #246 | ksqlDB and StarRocks removal; Superset live record | merged |
 | #247 | RUN-0096 snapshot custody | merged |
 | #249 | ADR-0039/0040 proposed; REQ-0005 restated | merged |
-| this PR | ADR-0039/0040 accepted; ADR-0015/0019 superseded | open |
+| #248 | Alloy HOME OTLP receiver forwarding traces to Tempo | merged |
+| #250 | ADR-0039/0040 accepted; ADR-0015/0019 superseded; ruff format fix | merged |
+| this PR | Alloy OTLP live record | open |
 
 ## Rulings
 
@@ -1582,7 +1584,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Alloy shipped logs for only 6 of 56 containers between the S05 phase 1 live apply (2026-09-22) and the phase 2 live apply; those container logs are lost for that window.
 - Offsite backup destination (owner).
 - The runtime-version check reads SMTP enhanced status codes (for example the relay refusal) as version pins; narrow its pattern or allow a status-code context (governance tooling owner).
-- Alloy HOME config has no OTLP receiver while `4317/4318` stay published; add one when hy-home.k8s sends traces or logs over OTLP (observability owner).
+- ~~Alloy HOME config has no OTLP receiver while `4317/4318` stay published; add one when hy-home.k8s sends traces or logs over OTLP (observability owner).~~ Closed 2026-09-24: #248 added the receiver (traces to `tempo:4317`); `infra-alloy` was recreated on owner approval and is healthy, both receivers listen, and a smoke span sent to `192.168.0.13:4318` was found in Tempo. hy-home.k8s traces arrive after that repository restarts its `apps` and `ingress-nginx` pods (k8s side).
 - ~~`hy-home.k8s` External Secrets store: after the k3d removal no Compose service is reachable from the cluster, so the store needs another route to OpenBao or its own secret source (other repository).~~ Closed 2026-09-23: the cluster reaches OpenBao through the host route in the hy-home.k8s integration runbook (RUN-0096), with Kubernetes auth and the `eso-read-platform` role.
 - Preserved Vault data (`${DEFAULT_SECURITY_DIR}/vault`, 40 KB, still in the Restic state set), `secrets/security/vault_token.txt` and `vault_unseal_keys.legacy.txt` disposition (owner approval).
 - `examples/operations/compose-core-readiness/` still demonstrates a Vault-based readiness rig; restate it on OpenBao or declare it intentionally generic (owner).
