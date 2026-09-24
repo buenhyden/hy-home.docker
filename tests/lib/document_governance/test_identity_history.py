@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 import json
 import os
@@ -25,6 +26,51 @@ from scripts.lib.document_governance.metadata.profile import (
 from scripts.lib.document_governance.registry import load_registry
 
 LEGACY_REQUIREMENT = pathlib.PurePosixPath("docs/01.requirements/prd-0042-preserved.md")
+
+
+# The two real-lineage transition tests scan every merge between the approved
+# baseline and HEAD, so against a moving HEAD their Git output and time grow
+# with each merged PR until the scan bound fails them. They run on a detached
+# checkout of this fixed commit (#141) instead: 23 MiB and about 20 s against
+# the 64 MiB and 45 s bounds, constant from now on. The production check scans
+# only the PR's own merges and is unaffected.
+PINNED_LINEAGE_COMMIT = "4c6d211129615eab372d720ebd209b6c27618c86"
+
+
+@contextlib.contextmanager
+def pinned_lineage_root():
+    repo = pathlib.Path(__file__).resolve().parents[3]
+    with tempfile.TemporaryDirectory() as directory:
+        checkout = pathlib.Path(directory) / "lineage"
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(repo),
+                "worktree",
+                "add",
+                "--detach",
+                "-q",
+                str(checkout),
+                PINNED_LINEAGE_COMMIT,
+            ],
+            check=True,
+        )
+        try:
+            yield checkout
+        finally:
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(repo),
+                    "worktree",
+                    "remove",
+                    "--force",
+                    str(checkout),
+                ],
+                check=True,
+            )
 
 
 class IdentityHistoryTests(unittest.TestCase):
@@ -113,9 +159,14 @@ class IdentityHistoryTests(unittest.TestCase):
         )
 
     def test_allocation_transition_reads_each_blob_once(self) -> None:
+        with pinned_lineage_root() as root:
+            self._test_allocation_transition_reads_each_blob_once(root)
+
+    def _test_allocation_transition_reads_each_blob_once(
+        self, root: pathlib.Path
+    ) -> None:
         from scripts.lib.document_governance.archive import _approved_migration_document
 
-        root = pathlib.Path(__file__).resolve().parents[3]
         base = _approved_migration_document(root)["baseline_commit"]
         real = identity_history._run_git
         blobs: list[str] = []
@@ -135,9 +186,14 @@ class IdentityHistoryTests(unittest.TestCase):
         self.assertEqual(len(blobs), len(set(blobs)))
 
     def test_approved_pre_introduction_base_preserves_existing_identity(self) -> None:
+        with pinned_lineage_root() as root:
+            self._test_approved_pre_introduction_base_preserves_existing_identity(root)
+
+    def _test_approved_pre_introduction_base_preserves_existing_identity(
+        self, root: pathlib.Path
+    ) -> None:
         from scripts.lib.document_governance.archive import _approved_migration_document
 
-        root = pathlib.Path(__file__).resolve().parents[3]
         approved = _approved_migration_document(root)
         base = approved["baseline_commit"]
         self.assertEqual(
