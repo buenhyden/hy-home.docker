@@ -1,10 +1,10 @@
 ---
 title: "Native OIDC Service Migration"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0004"
 parent_ids:
@@ -241,6 +241,8 @@ service changes, data deletion or blanket administrator access. Unsupported
 services retain their existing protection and receive an explicit explanation.
 
 ## Deferred Items
+
+Closure (2026-09-24): PR #168 merged on 2026-09-19. Terrakube's Keycloak client and the removal of its API ForwardAuth move to [SPEC-0181](../../0181-home-residual-operations/spec.md) (at `iac` activation). The pending Gatus rollout and human acceptance notes below are historical to this round; remaining authentication acceptance is the SSO route matrix in SPEC-0181.
 
 Open WebUI and Gatus are migrated. Terrakube remains behind ForwardAuth because
 it is not running and its API audience validation is not established; no optional

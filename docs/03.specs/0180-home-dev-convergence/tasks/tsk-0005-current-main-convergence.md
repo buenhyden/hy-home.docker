@@ -1,10 +1,10 @@
 ---
 title: "Current Main Home and Development Convergence"
-version: "0.4.4"
+version: "0.4.5"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0005"
 parent_ids:
@@ -595,6 +595,8 @@ Historical PR evidence in Tasks 0001–0004 retains only its dated scope.
 | Mailpit / Stalwart | Mailpit DEV capture; Stalwart OPTIONAL mail server | Test mail and real mailbox state differ | Avoid exposure or mailbox loss |
 
 ## Deferred Items
+
+Closure (2026-09-24): PR #169 merged on 2026-09-20 with its last hosted `validation-changed` run failing; later main runs pass (for example #250). The draft and unpushed states above are historical. Private registry synchronization closed in Task 0008 (#243). Cold start, reboot, sustained and peak resource measurement, isolated restore rehearsals, OpenBao recovery custody, SEC-002 provisioning and runtime acceptance, and the non-HOME running-container assessment move to [SPEC-0181](../../0181-home-residual-operations/spec.md).
 
 - PR 169 is draft at `0eaa445a7a9820a8dd6289adacd7b900543443b0`.
   The exact 35-file formatting-hook plus Gatus Dockerfile packet is locally green and

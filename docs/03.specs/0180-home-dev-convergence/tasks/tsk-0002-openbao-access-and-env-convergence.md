@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Access and Private Schema Convergence"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0002"
 parent_ids:
@@ -141,6 +141,8 @@ runtime log may enter committed evidence. Recovery custody location was handed
 to the owner privately; offline separation and backup retention remain required.
 
 ## Deferred Items
+
+Closure (2026-09-24): PR #168 merged on 2026-09-19 with its last hosted `validation-changed` run failing, which closes the pending hosted checks below; later main runs pass. Offline custody of the recovery shares and snapshots, isolated snapshot restore, broader HOME runtime acceptance and host reboot move to [SPEC-0181](../../0181-home-residual-operations/spec.md).
 
 Owner must move recovery shares and snapshots to offline protected custody.
 Isolated snapshot restoration, broader HOME runtime acceptance and host reboot

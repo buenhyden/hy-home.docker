@@ -1,10 +1,10 @@
 ---
 title: "Keycloak and OIDC Operations Research"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0003"
 parent_ids:
@@ -76,6 +76,8 @@ declared behavior, and named acceptance evidence describes observed behavior.
 Do not conflate them. Preserve service pins and all runtime/private state.
 
 ## Deferred Items
+
+Closure (2026-09-24): whole-stack login/logout acceptance moves to [SPEC-0181](../../0181-home-residual-operations/spec.md) as the SSO route matrix. Client provisioning closed per service in later Tasks (Superset in Task 0008 S16) except Terrakube, which moves to SPEC-0181.
 
 Whole-stack login/logout acceptance, missing client provisioning and any security
 configuration remediation require their own scoped implementation and acceptance.

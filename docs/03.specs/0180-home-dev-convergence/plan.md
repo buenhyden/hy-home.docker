@@ -1,6 +1,6 @@
 ---
 title: "Home and Development Server Convergence Plan"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -16,12 +16,14 @@ created: "2026-09-19"
 
 ## Objective
 
-Close remaining [Spec](spec.md) gaps against main
+This Plan ran in rounds. The first follow-up round closed [Spec](spec.md) gaps against main
 `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` in
 `codex/home-dev-convergence-followup`. Preserve delivered implementation and
 historical Tasks; do not replay the original baseline or its runtime approvals.
-[Task 0005](tasks/tsk-0005-current-main-convergence.md) owns the current
-acceptance assessment, work ledger, validation evidence and rulings.
+[Task 0005](tasks/tsk-0005-current-main-convergence.md) owned the acceptance
+assessment for that round; Tasks 0007 and 0008 own the later rounds (Task 9
+and Task 10 below), and [Task 0008](tasks/tsk-0008-storage-security-lakehouse-convergence.md)
+will hold the completion receipt.
 
 ## Dependencies
 
@@ -77,6 +79,37 @@ current comparison, not an instruction to repeat it.
    tool availability, current service inventory and independent audit findings.
    Freeze each bounded unit's files and acceptance checks before dispatch.
 
+### Work units
+
+These are the Spec's work units. Tasks 0001–0008 carry them in turn, and the
+completion receipt that [Task 0008](tasks/tsk-0008-storage-security-lakehouse-convergence.md)
+will hold maps each acceptance criterion to one of them.
+
+1. W1: Inventory and research: measured service, profile, config, version,
+   env/secret and document inventory with official evidence (A; Tasks 0001,
+   0005 and 0008 S00–S01).
+2. W2: Architecture and profile: service dispositions, POL-0078 vocabulary,
+   root includes, dependency closure and HOME exclusions (B/R; Tasks 0005,
+   0007 and 0008 S04–S05, S07–S08, S19).
+3. W3: Stage 99 contracts: template and registry gaps with focused contract
+   tests, and the per-stage template ledger (D; Tasks 0005 and 0008 S02, S19).
+4. W4: Navigation and operations: root, tier and service READMEs and the
+   retained services' Guide/Policy/Runbook (B/E; Tasks 0005, 0007 and 0008
+   S03–S19).
+5. W5: Version governance: runtime pins, registry projection, single update
+   owner, disabled infrastructure automerge (C; Tasks 0005 and 0006).
+6. W6: Environment and secret contracts: public schemas, unique identities and
+   value-preserving private synchronization (F; Tasks 0002, 0005, 0007 and
+   0008).
+7. W7: Validation and review: focused regressions, changed/full, Compose,
+   hardening, links, registry and Renovate checks, and independent reviews (G;
+   every Task).
+8. W8: Deployment and recovery: approved live activation and its health,
+   persistence and backup/restore evidence, kept apart from pending and
+   unverified items (F/G; Tasks 0002, 0004, 0007 and 0008).
+9. W9: Delivery: reviewed logical commits and PR reports with residual risks
+   and recovery (G; the PRs in each Task's commit or delivery ledger).
+
 ### Bounded current work units
 
 | Unit | Scope and output | Depends on | Completion checkpoint |
@@ -96,7 +129,8 @@ before mutation; D precedes E when a template contract changes. R consumes A's i
 records the approved result in operator documents; neither creates a competing
 inventory owner. Every implementation unit follows
 implementation → specification review → quality/security review → targeted
-correction → scoped re-review. Review results and rulings go in Task 0005.
+correction → scoped re-review. In the A–G/R round, review results and rulings
+went in Task 0005.
 
 ### Task 1: A — Baseline inventory and service disposition
 
@@ -186,7 +220,7 @@ exact-path handoff and coordinates the relevant checks before integration.
 Coordinate each unit's specification review, quality/security review, corrections
 and scoped re-review. Run focused tests, registered changed/full gates, Compose,
 metadata/links, relevant hardening and external validator checks. Record actual
-exit codes and unavailable prerequisites in Task 0005. A distinct final reviewer
+exit codes and unavailable prerequisites in Task 0005 (A–G/R round). A distinct final reviewer
 examines the whole branch and all nine criteria; the controller then prepares
 reviewed logical commits and the PR report within the granted delivery scope.
 
@@ -256,7 +290,7 @@ W1 inventory/research maps to A; W2 architecture/profile maps to B/R; W3 Stage 9
 maps to D; W4 profiles/navigation/operations maps to B/E; W5 version governance
 maps to C; W6 environment/secret contracts maps to F; W7 validation/review maps
 to G. W8 metadata/deployment preparation maps to F/G with live execution deferred
-until concrete approval. W9 delivery maps to G after review and gates; prior
+until concrete approval; Tasks 0007 and 0008 later ran approved live steps. W9 delivery maps to G after review and gates; prior
 PR/commit evidence remains in its original Task. No identifier is reused or
 historical execution result overwritten.
 
@@ -299,7 +333,7 @@ The owner explicitly selects subagent-driven implementation. Apply
 `executing-plans` for critical plan review, checkpoints and tracking even though
 the installed procedure recommends inline execution; the explicit workflow
 choice governs. Routine repository design choices already have approval.
-Task 0005 records each ruling's decision, evidence, what could be wrong and cost
+Task 0005 (A–G/R round), then Tasks 0007 and 0008, record each ruling's decision, evidence, what could be wrong and cost
 if wrong. Skills and scratch coordination files do not create another Plan or
 execution authority. Completed OpenBao/OIDC acceptance stays completed within
 its historical scope; broader HOME cold-start/reboot/restore and measured
