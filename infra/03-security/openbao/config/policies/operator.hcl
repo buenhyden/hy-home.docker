@@ -1,8 +1,8 @@
 # Owner-approved human operations: two existing values, renderer credentials,
 # backup reads, authenticated quorum recovery, the hy-home.k8s cluster
 # rebuild steps (Kubernetes auth and bootstrap token), the Prometheus API
-# credential rotation and the Kiali Grafana token reissue. No secret deletion
-# or wildcards.
+# credential rotation, the Kiali Grafana token reissue and the Argo CD
+# notifications Slack token. No secret deletion or wildcards.
 path "secret/data/hy-home/02-auth/keycloak" {
   capabilities = ["read", "update"]
 }
@@ -53,6 +53,16 @@ path "secret/data/platform/grafana-api" {
 }
 
 path "secret/metadata/platform/grafana-api" {
+  capabilities = ["read"]
+}
+
+# hy-home.k8s Argo CD notifications Slack token: replace it without a root
+# session.
+path "secret/data/platform/notifications" {
+  capabilities = ["create", "read", "update"]
+}
+
+path "secret/metadata/platform/notifications" {
   capabilities = ["read"]
 }
 

@@ -74,8 +74,10 @@ the Prometheus recreation as exact targets.
 2. Apply the policy and issue a new orphan service token without the default
    policy. Give it a finite TTL within the effective system maximum, record its
    expiry and accessor in protected custody, and deliver only the token value
-   directly to `secrets/security/openbao_token.txt` at mode `0600`. Do not
-   print it, pass it as an argument or stage it in another file.
+   to `secrets/security/openbao_token.txt` at mode `0640` with group
+   `SECRETS_GID` (Prometheus reads it as `nobody` through `group_add`). Do not
+   print it or pass it as an argument; the only staging allowed is the
+   owner-only session directory of the commands below, deleted afterwards.
 3. Through protected input, verify the new token can read `sys/metrics` and
    is denied on an unrelated secret path and administrative path. Record only
    boolean allow/deny results and effective TTL, never the token or raw response.
@@ -95,6 +97,44 @@ disposition. Recreate only Prometheus from the reviewed rollback commit. A
 source rollback must not reintroduce `vault_token`; leave OpenBao metrics
 disabled until the dedicated credential path can be repaired.
 
+The commands for step 5 run in the throwaway client of the
+[hy-home.k8s integration runbook](../../12-infra-net/0096-k8s-integration/runbook.md)
+(5.2, `/s/k8s` is the host's owner-only `/tmp/bao-k8s`), inside its temporary
+root session (5.4, `R` passes the root per command). The operator policy cannot
+issue a token with the `prometheus` policy.
+
+```sh
+R policy write prometheus /policies/prometheus.hcl
+R token create -orphan -no-default-policy -policy=prometheus -ttl=720h -field=token >/s/k8s/metrics.token
+R write -format=json auth/token/lookup token=@/s/k8s/metrics.token | grep -E '"(accessor|expire_time)"' >/s/k8s/metrics.custody
+grep -c . /s/k8s/metrics.custody
+BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao read sys/metrics >/dev/null 2>&1 && echo "metrics: allowed" || echo "metrics: DENIED"
+BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao policy list >/dev/null 2>&1 && echo "policy list: LEAK" || echo "policy list: denied"
+```
+
+Expected: `2` (the custody lines, counted, never shown), `metrics: allowed`,
+`policy list: denied`. The token itself cannot look itself up: its only
+policy is `sys/metrics`, hence the root lookup. Keep the root session open.
+On the host, replace the file with the same mode and group, recreate only
+Prometheus and wait for the target:
+
+```bash
+install -m 640 -g "$(stat -c %g secrets/security/openbao_token.txt)" /tmp/bao-k8s/metrics.token secrets/security/.openbao_token.new
+mv secrets/security/.openbao_token.new secrets/security/openbao_token.txt
+rm -f /tmp/bao-k8s/metrics.token
+docker compose --profile obs up -d --no-deps --force-recreate --wait prometheus
+sleep 45   # one scrape interval after the recreate
+docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22openbao%22%7D' | grep -o '"value":\[[^]]*\]'
+```
+
+Expected: value `"1"`. Then, back in the root session, revoke the previous
+token by the accessor in `secrets/security/openbao_metrics_token.custody`
+(`R token revoke -accessor <accessor>`), and on the host move
+`/tmp/bao-k8s/metrics.custody` over that custody file with mode `0600` after
+checking it is not empty (`test -s`). Then end the root session with the
+integration runbook's root revocation step (`root revoked`, `Started false`).
+Prometheus publishes no host port, so the check runs inside its container.
+
 Before an Agent restart, an authorized operator must deliver a fresh SecretID
 through a protected channel. Stop only the Agent while placing RoleID/SecretID
 files (0600, container UID 100/GID 1000), then start it. Do not test-login with
@@ -105,6 +145,30 @@ issuance; if none has been established, use the separately approved loopback rec
 procedure below. Ordinary generate-root also requires authenticated permission
 in the current API; quorum keys alone do not authorize that endpoint. Do not store
 an active permanent root token as an automation shortcut.
+
+Delivery commands. The OIDC operator may issue the SecretID (5.2 client and
+5.3 login of the integration runbook, no root needed):
+
+```sh
+bao write -f -field=secret_id auth/approle/role/hy-home-renderer/secret-id >/s/k8s/secret_id
+```
+
+The SecretID lives ten minutes. On the host, within that window:
+
+```bash
+docker stop openbao-agent
+T=$(date -u +%FT%TZ)
+docker run --rm --user 0 -v hy-home-infra_openbao-agent-data:/a -v /tmp/bao-k8s:/s:ro --entrypoint install "$(docker inspect openbao-agent --format '{{.Config.Image}}')" -m 600 -o 100 -g 1000 /s/secret_id /a/secret_id
+rm -f /tmp/bao-k8s/secret_id
+docker start openbao-agent
+sleep 20
+docker logs --since "$T" openbao-agent 2>&1 | grep -c 'authentication successful'
+docker logs --since "$T" openbao-agent 2>&1 | grep -ciE 'no known secret ID|permission denied|invalid'
+```
+
+Expected: at least `1`, then `0`. Health and the missing `secret_id` file prove
+nothing here: the volume keeps an old token file, and the Agent deletes the
+SecretID when it reads it, before login succeeds.
 
 Verify unsealed status, Agent health, periodic token renewal capability, exact
 read/deny capabilities and both output files (0600). Compare output bytes to the

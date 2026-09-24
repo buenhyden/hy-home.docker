@@ -40,7 +40,8 @@ repository boundary.
   each issue. A longer-lived token is revoked on sight.
 - The OIDC operator may update `auth/kubernetes/config`, issue bootstrap
   tokens, and update `secret/platform/prometheus-api` for a credential
-  rotation and `secret/platform/grafana-api` for a token reissue. Enabling
+  rotation, `secret/platform/grafana-api` for a token reissue and
+  `secret/platform/notifications` for a Slack token replacement. Enabling
   the method, writing policies and roles, and writing `secret/platform/*`
   need an approved temporary-root session that ends with revocation.
 - Prometheus is reachable from the cluster only through `/api/v1/` with Basic
