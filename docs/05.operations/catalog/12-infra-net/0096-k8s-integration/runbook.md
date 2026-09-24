@@ -199,7 +199,17 @@ bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p1.json
 bao operator generate-root -nonce="$NONCE" -format=json > /tmp/c/p2.json
 ENC=$(sed -n 's/.*"encoded_token": *"\([^"]*\)".*/\1/p' /tmp/c/p2.json); bao operator generate-root -decode="$ENC" -otp="$OTP" > /tmp/c/root
 R() { BAO_TOKEN="$(cat /tmp/c/root)" bao "$@"; }
+R token lookup -format=json | grep -c '"root"'
 ```
+
+Expected: `1` or more. `0` or a `403` on the next `R` command means
+`/tmp/c/root` is missing or empty and `bao` fell back to the operator login
+token; check `generate-root -status`, cancel a stale attempt with
+`bao operator generate-root -cancel`, and run the ceremony again.
+
+The client container mounts the policies from the checkout it starts in. Start
+the session only after the policy change it applies is merged and pulled;
+otherwise `R policy write` applies the old file.
 
 Then run 5.4.1 (first setup) or 5.4.2 (additional application), and always
 5.4.3.
@@ -328,13 +338,14 @@ metrics NodePorts.
 ### Phase 8. Clean up and record
 
 ```bash
-rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token /tmp/bao-k8s/slack.token /tmp/bao-k8s/metrics.token /tmp/bao-k8s/secret_id
+rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token /tmp/bao-k8s/slack.token /tmp/bao-k8s/metrics.token /tmp/bao-k8s/secret_id /tmp/bao-k8s/*.custody /tmp/bao-k8s/*.hcl
 install -d -m 700 secrets/backup/openbao
 mv /tmp/bao-k8s/*.snap secrets/backup/openbao/
 rmdir /tmp/bao-k8s 2>/dev/null || ls -l /tmp/bao-k8s
 ```
 
-`secrets/backup/` is git-ignored and owner-only. It is an interim copy on the
+`secrets/backup/` is owner-only, and `.gitignore` covers its `*.txt` and
+`*.snap` files. It is an interim copy on the
 same host: copy the snapshot to separate offline custody as the
 [backup and restore policy](../../04-data/0021-backup-and-restore/policy.md)
 requires, then keep or delete the host copy by that policy's retention.
@@ -397,8 +408,25 @@ without a root session.
    ```
 
    Expected: `current_version` one higher than before.
-3. Ask the cluster owner to force an ESO refresh of `kiali-grafana-auth`, then
-   delete the old token in Grafana (service account `k8s-kiali`, Tokens).
+3. Force the ESO refresh, then recreate the Kiali pod: Kiali reads the token
+   when it starts, so a refreshed Secret alone leaves it on the old token.
+
+   ```bash
+   kubectl -n istio-system annotate externalsecret kiali-grafana-auth force-sync="$(date +%s)" --overwrite
+   kubectl -n istio-system delete pod -l app=kiali
+   kubectl -n istio-system rollout status deploy/kiali --timeout=180s
+   ```
+
+   Deleting the pod leaves the Deployment spec unchanged, so Argo CD sees no
+   drift. Open Kiali once (or call its `/kiali/api/grafana`), then list the
+   tokens and confirm the new one has the latest `lastUsedAt`:
+
+   ```bash
+   graf_auth | curl -K - -s --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem "https://grafana.hy.home.arpa/api/serviceaccounts/$SA/tokens" | jq -r '.[] | "\(.id) \(.name) expires=\(.expiration) lastUsed=\(.lastUsedAt)"'
+   graf_auth | curl -K - -s -o /dev/null -w '%{http_code}\n' -X DELETE --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem "https://grafana.hy.home.arpa/api/serviceaccounts/$SA/tokens/<old id>"
+   ```
+
+   Expected: the new token used most recently, then `200` for the old one.
 
 ### Setting or replacing the Slack notifications token
 
@@ -419,8 +447,16 @@ needs one root session (5.4) to run `R policy write hy-home-operator
    ```
 
    Expected: `current_version` one higher than before (`1` the first time).
-3. Delete `/tmp/bao-k8s/slack.token`, then ask the cluster owner to force an
-   ESO refresh of `argocd-notifications-secret` and confirm it reports synced.
+3. Delete `/tmp/bao-k8s/slack.token`, then force the ESO refresh and check
+   the Argo CD application:
+
+   ```bash
+   kubectl -n argocd annotate externalsecret argocd-notifications-secret force-sync="$(date +%s)" --overwrite
+   kubectl -n argocd get externalsecret argocd-notifications-secret
+   kubectl -n argocd get application platform-argocd-config -o jsonpath='{.status.sync.status} {.status.health.status}{"\n"}'
+   ```
+
+   Expected: `SecretSynced`, `True`, then `Synced Healthy`.
 
 ### Troubleshooting
 

@@ -54,6 +54,45 @@ rehearsal writes to a temporary directory. All three report `dismissed`.
 - RUN-0085: metrics token rotation and Agent SecretID delivery commands.
 - RUN-0096: Slack notifications token procedure and its When to Use row.
 
+### Owner session (2026-09-24, about 18:45–19:12 KST)
+
+The owner ran the client container and every command that touched a share,
+OTP, token or KV value; the agent ran the host-side steps that needed no
+secret input and the read-only checks, at the owner's instruction ("if you
+can do it, do it"). No value was printed.
+
+| Step | Who | Result |
+| --- | --- | --- |
+| 5.1a Kiali token | owner | Grafana `200` with the new token, `401` without; token `k8s-kiali-20260924`, expires 2026-12-23T09:48Z |
+| 5.3 snapshot (W2) | owner | `pre-change.snap` (the Plan's name was `pre-spec-0181.snap`) |
+| W7 SecretID | owner issued (18:50:35), agent delivered (18:57:26) | Agent stopped, file installed `600 100:1000`, started; `authentication successful` 1, errors 0, `sink.file: token written` |
+| W5 KV | owner | `secret/platform/grafana-api` version `5` |
+| 5.4 root | owner | first `R policy write` returned `403`: `/tmp/c/root` was not yet written, so `bao` used the operator login; after the ceremony, root lookup `2` |
+| W3 policy | owner | `hy-home-operator` uploaded from `/s/k8s/operator.hcl`, the reviewed #256 file staged by the agent because #256 was not merged yet |
+| W4 | owner | `token_explicit_max_ttl` `7200` |
+| W6 token | owner | `prometheus` policy written; new token: custody lines `2`, `metrics: allowed`, `policy list: denied` |
+| W6 host | agent | file replaced (`640`, group `SECRETS_GID`), Prometheus recreated, `up{job="openbao"}` `1`, `lastError` empty |
+| W6 revoke | owner | old accessor revoked, lookup `old: revoked` |
+| W6 custody | agent | custody file rewritten in its `key=value` form, 4 lines; new expiry 2026-10-24T10:04Z |
+| 5.4.3 | owner | `root revoked`, `Started false` |
+| W3 KV | owner, as operator | `secret/platform/notifications` version `1`, `current_version` `1` |
+| Phase 8 | agent | tokens, SecretID, custody copies and the staged policy removed; `/tmp/bao-k8s` removed; snapshot moved to `secrets/backup/openbao/` (`700`/`600`, 53788 bytes) |
+| W3 k8s | agent | `argocd-notifications-secret` force-synced: `SecretSynced True`; `platform-argocd-config` `Synced Healthy` |
+| W5 k8s | agent | `kiali-grafana-auth` force-synced; Kiali still used the old token (Grafana `lastUsedAt` 10:10:06Z) because it reads the token at start; Kiali pod deleted and recreated; `/kiali/api/grafana` `200`; new token `lastUsedAt` 10:11:37Z; old token `k8s-kiali-20260923` deleted (`200`) |
+| W1 runtime | agent | after #256 merged, Prometheus reloaded with SIGHUP; `OpenBaoMetricsScrapeFailing` loaded, `inactive`, health `ok` |
+
+Deviations and lessons, now in the runbooks: the session started while #256
+(the policy change) was unmerged, so the reviewed policy file was staged in
+the session directory; RUN-0096 now says to start only after the policy
+change is merged and pulled, and gives the root lookup check that explains a
+`403`. Kiali needs a pod recreate after its token refresh. The metrics custody
+file uses `key=value` lines; RUN-0085 now writes it in that form. `.snap` files
+under `secrets/` were not ignored by Git; `.gitignore` now covers them.
+
+Open after the session: the offline copy of the snapshot and the recovery
+shares (owner), and the owner's untracked `secrets/platform/notifications`
+file (mode 664, created 16:28), which the agent did not read or change.
+
 ## Verification Evidence
 
 W1 checks: promtool 5 rules SUCCESS; metadata check-changed 0 violations;
@@ -78,7 +117,7 @@ here. The owner approved the Spec and Plan on 2026-09-24.
 | --- | --- | --- |
 | #256 | SPEC-0181 narrowed and put to review; Plan and Task; W1; SPEC-0182 draft | merged |
 | #257 | SPEC-0181 Spec and Plan approved; Task ready | merged |
-| this PR | SPEC-0181 active; Task in progress for the owner session | open |
+| this PR | SPEC-0181 active; Task in progress; session record and runbook lessons | open |
 
 ## Rulings
 
