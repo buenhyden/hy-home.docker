@@ -1,8 +1,8 @@
 ---
 title: "OpenBao and hy-home.k8s Integration Operations"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"
@@ -70,13 +70,14 @@ Two independent read-only reviews ran on 2026-09-24, one on the Spec, Plan and
 traceability, one on command correctness, security and honesty. Both found the
 same blocking defect (the metrics token cannot look itself up, so its custody
 record would be empty) and returned APPROVE WITH FIXES; all findings are fixed
-here. The owner's approval follows before the Spec and Plan are approved.
+here. The owner approved the Spec and Plan on 2026-09-24.
 
 ## Commit Ledger
 
 | PR | Scope | State |
 | --- | --- | --- |
-| this PR | SPEC-0181 narrowed and put to review; Plan and Task; W1; SPEC-0182 draft | open |
+| #256 | SPEC-0181 narrowed and put to review; Plan and Task; W1; SPEC-0182 draft | merged |
+| this PR | SPEC-0181 Spec and Plan approved; Task ready | open |
 
 ## Rulings
 
