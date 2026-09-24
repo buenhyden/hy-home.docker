@@ -726,7 +726,6 @@ _FIXED_PROFILE_CATEGORIES = {
     "dependency-update": "automation",
     "testing": "automation",
     "iac": "automation",
-    "ksql": "automation",
     "legacy-vault": "lifecycle",
     "couchdb": "topology",
     "dedicated-valkey": "topology",

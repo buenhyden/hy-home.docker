@@ -1,10 +1,10 @@
 ---
 title: "Specialized Analytics Engines Selection"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "ADR-0015"
 parent_ids:
@@ -70,6 +70,17 @@ current curated image registry is `infra/tech-stack.versions.json`.
 ## Traceability
 
 이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Follow-up
+
+- Update (2026-09-24): ksqlDB and StarRocks were removed under SPEC-0180 S19
+  after their named successors' live acceptance passed the same day (Flink
+  batch and checkpointed streaming inserts; a Trino read through Great
+  Expectations). Flink (`04-data/lakehouse/flink`) now owns stream processing
+  and Trino (`04-data/lakehouse/trino`, with Iceberg on SeaweedFS) now owns
+  OLAP warehouse queries. The InfluxDB and OpenSearch selections above are
+  unchanged. This text is added, not a rewrite; the Context and Decision above
+  read as they did when accepted. Noted by SPEC-0180.
 
 ## Decision Drivers
 

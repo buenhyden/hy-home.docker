@@ -64,9 +64,6 @@ rbac:
           value: ".*"
           actions: all
 
-        - resource: ksql
-          actions: all
-
         - resource: acl
           actions: all
 

@@ -3043,11 +3043,12 @@
           "next_number": 5,
           "current_issued": [
             1,
+            3
+          ],
+          "reserved_history": [
             2,
-            3,
             4
           ],
-          "reserved_history": [],
           "child_spaces": {}
         },
         "REQ-0005.NFR": {

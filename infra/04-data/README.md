@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 created: "2025-11-12"
 ---
 
@@ -43,9 +43,7 @@ documented operating boundaries.
 | [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
 | [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
 | [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |
-| [`analytics/ksql`](analytics/ksql/README.md) | `ksql` | OPTIONAL | Kafka-dependent stream processing; requires named Kafka workload |
 | [`analytics/opensearch`](analytics/opensearch/README.md) | `opensearch`, `opensearch-cluster` | OPTIONAL/LAB | Single-node search versus same-host cluster exercise |
-| [`analytics/starrocks`](analytics/starrocks/README.md) | `starrocks` | OPTIONAL | Named analytical workload only |
 | [`nosql/cassandra`](nosql/cassandra/README.md), [`couchdb`](nosql/couchdb/README.md), [`mongodb`](nosql/mongodb/README.md) | `cassandra`, `couchdb`, `mongodb` | LAB | Separate same-host datastore laboratories; no cross-engine volume or migration assumption |
 | [`specialized/qdrant`](specialized/qdrant/README.md) | `ai`, `ai-llm`, `qdrant` | HOME | Vector store for HOME AI; snapshot/isolated restore required |
 | [`specialized/neo4j`](specialized/neo4j/README.md) | `graph` | OPTIONAL | Graph workload only; distinct from Qdrant |

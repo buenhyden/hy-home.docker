@@ -1,10 +1,10 @@
 ---
 title: "Operations — 04 Data"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 ---
 
@@ -32,10 +32,8 @@ four-digit subject identity. Role membership follows the current subject tree.
 | Subject | Available documents |
 | --- | --- |
 | [Analytics — InfluxDB](0017-influxdb/guide.md) | [Guide](0017-influxdb/guide.md), [Policy](0017-influxdb/policy.md), [Runbook](0017-influxdb/runbook.md) |
-| [Analytics — ksqlDB](0018-ksqldb/guide.md) | [Guide](0018-ksqldb/guide.md), [Policy](0018-ksqldb/policy.md), [Runbook](0018-ksqldb/runbook.md) |
 | [Analytics — OpenSearch](0019-opensearch/guide.md) | [Guide](0019-opensearch/guide.md), [Policy](0019-opensearch/policy.md), [Runbook](0019-opensearch/runbook.md) |
 | [Analytics — Superset](0097-superset/guide.md) | [Guide](0097-superset/guide.md), [Policy](0097-superset/policy.md), [Runbook](0097-superset/runbook.md) |
-| [Analytics — Warehouses](0020-starrocks/guide.md) | [Guide](0020-starrocks/guide.md), [Policy](0020-starrocks/policy.md), [Runbook](0020-starrocks/runbook.md) |
 | [Backup and restore](0021-backup-and-restore/guide.md) | [Guide](0021-backup-and-restore/guide.md), [Policy](0021-backup-and-restore/policy.md), [Runbook](0021-backup-and-restore/runbook.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster/guide.md) | [Guide](0022-valkey-cluster/guide.md), [Policy](0022-valkey-cluster/policy.md), [Runbook](0022-valkey-cluster/runbook.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs/guide.md) | [Guide](0024-seaweedfs/guide.md), [Policy](0024-seaweedfs/policy.md), [Runbook](0024-seaweedfs/runbook.md) |

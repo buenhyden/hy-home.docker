@@ -971,50 +971,6 @@
       ]
     },
     {
-      "component": "Compose image: confluentinc/cp-ksqldb-cli",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "confluentinc/cp-ksqldb-cli": "external"
-      },
-      "images": [
-        "confluentinc/cp-ksqldb-cli:8.0.8"
-      ],
-      "compose_files": [
-        "infra/04-data/analytics/ksql/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
-          "images": [
-            "confluentinc/cp-ksqldb-cli:8.0.8"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: confluentinc/cp-ksqldb-server",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "confluentinc/cp-ksqldb-server": "external"
-      },
-      "images": [
-        "confluentinc/cp-ksqldb-server:8.3.2"
-      ],
-      "compose_files": [
-        "infra/04-data/analytics/ksql/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
-          "images": [
-            "confluentinc/cp-ksqldb-server:8.3.2"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: confluentinc/cp-schema-registry",
       "tier": "05-messaging",
       "classification": "external",
@@ -1032,28 +988,6 @@
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
           "images": [
             "confluentinc/cp-schema-registry:8.3.2"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: confluentinc/ksqldb-examples",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "confluentinc/ksqldb-examples": "external"
-      },
-      "images": [
-        "confluentinc/ksqldb-examples:8.0.8"
-      ],
-      "compose_files": [
-        "infra/04-data/analytics/ksql/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/analytics/ksql/docker-compose.yml",
-          "images": [
-            "confluentinc/ksqldb-examples:8.0.8"
           ]
         }
       ]
@@ -1545,50 +1479,6 @@
           "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
           "images": [
             "stalwartlabs/stalwart:v0.16.22"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: starrocks/be-ubuntu",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "starrocks/be-ubuntu": "external"
-      },
-      "images": [
-        "starrocks/be-ubuntu:4.1.4"
-      ],
-      "compose_files": [
-        "infra/04-data/analytics/starrocks/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/analytics/starrocks/docker-compose.yml",
-          "images": [
-            "starrocks/be-ubuntu:4.1.4"
-          ]
-        }
-      ]
-    },
-    {
-      "component": "Compose image: starrocks/fe-ubuntu",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "starrocks/fe-ubuntu": "external"
-      },
-      "images": [
-        "starrocks/fe-ubuntu:4.1.4"
-      ],
-      "compose_files": [
-        "infra/04-data/analytics/starrocks/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/analytics/starrocks/docker-compose.yml",
-          "images": [
-            "starrocks/fe-ubuntu:4.1.4"
           ]
         }
       ]

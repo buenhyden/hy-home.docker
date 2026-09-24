@@ -1,10 +1,10 @@
 ---
 title: "04-Data Hardening and HA Expansion Strategy"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "ADR-0019"
 parent_ids:
@@ -70,6 +70,17 @@ created: "2026-03-28"
 ## Traceability
 
 이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+
+## Follow-up
+
+- Update (2026-09-24): the `ksql` tier-label remediation item above is
+  historical. ksqlDB was removed under SPEC-0180 S19 after Flink's live
+  acceptance the same day; Flink (`04-data/lakehouse/flink`) is the current
+  stream-processing engine and carries its own `hy-home.tier` label. The other
+  immediate hardening items (`supabase` healthcheck, `valkey-cluster-exporter`
+  secret path, `seaweedfs` expose token) are unaffected. This text is added,
+  not a rewrite; the Context and Decision above read as they did when
+  accepted. Noted by SPEC-0180.
 
 ## Decision Drivers
 

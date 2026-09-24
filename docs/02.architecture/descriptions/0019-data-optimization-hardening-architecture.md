@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -31,7 +31,7 @@ graph/vector 서비스 구조를 설명한다. Maintainer와 operator는 공통 
 
 ## Components
 
-- Analytics: InfluxDB, ksqlDB, OpenSearch, warehouse services
+- Analytics: InfluxDB, OpenSearch
 - Cache and KV: Valkey cluster
 - Object storage: SeaweedFS
 - NoSQL: Cassandra, CouchDB, MongoDB

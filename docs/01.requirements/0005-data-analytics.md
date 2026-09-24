@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier (04-data/analytics) Product Requirements"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "requirements"
 artifact_id: "REQ-0005"
 parent_ids: []
@@ -16,11 +16,11 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-본 문서는 `04-data/analytics` 서브 티어의 전문화된 데이터 분석 엔진들(InfluxDB, ksqlDB, OpenSearch, StarRocks)에 대한 제품 요구사항을 정의한다. 시계열 데이터, 스트림 처리, 로그 검색, 그리고 대규모 OLAP 분석 환경을 통합적으로 구축하여 플랫폼의 데이터 인사이트 추출 능력을 극대화하는 것을 목표로 한다.
+본 문서는 `04-data/analytics` 서브 티어의 전문화된 데이터 분석 엔진들(InfluxDB, OpenSearch)에 대한 제품 요구사항을 정의한다. 시계열 데이터와 로그 검색을 통합적으로 구축하여 플랫폼의 데이터 인사이트 추출 능력을 극대화하는 것을 목표로 한다. 실시간 스트림 처리와 대규모 OLAP 분석은 `04-data/lakehouse`(Flink, Trino)가 담당하며 이 PRD의 범위 밖이다.
 
 ### Problem Statement
 
-현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, ksqlDB, OpenSearch, StarRocks compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose가 파일을 무조건 include하더라도 `core` profile에는 속하지 않아 별도 profile 선택 없이는 기동되지 않는다는 요구사항을 정의한다.
+현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, OpenSearch compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose가 파일을 무조건 include하더라도 `core` profile에는 속하지 않아 별도 profile 선택 없이는 기동되지 않는다는 요구사항을 정의한다. ksqlDB와 StarRocks는 SPEC-0180 S19에서 Flink와 Trino live acceptance(2026-09-24) 이후 제거되었다.
 
 ## Stakeholders and User Needs
 
@@ -35,16 +35,12 @@ created: "2026-03-26"
 ### Key Use Cases
 
 - **STORY-01**: 사용자는 대시보드를 통해 지난 1년간의 스마트 홈 센서 데이터 변화 추이를 1초 미만의 지연 시간으로 조회하고 싶어한다 (InfluxDB).
-- **STORY-02**: 개발자는 Kafka로 인입되는 스트림 데이터를 실시간으로 변환(JOIN/Windowing)하여 새로운 분석용 이벤트를 생성하고 싶어한다 (ksqlDB).
-- **STORY-03**: 운영자는 수집된 마이크로서비스 로그에서 특정 키워드를 기반으로 초 단위의 고속 검색을 수행하고 싶어한다 (OpenSearch).
-- **STORY-04**: 분석가는 수억 건의 레코드가 포함된 데이터웨어하우스에서 복잡한 SQL JOIN 쿼리를 실시간으로 수행하고 싶어한다 (StarRocks).
+- **STORY-02**: 운영자는 수집된 마이크로서비스 로그에서 특정 키워드를 기반으로 초 단위의 고속 검색을 수행하고 싶어한다 (OpenSearch).
 
 ## Functional Requirements
 
 - **REQ-0005-FR-0001**: 시계열 데이터(TSDB)를 위한 전용 쓰기 및 조회 인터페이스 제공.
-- **REQ-0005-FR-0002**: SQL 문법을 이용한 실시간 스트림 처리 엔진(Stream Processing) 구축.
 - **REQ-0005-FR-0003**: 전문 검색(Full-text Search) 및 로그 수집 파이프라인 연동.
-- **REQ-0005-FR-0004**: 대규모 읽기 최적화 및 조인 성능을 보장하는 분석용 데이터웨어하우스 구축.
 
 ## Non-functional Requirements
 
@@ -57,13 +53,11 @@ No separately numbered solution-independent external interface requirement was i
 ## Acceptance Criteria
 
 - **REQ-0005-FR-0001**: InfluxDB 3 Core 단일 compose, database 이름, port `8181`, `/api/v3/write_lp` endpoint/schema, current healthcheck가 문서와 정적 source에서 일치해야 한다. Token provisioning과 authenticated write acceptance는 별도 runtime 승인 전까지 검증된 것으로 간주하지 않는다.
-- **REQ-0005-FR-0002**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
-- **REQ-0005-FR-0003**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, profile이 선택하는 cluster topology, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
-- **REQ-0005-FR-0004**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
+- **REQ-0005-FR-0003**: OpenSearch 문서는 현재 compose가 증명하는 단일 primary stack, profile이 선택하는 cluster topology, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다. live 성능 수치(P95, indexing latency)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
 
 ## Constraints
 
-- **In Scope**: InfluxDB, ksqlDB, OpenSearch, StarRocks의 요구사항, 인터페이스, optional compose 실행 경계 정의.
+- **In Scope**: InfluxDB, OpenSearch의 요구사항, 인터페이스, optional compose 실행 경계 정의.
 - **Out of Scope**: 개별 데이터 시각화 도구(Grafana)의 세부 대시보드 설계.
 - **Non-goals**: 실시간 트랜잭션 수반 SQL 데이터 처리 (-> core PostgreSQL 담당).
 

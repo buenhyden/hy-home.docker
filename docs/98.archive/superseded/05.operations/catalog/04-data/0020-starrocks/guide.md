@@ -1,10 +1,10 @@
 ---
 title: "StarRocks Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "GDE-0020"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/04-data/analytics/starrocks/docker-compose.yml:
   - 'starrocks-be'
   - 'starrocks-fe'
+superseded_by: "GDE-0094"
 created: "2026-05-10"
 ---
 

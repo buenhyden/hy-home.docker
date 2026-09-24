@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -40,9 +40,9 @@ defines ten services:
 
 | Service | Role | Current selectors |
 | --- | --- | --- |
-| `kafka-1` | KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql`, `cdc` |
+| `kafka-1` | KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
 | `kafka-2`, `kafka-3` | additional same-host brokers/controllers | `messaging-cluster` |
-| `schema-registry` | schema storage/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `ksql`, `cdc` |
+| `schema-registry` | schema storage/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
 | `kafka-connect` | connector runtime with the Debezium PostgreSQL plugin | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
 | `debezium-db-provision` | CDC source role, grants and publication on `mng-pg` | `cdc` |
 | `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
