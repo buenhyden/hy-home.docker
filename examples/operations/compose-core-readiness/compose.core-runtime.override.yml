@@ -1,3 +1,8 @@
+# Isolated readiness rig (crr_net) layered on the root Compose by
+# scripts/lib/ops/compose-core-readiness.sh with env.runtime.example.
+# Its Vault and Vault Agent are a self-contained secret-agent fixture for the
+# harness scenarios, independent of the production OpenBao; production uses
+# OpenBao (RUN-0085). Kept on Vault by owner decision (SPEC-0182).
 networks: !override
   crr_net:
     driver: bridge

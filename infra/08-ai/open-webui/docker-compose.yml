@@ -25,7 +25,6 @@ services:
       - /usr/local/bin/open-webui-oidc-entrypoint.sh
     environment:
       OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
-      VECTOR_DB_URL: http://qdrant:${QDRANT_PORT:-6333}
       RAG_EMBEDDING_ENGINE: ollama
       RAG_EMBEDDING_MODEL: qwen3-embedding:4b
       WEBUI_URL: https://chat.${DEFAULT_URL}
