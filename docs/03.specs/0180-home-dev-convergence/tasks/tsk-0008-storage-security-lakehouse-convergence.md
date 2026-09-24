@@ -1387,7 +1387,7 @@ The fixture now copies `plan.ndjson`.
 | --- | --- |
 | S10 WireMock, S11 Pact Broker | start on their profiles; Pact Broker needs its DB provisioning **Done 2026-09-24** |
 | S12 Spark, S13 Trino, S14 Flink, S15 Great Expectations | STRG-015 and the `.env` key, `seaweedfs-s3` recreate, `seaweedfs-table-bucket`; Flink checkpoint directory (`2770`, group `SECRETS_GID`) and image build **Done 2026-09-24** |
-| S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin **Blocked:** Keycloak client is the owner's |
+| S16 Superset | Keycloak client `home-superset` (remote), IAM-013, secret generation, image build, first admin **Done 2026-09-24** |
 | S17 Stalwart | empty data directory, image build for `stalwart-config`, plan, restart **Done 2026-09-24** |
 | S18 routes | recreate `qdrant`, `kafka-rest`, `schema-registry`, `mongo-express` and the OpenSearch cluster node where running **Done 2026-09-24** (running services only) |
 | S19 `allowed_groups` | recreate `oauth2-proxy`; then an owner login through one SSO route must reach the application. `sso-errors` turns 401–403 into the sign-in flow, so a denial shows as a loop ending on the OAuth2 Proxy error page and a group denial in its log, not as a 403 at the route. On that signal the `groups` claim is missing from the proxy's token: restore the previous config and recreate (rollback) **Done 2026-09-24** (S19 live apply) |
@@ -1401,7 +1401,7 @@ The fixture now copies `plan.ndjson`.
 | Step | Result |
 | --- | --- |
 | Pull #240 into the operations checkout | fast-forward `77296f652` → `5cfd9de8a`; Traefik dropped `k3s-ingress` without a restart (`*.k8s.hy.home.arpa` now 404 from Traefik); other routes unchanged |
-| AI-008 | `secrets/data/qdrant_api_key.txt` created alone (16 alphanumeric, 0640, never printed). `gen-secrets.sh` was not used: its no-argument run would also create the unapproved Superset secrets, and `--sync-metadata-check` refuses the private registry because its SEC-003 row had 4 `|` separators instead of 9 (a multi-line value split the row). The owner restored the row to the public placeholder after confirming the shares are intact in `secrets/security/openbao_unseal_keys.txt`; `--sync-metadata` then added AI-008, PG-028, PG-029, IAM-013 and AUTO-020 (`files_changed=2`, values preserved, secret files untouched) and a rerun of the check reports `files_changed=0` |
+| AI-008 | `secrets/data/qdrant_api_key.txt` created alone (16 alphanumeric, 0640, never printed). `gen-secrets.sh` was not used: its no-argument run would also create the unapproved Superset secrets, and `--sync-metadata-check` refuses the private registry because its SEC-003 row had 4 pipe separators instead of 9 (a multi-line value split the row). The owner restored the row to the public placeholder after confirming the shares are intact in `secrets/security/openbao_unseal_keys.txt`;`--sync-metadata`then added AI-008, PG-028, PG-029, IAM-013 and AUTO-020 (`files_changed=2`, values preserved, secret files untouched) and a rerun of the check reports`files_changed=0` |
 | `qdrant` recreate | healthy; `/readyz` 200 without the key, `/collections` and `/metrics` 401 without it, `/collections` 200 with it; the key is not in the container's environment metadata; the stale `qdrant-grpc` TCP router and its "middleware does not exist" error are gone |
 | `prometheus` recreate | healthy; `up{job="qdrant"}` 1 through `bearer_token_file`; `QdrantDown` loaded with `job="qdrant"`. `opensearch` (not running) and `cadvisor` (first scrape pending) were the only unhealthy targets |
 | `oauth2-proxy` recreate | **Failed then fixed.** The new container crash-looped: `extra_hosts` pinned `keycloak.`/`auth.` to `host-gateway` (172.17.0.1), and Traefik publishes 443 only on `TRAEFIK_BIND_IP` since its recreate 11 hours earlier, so OIDC discovery was refused. The previous container had discovered at start 21 hours earlier, which hid the defect. Every SSO route answered 500 from about 22:52:28 to 22:53:30 UTC. Removing the two `extra_hosts` lines lets it resolve Keycloak through the Traefik `edge_net` alias like every other service; recreated healthy, unauthenticated SSO requests get 401 with the sign-in page. A test now fails if any service pins `keycloak.`/`auth.` to a host entry |
@@ -1420,7 +1420,7 @@ The fixture now copies `plan.ndjson`.
 | Operations checkout modes | 47 tracked files `0600` and 6 directories `0700` from pulls run with a restrictive umask; Flink could not read its start script and the rebuilt GX image copied an unreadable script. Restored `644`/`755` (Git reports no change), images rebuilt; later pulls use umask `022` |
 | Secret registry parity (owner rule) | #243 merged; `0600` backups, then `--sync-metadata-prune`: the private registry equals the public one except value cells (209 lines each) and `.env` has exactly the public key set (the 11 retired Stalwart keys removed) |
 | Superset secrets | PG-028 and AUTO-020 generated (0640). The generation run copied the three-line SEC-003 unseal-share file into its table cell and split the row again, which is how SEC-003 broke twice before; the registry was rebuilt from the public text with SEC-003 back to its placeholder and the copy holding the shares was shredded. Generation now skips multi-line values (this PR) |
-| S16 Superset | **Blocked:** creating the Keycloak client `home-superset` was refused by the agent permission check; the owner creates it and stores its secret as IAM-013, then build, provisioning, start and `create-admin` follow RUN-0097 |
+| S16 Superset | **Pass.** The owner created `home-superset`; four settings differed from RUN-0097 (redirect URI and web origin with the typo `hy.hom.arpa`, a service account enabled, no PKCE) and were corrected with the secret unchanged (the IAM-013 file's hash equals Keycloak's; mode set to `0640`). Generation filled the registry, which now differs from the public file only in value cells (SEC-003 empty by design). Image built; `superset-db-provision` and `superset-init` exit 0 (`--no-deps`); `superset` healthy; `/health` 200; `/login/keycloak` redirects to `home-superset` with the right redirect URI; Admin created for the `/admins` user before first login; the owner's OIDC login reached Superset as `Admin`. The browser's `service-worker.js` request is a harmless 404 |
 | RUN-0096 Session 3 | owner-run (OIDC browser login and a temporary root from unseal shares). Evidence it may already be done: `kiali-grafana-auth` and both `prometheus-api-auth` ExternalSecrets are synced; only the owner can confirm the `k8s-bootstrap` role cap (`7200`) |
 
 ## Verification Evidence
@@ -1520,7 +1520,10 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 | #240 | `k3s-ingress` removal and the S19 review fixes (#239 merged before both) | merged |
 | #241 | S19 live apply and the OAuth2 Proxy Keycloak route fix | merged |
 | #242 | S19 live close: owner login and private registry repair | merged |
-| this PR | ksqlDB and StarRocks removal | open |
+| #243 | Private secret registry mirrors the public one except values | merged |
+| #244 | Multi-line secret files stay out of the registry; remaining live activation | merged |
+| #245 | Real-lineage identity tests pinned to a fixed commit (CI bound) | merged |
+| this PR | ksqlDB and StarRocks removal; Superset live record | open |
 
 ## Rulings
 

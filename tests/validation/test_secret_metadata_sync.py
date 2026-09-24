@@ -544,9 +544,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(text.replace("`(empty)`", f"`{value}`"), after)
 
     def test_generation_keeps_a_multiline_file_out_of_the_registry(self):
-        text = (
-            "| **TEST-001** | `X` | `Recovery` | `(empty)` | `-` | `secrets/shares.txt` | 2026-01-01 | Shares |\n"
-        )
+        text = "| **TEST-001** | `X` | `Recovery` | `(empty)` | `-` | `secrets/shares.txt` | 2026-01-01 | Shares |\n"
         self.example.write_text(text)
         self.target.write_text(text)
         self.target.chmod(0o600)
