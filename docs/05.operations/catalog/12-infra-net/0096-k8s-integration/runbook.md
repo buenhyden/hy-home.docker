@@ -23,6 +23,7 @@ created: "2026-09-23"
 | Prometheus API password rotated | 1, [rotation](#rotating-the-prometheus-api-credential), 7, 8 |
 | Setup done before the Prometheus API or Grafana KV entry existed | 1, 5 (5.1–5.3 with 5.1a, 5.4 with 5.4.2, 5.4.3), 7, 8 |
 | Kiali Grafana token expiring | 1, [reissue](#reissuing-the-kiali-grafana-token), 8 |
+| Argo CD notifications Slack token set or replaced | 1, [Slack token](#setting-or-replacing-the-slack-notifications-token), 8 |
 | OpenBao auth mount, policy or role lost | 1, 5 (all steps), 6, 7, 8 |
 
 Rules for every phase:
@@ -327,7 +328,7 @@ metrics NodePorts.
 ### Phase 8. Clean up and record
 
 ```bash
-rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token
+rm -f /tmp/bao-k8s/k8s-bootstrap.token /tmp/bao-k8s/grafana-kiali.token /tmp/bao-k8s/slack.token /tmp/bao-k8s/metrics.token /tmp/bao-k8s/secret_id
 install -d -m 700 secrets/backup/openbao
 mv /tmp/bao-k8s/*.snap secrets/backup/openbao/
 rmdir /tmp/bao-k8s 2>/dev/null || ls -l /tmp/bao-k8s
@@ -398,6 +399,28 @@ without a root session.
    Expected: `current_version` one higher than before.
 3. Ask the cluster owner to force an ESO refresh of `kiali-grafana-auth`, then
    delete the old token in Grafana (service account `k8s-kiali`, Tokens).
+
+### Setting or replacing the Slack notifications token
+
+`secret/platform/notifications` (`slack_token`) feeds the hy-home.k8s
+`argocd-notifications-secret`. It takes a Slack bot token (`xoxb-`), not the
+incoming-webhook URL in COMM-004. The operator policy grants this path from
+SPEC-0181 on; an environment whose `hy-home-operator` policy predates that
+needs one root session (5.4) to run `R policy write hy-home-operator
+/policies/operator.hcl` first.
+
+1. On the host, with `umask 077`, create `/tmp/bao-k8s/slack.token` in an
+   editor. Do not `echo` the token.
+2. Update OpenBao as the operator (5.2 client container, 5.3 login):
+
+   ```sh
+   bao kv put secret/platform/notifications slack_token=@/s/k8s/slack.token
+   bao kv metadata get -format=json secret/platform/notifications | grep '"current_version"'
+   ```
+
+   Expected: `current_version` one higher than before (`1` the first time).
+3. Delete `/tmp/bao-k8s/slack.token`, then ask the cluster owner to force an
+   ESO refresh of `argocd-notifications-secret` and confirm it reports synced.
 
 ### Troubleshooting
 

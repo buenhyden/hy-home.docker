@@ -45,7 +45,8 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 
 | ID | Package | Current roles |
 | --- | --- | --- |
-| SPEC-0181 | [HOME Residual Operations](0181-home-residual-operations/spec.md) | draft; open items SPEC-0180 recorded as residual risk |
+| SPEC-0182 | [HOME Residual Backlog](0182-home-residual-backlog/spec.md) | draft; SPEC-0180 residuals outside SPEC-0181 |
+| SPEC-0181 | [OpenBao and hy-home.k8s Integration Operations](0181-home-residual-operations/spec.md) | review; one repository change and one owner-run OpenBao session; [Plan](0181-home-residual-operations/plan.md), [Task](0181-home-residual-operations/tasks/tsk-0001-openbao-k8s-operations.md) |
 | SPEC-0180 | [Home and Development Server Convergence](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0180-home-dev-convergence/plan.md) and [Task 0008](../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md); residual work in SPEC-0181 |
 | SPEC-0093 | [Documentation Taxonomy Migration](../98.archive/completed/03.specs/0093-docs-taxonomy-agent-first-migration/spec.md) | completed, preserved under the archive |
 | SPEC-0094 | [Harness and Agent-first Engineering](../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) | completed, preserved under the archive |
