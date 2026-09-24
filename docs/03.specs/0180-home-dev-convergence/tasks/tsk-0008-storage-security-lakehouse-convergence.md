@@ -1558,7 +1558,7 @@ Branch `refactor/spec-0180-platform-convergence` from `1ac49fd35`.
 - Open WebUI sets `VECTOR_DB_URL` without `VECTOR_DB`, so the value is unused and Qdrant is not its store. Remove the key or select Qdrant with the API key (Open WebUI owner).
 
 - ~~File-provider router `k3s-ingress` forwards `*.k8s.` hosts to the native k3s NodePort with no gateway authentication (owner).~~ Closed 2026-09-24: removed in S19 on the owner's decision.
-- `test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).
+- ~~`test_compose_baseline_gates.py` has pre-existing `ruff format` drift and one `PLW1510` (`subprocess.run` without `check`, S16 Superset rehearsal); CI does not run ruff (test owner).~~ Closed 2026-09-24: CI does run `ruff format` on changed-Python PRs (#249 failed on it); the test file, `superset_config.py` and `hyhome-gx.py` are formatted and the call has `check=False`.
 
 - ~~Private registry `SEC-003` row spans three lines, so `gen-secrets.sh` metadata sync and generation refuse or would rewrite it (owner).~~ Closed 2026-09-23: the row was replaced by the example placeholder after a private equality check (secret cleanup section).
 - Retained MinIO data volume `hy-home-infra_minio-data` (176.8 MB) is not backed up and has no scheduled disposal date (owner).

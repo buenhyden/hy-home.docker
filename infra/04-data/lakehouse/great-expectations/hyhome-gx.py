@@ -57,7 +57,9 @@ def validate(names: list[str]) -> int:
         suite = context.suites.add(gx.ExpectationSuite(name=name))
         for item in spec["expectations"]:
             suite.add_expectation_configuration(
-                ExpectationConfiguration(type=item["type"], kwargs=item.get("kwargs", {}))
+                ExpectationConfiguration(
+                    type=item["type"], kwargs=item.get("kwargs", {})
+                )
             )
         batch = asset.add_batch_definition_whole_table("all").get_batch()
         result = batch.validate(suite)
@@ -73,7 +75,11 @@ def validate(names: list[str]) -> int:
                     default=str,
                 )
             )
-        print(json.dumps({"suite": name, "table": spec["table"], "success": result.success}))
+        print(
+            json.dumps(
+                {"suite": name, "table": spec["table"], "success": result.success}
+            )
+        )
         failed += not result.success
     return 1 if failed else 0
 
