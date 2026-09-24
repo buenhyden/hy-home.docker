@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -59,6 +59,15 @@ Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
   the `lakehouse` identity catalog and table actions only (no policy change,
   no bucket deletion); `seaweedfs-table-bucket` rewrites it on every run, so a
   hand-edited policy does not survive.
+- **Metrics.** Only `seaweedfs-s3` serves metrics, on `9327`, scraped by
+  Prometheus as job `seaweedfs-s3`. The listener is not published and has no
+  Traefik route, but any `edge_net` service can reach it; that is accepted
+  because it carries request counters and latencies only (low sensitivity).
+  Master, volume and filer are not exposed for scraping.
+  `SeaweedFSS3Down` and `SeaweedFSDataDiskLow` live in
+  `alert_rules.local.datastores.yml`; the disk rule pins the node-exporter
+  mountpoint of the data-disk filesystem and must follow it if
+  `DEFAULT_MOUNT_VOLUME_PATH` moves.
 - **Capacity.** The volume server stops accepting writes below 20 GiB free on
   the data disk (`-minFreeSpace`, POL-0035). Same-host replicas are not host
   availability, so replication is `000`.

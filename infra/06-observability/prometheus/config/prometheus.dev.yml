@@ -101,6 +101,12 @@ scrape_configs:
         labels:
           domain: "datastores"
 
+  - job_name: "seaweedfs-s3"
+    static_configs:
+      - targets: ["seaweedfs-s3:9327"]
+        labels:
+          domain: "datastores"
+
   - job_name: "opensearch"
     metrics_path: "/_prometheus/metrics"
     scheme: https

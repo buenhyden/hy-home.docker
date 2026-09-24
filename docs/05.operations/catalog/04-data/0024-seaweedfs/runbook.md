@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -35,6 +35,15 @@ anonymous and wrong-credential requests are refused, that filer and volume
 HTTP need a JWT, that gRPC requires a client certificate, the consumer S3 API,
 persistence across restart, a read failing while the volume server is down,
 and backup and restore into empty stores.
+
+### Alerts
+
+- `SeaweedFSS3Down`: check `docker compose ps seaweedfs-s3` and its logs; the
+  metrics listener shares the S3 process, so a down target usually means S3 is
+  down or restarting.
+- `SeaweedFSDataDiskLow`: free space on the data-disk filesystem is under 15%.
+  Below 20 GiB the volume server stops accepting writes (`-minFreeSpace`); free
+  space or escalate before that point. Deleting objects needs an approved task.
 
 ### First activation (approved task)
 

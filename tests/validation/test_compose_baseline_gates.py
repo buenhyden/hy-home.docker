@@ -3200,10 +3200,14 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         } - {"localhost"}
         self.assertIn("traefik", hosts)
         self.assertEqual([], sorted(hosts - services.keys()))
+        # seaweedfs-s3 is scraped over edge_net (shared with Prometheus) so the
+        # S3 API does not also join obs_net; see POL-0024 "Metrics".
+        edge_scraped = {"seaweedfs-s3"}
         missing = [
             name
             for name in sorted(hosts)
-            if "obs_net" not in (services[name].get("networks") or {})
+            if ("edge_net" if name in edge_scraped else "obs_net")
+            not in (services[name].get("networks") or {})
         ]
         self.assertEqual([], missing)
 
@@ -3584,6 +3588,39 @@ class QdrantApiKeyContractTests(unittest.TestCase):
             job = next(j for j in jobs if j["job_name"] == "qdrant")
             key_file = job.get("bearer_token_file")
             self.assertEqual("/run/secrets/qdrant_read_only_api_key", key_file, name)
+
+
+class SeaweedfsS3MetricsContractTests(unittest.TestCase):
+    def test_only_s3_serves_metrics_and_prometheus_scrapes_and_alerts_on_it(
+        self,
+    ) -> None:
+        import yaml
+
+        compose = ROOT / "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
+        services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
+        for name, service in services.items():
+            has_metrics = any(
+                "-metricsPort" in str(arg) for arg in service.get("command") or []
+            )
+            self.assertEqual(name == "seaweedfs-s3", has_metrics, name)
+        self.assertIn("-metricsPort=9327", services["seaweedfs-s3"]["command"])
+        config_dir = ROOT / "infra/06-observability/prometheus/config"
+        for name in ("prometheus.yml", "prometheus.dev.yml"):
+            jobs = yaml.safe_load((config_dir / name).read_text(encoding="utf-8"))[
+                "scrape_configs"
+            ]
+            job = next(j for j in jobs if j["job_name"] == "seaweedfs-s3")
+            self.assertEqual(
+                ["seaweedfs-s3:9327"], job["static_configs"][0]["targets"], name
+            )
+        rules = yaml.safe_load(
+            (config_dir / "alert_rules/alert_rules.local.datastores.yml").read_text(
+                encoding="utf-8"
+            )
+        )
+        exprs = [r.get("expr", "") for g in rules["groups"] for r in g["rules"]]
+        self.assertIn('up{job="seaweedfs-s3"} == 0', exprs)
+        self.assertTrue(any("node_filesystem_avail_bytes" in e for e in exprs))
 
 
 if __name__ == "__main__":
