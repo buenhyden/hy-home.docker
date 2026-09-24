@@ -24,7 +24,7 @@ Open WebUI 서비스 운영 전반:
 
 - 사용자 접근 및 세션 관리
 - 문서 업로드/인덱싱/삭제 기준
-- Open WebUI와 Ollama/Qdrant 연동 구성 변경 관리
+- Open WebUI와 Ollama 연동 구성 변경 관리
 
 - **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
 - **Agents**: Open WebUI 운영 자동화 에이전트, 문서 인덱싱/정리 에이전트
@@ -34,7 +34,7 @@ Open WebUI 서비스 운영 전반:
 
 - **Required**:
 - 현재 구현은 `home-openwebui` Keycloak client의 native OIDC를 사용한다. Traefik router는 TLS와 `gateway-standard-chain@file`만 적용하며 `sso-auth@file`은 적용하지 않는다. 로컬 비밀번호 로그인, signup, email account merge, OAuth role/group management와 group creation은 Compose에서 비활성화한다.
-  - `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 변경은 사전 영향도 검토를 수행해야 한다.
+  - `OLLAMA_BASE_URL`, `RAG_EMBEDDING_MODEL` 변경과 `VECTOR_DB` 도입(외부 벡터 DB 선택, 재색인 필요)은 사전 영향도 검토를 수행해야 한다.
   - 인덱싱 실패/지연, 연결 실패 로그를 운영 증적으로 보관해야 한다.
   - `ai` profile 선택으로 AI 서비스를 기동하는 것은 runtime 승인 후 수행해야 한다.
 - **Allowed**:
@@ -48,10 +48,10 @@ Open WebUI 서비스 운영 전반:
 ### Lifecycle and data controls
 
 - Open WebUI remains `HOME`; native Keycloak OIDC and `gateway-standard-chain@file` are required. Do not add `sso-auth@file` or enable password/signup/email-merge/role-management fallbacks without a reviewed auth design.
-- SQLite/application data, uploads, the exact auth/OIDC secret set, and the Qdrant state for RAG form a coordinated recovery boundary. Qdrant backup/restore remains owned by `RUN-0034`; never infer vector recovery from a WebUI volume copy.
+- SQLite/application data, uploads, RAG vectors (the local store in the same volume) and the exact auth/OIDC secret set form one recovery boundary. Selecting an external vector store with `VECTOR_DB` would split that boundary and needs a re-index.
 - Stop writes before copying SQLite or the data volume. Restore to isolated storage/project first and verify identities, chats, uploads, OIDC, model access, and controlled RAG retrieval before any production replacement.
 - Upgrade only with a prior recoverable copy, migration review, pinned image identity, and rollback evidence. Source resource limits do not prove spare capacity.
-- Removal requires exported user/content evidence, coordinated Qdrant retention, revoked OIDC client/secrets, disabled routes, and explicit approval before persistent deletion.
+- Removal requires exported user/content evidence, revoked OIDC client/secrets, disabled routes, and explicit approval before persistent deletion.
 
 ## Exceptions
 
@@ -63,7 +63,7 @@ Open WebUI 서비스 운영 전반:
   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
   - runtime 승인 후 `ai` profile 선택 상태에서 `open-webui` container-internal health endpoint 응답 확인
-  - Open WebUI -> Ollama/Qdrant container-internal 연결성 확인
+  - Open WebUI -> Ollama container-internal 연결성 확인
 - 운영 중 체크:
   - 인증 실패율, 5xx 비율, 인덱싱 실패율 모니터링
 - 증적:

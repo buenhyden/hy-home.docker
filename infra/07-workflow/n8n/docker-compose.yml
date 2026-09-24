@@ -286,7 +286,7 @@ services:
       - |
         export VALKEY_PASSWORD=$$(cat /run/secrets/n8n_valkey_password | tr -d '\n')
         exec /redis_exporter \
-          -redis.addr=redis://mng-n8n-valkey:${VALKEY_PORT} \
+          -redis.addr=redis://n8n-valkey:${VALKEY_PORT:-6379} \
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
