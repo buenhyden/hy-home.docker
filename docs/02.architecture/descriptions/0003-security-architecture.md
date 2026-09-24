@@ -88,7 +88,7 @@ Operational detail lives in [OpenBao operations](../../05.operations/catalog/03-
 
 - [Security requirement](../../01.requirements/0003-security.md)
 - [Central secrets manager decision](../decisions/0003-vault-as-secrets-manager.md)
-- [Current convergence Spec](../../03.specs/0180-home-dev-convergence/spec.md)
+- [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the
 [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

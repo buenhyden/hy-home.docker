@@ -1,8 +1,8 @@
 ---
 title: "Home and Development Server Convergence Plan"
-version: "0.8.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-24"
 layer: "specs"

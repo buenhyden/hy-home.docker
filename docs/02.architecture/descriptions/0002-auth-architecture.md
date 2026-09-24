@@ -202,7 +202,7 @@ OpenBao router도 `gateway-standard-chain@file`만 사용한다. Keycloak 그룹
 `/openbao-admins`는 OpenBao OIDC role `home-admin`의 조건이며, 로그인 결과는
 `hy-home-operator` 정책의 OpenBao 토큰이다. Keycloak 사용자·그룹과 OpenBao
 role·policy는 별도 객체다. 실제 로그인 검증은
-[OpenBao 작업 기록](../../03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md)이 소유한다.
+[OpenBao 작업 기록](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md)이 소유한다.
 
 ## Related Documents
 

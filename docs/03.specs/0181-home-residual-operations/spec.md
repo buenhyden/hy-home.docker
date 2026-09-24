@@ -112,8 +112,8 @@ an OpenBao policy beyond the paths an item needs.
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031 Home and Development Host](../../02.architecture/descriptions/0031-home-development-host.md)
-- [SPEC-0180](../0180-home-dev-convergence/spec.md)
-- [SPEC-0180 Task 0008](../0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md)
+- [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- [SPEC-0180 Task 0008](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md)
 
 ## Open Questions
 

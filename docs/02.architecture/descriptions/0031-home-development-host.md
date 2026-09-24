@@ -93,7 +93,7 @@ Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
 ## Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- [SPEC-0180](../../03.specs/0180-home-dev-convergence/spec.md)
+- [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [Service disposition research](../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
 - [Infrastructure implementation](../../../infra/README.md)
 
