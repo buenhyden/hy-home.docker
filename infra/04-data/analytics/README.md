@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier (04-Data: Analytics)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 created: "2026-03-27"
 ---
 
@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Overview
 
-이 경로는 플랫폼의 분석 및 특수 목적 데이터 엔진을 관리한다. 시계열 데이터(InfluxDB), 실시간 스트림 처리(ksqlDB), 로그 검색 및 분석(OpenSearch), 그리고 대규모 OLAP 웨어하우스(StarRocks)를 포함하는 분석 데이터 계층을 담당한다.
+이 경로는 플랫폼의 분석 및 특수 목적 데이터 엔진을 관리한다. 시계열 데이터(InfluxDB)와 로그 검색 및 분석(OpenSearch)을 포함하는 분석 데이터 계층을 담당한다. 실시간 스트림 처리와 대규모 OLAP 웨어하우스는 `lakehouse` (Flink, Trino)가 담당한다.
 
 ## Audience
 
@@ -45,9 +45,7 @@ created: "2026-03-27"
 ```text
 analytics/
 ├── influxdb/       # Time Series Database (TSDB)
-├── ksql/           # Streaming SQL engine for Kafka
 ├── opensearch/     # Log Search & Analytics Engine
-├── starrocks/      # StarRocks (OLAP) Engine
 └── README.md       # This file
 ```
 
@@ -56,16 +54,14 @@ analytics/
 | Package | Classification | Exact profile | Stage 05 subject |
 | --- | --- | --- | --- |
 | [InfluxDB](influxdb/README.md) | `OPTIONAL` | `influxdb` | `0017-influxdb` |
-| [ksqlDB](ksql/README.md) | `OPTIONAL` | `ksql` | `0018-ksqldb` |
 | [OpenSearch](opensearch/README.md) | `OPTIONAL` primary / `LAB` cluster | `opensearch` / `opensearch-cluster` | `0019-opensearch` |
-| [StarRocks](starrocks/README.md) | `OPTIONAL` | `starrocks` | `0020-starrocks` |
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. 신규 분석 엔진 추가 시 반드시 **ADR-0015** 기술 선택 기록을 먼저 확인한다.
 2. 각 엔진 구성 변경 시 network 소속 규약(GDE-0077)을 준수한다.
 3. 운영 절차 변경 시 관련 guide/policy/runbook(`docs/05.operations/catalog/04-data/`)을 함께 갱신한다.
-4. Docker Secrets는 compose에 선언된 서비스에서만 current implementation evidence로 취급한다. InfluxDB and OpenSearch declare secrets; ksqlDB and StarRocks do not currently declare Docker Secrets.
+4. Docker Secrets는 compose에 선언된 서비스에서만 current implementation evidence로 취급한다. InfluxDB and OpenSearch declare secrets.
 
 5. 이 README와 하위 디렉터리의 `README.md`를 우선적으로 읽어 각 엔진의 책임을 파악한다.
 6. 인프라 변경 시 `docker-compose.yml`의 볼륨 마운트와 네트워크 설정을 확인한다.

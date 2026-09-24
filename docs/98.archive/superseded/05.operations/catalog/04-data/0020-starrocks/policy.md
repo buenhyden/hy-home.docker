@@ -1,14 +1,15 @@
 ---
 title: "StarRocks Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
-status: "active"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-24"
 layer: "operations"
 artifact_id: "POL-0020"
 parent_ids:
 - "AD-0012"
+superseded_by: "POL-0094"
 created: "2026-05-17"
 ---
 

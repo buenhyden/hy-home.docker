@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB (TSDB)"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 created: "2025-11-21"
 ---
 
@@ -37,7 +37,7 @@ created: "2025-11-21"
 
 - 장기 로그 저장 (-> Loki 담당)
 - 객체 저장 (-> SeaweedFS 담당)
-- 실시간 스트림 처리 (-> ksqlDB 담당)
+- 실시간 스트림 처리 (-> `lakehouse/flink` 담당)
 
 ## Structure
 

@@ -544,9 +544,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(text.replace("`(empty)`", f"`{value}`"), after)
 
     def test_generation_keeps_a_multiline_file_out_of_the_registry(self):
-        text = (
-            "| **TEST-001** | `X` | `Recovery` | `(empty)` | `-` | `secrets/shares.txt` | 2026-01-01 | Shares |\n"
-        )
+        text = "| **TEST-001** | `X` | `Recovery` | `(empty)` | `-` | `secrets/shares.txt` | 2026-01-01 | Shares |\n"
         self.example.write_text(text)
         self.target.write_text(text)
         self.target.chmod(0o600)
@@ -826,12 +824,12 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(264, len(contract["public"]))
+        self.assertEqual(262, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
         self.assertEqual(59, len(contract["required"]))
-        self.assertEqual(205, len(contract["optional"]))
+        self.assertEqual(203, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],

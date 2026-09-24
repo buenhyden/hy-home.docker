@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "requirements"
 artifact_id: "REQ-0006"
 parent_ids: []
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `hy-home.docker` 아키텍처의 메시징 계층(`05-messaging`)에 대한 제품 요구사항을 정의한다. 고성능 이벤트 스트리밍(Kafka)과 경량 작업 큐(RabbitMQ)를 통해 시스템 전반의 비동기 통신을 지원한다. 스트리밍 SQL 처리(ksqlDB)는 현재 `04-data/analytics` 구현과 운영 문서가 소유한다.
+이 문서는 `hy-home.docker` 아키텍처의 메시징 계층(`05-messaging`)에 대한 제품 요구사항을 정의한다. 고성능 이벤트 스트리밍(Kafka)과 경량 작업 큐(RabbitMQ)를 통해 시스템 전반의 비동기 통신을 지원한다. 스트리밍 SQL 처리(Flink)는 현재 `04-data/lakehouse` 구현과 운영 문서가 소유한다.
 
 ### Problem Statement
 
@@ -80,7 +80,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Risks
 
 - **Risks**: Kafka 노드 장애 시 파티션 리밸런싱 지연 가능성. 스키마 변경 시 하위 호환성 위반 위험.
-- **Dependencies**: 인증 및 권한 관리를 위해 `02-auth` 계층에 의존한다. ksqlDB consumer/processing boundary는 `04-data/analytics/ksql`에 의존한다.
+- **Dependencies**: 인증 및 권한 관리를 위해 `02-auth` 계층에 의존한다. Flink consumer/processing boundary는 `04-data/lakehouse/flink`에 의존한다.
 - **Assumptions**: 모든 노드는 `kafka_net` 내에서 통신하며 전용 볼륨에 데이터를 저장한다.
 
 ## Traceability

@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging)"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-24"
 created: "2025-11-12"
 ---
 
@@ -31,7 +31,7 @@ The tier has one leaf package: [`kafka`](kafka/README.md).
 
 The exact root selectors are `messaging`, `messaging-broker`,
 `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`,
-`messaging-admin`, and `ksql`; use the package map to see which services each
+and `messaging-admin`; use the package map to see which services each
 selects. A named producer and
 consumer, retention/capacity plan, plaintext-listener risk acceptance and complete
 recovery plan are required before activation. Three brokers on one host are not

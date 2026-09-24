@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.4.3"
+version: "2.4.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-24"
 layer: "archive"
 ---
 
@@ -114,6 +114,12 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 | `superseded/05.operations/catalog/04-data/0023-minio/policy.md` | superseded | POL-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/policy.md` |
 | `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | RUN-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/runbook.md` |
 | `superseded/05.operations/catalog/03-security/0016-vault/guide.md` | superseded | GDE-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/guide.md` |
+| `superseded/05.operations/catalog/04-data/0018-ksqldb/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0018-ksqldb/guide.md` |
+| `superseded/05.operations/catalog/04-data/0018-ksqldb/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/policy.md` |
+| `superseded/05.operations/catalog/04-data/0018-ksqldb/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md` |
+| `superseded/05.operations/catalog/04-data/0020-starrocks/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0020-starrocks/guide.md` |
+| `superseded/05.operations/catalog/04-data/0020-starrocks/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/policy.md` |
+| `superseded/05.operations/catalog/04-data/0020-starrocks/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/runbook.md` |
 | `superseded/05.operations/catalog/03-security/0016-vault/policy.md` | superseded | POL-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/policy.md` |
 | `superseded/05.operations/catalog/03-security/0016-vault/runbook.md` | superseded | RUN-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/runbook.md` |
 

@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-24"
 layer: "specs"
 artifact_id: "SPEC-0180-TSK-0001"
 parent_ids:
@@ -281,9 +281,9 @@ metadata gate across the current corpus, not by the existence of these links.
 | kafka-rest-proxy | [active](../../../05.operations/catalog/05-messaging/0036-kafka/guide.md) | [active](../../../05.operations/catalog/05-messaging/0036-kafka/policy.md) | [active](../../../05.operations/catalog/05-messaging/0036-kafka/runbook.md) | linked | metadata gate |
 | keycloak | [active](../../../05.operations/catalog/02-auth/0014-keycloak/guide.md) | [active](../../../05.operations/catalog/02-auth/0014-keycloak/policy.md) | [active](../../../05.operations/catalog/02-auth/0014-keycloak/runbook.md) | linked | metadata gate |
 | kong | [active](../../../05.operations/catalog/04-data/0029-supabase/guide.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/policy.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/runbook.md) | linked | metadata gate |
-| ksql-datagen | [active](../../../05.operations/catalog/04-data/0018-ksqldb/guide.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/policy.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/runbook.md) | linked | metadata gate |
-| ksqldb-cli | [active](../../../05.operations/catalog/04-data/0018-ksqldb/guide.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/policy.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/runbook.md) | linked | metadata gate |
-| ksqldb-server | [active](../../../05.operations/catalog/04-data/0018-ksqldb/guide.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/policy.md) | [active](../../../05.operations/catalog/04-data/0018-ksqldb/runbook.md) | linked | metadata gate |
+| ksql-datagen | `GDE-0018` (superseded) | `POL-0018` (superseded) | `RUN-0018` (superseded) | linked | metadata gate |
+| ksqldb-cli | `GDE-0018` (superseded) | `POL-0018` (superseded) | `RUN-0018` (superseded) | linked | metadata gate |
+| ksqldb-server | `GDE-0018` (superseded) | `POL-0018` (superseded) | `RUN-0018` (superseded) | linked | metadata gate |
 | locust-master | [active](../../../05.operations/catalog/09-tooling/0062-locust/guide.md) | [active](../../../05.operations/catalog/09-tooling/0062-locust/policy.md) | [active](../../../05.operations/catalog/09-tooling/0062-locust/runbook.md) | linked | metadata gate |
 | locust-worker | [active](../../../05.operations/catalog/09-tooling/0062-locust/guide.md) | [active](../../../05.operations/catalog/09-tooling/0062-locust/policy.md) | [active](../../../05.operations/catalog/09-tooling/0062-locust/runbook.md) | linked | metadata gate |
 | loki | [active](../../../05.operations/catalog/06-observability/0043-loki/guide.md) | [active](../../../05.operations/catalog/06-observability/0043-loki/policy.md) | [active](../../../05.operations/catalog/06-observability/0043-loki/runbook.md) | linked | metadata gate |
@@ -356,8 +356,8 @@ metadata gate across the current corpus, not by the existence of these links.
 | seaweedfs-volume | [active](../../../05.operations/catalog/04-data/0024-seaweedfs/guide.md) | [active](../../../05.operations/catalog/04-data/0024-seaweedfs/policy.md) | [active](../../../05.operations/catalog/04-data/0024-seaweedfs/runbook.md) | linked | metadata gate |
 | sonarqube | [active](../../../05.operations/catalog/09-tooling/0066-sonarqube/guide.md) | [active](../../../05.operations/catalog/09-tooling/0066-sonarqube/policy.md) | [active](../../../05.operations/catalog/09-tooling/0066-sonarqube/runbook.md) | linked | metadata gate |
 | stalwart | [active](../../../05.operations/catalog/10-communication/0070-mail/guide.md) | [active](../../../05.operations/catalog/10-communication/0070-mail/policy.md) | [active](../../../05.operations/catalog/10-communication/0070-mail/runbook.md) | linked | metadata gate |
-| starrocks-be | [active](../../../05.operations/catalog/04-data/0020-starrocks/guide.md) | [active](../../../05.operations/catalog/04-data/0020-starrocks/policy.md) | [active](../../../05.operations/catalog/04-data/0020-starrocks/runbook.md) | linked | metadata gate |
-| starrocks-fe | [active](../../../05.operations/catalog/04-data/0020-starrocks/guide.md) | [active](../../../05.operations/catalog/04-data/0020-starrocks/policy.md) | [active](../../../05.operations/catalog/04-data/0020-starrocks/runbook.md) | linked | metadata gate |
+| starrocks-be | `GDE-0020` (superseded) | `POL-0020` (superseded) | `RUN-0020` (superseded) | linked | metadata gate |
+| starrocks-fe | `GDE-0020` (superseded) | `POL-0020` (superseded) | `RUN-0020` (superseded) | linked | metadata gate |
 | storage | [active](../../../05.operations/catalog/04-data/0029-supabase/guide.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/policy.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/runbook.md) | linked | metadata gate |
 | studio | [active](../../../05.operations/catalog/04-data/0029-supabase/guide.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/policy.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/runbook.md) | linked | metadata gate |
 | supavisor | [active](../../../05.operations/catalog/04-data/0029-supabase/guide.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/policy.md) | [active](../../../05.operations/catalog/04-data/0029-supabase/runbook.md) | linked | metadata gate |
