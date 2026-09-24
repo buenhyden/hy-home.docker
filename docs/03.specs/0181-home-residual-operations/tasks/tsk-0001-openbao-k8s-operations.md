@@ -90,8 +90,13 @@ file uses `key=value` lines; RUN-0085 now writes it in that form. `.snap` files
 under `secrets/` were not ignored by Git; `.gitignore` now covers them.
 
 Open after the session: the offline copy of the snapshot and the recovery
-shares (owner), and the owner's untracked `secrets/platform/notifications`
-file (mode 664, created 16:28), which the agent did not read or change.
+shares (owner). The owner's untracked `secrets/platform/notifications` file
+(mode 664, created 16:28) was deleted by the owner after the session; the
+agent confirmed only that the directory is gone.
+
+Offline custody (owner, 2026-09-24): the owner confirmed copying
+`pre-change.snap` and the recovery-share file to offline custody; the medium
+was not named.
 
 ## Verification Evidence
 
@@ -102,6 +107,19 @@ unittest OK; pre-commit passed except two local-only permission tests
 not tracked by Git), which pass after `chmod g-w`. Two independent reviews
 returned APPROVE WITH FIXES; their findings are fixed in this PR. Session
 results are added as each work unit runs.
+
+Completion receipt for SPEC-0181 (criteria 1–8, Plan work units W1–W8):
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: operator grant and `OpenBaoMetricsScrapeFailing` merged in #256 with promtool, metadata, link, catalog and lifecycle checks; the grant is live (uploaded in the session) and the rule loaded `inactive`, health `ok` | [operator.hcl](../../../../infra/03-security/openbao/config/policies/operator.hcl) |
+| 2 | W2 | PASS: snapshot `pre-change.snap` in `secrets/backup/openbao/` (`700`/`600`); the owner confirmed an offline copy of it and of the recovery shares (medium not named) | [POL-0021](../../../../docs/05.operations/catalog/04-data/0021-backup-and-restore/policy.md) |
+| 3 | W3 | PASS: `secret/platform/notifications` `current_version` `1`, written by the operator; `argocd-notifications-secret` `SecretSynced True`; `platform-argocd-config` `Synced Healthy` | [RUN-0096](../../../../docs/05.operations/catalog/12-infra-net/0096-k8s-integration/runbook.md) |
+| 4 | W4 | PASS: `token_explicit_max_ttl` `7200`; `root revoked`, `Started false` | [RUN-0096](../../../../docs/05.operations/catalog/12-infra-net/0096-k8s-integration/runbook.md) |
+| 5 | W5 | PASS: `grafana-api` version `5`; after the Kiali pod recreate `/kiali/api/grafana` `200` and the new token has the latest `lastUsedAt`; old token deleted (`200`); new expiry 2026-12-23 | [RUN-0096](../../../../docs/05.operations/catalog/12-infra-net/0096-k8s-integration/runbook.md) |
+| 6 | W6 | PASS: new token checks (`metrics: allowed`, `policy list: denied`), `up{job="openbao"}` `1`, old accessor revoked, custody rewritten; new expiry 2026-10-24T10:04Z | [RUN-0085](../../../../docs/05.operations/catalog/03-security/0085-openbao/runbook.md) |
+| 7 | W7 | PASS: SecretID delivered within its ten minutes; `authentication successful` 1, errors 0, `sink.file: token written` | [RUN-0085](../../../../docs/05.operations/catalog/03-security/0085-openbao/runbook.md) |
+| 8 | W8 | PASS: CodeQL alerts #23, #24 and #26 `dismissed`, reason `used in tests` | N/A: repository code-scanning state on GitHub |
 
 ## Review Evidence
 
@@ -117,7 +135,11 @@ here. The owner approved the Spec and Plan on 2026-09-24.
 | --- | --- | --- |
 | #256 | SPEC-0181 narrowed and put to review; Plan and Task; W1; SPEC-0182 draft | merged |
 | #257 | SPEC-0181 Spec and Plan approved; Task ready | merged |
-| this PR | SPEC-0181 active; Task in progress; session record and runbook lessons | open |
+| #258 | SPEC-0181 active; Task in progress; session record and runbook lessons | merged |
+| #259 | Completion receipt (the last change to these bodies) | merged |
+
+The next PR completes SPEC-0181 and moves this package to
+`docs/98.archive/completed/03.specs/`; it changes only lifecycle fields here.
 
 ## Rulings
 
@@ -129,4 +151,6 @@ here. The owner approved the Spec and Plan on 2026-09-24.
 
 ## Deferred Items
 
-None yet.
+None. Every other SPEC-0180 residual is in SPEC-0182. The next metrics token
+rotation is due before 2026-10-24 and the next Kiali token before 2026-12-23;
+`OpenBaoMetricsScrapeFailing` fires if the metrics token lapses.
