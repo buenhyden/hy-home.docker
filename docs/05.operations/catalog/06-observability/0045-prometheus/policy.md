@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -54,7 +54,9 @@ config, and alert-rule surfaces.
     `/etc/prometheus/alert_rules/recording_rules.yml`.
   - Alert rules must include `expr`, `for` when applicable, `labels.severity`,
     and actionable `annotations`.
-  - `opensearch_exporter_password` and `openbao_token` are Docker Secret file
+  - `opensearch_exporter_password`, `openbao_token`, and
+    `qdrant_read_only_api_key` (AI-009, Qdrant read-only key; Prometheus never
+    holds the full `qdrant_api_key`) are Docker Secret file
     references only; their values must not appear in docs, logs, or task
     evidence.
     Active Prometheus neither declares nor mounts it; preserve any existing

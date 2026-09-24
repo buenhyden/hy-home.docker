@@ -3551,7 +3551,9 @@ class RouteAuthContractTests(unittest.TestCase):
 
 
 class QdrantApiKeyContractTests(unittest.TestCase):
-    def test_qdrant_requires_its_key_and_prometheus_sends_it(self) -> None:
+    def test_qdrant_requires_its_keys_and_prometheus_sends_the_read_only_one(
+        self,
+    ) -> None:
         import yaml
 
         compose = ROOT / "infra/04-data/specialized/qdrant/docker-compose.yml"
@@ -3561,18 +3563,27 @@ class QdrantApiKeyContractTests(unittest.TestCase):
         script = service["command"][-1]
         self.assertIn("</run/secrets/qdrant_api_key", script)
         self.assertIn("export QDRANT__SERVICE__API_KEY", script)
+        self.assertIn("qdrant_read_only_api_key", service["secrets"])
+        self.assertIn("</run/secrets/qdrant_read_only_api_key", script)
+        self.assertIn("export QDRANT__SERVICE__READ_ONLY_API_KEY", script)
+        self.assertIn('!= "$$QDRANT__SERVICE__API_KEY"', script)
         self.assertIn("exec ./entrypoint.sh", script)
         root = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
         self.assertIn("qdrant_api_key", root["secrets"])
+        self.assertIn("qdrant_read_only_api_key", root["secrets"])
         observability = ROOT / "infra/06-observability/docker-compose.yml"
         prometheus = yaml.safe_load(observability.read_text(encoding="utf-8"))
-        self.assertIn("qdrant_api_key", prometheus["services"]["prometheus"]["secrets"])
+        granted = prometheus["services"]["prometheus"]["secrets"]
+        self.assertIn("qdrant_read_only_api_key", granted)
+        self.assertNotIn("qdrant_api_key", granted)
         for name in ("prometheus.yml", "prometheus.dev.yml"):
             config = ROOT / "infra/06-observability/prometheus/config" / name
-            jobs = yaml.safe_load(config.read_text(encoding="utf-8"))["scrape_configs"]
+            text = config.read_text(encoding="utf-8")
+            self.assertNotIn("qdrant_api_key", text, name)
+            jobs = yaml.safe_load(text)["scrape_configs"]
             job = next(j for j in jobs if j["job_name"] == "qdrant")
             key_file = job.get("bearer_token_file")
-            self.assertEqual("/run/secrets/qdrant_api_key", key_file, name)
+            self.assertEqual("/run/secrets/qdrant_read_only_api_key", key_file, name)
 
 
 if __name__ == "__main__":

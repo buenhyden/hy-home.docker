@@ -44,9 +44,11 @@ services:
       - qdrant-data:/qdrant/storage:rw
     secrets:
       - qdrant_api_key
+      - qdrant_read_only_api_key
     # Qdrant reads the key only from the environment. With it set, every REST
     # and gRPC call needs `api-key` or `Authorization: Bearer`; /readyz,
-    # /livez and /healthz stay open for the healthcheck.
+    # /livez and /healthz stay open for the healthcheck. The read-only key
+    # (Prometheus scrape) can read but not write.
     command:
       - /bin/bash
       - -ec
@@ -54,6 +56,10 @@ services:
         QDRANT__SERVICE__API_KEY="$$(tr -d '\r\n' </run/secrets/qdrant_api_key)"
         [ "$${#QDRANT__SERVICE__API_KEY}" -ge 16 ] || { echo 'qdrant: qdrant_api_key must be at least 16 characters' >&2; exit 64; }
         export QDRANT__SERVICE__API_KEY
+        QDRANT__SERVICE__READ_ONLY_API_KEY="$$(tr -d '\r\n' </run/secrets/qdrant_read_only_api_key)"
+        [ "$${#QDRANT__SERVICE__READ_ONLY_API_KEY}" -ge 16 ] || { echo 'qdrant: qdrant_read_only_api_key must be at least 16 characters' >&2; exit 64; }
+        [ "$$QDRANT__SERVICE__READ_ONLY_API_KEY" != "$$QDRANT__SERVICE__API_KEY" ] || { echo 'qdrant: qdrant_read_only_api_key must differ from qdrant_api_key' >&2; exit 64; }
+        export QDRANT__SERVICE__READ_ONLY_API_KEY
         exec ./entrypoint.sh
     networks:
       edge_net: {}

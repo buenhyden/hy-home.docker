@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-05-10"
 | Services / profiles | Single `qdrant`; exact `ai`, `ai-llm`, `qdrant`. |
 | Flow / exposure | REST through Traefik HTTPS behind SSO; gRPC only in-network on `qdrant:6334`; no host publication. |
 | Persistence / environment | `qdrant-data:/qdrant/storage`, snapshots under `/qdrant/storage/snapshots`; service ports/path are Compose environment keys. |
-| Secrets / security | API key from the `qdrant_api_key` secret (AI-008); every REST/gRPC call needs it except `/readyz`, `/livez`, `/healthz`. |
+| Secrets / security | API key from the `qdrant_api_key` secret (AI-008); every REST/gRPC call needs it (or the read-only key) except `/readyz`, `/livez`, `/healthz`. Prometheus holds only the read-only key `qdrant_read_only_api_key` (AI-009). |
 | Health / resources | `/readyz`; `template-stateful-med`. |
 | Backup / upgrade | snapshot restore to same minor or next minor target with approximately 2x disk; verify collections/aliases/counts before promotion. |
 | License / edition | Qdrant source is Apache-2.0; managed-cloud features are outside this self-hosted single-node contract. |
@@ -55,7 +55,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 - 루트 [docker-compose.yml](../../../../../docker-compose.yml)에 `infra/04-data/specialized/qdrant/docker-compose.yml`가 active include인지 확인한다.
 - `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `QDRANT_PORT`, `QDRANT_GRPC_PORT` 값이 로컬 환경과 맞아야 한다. 아래 명령의 `6333`은 기본 `QDRANT_PORT`이며, 바꿨다면 그 값으로 바꿔 쓴다.
-- Qdrant는 `qdrant_api_key` secret(AI-008)을 시작 스크립트가 `QDRANT__SERVICE__API_KEY`로 넘겨 API key를 요구한다. 클라이언트는 `api-key` 또는 `Authorization: Bearer` header로 보낸다. Prometheus는 `bearer_token_file`로 보낸다.
+- Qdrant는 `qdrant_api_key` secret(AI-008)을 시작 스크립트가 `QDRANT__SERVICE__API_KEY`로 넘겨 API key를 요구한다. 클라이언트는 `api-key` 또는 `Authorization: Bearer` header로 보낸다. 읽기 전용 key `qdrant_read_only_api_key`(AI-009)는 `QDRANT__SERVICE__READ_ONLY_API_KEY`로 넘어가며, 16자 이상이고 전체 key와 달라야 시작한다. Prometheus는 이 읽기 전용 key만 받아 `bearer_token_file`로 보낸다.
 
 ### Step-by-step Instructions
 

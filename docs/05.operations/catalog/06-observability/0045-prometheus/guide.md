@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -201,7 +201,7 @@ Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current co
 
 - **Purpose/classification/source**: `prometheus` is a `HOME` metrics/rules service and its mapped `node-exporter` is also `HOME`; `obs`/`obs-core`/`dev` plus narrower alerting/batch profiles select it. [Compose](../../../../../infra/06-observability/docker-compose.yml), scrape config, and rule files are authoritative.
 - **Flow/state**: Prometheus scrapes exporters/services, evaluates rules, sends alerts to Alertmanager, accepts explicitly configured remote-write, and stores local TSDB blocks/WAL in `prometheus-data:/prometheus`. No external long-term metrics store is declared.
-- **Secrets/dependencies/security**: `opensearch_exporter_password` and staged `openbao_token` are scrape secrets. The tracked token/policy contract does not prove the running target loaded it. Exporters, Alertmanager, gateway auth, root CA, storage, and `obs_net` are dependencies; never expose secret-bearing rendered config.
+- **Secrets/dependencies/security**: `opensearch_exporter_password`, the Qdrant read-only key `qdrant_read_only_api_key` (AI-009), and staged `openbao_token` are scrape secrets. The tracked token/policy contract does not prove the running target loaded it. Exporters, Alertmanager, gateway auth, root CA, storage, and `obs_net` are dependencies; never expose secret-bearing rendered config.
 - **Resources/normal use**: source retention/resource flags are configuration, not headroom. Render from root, run `promtool` config/rules checks, verify readiness, targets, rule health, and a bounded query before changes.
 - **Lifecycle**: `--web.enable-lifecycle` and remote-write receiver are enabled, but `--web.enable-admin-api` is not. Therefore do not prescribe the online snapshot endpoint. Use an approved stopped consistent copy/storage snapshot, or separately approve and validate an admin-API design. Upgrade with TSDB compatibility review and verify WAL replay, queries, rules, alerts, and remote-write.
 - **Upstream/license**: follow official [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/). Prometheus is Apache-2.0 licensed.

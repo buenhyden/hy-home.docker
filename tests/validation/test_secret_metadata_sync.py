@@ -876,8 +876,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.registry_text,
             self.environment["consumed"],
         )
-        self.assertEqual(87, len(contract["declarations"]))
-        self.assertEqual(120, len(contract["rows"]))
+        self.assertEqual(88, len(contract["declarations"]))
+        self.assertEqual(121, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])

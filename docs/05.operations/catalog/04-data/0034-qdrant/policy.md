@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -24,6 +24,7 @@ created: "2026-05-17"
 - `qdrant` service and `qdrant-data` volume
 - REST route `qdrant.${DEFAULT_URL}` behind SSO (`sso-auth@file`) and the API key; no gRPC route
 - API key from `qdrant_api_key` (AI-008); only the health endpoints answer without it
+- Read-only API key from `qdrant_read_only_api_key` (AI-009), the only key Prometheus holds; it must differ from the full key
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
 - Linked guide and runbook under `docs/05.operations`
 
