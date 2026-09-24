@@ -71,7 +71,8 @@ are applied in the same PR. The owner's approval follows.
 | PR | Scope | State |
 | --- | --- | --- |
 | #261 | SPEC-0182 to review; Plan and three Tasks | merged |
-| this PR | SPEC-0182 Spec and Plan approved; Tasks ready | open |
+| #262 | SPEC-0182 Spec and Plan approved; Tasks ready | merged |
+| this PR | SPEC-0182 active; Task 0001 in progress | open |
 
 ## Rulings
 

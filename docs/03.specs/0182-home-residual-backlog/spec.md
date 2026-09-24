@@ -1,8 +1,8 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "specs"
