@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.2.4"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -55,6 +55,21 @@ created: "2026-06-04"
   identity다. `tooling`, `testing`,
   `iac`, `dependency-update`는 named operator/development work이고 HOME에 포함하지
   않는다. profile vocabulary 또는 full membership table은 POL-0078에서만 관리한다.
+- **Recreate on edit**: 단일 파일 bind mount(`./config/x.yml:/etc/x.yml`)는
+  mount 시점의 inode를 고정한다. editor와 branch 전환은 파일을 새 inode로
+  교체하므로 container는 이전 내용을 계속 읽고, `restart`도 이를 바꾸지 않는다.
+  따라서 단일 파일로 mount된 configuration을 수정한 뒤에는
+  `docker compose up -d --force-recreate <service>`로 해당 service를 재생성한다.
+  Mount는 directory로 바꾸지 않으며 이 규칙과 hash 점검이 통제 수단이다.
+- **Post-apply hash check**: 모든 live apply(`up -d`, recreate, 설정 변경 반영)
+  직후 container를 시작한 checkout에서
+  `python3 scripts/operations/check-config-mount-hashes.py --root <checkout>`을
+  실행한다. `DIFF`(exit 1)는 recreate 누락이므로 해당 service를 재생성하고 다시
+  점검한다. `cat`이 없는 image는 `UNREADABLE`로 표시되며,
+  `--helper-image <local image with cat>`은 일시적 `--rm` helper container를
+  띄우므로 해당 apply 승인 범위에서만 사용한다. `secrets/` 경로와 파일 내용은
+  읽거나 출력하지 않는다. `docker cp`는 bind mount를 host 경로로 해석해 오래된
+  inode를 보지 못하므로 이 점검에 쓰지 않는다.
 
 ### AI Agent Policy
 
@@ -223,6 +238,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
 - 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
+- 단일 파일 config mount 점검(live apply 직후, read-only): `python3 scripts/operations/check-config-mount-hashes.py --root <checkout>`
 - 운영 갭 점검(예시):
   - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
 - 문서 추적성 점검:
