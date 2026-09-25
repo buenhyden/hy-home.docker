@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -69,12 +69,11 @@ docker compose exec ollama nvidia-smi
 ### 2. Model Lifecycle (CLI)
 
 ```bash
-# 모델 다운로드
-docker compose exec ollama ollama pull llama3
-
 # 모델 목록 확인
 docker compose exec ollama ollama list
 ```
+
+모델 변경(`ollama pull` 등)은 [Ollama Operations Policy](../policies/0056-ollama.md)가 요구하는 승인된 local/dev rehearsal 없이 무조건 실행하지 않는다. 절차는 [Ollama runbook](../runbooks/0056-ollama.md)을 따른다.
 
 ### 3. Inference API Check
 

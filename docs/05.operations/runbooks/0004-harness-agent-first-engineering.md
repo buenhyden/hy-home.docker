@@ -138,7 +138,6 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation

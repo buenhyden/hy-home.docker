@@ -1,10 +1,10 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -26,7 +26,6 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 `config/config.alloy`에 선언된 Alloy 운영 기준을 다룬다.
 
 - **Systems**: compose service `alloy`, container `infra-alloy`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alloy/config/config.alloy`, volume `alloy-data`, Docker socket/container log read-only mounts
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

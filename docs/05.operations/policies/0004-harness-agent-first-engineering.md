@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -76,23 +76,7 @@ its owner cannot drift that way.
 
 ## Verification
 
-```bash
-python3 -m json.tool .codex/hooks.json >/dev/null
-python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/**/*.sh
-CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
-printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
-printf '{"tool_input":{"file_path":"infra/10-communication/stalwart/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
-CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
-bash scripts/knowledge/report-graphify-health.sh
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/check-document-links.py --mode all
-bash scripts/validation/validate-docker-compose.sh
-bash scripts/validation/check-template-security-baseline.sh
-bash scripts/validation/check-quickwin-baseline.sh
-bash scripts/hardening/check-all-hardening.sh
-```
+Every hook, runtime, and repository contract check listed in [Runbook §Procedure](../runbooks/0004-harness-agent-first-engineering.md#procedure) must pass before a harness or Agent-first change is accepted.
 
 ## Review Cadence
 

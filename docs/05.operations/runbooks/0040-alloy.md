@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -122,14 +122,6 @@ created: "2026-05-17"
 - Git-managed `config.alloy`, Compose, or downstream endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Alloy를 재시작한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - Docker socket/container mount permission relaxation, exporter endpoint change, OTLP port change, relabel cardinality expansion은 이 런북의 안전 롤백 범위를 벗어난다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ### Planned isolated recovery rehearsal
 

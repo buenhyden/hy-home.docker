@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0009"
 parent_ids: []
@@ -183,14 +183,6 @@ created: "2026-06-04"
 
 - [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
 - [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## Evidence
 

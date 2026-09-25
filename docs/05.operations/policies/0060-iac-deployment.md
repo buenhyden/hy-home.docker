@@ -1,10 +1,10 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -21,7 +21,6 @@ created: "2026-03-25"
 ## Policy Scope
 
 - **Systems**: `infra/09-tooling/opentofu/docker-compose.yml`, `infra/09-tooling/terrakube/docker-compose.yml`
-- **Agents**: repo-local governance를 따르는 AI agents
 - **Environments**: local, development, homelab operations
 
 Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [migration handoff](../guides/0068-terraform.md)를 따른다.

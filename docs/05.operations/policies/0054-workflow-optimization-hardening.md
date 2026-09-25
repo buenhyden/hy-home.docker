@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -25,7 +25,6 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 07-workflow`
 
 - **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner, workflow Valkey
-- **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls

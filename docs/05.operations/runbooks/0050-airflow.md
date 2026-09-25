@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -105,14 +105,6 @@ created: "2026-05-17"
 - [ ] DB 마이그레이션 실패 시, `_AIRFLOW_DB_MIGRATE: 'false'`로 일시 전환 후 롤백을 고려하십시오.
 
 ---
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ### Planned isolated restore rehearsal
 

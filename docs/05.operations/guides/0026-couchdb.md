@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
@@ -63,31 +63,7 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 
 ### Step-by-step Instructions
 
-1. 서비스 구성을 렌더링한다.
-
-   ```bash
-   docker compose --profile couchdb config --quiet
-   ```
-
-2. 클러스터와 init job 상태를 확인한다.
-
-   ```bash
-   docker compose ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
-   ```
-
-3. 로컬 컨테이너 기준 health endpoint를 확인한다.
-
-   ```bash
-   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_up"'
-   ```
-
-4. membership은 primary route 또는 `couchdb-1` 내부에서 확인한다.
-
-   ```bash
-   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'
-   ```
-
-5. 외부 접근은 Traefik route `https://couchdb.${DEFAULT_URL}`와 sticky cookie 설정을 전제로 한다. 직접 host port publish는 현재 compose에 없다.
+정상 운영 중 점검은 compose profile 렌더링, 클러스터/init job 상태, `couchdb-1` 내부 secret mount 기반 `_up` 및 `_membership` health endpoint 확인으로 구성된다. 외부 접근은 Traefik route `https://couchdb.${DEFAULT_URL}`와 sticky cookie 설정을 전제로 하며 직접 host port publish는 현재 compose에 없다. 실행 가능한 명령 순서와 기대 결과는 [CouchDB runbook](../runbooks/0026-couchdb.md#steps)을 따른다.
 
 ### Common Pitfalls
 

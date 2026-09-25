@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Health and Recovery Triage Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0025"
 parent_ids:
@@ -92,9 +92,8 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 
 ### Safe Rollback or Recovery Procedure
 
-1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
-2. Runtime recovery in this runbook is limited to compose `up -d` for the declared services after evidence capture.
-3. 복원 실패 시 격리 target과 그 전용 빈 volume을 폐기한다. source snapshot이나 tracked data volume은 변경하지 않는다.
+1. Runtime recovery in this runbook is limited to compose `up -d` for the declared services after evidence capture.
+2. 복원 실패 시 격리 target과 그 전용 빈 volume을 폐기한다. source snapshot이나 tracked data volume은 변경하지 않는다.
 
 ### Planned Isolated Restore Rehearsal
 

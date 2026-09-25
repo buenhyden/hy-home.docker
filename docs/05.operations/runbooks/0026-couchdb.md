@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -92,9 +92,8 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 ### Safe Rollback or Recovery Procedure
 
-1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
-2. Runtime recovery in this runbook is limited to compose `up -d` for the declared CouchDB services after evidence capture.
-3. 실패한 격리 cluster와 그 전용 storage를 폐기한다. source cluster와 tracked volumes는 변경하지 않는다.
+1. Runtime recovery in this runbook is limited to compose `up -d` for the declared CouchDB services after evidence capture.
+2. 실패한 격리 cluster와 그 전용 storage를 폐기한다. source cluster와 tracked volumes는 변경하지 않는다.
 
 ### Planned Isolated Restore Rehearsal
 

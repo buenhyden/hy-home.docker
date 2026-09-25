@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0058"
 parent_ids:
@@ -91,7 +91,7 @@ created: "2026-05-17"
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: N/A
-- **Model Fallback**: 승인된 운영 모델에서 직전 안정 모델로 fallback
+- **Model Fallback**: operator approval을 받은 뒤에만 승인된 운영 모델에서 직전 안정 모델로 전환
 - **Tool Disable / Revoke**: AI 자동 배포/승격 파이프라인 일시 중지(승인 필요)
 - **Eval Re-run**:
   - `check-all-hardening.sh 08-ai`

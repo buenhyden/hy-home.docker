@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0001"
 parent_ids: []
@@ -25,7 +25,6 @@ created: "2026-06-04"
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
 
 - **Systems**: Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` (root 통합 Compose 해석 기준)
-- **Agents**: Infra/DevOps/Operations 역할 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
@@ -44,9 +43,9 @@ created: "2026-06-04"
 
 ### AI Agent Policy
 
-- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Model / Prompt Change Process**: Governed by [agentic governance](../../../.agents/governance/agentic.md); not restated here.
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Log / Trace Retention**: Governed by [task checklists](../../../.agents/governance/task-checklists.md).
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
 ## Exceptions

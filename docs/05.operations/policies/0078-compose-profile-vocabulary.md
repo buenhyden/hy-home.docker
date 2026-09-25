@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.8.1"
+version: "1.8.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -22,7 +22,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 ## Policy Scope
 
 - **Systems**: root가 include하는 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}`.
-- **Agents**: Infra/DevOps/Operations 기여자와 검토자.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업.
 
 ## Definitions

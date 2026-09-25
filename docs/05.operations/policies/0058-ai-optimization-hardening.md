@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -25,7 +25,6 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 08-ai`
 
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
-- **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls

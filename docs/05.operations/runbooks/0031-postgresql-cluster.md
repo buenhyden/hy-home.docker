@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -101,9 +101,8 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 
 ### Safe Rollback or Recovery Procedure
 
-1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
-2. Runtime recovery in this runbook is limited to compose `up -d` for stopped declared services after evidence capture.
-3. 실패한 격리 cluster와 전용 volumes를 폐기한다. source cluster, DCS와 tracked volumes는 변경하지 않는다.
+1. Runtime recovery in this runbook is limited to compose `up -d` for stopped declared services after evidence capture.
+2. 실패한 격리 cluster와 전용 volumes를 폐기한다. source cluster, DCS와 tracked volumes는 변경하지 않는다.
 
 ### Planned Isolated Logical Restore
 

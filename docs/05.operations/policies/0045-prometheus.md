@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -29,7 +29,6 @@ This policy applies to the current `infra/06-observability/prometheus` compose,
 config, and alert-rule surfaces.
 
 - **Systems**: compose service `prometheus`, container `infra-prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

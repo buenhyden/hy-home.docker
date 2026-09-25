@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -27,13 +27,9 @@ Run from the repository root because leaf files depend on root-owned networks,
 secrets and shared templates. Select representative current profiles rather than
 rendering a leaf file directly:
 
-```bash
-docker compose --env-file .env.example --profile mng config --quiet
-docker compose --env-file .env.example --profile valkey-cluster config --quiet
-docker compose --env-file .env.example --profile seaweedfs config --quiet
-docker compose --env-file .env.example --profile storage config --quiet
-bash scripts/hardening/check-all-hardening.sh 04-data
-```
+Render each representative current profile with the root `.env.example` and run
+the shared hardening check script for this tier. The exact command sequence is
+owned by the [04-Data Optimization Hardening runbook](../runbooks/0030-data-optimization-hardening.md#procedure).
 
 Inspect the rendered services without printing substituted private values. Verify
 classification/profile alignment, unique writable volumes, the declared networks, secret

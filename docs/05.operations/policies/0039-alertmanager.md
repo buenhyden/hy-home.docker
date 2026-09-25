@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -26,7 +26,6 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 `config/config.yml`에 선언된 Alertmanager 운영 기준을 다룬다.
 
 - **Systems**: compose service `alertmanager`, container `infra-alertmanager`, image [prom/alertmanager image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

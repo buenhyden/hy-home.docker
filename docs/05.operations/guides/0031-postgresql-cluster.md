@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -70,25 +70,9 @@ created: "2026-05-10"
 
 ### Step-by-step Instructions
 
-1. 선택 클러스터 구성을 렌더링한다.
+정상 운영 중 점검은 선택 클러스터 compose 렌더링, 핵심 서비스 상태, `patronictl list` 기준 Patroni cluster 상태 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [PostgreSQL Cluster runbook](../runbooks/0031-postgresql-cluster.md#steps)을 따른다.
 
-   ```bash
-   docker compose --profile postgres-ha config --quiet
-   ```
-
-2. 핵심 서비스 상태를 확인한다.
-
-   ```bash
-   docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-cluster-init pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
-   ```
-
-3. Patroni cluster 상태는 한 PostgreSQL node 내부에서 확인한다.
-
-   ```bash
-   docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
-   ```
-
-4. 애플리케이션 연결은 `pg-router`를 기준으로 한다.
+1. 애플리케이션 연결은 `pg-router`를 기준으로 한다.
 
    | Endpoint | Host | Port | Purpose |
    | --- | --- | --- | --- |

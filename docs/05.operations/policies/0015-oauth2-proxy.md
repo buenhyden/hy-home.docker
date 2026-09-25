@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -28,7 +28,6 @@ created: "2026-05-17"
 - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
 
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
-- **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
@@ -50,13 +49,8 @@ created: "2026-05-17"
 - **Disallowed**:
   - fail-open 상시 운영
   - 시크릿을 Compose/문서에 평문으로 저장
-
-### AI Agent Policy
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
-- **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
-- **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
+  - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
+  - 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 절차를 수행해야 한다.
 
 ## Exceptions
 

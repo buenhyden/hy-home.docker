@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -28,7 +28,6 @@ storage와 retention만 active 기준으로 관리하며, external long-term arc
 backup 책임 경계를 다룬다.
 
 - **Systems**: Prometheus local TSDB, Loki SeaweedFS bucket `loki-bucket`, Tempo SeaweedFS bucket `tempo-bucket`, Pyroscope local filesystem backend `/var/lib/pyroscope`, Grafana dashboard JSON assets
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

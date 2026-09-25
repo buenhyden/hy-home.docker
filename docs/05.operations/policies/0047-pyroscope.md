@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -27,7 +27,6 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
 
 - **Systems**: compose service `pyroscope`, container `infra-pyroscope`, image [grafana/pyroscope image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

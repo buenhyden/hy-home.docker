@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -24,7 +24,6 @@ created: "2026-06-04"
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
 - **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
-- **Agents**: Infra/DevOps/Operations 역할의 에이전트
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
@@ -50,11 +49,8 @@ created: "2026-06-04"
   Guide/Policy/Runbook을 함께 갱신한다. Guide의 optional
   `implementation_services` mapping이 exact Compose path/service binding을 소유하고,
   existing operations-catalog validator가 global join을 검증한다.
-- current HOME selection은 `core mng ai workflow storage obs-core obs-host
-  availability logs alerting tracing profiling obs-gpu registry`이며 41 service
-  identity다. `tooling`, `testing`,
-  `iac`, `dependency-update`는 named operator/development work이고 HOME에 포함하지
-  않는다. profile vocabulary 또는 full membership table은 POL-0078에서만 관리한다.
+- HOME profile membership과 full profile vocabulary table은
+  [POL-0078](0078-compose-profile-vocabulary.md)에서만 관리한다.
 - **Recreate on edit**: 단일 파일 bind mount(`./config/x.yml:/etc/x.yml`)는
   mount 시점의 inode를 고정한다. editor와 branch 전환은 파일을 새 inode로
   교체하므로 container는 이전 내용을 계속 읽고, `restart`도 이를 바꾸지 않는다.

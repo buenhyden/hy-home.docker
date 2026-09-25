@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -108,12 +108,11 @@ snapshot reference. Restart only after the backup check succeeds.
 
 #### 5. Service Restart Path
 
+`ollama` 재시작/복구는 [Ollama runbook](0056-ollama.md) 및 필요 시 [GPU Recovery runbook](0055-gpu-recovery.md)을 따른다. 의존 서비스 정상화가 확인된 뒤에만 아래 명령으로 Open WebUI를 마지막에 재시작한다.
+
 ```bash
-docker compose restart ollama
 docker compose restart open-webui
 ```
-
-- 의존 서비스 정상화 후 Open WebUI를 마지막에 재시작한다.
 
 ### Verification Steps
 
@@ -142,7 +141,7 @@ docker compose restart open-webui
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: 최근 프롬프트/설정 변경을 직전 안정 버전으로 복원
-- **Model Fallback**: 고부하 모델에서 안정 모델로 임시 전환
+- **Model Fallback**: operator approval을 받은 뒤에만 고부하 모델에서 안정 모델로 전환
 - **Tool Disable / Revoke**: 문서 업로드/자동 인덱싱 기능 임시 비활성
 - **Eval Re-run**: 기본 채팅 + RAG smoke test 재실행
 - **Trace Capture**: 장애 시간대 로그/지표를 증적으로 보존

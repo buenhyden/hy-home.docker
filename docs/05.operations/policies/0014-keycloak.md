@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -25,7 +25,6 @@ created: "2026-05-17"
 - Realm/client 운영 변경 승인 정책
 
 - **Systems**: Keycloak (Quarkus)
-- **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
@@ -41,13 +40,8 @@ created: "2026-05-17"
 - **Disallowed**:
   - 시크릿 평문 하드코딩
   - 인증 우회 목적 설정 변경
-
-### AI Agent Policy
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
-- **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
-- **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
+  - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
+  - readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차를 수행해야 한다.
 
 ## Exceptions
 
