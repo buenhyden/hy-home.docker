@@ -829,11 +829,6 @@ def validate_registry(
                 identity_relation == "package-member"
                 and bool({"package_number", "number"} & path_tokens & artifact_tokens)
             )
-            or (
-                identity_relation == "subject-member"
-                and "subject_number" in path_tokens
-                and "number" in artifact_tokens
-            )
         )
         if not relation_valid:
             findings.append(
@@ -1943,11 +1938,11 @@ def validate_requirement_allocation_transition(
 
 
 _TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|year):4\}"
     r"|\{(?:slug|hook_slug|domain|stage|category|subpath|archived_subpath)\}"
 )
 _ARTIFACT_TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|member_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|member_number|year):4\}"
     r"|\{retired_artifact_id\}"
 )
 

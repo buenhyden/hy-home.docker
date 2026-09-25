@@ -477,6 +477,17 @@ class DocumentRegistryTests(unittest.TestCase):
             {item.code for item in validate_registry(raw)},
         )
 
+    def test_retired_catalog_subject_identity_is_not_a_registrable_shape(self) -> None:
+        # ADR-0043 removed the only subject-member profiles; the relation and its
+        # `{subject_number}` token cannot come back as a current path contract.
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        guide = next(item for item in raw["profiles"] if item["id"] == "guide")
+        guide["identity_relation"] = "subject-member"
+        guide["path_pattern"] = (
+            "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/guide.md"
+        )
+        self.assertTrue(validate_registry(raw))
+
     def test_superseded_adr_has_no_stale_retain_in_place_exception(self) -> None:
         self.assertNotIn(
             "retain-superseded-in-place",
@@ -1887,7 +1898,6 @@ class DocumentRegistryTests(unittest.TestCase):
                 "{task_number:4}": "0001",
                 "{member_number:4}": "0001",
                 "{retired_artifact_id}": "SPEC-0001",
-                "{subject_number:4}": "0001",
                 "{year:4}": "2026",
                 "{slug}": "example",
                 "{domain}": "04-data",
