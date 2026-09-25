@@ -59,11 +59,34 @@ Read-only investigation of 2026-09-25 against main `64497555c`:
 
 ## Work Log
 
-Pending.
+- 2026-09-25 W1: four PRs merged after CI: #264 (n8n exporter target,
+  Open WebUI `VECTOR_DB_URL` removal and doc corrections, compose-core-readiness
+  orphan removal, `test_service_wiring_contracts`), #265 (runtime-version check
+  ignores SMTP enhanced status codes and section numbers), #266 (Qdrant
+  read-only key AI-009 for Prometheus; SeaweedFS S3 `-metricsPort=9327`, scrape
+  job, `SeaweedFSS3Down` and `SeaweedFSDataDiskLow`).
+- 2026-09-25 W2: the owner generated AI-009 (64 hex characters, differs from
+  AI-008; values never read by the agent). With the owner's approval the agent
+  recreated `open-webui`, `qdrant`, `prometheus` and, by owner ruling below,
+  `seaweedfs-s3` (project `hy-home-infra`, `--no-deps --force-recreate`).
 
 ## Verification Evidence
 
-Pending.
+- W1: `run-ci-gate.py --profile changed` rc=0 (153 tests OK) on #264; #266
+  focused modules 112 tests OK, promtool rules and configs pass; all four PRs
+  green in CI.
+- W2 Open WebUI: `healthy`; no `VECTOR_DB*` variable in the container.
+- W2 Qdrant: `healthy` with both secrets mounted; `/metrics` returns 200 with
+  the read-only key and 401 without a key; `DELETE /collections/...` with the
+  read-only key returns 403.
+- W2 Prometheus: `healthy`; targets `qdrant` and `seaweedfs-s3` are `up`;
+  rules `QdrantDown`, `SeaweedFSS3Down` and `SeaweedFSDataDiskLow` loaded with
+  health `ok`. The `SeaweedFSDataDiskLow` mountpoint label matches the live
+  series `/home/hyunyoun/storage`.
+- W2 SeaweedFS S3: `healthy`; port 9327 serves 53 `SeaweedFS*` series; the
+  `SeaweedFSS3Down` alert raised while the old container ran cleared after the
+  recreate. Loki logged no errors and Tempo only idle-scheduler messages in
+  the 15 minutes after it.
 
 ## Review Evidence
 
@@ -71,12 +94,21 @@ Pending.
 
 ## Commit Ledger
 
-No PR yet.
+| PR | Scope | State |
+| --- | --- | --- |
+| #264 | n8n exporter, Open WebUI vector store, readiness orphan | merged |
+| #265 | runtime-version false positives | merged |
+| #266 | Qdrant read-only key, SeaweedFS S3 metrics | merged |
+| this PR | W1 and W2 evidence | open |
 
 ## Rulings
 
 See the Plan.
 
+- 2026-09-25: after #266 merged, the old `seaweedfs-s3` had no metrics port,
+  so `SeaweedFSS3Down` would alert until W4. The owner chose to recreate S3 in
+  W2; W4 now recreates only master, volume and filer.
+
 ## Deferred Items
 
-None yet.
+- The W2 hash check runs in W4, which creates the check script (Task 0002).
