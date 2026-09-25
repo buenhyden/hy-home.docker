@@ -17,8 +17,6 @@ workflow/n8n
 workflow/n8n-task-runner
 workflow/n8n-task-runner-worker
 registry
-# Preserved Vault Raft data: source removed in SPEC-0180 S08, kept until owner disposition.
-security/vault
 # SeaweedFS needle volumes and master state. Filer metadata comes from the
 # fs.meta.save export taken first (RUN-0024), never from the live leveldb store.
 data/seaweedfs/volume

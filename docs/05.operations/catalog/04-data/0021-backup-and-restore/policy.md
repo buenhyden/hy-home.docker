@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -41,7 +41,6 @@ This policy applies to the current source-backed package and its retained state.
 | Management Valkey: OAuth2 Proxy sessions and Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF enabled | Point-in-time RDB stream (`valkey-cli --rdb -`) into export staging, then a Restic snapshot; the live AOF directory is excluded; record whether queued work must be replayed or discarded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; queued-job semantics require incident approval | Synthetic RDB export and reload rehearsed 2026-09-22; no HOME-data restore. Recovery: [RUN-0028](../0028-management-database/runbook.md) |
 | OpenBao secrets and Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | Authenticated Raft snapshot to separate offline custody; seal/recovery material follows its security runbook | Barrier encryption does not replace encrypted backup custody; daily 30 days, monthly 1 year | RPO 24 h, RTO 4 h; planning target, unverified | No rehearsal. OpenBao security operations own recovery. `openbao-agent-data` and `openbao-agent-out` contain generated secret material and stay outside general archives. |
 | OpenBao Agent generated auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | Do not generically back up rendered secret output. Recover by re-authenticating the agent and re-rendering from restored OpenBao; separately preserve non-secret template source | Output is secret-bearing and source-at-rest encryption is unverified; no general retention | Data RPO not applicable to derived output; recovery target 4 h, unverified | No rehearsal. Security operations own re-authentication, template verification and secure disposal of stale output. |
-| Retained MinIO data (removed from source in SPEC-0180 S07) | `${DEFAULT_DATA_DIR}/minio/data-1` | Not backed up; kept unchanged as recovery material for the S07 cutover | none | not applicable | Reading it and disposal: RUN-0024 |
 | Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export` copies `webui.db` through the SQLite Online Backup API with an integrity check; uploads and other files go to Restic directly; the live database files and cache are excluded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 8 h; planning target, unverified | Synthetic WAL-database export rehearsed 2026-09-22; no HOME-data restore. The AI operations subject owns isolated validation. |
 | SeaweedFS objects and filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator pauses vacuum, exports filer metadata with `fs.meta.save`, Restic reads the volume and master trees, vacuum resumes on exit; the live leveldb2 filer store is not file-copied | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly; counts toward the 5 GiB state budget | RPO 24 h, RTO 8 h; planning target | Isolated rehearsal 2026-09-22: restore into empty stores returned identical objects; no HOME data yet. GDE/RUN-0024 own validation. |
 | Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; SQLite at `/data/gatus.db` in WAL mode | `backup-sqlite-export` Online Backup API copy including uncheckpointed WAL pages, then Restic | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; planning target, unverified | Synthetic WAL export rehearsed 2026-09-22; no HOME-data restore. The Gatus operations subject owns validation. |
@@ -110,6 +109,12 @@ cutover. Record unverified runtime properties explicitly.
 
 Review after profile, image, volume, credential, consumer, retention or upstream
 lifecycle change and at least annually while retained.
+
+The retained MinIO data and the preserved Vault tree
+(`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`) were disposed of on 2026-09-25
+under SPEC-0182 W5, which ended the SPEC-0180 S07 rollback path. Restic no
+longer includes `security/vault`; existing snapshots that hold it age out
+under the Restic retention above.
 
 ## Traceability
 
