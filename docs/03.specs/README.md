@@ -1,10 +1,10 @@
 ---
 title: "03.specs"
-version: "1.0.22"
+version: "1.0.23"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-17"
+updated: "2026-09-26"
 layer: "specs"
 ---
 
@@ -45,6 +45,7 @@ design.md, tests.md, singular task.md는 package role이 아닙니다.
 
 | ID | Package | Current roles |
 | --- | --- | --- |
+| SPEC-0183 | [Operations Role Layout](0183-operations-role-layout/spec.md) | draft; Stage 05 role layout per ADR-0043; [Plan](0183-operations-role-layout/plan.md), [Task 0001](0183-operations-role-layout/tasks/tsk-0001-operations-role-layout.md) |
 | SPEC-0182 | [HOME Residual Backlog](0182-home-residual-backlog/spec.md) | active; repository follow-ups, runtime and legacy data, recovery and authentication acceptance; [Plan](0182-home-residual-backlog/plan.md), Tasks [0001](0182-home-residual-backlog/tasks/tsk-0001-repository-follow-ups.md), [0002](0182-home-residual-backlog/tasks/tsk-0002-runtime-and-legacy-data.md), [0003](0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md) |
 | SPEC-0181 | [OpenBao and hy-home.k8s Integration Operations](../98.archive/completed/03.specs/0181-home-residual-operations/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0181-home-residual-operations/plan.md) and [Task](../98.archive/completed/03.specs/0181-home-residual-operations/tasks/tsk-0001-openbao-k8s-operations.md) |
 | SPEC-0180 | [Home and Development Server Convergence](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md) | completed, preserved under the archive with [Plan](../98.archive/completed/03.specs/0180-home-dev-convergence/plan.md) and [Task 0008](../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md); residual work in SPEC-0181 |

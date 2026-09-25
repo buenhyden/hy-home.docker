@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.5.1"
+version: "1.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "architecture"
 ---
 
@@ -47,6 +47,7 @@ docs/02.architecture/decisions/
 ├── 0040-data-hardening-gate-and-staged-expansion.md
 ├── 0041-offsite-backup-target.md
 ├── 0042-openbao-unseal-method.md
+├── 0043-operations-role-layout.md
 └── README.md
 ```
 
@@ -102,6 +103,9 @@ docs/02.architecture/decisions/
 - [`ADR-0042`](./0042-openbao-unseal-method.md):
   auto-unseal을 연기하고 수동 Shamir unseal을 유지하는 accepted decision.
   owner와 재검토 trigger를 담는다(SPEC-0182 W10).
+- [`ADR-0043`](./0043-operations-role-layout.md):
+  Stage 05를 domain catalog에서 역할 우선(`guides/`, `policies/`, `runbooks/`,
+  `incidents/`) 구조로 바꾸는 proposed decision(SPEC-0183).
 
 ## How to Work in This Area
 

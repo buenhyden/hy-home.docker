@@ -3989,15 +3989,15 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 42,
-      "next_number": 43,
+      "high_water": 43,
+      "next_number": 44,
       "child_spaces": {}
     },
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 182,
-      "next_number": 183,
+      "high_water": 183,
+      "next_number": 184,
       "child_spaces": {}
     },
     "operations-subject": {
