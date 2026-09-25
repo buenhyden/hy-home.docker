@@ -1,10 +1,10 @@
 ---
 title: "Repository Follow-ups"
-version: "0.3.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0001"
 parent_ids:
@@ -99,7 +99,8 @@ Pending.
 | #264 | n8n exporter, Open WebUI vector store, readiness orphan | merged |
 | #265 | runtime-version false positives | merged |
 | #266 | Qdrant read-only key, SeaweedFS S3 metrics | merged |
-| this PR | W1 and W2 evidence | open |
+| #267 | W1 and W2 evidence | merged |
+| this PR | Task 0001 completed | open |
 
 ## Rulings
 
@@ -111,4 +112,5 @@ See the Plan.
 
 ## Deferred Items
 
-- The W2 hash check runs in W4, which creates the check script (Task 0002).
+- Resolved: the W2 hash check ran in W4 with the new check script (Task 0002,
+  #270): match 18, diff 0.
