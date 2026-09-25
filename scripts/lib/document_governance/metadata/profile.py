@@ -99,23 +99,6 @@ def _normalized_document_values(
 
 DEFAULT_PROFILES = DEFAULT_REGISTRY
 DEFAULT_AGENT_GOVERNANCE_REGISTRY = ROOT / "docs/99.templates/registry.json"
-OPERATIONS_CATALOG_DOMAINS = frozenset(
-    {
-        "00-workspace",
-        "01-gateway",
-        "02-auth",
-        "03-security",
-        "04-data",
-        "05-messaging",
-        "06-observability",
-        "07-workflow",
-        "08-ai",
-        "09-tooling",
-        "10-communication",
-        "11-laboratory",
-        "12-infra-net",
-    }
-)
 EXPECTED_ARCHIVE_DISPOSITIONS = (
     "superseded",
     "duplicate",

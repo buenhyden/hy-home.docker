@@ -169,18 +169,6 @@ def _safe_relative(value: object, label: str) -> pathlib.PurePosixPath:
     return path
 
 
-def _has_symlink_component(root: pathlib.Path, relative: pathlib.PurePosixPath) -> bool:
-    current = root
-    for part in relative.parts:
-        current /= part
-        try:
-            if stat.S_ISLNK(current.lstat().st_mode):
-                return True
-        except FileNotFoundError:
-            return False
-    return False
-
-
 def _kill_and_reap(process: subprocess.Popen[bytes]) -> None:
     if process.poll() is None:
         try:
@@ -2004,13 +1992,15 @@ def _role_siblings(
     """Group tracked role members by the subject slug they share."""
 
     siblings: dict[str, dict[str, pathlib.PurePosixPath]] = {}
-    for path in paths:
+    # Sorted input keeps the result independent of set iteration order; a
+    # duplicate slug is rejected separately as `role-slug-duplicate`.
+    for path in sorted(paths):
         if path.parent.parent != OPERATIONS_ROOT:
             continue
         role = _ROLE_DIRECTORY.get(path.parent.name)
         match = _MEMBER.fullmatch(path.name)
         if role is not None and match is not None:
-            siblings.setdefault(match["slug"], {})[role] = path
+            siblings.setdefault(match["slug"], {}).setdefault(role, path)
     return siblings
 
 
@@ -2103,10 +2093,17 @@ def _inventory_bindings(
             ("policy", "policies"),
             ("runbook", "runbooks"),
         ):
-            member = subject.get(
-                kind,
-                OPERATIONS_ROOT / directory / f"{match['number']}-{match['slug']}.md",
-            )
+            member = subject.get(kind)
+            if member is None:
+                findings.append(
+                    _finding(
+                        "service-operations-owner",
+                        OPERATIONS_ROOT / directory,
+                        f"service ownership requires a current {kind} for slug "
+                        f"{match['slug']}",
+                    )
+                )
+                continue
             try:
                 frontmatter = _frontmatter(_read_text(root, member), member)
                 valid = frontmatter.get(
