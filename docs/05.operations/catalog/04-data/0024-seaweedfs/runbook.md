@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -62,12 +62,11 @@ and backup and restore into empty stores.
 
 Loki, Tempo and MLflow moved to SeaweedFS on 2026-09-22 (SPEC-0180 S07); each
 bucket holds a `hyhome-migration/<bucket>.cutover` marker from that copy.
-MinIO was then removed from the source; its container is stopped in a
-separately approved live step. Its data directory,
-`${DEFAULT_DATA_DIR}/minio/data-1`, is kept unchanged as recovery material and
-is not in the backup set. Do not copy it while the container still runs. To read it, start the last
-MinIO definition from Git history in an isolated project against a copy of that
-directory. Deleting the directory needs owner approval.
+MinIO was then removed from the source. On 2026-09-25 SPEC-0182 W5 disposed
+of its data directory `${DEFAULT_DATA_DIR}/minio/data-1`, the volume
+`hy-home-infra_minio-data`, the quarantined MinIO credential files and the
+`quay.io/minio/minio` image, so the S07 rollback path to MinIO has ended.
+SeaweedFS holds the only copy of these buckets.
 
 ### Backup (daily, RUN-0021)
 

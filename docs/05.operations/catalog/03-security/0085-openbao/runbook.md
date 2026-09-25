@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -49,8 +49,11 @@ separate custody: anyone who can read that file can unseal OpenBao. Unseal from
 an interactive terminal (`docker compose exec openbao bao operator unseal`) and
 paste one share at the hidden prompt; never pass a share as an argument. The
 private registry keeps only a placeholder for SEC-003; the file is the single
-copy. The legacy Vault files cannot unseal OpenBao and were moved out of the
-live tree to `secrets/.retired/2026-09-23/security/` pending disposal.
+copy. The legacy Vault files cannot unseal OpenBao. On 2026-09-25 SPEC-0182 W5
+disposed of them (`vault_token.txt` and `vault_unseal_keys.legacy.txt` in
+`secrets/.retired/2026-09-23/security/`), the preserved Vault tree
+`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault` and the legacy `hashicorp/vault`
+image. With the data gone, the legacy Vault root token is moot.
 
 The `hy-home-renderer` AppRole uses the
 [renderer policy](../../../../../infra/03-security/openbao/config/policies/renderer.hcl):

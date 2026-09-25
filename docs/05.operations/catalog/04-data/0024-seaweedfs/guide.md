@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -66,7 +66,9 @@ under `lakehouse` only, `seaweedfs-table-bucket` creates the `lakehouse` table
 bucket, its policy and the `dev` and `test` namespaces, all idempotently; every bucket-owning consumer waits for it (Nginx waits for
 `seaweedfs-s3` only). The S07 cutover copied each
 MinIO bucket through the S3 API and left a `hyhome-migration/<bucket>.cutover`
-marker object; the copy job was removed with MinIO.
+marker object; the copy job was removed with MinIO. The retained MinIO data,
+volume and image were disposed of on 2026-09-25 (SPEC-0182 W5), which ended
+the S07 rollback path.
 
 ### Images, configuration and resource controls
 
