@@ -82,8 +82,25 @@ Read-only investigation of 2026-09-25:
   then `seaweedfs-master`, `seaweedfs-volume` and `seaweedfs-filer`, each
   after the previous was healthy, then `pyroscope`.
 
+- 2026-09-25 W3: with the owner's approval, RUN-0021 step 2. Preconditions:
+  stanza `mng` status ok, last full backup `20260922-073354F`, 29G free under
+  the state directory, cluster 118 MB. A `pg_dumpall` went to a `0600` file
+  under `umask 077` (2.7 MB, dump-complete trailer present); the running image
+  was tagged `hy-home/mng-pg:pre-0182` (`sha256:1a3e1b08…`). The rebuilt
+  image (`sha256:0abb5ce5…`) carries the `archive-push` console level; `mng-pg`
+  was recreated at 02:44:28Z and healthy at 02:44:51Z. The dump was deleted
+  after verification.
+
 ## Verification Evidence
 
+- W3: `pgbackrest --stanza=mng check` completed successfully;
+  `archive_mode` on; after a forced WAL switch `pg_stat_archiver` shows
+  `00000001000000030000005F` archived with 0 failures and no `archive-push`
+  line in the container log. CDC connector `hyhome-app-postgres` and its task
+  `RUNNING`; `hyhome_app_slot` active with `wal_status` `reserved`. Keycloak,
+  n8n, n8n-worker, the Airflow services, Flower, MLflow and `mng-pg-exporter`
+  healthy; Keycloak logged 3 errors during the restart and none after
+  02:46Z. Hash check: match 18, diff 0.
 - W4 hash check after the recreates (`--root` the main checkout): match 18,
   diff 0; Pyroscope unreadable by design, and fresh by construction since it
   was recreated at 02:30:46Z against a file last changed on 2026-09-16.
@@ -103,7 +120,7 @@ Pending.
 | PR | Scope | State |
 | --- | --- | --- |
 | #268 | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | merged |
-| this PR | W4 hash check, recreate-on-edit rule, recreates | open |
+| this PR | W4 hash check, recreate-on-edit rule, recreates; W3 `mng-pg` rebuild | open |
 
 ## Rulings
 
