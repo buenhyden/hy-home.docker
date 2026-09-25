@@ -51,7 +51,8 @@ created: "2026-06-04"
   `implementation_services` mapping이 exact Compose path/service binding을 소유하고,
   existing operations-catalog validator가 global join을 검증한다.
 - current HOME selection은 `core mng ai workflow storage obs-core obs-host
-  availability logs alerting`이며 37 service identity다. `tooling`, `testing`,
+  availability logs alerting tracing profiling obs-gpu registry`이며 41 service
+  identity다. `tooling`, `testing`,
   `iac`, `dependency-update`는 named operator/development work이고 HOME에 포함하지
   않는다. profile vocabulary 또는 full membership table은 POL-0078에서만 관리한다.
 

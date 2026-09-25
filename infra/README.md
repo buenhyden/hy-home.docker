@@ -103,13 +103,15 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 | `mng` | Shared management database/broker and exporters needed by the selected HOME services |
 | `ai workflow storage` | Confirmed always-on AI/workflow capability and its object/vector/state dependencies |
 | `obs-core obs-host availability logs alerting` | HOME metrics, host visibility, availability, logs and alerts |
-| `tooling` | Registry and SonarQube only; excluded from HOME |
+| `tracing profiling obs-gpu` | HOME traces (Tempo), profiles (Pyroscope) and GPU metrics (DCGM exporter) that HOME Alloy, Traefik, Grafana and Prometheus already send to or scrape |
+| `registry` | HOME development container registry |
+| `tooling` | Registry and SonarQube; excluded from HOME (the registry alone joins HOME through `registry`) |
 | `testing` | k6 and the Locust master/worker pair; excluded from HOME |
 | `iac` | OpenTofu and Terrakube API/UI/executor; excluded from HOME |
 | `dependency-update` | Renovate update job only; excluded from `tooling` and HOME |
 
-HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting`의
-37-service selection이다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
+HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
+41-service selection이다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
 AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
 초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
@@ -123,7 +125,7 @@ AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼
 
 ```bash
 # 구성 검증만 수행하며 컨테이너를 시작하지 않는다.
-HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availability logs alerting" \
+HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry" \
   bash scripts/validation/validate-docker-compose.sh
 ```
 

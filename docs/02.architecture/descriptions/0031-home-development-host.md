@@ -66,7 +66,8 @@ rotation or complete secret delivery. No secret values belong in diagrams or evi
 ## Deployment View
 
 The source-controlled selection is validated before deployment. `core mng ai
-workflow storage obs-core obs-host availability logs alerting` describes the
+workflow storage obs-core obs-host availability logs alerting tracing profiling
+obs-gpu registry` describes the
 current HOME candidate; it is not a new competing profile vocabulary or approval.
 Use exact services for approved incremental deployment. Exclude cluster variants,
 legacy selectors and update/IaC jobs from unattended startup.
