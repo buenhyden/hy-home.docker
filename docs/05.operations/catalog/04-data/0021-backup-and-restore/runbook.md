@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -106,13 +106,14 @@ and filer running makes the run exit 1 (RUN-0024).
 
 ### 5. Point-in-time restore of `mng-pg` into isolation
 
-Restore into a new directory, never over the live `PGDATA`. Image names come
-from Compose, which owns the pins:
+Restore into a new directory, never over the live `PGDATA`. Set `SCRATCH_ROOT`
+to a directory on the data disk: `mktemp` alone lands on the system disk, which
+a full restore can fill. Image names come from Compose, which owns the pins:
 
 ```bash
 pg_image="$(docker compose config --images mng-pg)"
 target='2026-09-22 06:13:56+00'   # a time after the last wanted commit
-scratch="$(mktemp -d)"
+scratch="$(mktemp -d -p "${SCRATCH_ROOT:?set to a data-disk directory}")"
 chmod 0755 "$scratch"   # the postgres user (UID 70) must traverse it
 docker run --rm \
   -v "$PWD/secrets/backup/pgbackrest_cipher_pass.txt:/run/secrets/pgbackrest_cipher_pass:ro" \
@@ -154,7 +155,7 @@ no rights to reapply ownership:
 
 ```bash
 restic_image="$(docker compose --profile backup config --images restic)"
-scratch="$(mktemp -d)"
+scratch="$(mktemp -d -p "${SCRATCH_ROOT:?set to a data-disk directory}")"
 docker run --rm -e RESTIC_PASSWORD_FILE=/pw \
   -v "$PWD/secrets/backup/restic_password.txt:/pw:ro" \
   -v "$state/restic:/repo:ro" -v "$scratch:/out" \

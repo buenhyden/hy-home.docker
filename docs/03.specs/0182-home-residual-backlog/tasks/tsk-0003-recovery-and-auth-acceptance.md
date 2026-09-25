@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -170,6 +170,12 @@ are applied in the same PR. The owner's approval follows.
 ## Rulings
 
 See the Plan.
+
+- 2026-09-25, owner: criterion 7 asks for a JupyterLab restore on real
+  content, but the production work directory holds no files. The
+  2026-09-22 synthetic-notebook rehearsal (RUN-0089) stands as the W7
+  JupyterLab evidence; a real-content rehearsal follows once the directory
+  holds work.
 
 ## Deferred Items
 

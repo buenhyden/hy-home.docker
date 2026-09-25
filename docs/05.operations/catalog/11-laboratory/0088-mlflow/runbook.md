@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -62,6 +62,10 @@ artifact access denial, tracking-store restore, or upgrade.
    dangling artifact URIs.
 3. For an upgrade, take step 1 first, then start the new image and watch its
    migration output.
+
+A rehearsal leaves `mlflow` running: take a read-only dump and a read-only
+bucket mirror instead of step 1's stop, and restore them only into the
+isolated environment of step 2.
 
 ## Evidence
 

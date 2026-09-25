@@ -1,10 +1,10 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0002"
 parent_ids:
@@ -150,7 +150,7 @@ Pending.
 | #268 | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | merged |
 | #270 | W4 hash check, recreate-on-edit rule, recreates; W3 `mng-pg` rebuild | merged |
 | #271 | W5 Restic include and document corrections | merged |
-| this PR | W5 disposal evidence | open |
+| #273 | W5 disposal evidence | merged |
 
 ## Rulings
 
