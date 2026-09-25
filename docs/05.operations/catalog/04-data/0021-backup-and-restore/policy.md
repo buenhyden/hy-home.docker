@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.4.0"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -37,7 +37,7 @@ This policy applies to the current source-backed package and its retained state.
 
 | Owner and data class | Current state surface | Required backup method and destination | Encryption and retention | Planning target | Rehearsal and recovery owner |
 | --- | --- | --- | --- | --- | --- |
-| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; roles and grants are cluster-wide | pgBackRest in the server image: full backup on Sunday, differential daily, continuous WAL archive (`archive_timeout`) to `${BACKUP_STATE_REPO_DIR}/pgbackrest` on the system SSD (budget, control 2); a globals-only export and the pgBackRest repository itself go to the state Restic set, which carries them offsite to R2 (control 1); never copy a live `PGDATA` tree | Repository `aes-256-cbc` with BKP-001; two full backups and their WAL retained; Restic 30 daily / 13 weekly / 12 monthly | RPO 5 min by WAL archive, RTO 4 h; planning target, unverified on HOME data | Synthetic full/diff/PITR rehearsal passes (`BackupRestoreRehearsalTests`, 2026-09-22); no HOME-data restore yet. Procedure: [RUN-0021](runbook.md); service recovery: [RUN-0028](../0028-management-database/runbook.md) |
+| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; roles and grants are cluster-wide | pgBackRest in the server image: full backup on Sunday, differential daily, continuous WAL archive (`archive_timeout`) to `${BACKUP_STATE_REPO_DIR}/pgbackrest` on the system SSD (budget, control 2); a globals-only export goes to Restic; never copy a live `PGDATA` tree | Repository `aes-256-cbc` with BKP-001; two full backups and their WAL retained; Restic 30 daily / 13 weekly / 12 monthly | RPO 5 min by WAL archive, RTO 4 h; planning target, unverified on HOME data | Synthetic full/diff/PITR rehearsal passes (`BackupRestoreRehearsalTests`, 2026-09-22); no HOME-data restore yet. Procedure: [RUN-0021](runbook.md); service recovery: [RUN-0028](../0028-management-database/runbook.md) |
 | Management Valkey: OAuth2 Proxy sessions and Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF enabled | Point-in-time RDB stream (`valkey-cli --rdb -`) into export staging, then a Restic snapshot; the live AOF directory is excluded; record whether queued work must be replayed or discarded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; queued-job semantics require incident approval | Synthetic RDB export and reload rehearsed 2026-09-22; no HOME-data restore. Recovery: [RUN-0028](../0028-management-database/runbook.md) |
 | OpenBao secrets and Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | Authenticated Raft snapshot to separate offline custody; seal/recovery material follows its security runbook | Barrier encryption does not replace encrypted backup custody; daily 30 days, monthly 1 year | RPO 24 h, RTO 4 h; planning target, unverified | No rehearsal. OpenBao security operations own recovery. `openbao-agent-data` and `openbao-agent-out` contain generated secret material and stay outside general archives. |
 | OpenBao Agent generated auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | Do not generically back up rendered secret output. Recover by re-authenticating the agent and re-rendering from restored OpenBao; separately preserve non-secret template source | Output is secret-bearing and source-at-rest encryption is unverified; no general retention | Data RPO not applicable to derived output; recovery target 4 h, unverified | No rehearsal. Security operations own re-authentication, template verification and secure disposal of stale output. |
@@ -63,21 +63,13 @@ This policy applies to the current source-backed package and its retained state.
    physical disk. `BACKUP_STATE_REPO_DIR` (system SSD) holds copies of
    data-disk state and `BACKUP_HOST_REPO_DIR` (data disk) holds copies of
    `secrets/` and `.env`; the orchestrator refuses a repository on the same
-   filesystem as, or inside, its source. Offsite (ADR-0041): after each
-   successful local backup and check, `restic-offsite` copies the snapshots of
-   both Restic repositories, including the pgBackRest repository inside the
-   state set, to one Cloudflare R2 repository with a bucket lock; the host's
-   token can write objects but not administer or delete the bucket. Offsite
-   recovery exists once the owner completes the R2 setup in RUN-0021 and the
-   first copy succeeds, with a remote RPO of one day. Until then all copies are
-   on one host and **offsite recovery is not provided**.
+   filesystem as, or inside, its source. All copies are on one host, so
+   **offsite recovery is not provided**.
 2. The SSD repository has a size budget of `BACKUP_STATE_MAX_GIB` (5 GiB,
    owner 2026-09-22). Above it the run fails and Restic writes nothing;
    snapshots are never deleted automatically to meet the budget.
-3. Backup keys BKP-001 and BKP-002, and the R2 secrets BKP-003 to BKP-005,
-   have an offline copy outside this host and are never stored in OpenBao.
-   Restic's host repository contains the keys but needs BKP-002 to open; the
-   R2 repository needs BKP-003.
+3. Backup keys BKP-001 and BKP-002 have an offline copy outside this host.
+   Restic's host repository contains the keys but needs BKP-002 to open.
 4. One scheduler owns backups: `hyhome-backup.timer` on the host. Airflow and
    other schedulers do not run backups. Snapshot deletion (`forget-prune`) is a
    separately approved manual procedure.
@@ -138,8 +130,7 @@ under the Restic retention above.
 - [Grafana backup guidance](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/)
 - [OpenBao Raft operator commands](https://openbao.org/docs/commands/operator/raft/)
 - [pgBackRest user guide](https://pgbackrest.org/user-guide.html) and [command reference](https://pgbackrest.org/command.html)
-- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html), [copying between repositories](https://restic.readthedocs.io/en/stable/045_working_with_repos.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)
-- [Cloudflare R2 bucket locks](https://developers.cloudflare.com/r2/buckets/bucket-locks/) and [R2 API tokens](https://developers.cloudflare.com/r2/api/tokens/)
+- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)
 
 ## Related Documents
 

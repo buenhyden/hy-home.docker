@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.2.0"
+version: "1.1.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-22"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -18,8 +18,7 @@ created: "2026-09-22"
 
 Use to prepare the backup repositories, switch `mng-pg` to the pgBackRest
 image, run or verify a backup, restore PostgreSQL to a point in time in
-isolation, restore files from Restic, delete old snapshots, or set up, verify
-or restore from the offsite R2 copy. Every step that
+isolation, restore files from Restic, or delete old snapshots. Every step that
 restarts a service, writes a repository or deletes snapshots needs its own
 approval naming the target.
 
@@ -178,120 +177,7 @@ docker compose --profile backup run --rm --no-deps \
 ```
 
 Keeps 30 daily, 13 weekly and 12 monthly snapshots per set. pgBackRest expires
-its own backups by `repo1-retention-full=2`. This prunes the local
-repositories only; the R2 repository is never pruned from this host.
-
-### 8. Offsite copy (R2)
-
-`restic-offsite` copies the snapshots of both local Restic repositories into
-one Cloudflare R2 Restic repository (ADR-0041). The state set contains
-`pgbackrest/`, so PostgreSQL goes offsite through it with a one-day remote RPO;
-there is no pgBackRest S3 repository. The state set now also stores every
-pgBackRest file it has seen until `forget-prune`, which counts toward
-`BACKUP_STATE_MAX_GIB`; watch the logged sizes.
-
-#### 8.1 Owner one-time setup (approval: new credentials and first upload)
-
-In the Cloudflare dashboard:
-
-1. **R2 → Create bucket**: a name such as `hyhome-restic`, automatic location,
-   Standard storage class (Infrequent Access bills minimum storage and reads).
-2. **Bucket → Settings → Bucket lock rules → Add rule**, retention by age
-   30 days, one rule each for the prefixes `data/`, `index/`, `snapshots/`,
-   `keys/` and `config`. Do not lock `locks/`: Restic must delete its own lock
-   files.
-3. **R2 → Manage API tokens → Create API token**: permission **Object Read &
-   Write**, applied to that bucket only, no Admin permission. The token can
-   then neither administer nor delete the bucket, and the bucket lock refuses
-   deletes of locked objects. Note the Access Key ID and Secret Access Key
-   (shown once) and the account ID from the S3 endpoint
-   `https://<account-id>.r2.cloudflarestorage.com`.
-
-On the host, from the repository root, without echoing values:
-
-```bash
-umask 077
-bash scripts/operations/gen-secrets.sh --sync-metadata   # adds BACKUP_OFFSITE_R2_* to .env
-bash scripts/operations/gen-secrets.sh                   # creates BKP-003 restic_offsite_password.txt
-IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_access_key_id.txt; unset r2       # BKP-004
-IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_secret_access_key.txt; unset r2   # BKP-005
-```
-
-Set `BACKUP_OFFSITE_R2_ACCOUNT_ID` (32 hex characters) and
-`BACKUP_OFFSITE_R2_BUCKET` in `.env`. Copy BKP-003, BKP-004, BKP-005, the
-account ID and the bucket name to offline custody next to BKP-001/BKP-002;
-never store them in OpenBao, because recovery after host loss must not depend
-on it. Then initialize the remote with the state repository's chunker
-parameters and make the first copy:
-
-```bash
-docker compose --profile backup run --rm --no-deps restic-offsite init
-docker compose --profile backup run --rm --no-deps restic-offsite copy
-docker compose --profile backup run --rm --no-deps restic-offsite check
-```
-
-`init` skips an initialized repository. Rollback: clear the two `.env` keys;
-the daily run then skips the offsite step.
-
-#### 8.2 Daily behaviour
-
-While either `.env` key is empty the orchestrator logs `offsite copy not
-configured (BACKUP_OFFSITE_R2_*); skipped` and the unit result is unchanged.
-Once configured, after a successful local Restic backup and check (and after
-staging is emptied and SeaweedFS vacuum resumes) it runs `restic-offsite copy`,
-which uploads only snapshots the remote lacks and logs `R2 latest snapshots:`
-with one line per set; on Sunday it also runs `restic check
---read-data-subset 10%` on the remote. A failed copy or check logs `offsite
-copy to R2 failed` or `offsite check of R2 failed` and the unit exits 1, like
-any other failed step; local backups stay valid. A failed local step logs
-`offsite copy skipped` and uploads nothing. An uninitialized or unreachable
-remote exits 65.
-
-#### 8.3 Restore from R2
-
-After host loss: install Docker, check out this repository, restore BKP-002 to
-BKP-005 from offline custody into `secrets/backup/` (umask 077) and set the
-two `.env` keys. Restore the host set first; it returns `secrets/` (including
-BKP-001) and `.env`:
-
-```bash
-account=...; bucket=...                     # from offline custody
-restic_image="$(docker compose --profile backup config --images restic-offsite)"
-scratch="$(mktemp -d)"
-docker run --rm --entrypoint sh \
-  -e RESTIC_REPOSITORY="s3:https://$account.r2.cloudflarestorage.com/$bucket" \
-  -e AWS_DEFAULT_REGION=auto -e RESTIC_PASSWORD_FILE=/keys/restic_offsite_password.txt \
-  -v "$PWD/secrets/backup:/keys:ro" -v "$scratch:/out" "$restic_image" -ec '
-    AWS_ACCESS_KEY_ID="$(cat /keys/r2_access_key_id.txt)"
-    AWS_SECRET_ACCESS_KEY="$(cat /keys/r2_secret_access_key.txt)"
-    export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
-    restic snapshots --compact --latest 1
-    restic restore latest --tag hyhome-host --target /out/host
-    restic restore latest --tag hyhome-state --target /out/state'
-```
-
-Copied snapshots have new IDs in R2; match them by time, host and tag. From
-`$scratch/state/src/state/`: move `pgbackrest/` to
-`$state/pgbackrest` (owner 70:70, 0750) and follow step 5 for point-in-time
-recovery, which then reaches the last WAL the copy contained; restore
-`exports/` and `volumes/` as in step 6. To rebuild a local repository instead,
-run in the same container
-`restic -r /out/repo init --password-file /keys/restic_password.txt --from-repo "$RESTIC_REPOSITORY" --from-password-file /keys/restic_offsite_password.txt --copy-chunker-params`
-and then `restic -r /out/repo copy --password-file /keys/restic_password.txt --from-repo "$RESTIC_REPOSITORY" --from-password-file /keys/restic_offsite_password.txt --tag hyhome-state`.
-
-#### 8.4 Verification
-
-- `journalctl -u hyhome-backup.service` shows `R2 latest snapshots:` with a
-  state and a host line dated today, and the unit exited 0.
-- `docker compose --profile backup run --rm --no-deps restic-offsite snapshots`
-  lists both sets; Sunday runs show `no errors were found` for the remote.
-- The dashboard lists the five bucket lock rules and the token's single
-  bucket scope.
-- A restore rehearsal from R2 into a scratch directory (8.3) is recorded with
-  elapsed time before offsite recovery is claimed as verified.
-- Remote snapshot deletion is not run from this host; it needs a separate
-  admin credential, a separately approved Task and objects older than the lock
-  retention.
+its own backups by `repo1-retention-full=2`.
 
 ## Evidence
 
@@ -327,5 +213,3 @@ errors, or when a key is lost.
 - [pgBackRest user guide](https://pgbackrest.org/user-guide.html)
 - [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
 - [Restic: removing snapshots](https://restic.readthedocs.io/en/stable/060_forget.html)
-- [Restic: copying snapshots between repositories](https://restic.readthedocs.io/en/stable/045_working_with_repos.html)
-- [Cloudflare R2 bucket locks](https://developers.cloudflare.com/r2/buckets/bucket-locks/) and [API tokens](https://developers.cloudflare.com/r2/api/tokens/)
