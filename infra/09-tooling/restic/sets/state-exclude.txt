@@ -1,5 +1,3 @@
 # Inner paths never copied even inside an allowlisted tree.
 /src/state/volumes/ai/comfyui/models
 /src/state/volumes/ai/comfyui/cache
-# pgBackRest writes a temporary file and renames it when complete.
-*.pgbackrest.tmp
