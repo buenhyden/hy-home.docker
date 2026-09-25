@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.0.2"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-26"
 layer: "operations"
 ---
 
@@ -60,9 +60,11 @@ service names, environment variables는 원형을 유지합니다.
 └── README.md
 ```
 
-> **현황 (2026-05-28)**: 기록된 사고가 없어 `YYYY/` 연도 폴더가 존재하지 않는다.
-> 첫 사고 발생 시 `incidents/2026/inc-####-<slug>/` 폴더를 생성하고,
-> 사고 기록과 사후 분석을 같은 incident packet 안에 저장한다.
+### Current Incidents
+
+| Incident | 상태 | 발생 | Postmortem |
+| --- | --- | --- | --- |
+| [inc-2026-0002 Airflow Keycloak native authentication](2026/inc-0002-airflow-keycloak-native-auth/incident.md) | `mitigated` | 2026-09-18 | 없음. `resolved` 전환과 원인 분석은 해결 증거가 확보된 뒤 같은 묶음에 기록한다. |
 
 ### Templates
 
@@ -90,6 +92,6 @@ service names, environment variables는 원형을 유지합니다.
 ## Related Documents
 
 - [Operations index](../README.md)
-- [Runbooks](../README.md)
+- [Runbooks](../runbooks/README.md)
 - [Incident template](../../99.templates/templates/operations/incident.template.md)
 - [Postmortem template](../../99.templates/templates/operations/postmortem.template.md)
