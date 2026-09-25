@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -54,6 +54,19 @@ Read-only investigation of 2026-09-25:
   pending the owner. Inputs: journal `repository sizes` state 429–777 MiB
   (5 GiB budget), host 1 MiB; OpenBao `2.6.2` built-in seals per the official
   2.6.x seal documentation.
+- 2026-09-25 W9 (agent part): the SSO behavioural matrix was added to
+  GDE-0079 and its no-cookie probes were run against the live gateway;
+  results are under Verification Evidence. The owner rows (user outside
+  `/admins`, logout, role removal, native OIDC signed in) remain pending
+  owner.
+- 2026-09-25 W9 Valkey disconnect (owner approved): `oauth2-proxy` was
+  detached from `mng_data_net` 14:07:19–14:07:33Z; requests, including one
+  with a forged session cookie, were refused (401), so the session store
+  fails closed. It was reconnected with alias `oauth2-proxy` and is healthy.
+- 2026-09-25 W9 finding: a no-cookie browser request to an SSO route showed
+  oauth2-proxy's "Found." link page instead of redirecting, because browsers
+  ignore `Location` on a 401. Fixed by rewriting 401 to 302 in the
+  `sso-errors` middleware (#274).
 
 ## Verification Evidence
 
@@ -68,6 +81,23 @@ W12, retired and entry-closed items (criterion 12):
 | Renovate host units | Closed at entry, re-verified | `hyhome-renovate.service` and `.timer` in `/etc/systemd/system` are regular `0644` files identical to `infra/09-tooling/renovate/systemd/`; the timer is enabled |
 | compose-core-readiness Vault rig | Kept as a generic fixture | Owner decision; its override header states it is a self-contained harness fixture independent of production OpenBao (#264) |
 | Open WebUI vector store | Kept local | `VECTOR_DB` is unset, so Open WebUI uses its local store; the unused `VECTOR_DB_URL` and the docs claiming Qdrant were corrected (#264), and the recreated container has no `VECTOR_DB*` variable |
+
+W9, SSO no-cookie probes (criterion 9, agent rows), 2026-09-25. Read-only
+GETs from the host to the gateway at `192.168.0.13:443`, no credentials or
+cookies; routers read from the Traefik labels of the running `hy-home-infra`
+containers (the file provider declares no routers). 19 live routers carry
+`sso-auth` (the Inputs counted 22 in the earlier investigation).
+
+| Probe | Routers | Result |
+| --- | --- | --- |
+| GET `/` without a cookie | `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static` (`/favicon.ico`), `schema-registry`, `tempo` | pass: all `401` with `Location` to the Keycloak authorization endpoint of `hy-home.realm`, `client_id=home-proxy-client`, callback `https://auth.hy.home.arpa/oauth2/callback`, S256; no upstream content |
+| API client without credentials | `alloy` with `Accept: application/json`, `prometheus` `/api/v1/status/buildinfo` | pass: `401` |
+| Native OIDC without a session | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | pass: each API path refuses (`401`, OpenBao `403`) and each login path reaches Keycloak or the app login page; details in GDE-0079 |
+
+Finding: the SSO chain answers `401` with a `Location` header, not `302`,
+so a browser renders the one-link "Found" page instead of redirecting. Access
+is refused either way; the owner confirms the browser experience during the
+logout row.
 
 ## Review Evidence
 
@@ -90,7 +120,8 @@ are applied in the same PR. The owner's approval follows.
 | #262 | SPEC-0182 Spec and Plan approved; Tasks ready | merged |
 | #263 | SPEC-0182 active; Task 0001 in progress | merged |
 | #269 | W12 closures; Task 0003 in progress | merged |
-| this PR | W10 options memos ADR-0041 and ADR-0042 | open |
+| #272 | W10 options memos ADR-0041 and ADR-0042 | merged |
+| this PR | W9 SSO matrix and no-cookie probes | open |
 
 ## Rulings
 

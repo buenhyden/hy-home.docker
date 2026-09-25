@@ -91,8 +91,36 @@ Read-only investigation of 2026-09-25:
   was recreated at 02:44:28Z and healthy at 02:44:51Z. The dump was deleted
   after verification.
 
+- 2026-09-25 W5: preconditions met: the cutover markers for `cdn-bucket`,
+  `loki-bucket`, `mlflow-artifacts` and `tempo-bucket` exist in
+  `/buckets/hyhome-migration/`; MLflow holds the same two artifact keys in
+  MinIO and SeaweedFS; MinIO `doc-intel-assets` was empty. Final inventory
+  through a read-only `alpine:3` container: MinIO `data-1` 2059 files,
+  180381162 bytes, tree hash prefix `560a8f1091d1f7dd`; Vault tree 2 files,
+  33628160 bytes, prefix `454cb71757d257bd`. Credential files by name, size,
+  mode and date: the four `storage/minio_*` files (10 or 16 bytes, `0640`,
+  2026-09-23), `storage/mlflow_s3_password.txt` (16, `0640`, 2026-09-21),
+  `tools/terrakube_minio_secret_key.txt` (16, `0600`, 2026-03-19),
+  `security/vault_token.txt` (29, `0600`, 2026-03-23),
+  `security/vault_unseal_keys.legacy.txt` (295, `0600`, 2026-03-23) and
+  `secrets/.backup-20260923/` (`.env` 14939 and `SENSITIVE_ENV_VARS.md` 20855,
+  `0600`). #271 removed the `security/vault` Restic include and corrected
+  RUN-0024, RUN-0035, RUN-0085, POL-0021 and `secrets/README.md`; after it
+  merged the owner ran the six approved disposal commands: volume
+  `hy-home-infra_minio-data`, the MinIO directory and the Vault tree (both
+  through a root container), the eight quarantined files,
+  `secrets/.backup-20260923/` and images `hashicorp/vault` and
+  `quay.io/minio/minio`. The SPEC-0180 S07 rollback path has ended and the
+  legacy Vault root token is moot.
+
 ## Verification Evidence
 
+- W5 disposal: volume absent from `docker volume ls`; `minio/data-1` and
+  `security/vault` absent (only `openbao` remains under `security/`); 0 of the
+  8 targeted files remain and the other 6 quarantined files are kept;
+  `secrets/.backup-20260923/` absent; neither image listed. The first Restic
+  snapshot without the Vault tree is taken by `hyhome-backup.timer` on
+  2026-09-26 03:45 KST and is checked then.
 - W3: `pgbackrest --stanza=mng check` completed successfully;
   `archive_mode` on; after a forced WAL switch `pg_stat_archiver` shows
   `00000001000000030000005F` archived with 0 failures and no `archive-push`
@@ -120,7 +148,9 @@ Pending.
 | PR | Scope | State |
 | --- | --- | --- |
 | #268 | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | merged |
-| this PR | W4 hash check, recreate-on-edit rule, recreates; W3 `mng-pg` rebuild | open |
+| #270 | W4 hash check, recreate-on-edit rule, recreates; W3 `mng-pg` rebuild | merged |
+| #271 | W5 Restic include and document corrections | merged |
+| this PR | W5 disposal evidence | open |
 
 ## Rulings
 
