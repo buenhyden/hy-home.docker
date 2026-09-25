@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-26"
 created: "2026-02-21"
 ---
 
@@ -425,9 +425,11 @@ rows that lack safe defaults are classified for rewrite or merge. Consumers
 and tests require semantic invocation/import evidence: a manifest mention,
 generated index, archive record, or ownership glob is not consumption.
 
-The canonical LLM Wiki generator is
-`python3 scripts/knowledge/generate-llm-wiki.py`. It owns both tracked outputs,
-defaults to `--check`, and mutates them only with explicit `--write`.
+No LLM Wiki generator is maintained; it was removed with its tracked outputs.
+Repository navigation is owned by the canonical knowledge maps under
+`.agents/knowledge/` and by the root `llms.txt` entry point, and
+`scripts/knowledge/report-graphify-health.sh` reports advisory Graphify health
+without writing.
 
 ## Verification
 
@@ -443,15 +445,15 @@ The gate derives coverage from tracked plus present non-ignored Task-local
 paths, verifies exact field and vocabulary contracts, checks deterministic
 ordering, and requires all declared consumer and test paths to contain
 invocation/import evidence. `--check-generated` runs only retained check-write
-generators; it never invokes runtime-changing rows.
+generators that declare a `check_command` and `outputs`; it never invokes
+runtime-changing rows. No row declares both today, so the mode currently adds
+nothing beyond the base check.
 
 ## Related Documents
 
 - [🤖 Agent Governance](../AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/README.md`)
-- LLM Wiki Maintenance (`docs/05.operations/catalog/00-workspace/0007-llm-wiki-maintenance/guide.md`)
-- LLM Wiki Generated Index (`docs/90.references/data/0082-llm-wiki-index/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
 - [Agent Evaluation Harness](../evals/README.md) - the sibling automation root; `evals/README.md` owns the eval surface this manifest also registers
 - Workspace Governance Authority (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
