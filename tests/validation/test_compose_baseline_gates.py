@@ -1820,6 +1820,102 @@ class BackupContractTests(unittest.TestCase):
         )
         self.assertIn("Persistent=true", timer)
 
+    def test_offsite_job_is_the_only_backup_egress_and_reads_repos_read_only(
+        self,
+    ) -> None:
+        import yaml
+
+        document = yaml.safe_load((ROOT / RESTIC_COMPOSE).read_text(encoding="utf-8"))
+        service = document["services"]["restic-offsite"]
+        local = document["services"]["restic"]
+        self.assertEqual(["backup"], service["profiles"])
+        self.assertEqual(local["image"], service["image"])
+        self.assertNotIn("network_mode", service)
+        self.assertEqual(["restic_offsite_net"], service["networks"])
+        network = document["networks"]["restic_offsite_net"]
+        self.assertFalse(network.get("internal", False))
+        self.assertEqual(["snapshots"], service["command"])
+        self.assertEqual(["DAC_READ_SEARCH"], service["cap_add"])
+        self.assertEqual(
+            {
+                "restic_password",
+                "restic_offsite_password",
+                "r2_access_key_id",
+                "r2_secret_access_key",
+            },
+            set(service["secrets"]),
+        )
+        environment = service["environment"]
+        # Credentials arrive only as secret files; the script exports them.
+        self.assertFalse(any(key.startswith("AWS_ACCESS") for key in environment))
+        self.assertFalse(any(key.startswith("AWS_SECRET") for key in environment))
+        self.assertEqual(
+            "/run/secrets/restic_offsite_password", environment["RESTIC_PASSWORD_FILE"]
+        )
+        self.assertEqual(
+            "/run/secrets/restic_password", environment["RESTIC_FROM_PASSWORD_FILE"]
+        )
+        mounts = {}
+        for volume in service["volumes"]:
+            if isinstance(volume, str):
+                self.assertTrue(volume.endswith(":ro"), volume)
+                continue
+            mounts[volume["target"]] = volume
+            self.assertIs(True, volume.get("read_only"), volume["target"])
+        self.assertEqual({"/repo/state", "/repo/host"}, set(mounts))
+        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text(encoding="utf-8"))
+        for name in service["secrets"]:
+            self.assertTrue(
+                root["secrets"][name]["file"].startswith("./secrets/backup/"), name
+            )
+
+    def test_state_set_carries_the_pgbackrest_repository_offsite(self) -> None:
+        # Owner decision 2026-09-25: pgBackRest reaches R2 inside the state
+        # Restic repository, not through a direct pgBackRest S3 repository.
+        service = _compose_service(RESTIC_COMPOSE, "restic")
+        mount = [
+            volume
+            for volume in service["volumes"]
+            if isinstance(volume, dict) and volume["target"] == "/src/state/pgbackrest"
+        ]
+        self.assertEqual(1, len(mount))
+        self.assertTrue(mount[0]["source"].endswith("/pgbackrest"))
+        self.assertIs(True, mount[0]["read_only"])
+        script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
+        self.assertIn('echo /src/state/pgbackrest >>"$list"', script)
+        exclude = (ROOT / RESTIC_DIR / "sets/state-exclude.txt").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("*.pgbackrest.tmp", exclude)
+        mng_pg = _compose_service(MNG_DB_COMPOSE, "mng-pg")
+        self.assertNotIn("repo2", " ".join(_compose_command(mng_pg)))
+
+    def test_offsite_script_copies_without_deleting_and_samples_remote_data(
+        self,
+    ) -> None:
+        script = (ROOT / RESTIC_DIR / "offsite.sh").read_text(encoding="utf-8")
+        self.assertIn("--copy-chunker-params", script)
+        self.assertIn("--read-data-subset", script)
+        self.assertIn("already initialized; skipped", script)
+        # Local repositories are mounted read-only, so the source is not locked.
+        self.assertIn("copy --no-lock --from-repo", script)
+        self.assertNotRegex(script, r"\brestic (forget|prune|unlock)\b")
+        self.assertNotIn("set -x", script)
+        self.assertIn("forget | prune | unlock)", script)
+
+    def test_orchestrator_copies_offsite_after_local_restic_succeeds(self) -> None:
+        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
+            encoding="utf-8"
+        )
+        copy = script.index("restic-offsite copy")
+        self.assertLess(script.index("restic check || "), copy)
+        self.assertIn("offsite copy not configured", script)
+        self.assertIn('[[ "$restic_ok" == true ]]', script)
+        self.assertRegex(script, r"restic-offsite copy \|\| \{[^}]*status=1")
+        self.assertIn("restic-offsite check", script)
+        # Plaintext exports are gone and SeaweedFS vacuum resumes before upload.
+        self.assertLess(script.rindex("\ncleanup\n"), copy)
+
 
 @unittest.skipUnless(
     os.environ.get("HYHOME_BACKUP_REHEARSAL") == "1",
@@ -3552,6 +3648,16 @@ class RouteAuthContractTests(unittest.TestCase):
             if not chain and ROUTES_WITHOUT_SSO.get(name) != "static-only"
         )
         self.assertEqual([], bare)
+
+    def test_sso_sign_in_redirect_reaches_the_browser_as_302(self) -> None:
+        """A 401 keeps oauth2-proxy's Location, but browsers only follow a 3xx."""
+        import yaml
+
+        path = ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
+        errors = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
+            "middlewares"
+        ]["sso-errors"]["errors"]
+        self.assertEqual({"401": 302}, errors.get("statusRewrites"))
 
 
 class QdrantApiKeyContractTests(unittest.TestCase):

@@ -824,12 +824,12 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(262, len(contract["public"]))
+        self.assertEqual(264, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
         self.assertEqual(59, len(contract["required"]))
-        self.assertEqual(203, len(contract["optional"]))
+        self.assertEqual(205, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],
@@ -876,8 +876,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.registry_text,
             self.environment["consumed"],
         )
-        self.assertEqual(88, len(contract["declarations"]))
-        self.assertEqual(121, len(contract["rows"]))
+        self.assertEqual(91, len(contract["declarations"]))
+        self.assertEqual(124, len(contract["rows"]))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])

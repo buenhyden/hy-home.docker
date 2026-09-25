@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-25"
 ---
 
 # Restic Backup Jobs
@@ -12,8 +12,9 @@ updated: "2026-09-22"
 ## Overview
 
 One-shot jobs that snapshot HOME state into two encrypted Restic repositories on
-different physical disks, plus the host orchestrator and timer that also drive
-pgBackRest in `mng-pg`.
+different physical disks, copy both to one Cloudflare R2 repository offsite
+(ADR-0041), plus the host orchestrator and timer that also drive pgBackRest in
+`mng-pg`.
 
 ## Audience
 
@@ -26,15 +27,17 @@ In scope: the file-safe data-disk trees allowlisted in
 [`sets/state-include.txt`](sets/state-include.txt), consistent exports
 (PostgreSQL globals, Valkey RDB, three SQLite databases), `secrets/` and `.env`.
 Out of scope: everything not allowlisted, in particular live engine
-directories, which have their own method in POL-0021, and offsite copies (not
-provided).
+directories, which have their own method in POL-0021. The pgBackRest
+repository reaches R2 inside the state Restic repository (daily remote RPO);
+there is no direct pgBackRest S3 repository.
 
 ## Structure
 
 ```text
 restic/
-├── docker-compose.yml     # restic and backup-sqlite-export (profile backup)
+├── docker-compose.yml     # restic, restic-offsite, backup-sqlite-export (profile backup)
 ├── backup.sh              # snapshots | init | backup | check | forget-prune | cmd
+├── offsite.sh             # R2: snapshots | init | copy | check | cmd (no deletes)
 ├── export_sqlite.py       # Online Backup API copies with integrity check
 ├── sets/                  # state-include, state-exclude, host-exclude
 ├── bin/hyhome-backup.sh   # host orchestrator (lock, disk preflight, order)
@@ -69,6 +72,15 @@ pgBackRest is pinned in the
   source, skips the Restic step and fails when `BACKUP_STATE_REPO_DIR` is at or
   over `BACKUP_STATE_MAX_GIB` (5) after pgBackRest expiry, and always empties
   staging on exit.
+- `restic-offsite` is the only backup job with egress (`restic_offsite_net`);
+  it mounts only the two local repositories read-only (`DAC_READ_SEARCH`) and
+  runs `restic copy --no-lock --from-repo` into
+  `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>`.
+  Secrets: `restic_password` (source), `restic_offsite_password` (BKP-003),
+  `r2_access_key_id` (BKP-004), `r2_secret_access_key` (BKP-005); the script
+  exports the R2 keys without printing them. The orchestrator skips it while
+  either key is empty, runs `copy` after a successful local backup and check,
+  and `check --read-data-subset 10%` on Sundays; a failure fails the unit.
 - `mng-pg` has a local build and no registry: use
   `docker compose pull --ignore-buildable` for pulls.
 

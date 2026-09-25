@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.8.1"
+version: "1.8.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -46,7 +46,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `api-mock` | capability | 개발·테스트용 HTTP stub 서버; tracked mapping만 제공 | `wiremock` | No | normal service startup; admin API는 loopback 전용 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
-| `backup` | automation | Restic 백업·SQLite export 작업; host timer와 명시적 명령만 실행 | `restic`, `backup-sqlite-export` | No | backup repository and export staging writes when run | current |
+| `backup` | automation | Restic 백업·SQLite export·R2 offsite copy 작업; host timer와 명시적 명령만 실행 | `restic`, `restic-offsite`, `backup-sqlite-export` | No | backup repository and export staging writes when run; `restic-offsite`는 R2 원격 저장소에 추가만 함 | current |
 | `bi` | capability | Superset BI 웹과 feature 소유 metadata DB; Keycloak native OIDC | `mng-pg`, `mng-pg-init`, `superset-db-provision`, `superset-init`, `superset` | No | initialization: superset-db-provision (role·database), superset-init (migration·role 동기화·`lakehouse` DB 등록); Trino는 `lakehouse` profile로 함께 선택 | current |
 | `batch-metrics` | capability | 배치 작업 메트릭 수집 | `prometheus`, `grafana`, `pushgateway` | No | normal service startup | current |
 | `cassandra` | capability | Cassandra 저장소와 exporter | `cassandra-exporter`, `cassandra-node1` | No | normal service startup | current |

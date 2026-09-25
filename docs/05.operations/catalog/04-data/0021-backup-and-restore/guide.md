@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.0.0"
+version: "1.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -12,6 +12,7 @@ parent_ids:
 implementation_services:
   infra/09-tooling/restic/docker-compose.yml:
   - restic
+  - restic-offsite
   - backup-sqlite-export
 created: "2026-09-22"
 ---
@@ -26,6 +27,7 @@ created: "2026-09-22"
 | --- | --- | --- |
 | pgBackRest inside `mng-pg` | Physical backups of the management PostgreSQL cluster, continuous WAL archive, point-in-time recovery | Any other engine; logical per-database exports |
 | Restic (`restic` job) | Encrypted, deduplicated snapshots of the allowlisted file-safe trees in `sets/state-include.txt`, consistent exports, `secrets/` and `.env` | Everything not allowlisted, in particular live engine directories (PostgreSQL, Valkey, Kafka, OpenBao Raft, TSDB, log, search and LAB stores) and ComfyUI models |
+| `restic-offsite` job | `restic copy` of both local Restic repositories (including `pgbackrest/` in the state set) into one Cloudflare R2 repository, remote `check` | Local writes, remote snapshot deletion |
 | `backup-sqlite-export` job | Consistent copies of the Grafana, Gatus and Open WebUI SQLite databases through the Online Backup API | Other SQLite files |
 | Host orchestrator `hyhome-backup.sh` | Order, single-run lock, cross-disk preflight, PostgreSQL globals and Valkey RDB exports | Retention deletes (`forget-prune`) |
 
@@ -44,7 +46,10 @@ leaves one copy:
   `secrets/` and `.env`, which live on the SSD.
 
 The orchestrator refuses a repository on the same filesystem as, or inside,
-the data it protects. Both repositories are on one host, so offsite recovery is
+the data it protects. Offsite, `restic-offsite` copies both Restic repositories
+(the state set includes `pgbackrest/`) to one Cloudflare R2 repository after
+each successful local run (ADR-0041). Until the owner completes the R2 setup
+in [RUN-0021](runbook.md), all copies are on one host and offsite recovery is
 not provided.
 
 ### Schedule and load
