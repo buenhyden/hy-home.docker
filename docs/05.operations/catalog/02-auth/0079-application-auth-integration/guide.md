@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.5.0"
+version: "0.6.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-25"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -448,6 +448,26 @@ identity check were closed: `qdrant` (HOME, no API key) and the Kafka
 now enables the basic auth its credentials were meant for. The Qdrant gRPC
 TCP route was removed. Containers keep using the service names on their
 networks.
+
+### SSO Behavioural Matrix
+
+The route matrix above is static. This matrix records how the live gateway
+behaves (SPEC-0182 criterion 9). Every row ends as pass, fail, or
+owner-declined with a reason. Agent rows use read-only GETs without
+credentials or cookies, sent from the host to the gateway address
+(`curl -sk --resolve <host>:443:192.168.0.13 https://<host>/`). Owner rows
+need a signed-in browser or Keycloak admin access.
+
+| Behaviour | Routers covered | Method | Expected | Performer | Result |
+| --- | --- | --- | --- | --- | --- |
+| No cookie, SSO route | the 19 live routers carrying `sso-auth`: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/` (`/favicon.ico` for `redisinsight-static`) | No upstream content; response points to the Keycloak authorization endpoint | agent | pass (2026-09-25): every router returned `401` with `Location` and body link to `keycloak.hy.home.arpa/realms/hy-home.realm/protocol/openid-connect/auth`, `client_id=home-proxy-client`, callback `auth.hy.home.arpa/oauth2/callback`, S256. The status is `401`, not `302`, so a browser shows a one-link page instead of redirecting; #274 rewrites that `401` to `302` |
+| No cookie, API client | `alloy` (`Accept: application/json`), `prometheus` (`/api/v1/status/buildinfo`) | GET without credentials | `401` | agent | pass (2026-09-25): both `401` |
+| No session, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | GET `/`, the app's login path, and one API path | Login starts at Keycloak or the app's login page; the API refuses | agent | pass (2026-09-25): Open WebUI `/` 200 (app shell), `/api/models` 401, `/oauth/oidc/login` 302 to Keycloak; Grafana `/` 302 `/login`, 307 `/login/generic_oauth`, 302 to Keycloak, `/api/search` 401; Airflow `/` 200 (app shell), `/api/v2/dags` 401, `/auth/login` 307 to Keycloak; Gatus `/` 200 (app shell), `/api/v1/endpoints/statuses` 401, `/oidc/login` 302 to Keycloak; Kafbat `/` and `/api/clusters` 302 to `/oauth2/authorization/keycloak`, then 302 to Keycloak; Dozzle `/` 307 `/login` (200), `/api/events/stream` 401; OpenBao `/` 307 `/ui/`, `/v1/sys/mounts` 403. `superset` is not running |
+| User outside `/admins` | every SSO route | Sign in as a realm user outside `/admins`, open an SSO route | Refused: OAuth2 Proxy logs the group denial; the flow ends on the Proxy error page (`sso-errors` hides the `403`) | owner | pending owner |
+| Logout | every SSO route | Signed in, open `https://auth.hy.home.arpa/oauth2/sign_out`, then an SSO route | Proxy cookie cleared; the next request goes to Keycloak again (Keycloak SSO may sign in again without a prompt) | owner | pending owner |
+| Role removal | every SSO route | Signed in, remove the user from `/admins` in Keycloak, wait for `cookie_refresh` (1h) or sign out and back in | Access refused after the session refresh | owner | pending owner |
+| Valkey unreachable | every SSO route | Disconnect only `oauth2-proxy` from `mng_data_net`, request an SSO route with and without a cookie, reconnect | Fails closed: no upstream content, with or without a cookie | owner approval, then agent or owner | pass 2026-09-25: 401 with and without a forged cookie |
+| Native OIDC signed-in behaviour | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | Sign in, check role mapping, sign out | Each app applies its own client and role mapping; the Proxy allowlist does not apply | owner | pending owner |
 
 ### 서비스별 정적 검증
 
