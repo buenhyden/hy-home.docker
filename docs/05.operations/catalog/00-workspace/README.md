@@ -1,10 +1,10 @@
 ---
 title: "Operations — 00 Workspace"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/domain-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-25"
 layer: "operations"
 ---
 
@@ -42,6 +42,7 @@ policy for controls, and runbook for ordered recovery or validation.
 | [release management](0009-release-management/runbook.md) | Runbook |
 | [sensitive environment comparison](0010-sensitive-env-vars-comparison/guide.md) | Guide |
 | [Compose profile vocabulary](0078-compose-profile-vocabulary/policy.md) | Policy |
+| [Cold start and reboot](0098-cold-start-and-reboot/runbook.md) | Runbook |
 
 ## How to Work in This Area
 
