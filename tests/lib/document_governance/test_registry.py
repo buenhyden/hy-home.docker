@@ -366,8 +366,36 @@ class DocumentRegistryTests(unittest.TestCase):
             )
             self.assertEqual("active", record.metadata["status"])
             self.assertEqual(historical, text)
+            # A generic catalog slug moved with its domain word as a prefix.
+            renamed, _ = lifecycle._operations_moved_body_baseline(
+                ROOT,
+                pathlib.Path(
+                    "docs/05.operations/policies/0030-data-optimization-hardening.md"
+                ),
+                profiles,
+                base(
+                    (
+                        pathlib.Path(
+                            "docs/05.operations/catalog/04-data/"
+                            "0030-optimization-hardening/policy.md"
+                        ),
+                        "POL-0052",
+                    )
+                ),
+                "a" * 40,
+            )
+            self.assertIsNotNone(renamed)
             for records in (
                 base((source, "POL-0051")),
+                # The same identifier under another subject is a new document.
+                base(
+                    (
+                        pathlib.Path(
+                            "docs/05.operations/catalog/07-workflow/0052-other/policy.md"
+                        ),
+                        "POL-0052",
+                    )
+                ),
                 base(
                     (source, "POL-0052"), (source.with_name("runbook.md"), "POL-0052")
                 ),

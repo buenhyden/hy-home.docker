@@ -1149,10 +1149,19 @@ def _operations_moved_body_baseline(
         OSError,
     ):
         return None, None
+    # The catalog subject folder is `####-<slug>` under `NN-<domain>`; the move
+    # kept the slug or, for a generic slug, prefixed its domain word. A reused
+    # identifier under any other slug is a new document, not a predecessor.
+    slug = target.stem.split("-", 1)[-1]
     matches = [
         record
         for record in base_records
         if record.path.as_posix().startswith(_RETIRED_OPERATIONS_CATALOG)
+        and slug
+        in {
+            (subject := record.path.parent.name.split("-", 1)[-1]),
+            f"{record.path.parent.parent.name.split('-', 1)[-1]}-{subject}",
+        }
         and record.metadata.get("type") == current.get("type")
         and record.metadata.get("artifact_id") == current.get("artifact_id")
     ]

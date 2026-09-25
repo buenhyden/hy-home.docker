@@ -81,7 +81,7 @@ REQUIRED_LOCAL_PATHS = frozenset(
     }
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
-RUNBOOK_AUTHORITY = __import__("re").compile(
+RUNBOOK_AUTHORITY = re.compile(
     r"docs/05\.operations/runbooks/[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
 )
 MACHINE_AUTHORITIES = frozenset(

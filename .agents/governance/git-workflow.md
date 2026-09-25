@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-26"
 ---
 
 # Git Workflow Governance

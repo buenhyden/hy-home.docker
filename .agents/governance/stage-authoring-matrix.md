@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.1.1"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-26"
 ---
 
 # Stage Authoring Matrix
@@ -15,7 +15,7 @@ updated: "2026-09-06"
 | 01 | `requirements` | solution-independent requirements | Requirement Package | acceptance and traceability |
 | 02 | `architecture` | current structure and durable decisions | Description or ADR | architecture traceability |
 | 03 | `specs` | implementable change contract and execution | Spec Package | focused tests, Task, review |
-| 05 | `operations` | operational knowledge and incidents | Operations catalog | safe procedure and observed result |
+| 05 | `operations` | operational knowledge and incidents | Operations Guide, Policy, Runbook, or Incident | safe procedure and observed result |
 | 90 | `references` | non-normative evidence | Research, Audit, or Data | provenance and observation date |
 | 98 | `archive` | retention classes for frozen bodies and route dispositions for outside routes | preserved records, Migration, or Tombstone | source-byte evidence; Git history recovers frozen content |
 | 99 | — | document contracts | registry, schemas, templates | registry/schema tests |

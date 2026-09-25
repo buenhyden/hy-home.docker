@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
-version: "0.2.2"
+version: "0.2.3"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-26"
 created: "2026-09-06"
 observed_at: "2026-09-07"
 review_cycle: "on-surface-change"
@@ -39,7 +39,7 @@ anything outside this repository.
 | `docs/01.requirements/**` | the Requirement Package | solution-independent needs only | metadata, links, traceability |
 | `docs/02.architecture/**` | Description for structure, ADR for one decision | accepted decisions are superseded, never rewritten | metadata, links, taxonomy tests |
 | `docs/03.specs/**` | the active Spec Package; its Task owns execution evidence | bounded change contract | metadata, corpus lifecycle, spec package tests |
-| `docs/05.operations/**` | the operations catalog subject | operator procedure and incidents | operations catalog check |
+| `docs/05.operations/**` | the Guide, Policy, or Runbook in its role directory, or the Incident packet | operator context, controls, procedure, and incidents | operations catalog check |
 | `docs/90.references/**` | Research, Audit, or Data package | non-normative dated evidence | metadata, reference protection tests |
 | `docs/98.archive/**` | retention classes holding frozen bodies, and Tombstone and Migration route records | frozen bodies are never edited; the index, `completed/`, and `resolved/` are the admitted link targets | corpus lifecycle, archive recovery, archive link boundary |
 | `docs/99.templates/registry.json` | the Stage 99 registry | document shape, path, identity, lifecycle | registry and metadata suites |

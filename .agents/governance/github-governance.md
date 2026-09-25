@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-09"
+updated: "2026-09-26"
 ---
 
 # GitHub Governance Policy
