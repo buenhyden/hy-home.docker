@@ -65,8 +65,8 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/01-gateway/0011-nginx/guide.md
-  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
+  - docs/05.operations/guides/0011-nginx.md
+  - docs/05.operations/guides/0012-edge-routing-stack.md
   disposition: retain
   successor: null
   tests:
@@ -77,7 +77,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/guides/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
@@ -102,7 +102,7 @@ files:
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
+  - docs/05.operations/guides/0004-harness-agent-first-engineering.md
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
@@ -115,9 +115,9 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/guide.md
-  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/policy.md
-  - docs/05.operations/catalog/00-workspace/0004-harness-agent-first-engineering/runbook.md
+  - docs/05.operations/guides/0004-harness-agent-first-engineering.md
+  - docs/05.operations/policies/0004-harness-agent-first-engineering.md
+  - docs/05.operations/runbooks/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
@@ -506,7 +506,7 @@ files:
   - tests/lib/hooks/test_tool_payload.py
 - path: scripts/lib/ops/compose-core-readiness.sh
   kind: library
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: none
   consumers:
@@ -540,34 +540,34 @@ files:
   - tests/validation/test_script_manifest.py
 - path: scripts/operations/check-compose-core-readiness.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_compose_core_readiness.py
 - path: scripts/operations/check-config-mount-hashes.py
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md
+  authority: docs/05.operations/policies/0006-infrastructure-optimization-governance.md
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md
+  - docs/05.operations/policies/0006-infrastructure-optimization-governance.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_config_mount_hashes.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
-  - docs/05.operations/catalog/01-gateway/0012-edge-routing-stack/guide.md
+  - docs/05.operations/guides/0012-edge-routing-stack.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:
@@ -589,23 +589,23 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/rehearse-postgres-logical-upgrade.sh
   kind: operations
-  authority: docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  authority: docs/05.operations/runbooks/0032-postgresql-logical-upgrade-restore-rehearsal.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md
+  - docs/05.operations/runbooks/0032-postgresql-logical-upgrade-restore-rehearsal.md
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_postgres_logical_upgrade_rehearsal.py
 - path: scripts/operations/rehearse-sample-service-delivery.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:
@@ -655,22 +655,22 @@ files:
   tests: []
 - path: scripts/security/seed-grype-db-cache.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:
   - tests/lib/supply_chain/test_grype_db_seed.py
 - path: scripts/security/verify-sample-service-supply-chain.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:
@@ -763,7 +763,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/00-workspace/0001-common-optimizations-template-exceptions/policy.md
+  - docs/05.operations/policies/0001-common-optimizations-template-exceptions.md
   disposition: retain
   successor: null
   tests:
@@ -868,12 +868,12 @@ files:
   - tests/validation/test_run_ci_precommit.sh
 - path: scripts/validation/validate-docker-compose.sh
   kind: operations
-  authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  authority: docs/05.operations/runbooks/0009-release-management.md
   lifecycle: active
   mutation: runtime
   consumers:
   - .github/workflow-contract.yml
-  - docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
+  - docs/05.operations/runbooks/0009-release-management.md
   disposition: retain
   successor: null
   tests:

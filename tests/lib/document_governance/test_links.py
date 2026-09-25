@@ -655,21 +655,10 @@ class DocumentGraphTests(unittest.TestCase):
         with self.assertRaises(dataclasses.FrozenInstanceError):
             links[0].line = 99  # type: ignore[misc]
 
-    def test_retired_role_root_implementation_selector_has_no_current_inputs(
-        self,
-    ) -> None:
-        selected: list[str] = []
-        operations = ROOT / "docs/05.operations"
-        for role_root in ("guides", "policies", "runbooks"):
-            bucket = operations / role_root
-            if bucket.is_dir():
-                selected.extend(
-                    path.relative_to(ROOT).as_posix()
-                    for path in bucket.rglob("*.md")
-                    if path.name != "README.md"
-                )
-
-        self.assertEqual([], selected)
+    def test_retired_catalog_root_has_no_current_inputs(self) -> None:
+        # ADR-0043 retired the domain catalog; the role directories replace it.
+        catalog = ROOT / "docs/05.operations/catalog"
+        self.assertFalse(catalog.exists())
 
     def test_graph_ignores_fences_and_resolves_relative_links_and_anchors(self) -> None:
         from scripts.lib.document_governance.links import build_document_graph
@@ -1163,15 +1152,17 @@ class DocumentGraphTests(unittest.TestCase):
             ops = root / "docs/05.operations/README.md"
             catalog = (
                 root
-                / "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
+                / "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
             )
-            guide = catalog.parent / "subject/guide.md"
-            runbook = catalog.parent / "subject/runbook.md"
+            guide = root / "docs/05.operations/guides/0001-subject.md"
+            runbook = root / "docs/05.operations/runbooks/0001-subject.md"
             for path in (specs, ops, catalog, guide, runbook):
                 path.parent.mkdir(parents=True, exist_ok=True)
             specs.write_text("[Operations](../05.operations/README.md)\n")
             ops.write_text("[Specs](../03.specs/README.md)\n")
-            catalog.write_text("[OPER](subject/guide.md), [RUN](subject/runbook.md)\n")
+            catalog.write_text(
+                "[OPER](../guides/0001-subject.md), [RUN](../runbooks/0001-subject.md)\n"
+            )
             guide.write_text("# Guide\n")
             runbook.write_text("# Runbook\n")
             graph = build_document_graph(

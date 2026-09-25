@@ -60,13 +60,13 @@ open-webui/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
 | Secret refs | `openwebui_oidc_client_secret`; root:root 0600 host file |
 | Healthcheck | Compose healthcheck declared for `open-webui` |
-| Operations | Guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`), Policy (`docs/05.operations/catalog/08-ai/0057-open-webui/policy.md`), Runbook (`docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0057-open-webui.md`), Policy (`docs/05.operations/policies/0057-open-webui.md`), Runbook (`docs/05.operations/runbooks/0057-open-webui.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Read the Open WebUI Interface & RAG Guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`).
+1. Read the Open WebUI Interface & RAG Guide (`docs/05.operations/guides/0057-open-webui.md`).
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify the connection to Ollama before document indexing.
 
@@ -81,16 +81,16 @@ open-webui/
 - Classification: **HOME**. Exact profiles: `ai`, `ai-llm`.
 - Source authority: this package Compose and its selected image/build inputs; `infra/tech-stack.versions.json` is a derived projection.
 - Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d open-webui`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/08-ai/0057-open-webui/`; IDs `GDE-0057`, `POL-0057`, `RUN-0057`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0057-open-webui.md`; IDs `GDE-0057`, `POL-0057`, `RUN-0057`.
 - The subject runbook's isolated recovery is planned and unexecuted. Preserve model/content provenance and never use a live filesystem copy as restore evidence.
 
 ## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
-- Open WebUI usage guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`)
-- Open WebUI operations policy (`docs/05.operations/catalog/08-ai/0057-open-webui/policy.md`)
-- Open WebUI recovery runbook (`docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md`)
+- Open WebUI usage guide (`docs/05.operations/guides/0057-open-webui.md`)
+- Open WebUI operations policy (`docs/05.operations/policies/0057-open-webui.md`)
+- Open WebUI recovery runbook (`docs/05.operations/runbooks/0057-open-webui.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Validation
@@ -113,7 +113,7 @@ verification is enabled.
 `ENABLE_LOGIN_FORM=false` hides the form, while `ENABLE_PASSWORD_AUTH=false`
 separately rejects the password API. Persisted UI configuration must also be
 verified. See the runbook
-(`docs/05.operations/catalog/08-ai/0057-open-webui/runbook.md`) for secret ownership,
+(`docs/05.operations/runbooks/0057-open-webui.md`) for secret ownership,
 one-key configuration updates and recovery.
 
 ### Environment Variables

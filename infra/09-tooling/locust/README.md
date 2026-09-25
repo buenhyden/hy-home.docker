@@ -78,9 +78,9 @@ Run these commands from the repository root and start or scale services only wit
 
 ## Related Documents
 
-- **Guide**: Locust Load Testing Guide (`docs/05.operations/catalog/09-tooling/0062-locust/guide.md`)
-- **Policy**: Locust operations policy (`docs/05.operations/catalog/09-tooling/0062-locust/policy.md`)
-- **Runbook**: Locust recovery runbook (`docs/05.operations/catalog/09-tooling/0062-locust/runbook.md`)
+- **Guide**: Locust Load Testing Guide (`docs/05.operations/guides/0062-locust.md`)
+- **Policy**: Locust operations policy (`docs/05.operations/policies/0062-locust.md`)
+- **Runbook**: Locust recovery runbook (`docs/05.operations/runbooks/0062-locust.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Service Readiness
@@ -97,7 +97,7 @@ Run these commands from the repository root and start or scale services only wit
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
 | Healthcheck | Compose healthcheck declared for `locust-master`, `locust-worker` |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0062-locust/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0062-locust/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0062-locust/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0062-locust.md`), Policy (`docs/05.operations/policies/0062-locust.md`), Runbook (`docs/05.operations/runbooks/0062-locust.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

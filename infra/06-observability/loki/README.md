@@ -70,7 +70,7 @@ loki/
 | Route | `https://loki.${DEFAULT_URL}` through `gateway-standard-chain@file,sso-errors@file,sso-auth@file` |
 | Labels | `traefik.http.routers.loki.*`, `traefik.http.services.loki.loadbalancer.server.port` |
 | Healthcheck | `http://127.0.0.1:${LOKI_PORT:-3100}/ready` |
-| Operations | Guide (`docs/05.operations/catalog/06-observability/0043-loki/guide.md`), Policy (`docs/05.operations/catalog/06-observability/0043-loki/policy.md`), Runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0043-loki.md`), Policy (`docs/05.operations/policies/0043-loki.md`), Runbook (`docs/05.operations/runbooks/0043-loki.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the linked runbook, compose config rendering, service logs, and redacted storage/ingestion evidence |
 
@@ -101,8 +101,8 @@ loki/
 
 ## How to Work in This Area
 
-1. Follow the Loki guide (`docs/05.operations/catalog/06-observability/0043-loki/guide.md`) for usage and query context.
-2. Follow the Loki runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`) for readiness, storage, ingestion, restart, and rollback steps.
+1. Follow the Loki guide (`docs/05.operations/guides/0043-loki.md`) for usage and query context.
+2. Follow the Loki runbook (`docs/05.operations/runbooks/0043-loki.md`) for readiness, storage, ingestion, restart, and rollback steps.
 3. Keep `S3_SECRET_KEY`, rendered environment values, and SeaweedFS credentials out of docs, logs, task evidence, and commit messages.
 4. Do not change retention, compactor, SeaweedFS bucket, resource caps, secret references, label cardinality policy, or route middleware without plan/task evidence and rollback notes.
 
@@ -127,16 +127,16 @@ loki/
 - Classification: **HOME**. Exact profiles: `obs`, `logs`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d loki`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0043-loki/`; IDs `GDE-0043`, `POL-0043`, `RUN-0043`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0043-loki.md`; IDs `GDE-0043`, `POL-0043`, `RUN-0043`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
 - [infra/README.md](../../README.md)
 - Operations index (`docs/05.operations/README.md`)
-- Loki guide (`docs/05.operations/catalog/06-observability/0043-loki/guide.md`)
-- Loki policy (`docs/05.operations/catalog/06-observability/0043-loki/policy.md`)
-- Loki runbook (`docs/05.operations/catalog/06-observability/0043-loki/runbook.md`)
+- Loki guide (`docs/05.operations/guides/0043-loki.md`)
+- Loki policy (`docs/05.operations/policies/0043-loki.md`)
+- Loki runbook (`docs/05.operations/runbooks/0043-loki.md`)
 - [Documentation index](../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

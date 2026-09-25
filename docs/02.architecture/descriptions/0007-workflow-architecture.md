@@ -143,7 +143,7 @@ Airflow auth:
 - **PRD**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 - **ADR**: [Airflow/n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
 - **ADR**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- **Airflow Operations**: [Guide](../../05.operations/catalog/07-workflow/0050-airflow/guide.md)
-- **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- **Airflow Operations**: [Guide](../../05.operations/guides/0050-airflow.md)
+- **Auth Integration**: [Application Authentication Integration Guide](../../05.operations/guides/0079-application-auth-integration.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

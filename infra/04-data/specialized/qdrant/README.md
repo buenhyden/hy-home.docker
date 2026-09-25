@@ -37,9 +37,9 @@ The `qdrant` service provides the vector database layer for AI/ML applications, 
 ### Out of Scope
 
 - Vector embedding generation (Handled by upstream models)
-- Collection-level schema design (See Technical Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`))
-- Operational controls (See Operations Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`))
-- Health and recovery triage (See Recovery Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`))
+- Collection-level schema design (See Technical Guide (`docs/05.operations/guides/0034-qdrant.md`))
+- Operational controls (See Operations Policy (`docs/05.operations/policies/0034-qdrant.md`))
+- Health and recovery triage (See Recovery Runbook (`docs/05.operations/runbooks/0034-qdrant.md`))
 
 ## Structure
 
@@ -63,13 +63,13 @@ qdrant/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.qdrant.rule`, `traefik.http.routers.qdrant.entrypoints`, `traefik.http.routers.qdrant.tls`, `traefik.http.routers.qdrant.middlewares`, `traefik.http.services.qdrant.loadbalancer.server.port` |
 | Secret refs | `qdrant_api_key`, `qdrant_read_only_api_key` |
 | Healthcheck | Compose healthcheck declared for `qdrant` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`), Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0034-qdrant.md`), Policy (`docs/05.operations/policies/0034-qdrant.md`), Runbook (`docs/05.operations/runbooks/0034-qdrant.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
-1. Review the Technical Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`) for RAG integration patterns.
+1. Review the Technical Guide (`docs/05.operations/guides/0034-qdrant.md`) for RAG integration patterns.
 2. Ensure the `ai` or `qdrant` profiles are active when deploying.
 3. Snapshots are configured inside the persistent volume; verify path mapping before any owner-approved backup operation.
 4. Monitor health via the `/readyz` endpoint.
@@ -97,10 +97,10 @@ Classification is `HOME`. Qdrant requires the API key from `qdrant_api_key` (AI-
 
 ## Related Documents
 
-- Specialized Guides (`docs/05.operations/catalog/04-data/README.md`)
-- Qdrant Technical Guide (`docs/05.operations/catalog/04-data/0034-qdrant/guide.md`)
-- Qdrant Operations Policy (`docs/05.operations/catalog/04-data/0034-qdrant/policy.md`)
-- Qdrant Recovery Runbook (`docs/05.operations/catalog/04-data/0034-qdrant/runbook.md`)
+- Specialized Guides (`docs/05.operations/guides/README.md`)
+- Qdrant Technical Guide (`docs/05.operations/guides/0034-qdrant.md`)
+- Qdrant Operations Policy (`docs/05.operations/policies/0034-qdrant.md`)
+- Qdrant Recovery Runbook (`docs/05.operations/runbooks/0034-qdrant.md`)
 - [Documentation index](../../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.

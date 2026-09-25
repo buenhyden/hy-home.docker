@@ -66,7 +66,7 @@ target data service.
 
 Use the [documentation index](../../docs/README.md), then exact Stage 05 subjects
 `0072-dozzle`, `0073-open-notebook`, and `0076-redisinsight` under
-`docs/05.operations/catalog/11-laboratory/`. Run from the repository root:
+`docs/05.operations/README.md`. Run from the repository root:
 
 ```bash
 HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh
@@ -81,4 +81,4 @@ restore evidence. Compose/Dockerfile declarations own runtime pins;
 
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
-- Stage 05 laboratory package: `docs/05.operations/catalog/11-laboratory/README.md`
+- Stage 05 laboratory package: `docs/05.operations/README.md`

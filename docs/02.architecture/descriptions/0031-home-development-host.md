@@ -24,7 +24,7 @@ created: "2026-09-19"
 ## System Boundaries
 
 루트 Compose가 include를, 서비스 profile이 활성화를 소유한다. 어휘의 정규
-소유자는 [POL-0078](../../05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md)이다.
+소유자는 [POL-0078](../../05.operations/policies/0078-compose-profile-vocabulary.md)이다.
 운영 데이터를 가진 현재 호스트와 실험용 별도 Compose project를 구분한다.
 프로파일은 보안 격리 경계가 아니며 같은 Docker daemon 장애를 공유한다.
 공유 Compose network는 기존 구현의 신뢰 경계로, 이 설계가

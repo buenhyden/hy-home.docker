@@ -66,5 +66,5 @@ documented operating boundaries.
 ## Related Documents
 
 Use the [documentation entry point](../../docs/README.md) to locate the Stage 05
-Data catalog (`docs/05.operations/catalog/04-data/`), especially POL-0021 for the
+Data catalog (`docs/05.operations/README.md`), especially POL-0021 for the
 HOME state-owner matrix and RUN-0035 for storage exhaustion.

@@ -51,7 +51,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         selected = contract.select_public_suites(
             public,
             "changed",
-            ("docs/05.operations/catalog/README.md",),
+            ("docs/05.operations/guides/README.md",),
         )
         self.assertIn("document-contract", selected)
         self.assertIn("document-graph", selected)

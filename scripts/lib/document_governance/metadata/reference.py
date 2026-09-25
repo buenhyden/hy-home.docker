@@ -52,6 +52,7 @@ from scripts.lib.document_governance.metadata.lifecycle import (
     _governance_moved_body_baseline,
     _legacy_exception_evidence,
     _link_target_neutral_text,
+    _operations_moved_body_baseline,
     _record_from_text,
     _task5_move_body_sources,
     _task5_moved_body_baseline,
@@ -1446,6 +1447,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.mode == "check-changed" and base.merge_base:
         for path_text in sorted(changed_selection):
             if path_text in base_records_by_path:
+                continue
+            operations_record, operations_text = _operations_moved_body_baseline(
+                root, pathlib.Path(path_text), profiles, base_records, base.merge_base
+            )
+            if operations_record is not None and operations_text is not None:
+                base_records_by_path[path_text] = operations_record
+                governance_move_texts[path_text] = operations_text
                 continue
             governance_record, governance_text = _governance_moved_body_baseline(
                 root, pathlib.Path(path_text), profiles, base.merge_base

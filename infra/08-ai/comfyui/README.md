@@ -63,7 +63,7 @@ Keep Compose, build sources, public environment keys and secret references consi
 - Classification: **HOME**. Exact profiles: `ai`, `ai-image`.
 - Source authority: this package Compose and its selected image/build inputs; `infra/tech-stack.versions.json` is a derived projection.
 - Root preflight: `docker compose --profile ai config --quiet`. Root targeted start: `docker compose --profile ai up -d comfyui`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/08-ai/0081-comfyui/`; IDs `GDE-0081`, `POL-0081`, `RUN-0081`.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0081-comfyui.md`; IDs `GDE-0081`, `POL-0081`, `RUN-0081`.
 - The subject runbook's isolated recovery is planned and unexecuted. Preserve model/content provenance and never use a live filesystem copy as restore evidence.
 
 ## Related Documents

@@ -112,8 +112,8 @@ OAuth2 Proxy `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 
 - [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
 - [Auth Architecture](../descriptions/0002-auth-architecture.md)
-- [Application Auth Integration Policy](../../05.operations/catalog/02-auth/0079-application-auth-integration/policy.md)
-- [Application Auth Integration Guide](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- [Application Auth Integration Policy](../../05.operations/policies/0079-application-auth-integration.md)
+- [Application Auth Integration Guide](../../05.operations/guides/0079-application-auth-integration.md)
 
 ## Related Documents
 

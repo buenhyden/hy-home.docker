@@ -106,9 +106,9 @@ requires runtime approval.
 
 ## Related Documents
 
-- **Guide**: Pact Broker Usage Guide (`docs/05.operations/catalog/09-tooling/0093-pact-broker/guide.md`)
-- **Policy**: Pact Broker Operations Policy (`docs/05.operations/catalog/09-tooling/0093-pact-broker/policy.md`)
-- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/catalog/09-tooling/0093-pact-broker/runbook.md`)
+- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/0093-pact-broker.md`)
+- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/0093-pact-broker.md`)
+- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/0093-pact-broker.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -127,7 +127,7 @@ requires runtime approval.
 | Labels | `hy-home.tier` |
 | Secret refs | `pact_broker_db_password`, `pact_broker_basic_auth_password`, `mng_postgres_password` (provisioning) |
 | Healthcheck | Compose healthcheck declared for `pact-broker` (`/diagnostic/status/heartbeat`) |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0093-pact-broker/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0093-pact-broker/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0093-pact-broker/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0093-pact-broker.md`), Policy (`docs/05.operations/policies/0093-pact-broker.md`), Runbook (`docs/05.operations/runbooks/0093-pact-broker.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Inspect the heartbeat, then provisioning and broker logs, then the linked runbook. |
 

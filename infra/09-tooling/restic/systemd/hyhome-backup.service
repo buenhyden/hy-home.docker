@@ -1,6 +1,6 @@
 [Unit]
 Description=HOME backup: pgBackRest, consistent exports and Restic (hy-home Docker Compose)
-Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/04-data/0021-backup-and-restore/runbook.md
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/runbooks/0021-backup-and-restore.md
 Requires=docker.socket
 After=docker.socket network-online.target
 Wants=network-online.target

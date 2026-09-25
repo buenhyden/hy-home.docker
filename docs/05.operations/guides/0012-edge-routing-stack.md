@@ -1,0 +1,106 @@
+---
+title: "Edge Routing Stack Operations"
+version: "1.2.1"
+type: "operation/guide"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-23"
+layer: "operations"
+artifact_id: "GDE-0012"
+parent_ids: []
+created: "2026-07-06"
+---
+# Edge Routing Stack Operations
+
+## Usage
+
+### Overview
+
+이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`가, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
+
+### Edge Routing Stack Usage
+
+> Step-by-step procedure for deploying and configuring the entry point infrastructure.
+
+---
+
+#### Usage Type
+
+`system-guide`
+
+#### Target Audience
+
+- Infrastructure Operator
+- Backend Developer
+- Contributor
+
+#### Purpose
+
+This guide helps the reader validate the Traefik edge router selected by `core`/`dev` and understand the Nginx path-proxy boundary drawn by the `nginx` profile.
+
+#### Prerequisites
+
+- Docker & Docker Compose installed.
+- Valid domain name (configured in `DEFAULT_URL` environment variable).
+- Secrets generated via `scripts/operations/gen-secrets.sh`.
+- Certificates available in `secrets/certs/`.
+
+#### Step-by-step Instructions
+
+##### 1. Verify Network Contract
+
+Use the root compose validator instead of creating networks ad hoc. The root compose declares the flow-scoped networks and the external network contracts.
+
+```bash
+HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
+```
+
+##### 2. Configure Traefik
+
+1. Review `infra/01-gateway/traefik/config/traefik.yml`.
+2. Ensure dynamic configuration in `infra/01-gateway/traefik/dynamic/` is present.
+3. Verify TLS certificates are mapped correctly in `tls.yaml`.
+
+##### 3. Validate Gateway Stack
+
+Validate the current gateway contract before any runtime action:
+
+```bash
+bash scripts/hardening/check-all-hardening.sh 01-gateway
+```
+
+Runtime start/stop/reload actions are not part of this guide. Traefik runtime work must use the approved root compose context. Nginx runtime work requires an explicit root network/dependency context: the root includes `infra/01-gateway/nginx/docker-compose.yml` unconditionally, but the service is selected by the `nginx` profile and depends on backend services.
+
+#### 4. Verify Functionality
+
+- For static evidence, use `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` and `bash scripts/hardening/check-all-hardening.sh 01-gateway`.
+- For runtime evidence after approval, check the Traefik dashboard and `docker compose exec traefik traefik healthcheck --ping` in the running root stack.
+- For Nginx runtime evidence after approval, run `docker compose exec nginx nginx -t` only in the explicitly provisioned Nginx context.
+
+#### Common Pitfalls
+
+- **Cert Name Mismatch**: Ensure `tls.yaml` points to the correct filenames in `secrets/certs/`.
+- **Port Conflicts**: Port 80 and 443 must be available on the host.
+- **Network Isolation**: Backend services must be on `edge_net`, the Traefik Docker provider network, to be discovered.
+- **Service-local Compose**: Standalone `infra/01-gateway/*/docker-compose.yml` rendering is not gateway readiness evidence because it lacks the root network/secret/dependency context.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
+## Runbook Handoff
+
+Runtime recovery is handled by [Traefik runbook](../runbooks/0013-traefik.md) and [Nginx runbook](../runbooks/0011-nginx.md).
+
+## Traceability
+
+- Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
+
+## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../infra/tech-stack.versions.json) provides drift verification.
+
+- [Operations index](../README.md)
+- [Gateway Traefik guide](0013-traefik.md)
+- [Gateway Nginx guide](0011-nginx.md)

@@ -666,7 +666,7 @@ def _link_targets(graph: DocumentGraph, source: pathlib.PurePosixPath) -> set[st
 
 def traceability_pair_total(graph: DocumentGraph) -> int:
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
+        "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
     )
     node = _node_map(graph).get(catalog)
     return 0 if node is None else len(_CATALOG_PAIR.findall(node.text))
@@ -702,7 +702,7 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     specs = pathlib.PurePosixPath("docs/03.specs/README.md")
     operations = pathlib.PurePosixPath("docs/05.operations/README.md")
     catalog = pathlib.PurePosixPath(
-        "docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md"
+        "docs/05.operations/policies/0006-infrastructure-optimization-governance.md"
     )
     for path in (specs, operations, catalog):
         if path not in nodes:

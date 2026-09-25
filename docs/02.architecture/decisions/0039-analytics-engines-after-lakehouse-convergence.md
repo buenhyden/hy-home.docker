@@ -88,4 +88,4 @@ acceptance 기록과 현재 저장소 구성이다. 기록되지 않은 런타�
 - **Superseded ADR**: `ADR-0015` (`docs/98.archive/superseded/`에 보존)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
 - **Requirements**: [0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
-- **Lakehouse policy**: [POL-0094](../../05.operations/catalog/04-data/0094-lakehouse/policy.md)
+- **Lakehouse policy**: [POL-0094](../../05.operations/policies/0094-lakehouse.md)

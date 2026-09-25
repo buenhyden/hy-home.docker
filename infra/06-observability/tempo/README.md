@@ -35,7 +35,7 @@ Tempo stores trace data in an S3-compatible backend (SeaweedFS). It enables "Tra
 ### Out of Scope
 
 - Application-level instrumentation (handled by OpenTelemetry SDKs).
-- Long-term trace archival (governed by Retention Policy (`docs/05.operations/catalog/06-observability/0049-tempo/policy.md`)).
+- Long-term trace archival (governed by Retention Policy (`docs/05.operations/policies/0049-tempo.md`)).
 
 ## Structure
 
@@ -97,14 +97,14 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 - Classification: **OPTIONAL**. Exact profiles: `obs`, `tracing`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d tempo`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0049-tempo/`; IDs `GDE-0049`, `POL-0049`, `RUN-0049`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0049-tempo.md`; IDs `GDE-0049`, `POL-0049`, `RUN-0049`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
-- Usage guide (`docs/05.operations/catalog/06-observability/0049-tempo/guide.md`)
-- Operations policy (`docs/05.operations/catalog/06-observability/0049-tempo/policy.md`)
-- Recovery runbook (`docs/05.operations/catalog/06-observability/0049-tempo/runbook.md`)
+- Usage guide (`docs/05.operations/guides/0049-tempo.md`)
+- Operations policy (`docs/05.operations/policies/0049-tempo.md`)
+- Recovery runbook (`docs/05.operations/runbooks/0049-tempo.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Service Readiness
@@ -121,7 +121,7 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 | Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
 | Secret refs | `seaweedfs_s3_tempo_secret_key` |
 | Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
-| Operations | Guide (`docs/05.operations/catalog/06-observability/0049-tempo/guide.md`), Policy (`docs/05.operations/catalog/06-observability/0049-tempo/policy.md`), Runbook (`docs/05.operations/catalog/06-observability/0049-tempo/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0049-tempo.md`), Policy (`docs/05.operations/policies/0049-tempo.md`), Runbook (`docs/05.operations/runbooks/0049-tempo.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose --profile obs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 

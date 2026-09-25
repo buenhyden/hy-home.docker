@@ -1,0 +1,140 @@
+---
+title: "Harness / Agent-first Engineering Usage Guide"
+version: "1.0.3"
+type: "operation/guide"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-20"
+layer: "operations"
+artifact_id: "GDE-0004"
+parent_ids:
+- "SPEC-0094"
+created: "2026-06-04"
+---
+
+# Harness / Agent-first Engineering Usage Guide
+
+## Overview
+
+이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
+
+## Usage
+
+1. Read root entry files: `README.md`, `AGENTS.md`, and `CLAUDE.md`.
+2. Read environment and docs maps: `docs/README.md`, `infra/README.md`, `scripts/README.md`.
+3. Check Graphify health with `bash scripts/knowledge/report-graphify-health.sh`; if it reports `status=advisory`, use Graphify only for navigation and corroborate claims against tracked files and canonical docs.
+4. Read governance policy: `.agents/README.md`, `.agents/governance/agentic.md`, `.agents/governance/documentation-protocol.md`, and `.agents/governance/stage-authoring-matrix.md`.
+5. Inspect provider-native runtime surfaces: `.claude/provider.md`, `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`; `.codex/agents/*.toml`, `.codex/hooks.json`; and `.agents/governance/providers/README.md`, `.agents/governance/providers/registry.yaml`, `.codex/provider.md`, `scripts/hooks/agent-event-hook.sh`. Codex discovers canonical `.agents/skills/<skill_id>/SKILL.md` packages and explicitly reads role-selected procedures; Claude uses thin generated pointers. Invocation is explicit and grants no runtime authority.
+6. Compare runtime projections against `.agents/roles/**`, `.agents/skills/**`, and `.agents/governance/providers/registry.yaml`.
+7. Review validators: `scripts/validation/run-ci-gate.py`, `scripts/validation/check-document-links.py --mode traceability`, `scripts/validation/validate-docker-compose.sh`.
+8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/hooks/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
+9. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
+10. Run the validation commands listed in the runbook before declaring completion.
+
+### CI quality-gate version alignment
+
+When a hosted quality gate disagrees with a local result, identify the
+executable selected by the tracked workflow before suppressing a diagnostic or
+changing an unrelated Dockerfile.
+
+1. Read `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
+   `.pre-commit-config.yaml`, and the failed job log. Record the event,
+   revision, job, hook, image or binary reference, and rule identifier. A local
+   command proves only the executable it used.
+2. Compare a pre-commit repository `rev` with its hook manifest. The Hadolint
+   `hadolint-docker` hook at upstream `v2.14.0` is a `docker_image` hook whose
+   entry is the untagged `ghcr.io/hadolint/hadolint hadolint`; the hook revision
+   therefore does not select a container image version. Pin the entry to the
+   same release as the repository revision, and use a focused regression to
+   reject one-sided changes. The upstream [v2.14.0 hook manifest](https://raw.githubusercontent.com/hadolint/hadolint/v2.14.0/.pre-commit-hooks.yaml)
+   is the authority for that behavior.
+3. A release tag aligns the selected Hadolint version but does not freeze image
+   bytes. Consider an immutable digest only through a separately reviewed
+   maintenance path that states how the paired revision, tag, digest and update
+   owner will be kept current.
+4. Run the focused regression and workflow-contract check, then the smallest
+   applicable local gate. A hosted result remains pending until GitHub Actions
+   runs the changed revision; a successful local reproduction is not a rerun.
+5. Keep `validation-changed` and `validation-full` separate. The first is the
+   required pull-request gate; the second runs on main pushes or manual dispatch
+   and uploads SARIF with additional permissions. Shared setup is not evidence
+   of duplication. The workflow/event/ref concurrency key cancels stale runs
+   within each event/ref group while keeping push and manual runs separate. This
+   follows [GitHub's concurrency guidance](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency).
+6. Treat simplification as a proposal until an inventory proves that a trigger,
+   permission, gate node, or consumer is unused. Title-dependent validation
+   needs an `edited`-event assessment because a title edit without a commit can
+   leave an earlier green run in place. Do not alter events, required checks,
+   permissions, or remote rulesets from this guide.
+
+For CI Quality Gates, the approved 2026-09-20 follow-up adds `edited` to the
+pull-request trigger because `PR_TITLE` is a gate input, keys concurrency by
+workflow, ref, and event to keep manual diagnostics from cancelling main-push
+validation, and runs the existing pre-commit leaf before expensive leaves. It
+preserves the gate set, job identities, `SKIP` ownership, and changed/full
+separation. Hosted verification remains required.
+
+The 2026-09-20 PR #169 incident and the resulting Hadolint alignment are
+recorded in [SPEC-0180 Task 0006](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0006-ci-quality-version-alignment.md).
+It distinguishes the failed hosted revision from local evidence and from future
+GitHub Actions consolidation proposals.
+
+### Audience and Prerequisites
+
+#### Usage Type
+
+How-to / audit guide.
+
+#### Target Audience
+
+- AI Agents
+- Documentation Writers
+- Infra Operators
+- Repository Maintainers
+
+#### Purpose
+
+반복 가능한 방식으로 workspace purpose, rules, runtime surface, governance contracts, validation gates를 조사하고, 필요한 경우 stage 문서와 README를 템플릿에 맞춰 갱신한다.
+
+#### Prerequisites
+
+- Read `AGENTS.md`.
+- Read `graphify-out/GRAPH_REPORT.md` before architecture or codebase answers.
+- Run `bash scripts/knowledge/report-graphify-health.sh` when `graphify-out/` exists.
+- Confirm the active role, skill, provider, and policy route from `.agents/`.
+- Do not inspect secrets or credential files.
+
+## Troubleshooting
+
+- Treating `.codex/agents/*.toml` or `.claude/agents/*.md` as canonical role catalogs instead of provider-native adapters to the canonical agent governance catalog.
+- Treating authored `.agents` sources as stale generated files, copying canonical bodies into native skill adapters, or inferring live picker/invocation acceptance from static discovery configuration.
+- Editing root shims instead of the governance hub.
+- Treating contaminated Graphify output as authoritative architecture evidence.
+- Treating `status=advisory` Graphify health as a failure or as architecture authority; it is downgraded navigation context only.
+- Claiming full workspace Docker validation when only default/core profile and supported hardening tiers were checked.
+- Treating catalog parity checks as semantic parity across all agent/skill content.
+- Pulling `10-communication` Compose remediation into a Harness / Agent-first pass without a separate infra scope.
+- Skipping hook event and payload simulation after hook quoting, event dispatch, or parsing changes.
+- Adding stage documents without updating the parent README.
+- Claiming graph refresh when the `graphify` CLI is unavailable.
+- Running `pre-commit` manually despite repository guidance.
+
+## Common Checks
+
+- `Routine Usage` steps and the linked validators complete without unresolved failures.
+
+## Runbook Handoff
+
+반복 검증, evidence capture, rollback 또는 escalation 절차는
+[Harness / Agent-first Engineering Runbook](../runbooks/0004-harness-agent-first-engineering.md)을 따른다.
+
+## Traceability
+
+- Declared parent: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- Subject peers: [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
+## Related Documents
+
+- [Operations index](../README.md)
+- [Operations policy](../policies/0004-harness-agent-first-engineering.md)
+- [Operations runbook](../runbooks/0004-harness-agent-first-engineering.md)

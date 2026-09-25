@@ -93,7 +93,7 @@ it cannot reach any other bucket.
 
 ## Related Documents
 
-- **Guide**: MLflow usage guide (`docs/05.operations/catalog/11-laboratory/0088-mlflow/guide.md`)
-- **Policy**: MLflow operations policy (`docs/05.operations/catalog/11-laboratory/0088-mlflow/policy.md`)
-- **Runbook**: MLflow recovery runbook (`docs/05.operations/catalog/11-laboratory/0088-mlflow/runbook.md`)
+- **Guide**: MLflow usage guide (`docs/05.operations/guides/0088-mlflow.md`)
+- **Policy**: MLflow operations policy (`docs/05.operations/policies/0088-mlflow.md`)
+- **Runbook**: MLflow recovery runbook (`docs/05.operations/runbooks/0088-mlflow.md`)
 - [Documentation index](../../../docs/README.md)

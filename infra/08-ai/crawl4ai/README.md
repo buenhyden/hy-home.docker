@@ -72,7 +72,7 @@ Runtime pins are owned by the Compose declaration; the
 
 ## Related Documents
 
-- **Guide**: Crawl4AI usage guide (`docs/05.operations/catalog/08-ai/0091-crawl4ai/guide.md`)
-- **Policy**: Crawl4AI operations policy (`docs/05.operations/catalog/08-ai/0091-crawl4ai/policy.md`)
-- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/catalog/08-ai/0091-crawl4ai/runbook.md`)
+- **Guide**: Crawl4AI usage guide (`docs/05.operations/guides/0091-crawl4ai.md`)
+- **Policy**: Crawl4AI operations policy (`docs/05.operations/policies/0091-crawl4ai.md`)
+- **Runbook**: Crawl4AI recovery runbook (`docs/05.operations/runbooks/0091-crawl4ai.md`)
 - [Documentation index](../../../docs/README.md)

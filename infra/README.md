@@ -71,7 +71,7 @@ docker compose --env-file .env.example --profile '*' config --services
 
 프로파일 어휘와 목적은 POL-0078이 소유한다. [문서 인덱스](../docs/README.md)에서
 Compose Profile Vocabulary Policy로 이동한다. Canonical path는
-`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`다. 전수 분류와 관측 일자는 Stage 90의
+`docs/05.operations/policies/0078-compose-profile-vocabulary.md`다. 전수 분류와 관측 일자는 Stage 90의
 기존 local Docker service consolidation 연구에 기록한다.
 
 ## Tech Stack

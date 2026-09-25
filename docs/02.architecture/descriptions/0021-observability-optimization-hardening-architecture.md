@@ -111,8 +111,8 @@ created: "2026-03-28"
 - **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
 - **Spec**: [../03.specs/007-observability/spec.md](0006-observability-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/guide.md)
-- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/catalog/06-observability/0044-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/0044-observability-optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/0044-observability-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/0044-observability-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

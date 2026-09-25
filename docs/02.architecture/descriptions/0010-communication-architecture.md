@@ -77,8 +77,8 @@ rendered; profile rendering is not a stop operation.
 
 ## Traceability
 
-- [Mailpit operations](../../05.operations/catalog/10-communication/0084-mailpit/guide.md)
-- [Stalwart operations](../../05.operations/catalog/10-communication/0070-mail/guide.md)
+- [Mailpit operations](../../05.operations/guides/0084-mailpit.md)
+- [Stalwart operations](../../05.operations/guides/0070-mail.md)
 
 ## Related Documents
 

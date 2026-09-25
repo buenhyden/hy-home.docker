@@ -60,7 +60,7 @@ analytics/
 
 1. 신규 분석 엔진 추가 시 반드시 **ADR-0039** 기술 선택 기록(ADR-0015를 대체)을 먼저 확인한다.
 2. 각 엔진 구성 변경 시 network 소속 규약(GDE-0077)을 준수한다.
-3. 운영 절차 변경 시 관련 guide/policy/runbook(`docs/05.operations/catalog/04-data/`)을 함께 갱신한다.
+3. 운영 절차 변경 시 관련 guide/policy/runbook(`docs/05.operations/README.md`)을 함께 갱신한다.
 4. Docker Secrets는 compose에 선언된 서비스에서만 current implementation evidence로 취급한다. InfluxDB and OpenSearch declare secrets.
 
 5. 이 README와 하위 디렉터리의 `README.md`를 우선적으로 읽어 각 엔진의 책임을 파악한다.
@@ -69,7 +69,7 @@ analytics/
 
 ## Related Documents
 
-- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
+- Stage 05 documents: `docs/05.operations/{guides,policies,runbooks}/####-<slug>.md`
 - [Documentation index](../../../docs/README.md)
 
 ---

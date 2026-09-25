@@ -215,7 +215,7 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `.codex/provider.md`
 - `.github/repository-surface.md`
 - `.github/rulesets/main-protection.md`
-- `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
+- `docs/05.operations/runbooks/0009-release-management.md`
 
 ## References
 

@@ -33,7 +33,7 @@ Pyroscope provides continuous profiling of applications to identify performance 
 ### Out of Scope
 
 - Application-level profiling agents (handled by [Grafana Alloy](../alloy/README.md)).
-- Long-term archival of profiling data (governed by Retention Policy (`docs/05.operations/catalog/06-observability/0047-pyroscope/policy.md`)).
+- Long-term archival of profiling data (governed by Retention Policy (`docs/05.operations/policies/0047-pyroscope.md`)).
 
 ## Structure
 
@@ -94,14 +94,14 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 - Classification: **OPTIONAL**. Exact profiles: `obs`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0047-pyroscope/`; IDs `GDE-0047`, `POL-0047`, `RUN-0047`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0047-pyroscope.md`; IDs `GDE-0047`, `POL-0047`, `RUN-0047`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
-- Usage guide (`docs/05.operations/catalog/06-observability/0047-pyroscope/guide.md`)
-- Operations policy (`docs/05.operations/catalog/06-observability/0047-pyroscope/policy.md`)
-- Recovery runbook (`docs/05.operations/catalog/06-observability/0047-pyroscope/runbook.md`)
+- Usage guide (`docs/05.operations/guides/0047-pyroscope.md`)
+- Operations policy (`docs/05.operations/policies/0047-pyroscope.md`)
+- Recovery runbook (`docs/05.operations/runbooks/0047-pyroscope.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## How to Work in This Area

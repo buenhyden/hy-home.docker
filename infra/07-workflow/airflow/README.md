@@ -164,15 +164,15 @@ docker compose exec airflow-apiserver airflow dags list
 - Airflow core/Flower/StatsD services are **HOME** on `workflow`/`workflow-airflow`; Airflow Valkey and its exporter are **OPTIONAL** on `dedicated-valkey`.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer flower airflow-statsd-exporter`.
 - `dedicated-valkey` only starts the pair; actual selection requires matching `AIRFLOW_VALKEY_HOST` and `AIRFLOW_VALKEY_SECRET`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/catalog/07-workflow/0050-airflow/`; IDs `GDE-0050`, `POL-0050`, `RUN-0050`. Its isolated restore is planned and unexecuted.
+- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0050-airflow.md`; IDs `GDE-0050`, `POL-0050`, `RUN-0050`. Its isolated restore is planned and unexecuted.
 
 ## Related Documents
 
 - **Architecture**: `docs/02.architecture/descriptions/0007-workflow-architecture.md`
-- **Guide**: `docs/05.operations/catalog/07-workflow/0050-airflow/guide.md`
-- **Policy**: `docs/05.operations/catalog/07-workflow/0050-airflow/policy.md`
-- **Runbook**: `docs/05.operations/catalog/07-workflow/0050-airflow/runbook.md`
-- **Auth Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`
+- **Guide**: `docs/05.operations/guides/0050-airflow.md`
+- **Policy**: `docs/05.operations/policies/0050-airflow.md`
+- **Runbook**: `docs/05.operations/runbooks/0050-airflow.md`
+- **Auth Integration**: `docs/05.operations/guides/0079-application-auth-integration.md`
 - **Incident**: `docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md`
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

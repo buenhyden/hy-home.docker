@@ -1112,6 +1112,62 @@ def _governance_moved_body_baseline(
     return Record(target, previous, profile_id, frontmatter_present=True), text
 
 
+# ADR-0043 moved every Operations member out of the domain catalog.
+_OPERATIONS_ROLE_PROFILES = frozenset({"guide", "policy", "runbook"})
+_RETIRED_OPERATIONS_CATALOG = "docs/05.operations/catalog/"  # retired-route-record
+
+
+def _operations_moved_body_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    profiles: Mapping[str, object],
+    base_records: Sequence[Record],
+    base_ref: str | None,
+) -> tuple[Record | None, str | None]:
+    """Recover an Operations member's catalog predecessor from a verified blob.
+
+    This is a historical path translation, never a current loading alias. The
+    move kept each member's type and artifact identity, so exactly one catalog
+    record at the base carrying both is the predecessor whose status and body
+    the member inherits; zero or several matches recover nothing.
+    """
+
+    registry = profiles.get("_registry")
+    if not isinstance(registry, DocumentRegistry) or not base_ref:
+        return None, None
+    profile_id = classify_registered_path(target.as_posix(), registry)
+    if profile_id not in _OPERATIONS_ROLE_PROFILES:
+        return None, None
+    try:
+        current = _parse_frontmatter_text(
+            read_bounded_regular(root, target).decode("utf-8")
+        )
+    except (
+        FrontmatterError,
+        OperationsAuthorityError,
+        UnicodeError,
+        OSError,
+    ):
+        return None, None
+    matches = [
+        record
+        for record in base_records
+        if record.path.as_posix().startswith(_RETIRED_OPERATIONS_CATALOG)
+        and record.metadata.get("type") == current.get("type")
+        and record.metadata.get("artifact_id") == current.get("artifact_id")
+    ]
+    if len(matches) != 1 or not isinstance(current.get("artifact_id"), str):
+        return None, None
+    text = _text_at_ref(root, matches[0].path, base_ref)
+    if text is None:
+        return None, None
+    try:
+        previous = _parse_frontmatter_text(text)
+    except FrontmatterError:
+        return None, None
+    return Record(target, previous, profile_id, frontmatter_present=True), text
+
+
 def _previous_status(
     root: pathlib.Path,
     path: pathlib.Path,

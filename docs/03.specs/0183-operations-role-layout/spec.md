@@ -18,7 +18,7 @@ created: "2026-09-26"
 ## Overview
 
 Replace the domain-first Stage 05 catalog
-(`docs/05.operations/catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`)
+(`docs/05.operations/catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`) <!-- retired-route-record -->
 with a role-first layer that a person operating this workspace reads by
 purpose: `guides/` for stable operating context, `policies/` for approval,
 security, and exception boundaries, `runbooks/` for executable command flows,
@@ -70,7 +70,7 @@ action, including push and pull request.
    shared directory. A slug is unique within one role directory.
 4. Each role index lists every member once, grouped by domain. Domain is an
    index classification, not a path segment.
-5. No active document or automation names `docs/05.operations/catalog/` as a
+5. No active document or automation names `docs/05.operations/catalog/` as a <!-- retired-route-record -->
    current route. The validator rejects such a mention outside Stage 98,
    Stage 90, Stage 03 execution bodies, and tests, and rejects a
    reintroduced `catalog/` directory.

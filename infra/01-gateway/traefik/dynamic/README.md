@@ -63,7 +63,7 @@ infra/01-gateway/traefik/dynamic/
 
 - [infra/README.md](../../../README.md)
 - [Traefik service README](../README.md)
-- Gateway operations policies (`docs/05.operations/catalog/01-gateway/README.md`)
+- Gateway operations policies (`docs/05.operations/policies/README.md`)
 - [Documentation index](../../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../../tech-stack.versions.json) provides drift verification.

@@ -334,6 +334,55 @@ class DocumentRegistryTests(unittest.TestCase):
                 all(call.args[1] == target for call in current_read.call_args_list)
             )
 
+    def test_operations_move_inherits_only_a_unique_same_identity_predecessor(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        target = pathlib.Path(
+            "docs/05.operations/policies/0052-airflow-dag-lifecycle.md"
+        )
+        source = pathlib.Path(
+            "docs/05.operations/catalog/07-workflow/0051-airflow-dag-lifecycle/policy.md"
+        )
+        historical = '---\ntype: "operation/policy"\nstatus: "active"\nartifact_id: "POL-0052"\n---\n# Policy\n'
+        current = historical.replace("# Policy", "# Policy moved").encode()
+
+        def base(*records: tuple[pathlib.Path, str]) -> list[object]:
+            return [
+                lifecycle.Record(
+                    path, {"type": "operation/policy", "artifact_id": aid}, "policy"
+                )
+                for path, aid in records
+            ]
+
+        with (
+            mock.patch.object(lifecycle, "_text_at_ref", return_value=historical),
+            mock.patch.object(lifecycle, "read_bounded_regular", return_value=current),
+        ):
+            record, text = lifecycle._operations_moved_body_baseline(
+                ROOT, target, profiles, base((source, "POL-0052")), "a" * 40
+            )
+            self.assertEqual("active", record.metadata["status"])
+            self.assertEqual(historical, text)
+            for records in (
+                base((source, "POL-0051")),
+                base(
+                    (source, "POL-0052"), (source.with_name("runbook.md"), "POL-0052")
+                ),
+                base(
+                    (pathlib.Path("docs/05.operations/policies/0052-x.md"), "POL-0052")
+                ),
+            ):
+                with self.subTest(records=records):
+                    self.assertEqual(
+                        (None, None),
+                        lifecycle._operations_moved_body_baseline(
+                            ROOT, target, profiles, records, "a" * 40
+                        ),
+                    )
+
     def test_explicit_initial_transition_evidence_requires_exact_path_and_legal_edge(
         self,
     ) -> None:
@@ -393,7 +442,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(registry)
         for path in (
             "docs/03.specs/README.md",
-            "docs/05.operations/catalog/00-workspace/README.md",
+            "docs/05.operations/guides/README.md",
             "docs/90.references/research/README.md",
         ):
             with self.subTest(path=path):
@@ -1304,7 +1353,9 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/03.specs/0153-example/contracts/openapi.yaml": "openapi-contract",
             "docs/03.specs/0153-example/contracts/schema.graphql": "graphql-contract",
             "docs/03.specs/0153-example/contracts/service.proto": "proto-contract",
-            "docs/05.operations/catalog/04-data/README.md": "operations-domain-readme",
+            "docs/05.operations/guides/README.md": "readme",
+            "docs/05.operations/policies/README.md": "readme",
+            "docs/05.operations/runbooks/README.md": "readme",
         }
         for path, profile_id in expected.items():
             with self.subTest(path=path):
@@ -1312,13 +1363,21 @@ class DocumentRegistryTests(unittest.TestCase):
 
         guide = registry.profiles["guide"]
         self.assertEqual("GDE-{number:4}", guide["artifact_id_pattern"])
-        self.assertEqual("subject-member", guide["identity_relation"])
+        self.assertEqual("direct", guide["identity_relation"])
+        member = pathlib.PurePosixPath("docs/05.operations/guides/0051-example.md")
         self.assertEqual(
             [],
             validate_stable_identity(
-                pathlib.PurePosixPath(
-                    "docs/05.operations/catalog/04-data/0051-example/guide.md"
-                ),
+                member,
+                {"type": "operation/guide", "artifact_id": "GDE-0051"},
+                registry.profiles,
+            ),
+        )
+        # The file number is the artifact number, so a renumbered file fails.
+        self.assertNotEqual(
+            [],
+            validate_stable_identity(
+                member,
                 {"type": "operation/guide", "artifact_id": "GDE-0052"},
                 registry.profiles,
             ),
@@ -1329,6 +1388,11 @@ class DocumentRegistryTests(unittest.TestCase):
 
         self.assertNotIn("operations-subject-readme", registry.profiles)
         self.assertNotIn("operations-subject-readme", registry.transitions)
+        self.assertNotIn("operations-domain-readme", registry.profiles)
+        self.assertNotIn("operations-domain-readme", registry.transitions)
+        self.assertIsNone(
+            classify_path("docs/05.operations/catalog/04-data/README.md", registry)
+        )
         self.assertIsNone(
             classify_path(
                 "docs/05.operations/catalog/04-data/0051-example/README.md",
@@ -1340,9 +1404,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = load_registry().profiles
         examples = (
             (
-                pathlib.PurePosixPath(
-                    "docs/05.operations/catalog/data/10012-wrong/guide.md"
-                ),
+                pathlib.PurePosixPath("docs/05.operations/guides/10012-wrong.md"),
                 {"type": "operation/guide", "artifact_id": "GDE-0012"},
             ),
             (
@@ -1872,7 +1934,6 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertTrue(
             {
                 "reference-category-readme",
-                "operations-domain-readme",
                 "readme",
                 "governance-policy",
                 "governance-hook-policy",

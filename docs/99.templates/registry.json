@@ -609,50 +609,12 @@
       }
     },
     {
-      "id": "operations-domain-readme",
-      "type": "operation/domain-readme",
-      "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/catalog/{domain}/README.md",
-      "artifact_id_pattern": null,
-      "identity_relation": "none",
-      "template_id": "operation/domain-readme",
-      "required_frontmatter": [
-        "title",
-        "version",
-        "type",
-        "status",
-        "owner",
-        "updated",
-        "layer"
-      ],
-      "optional_frontmatter": [
-        "created",
-        "generated_by"
-      ],
-      "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "How to Work in This Area",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience"
-      ],
-      "lifecycle_id": "living",
-      "traceability": {},
-      "exceptions": [],
-      "frontmatter_values": {
-        "layer": "operations"
-      }
-    },
-    {
       "id": "guide",
       "type": "operation/guide",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/guide.md",
+      "path_pattern": "docs/05.operations/guides/{number:4}-{slug}.md",
       "artifact_id_pattern": "GDE-{number:4}",
-      "identity_relation": "subject-member",
+      "identity_relation": "direct",
       "template_id": "operation/guide",
       "required_frontmatter": [
         "title",
@@ -701,9 +663,9 @@
       "id": "policy",
       "type": "operation/policy",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/policy.md",
+      "path_pattern": "docs/05.operations/policies/{number:4}-{slug}.md",
       "artifact_id_pattern": "POL-{number:4}",
-      "identity_relation": "subject-member",
+      "identity_relation": "direct",
       "template_id": "operation/policy",
       "required_frontmatter": [
         "title",
@@ -754,9 +716,9 @@
       "id": "runbook",
       "type": "operation/runbook",
       "frontmatter_policy": "required",
-      "path_pattern": "docs/05.operations/catalog/{domain}/{subject_number:4}-{slug}/runbook.md",
+      "path_pattern": "docs/05.operations/runbooks/{number:4}-{slug}.md",
       "artifact_id_pattern": "RUN-{number:4}",
-      "identity_relation": "subject-member",
+      "identity_relation": "direct",
       "template_id": "operation/runbook",
       "required_frontmatter": [
         "title",
@@ -1552,7 +1514,9 @@
         "docs/02.architecture/descriptions/README.md",
         "docs/03.specs/README.md",
         "docs/05.operations/README.md",
-        "docs/05.operations/catalog/README.md",
+        "docs/05.operations/guides/README.md",
+        "docs/05.operations/policies/README.md",
+        "docs/05.operations/runbooks/README.md",
         "docs/05.operations/incidents/README.md",
         "docs/90.references/README.md",
         "docs/98.archive/README.md",
@@ -1615,7 +1579,13 @@
         "docs/05.operations/README.md": {
           "layer": "operations"
         },
-        "docs/05.operations/catalog/README.md": {
+        "docs/05.operations/guides/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/policies/README.md": {
+          "layer": "operations"
+        },
+        "docs/05.operations/runbooks/README.md": {
           "layer": "operations"
         },
         "docs/05.operations/incidents/README.md": {
@@ -2356,12 +2326,6 @@
       "source": "docs/99.templates/templates/governance/skill.template.md",
       "profiles": [
         "governance-skill"
-      ]
-    },
-    "operation/domain-readme": {
-      "source": "docs/99.templates/templates/common/readme-domain.template.md",
-      "profiles": [
-        "operations-domain-readme"
       ]
     },
     "operation/guide": {
@@ -4073,7 +4037,6 @@
     "guide": "living",
     "incident": "incident",
     "migration": "sealed-record",
-    "operations-domain-readme": "living",
     "package-readme": "living",
     "plan": "plan",
     "policy": "operational-policy",

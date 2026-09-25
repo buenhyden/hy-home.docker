@@ -65,8 +65,8 @@ Use Conventional Commits with explicit scopes where possible.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- For release tag creation, follow the stable Release Management Operations
-  subject's sibling `runbook.md` procedure.
+- For release tag creation, follow the Release Management Runbook
+  (`docs/05.operations/runbooks/0009-release-management.md`).
 
 ## 5. Agent Completion Commit Discipline
 
@@ -92,4 +92,4 @@ GitHub-specific enforcement rules (branch protection, required checks, CODEOWNER
 
 - `.agents/governance/github-governance.md`
 - `.agents/governance/quality-standards.md`
-- `docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md`
+- `docs/05.operations/runbooks/0009-release-management.md`

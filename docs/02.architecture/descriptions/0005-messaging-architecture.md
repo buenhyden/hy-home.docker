@@ -48,7 +48,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
   `messaging-cluster`.
 - `kafka-2` and `kafka-3` participate only in `messaging-cluster`.
 - Schema Registry, Connect, REST, Kafbat, exporter and init have the current
-  selectors documented in [GDE-0036](../../05.operations/catalog/05-messaging/0036-kafka/guide.md).
+  selectors documented in [GDE-0036](../../05.operations/guides/0036-kafka.md).
 - The init job declares replication factor 3 for its two bootstrap topics, so a
   valid initialization requires the three-broker topology.
 
@@ -88,5 +88,5 @@ assumed from the selected images.
 
 - **Requirement:** [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **Decision:** [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- **Operations:** [Kafka Guide](../../05.operations/catalog/05-messaging/0036-kafka/guide.md)
+- **Operations:** [Kafka Guide](../../05.operations/guides/0036-kafka.md)
 - **Runtime source:** [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)

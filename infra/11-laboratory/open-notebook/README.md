@@ -71,7 +71,7 @@ open-notebook/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
 | Secret refs | names: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; mounts: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
 | Healthcheck | Compose healthcheck declared for `surrealdb` and `open_notebook` |
-| Operations | Guide (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md`), Policy (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md`), Runbook (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0073-open-notebook.md`), Policy (`docs/05.operations/policies/0073-open-notebook.md`), Runbook (`docs/05.operations/runbooks/0073-open-notebook.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `notebook` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
 
@@ -151,12 +151,12 @@ Open Notebook upstream only supports SurrealDB v2. SurrealDB v3 is incompatible 
 
 ## Related Documents
 
-- **Guide**: Open Notebook usage guide (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/guide.md`)
-- **Policy**: Open Notebook operations policy (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/policy.md`)
-- **Runbook**: Open Notebook recovery runbook (`docs/05.operations/catalog/11-laboratory/0073-open-notebook/runbook.md`)
-- **SurrealDB Guide**: SurrealDB usage guide (`docs/05.operations/catalog/11-laboratory/0080-surrealdb/guide.md`)
-- **SurrealDB Policy**: SurrealDB operations policy (`docs/05.operations/catalog/11-laboratory/0080-surrealdb/policy.md`)
-- **SurrealDB Runbook**: SurrealDB recovery runbook (`docs/05.operations/catalog/11-laboratory/0080-surrealdb/runbook.md`)
+- **Guide**: Open Notebook usage guide (`docs/05.operations/guides/0073-open-notebook.md`)
+- **Policy**: Open Notebook operations policy (`docs/05.operations/policies/0073-open-notebook.md`)
+- **Runbook**: Open Notebook recovery runbook (`docs/05.operations/runbooks/0073-open-notebook.md`)
+- **SurrealDB Guide**: SurrealDB usage guide (`docs/05.operations/guides/0080-surrealdb.md`)
+- **SurrealDB Policy**: SurrealDB operations policy (`docs/05.operations/policies/0080-surrealdb.md`)
+- **SurrealDB Runbook**: SurrealDB recovery runbook (`docs/05.operations/runbooks/0080-surrealdb.md`)
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)
 - [Documentation index](../../../docs/README.md)
 - [Infrastructure index](../../README.md)

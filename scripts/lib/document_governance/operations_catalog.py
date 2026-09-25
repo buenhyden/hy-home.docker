@@ -39,11 +39,9 @@ REGISTRY_PATH = pathlib.PurePosixPath("docs/99.templates/registry.json")
 OPERATIONS_ROOT = pathlib.PurePosixPath("docs/05.operations")
 MAX_FILE_BYTES = 10_000_000
 MAX_TRACKED_FILES = 10_000
-MAX_CATALOG_ENTRIES = 1_000
 MAX_DIRECTORY_ENTRIES = 10_000
 MAX_OPERATIONS_ROOT_ENTRIES = 16
-MAX_DOMAIN_ENTRIES = 512
-MAX_SUBJECT_ENTRIES = 8
+MAX_ROLE_ENTRIES = 1_000
 MAX_INCIDENT_ENTRIES = 512
 MAX_INCIDENT_YEAR_ENTRIES = 1_000
 MAX_INCIDENT_PACKET_ENTRIES = 4
@@ -51,11 +49,12 @@ MAX_GIT_SECONDS = 30.0
 MAX_GIT_STDOUT_BYTES = 10_000_000
 MAX_GIT_STDERR_BYTES = 1_000_000
 MAX_GIT_TOTAL_BYTES = 11_000_000
-_DOMAIN = re.compile(r"[0-9]{2}-[a-z0-9][a-z0-9-]*")
-_SUBJECT = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)")
+_MEMBER = re.compile(r"(?P<number>[0-9]{4})-(?P<slug>[a-z0-9][a-z0-9-]*)\.md")
 _YEAR = re.compile(r"[0-9]{4}")
 _INCIDENT = re.compile(r"inc-(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*")
-_ROLE_FILE = {"guide.md": "guide", "policy.md": "policy", "runbook.md": "runbook"}
+# Each role owns one directory; a subject is the slug its members share.
+_ROLE_DIRECTORY = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
+_OPERATIONS_ROOT_ENTRIES = frozenset({"README.md", "incidents", *_ROLE_DIRECTORY})
 _OPERATIONS_PROFILE_IDS = ("guide", "policy", "runbook", "incident", "postmortem")
 _ROLE_SECTION_ALIASES = {
     "guide": {
@@ -94,9 +93,8 @@ _ROLE_SECTION_ALIASES = {
 }
 _ACTIVE_ROUTE_PATTERNS = (
     re.compile(r"docs/05\.operations/[^\s`)'\"]+/ops-(?:#{4}|\*|[0-9]{4})(?:[-/])"),
-    re.compile(
-        r"docs/05\.operations/(?:\{(?:guides[|,]policies[|,]runbooks)(?:[|,]incidents)?\}|guides|policies|runbooks)(?:[/}`]|$)"
-    ),
+    # ADR-0043 retired the domain catalog; its routes are history, not current.
+    re.compile(r"docs/05\.operations/catalog(?:[/`)'\"\s.,;:]|$)"),
 )
 _RELEASE_ROLE_PATTERN = re.compile(
     r"(?:(?:guide|policy|runbook|incident|postmortem)(?:\s*,\s*|\s+and\s+)release\b|Release (?:document )?role)",
@@ -692,7 +690,7 @@ def validate_active_operations_references(
 
 COMPOSE_ROOT = pathlib.PurePosixPath("docker-compose.yml")
 PROFILE_VOCABULARY_POLICY = pathlib.PurePosixPath(
-    "docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md"
+    "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
 )
 _COMPOSE_FILE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml")
 # A profile row is a table row whose first cell is exactly one backticked name.
@@ -1390,6 +1388,153 @@ def _date_time(value: object) -> dt.datetime | None:
     return parsed
 
 
+def _index_member_links(text: str) -> Counter[str]:
+    """Count the index's links to sibling member files, ignoring anchors."""
+
+    counts: Counter[str] = Counter()
+    for block in MarkdownIt("commonmark").enable("table").parse(text):
+        for token in block.children or ():
+            if token.type != "link_open":
+                continue
+            href = str(token.attrGet("href") or "").split("#", 1)[0]
+            href = href.removeprefix("./")
+            if href and "/" not in href and href != "README.md":
+                counts[href] += 1
+    return counts
+
+
+def _validate_role_directory(
+    root: pathlib.Path,
+    directory: str,
+    role: str,
+    profile: object,
+    registry: Mapping[str, object],
+    seen_artifacts: dict[str, pathlib.PurePosixPath],
+    require_tracked,
+) -> list[CatalogFinding]:
+    """Validate one role directory: its index, member names, and identities."""
+
+    findings: list[CatalogFinding] = []
+    relative = OPERATIONS_ROOT / directory
+    try:
+        entries = _directory_entries_bounded(
+            root, relative, max_entries=MAX_ROLE_ENTRIES
+        )
+    except OperationsAuthorityError as error:
+        code = (
+            "role-bounds" if error.code == "directory-bounds" else "role-root-invalid"
+        )
+        return [_finding(code, relative, str(error))]
+    by_name = {entry.name: entry for entry in entries}
+    index_entry = by_name.get("README.md")
+    index_links: Counter[str] | None = None
+    if index_entry is None or not index_entry.is_regular:
+        findings.append(
+            _finding(
+                "role-index-invalid", relative / "README.md", "regular README required"
+            )
+        )
+    else:
+        require_tracked(relative / "README.md")
+        try:
+            index_links = _index_member_links(_read_text(root, relative / "README.md"))
+        except OperationsAuthorityError as error:
+            findings.append(_finding(error.code, relative / "README.md", str(error)))
+    if not isinstance(profile, Mapping):
+        return [*findings, _finding("role-profile-invalid", relative, role)]
+    members: list[str] = []
+    seen_slugs: dict[str, pathlib.PurePosixPath] = {}
+    for entry in sorted(entries):
+        if entry.name == "README.md":
+            continue
+        member = relative / entry.name
+        match = _MEMBER.fullmatch(entry.name)
+        if match is None:
+            findings.append(
+                _finding("role-path-invalid", member, "must be ####-<slug>.md")
+            )
+            continue
+        members.append(entry.name)
+        require_tracked(member)
+        if not entry.is_regular:
+            findings.append(
+                _finding(
+                    "role-file-invalid", member, "must be regular and symlink-free"
+                )
+            )
+            continue
+        previous_slug = seen_slugs.setdefault(match["slug"], member)
+        if previous_slug != member:
+            findings.append(_finding("role-slug-duplicate", member, str(previous_slug)))
+        try:
+            text = _read_text(root, member)
+            metadata = _frontmatter(text, member)
+        except OperationsAuthorityError as error:
+            findings.append(_finding(error.code, member, str(error)))
+            continue
+        artifact = metadata.get("artifact_id")
+        if not path_matches_pattern(member, profile.get("path_pattern")):
+            findings.append(_finding("role-path-profile-mismatch", member, role))
+        if profile.get("identity_relation") != "direct":
+            findings.append(
+                _finding(
+                    "role-identity-relation-invalid",
+                    member,
+                    str(profile.get("identity_relation")),
+                )
+            )
+        pattern = profile.get("artifact_id_pattern")
+        expected = (
+            pattern.replace("{number:4}", match["number"])
+            if isinstance(pattern, str)
+            else None
+        )
+        if artifact != expected or metadata.get("type") != document_type(role):
+            findings.append(_finding("role-identity-invalid", member, str(artifact)))
+        if not set(_string_items(profile.get("required_frontmatter"))) <= set(metadata):
+            findings.append(
+                _finding("role-profile-invalid", member, "required metadata missing")
+            )
+        if metadata.get("status") not in _profile_statuses(registry, profile):
+            findings.append(
+                _finding("role-status-invalid", member, str(metadata.get("status")))
+            )
+        headings = _headings(text)
+        missing_sections = [
+            section
+            for section in _string_items(profile.get("required_sections"))
+            if not headings
+            & _ROLE_SECTION_ALIASES.get(role, {}).get(section, {section})
+        ]
+        if missing_sections:
+            findings.append(
+                _finding("role-sections-invalid", member, ",".join(missing_sections))
+            )
+        if isinstance(artifact, str):
+            previous_artifact = seen_artifacts.setdefault(artifact, member)
+            if previous_artifact != member:
+                findings.append(
+                    _finding("role-identity-duplicate", member, str(previous_artifact))
+                )
+    if index_links is not None:
+        expected_links = set(members)
+        wrong = sorted(
+            name
+            for name in expected_links | set(index_links)
+            if index_links.get(name, 0) != (1 if name in expected_links else 0)
+        )
+        for name in wrong:
+            findings.append(
+                _finding(
+                    "role-index-membership-invalid",
+                    relative / "README.md",
+                    f"{name} must be linked exactly once when it is a member, "
+                    "and never otherwise",
+                )
+            )
+    return findings
+
+
 def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...]:
     """Validate the bounded current Stage 05 tree against Stage 99 profiles."""
     try:
@@ -1430,7 +1575,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
         return (_finding(code, OPERATIONS_ROOT, str(error)),)
     root_entry_names = {entry.name for entry in operations_entries}
     root_by_name = {entry.name: entry for entry in operations_entries}
-    if root_entry_names != {"README.md", "catalog", "incidents"}:
+    if root_entry_names != _OPERATIONS_ROOT_ENTRIES:
         findings.append(
             _finding(
                 "operations-root-contents-invalid",
@@ -1438,7 +1583,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 str(sorted(root_entry_names)),
             )
         )
-    for retired in ("releases", "guides", "policies", "runbooks"):
+    for retired in ("releases", "catalog"):
         if retired in root_entry_names:
             findings.append(
                 _finding(
@@ -1464,218 +1609,19 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
             )
         )
 
-    catalog_relative = OPERATIONS_ROOT / "catalog"
-    try:
-        catalog_entries = _directory_entries_bounded(
-            root,
-            catalog_relative,
-            max_entries=MAX_CATALOG_ENTRIES,
-        )
-    except OperationsAuthorityError as error:
-        code = (
-            "catalog-bounds"
-            if error.code == "directory-bounds"
-            else "catalog-root-invalid"
-        )
-        findings.append(_finding(code, catalog_relative, str(error)))
-        catalog_entries = ()
-    seen_numbers: dict[str, pathlib.PurePosixPath] = {}
     seen_artifacts: dict[str, pathlib.PurePosixPath] = {}
-    catalog_by_name = {entry.name: entry for entry in catalog_entries}
-    catalog_readme = catalog_by_name.get("README.md")
-    if catalog_readme is None or not catalog_readme.is_regular:
-        findings.append(
-            _finding(
-                "catalog-index-invalid",
-                catalog_relative / "README.md",
-                "regular README required",
+    for directory, role in sorted(_ROLE_DIRECTORY.items()):
+        findings.extend(
+            _validate_role_directory(
+                root,
+                directory,
+                role,
+                profiles.get(role),
+                registry,
+                seen_artifacts,
+                require_tracked,
             )
         )
-    else:
-        require_tracked(catalog_relative / "README.md")
-    for domain_entry in sorted(catalog_entries, key=lambda item: item.name):
-        if domain_entry.name == "README.md":
-            continue
-        domain_relative = catalog_relative / domain_entry.name
-        if (
-            not domain_entry.is_directory
-            or _DOMAIN.fullmatch(domain_entry.name) is None
-        ):
-            findings.append(
-                _finding(
-                    "domain-path-invalid",
-                    domain_relative,
-                    "must be a two-digit slug directory",
-                )
-            )
-            continue
-        try:
-            domain_entries = _directory_entries_bounded(
-                root,
-                domain_relative,
-                max_entries=MAX_DOMAIN_ENTRIES,
-            )
-        except OperationsAuthorityError as error:
-            code = (
-                "domain-bounds"
-                if error.code == "directory-bounds"
-                else "domain-invalid"
-            )
-            findings.append(_finding(code, domain_relative, str(error)))
-            continue
-        domain_by_name = {entry.name: entry for entry in domain_entries}
-        domain_readme = domain_by_name.get("README.md")
-        if domain_readme is None or not domain_readme.is_regular:
-            findings.append(
-                _finding(
-                    "domain-index-invalid",
-                    domain_relative / "README.md",
-                    "regular README required",
-                )
-            )
-        else:
-            require_tracked(domain_relative / "README.md")
-        for subject_entry in sorted(domain_entries, key=lambda item: item.name):
-            if subject_entry.name == "README.md":
-                continue
-            subject_relative = domain_relative / subject_entry.name
-            match = _SUBJECT.fullmatch(subject_entry.name)
-            if not subject_entry.is_directory or match is None:
-                findings.append(
-                    _finding(
-                        "subject-path-invalid",
-                        subject_relative,
-                        "must be prefixless four-digit slug",
-                    )
-                )
-                continue
-            try:
-                subject_entries = _directory_entries_bounded(
-                    root,
-                    subject_relative,
-                    max_entries=MAX_SUBJECT_ENTRIES,
-                )
-            except OperationsAuthorityError as error:
-                code = (
-                    "subject-bounds"
-                    if error.code == "directory-bounds"
-                    else "subject-symlink-invalid"
-                )
-                findings.append(_finding(code, subject_relative, str(error)))
-                continue
-            number = match.group("number")
-            previous = seen_numbers.setdefault(number, subject_relative)
-            if previous != subject_relative:
-                findings.append(
-                    _finding(
-                        "subject-identity-duplicate", subject_relative, str(previous)
-                    )
-                )
-            entries_by_name = {entry.name: entry for entry in subject_entries}
-            entries = set(entries_by_name)
-            if not entries or not entries <= set(_ROLE_FILE):
-                findings.append(
-                    _finding(
-                        "subject-role-membership-invalid",
-                        subject_relative,
-                        "one or more guide.md, policy.md, or runbook.md files required",
-                    )
-                )
-            for filename in sorted(entries & set(_ROLE_FILE)):
-                role_relative = subject_relative / filename
-                require_tracked(role_relative)
-                if not entries_by_name[filename].is_regular:
-                    findings.append(
-                        _finding(
-                            "role-file-invalid",
-                            role_relative,
-                            "must be regular and symlink-free",
-                        )
-                    )
-                    continue
-                try:
-                    role_text = _read_text(root, role_relative)
-                    metadata = _frontmatter(role_text, role_relative)
-                except OperationsAuthorityError as error:
-                    findings.append(_finding(error.code, role_relative, str(error)))
-                    continue
-                role = _ROLE_FILE[filename]
-                artifact = metadata.get("artifact_id")
-                profile = profiles.get(role)
-                if not isinstance(profile, Mapping):
-                    findings.append(
-                        _finding("role-profile-invalid", role_relative, role)
-                    )
-                    continue
-                if not path_matches_pattern(role_relative, profile.get("path_pattern")):
-                    findings.append(
-                        _finding(
-                            "role-path-profile-mismatch",
-                            role_relative,
-                            role,
-                        )
-                    )
-                if profile.get("identity_relation") != "subject-member":
-                    findings.append(
-                        _finding(
-                            "role-identity-relation-invalid",
-                            role_relative,
-                            str(profile.get("identity_relation")),
-                        )
-                    )
-                if not _matches_artifact_pattern(
-                    profile.get("artifact_id_pattern"), artifact
-                ) or metadata.get("type") != document_type(role):
-                    findings.append(
-                        _finding("role-identity-invalid", role_relative, str(artifact))
-                    )
-                required_metadata = set(
-                    _string_items(profile.get("required_frontmatter"))
-                )
-                if not required_metadata <= set(metadata):
-                    findings.append(
-                        _finding(
-                            "role-profile-invalid",
-                            role_relative,
-                            "required metadata missing",
-                        )
-                    )
-                allowed_statuses = _profile_statuses(registry, profile)
-                if metadata.get("status") not in allowed_statuses:
-                    findings.append(
-                        _finding(
-                            "role-status-invalid",
-                            role_relative,
-                            str(metadata.get("status")),
-                        )
-                    )
-                headings = _headings(role_text)
-                missing_sections = [
-                    section
-                    for section in _string_items(profile.get("required_sections"))
-                    if not headings
-                    & _ROLE_SECTION_ALIASES.get(role, {}).get(section, {section})
-                ]
-                if missing_sections:
-                    findings.append(
-                        _finding(
-                            "role-sections-invalid",
-                            role_relative,
-                            ",".join(missing_sections),
-                        )
-                    )
-                if isinstance(artifact, str):
-                    previous_artifact = seen_artifacts.setdefault(
-                        artifact, role_relative
-                    )
-                    if previous_artifact != role_relative:
-                        findings.append(
-                            _finding(
-                                "role-identity-duplicate",
-                                role_relative,
-                                str(previous_artifact),
-                            )
-                        )
 
     incidents_relative = OPERATIONS_ROOT / "incidents"
     try:
@@ -2052,6 +1998,22 @@ def _inventory_source_links(text: str, guide: pathlib.PurePosixPath) -> frozense
     )
 
 
+def _role_siblings(
+    paths: Sequence[pathlib.PurePosixPath],
+) -> dict[str, dict[str, pathlib.PurePosixPath]]:
+    """Group tracked role members by the subject slug they share."""
+
+    siblings: dict[str, dict[str, pathlib.PurePosixPath]] = {}
+    for path in paths:
+        if path.parent.parent != OPERATIONS_ROOT:
+            continue
+        role = _ROLE_DIRECTORY.get(path.parent.name)
+        match = _MEMBER.fullmatch(path.name)
+        if role is not None and match is not None:
+            siblings.setdefault(match["slug"], {})[role] = path
+    return siblings
+
+
 def _inventory_bindings(
     root: pathlib.Path,
     paths: tuple[pathlib.PurePosixPath, ...],
@@ -2060,11 +2022,10 @@ def _inventory_bindings(
     owners: dict[tuple[str, str], pathlib.PurePosixPath] = {}
     findings: list[CatalogFinding] = []
     tracked = frozenset(paths)
+    siblings = _role_siblings(paths)
     for guide in paths:
-        if not (
-            str(guide).startswith("docs/05.operations/catalog/")
-            and guide.name == "guide.md"
-        ):
+        match = _MEMBER.fullmatch(guide.name)
+        if guide.parent != OPERATIONS_ROOT / "guides" or match is None:
             continue
         text = _read_text(root, guide)
         metadata = _frontmatter(text, guide)
@@ -2136,8 +2097,16 @@ def _inventory_bindings(
                     )
                 else:
                     owners[identity] = guide
-        for filename, kind in _ROLE_FILE.items():
-            member = guide.parent / filename
+        subject = siblings.get(match["slug"], {})
+        for kind, directory in (
+            ("guide", "guides"),
+            ("policy", "policies"),
+            ("runbook", "runbooks"),
+        ):
+            member = subject.get(
+                kind,
+                OPERATIONS_ROOT / directory / f"{match['number']}-{match['slug']}.md",
+            )
             try:
                 frontmatter = _frontmatter(_read_text(root, member), member)
                 valid = frontmatter.get(
@@ -2286,6 +2255,11 @@ def _inventory_projection(
         for item in service.get("secrets", [])
     )
     guide = owners.get(identity)
+    subject = (
+        _role_siblings(tuple(tracked)).get(_MEMBER.fullmatch(guide.name)["slug"], {})
+        if guide
+        else {}
+    )
     security["authentication_env_keys"] = [
         key for key in env_keys if re.search(r"AUTH|OIDC|SSO|COOKIE", key)
     ]
@@ -2298,8 +2272,9 @@ def _inventory_projection(
         }
     operations = (
         "; ".join(
-            _inventory_link(guide.parent / member, member.removesuffix(".md"))
-            for member in _ROLE_FILE
+            _inventory_link(subject[kind], kind)
+            for kind in ("guide", "policy", "runbook")
+            if kind in subject
         )
         if guide
         else "unowned"
@@ -2332,8 +2307,8 @@ def _inventory_projection(
         + _inventory_cell(template)
         + "; runtime unverified; "
         + (
-            _inventory_link(guide.parent / "policy.md", "Policy")
-            if guide
+            _inventory_link(subject["policy"], "Policy")
+            if "policy" in subject
             else "unowned"
         ),
         "Operations docs": operations,

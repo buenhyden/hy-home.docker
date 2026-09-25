@@ -61,7 +61,7 @@ specialized/
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)
-- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
+- Stage 05 documents: `docs/05.operations/{guides,policies,runbooks}/####-<slug>.md`
 - [Documentation index](../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

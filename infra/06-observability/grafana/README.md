@@ -66,7 +66,7 @@ grafana/
 | Ports | `traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}` |
 | Labels | `traefik.http.routers.grafana.*`, `traefik.http.routers.grafana-static.*`, `traefik.http.services.grafana-svc.*` |
 | Healthcheck | `http://localhost:${GRAFANA_PORT:-3000}/api/health` |
-| Operations | Guide (`docs/05.operations/catalog/06-observability/0041-grafana/guide.md`), Policy (`docs/05.operations/catalog/06-observability/0041-grafana/policy.md`), Runbook (`docs/05.operations/catalog/06-observability/0041-grafana/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0041-grafana.md`), Policy (`docs/05.operations/policies/0041-grafana.md`), Runbook (`docs/05.operations/runbooks/0041-grafana.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the linked runbook, compose config rendering, service logs, healthcheck, and redacted OAuth/datasource evidence |
 
@@ -98,8 +98,8 @@ grafana/
 
 ## How to Work in This Area
 
-1. Follow the Grafana guide (`docs/05.operations/catalog/06-observability/0041-grafana/guide.md`) for usage and provisioning context.
-2. Follow the Grafana runbook (`docs/05.operations/catalog/06-observability/0041-grafana/runbook.md`) for readiness, SSO, datasource, dashboard provisioning, restart, and rollback steps.
+1. Follow the Grafana guide (`docs/05.operations/guides/0041-grafana.md`) for usage and provisioning context.
+2. Follow the Grafana runbook (`docs/05.operations/runbooks/0041-grafana.md`) for readiness, SSO, datasource, dashboard provisioning, restart, and rollback steps.
 3. Keep admin passwords, OAuth client secrets, tokens, and rendered secret values out of docs, logs, task evidence, and commit messages.
 4. Do not change role mapping, datasource UIDs, dashboard provider locks, secret references, image version, or route middleware without plan/task evidence and rollback notes.
 
@@ -125,16 +125,16 @@ grafana/
 - Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d grafana`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0041-grafana/`; IDs `GDE-0041`, `POL-0041`, `RUN-0041`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0041-grafana.md`; IDs `GDE-0041`, `POL-0041`, `RUN-0041`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
 - [infra/README.md](../../README.md)
 - Operations index (`docs/05.operations/README.md`)
-- Grafana guide (`docs/05.operations/catalog/06-observability/0041-grafana/guide.md`)
-- Grafana policy (`docs/05.operations/catalog/06-observability/0041-grafana/policy.md`)
-- Grafana runbook (`docs/05.operations/catalog/06-observability/0041-grafana/runbook.md`)
+- Grafana guide (`docs/05.operations/guides/0041-grafana.md`)
+- Grafana policy (`docs/05.operations/policies/0041-grafana.md`)
+- Grafana runbook (`docs/05.operations/runbooks/0041-grafana.md`)
 - [Documentation index](../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

@@ -65,7 +65,7 @@ nginx/
 | Labels | Not declared |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `nginx` |
-| Operations | Guide (`docs/05.operations/catalog/01-gateway/0011-nginx/guide.md`), Policy (`docs/05.operations/catalog/01-gateway/0011-nginx/policy.md`), Runbook (`docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0011-nginx.md`), Policy (`docs/05.operations/policies/0011-nginx.md`), Runbook (`docs/05.operations/runbooks/0011-nginx.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with static hardening checks; inspect service logs only when an approved Nginx runtime context is already running. |
 
@@ -80,7 +80,7 @@ nginx/
 
 5. Always run `nginx -t` in the approved running context before reloading configuration.
 6. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
-7. Update specific path guides in `docs/05.operations/catalog/01-gateway/0011-nginx/guide.md` when adding new routing logic.
+7. Update specific path guides in `docs/05.operations/guides/0011-nginx.md` when adding new routing logic.
 
 ## Configuration
 
@@ -118,10 +118,10 @@ healthcheck:
 ## Related Documents
 
 - [01-gateway Root README](../README.md)
-- Nginx Guide (`docs/05.operations/catalog/01-gateway/0011-nginx/guide.md`)
-- Gateway Operations Policy (`docs/05.operations/catalog/01-gateway/0011-nginx/policy.md`)
-- Nginx Runbook (`docs/05.operations/catalog/01-gateway/0011-nginx/runbook.md`)
-- SSO Setup Guide (`docs/05.operations/catalog/02-auth/README.md`)
+- Nginx Guide (`docs/05.operations/guides/0011-nginx.md`)
+- Gateway Operations Policy (`docs/05.operations/policies/0011-nginx.md`)
+- Nginx Runbook (`docs/05.operations/runbooks/0011-nginx.md`)
+- SSO Setup Guide (`docs/05.operations/guides/README.md`)
 - [Documentation index](../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.

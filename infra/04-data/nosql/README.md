@@ -61,14 +61,14 @@ nosql/
 1. **Selection**: 요구사항(단일 노드 wide-column, 문서 sync cluster, replica set)에 맞는 엔진을 선택한다.
 2. **Deployment**: 루트 compose include 상태를 확인한 뒤 각 서브디렉터리의 `docker-compose.yml`을 함께 렌더링한다.
 3. **Standards**: 각 엔진은 `common-optimizations.yml`의 source-declared template을 확장하며 exporter도 해당 engine의 exact profile에 속한다.
-4. **Documentation**: 변경 사항 발생 시 하위 README와 상위 `docs/05.operations/catalog/04-data/` 문서를 함께 업데이트한다.
+4. **Documentation**: 변경 사항 발생 시 하위 README와 상위 `docs/05.operations/README.md` 문서를 함께 업데이트한다.
 
 ## Related Documents
 
 - **Architecture**: Data Tier Architecture Description (`docs/02.architecture/descriptions/0004-data-architecture.md`)
-- **Guides**: NoSQL Guides (`docs/05.operations/catalog/04-data/README.md`)
-- **Policies**: NoSQL Policies (`docs/05.operations/catalog/04-data/README.md`)
-- Stage 05 subjects: `docs/05.operations/catalog/04-data/<subject>/`
+- **Guides**: NoSQL Guides (`docs/05.operations/guides/README.md`)
+- **Policies**: NoSQL Policies (`docs/05.operations/policies/README.md`)
+- Stage 05 documents: `docs/05.operations/{guides,policies,runbooks}/####-<slug>.md`
 - **Source**: [Data Tier Root](../README.md)
 - [Documentation index](../../../docs/README.md)
 

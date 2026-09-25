@@ -35,7 +35,7 @@ document; the kind names its role inside that family.
 | --- | --- | --- |
 | `governance` | canonical agent governance | `sdlc`, `policy`, `hook-policy`, `role`, `skill`, `knowledge`, `knowledge-index`, `prompt`, `prompt-index`, `provider`, `provider-index`, `claude-agent`, `codex-agent` |
 | `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
-| `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem`, `domain-readme` |
+| `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
 | `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data`, `category-readme` |
 | `archive` | 98 | `migration`, `tombstone` |
 | `common` | any | `readme`, `documentation-readme`, `repository-readme`, `package-readme`, `runtime-governance-readme`, `template-source`, `unsupported` |

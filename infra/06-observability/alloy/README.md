@@ -55,10 +55,10 @@ alloy/
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. Follow the Alloy Guide (`docs/05.operations/catalog/06-observability/0040-alloy/guide.md`).
+1. Follow the Alloy Guide (`docs/05.operations/guides/0040-alloy.md`).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
 3. Access the Alloy UI at `https://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
-4. Verify changes in the Alloy Operation Policy (`docs/05.operations/catalog/06-observability/0040-alloy/policy.md`).
+4. Verify changes in the Alloy Operation Policy (`docs/05.operations/policies/0040-alloy.md`).
 5. Use Alloy's `discovery.docker` for automatic container metadata enrichment.
 
 6. **OTLP First**: Prefer `OTLP` ingestion for all new application instrumentation to ensure future-proof telemetry.
@@ -113,12 +113,12 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 - Classification: **HOME**. Exact profiles: `obs`, `logs`, `tracing`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alloy`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0040-alloy/`; IDs `GDE-0040`, `POL-0040`, `RUN-0040`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0040-alloy.md`; IDs `GDE-0040`, `POL-0040`, `RUN-0040`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
-- **System Guide**: `docs/05.operations/catalog/06-observability/0040-alloy/guide.md`
-- **Policy**: `docs/05.operations/catalog/06-observability/0040-alloy/policy.md`
-- **Runbooks**: `docs/05.operations/catalog/06-observability/0040-alloy/runbook.md`
+- **System Guide**: `docs/05.operations/guides/0040-alloy.md`
+- **Policy**: `docs/05.operations/policies/0040-alloy.md`
+- **Runbooks**: `docs/05.operations/runbooks/0040-alloy.md`
 - [Documentation index](../../../docs/README.md)

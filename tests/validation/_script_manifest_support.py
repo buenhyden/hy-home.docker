@@ -128,8 +128,7 @@ def reference_proves_use(reference: str, target: str, *, is_test: bool = False) 
 def is_runbook_authority(path: str) -> bool:
     return bool(
         re.fullmatch(
-            r"docs/05\.operations/catalog/[0-9]{2}-[a-z0-9-]+/"
-            r"[0-9]{4}-[a-z0-9-]+/runbook\.md",
+            r"docs/05\.operations/runbooks/[0-9]{4}-[a-z0-9-]+\.md",
             path,
         )
     )
