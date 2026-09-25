@@ -985,6 +985,14 @@ def _runtime_image_parts(entry: Mapping[str, object]) -> tuple[tuple[str, str], 
     return tuple(parts)
 
 
+# ADR-0043: an Operations member is `<role directory>/####-<slug>.md`.
+_OPERATIONS_ROLE_ROOTS = (
+    "docs/05.operations/guides/",
+    "docs/05.operations/policies/",
+    "docs/05.operations/runbooks/",
+)
+
+
 def _runtime_mentions(text: str, entry: Mapping[str, object]) -> bool:
     names = (entry["component"], *[repo for repo, _ in _runtime_image_parts(entry)])
     return any(
@@ -998,8 +1006,8 @@ def _runtime_owned_document(path: pathlib.Path, entry: Mapping[str, object]) -> 
         path.parent == pathlib.Path(source).parent for source in entry["compose_files"]
     ):
         return True
-    if path.as_posix().startswith("docs/05.operations/"):
-        slug = re.sub(r"[^a-z0-9]", "", re.sub(r"^\d+-", "", path.parent.name).lower())
+    if path.as_posix().startswith(_OPERATIONS_ROLE_ROOTS):
+        slug = re.sub(r"[^a-z0-9]", "", re.sub(r"^\d+-", "", path.stem).lower())
         component = re.sub(r"[^a-z0-9]", "", entry["component"].lower())
         return bool(component and component in slug)
     return False
@@ -1174,10 +1182,7 @@ def _runtime_version_findings(
     path = record.path.as_posix()
     in_scope = (
         (record.path.name == "README.md" and not path.startswith("docs/98.archive/"))
-        or (
-            path.startswith("docs/05.operations/")
-            and record.path.name in {"guide.md", "policy.md", "runbook.md"}
-        )
+        or path.startswith(_OPERATIONS_ROLE_ROOTS)
         or (
             path.startswith(
                 (

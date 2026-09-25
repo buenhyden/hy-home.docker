@@ -19,7 +19,7 @@ groups:
         annotations:
           summary: 'GPU 온도 높음: GPU {{ $labels.gpu }}'
           description: "GPU {{ $labels.gpu }} ({{ $labels.modelName }}) 온도가 10분 이상 85°C를 넘었습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] GPU XID error reported / GPU XID 오류 발생
       - alert: GpuXidError
@@ -31,7 +31,7 @@ groups:
         annotations:
           summary: 'GPU XID 오류: GPU {{ $labels.gpu }}'
           description: "GPU {{ $labels.gpu }}가 XID {{ $value }}를 보고했습니다. 드라이버·하드웨어 상태를 확인하세요."
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0055-gpu-recovery.md'
 
       # [What] GPU framebuffer nearly full / GPU 메모리 부족
       - alert: GpuMemoryNearlyFull
@@ -43,4 +43,4 @@ groups:
         annotations:
           summary: 'GPU 메모리 95% 초과: GPU {{ $labels.gpu }}'
           description: "GPU {{ $labels.gpu }} framebuffer 사용률이 15분 이상 95%를 넘었습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/08-ai/0055-gpu-recovery/runbook.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0055-gpu-recovery.md'

@@ -88,7 +88,7 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 
 ## Related Documents
 
-- **Guide**: dbt usage guide (`docs/05.operations/catalog/09-tooling/0090-dbt/guide.md`)
-- **Policy**: dbt operations policy (`docs/05.operations/catalog/09-tooling/0090-dbt/policy.md`)
-- **Runbook**: dbt recovery runbook (`docs/05.operations/catalog/09-tooling/0090-dbt/runbook.md`)
+- **Guide**: dbt usage guide (`docs/05.operations/guides/0090-dbt.md`)
+- **Policy**: dbt operations policy (`docs/05.operations/policies/0090-dbt.md`)
+- **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/0090-dbt.md`)
 - [Documentation index](../../../docs/README.md)

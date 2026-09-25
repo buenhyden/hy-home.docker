@@ -104,14 +104,14 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 - Classification: **OPTIONAL**. Exact profiles: `obs`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pushgateway`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0046-pushgateway/`; IDs `GDE-0046`, `POL-0046`, `RUN-0046`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0046-pushgateway.md`; IDs `GDE-0046`, `POL-0046`, `RUN-0046`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
-- Usage guide (`docs/05.operations/catalog/06-observability/0046-pushgateway/guide.md`)
-- Operations policy (`docs/05.operations/catalog/06-observability/0046-pushgateway/policy.md`)
-- Recovery runbook (`docs/05.operations/catalog/06-observability/0046-pushgateway/runbook.md`)
+- Usage guide (`docs/05.operations/guides/0046-pushgateway.md`)
+- Operations policy (`docs/05.operations/policies/0046-pushgateway.md`)
+- Recovery runbook (`docs/05.operations/runbooks/0046-pushgateway.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## How to Work in This Area

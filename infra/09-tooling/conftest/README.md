@@ -84,9 +84,9 @@ No environment variables or secrets.
 
 ## Related Documents
 
-- **Guide**: Conftest Usage Guide (`docs/05.operations/catalog/09-tooling/0095-conftest/guide.md`)
-- **Policy**: Conftest Operations Policy (`docs/05.operations/catalog/09-tooling/0095-conftest/policy.md`)
-- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/catalog/09-tooling/0095-conftest/runbook.md`)
+- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/0095-conftest.md`)
+- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/0095-conftest.md`)
+- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/0095-conftest.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -105,7 +105,7 @@ No environment variables or secrets.
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Not declared (one-shot job) |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0095-conftest/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0095-conftest/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0095-conftest/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0095-conftest.md`), Policy (`docs/05.operations/policies/0095-conftest.md`), Runbook (`docs/05.operations/runbooks/0095-conftest.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Run the job and fix the first failing declaration; see the runbook. |
 

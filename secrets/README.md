@@ -66,7 +66,7 @@ secrets/
 1. secret 값 파일을 열지 말고, 먼저 이 README와 `SENSITIVE_ENV_VARS.md.example`를 확인합니다.
 2. 새 secret 경로가 필요하면 대응 서비스의 `infra/` Compose 정의와 registry mapping을 함께 확인합니다.
 3. secret 생성 또는 누락 파일 보강은 `./scripts/operations/gen-secrets.sh` 같은 승인된 스크립트를 우선 사용합니다.
-4. 인증서 파일은 Developer Environment Operations (`docs/05.operations/catalog/00-workspace/0002-developer-environment/guide.md`)의 local TLS 절차와 관련 runbook을 따릅니다.
+4. 인증서 파일은 Developer Environment Operations (`docs/05.operations/guides/0002-developer-environment.md`)의 local TLS 절차와 관련 runbook을 따릅니다.
 5. 문서, 로그, commit, PR 설명에는 secret 값 원문을 쓰지 않습니다.
 
 ## Navigation / Inventory
@@ -209,7 +209,7 @@ private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승�
   줄당 하나씩 담고, 그중 2개로 unseal합니다. `openbao_token.txt`(SEC-002)는 Prometheus
   `sys/metrics` 읽기 토큰입니다. initial root token은 폐기되어 저장하지 않으며, Agent
   token은 Agent가 자체 디렉터리에서 관리합니다. 세 share를 한 파일에 두는 것은
-  OpenBao runbook(`docs/05.operations/catalog/03-security/0085-openbao/runbook.md`)의
+  OpenBao runbook(`docs/05.operations/runbooks/0085-openbao.md`)의
   분리 보관 기준에 대한 명시적 예외입니다.
 - AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 

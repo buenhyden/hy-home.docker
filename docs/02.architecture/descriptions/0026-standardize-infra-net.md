@@ -107,8 +107,8 @@ Compose configuration.
 - [ADR-0026 Standardize infra_net (the superseded single-mesh decision)](../decisions/0026-standardize-infra-net.md)
 - [SPEC-0180 HOME development convergence](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [SPEC-0098 completed implementation outcome](../../98.archive/completed/03.specs/0098-standardize-infra-net/spec.md)
-- [IP address management guide](../../05.operations/catalog/12-infra-net/0077-ip-address-management/guide.md)
-- [IP address management policy](../../05.operations/catalog/12-infra-net/0077-ip-address-management/policy.md)
-- [IP address management runbook](../../05.operations/catalog/12-infra-net/0077-ip-address-management/runbook.md)
+- [IP address management guide](../../05.operations/guides/0077-ip-address-management.md)
+- [IP address management policy](../../05.operations/policies/0077-ip-address-management.md)
+- [IP address management runbook](../../05.operations/runbooks/0077-ip-address-management.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

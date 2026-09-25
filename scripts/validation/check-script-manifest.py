@@ -82,7 +82,7 @@ REQUIRED_LOCAL_PATHS = frozenset(
 )
 APPROVED_TEST_PREFIXES = ("tests/lib/", "tests/validation/")
 RUNBOOK_AUTHORITY = __import__("re").compile(
-    r"docs/05\.operations/catalog/[0-9]{2}-[^/]+/[0-9]{4}-[^/]+/runbook\.md"
+    r"docs/05\.operations/runbooks/[0-9]{4}-[a-z0-9][a-z0-9-]*\.md"
 )
 MACHINE_AUTHORITIES = frozenset(
     {
@@ -279,7 +279,7 @@ def validate_manifest_document(
                     _finding(
                         "runtime-authority-invalid",
                         path,
-                        "retained runtime script requires a domain-first Operations Runbook authority",
+                        "retained runtime script requires an Operations Runbook authority",
                     )
                 )
 

@@ -65,7 +65,7 @@ ADR 없이는 current topology로 간주하지 않는다.
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [ADR-0018](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
 - [SPEC-0003](0003-security-architecture.md)
-- [OpenBao policy](../../05.operations/catalog/03-security/0085-openbao/policy.md)
-- [OpenBao runbook](../../05.operations/catalog/03-security/0085-openbao/runbook.md)
+- [OpenBao policy](../../05.operations/policies/0085-openbao.md)
+- [OpenBao runbook](../../05.operations/runbooks/0085-openbao.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

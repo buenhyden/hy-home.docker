@@ -87,9 +87,9 @@ requires runtime approval.
 
 ## Related Documents
 
-- **Guide**: WireMock Usage Guide (`docs/05.operations/catalog/09-tooling/0092-wiremock/guide.md`)
-- **Policy**: WireMock Operations Policy (`docs/05.operations/catalog/09-tooling/0092-wiremock/policy.md`)
-- **Runbook**: WireMock Recovery Runbook (`docs/05.operations/catalog/09-tooling/0092-wiremock/runbook.md`)
+- **Guide**: WireMock Usage Guide (`docs/05.operations/guides/0092-wiremock.md`)
+- **Policy**: WireMock Operations Policy (`docs/05.operations/policies/0092-wiremock.md`)
+- **Runbook**: WireMock Recovery Runbook (`docs/05.operations/runbooks/0092-wiremock.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -108,7 +108,7 @@ requires runtime approval.
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `wiremock` (`/__admin/health`) |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0092-wiremock/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0092-wiremock/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0092-wiremock/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0092-wiremock.md`), Policy (`docs/05.operations/policies/0092-wiremock.md`), Runbook (`docs/05.operations/runbooks/0092-wiremock.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Inspect the health endpoint and the unmatched-request list, then the linked runbook. |
 

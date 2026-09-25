@@ -1,6 +1,6 @@
 [Unit]
 Description=Weekly Renovate dependency-update trigger (Monday 00:00–05:59 KST)
-Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/catalog/09-tooling/0083-renovate/guide.md
+Documentation=file:///home/hyunyoun/data/hy-home.docker/docs/05.operations/guides/0083-renovate.md
 # No Requires=/Wants= on the service: that would start a Renovate run whenever
 # the timer itself starts (boot, enable --now). The timer activates the
 # same-named service only on schedule.

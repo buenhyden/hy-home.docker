@@ -159,8 +159,8 @@ pgBackRest는 `repo2-type=s3`(그리고 `gcs`, `azure`, `sftp`)로 둘째 저장
 - Parent: [AD-0004 Data Architecture](../descriptions/0004-data-architecture.md)
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10, Plan W10,
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
-- Policy: [POL-0021](../../05.operations/catalog/04-data/0021-backup-and-restore/policy.md)
-  control 1–3; Runbook: [RUN-0021](../../05.operations/catalog/04-data/0021-backup-and-restore/runbook.md)
+- Policy: [POL-0021](../../05.operations/policies/0021-backup-and-restore.md)
+  control 1–3; Runbook: [RUN-0021](../../05.operations/runbooks/0021-backup-and-restore.md)
 - Runtime sources: [Restic Compose](../../../infra/09-tooling/restic/docker-compose.yml),
   [orchestrator](../../../infra/09-tooling/restic/bin/hyhome-backup.sh),
   [pgBackRest configuration](../../../infra/04-data/operational/mng-db/pg/backup/pgbackrest.conf)

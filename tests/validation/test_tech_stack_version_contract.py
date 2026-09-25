@@ -77,11 +77,11 @@ DIRECT_RUNTIME_DOCS = (
     "infra/06-observability/tempo/README.md",
     "infra/08-ai/README.md",
     "infra/11-laboratory/dozzle/README.md",
-    "docs/05.operations/catalog/06-observability/0040-alloy/guide.md",
-    "docs/05.operations/catalog/06-observability/0045-prometheus/guide.md",
-    "docs/05.operations/catalog/06-observability/0040-alloy/policy.md",
-    "docs/05.operations/catalog/06-observability/0045-prometheus/policy.md",
-    "docs/05.operations/catalog/06-observability/0040-alloy/runbook.md",
+    "docs/05.operations/guides/0040-alloy.md",
+    "docs/05.operations/guides/0045-prometheus.md",
+    "docs/05.operations/policies/0040-alloy.md",
+    "docs/05.operations/policies/0045-prometheus.md",
+    "docs/05.operations/runbooks/0040-alloy.md",
 )
 
 

@@ -54,7 +54,7 @@ examples/
 1. 시드 폴더 전체를 `infra/`의 대상 tier 아래로 복사합니다 → 원본 시드는 그대로 남습니다.
 2. 복사본에서 서비스 이름, 이미지, 포트, 네트워크를 대상 서비스에 맞게 바꿉니다 → `docker compose config`가 성공합니다.
 3. 시크릿은 값이 아니라 파일로 주입하고 `.env.example`만 추적합니다 → 평문 자격 증명이 커밋되지 않습니다.
-4. 새 서비스 문서를 `docs/05.operations/catalog/`의 해당 도메인에 추가합니다 → 운영 절차 소유자가 생깁니다.
+4. 새 서비스 문서를 `docs/05.operations/README.md`의 해당 도메인에 추가합니다 → 운영 절차 소유자가 생깁니다.
 5. `bash scripts/validation/validate-docker-compose.sh`를 실행합니다 → 종료 코드 `0`.
 
 시드 자체를 고칠 때는 복사본이 아니라 `examples/` 원본을 고치고, 그 변경이 기존
@@ -65,6 +65,6 @@ examples/
 - [Root README](../README.md)
 - [Infrastructure surface](../infra/README.md)
 - [Sample web service seed](sample-web-service/README.md)
-- Operations catalog (`docs/05.operations/catalog/README.md`)
+- Operations catalog (`docs/05.operations/README.md`)
 - README template (`docs/99.templates/templates/common/readme-repository.template.md`)
 - [Documentation index](../docs/README.md)

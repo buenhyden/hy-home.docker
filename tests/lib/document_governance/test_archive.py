@@ -47,6 +47,24 @@ class MigrationStateTests(unittest.TestCase):
                     self.archive.tombstone_identity(f"{catalog}/{member}.md", "0232"),
                 )
 
+        # The role layout names the kind by directory and the artifact number by
+        # filename, so a member whose number differs from its subject keeps it.
+        for retired, expected in (
+            (
+                "docs/05.operations/guides/0051-airflow-dag-lifecycle.md",
+                "tomb-GDE-0051",
+            ),
+            (
+                "docs/05.operations/policies/0052-airflow-dag-lifecycle.md",
+                "tomb-POL-0052",
+            ),
+            ("docs/05.operations/runbooks/0009-release-management.md", "tomb-RUN-0009"),
+        ):
+            with self.subTest(retired=retired):
+                self.assertEqual(
+                    expected, self.archive.tombstone_identity(retired, "0235")
+                )
+
         # The pre-catalog layout keeps deriving from its directory marker, and
         # the number still comes from the tombstone file there.
         for retired, expected in (

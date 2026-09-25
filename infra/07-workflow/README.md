@@ -108,7 +108,7 @@ Run from the repository root: `docker compose --profile workflow config --quiet`
 | Airflow Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 | n8n Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 
-The profile starts optional brokers but does not select them. Set each application's matching host and secret selector together. The stable documentation entry point is [docs/README.md](../../docs/README.md); exact Stage 05 subjects are `GDE/POL/RUN-0050` at `docs/05.operations/catalog/07-workflow/0050-airflow/` and `GDE/POL/RUN-0053` at `docs/05.operations/catalog/07-workflow/0053-n8n/`.
+The profile starts optional brokers but does not select them. Set each application's matching host and secret selector together. The stable documentation entry point is [docs/README.md](../../docs/README.md); exact Stage 05 subjects are `GDE/POL/RUN-0050` at `docs/05.operations/guides/0050-airflow.md` and `GDE/POL/RUN-0053` at `docs/05.operations/guides/0053-n8n.md`.
 
 ## Related Documents
 

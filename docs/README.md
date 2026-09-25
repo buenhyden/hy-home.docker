@@ -57,7 +57,9 @@ docs/
 │       ├── tasks/
 │       └── contracts/
 ├── 05.operations/              # 운영 가이드, 정책, 런북, 사고 기록
-│   ├── catalog/<domain>/####-<subject>/
+│   ├── guides/####-<slug>.md
+│   ├── policies/####-<slug>.md
+│   ├── runbooks/####-<slug>.md
 │   └── incidents/<year>/inc-####-<slug>/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
 ├── 98.archive/                 # retention classes for frozen bodies plus route dispositions
@@ -76,9 +78,9 @@ docs/
 | declare an executable interface contract | `03.specs/####-<slug>/contracts/` |
 | plan implementation work | `03.specs/####-<slug>/plan.md` |
 | record task evidence | `03.specs/####-<slug>/tasks/` |
-| operate or configure a service | `05.operations/catalog/` |
-| define operational controls | `05.operations/catalog/` |
-| execute recovery or repeatable procedures | `05.operations/catalog/` |
+| operate or configure a service | `05.operations/guides/` |
+| define operational controls | `05.operations/policies/` |
+| execute recovery or repeatable procedures | `05.operations/runbooks/` |
 | record incidents or postmortems | `05.operations/incidents/<year>/inc-####-<slug>/` |
 | provide LLM-facing repository navigation | root `llms.txt` and the per-surface READMEs |
 | inspect a preserved body or its disposition record | `98.archive/` |
@@ -105,7 +107,7 @@ docs/
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
 - Agent 전용 문서(`.agents/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
 - `docs/03.specs/**`의 leaf 문서는 영어로 작성합니다. 여기에는 같은 패키지 안의 `plan.md`와 `tasks/**`가 포함됩니다.
-- `docs/05.operations/catalog/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
+- `docs/05.operations/{guides,policies,runbooks}/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
 | Surface | Language Rule |
@@ -116,7 +118,7 @@ docs/
 | `03.specs/` | English-only technical specifications and contracts |
 | `03.specs/####-<slug>/plan.md` | English-only implementation plans |
 | `03.specs/####-<slug>/tasks/` | English-only task evidence |
-| `05.operations/catalog/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
+| `05.operations/{guides,policies,runbooks}/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
 | `98.archive/` | retention class의 frozen 원문과 route disposition 기록; 인용 가능성은 처분이 이름으로 가지는 대상에서 도출 |

@@ -72,7 +72,6 @@ finished document must satisfy live with its owning stage.
 | `operation/runbook` | [operations/runbook.template.md](./operations/runbook.template.md) |
 | `operation/incident` | [operations/incident.template.md](./operations/incident.template.md) |
 | `operation/postmortem` | [operations/postmortem.template.md](./operations/postmortem.template.md) |
-| `operation/domain-readme` | [common/readme-domain.template.md](./common/readme-domain.template.md) |
 | `reference/research-pack` | [references/research-pack.template.md](./references/research-pack.template.md) |
 | `reference/research` | [references/research.template.md](./references/research.template.md) |
 | `reference/audit-pack` | [references/audit-pack.template.md](./references/audit-pack.template.md) |

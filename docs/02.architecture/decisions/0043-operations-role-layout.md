@@ -17,7 +17,7 @@ created: "2026-09-26"
 ## Context
 
 2026-08-13 SPEC-0158과 MIG-0002는 Stage 05를 domain 우선 catalog로 수렴시켰다.
-문서는 `docs/05.operations/catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`에
+문서는 `docs/05.operations/catalog/<domain>/####-<subject>/{guide,policy,runbook}.md`에 <!-- retired-route-record -->
 있고, 13개 domain README와 catalog README가 탐색을 소유한다. 그때의 운영 검증기는
 `guides/`, `policies/`, `runbooks/` 경로를 "retired root"로 거부한다.
 

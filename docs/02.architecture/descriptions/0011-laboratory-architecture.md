@@ -79,9 +79,9 @@ leaf. `admin` selects all four services; narrower profiles are `admin-logs`,
 
 ## Traceability
 
-- [Dozzle operations](../../05.operations/catalog/11-laboratory/0072-dozzle/guide.md)
-- [Open Notebook operations](../../05.operations/catalog/11-laboratory/0073-open-notebook/guide.md)
-- [RedisInsight operations](../../05.operations/catalog/11-laboratory/0076-redisinsight/guide.md)
+- [Dozzle operations](../../05.operations/guides/0072-dozzle.md)
+- [Open Notebook operations](../../05.operations/guides/0073-open-notebook.md)
+- [RedisInsight operations](../../05.operations/guides/0076-redisinsight.md)
 
 ## Related Documents
 

@@ -86,9 +86,9 @@ k6/
 
 ## Related Documents
 
-- **Guide**: k6 Performance Testing Guide (`docs/05.operations/catalog/09-tooling/0061-k6/guide.md`)
-- **Policy**: k6 operations policy (`docs/05.operations/catalog/09-tooling/0061-k6/policy.md`)
-- **Runbook**: k6 recovery runbook (`docs/05.operations/catalog/09-tooling/0061-k6/runbook.md`)
+- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/0061-k6.md`)
+- **Policy**: k6 operations policy (`docs/05.operations/policies/0061-k6.md`)
+- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/0061-k6.md`)
 - [Documentation index](../../../docs/README.md)
 
 ## Service Readiness
@@ -105,7 +105,7 @@ k6/
 | Labels | `hy-home.tier` |
 | Secret refs | None declared |
 | Healthcheck | None declared; `k6` runs one scenario and exits, so `restart` is `no` |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0061-k6/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0061-k6/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0061-k6/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0061-k6.md`), Policy (`docs/05.operations/policies/0061-k6.md`), Runbook (`docs/05.operations/runbooks/0061-k6.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

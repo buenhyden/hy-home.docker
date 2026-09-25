@@ -122,16 +122,16 @@ class OperationsAuthorityTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q"], cwd=root, check=True)
             fixtures = {
                 "scripts/validation/active.sh": (
-                    'guide="docs/05.operations/guides/00-workspace/example.md"\n'
+                    'guide="docs/05.operations/catalog/00-workspace/0001-example/guide.md"\n'
                 ),
                 ".github/operations.yaml": (
-                    "policy: docs/05.operations/policies/00-workspace/example.md\n"
+                    "policy: docs/05.operations/catalog/00-workspace/0001-example/policy.md\n"
                 ),
                 "tests/fixtures/negative.sh": (
-                    'runbook="docs/05.operations/runbooks/00-workspace/example.md"\n'
+                    'runbook="docs/05.operations/catalog/00-workspace/0001-example/runbook.md"\n'
                 ),
                 "docs/98.archive/history.toml": (
-                    'route = "docs/05.operations/guides/00-workspace/example.md"\n'
+                    'route = "docs/05.operations/catalog/00-workspace/0001-example/guide.md"\n'
                 ),
             }
             for relative, content in fixtures.items():
@@ -178,11 +178,10 @@ class OperationsAuthorityTests(unittest.TestCase):
             )
             self.assertIn("unicode.md:4", {finding.path for finding in findings})
 
-    def test_current_drift_guides_exist_at_canonical_catalog_paths(self) -> None:
+    def test_current_drift_guides_exist_at_canonical_role_paths(self) -> None:
         expected = (
-            "docs/05.operations/catalog/00-workspace/0003-env-key-comparison/guide.md",
-            "docs/05.operations/catalog/00-workspace/"
-            "0010-sensitive-env-vars-comparison/guide.md",
+            "docs/05.operations/guides/0003-env-key-comparison.md",
+            "docs/05.operations/guides/0010-sensitive-env-vars-comparison.md",
         )
         for relative in expected:
             with self.subTest(path=relative):
@@ -232,9 +231,7 @@ class OperationsAuthorityTests(unittest.TestCase):
         )
         self.assertEqual(
             expected,
-            _public_suites_for(
-                "docs/05.operations/catalog/01-gateway/0013-traefik/guide.md"
-            ),
+            _public_suites_for("docs/05.operations/guides/0013-traefik.md"),
         )
         self.assertEqual(
             expected,

@@ -18,7 +18,7 @@ groups:
         annotations:
           summary: 'Valkey 다운: {{ $labels.instance }}'
           description: 'Valkey 인스턴스 {{ $labels.instance }} 가 2분 이상 down 상태입니다. (Exporter Down 또는 Database 연결 불가)'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: ValkeyMemoryCritical
         expr: |
@@ -33,7 +33,7 @@ groups:
         annotations:
           summary: 'Valkey 메모리 90% 초과: {{ $labels.instance }}'
           description: 'Valkey 인스턴스 메모리 사용률이 90%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: ValkeyRejectedConnections
         expr:
@@ -46,7 +46,7 @@ groups:
         annotations:
           summary: 'Valkey 연결 거부 발생: {{ $labels.instance }}'
           description: 'Valkey가 연결을 거부하고 있습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
   # ============================================================================
   # [4] Databases (PostgreSQL)
@@ -62,7 +62,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 다운'
           description: 'PostgreSQL 데이터베이스가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: PostgresConnectionsExhausted
         expr: (sum(pg_stat_activity_count) by (datname) / sum(pg_settings_max_connections) by (datname)) > 0.8
@@ -73,7 +73,7 @@ groups:
         annotations:
           summary: 'Postgres 연결 고갈 위험: {{ $labels.datname }}'
           description: '데이터베이스 {{ $labels.datname }}의 활성 연결 수가 80%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: PostgresqlRestarted
         expr: time() - pg_postmaster_start_time_seconds < 60
@@ -84,7 +84,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 재시작됨: {{ $labels.instance }}'
           description: 'PostgreSQL이 최근 재시작되었습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: PostgresqlExporterError
         expr: pg_exporter_last_scrape_error > 0
@@ -95,7 +95,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 익스포터 에러: {{ $labels.instance }}'
           description: 'PostgreSQL 익스포터에서 에러가 발생했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: PostgresTooManyConnections
         expr: sum by (instance, job, server) (pg_stat_activity_count) > min by
@@ -118,7 +118,7 @@ groups:
         annotations:
           summary: 'Postgres 교착 상태 발생: {{ $labels.instance }}'
           description: '최근 1분간 {{ $value }} 개의 데드락이 발생했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: PostgresHighRollbackRate
         expr: >
@@ -158,7 +158,7 @@ groups:
         annotations:
           summary: 'PostgreSQL 테이블 VACUUM 미수행'
           description: '테이블 {{ $labels.relname }}이 10일간 자동 VACUUM되지 않았습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
   # ============================================================================
   # [6] Vector DB (Qdrant)
@@ -175,7 +175,7 @@ groups:
         annotations:
           summary: 'Qdrant 서비스 다운'
           description: 'Qdrant 인스턴스 {{ $labels.instance }} 가 2분 이상 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: QdrantHighMemoryUsage
         expr: memory_resident_bytes > 2 * 1024 * 1024 * 1024
@@ -186,7 +186,7 @@ groups:
         annotations:
           summary: 'Qdrant 메모리 사용량 높음'
           description: "Qdrant 프로세스 메모리(resident)가 2GiB를 초과했습니다. 현재 값: {{ $value | humanize1024 }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
       - alert: QdrantHighOpenFds
         expr: process_open_fds / process_max_fds > 0.8
@@ -197,7 +197,7 @@ groups:
         annotations:
           summary: 'Qdrant 파일 디스크립터 사용률 80% 초과'
           description: 'Qdrant 프로세스의 FD 사용률이 80%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
 
   # ============================================================================
   # [7] Object Storage (SeaweedFS)
@@ -214,7 +214,7 @@ groups:
         annotations:
           summary: 'SeaweedFS S3 게이트웨이 다운'
           description: 'SeaweedFS S3 {{ $labels.instance }} 메트릭(9327)이 2분 이상 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
 
       # The volume data lives under ${DEFAULT_DATA_DIR}/seaweedfs/volume, whose
       # filesystem is mounted at /home/hyunyoun/storage on this host. Change the
@@ -230,4 +230,4 @@ groups:
         annotations:
           summary: 'SeaweedFS 데이터 디스크 여유 공간 15% 미만'
           description: '{{ $labels.mountpoint }} 여유 공간이 {{ $value | humanizePercentage }} 입니다. 볼륨 서버는 20GiB 미만에서 쓰기를 멈춥니다(-minFreeSpace).'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/catalog/04-data/0024-seaweedfs/runbook.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'

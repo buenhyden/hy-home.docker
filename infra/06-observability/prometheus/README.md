@@ -48,9 +48,9 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 ### 2. Traceability
 
-- **System Guide**: `docs/05.operations/catalog/06-observability/0045-prometheus/guide.md`
-- **Operations Policy**: `docs/05.operations/catalog/06-observability/0045-prometheus/policy.md`
-- **Runbook**: `docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md`
+- **System Guide**: `docs/05.operations/guides/0045-prometheus.md`
+- **Operations Policy**: `docs/05.operations/policies/0045-prometheus.md`
+- **Runbook**: `docs/05.operations/runbooks/0045-prometheus.md`
 
 ## Overview
 
@@ -104,14 +104,14 @@ infra/06-observability/prometheus/
 - Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `alerting`, `batch-metrics`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d prometheus`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0045-prometheus/`; IDs `GDE-0045`, `POL-0045`, `RUN-0045`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0045-prometheus.md`; IDs `GDE-0045`, `POL-0045`, `RUN-0045`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
 - [infra/README.md](../../README.md)
 - `docs/05.operations/README.md`
-- Prometheus usage guide (`docs/05.operations/catalog/06-observability/0045-prometheus/guide.md`)
-- Prometheus operations policy (`docs/05.operations/catalog/06-observability/0045-prometheus/policy.md`)
-- Prometheus recovery runbook (`docs/05.operations/catalog/06-observability/0045-prometheus/runbook.md`)
+- Prometheus usage guide (`docs/05.operations/guides/0045-prometheus.md`)
+- Prometheus operations policy (`docs/05.operations/policies/0045-prometheus.md`)
+- Prometheus recovery runbook (`docs/05.operations/runbooks/0045-prometheus.md`)
 - [Documentation index](../../../docs/README.md)

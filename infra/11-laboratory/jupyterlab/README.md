@@ -82,8 +82,8 @@ Runtime pins are owned by the Compose/Dockerfile declarations; the
 
 ## Related Documents
 
-- **Guide**: JupyterLab usage guide (`docs/05.operations/catalog/11-laboratory/0089-jupyterlab/guide.md`)
-- **Policy**: JupyterLab operations policy (`docs/05.operations/catalog/11-laboratory/0089-jupyterlab/policy.md`)
-- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/catalog/11-laboratory/0089-jupyterlab/runbook.md`)
+- **Guide**: JupyterLab usage guide (`docs/05.operations/guides/0089-jupyterlab.md`)
+- **Policy**: JupyterLab operations policy (`docs/05.operations/policies/0089-jupyterlab.md`)
+- **Runbook**: JupyterLab recovery runbook (`docs/05.operations/runbooks/0089-jupyterlab.md`)
 - [MLflow package](../mlflow/README.md)
 - [Documentation index](../../../docs/README.md)

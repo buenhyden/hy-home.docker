@@ -112,8 +112,8 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_current_operations_policy_preserves_its_own_body_baseline(self) -> None:
         record = metadata.Record(
             pathlib.Path(
-                "docs/05.operations/catalog/00-workspace/"
-                "0001-common-optimizations-template-exceptions/policy.md"
+                "docs/05.operations/policies/"
+                "0001-common-optimizations-template-exceptions.md"
             ),
             {
                 "title": "Common Optimizations Template Exceptions",
@@ -158,8 +158,8 @@ class CurrentBodyContractTests(unittest.TestCase):
         def findings(extra: dict[str, object]) -> list[object]:
             record = metadata.Record(
                 pathlib.Path(
-                    "docs/05.operations/catalog/00-workspace/"
-                    "0001-common-optimizations-template-exceptions/policy.md"
+                    "docs/05.operations/policies/"
+                    "0001-common-optimizations-template-exceptions.md"
                 ),
                 {**base, **extra},
                 "policy",
@@ -901,7 +901,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
     def test_frozen_archive_and_nonruntime_guides_are_outside_scope(self) -> None:
         for path in (
             "docs/98.archive/legacy/README.md",
-            "docs/05.operations/catalog/00-workspace/0001-editing/guide.md",
+            "docs/05.operations/guides/0001-editing.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual([], self.findings("Document revision 7.8.9", path))
@@ -910,7 +910,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         )
 
     def test_operation_component_slug_uses_authored_source_authority(self) -> None:
-        path = "docs/05.operations/catalog/04-data/0001-exampledb/guide.md"
+        path = "docs/05.operations/guides/0001-exampledb.md"
         pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
         self.assertEqual([], self.findings(pointer + "Connection setup.", path))
         self.assertIn(
@@ -934,9 +934,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             registry = root / "infra/tech-stack.versions.json"
             registry.parent.mkdir(parents=True)
             registry.write_text(json.dumps({"entries": list(self.ENTRIES)}))
-            document = (
-                root / "docs/05.operations/catalog/04-data/9999-exampledb/policy.md"
-            )
+            document = root / "docs/05.operations/policies/9999-exampledb.md"
             document.parent.mkdir(parents=True)
             source = root / "infra/04-data/exampledb/docker-compose.yml"
             source.parent.mkdir(parents=True)
@@ -1087,8 +1085,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         )
         record = metadata.Record(
             pathlib.Path(
-                "docs/05.operations/catalog/02-auth/"
-                "0079-application-auth-integration/guide.md"
+                "docs/05.operations/guides/0079-application-auth-integration.md"
             ),
             {},
             "operation/guide",
@@ -1252,12 +1249,12 @@ class RuntimeVersionBodyTests(unittest.TestCase):
 
             cases = (
                 (
-                    "docs/05.operations/catalog/04-data/0025-cassandra/policy.md",
+                    "docs/05.operations/policies/0025-cassandra.md",
                     "[Runtime](/infra/04-data/nosql/cassandra/docker-compose.yml)\n"
                     "Cassandra 5.0.8 compatibility boundary.\n",
                 ),
                 (
-                    "docs/05.operations/catalog/00-workspace/0001-auth/guide.md",
+                    "docs/05.operations/guides/0001-auth.md",
                     "[Runtime](/infra/04-data/nosql/mongodb/docker-compose.yml)\n"
                     "MongoDB 8.3.9 migration boundary.\n",
                 ),

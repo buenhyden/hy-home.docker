@@ -118,8 +118,8 @@ Tracked infra artifact가 없는 신규 workflow service는 active workflow arch
 - **PRD**: [../01.requirements/0008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Spec**: [../03.specs/008-workflow/spec.md](0007-workflow-architecture.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/guide.md)
-- **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/catalog/07-workflow/0054-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/0054-workflow-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/0054-workflow-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/0054-workflow-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

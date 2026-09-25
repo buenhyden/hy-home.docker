@@ -151,8 +151,8 @@ Runtime:
 
 ## Related Documents
 
-- **Guide**: `docs/05.operations/catalog/02-auth/0014-keycloak/guide.md`
-- **Policy**: `docs/05.operations/catalog/02-auth/0014-keycloak/policy.md`
-- **Runbook**: `docs/05.operations/catalog/02-auth/0014-keycloak/runbook.md`
-- **Integration**: `docs/05.operations/catalog/02-auth/0079-application-auth-integration/guide.md`
+- **Guide**: `docs/05.operations/guides/0014-keycloak.md`
+- **Policy**: `docs/05.operations/policies/0014-keycloak.md`
+- **Runbook**: `docs/05.operations/runbooks/0014-keycloak.md`
+- **Integration**: `docs/05.operations/guides/0079-application-auth-integration.md`
 - [Documentation index](../../../docs/README.md)

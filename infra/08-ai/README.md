@@ -54,10 +54,10 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. Read the Ollama Usage Guide (`docs/05.operations/catalog/08-ai/0056-ollama/guide.md`).
-2. Follow the Open WebUI Usage Guide (`docs/05.operations/catalog/08-ai/0057-open-webui/guide.md`) and RAG Workflow Guide (`docs/05.operations/catalog/08-ai/0059-rag-workflow/guide.md`).
-3. Check the operations policy index (`docs/05.operations/catalog/08-ai/README.md`) for GPU, model, access, and logging controls.
-4. Consult the AI Runbooks (`docs/05.operations/catalog/08-ai/README.md`) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
+1. Read the Ollama Usage Guide (`docs/05.operations/guides/0056-ollama.md`).
+2. Follow the Open WebUI Usage Guide (`docs/05.operations/guides/0057-open-webui.md`) and RAG Workflow Guide (`docs/05.operations/guides/0059-rag-workflow.md`).
+3. Check the operations policy index (`docs/05.operations/policies/README.md`) for GPU, model, access, and logging controls.
+4. Consult the AI Runbooks (`docs/05.operations/runbooks/README.md`) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
 
 5. Always pull models explicitly via `ollama pull <model>` before referencing them in RAG.
 6. Monitor VRAM usage via `ollama-exporter` to prevent OOM during concurrent inference.
@@ -109,12 +109,12 @@ Run from the repository root: `docker compose --profile ai config --quiet` for s
 | `open-webui` | HOME | `ai`, `ai-llm` |
 | `comfyui` | HOME | `ai`, `ai-image` |
 
-The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0056` under `docs/05.operations/catalog/08-ai/0056-ollama/`, `GDE/POL/RUN-0057` under `.../0057-open-webui/`, and `GDE/POL/RUN-0081` under `.../0081-comfyui/`.
+The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0056` under `docs/05.operations/guides/0056-ollama.md`, `GDE/POL/RUN-0057` under `.../0057-open-webui/`, and `GDE/POL/RUN-0081` under `.../0081-comfyui/`.
 
 ## Related Documents
 
 - [infra/README.md](../README.md)
-- Operations guides - 08-ai (`docs/05.operations/catalog/08-ai/README.md`)
-- Operations policies - 08-ai (`docs/05.operations/catalog/08-ai/README.md`)
-- Operations runbooks - 08-ai (`docs/05.operations/catalog/08-ai/README.md`)
+- Operations guides - 08-ai (`docs/05.operations/guides/README.md`)
+- Operations policies - 08-ai (`docs/05.operations/policies/README.md`)
+- Operations runbooks - 08-ai (`docs/05.operations/runbooks/README.md`)
 - [Documentation index](../../docs/README.md)

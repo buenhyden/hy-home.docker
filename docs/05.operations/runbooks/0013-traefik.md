@@ -1,0 +1,123 @@
+---
+title: "01-Gateway Traefik Runbook"
+version: "1.0.0"
+type: "operation/runbook"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-19"
+layer: "operations"
+artifact_id: "RUN-0013"
+parent_ids:
+- "GDE-0013"
+created: "2026-05-17"
+---
+
+# 01-Gateway Traefik Runbook
+
+## Overview
+
+이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
+
+> Scope: Traefik Primary Gateway Recovery
+
+### Purpose
+
+- `gateway-standard-chain` 회귀 시 신속 복구
+- Dashboard 인증/접근 장애 진단
+- Traefik 서비스 정상성 복원
+
+## When to Use
+
+- dashboard 접근 실패(401 loop, 429 burst, 5xx)
+- 미들웨어 체인 누락/오타/잘못된 순서
+- Traefik healthcheck 실패
+
+## Procedure
+
+### Checklist
+
+- [ ] `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` 성공
+- [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실패 원인 확인
+- [ ] runtime 조치가 필요하면 root stack 실행 상태와 승인 범위를 확인
+
+### Steps
+
+1. 설정 검증
+   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+2. middleware 회귀 대응
+   - `infra/01-gateway/traefik/dynamic/middleware.yml`에서 아래 4개 블록 존재 확인:
+     - `req-rate-limit`
+     - `req-retry`
+     - `req-circuit-breaker`
+     - `gateway-standard-chain`
+3. dashboard 라우터 체인 확인
+   - `infra/01-gateway/traefik/docker-compose.yml`의 dashboard middleware 라벨이
+     `dashboard-auth@file,gateway-standard-chain@file`인지 확인
+4. runtime 상태 확인
+   - approved root stack이 실행 중이면 `docker compose ps traefik`으로 상태를 확인한다.
+   - runtime restart/reload가 필요하면 영향 범위와 승인자를 기록하고 root compose context에서만 수행한다.
+5. 사후 확인
+   - approved root stack이 실행 중이면 `docker compose exec traefik traefik healthcheck --ping`을 실행한다.
+
+### Verification Steps
+
+- [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 통과
+- [ ] dashboard 접근 시 BasicAuth 요구 및 인증 성공
+- [ ] 기존 라우팅 규칙 회귀 없음
+
+### Observability and Evidence Sources
+
+- **Signals**: Traefik healthcheck, gateway access/error logs
+- **Evidence to Capture**:
+  - `docker compose logs --tail=200 traefik` from the approved running root stack
+  - 검증 스크립트 출력
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 직전 정상 커밋으로 `infra/01-gateway/traefik/*` 복원
+- [ ] runtime restart/reload가 승인되면 root compose context에서 Traefik 단위로만 수행
+- [ ] 롤백 후 `check-all-hardening.sh 01-gateway` 재실행
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+- **Trace Capture**: Traefik logs + CI job logs
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+Restore the last reviewed static/dynamic configuration from Git. Obtain the
+matching certificate set from its private owner without copying keys into the
+repository or evidence. Validate `core`, run gateway hardening, then start only
+`traefik` in an isolated/canary route context and verify health, dashboard
+BasicAuth, one ForwardAuth route, one native OIDC route, metrics and logs before
+accepting 80/443 traffic. The tracked config has no ACME storage file to restore.
+This planned recovery was not executed during the 2026-09-20 correction.
+
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
+## Traceability
+
+- Declared parent: [01-Gateway Traefik Usage Guide](../guides/0013-traefik.md) (`GDE-0013`)
+- Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Policy](../policies/0013-traefik.md) (`POL-0013`)
+
+## Related Documents
+
+- [Official upstream operational documentation](https://doc.traefik.io/traefik/)
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+
+- [Operations index](../README.md)
+- [Usage guide](../guides/0013-traefik.md)
+- [Operations policy](../policies/0013-traefik.md)

@@ -1,0 +1,85 @@
+---
+title: "Airflow Operations Policy"
+version: "1.1.2"
+type: "operation/policy"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-23"
+layer: "operations"
+artifact_id: "POL-0050"
+parent_ids:
+- "AD-0007"
+created: "2026-05-17"
+---
+
+# Airflow Operations Policy
+
+## Overview
+
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.
+
+## Policy Scope
+
+- Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`) 관리
+- 메타데이터 DB 및 브로커(Valkey) 연결 정책
+- DAG 배포 및 운영 환경 보안 통제
+
+- **Systems**: Apache Airflow, CeleryExecutor
+- **Agents**: CI/CD 배포 에이전트, 모니터링 에이전트
+- **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
+
+## Controls
+
+- **Required**:
+  - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
+  - 민감 정보는 반드시 Secret Backend(Docker Secrets/OpenBao) 및 Airflow Connections를 통해 관리함.
+  - `dedicated-valkey` profile 선택 여부가 만드는 broker 차이(`mng-valkey` vs `airflow-valkey`)를 변경 문서에 명시함.
+  - 인증 manager는 Keycloak auth manager를 사용하고, client secret은
+    `airflow_keycloak_client_secret` Docker Secret으로만 주입함.
+  - Airflow 이미지는 `infra/07-workflow/airflow/Dockerfile`에서 고정된 Airflow/
+    Python constraints와 Keycloak provider 버전으로 재현 가능하게 빌드함.
+  - API server의 temporary CA bundle과 `--proxy-headers` 실행을 유지하고,
+    `FORWARDED_ALLOW_IPS`는 신뢰된 Traefik 주소로 제한함.
+  - 운영 승격 전 `AIRFLOW__CORE__LOAD_EXAMPLES` 상태를 별도 변경/evidence로 검토함.
+- **Allowed**:
+  - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
+  - 읽기 전용 UI 접근 (GUEST 권한).
+- **Disallowed**:
+  - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
+  - 사용자 인증(FAB) 또는 gateway SSO가 비활성화된 상태에서의 UI 노출.
+
+### Lifecycle and data controls
+
+- Core Airflow services remain `HOME`; the dedicated broker pair remains `OPTIONAL`. Selecting `dedicated-valkey` does not authorize or perform a broker cutover without the matching host/secret variables and a drained-queue change plan.
+- PostgreSQL metadata, the current `airflow_fernet_key`, DAGs, plugins, config, and required logs are one recovery unit. A database copy without the matching Fernet key cannot recover encrypted Connections.
+- Pause schedules and producers and reconcile running/queued tasks before backup, restore, broker migration, or schema upgrade. Do not treat Valkey queue contents as the authoritative task history.
+- Restore rehearsals must use an isolated project/network and restored copies, never overwrite production volumes. Verify DB migration level, DAG parsing, Connections decryption without printing values, worker/broker health, login, and a canary DAG.
+- Resource changes require before/after evidence; Compose limits are configuration, not proof of spare capacity. Removal requires exported evidence, a retained recovery set, revoked clients/secrets, and explicit deletion approval.
+
+## Exceptions
+
+- **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
+
+## Verification
+
+- **Static Check**: `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+- **Hardening Check**: `bash scripts/hardening/check-all-hardening.sh 07-workflow`
+- **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
+
+## Review Cadence
+
+- **Quarterly**: 매 분기별 리소스 사용량 분석 및 쿼터 조정.
+- **Per Release**: 새로운 Airflow 버전 또는 Provider 업데이트 시 정책 재검토.
+
+## Traceability
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](../guides/0050-airflow.md) (`GDE-0050`), [Runbook](../runbooks/0050-airflow.md) (`RUN-0050`)
+
+## Related Documents
+
+- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+
+- [Operations index](../README.md)
+- [Usage guide](../guides/0050-airflow.md)
+- [Recovery runbook](../runbooks/0050-airflow.md)

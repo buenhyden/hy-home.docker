@@ -210,8 +210,8 @@ role·policy는 별도 객체다. 실제 로그인 검증은
 - **Decision**: [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
 - **Decision**: [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
 - **Decision**: [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- **Operations**: [Keycloak guide](../../05.operations/catalog/02-auth/0014-keycloak/guide.md)
-- **Operations**: [OAuth2 Proxy guide](../../05.operations/catalog/02-auth/0015-oauth2-proxy/guide.md)
-- **Operations**: [Application authentication integration](../../05.operations/catalog/02-auth/0079-application-auth-integration/guide.md)
+- **Operations**: [Keycloak guide](../../05.operations/guides/0014-keycloak.md)
+- **Operations**: [OAuth2 Proxy guide](../../05.operations/guides/0015-oauth2-proxy.md)
+- **Operations**: [Application authentication integration](../../05.operations/guides/0079-application-auth-integration.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.

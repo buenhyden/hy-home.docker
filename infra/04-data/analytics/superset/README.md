@@ -101,9 +101,9 @@ Starting the service requires runtime approval; first setup is in RUN-0097.
 
 ## Related Documents
 
-- **Guide**: Superset Usage Guide (`docs/05.operations/catalog/04-data/0097-superset/guide.md`)
-- **Policy**: Superset Operations Policy (`docs/05.operations/catalog/04-data/0097-superset/policy.md`)
-- **Runbook**: Superset Runbook (`docs/05.operations/catalog/04-data/0097-superset/runbook.md`)
+- **Guide**: Superset Usage Guide (`docs/05.operations/guides/0097-superset.md`)
+- **Policy**: Superset Operations Policy (`docs/05.operations/policies/0097-superset.md`)
+- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/0097-superset.md`)
 - [Documentation index](../../../../docs/README.md)
 
 ---
@@ -122,7 +122,7 @@ Starting the service requires runtime approval; first setup is in RUN-0097.
 | Labels | `hy-home.tier`, Traefik router `superset` |
 | Secret refs | `superset_secret_key`, `superset_db_password`, `superset_oidc_client_secret`, `mng_postgres_password` (provisioning only) |
 | Healthcheck | `curl -fsS http://localhost:8088/health` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0097-superset/guide.md`), Policy (`docs/05.operations/catalog/04-data/0097-superset/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0097-superset/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0097-superset.md`), Policy (`docs/05.operations/policies/0097-superset.md`), Runbook (`docs/05.operations/runbooks/0097-superset.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Check `/health` and the init job log, then follow the runbook. |
 

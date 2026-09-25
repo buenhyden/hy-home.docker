@@ -134,7 +134,7 @@ Detailed current findings are not repeated here. They are consolidated in
   the [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md) retains the dated implementation result.
 - Operations authority: [Stage 05](../../../05.operations/README.md).
 - Audit/data evidence: implementation overview,
-  [Compose defects](../../../05.operations/catalog/09-tooling/0061-k6/guide.md),
+  [Compose defects](../../../05.operations/guides/0061-k6.md),
   LLM Wiki index, and
   repository map.
 - Package registry: [Research index](../README.md) and

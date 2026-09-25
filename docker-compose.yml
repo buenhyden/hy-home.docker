@@ -321,7 +321,7 @@ secrets:
 include:
   # Every file below is included unconditionally; Compose profiles decide what
   # starts. Selecting no profile resolves no service. The profile vocabulary is
-  # docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md.
+  # docs/05.operations/policies/0078-compose-profile-vocabulary.md.
   #
   # Six former sibling-pair files are gone rather than excluded: each declared
   # the same service names as its partner, and include: merges before profiles

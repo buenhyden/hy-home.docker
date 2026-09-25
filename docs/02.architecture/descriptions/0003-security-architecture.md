@@ -82,7 +82,7 @@ path stays out of service and must never share storage with OpenBao.
 
 ## Traceability
 
-Operational detail lives in [OpenBao operations](../../05.operations/catalog/03-security/0085-openbao/guide.md).
+Operational detail lives in [OpenBao operations](../../05.operations/guides/0085-openbao.md).
 
 ## Related Documents
 

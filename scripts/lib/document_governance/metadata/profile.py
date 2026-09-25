@@ -887,12 +887,11 @@ def infer_artifact_type(
             return "task"
         return "spec"
     if normalized.startswith("docs/05.operations/"):
-        if name == "guide.md":
-            return "guide"
-        if name == "policy.md":
-            return "policy"
-        if name == "runbook.md":
-            return "runbook"
+        role = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}.get(
+            pathlib.PurePosixPath(normalized).parent.name
+        )
+        if role is not None:
+            return role
     if normalized.startswith("docs/05.operations/incidents/"):
         return "postmortem" if name == "postmortem.md" else "incident"
     if normalized.startswith("docs/90.references/audits/"):
@@ -2184,8 +2183,9 @@ def build_registry_profiles(registry: DocumentRegistry) -> dict[str, object]:
             "terminal_statuses": terminal_statuses,
             "allowed_parent_types": parents,
             "allow_empty_parents": (
-                profile_id in {"research", "audit", "data"}
-                or profile.get("identity_relation") == "subject-member"
+                # Operations documents may be workspace roots with no parent.
+                profile_id
+                in {"research", "audit", "data", "guide", "policy", "runbook"}
                 or not parents
             ),
             "allow_additional": False,

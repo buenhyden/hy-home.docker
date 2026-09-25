@@ -195,11 +195,22 @@ _CATALOG_MEMBER = re.compile(
     r"(?P<member>guide|policy|runbook)\.md$"
 )
 _CATALOG_MEMBER_PREFIXES = {"guide": "GDE", "policy": "POL", "runbook": "RUN"}
+# The role layout (ADR-0043) names the kind by directory and the artifact number
+# by filename, so both parts of the identity come from the path itself.
+_ROLE_MEMBER = re.compile(
+    r"docs/05\.operations/(?P<directory>guides|policies|runbooks)/"
+    r"(?P<number>[0-9]{4})-[^/]+\.md$"
+)
+_ROLE_MEMBER_PREFIXES = {"guides": "GDE", "policies": "POL", "runbooks": "RUN"}
 
 
 def tombstone_identity(retired: str, number: str) -> str:
     """Derive the inherited `tomb-<retired artifact id>` tombstone identity."""
 
+    member = _ROLE_MEMBER.match(retired)
+    if member is not None:
+        prefix = _ROLE_MEMBER_PREFIXES[member.group("directory")]
+        return f"tomb-{prefix}-{member.group('number')}"
     catalog = _CATALOG_MEMBER.match(retired)
     if catalog is not None:
         prefix = _CATALOG_MEMBER_PREFIXES[catalog.group("member")]

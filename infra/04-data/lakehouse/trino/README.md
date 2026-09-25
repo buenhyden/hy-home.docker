@@ -93,9 +93,9 @@ Starting the service requires runtime approval.
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/catalog/04-data/0094-lakehouse/guide.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/catalog/04-data/0094-lakehouse/policy.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/catalog/04-data/0094-lakehouse/runbook.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
 - [Documentation index](../../../../docs/README.md)
 
 ---
@@ -114,7 +114,7 @@ Starting the service requires runtime approval.
 | Labels | `hy-home.tier` |
 | Secret refs | `seaweedfs_s3_lakehouse_secret_key` |
 | Healthcheck | `/usr/lib/trino/bin/health-check` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0094-lakehouse/guide.md`), Policy (`docs/05.operations/catalog/04-data/0094-lakehouse/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0094-lakehouse/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Run `SHOW SCHEMAS FROM lakehouse`, then follow the runbook. |
 

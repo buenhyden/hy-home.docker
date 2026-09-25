@@ -87,9 +87,9 @@ Run these read-only checks from the repository root. Starting or changing Regist
 
 ## Related Documents
 
-- **Guide**: Registry Guide (`docs/05.operations/catalog/09-tooling/0065-registry/guide.md`)
-- **Policy**: Registry Operations (`docs/05.operations/catalog/09-tooling/0065-registry/policy.md`)
-- **Runbook**: Registry Runbook (`docs/05.operations/catalog/09-tooling/0065-registry/runbook.md`)
+- **Guide**: Registry Guide (`docs/05.operations/guides/0065-registry.md`)
+- **Policy**: Registry Operations (`docs/05.operations/policies/0065-registry.md`)
+- **Runbook**: Registry Runbook (`docs/05.operations/runbooks/0065-registry.md`)
 - [Documentation index](../../../docs/README.md)
 
 ---
@@ -108,7 +108,7 @@ Run these read-only checks from the repository root. Starting or changing Regist
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `registry` |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0065-registry/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0065-registry/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0065-registry/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0065-registry.md`), Policy (`docs/05.operations/policies/0065-registry.md`), Runbook (`docs/05.operations/runbooks/0065-registry.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 

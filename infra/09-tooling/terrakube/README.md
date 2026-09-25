@@ -66,7 +66,7 @@ terrakube/
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule`, plus 9 more |
 | Secret refs | names: `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/seaweedfs_s3_terrakube_secret_key`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
 | Healthcheck | Compose healthcheck declared for `terrakube-api`, `terrakube-ui`, `terrakube-executor` |
-| Operations | Guide (`docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md`), Policy (`docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md`), Runbook (`docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0069-terrakube.md`), Policy (`docs/05.operations/policies/0069-terrakube.md`), Runbook (`docs/05.operations/runbooks/0069-terrakube.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
 
@@ -113,9 +113,9 @@ After the stack is enabled with the `iac` profile, use these routed endpoints:
 ## Related Documents
 
 - [Tooling tier README](../README.md)
-- Terrakube guide (`docs/05.operations/catalog/09-tooling/0069-terrakube/guide.md`)
-- Terrakube operations policy (`docs/05.operations/catalog/09-tooling/0069-terrakube/policy.md`)
-- Terrakube recovery runbook (`docs/05.operations/catalog/09-tooling/0069-terrakube/runbook.md`)
+- Terrakube guide (`docs/05.operations/guides/0069-terrakube.md`)
+- Terrakube operations policy (`docs/05.operations/policies/0069-terrakube.md`)
+- Terrakube recovery runbook (`docs/05.operations/runbooks/0069-terrakube.md`)
 - [Root infra README](../../README.md)
 - [Documentation index](../../../docs/README.md)
 

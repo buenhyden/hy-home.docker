@@ -30,13 +30,17 @@ from scripts.lib.document_governance.operations_catalog import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
+ROLE_DIRECTORIES = ("guides", "policies", "runbooks")
+ROLE_KINDS = {"guides": "guide", "policies": "policy", "runbooks": "runbook"}
+
+
 def current_role_paths(root: pathlib.Path = ROOT) -> tuple[pathlib.PurePosixPath, ...]:
     return tuple(
         pathlib.PurePosixPath(path.relative_to(root).as_posix())
+        for directory in ROLE_DIRECTORIES
         for path in sorted(
-            (root / "docs/05.operations/catalog").glob("*/[0-9][0-9][0-9][0-9]-*/*.md")
+            (root / "docs/05.operations" / directory).glob("[0-9][0-9][0-9][0-9]-*.md")
         )
-        if path.name in {"guide.md", "policy.md", "runbook.md"}
     )
 
 
@@ -81,26 +85,73 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             self.assertFalse((root / "docs/98.archive").exists())
             self.assertEqual(set(), finding_codes(root))
 
-    def test_prefixed_subject_is_rejected(self) -> None:
-        context, root = self._fixture()
-        with context:
-            subject = next(
-                (root / "docs/05.operations/catalog/00-workspace").glob("0001-*")
-            )
-            subject.rename(subject.with_name(f"ops-{subject.name}"))
-            self.assertIn("subject-path-invalid", finding_codes(root))
+    def _track(self, root: pathlib.Path, *paths: pathlib.Path) -> None:
+        subprocess.run(
+            ["git", "add", "-A", *(str(path) for path in paths)],
+            cwd=root,
+            check=True,
+        )
 
-    def test_invalid_domain_route_is_rejected(self) -> None:
+    def test_prefixed_or_nested_role_member_is_rejected(self) -> None:
+        for mutation in ("prefixed", "nested"):
+            with self.subTest(mutation=mutation):
+                context, root = self._fixture()
+                with context:
+                    member = root / self.role_paths[0]
+                    if mutation == "prefixed":
+                        target = member.with_name(f"ops-{member.name}")
+                    else:
+                        target = member.parent / "00-workspace" / member.name
+                        target.parent.mkdir()
+                    member.rename(target)
+                    self._track(root, member.parent)
+                    self.assertIn("role-path-invalid", finding_codes(root))
+
+    def test_file_number_must_equal_the_kept_artifact_number(self) -> None:
         context, root = self._fixture()
         with context:
-            subject = next(
-                (root / "docs/05.operations/catalog/00-workspace").glob("0001-*")
+            member = root / self.role_paths[0]
+            renumbered = member.with_name("0999" + member.name[4:])
+            member.rename(renumbered)
+            self._track(root, member.parent)
+            self.assertIn("role-identity-invalid", finding_codes(root))
+
+    def test_slug_is_unique_within_one_role_directory(self) -> None:
+        context, root = self._fixture()
+        with context:
+            member = root / self.role_paths[0]
+            text = member.read_text(encoding="utf-8")
+            artifact = yaml.safe_load(text.split("---\n", 2)[1])["artifact_id"]
+            prefix = artifact.split("-", 1)[0]
+            copy = member.with_name("0999" + member.name[4:])
+            copy.write_text(
+                text.replace(
+                    f'artifact_id: "{artifact}"', f'artifact_id: "{prefix}-0999"', 1
+                ),
+                encoding="utf-8",
             )
-            invalid_domain = root / "docs/05.operations/catalog/workspace"
-            invalid_domain.mkdir()
-            (invalid_domain / "README.md").write_text("invalid\n", encoding="utf-8")
-            subject.rename(invalid_domain / subject.name)
-            self.assertIn("domain-path-invalid", finding_codes(root))
+            self._track(root, copy)
+            self.assertIn("role-slug-duplicate", finding_codes(root))
+
+    def test_role_index_lists_every_member_exactly_once(self) -> None:
+        for mutation in ("missing", "duplicate", "stale"):
+            with self.subTest(mutation=mutation):
+                context, root = self._fixture()
+                with context:
+                    member = root / self.role_paths[0]
+                    index = member.parent / "README.md"
+                    text = index.read_text(encoding="utf-8")
+                    link = f"({member.name})"
+                    lines = text.splitlines(keepends=True)
+                    row = next(line for line in lines if link in line)
+                    if mutation == "missing":
+                        text = text.replace(row, "", 1)
+                    elif mutation == "duplicate":
+                        text = text.replace(row, row + row, 1)
+                    else:
+                        text = text.replace(row, row.replace(link, "(0999-gone.md)"), 1)
+                    index.write_text(text, encoding="utf-8")
+                    self.assertIn("role-index-membership-invalid", finding_codes(root))
 
     def test_changed_or_duplicate_role_identity_is_rejected(self) -> None:
         context, root = self._fixture()
@@ -126,7 +177,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             )
 
     def test_release_and_parallel_role_roots_are_rejected(self) -> None:
-        for retired in ("releases", "guides"):
+        for retired in ("releases", "catalog"):
             with self.subTest(retired=retired):
                 context, root = self._fixture()
                 with context:
@@ -264,14 +315,14 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             registry_root.symlink_to(external_root, target_is_directory=True)
             self.assertIn("registry-invalid", finding_codes(root))
 
-    def test_registry_route_and_identity_relation_govern_catalog_leaves(self) -> None:
+    def test_registry_route_and_identity_relation_govern_role_leaves(self) -> None:
         mutations = (
             (
                 "path_pattern",
-                "docs/05.operations/guides/{number:4}-{slug}.md",
+                "docs/05.operations/runbooks/{number:4}-{slug}.md",
                 "role-path-profile-mismatch",
             ),
-            ("identity_relation", "direct", "role-identity-relation-invalid"),
+            ("identity_relation", "package-member", "role-identity-relation-invalid"),
         )
         for key, value, expected in mutations:
             with self.subTest(key=key):
@@ -295,7 +346,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             ),
             (
                 "identity_relation",
-                "subject-member",
+                "package-member",
                 "incident-identity-relation-invalid",
             ),
         )
@@ -348,7 +399,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         with context:
             role = root / next(path for path in self.role_paths)
             text = role.read_text(encoding="utf-8")
-            role_name = role.stem
+            role_name = ROLE_KINDS[role.parent.name]
             role.write_text(
                 text.replace(f'type: "operation/{role_name}"\n', "", 1),
                 encoding="utf-8",
@@ -359,7 +410,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         context, root = self._fixture()
         with context:
             role = root / next(path for path in self.role_paths)
-            role_name = role.stem
+            role_name = ROLE_KINDS[role.parent.name]
             text = role.read_text(encoding="utf-8")
             role.write_text(
                 text.replace(
@@ -461,30 +512,28 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                         path.mkdir()
                     self.assertIn("role-file-invalid", finding_codes(root))
 
-    def test_untracked_valid_subject_is_not_current_membership(self) -> None:
+    def test_untracked_valid_member_is_not_current_membership(self) -> None:
         context, root = self._fixture()
         with context:
-            source = root / "docs/05.operations/catalog/01-gateway/0011-nginx"
-            target = source.with_name("0999-untracked")
-            shutil.copytree(source, target)
-            for role in ("guide", "policy", "runbook"):
-                path = target / f"{role}.md"
-                path.write_text(
-                    re.sub(
-                        rf"^artifact_id: {role}-[0-9]{{4}}$",
-                        f"artifact_id: {role}-9999",
-                        path.read_text(encoding="utf-8"),
-                        count=1,
-                        flags=re.MULTILINE,
-                    ),
-                    encoding="utf-8",
-                )
+            source = root / "docs/05.operations/guides/0011-nginx.md"
+            target = source.with_name("0999-untracked.md")
+            target.write_text(
+                re.sub(
+                    r'^artifact_id: "GDE-[0-9]{4}"$',
+                    'artifact_id: "GDE-0999"',
+                    source.read_text(encoding="utf-8"),
+                    count=1,
+                    flags=re.MULTILINE,
+                ),
+                encoding="utf-8",
+            )
             self.assertIn("untracked-operations-path", finding_codes(root))
 
     def test_structural_indexes_must_be_regular_and_symlink_free(self) -> None:
         for relative, expected in (
             ("docs/05.operations/README.md", "operations-root-index-invalid"),
             ("docs/05.operations/incidents/README.md", "incident-index-invalid"),
+            ("docs/05.operations/guides/README.md", "role-index-invalid"),
         ):
             for mutation in ("symlink", "directory", "fifo"):
                 with self.subTest(relative=relative, mutation=mutation):
@@ -500,19 +549,12 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                             os.mkfifo(path)
                         self.assertIn(expected, finding_codes(root))
 
-    def test_catalog_enumeration_is_bounded(self) -> None:
-        with mock.patch(
-            "scripts.lib.document_governance.operations_catalog.MAX_CATALOG_ENTRIES", 1
-        ):
-            self.assertIn("catalog-bounds", finding_codes())
-
-    def test_operations_root_domain_and_subject_enumeration_are_independently_bounded(
+    def test_operations_root_and_role_enumeration_are_independently_bounded(
         self,
     ) -> None:
         mutations = (
             ("MAX_OPERATIONS_ROOT_ENTRIES", "operations-root-bounds"),
-            ("MAX_DOMAIN_ENTRIES", "domain-bounds"),
-            ("MAX_SUBJECT_ENTRIES", "subject-bounds"),
+            ("MAX_ROLE_ENTRIES", "role-bounds"),
         )
         for constant, expected in mutations:
             with (
@@ -734,6 +776,31 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
             with self.assertRaisesRegex(OperationsAuthorityError, "stderr"):
                 _run_git_bounded(root, ["show", "HEAD:missing"], max_stderr=8)
 
+    def test_active_scan_rejects_catalog_routes_and_allows_role_routes(self) -> None:
+        cases = (
+            ("See docs/05.operations/catalog/00-workspace/0001-a/guide.md.", True),
+            ("See docs/05.operations/catalog/README.md.", True),
+            ("See docs/05.operations/guides/0001-a.md.", False),
+            ("See docs/05.operations/runbooks/0009-release-management.md.", False),
+            (
+                "See docs/05.operations/catalog/00-workspace/0001-a/guide.md. "
+                "retired-route-record",
+                False,
+            ),
+        )
+        for text, rejected in cases:
+            with self.subTest(text=text), self._repo() as directory:
+                root = pathlib.Path(directory)
+                (root / "active.md").write_text(text + "\n", encoding="utf-8")
+                subprocess.run(["git", "add", "active.md"], cwd=root, check=True)
+                codes = {
+                    finding.code
+                    for finding in validate_active_operations_references(root)
+                }
+                self.assertEqual(
+                    rejected, "active-operations-reference-invalid" in codes
+                )
+
     def test_active_scan_allows_deletion_but_rejects_nonregular_tracked_paths(
         self,
     ) -> None:
@@ -766,10 +833,7 @@ class BoundedGitAndTrackedInputTests(unittest.TestCase):
 
 
 class ComposeProfileVocabularyTests(unittest.TestCase):
-    POLICY = (
-        "docs/05.operations/catalog/00-workspace/"
-        "0078-compose-profile-vocabulary/policy.md"
-    )
+    POLICY = "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
     REQUIRED_HOME = (
         "core",
         "mng",
@@ -1464,7 +1528,9 @@ class ServiceInventoryTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         root = pathlib.Path(temporary.name)
         self.compose = "infra/04-data/example/docker-compose.yml"
-        self.subject = "docs/05.operations/catalog/04-data/0001-example"
+        self.guide = "docs/05.operations/guides/0001-example.md"
+        self.policy = "docs/05.operations/policies/0001-example.md"
+        self.runbook = "docs/05.operations/runbooks/0001-example.md"
         files = {
             self.compose: """services:
   database:
@@ -1492,18 +1558,16 @@ volumes:
     security_opt: [no-new-privileges:true]
     cap_drop: [ALL]
 """,
-            self.subject + "/guide.md": """---
+            self.guide: """---
 type: operation/guide
 status: active
 implementation_services:
   infra/04-data/example/docker-compose.yml: [database, exporter]
 ---
-[Compose](../../../../../infra/04-data/example/docker-compose.yml)
+[Compose](../../../infra/04-data/example/docker-compose.yml)
 """,
-            self.subject
-            + "/policy.md": "---\ntype: operation/policy\nstatus: active\n---\n",
-            self.subject
-            + "/runbook.md": "---\ntype: operation/runbook\nstatus: active\n---\n",
+            self.policy: "---\ntype: operation/policy\nstatus: active\n---\n",
+            self.runbook: "---\ntype: operation/runbook\nstatus: active\n---\n",
             "renovate.json5": "{}\n",
         }
         for name, value in files.items():
@@ -1620,12 +1684,12 @@ implementation_services:
 
     def test_broken_triplet_and_missing_guide_source_are_rejected(self):
         root = self._repo()
-        policy = root / self.subject / "policy.md"
+        policy = root / self.policy
         original = policy.read_text()
         policy.unlink()
         self.assertIn("service-operations-owner", self._codes(root))
         policy.write_text(original)
-        guide = root / self.subject / "guide.md"
+        guide = root / self.guide
         guide.write_text(guide.read_text().split("[Compose]")[0])
         self.assertIn("service-guide-source", self._codes(root))
 
@@ -1674,10 +1738,9 @@ implementation_services:
 
     def test_duplicate_service_ownership_is_rejected(self):
         root = self._repo()
-        duplicate = "docs/05.operations/catalog/04-data/0002-duplicate/guide.md"
+        duplicate = "docs/05.operations/guides/0002-duplicate.md"
         path = root / duplicate
-        path.parent.mkdir(parents=True)
-        path.write_text((root / self.subject / "guide.md").read_text())
+        path.write_text((root / self.guide).read_text())
         with mock.patch.object(
             operations_catalog,
             "_tracked_paths",
@@ -1775,7 +1838,7 @@ implementation_services:
 
     def test_guide_source_link_must_be_real_markdown_not_a_code_example(self):
         root = self._repo()
-        guide = root / self.subject / "guide.md"
+        guide = root / self.guide
         text = guide.read_text()
         prefix, link = text.split("[Compose]", 1)
         guide.write_text(prefix + "```markdown\n[Compose]" + link + "```\n")

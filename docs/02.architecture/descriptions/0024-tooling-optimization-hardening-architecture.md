@@ -120,8 +120,8 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
 - **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](0009-tooling-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/guide.md)
-- **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/catalog/09-tooling/0063-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/guides/0063-tooling-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/0063-tooling-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/runbooks/0063-tooling-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -61,7 +61,7 @@ supabase/
 | Labels | `hy-home.tier` |
 | Secret refs | names: `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, `supabase_service_key`, `supabase_dashboard_password`, `supabase_secret_key_base`, `supabase_vault_enc_key`, `supabase_pg_meta_crypto_key`, `supabase_openai_api_key`, `supabase_logflare_private_token`, `supabase_smtp_password`; mounts under `/run/secrets/` |
 | Healthcheck | Compose healthcheck declared for `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, plus 5 more |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0029-supabase/guide.md`), Policy (`docs/05.operations/catalog/04-data/0029-supabase/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0029-supabase/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0029-supabase.md`), Policy (`docs/05.operations/policies/0029-supabase.md`), Runbook (`docs/05.operations/runbooks/0029-supabase.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -106,9 +106,9 @@ Classification is `OPTIONAL`; all 13 services use exact profile `supabase`. Reco
 
 ## Related Documents
 
-- **Guide**: supabase.md (`docs/05.operations/catalog/04-data/0029-supabase/guide.md`)
-- **Policy**: supabase.md (`docs/05.operations/catalog/04-data/0029-supabase/policy.md`)
-- **Runbook**: supabase.md (`docs/05.operations/catalog/04-data/0029-supabase/runbook.md`)
+- **Guide**: supabase.md (`docs/05.operations/guides/0029-supabase.md`)
+- **Policy**: supabase.md (`docs/05.operations/policies/0029-supabase.md`)
+- **Runbook**: supabase.md (`docs/05.operations/runbooks/0029-supabase.md`)
 - [Documentation index](../../../../docs/README.md)
 
 ---

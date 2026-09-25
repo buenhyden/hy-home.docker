@@ -1,0 +1,125 @@
+---
+title: "CouchDB Usage Guide"
+version: "1.0.2"
+type: "operation/guide"
+status: "active"
+owner: "@buenhyden"
+updated: "2026-09-23"
+layer: "operations"
+artifact_id: "GDE-0026"
+parent_ids:
+- "POL-0026"
+implementation_services:
+  infra/04-data/nosql/couchdb/docker-compose.yml:
+  - 'couchdb-1'
+  - 'couchdb-2'
+  - 'couchdb-3'
+  - 'couchdb-cluster-init'
+created: "2026-05-10"
+---
+
+# CouchDB Usage Guide
+
+## Usage
+
+### Overview
+
+이 문서는 [CouchDB Compose 구현](../../../infra/04-data/nosql/couchdb/docker-compose.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
+
+### Current implementation
+
+| Field | Repository-specific decision |
+| --- | --- |
+| Consumer and data rationale | No confirmed HOME consumer; LAB document/replication evaluation. |
+| Source / updater | [Compose](../../../infra/04-data/nosql/couchdb/docker-compose.yml) owns image sources; dependency automation proposals require operator review. |
+| Services / profile | Three nodes plus `couchdb-cluster-init`; exact `couchdb`. |
+| Flow / dependency | init joins the same-host nodes and creates required system databases; clients use Traefik sticky routing. |
+| Exposure / persistence | HTTPS gateway only; per-node bind-backed data volumes. |
+| Environment / secrets | `COUCHDB_USERNAME` and node names; admin password and Erlang cookie are Docker Secrets. |
+| Health / resources | `/_up`, `/_membership`, init logs; nodes extend `template-stateful-med`. |
+| Security | Admin/cookie secret mounts and database `_security` objects; no direct host port. |
+| Backup / upgrade | Prefer replication; file backup must be quiesced/coherent. Follow upstream upgrade order only after isolated restore evidence. |
+| License / edition | Apache CouchDB source is Apache-2.0; no commercial clustering feature is assumed. |
+
+### Usage Type
+
+`system-guide`
+
+### Target Audience
+
+- Operator
+- Developer
+- AI Agent
+
+### Purpose
+
+CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반 admin/cookie 설정을 현재 compose 이름과 맞춰 사용할 수 있게 한다.
+
+### Prerequisites
+
+- 루트 [docker-compose.yml](../../../docker-compose.yml)는 CouchDB 파일을 include하며, 네 서비스는 모두 `couchdb` profile에 속한다.
+- `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `COUCHDB_USERNAME`, `couchdb_password`, `couchdb_cookie`가 준비되어 있어야 한다.
+- 로컬 점검은 가능하면 `couchdb-1` 내부에서 secret mount를 읽어 수행한다.
+
+### Step-by-step Instructions
+
+1. 서비스 구성을 렌더링한다.
+
+   ```bash
+   docker compose --profile couchdb config --quiet
+   ```
+
+2. 클러스터와 init job 상태를 확인한다.
+
+   ```bash
+   docker compose ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   ```
+
+3. 로컬 컨테이너 기준 health endpoint를 확인한다.
+
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_up"'
+   ```
+
+4. membership은 primary route 또는 `couchdb-1` 내부에서 확인한다.
+
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'
+   ```
+
+5. 외부 접근은 Traefik route `https://couchdb.${DEFAULT_URL}`와 sticky cookie 설정을 전제로 한다. 직접 host port publish는 현재 compose에 없다.
+
+### Common Pitfalls
+
+- 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
+- Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
+- 클러스터 init은 [curlimages/curl image declaration](../../../infra/04-data/nosql/couchdb/docker-compose.yml) 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
+- backup/restore는 database 단위 replication을 우선한다. file backup이 승인되면 config와 cluster metadata를 보존하고 upstream 순서대로 index files를 database files보다 먼저 복원한다.
+
+## Common Checks
+
+- `docker compose --profile couchdb config --quiet`
+- `docker compose logs couchdb-cluster-init`
+- `docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [CouchDB runbook](../runbooks/0026-couchdb.md)을 따른다.
+
+## Traceability
+
+- Declared parent: [CouchDB Operations Policy](../policies/0026-couchdb.md) (`POL-0026`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Policy](../policies/0026-couchdb.md) (`POL-0026`), [Runbook](../runbooks/0026-couchdb.md) (`RUN-0026`)
+
+## Related Documents
+
+- [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
+- [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
+- [CouchDB database security](https://docs.couchdb.org/en/stable/api/database/security.html)
+- [Apache CouchDB source and license](https://github.com/apache/couchdb)
+
+- [Operations index](../README.md)
+- [Operations policy](../policies/0026-couchdb.md)
+- [Recovery runbook](../runbooks/0026-couchdb.md)
+- [Infra README](../../../infra/04-data/nosql/couchdb/README.md)

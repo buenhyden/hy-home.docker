@@ -154,7 +154,7 @@ resolve_validate_selections() {
 }
 
 resolve_home_selection() {
-  python3 - "$BASE_DIR/docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md" <<'PY'
+  python3 - "$BASE_DIR/docs/05.operations/policies/0078-compose-profile-vocabulary.md" <<'PY'
 import pathlib
 import re
 import sys

@@ -110,14 +110,14 @@ alertmanager/
 - Classification: **HOME**. Exact profiles: `obs`, `alerting`.
 - Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d alertmanager`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/catalog/06-observability/0039-alertmanager/`; IDs `GDE-0039`, `POL-0039`, `RUN-0039`.
+- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0039-alertmanager.md`; IDs `GDE-0039`, `POL-0039`, `RUN-0039`.
 - Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
 
 ## Related Documents
 
-- **Guides**: `docs/05.operations/catalog/06-observability/0039-alertmanager/guide.md`
-- **Policy**: `docs/05.operations/catalog/06-observability/0039-alertmanager/policy.md`
-- **Runbook**: `docs/05.operations/catalog/06-observability/0039-alertmanager/runbook.md`
+- **Guides**: `docs/05.operations/guides/0039-alertmanager.md`
+- **Policy**: `docs/05.operations/policies/0039-alertmanager.md`
+- **Runbook**: `docs/05.operations/runbooks/0039-alertmanager.md`
 - [Documentation index](../../../docs/README.md)
 
 Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.

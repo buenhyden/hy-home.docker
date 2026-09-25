@@ -107,8 +107,8 @@ This hardening Architecture Description does not introduce production data owner
 - **PRD**: [../01.requirements/0012-laboratory.md](../../01.requirements/0012-laboratory.md)
 - **Spec**: [../03.specs/012-laboratory/spec.md](0011-laboratory-architecture.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/guide.md)
-- **Operation**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/policy.md)
-- **Runbook**: [../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md](../../05.operations/catalog/11-laboratory/0074-optimization-hardening/runbook.md)
+- **Guide**: [../../05.operations/guides/0074-laboratory-optimization-hardening.md](../../05.operations/guides/0074-laboratory-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/0074-laboratory-optimization-hardening.md](../../05.operations/policies/0074-laboratory-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/0074-laboratory-optimization-hardening.md](../../05.operations/runbooks/0074-laboratory-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

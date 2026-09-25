@@ -139,7 +139,7 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 bash scripts/validation/validate-docker-compose.sh
 ```
 
-기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
+기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/policies/0078-compose-profile-vocabulary.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 
@@ -161,7 +161,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 41개 HOME servic
 용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
-`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
+`docs/05.operations/policies/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
 `iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
@@ -191,7 +191,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 41개 HOME servic
 | `docs/03.specs/**` | English-only technical contracts |
 | `docs/03.specs/####-*/plan.md` | English-only implementation plans |
 | `docs/03.specs/####-*/tasks/tsk-####-*.md` | English-only task evidence |
-| `docs/05.operations/catalog/**`, `docs/05.operations/incidents/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
+| `docs/05.operations/{guides,policies,runbooks}/**`, `docs/05.operations/incidents/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
 | `docs/90.references/**` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
 | `docs/98.archive/**` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
 | `docs/99.templates/**` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |

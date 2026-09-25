@@ -86,7 +86,7 @@ documentation agents responsible for the tooling profile contract.
 ## How to Work in This Area
 
 Use the [documentation index](../../docs/README.md), then the exact Stage 05
-subjects under `docs/05.operations/catalog/09-tooling/` (`0061`, `0062`, `0065`,
+subjects under `docs/05.operations/README.md` (`0061`, `0062`, `0065`,
 `0066`, `0069`, `0082`, `0083`, `0090`, `0092`, `0093`, `0095`). Run from the repository root:
 
 ```bash
@@ -103,4 +103,4 @@ service readiness evidence. Compose/Dockerfile declarations own runtime pins;
 
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
-- Stage 05 tooling package: `docs/05.operations/catalog/09-tooling/README.md`
+- Stage 05 tooling package: `docs/05.operations/README.md`

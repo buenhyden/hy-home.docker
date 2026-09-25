@@ -110,9 +110,9 @@ Running the job requires runtime approval; it starts Trino when needed.
 
 ## Related Documents
 
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/catalog/04-data/0094-lakehouse/guide.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/catalog/04-data/0094-lakehouse/policy.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/catalog/04-data/0094-lakehouse/runbook.md`)
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
 - [Documentation index](../../../../docs/README.md)
 
 ---
@@ -131,7 +131,7 @@ Running the job requires runtime approval; it starts Trino when needed.
 | Labels | `hy-home.tier` |
 | Secret refs | none |
 | Healthcheck | none (one-shot job) |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0094-lakehouse/guide.md`), Policy (`docs/05.operations/catalog/04-data/0094-lakehouse/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0094-lakehouse/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Run `validate <suite>`, then follow the runbook. |
 

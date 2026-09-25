@@ -71,7 +71,7 @@ cassandra/
 | Labels | `hy-home.tier` |
 | Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
 | Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
-| Operations | Guide (`docs/05.operations/catalog/04-data/0025-cassandra/guide.md`), Policy (`docs/05.operations/catalog/04-data/0025-cassandra/policy.md`), Runbook (`docs/05.operations/catalog/04-data/0025-cassandra/runbook.md`) |
+| Operations | Guide (`docs/05.operations/guides/0025-cassandra.md`), Policy (`docs/05.operations/policies/0025-cassandra.md`), Runbook (`docs/05.operations/runbooks/0025-cassandra.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -116,9 +116,9 @@ Classification is `LAB`; this is a single data node, not a quorum or HA cluster.
 
 ## Related Documents
 
-- **Guide**: Cassandra Guide (`docs/05.operations/catalog/04-data/0025-cassandra/guide.md`)
-- **Policy**: Cassandra Operation (`docs/05.operations/catalog/04-data/0025-cassandra/policy.md`)
-- **Runbook**: Cassandra Runbook (`docs/05.operations/catalog/04-data/0025-cassandra/runbook.md`)
+- **Guide**: Cassandra Guide (`docs/05.operations/guides/0025-cassandra.md`)
+- **Policy**: Cassandra Operation (`docs/05.operations/policies/0025-cassandra.md`)
+- **Runbook**: Cassandra Runbook (`docs/05.operations/runbooks/0025-cassandra.md`)
 - [Documentation index](../../../../docs/README.md)
 
 ---

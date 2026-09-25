@@ -53,10 +53,10 @@ relational/
 | --- | --- | --- | --- |
 | [PostgreSQL cluster](postgresql-cluster/README.md) | `LAB` | `postgres-ha` | `0031-postgresql-cluster` |
 
-1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 Relational DB Guides (`docs/05.operations/catalog/04-data/README.md`)를 참조합니다.
+1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 Relational DB Guides (`docs/05.operations/guides/README.md`)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
-3. 운영 정책은 Relational Policies (`docs/05.operations/catalog/04-data/README.md`)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 `docs/05.operations/catalog/04-data/0031-postgresql-cluster/`의 Guide/Policy/Runbook을 따릅니다.
+3. 운영 정책은 Relational Policies (`docs/05.operations/policies/README.md`)를 반드시 준수해야 합니다.
+4. 장애 대응 및 복구는 `docs/05.operations/guides/0031-postgresql-cluster.md`의 Guide/Policy/Runbook을 따릅니다.
 
 ## Available Scripts
 
@@ -84,10 +84,10 @@ docker compose --env-file .env.example --profile postgres-ha config --quiet
 
 ## Related Documents
 
-- **Guides**: `docs/05.operations/catalog/04-data/README.md`
-- **Policies**: `docs/05.operations/catalog/04-data/README.md`
-- Stage 05 subject: `docs/05.operations/catalog/04-data/0031-postgresql-cluster/`
-- **Service Guide**: postgresql-cluster guide (`docs/05.operations/catalog/04-data/0031-postgresql-cluster/guide.md`)
+- **Guides**: `docs/05.operations/guides/README.md`
+- **Policies**: `docs/05.operations/policies/README.md`
+- Stage 05 subject: `docs/05.operations/guides/0031-postgresql-cluster.md`
+- **Service Guide**: postgresql-cluster guide (`docs/05.operations/guides/0031-postgresql-cluster.md`)
 - **ARD**: `docs/02.architecture/descriptions/0004-data-architecture.md`
 - [Documentation index](../../../docs/README.md)
 

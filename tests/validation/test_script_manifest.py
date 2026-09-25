@@ -280,7 +280,7 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual("retain", postgres["disposition"])
         self.assertEqual(
-            "docs/05.operations/catalog/04-data/0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md",
+            "docs/05.operations/runbooks/0032-postgresql-logical-upgrade-restore-rehearsal.md",
             postgres["authority"],
         )
         self.assertEqual(
@@ -295,7 +295,7 @@ class ScriptManifestTests(unittest.TestCase):
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
             "docs/05.operations/runbooks/03-security/vault.md",
-            "docs/05.operations/catalog/04-data/0031-postgresql-cluster/runbook.md",
+            "docs/05.operations/runbooks/0031-postgresql-cluster.md",
         }
         for row in self.rows:
             with self.subTest(path=row["path"]):
@@ -337,20 +337,21 @@ class ScriptManifestTests(unittest.TestCase):
                 self.assertNotIn("current_authorities", row)
                 self.assertNotIn("semantic_witnesses", row)
 
-    def test_runbook_authority_accepts_only_canonical_catalog_leaf_shape(self) -> None:
+    def test_runbook_authority_accepts_only_canonical_role_leaf_shape(self) -> None:
         self.assertTrue(
             is_runbook_authority(
-                "docs/05.operations/catalog/04-data/"
-                "0032-postgresql-logical-upgrade-restore-rehearsal/runbook.md"
+                "docs/05.operations/runbooks/"
+                "0032-postgresql-logical-upgrade-restore-rehearsal.md"
             )
         )
         rejected = (
             "docs/05.operations/04-data/ops-0032-example/runbook.md",
             "docs/05.operations/runbooks/04-data/example.md",
-            "docs/05.operations/catalog/4-data/ops-0032-example/runbook.md",
-            "docs/05.operations/catalog/04-data/ops-032-example/runbook.md",
-            "docs/05.operations/catalog/04-data/ops-0032-example/guide.md",
-            "docs/05.operations/catalog/04-data/nested/ops-0032-example/runbook.md",
+            "docs/05.operations/runbooks/032-example.md",
+            "docs/05.operations/runbooks/ops-0032-example.md",
+            "docs/05.operations/runbooks/nested/0032-example.md",
+            "docs/05.operations/guides/0032-example.md",
+            "docs/05.operations/catalog/04-data/0032-example/runbook.md",
         )
         for path in rejected:
             with self.subTest(path=path):
@@ -707,6 +708,21 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     kind="operations",
                     mutation="runtime",
                     authority="docs/authority.md",
+                )
+            ),
+        )
+
+    def test_retained_runtime_rejects_a_retired_catalog_runbook_authority(
+        self,
+    ) -> None:
+        # ADR-0043 retired the domain catalog; only a role-directory Runbook binds.
+        self.assertIn(
+            "runtime-authority-invalid",
+            self.codes(
+                self.row(
+                    kind="operations",
+                    mutation="runtime",
+                    authority="docs/05.operations/catalog/04-data/0032-example/runbook.md",
                 )
             ),
         )

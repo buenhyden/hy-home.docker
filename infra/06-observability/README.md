@@ -67,7 +67,7 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 | Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
 | Secret refs | names: `opensearch_exporter_password`, `openbao_token`, `qdrant_read_only_api_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/openbao_token`, `/run/secrets/qdrant_read_only_api_key`, `/run/secrets/seaweedfs_s3_loki_secret_key`, `/run/secrets/seaweedfs_s3_tempo_secret_key`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
 | Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
-| Operations | Guide index (`docs/05.operations/catalog/06-observability/README.md`), Policy index (`docs/05.operations/catalog/06-observability/README.md`), Runbook index (`docs/05.operations/catalog/06-observability/README.md`) |
+| Operations | Guide index (`docs/05.operations/README.md`), Policy index (`docs/05.operations/README.md`), Runbook index (`docs/05.operations/README.md`) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | From the repository root, use `docker compose --profile obs config --quiet`, then inspect service logs and linked operations/runbook evidence. |
 
@@ -75,10 +75,10 @@ The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Te
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. Follow the LGTM Stack Guide (`docs/05.operations/catalog/06-observability/0042-lgtm-stack/guide.md`).
-2. Refer to the Alloy Collector Guide (`docs/05.operations/catalog/06-observability/0040-alloy/guide.md`) for data piping.
-3. Check the Operations Policy (`docs/05.operations/catalog/06-observability/README.md`) for retention.
-4. Consult the Observability Runbook (`docs/05.operations/catalog/06-observability/README.md`) for recovery.
+1. Follow the LGTM Stack Guide (`docs/05.operations/guides/0042-lgtm-stack.md`).
+2. Refer to the Alloy Collector Guide (`docs/05.operations/guides/0040-alloy.md`) for data piping.
+3. Check the Operations Policy (`docs/05.operations/policies/README.md`) for retention.
+4. Consult the Observability Runbook (`docs/05.operations/runbooks/README.md`) for recovery.
 
 5. Always use `Alloy` as the primary entry point for telemetry data (OTLP).
 6. Dashboards MUST be provisioned via code in `grafana/provisioning/dashboards`.
@@ -165,7 +165,7 @@ All commands run from the repository root. `docker compose --profile <profile> c
 | `pyroscope` | OPTIONAL | `obs`, `profiling` |
 | `pushgateway` | OPTIONAL | `obs`, `batch-metrics` |
 
-The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, and `0087` under `docs/05.operations/catalog/06-observability/`.
+The stable documentation entry point is [docs/README.md](../../docs/README.md). Exact Stage 05 subjects are `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, and `0087` under `docs/05.operations/README.md`.
 
 ## Related Documents
 

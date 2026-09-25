@@ -76,5 +76,5 @@ The decision context above records the applicable drivers and evidence.
 - [Tooling PRD](../../01.requirements/0010-tooling.md)
 - [Tooling Architecture Description](../descriptions/0009-tooling-architecture.md)
 - [Current convergence Spec](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [OpenTofu operations](../../05.operations/catalog/09-tooling/0082-opentofu/guide.md)
-- [Terraform migration handoff](../../05.operations/catalog/09-tooling/0068-terraform/guide.md)
+- [OpenTofu operations](../../05.operations/guides/0082-opentofu.md)
+- [Terraform migration handoff](../../05.operations/guides/0068-terraform.md)

@@ -134,8 +134,7 @@ class ComposeSelectionValidationTests(unittest.TestCase):
             )
             (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
             policy = (
-                root / "docs/05.operations/catalog/00-workspace/"
-                "0078-compose-profile-vocabulary/policy.md"
+                root / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
@@ -200,8 +199,7 @@ else:
             )
             (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
             policy = (
-                root / "docs/05.operations/catalog/00-workspace/"
-                "0078-compose-profile-vocabulary/policy.md"
+                root / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
             )
             policy.parent.mkdir(parents=True)
             policy.write_text(
