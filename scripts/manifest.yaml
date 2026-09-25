@@ -77,6 +77,13 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - .claude/hooks/docker-compose-pre.sh
+  - .claude/hooks/post-tool-validate.sh
+  - .claude/hooks/pre-compact.sh
+  - .claude/hooks/session-end.sh
+  - .claude/hooks/session-start.sh
+  - .claude/hooks/stop.sh
+  - .claude/hooks/user-prompt-submit.sh
   - docs/05.operations/guides/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
@@ -376,7 +383,8 @@ files:
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
-  consumers: []
+  consumers:
+  - scripts/lib/document_governance/metadata/identity.py
   disposition: retain
   successor: null
   tests:
@@ -474,6 +482,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - scripts/validation/check-github-workflow-contract.py
   - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
@@ -786,7 +795,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - scripts/README.md
+  - .github/workflow-contract.yml
   disposition: retain
   successor: null
   tests:
@@ -798,6 +807,8 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
+  - scripts/security/seed-grype-db-cache.sh
+  - scripts/security/verify-sample-service-supply-chain.sh
   disposition: retain
   successor: null
   tests:
