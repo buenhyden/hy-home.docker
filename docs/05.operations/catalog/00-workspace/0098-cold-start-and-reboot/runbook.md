@@ -225,7 +225,7 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
 알린다.
 
-## Rehearsal Record
+## Verification Record
 
 Owner가 감독하는 재부팅 리허설마다 아래 표에 한 행씩 기록한다. 리허설
 실행 자체는 owner-run이며 이 문서의 범위가 아니다.
