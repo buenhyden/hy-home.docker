@@ -3553,6 +3553,16 @@ class RouteAuthContractTests(unittest.TestCase):
         )
         self.assertEqual([], bare)
 
+    def test_sso_sign_in_redirect_reaches_the_browser_as_302(self) -> None:
+        """A 401 keeps oauth2-proxy's Location, but browsers only follow a 3xx."""
+        import yaml
+
+        path = ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
+        errors = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
+            "middlewares"
+        ]["sso-errors"]["errors"]
+        self.assertEqual({"401": 302}, errors.get("statusRewrites"))
+
 
 class QdrantApiKeyContractTests(unittest.TestCase):
     def test_qdrant_requires_its_keys_and_prometheus_sends_the_read_only_one(

@@ -36,6 +36,10 @@ http:
       errors:
         status:
           - "401-403"
+        # oauth2-proxy answers sign_in with a redirect; browsers ignore Location
+        # on a 401, so only that status becomes a 302. 403 keeps its page.
+        statusRewrites:
+          "401": 302
         service: oauth2-proxy-svc
         query: "/oauth2/sign_in?rd={url}"
 
