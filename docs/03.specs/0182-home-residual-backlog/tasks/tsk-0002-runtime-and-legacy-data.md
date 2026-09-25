@@ -1,8 +1,8 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "specs"
@@ -52,7 +52,23 @@ Read-only investigation of 2026-09-25:
 
 ## Work Log
 
-Pending.
+- 2026-09-25 W6: rendered HOME was 40 services (37 plus three one-shot
+  init jobs). The running `hy-home-infra` containers outside it and the
+  owner's decision for each:
+
+  | Containers | Profile | Consumers and stop risk | Owner decision |
+  | --- | --- | --- | --- |
+  | `tempo`, `pyroscope`, `dcgm-exporter` | `tracing`, `profiling`, `obs-gpu` | HOME Alloy, Traefik and Grafana send traces and profiles; Prometheus scrapes GPU metrics. Stopping them breaks exports and datasources | Added to HOME |
+  | `registry` | `tooling`, `registry` | Development image registry | Added to HOME for default use |
+  | `kafka-1`, `kafka-connect`, `schema-registry`, `kafka-exporter`, `mlflow`, `jupyterlab` | `cdc`, `messaging`, `mlops`, `data-science` | W7 restore subjects; `hyhome_app_slot` on `mng-pg` active, lag 664 kB; stopping Connect with the slot kept grows WAL | Kept until W7, then decided again |
+  | `dozzle`, `redisinsight`, `kafbat-ui`, `kafka-rest-proxy` | `admin`, `messaging-admin`, `messaging-rest` | Operator UIs; no configured consumers | Kept outside HOME for operator use |
+  | `wiremock`, `pact-broker`, `mailpit`, `crawl4ai`, `open_notebook`, `surrealdb`, `superset`, `stalwart`, `pushgateway` | `api-mock`, `contract-testing`, `mail-dev`, `crawl4ai`, `notebook`, `bi`, `mail-server`, `batch-metrics` | No configured consumers; none is a scrape target; Alertmanager mails through its own smarthost | Stopped (`docker stop`; restart policy `unless-stopped`, so they stay stopped) |
+
+  `kafka-2` and `kafka-3` stay Created and the exited init, provision, Flink
+  and Trino containers stay exited. POL-0078, the root and infra READMEs,
+  POL-0006 and AD-0031 now name HOME with `tracing profiling obs-gpu
+  registry`; each adds only its own service, so HOME renders 44 (41 plus the
+  three init jobs).
 
 ## Verification Evidence
 
@@ -64,7 +80,9 @@ Pending.
 
 ## Commit Ledger
 
-No PR yet.
+| PR | Scope | State |
+| --- | --- | --- |
+| this PR | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | open |
 
 ## Rulings
 

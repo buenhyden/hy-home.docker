@@ -156,12 +156,12 @@ docker compose --profile core up -d
 ```
 
 `core`는 bootstrap selection일 뿐 HOME 전체가 아닙니다. 현재 HOME 후보는
-`core mng ai workflow storage obs-core obs-host availability logs alerting`의
-명시적 결합이며, 37개 HOME service identity를 선택합니다. 이 명령은 배포 승인이나
+`core mng ai workflow storage obs-core obs-host availability logs alerting
+tracing profiling obs-gpu registry`의 명시적 결합이며, 41개 HOME service identity를 선택합니다. 이 명령은 배포 승인이나
 용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
-`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`입니다. `tooling`은 registry와 SonarQube, `testing`은 k6와 Locust,
+`docs/05.operations/catalog/00-workspace/0078-compose-profile-vocabulary/policy.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
 `iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 

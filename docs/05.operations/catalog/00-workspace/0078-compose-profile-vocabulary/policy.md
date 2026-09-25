@@ -126,7 +126,7 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 
 | Named selection | Profiles | Forbidden categories |
 | --- | --- | --- |
-| HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage` | `automation`, `lifecycle`, `topology` |
+| HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage`, `tracing`, `profiling`, `obs-gpu`, `registry` | `automation`, `lifecycle`, `topology` |
 
 소유자가 2026-09-21 현재 운영 중이라고 밝힌 명령은 `local`, `core`, `mng`, `ai`,
 `dev`, `workflow`, `obs`, `admin` 8개 profile 조합이다. 이는 관측된 운영 선택이며
@@ -138,7 +138,9 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
 broker·영속 저장소·관측 종속성을 함께 유지한다. `core`만으로 HOME 앱이 충족되지는
-않는다. 새 HOME profile은 추가하지 않는다. OpenBao bootstrap/unseal/Agent 인증,
+않는다. SPEC-0182 W6(2026-09-25)에서 소유자가 HOME 설정이 이미 전송·수집하는
+`tracing`(Tempo), `profiling`(Pyroscope), `obs-gpu`(DCGM exporter)와 기본 사용할
+`registry`를 HOME에 추가했다. 그 밖의 새 HOME profile은 추가하지 않는다. OpenBao bootstrap/unseal/Agent 인증,
 DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이다. config 성공은
 무인 재기동이나 live readiness를 증명하지 않는다.
 
