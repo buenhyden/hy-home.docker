@@ -1,10 +1,10 @@
 ---
 title: "Renovate Policy"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -45,11 +45,7 @@ changes, upgrades, and evidence. `POL-0086` remains the update-strategy authorit
 
 ## Verification
 
-```bash
-renovate-config-validator --strict --no-global renovate.json5
-renovate-config-validator --strict infra/09-tooling/renovate/config/config.js
-bash scripts/operations/sync-tech-stack-versions.sh --check
-```
+Repository and self-host config validation must pass before any live run, per [Runbook step 1](../runbooks/0083-renovate.md#procedure).
 
 ## Exceptions
 

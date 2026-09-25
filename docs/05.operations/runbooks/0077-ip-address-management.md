@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -71,14 +71,6 @@ created: "2026-05-10"
 - [ ] 변경 전 Git diff 또는 commit 기준으로 해당 compose/network 변경을 되돌린다.
 - [ ] runtime 검증 중 충돌이 확인되면 추가 변경을 멈추고 evidence를 보존한다.
 - [ ] 네트워크/volume 삭제가 필요한 상황은 이 런북에서 직접 처리하지 않고 incident 절차로 승격한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## Evidence
 

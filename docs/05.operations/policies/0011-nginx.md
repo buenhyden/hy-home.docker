@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -25,7 +25,6 @@ created: "2026-05-17"
 - `infra/01-gateway/nginx/config/nginx.conf`
 - Nginx healthcheck/readonly/tmpfs 운영 표준 and the `nginx` profile runtime boundary
 - **Systems**: Nginx gateway proxy
-- **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls
@@ -47,13 +46,8 @@ created: "2026-05-17"
 - **Disallowed**:
   - `/ping`, `/oauth2/`, `/keycloak/`, `/cdn/` 기본 흐름 훼손
   - readonly 환경에서 영구 쓰기 경로 의존 설정
-
-### AI Agent Policy
-
-- **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
-- **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
-- **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
+  - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
+  - `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 즉시 런북 절차를 수행해야 한다.
 
 ## Exceptions
 

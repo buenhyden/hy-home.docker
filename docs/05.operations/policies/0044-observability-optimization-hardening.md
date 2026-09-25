@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -28,7 +28,6 @@ created: "2026-05-10"
 - `.github/workflow-contract.yml` `leaf.infrastructure-hardening` gate (`ci-quality.yml`의 `validation-changed`/`validation-full` job이 실행)
 
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
-- **Agents**: Operators, SREs, DevOps agents, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations, production-like validation
 
 ## Controls

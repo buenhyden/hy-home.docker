@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0074"
 parent_ids:
@@ -85,14 +85,6 @@ created: "2026-05-17"
 - [ ] 복구 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
 
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
-
 ## Evidence
 
 - Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
@@ -101,7 +93,6 @@ created: "2026-05-17"
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
 - If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation

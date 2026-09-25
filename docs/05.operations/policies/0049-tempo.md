@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -27,7 +27,6 @@ storage, block retention, metrics generator, secret boundary, protected route를
 `config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
 
 - **Systems**: compose service `tempo`, container `infra-tempo`, image [hy/tempo image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls
@@ -45,8 +44,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
     `seaweedfs-s3:8333`, `insecure: true`를 사용한다.
   - `S3_ACCESS_KEY`은 environment reference로, `S3_SECRET_KEY`는
     Docker Secret `seaweedfs_s3_tempo_secret_key`로만 주입한다.
-  - Block retention은 `block_retention: 24h`,
-    `compacted_block_retention: 1h`를 기준으로 한다.
+  - Block retention 값은 [POL-0048](0048-telemetry-retention.md)을 기준으로 한다.
   - Metrics generator는 `span_metrics`, `service_graphs`, `local_blocks`를
     활성화하고 Prometheus `http://prometheus:9090/api/v1/write`로
     `remote_write` 한다.

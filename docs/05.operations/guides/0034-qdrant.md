@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -59,31 +59,7 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 
 ### Step-by-step Instructions
 
-1. root-active compose 구성을 렌더링한다.
-
-   ```bash
-   docker compose --profile qdrant config --quiet
-   ```
-
-2. 서비스 상태를 확인한다.
-
-   ```bash
-   docker compose ps qdrant
-   ```
-
-3. REST health route를 확인한다.
-
-   ```bash
-   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'
-   ```
-
-4. collection inventory 같은 read-only API만 일반 점검에 사용한다.
-
-   ```bash
-   docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\napi-key: %s\r\n\r\n" "$(tr -d "\r\n" </run/secrets/qdrant_api_key)" >&3; cat <&3'
-   ```
-
-5. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하다. gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다.
+정상 운영 중 점검은 compose profile 렌더링, 서비스 상태, REST `/readyz` health route, API key 기반 read-only `/collections` inventory 확인으로 구성된다. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하며, gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다. 실행 가능한 명령 순서와 기대 결과는 [Qdrant runbook](../runbooks/0034-qdrant.md#steps)을 따른다.
 
 ### Common Pitfalls
 

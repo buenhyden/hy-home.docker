@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -23,13 +23,10 @@ that three same-host brokers provide host availability.
 
 ### Source-backed checks
 
-```bash
-docker compose --env-file .env.example --profile messaging config --quiet
-docker compose --env-file .env.example --profile messaging-cluster config --quiet
-bash scripts/hardening/check-all-hardening.sh 05-messaging
-```
-
-Run from the repository root. Inspect rendered services and verify:
+Render the current messaging selectors with the root `.env.example` and run the
+shared hardening check script for this tier from the repository root. The exact
+command sequence is owned by the [05-Messaging Optimization Hardening runbook](../runbooks/0037-messaging-optimization-hardening.md#procedure).
+Inspect rendered services and verify:
 
 - exact Kafka-family profiles and no removed broker family;
 - separate broker/Connect volumes and no path reuse;

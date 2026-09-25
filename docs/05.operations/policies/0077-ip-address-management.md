@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -24,7 +24,6 @@ created: "2026-04-01"
 이 정책은 repository가 root Compose에서 소유하는 모든 network의 소속과 주소 할당 방식을 관할한다.
 
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
-- **Agents**: 모든 인프라 관리 에이전트.
 - **Environments**: Local (docker-compose) 및 Production (Future) 개발/운영 환경.
 
 ## Controls

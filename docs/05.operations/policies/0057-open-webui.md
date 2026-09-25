@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -27,7 +27,6 @@ Open WebUI 서비스 운영 전반:
 - Open WebUI와 Ollama 연동 구성 변경 관리
 
 - **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
-- **Agents**: Open WebUI 운영 자동화 에이전트, 문서 인덱싱/정리 에이전트
 - **Environments**: Local, Dev, Homelab, Production-like rehearsal
 
 ## Controls

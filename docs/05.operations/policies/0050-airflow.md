@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -25,7 +25,6 @@ created: "2026-05-17"
 - DAG 배포 및 운영 환경 보안 통제
 
 - **Systems**: Apache Airflow, CeleryExecutor
-- **Agents**: CI/CD 배포 에이전트, 모니터링 에이전트
 - **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
 
 ## Controls

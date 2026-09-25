@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -24,7 +24,6 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 09-tooling`
 
 - **Systems**: opentofu, terrakube, registry, sonarqube, k6, locust, renovate
-- **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like
 
 ## Controls

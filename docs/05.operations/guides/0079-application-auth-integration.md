@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.6.1"
+version: "0.6.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -383,10 +383,8 @@ provider update만으로 기존 Keycloak permissions는 자동 갱신되지 않�
 
 #### DB migration
 
-```bash
-docker compose exec airflow-apiserver airflow db migrate
-docker compose exec airflow-apiserver airflow db check
-```
+[POL-0050](../policies/0050-airflow.md)에 따라 schema upgrade 전 schedule과 producer를
+pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../runbooks/0050-airflow.md#steps)을 따른다.
 
 #### JWT algorithm/format error
 

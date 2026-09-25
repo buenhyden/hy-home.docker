@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -94,9 +94,8 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 
 ### Safe Rollback or Recovery Procedure
 
-1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
-2. Runtime recovery in this runbook is limited to compose `up -d qdrant` after evidence capture.
-3. 실패한 isolated target과 전용 volume을 폐기한다. source service, snapshot과 tracked volume은 변경하지 않는다.
+1. Runtime recovery in this runbook is limited to compose `up -d qdrant` after evidence capture.
+2. 실패한 isolated target과 전용 volume을 폐기한다. source service, snapshot과 tracked volume은 변경하지 않는다.
 
 ### Planned Isolated Restore Rehearsal
 

@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -49,15 +49,8 @@ remote repository state, and the token owner are authoritative.
 
 2. Review token repository scope, branch protection, dry-run output, and the
    intended repositories. Validation does not prove token permission.
-3. A live run is an external write action. Execute only after authorization and
-   name the single job:
-
-   ```bash
-   docker compose --profile dependency-update run --rm renovate
-   ```
-
-4. Review every generated branch/PR and sanitized job summary. A successful job
-   does not authorize merging.
+3. A live run is an external write action; run it only through the authorized
+   procedure in the [Renovate runbook](../runbooks/0083-renovate.md#procedure).
 
 ### Recovery and Upgrade
 

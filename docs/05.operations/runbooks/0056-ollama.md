@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -56,17 +56,7 @@ curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags
 
 ##### 2. GPU Recognition Recovery
 
-```bash
-
-## 호스트 GPU 상태
-nvidia-smi
-
-## 컨테이너 내부 GPU 상태
-docker compose exec ollama nvidia-smi
-
-## 필요 시 컨테이너 재기동
-docker compose restart ollama
-```
+GPU 미인식 진단과 Docker daemon/컨테이너 재시작 절차는 [GPU Recovery runbook](0055-gpu-recovery.md)을 따른다.
 
 ### 3. VRAM OOM Mitigation
 
@@ -80,7 +70,7 @@ curl -X POST http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 }'
 ```
 
-- 고부하 모델 사용 중이면 임시로 경량 모델로 fallback한다.
+- 고부하 모델 사용 중이면 operator approval을 받은 뒤에만 경량 모델로 전환한다.
 
 ### 4. Model Integrity Check
 
@@ -123,7 +113,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 ### Agent Operations (If Applicable)
 
 - **Prompt Rollback**: 모델별 기본 프롬프트를 직전 안정값으로 복원
-- **Model Fallback**: 장애 시 경량 모델로 자동/수동 전환
+- **Model Fallback**: operator approval을 받은 뒤에만 경량 모델로 전환
 - **Tool Disable / Revoke**: 문제 모델 호출 경로 일시 차단
 - **Eval Re-run**: 추론 smoke test + Open WebUI 연동 테스트 재실행
 - **Trace Capture**: 장애 시간대 API/리소스 로그 보존

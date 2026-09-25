@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -42,15 +42,8 @@ secret files, unseal shares, SecretIDs, tokens or the rendered Compose model.
 Restic 백업, 그리고 `restic check`(`infra/09-tooling/restic/bin/hyhome-backup.sh`
 안의 `restic check` 호출).
 
-```bash
-sudo systemctl start hyhome-backup.service
-journalctl -u hyhome-backup.service -n 80 --no-pager
-docker exec -u postgres mng-pg pgbackrest --stanza=mng info
-docker compose --profile backup run --rm --no-deps restic snapshots
-```
-
-Expected: exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, 로그에
-`restic check`의 "no errors were found". 실패하면 재부팅을 진행하지 않고
+명령과 기대 결과는 [RUN-0021 step 4](0021-backup-and-restore.md#4-run-or-verify-a-backup)를
+그대로 사용한다. 실패하면 재부팅을 진행하지 않고
 [RUN-0021](0021-backup-and-restore.md)의 문제 해결
 절차를 따른다(잠금, 디스크 공간, 5 GiB 예산 초과 등).
 
@@ -139,25 +132,8 @@ OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 
 
 [RUN-0085 delivery 절차](0085-openbao.md#initial-bootstrap-and-credential-recovery)의
 명령을 그대로 쓴다. SecretID는 발급 후 10분, 1회용이며 Agent가 읽은 뒤 파일을
-지운다.
-
-```sh
-bao write -f -field=secret_id auth/approle/role/hy-home-renderer/secret-id >/s/k8s/secret_id
-```
-
-```bash
-docker stop openbao-agent
-T=$(date -u +%FT%TZ)
-docker run --rm --user 0 -v hy-home-infra_openbao-agent-data:/a -v /tmp/bao-k8s:/s:ro --entrypoint install "$(docker inspect openbao-agent --format '{{.Config.Image}}')" -m 600 -o 100 -g 1000 /s/secret_id /a/secret_id
-rm -f /tmp/bao-k8s/secret_id
-docker start openbao-agent
-sleep 20
-docker logs --since "$T" openbao-agent 2>&1 | grep -c 'authentication successful'
-docker logs --since "$T" openbao-agent 2>&1 | grep -ciE 'no known secret ID|permission denied|invalid'
-```
-
-Expected: 첫 grep이 1 이상, 두 번째가 0. SecretID 전달을 10분 안에 끝내지
-못하면 다시 5단계부터 새 SecretID를 발급한다.
+지운다. SecretID 전달을 10분 안에 끝내지 못하면 다시 5단계부터 새 SecretID를
+발급한다.
 
 ### 7. hy-home.k8s(k3d) 컨테이너
 

@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -66,25 +66,9 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ### Step-by-step Instructions
 
-1. 서비스 구성을 렌더링한다.
+정상 운영 중 점검은 compose profile 렌더링, init job/replica member 상태, `mongodb-rep1` 내부 secret mount 기반 `rs.status()` 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [MongoDB runbook](../runbooks/0027-mongodb.md#steps)을 따른다.
 
-   ```bash
-   docker compose --profile mongodb config --quiet
-   ```
-
-2. init job과 replica member 상태를 확인한다.
-
-   ```bash
-   docker compose ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init
-   ```
-
-3. replica set 상태는 `mongodb-rep1` 내부 secret mount를 사용해 확인한다.
-
-   ```bash
-   docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().ok"'
-   ```
-
-4. 애플리케이션 연결 문자열은 내부 서비스명을 포함한다.
+1. 애플리케이션 연결 문자열은 내부 서비스명을 포함한다.
 
    ```text
    mongodb://<user>:<password>@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin

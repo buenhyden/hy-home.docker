@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -27,7 +27,6 @@ provisioning, Keycloak role mapping, secret boundary, protected route를
 dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 - **Systems**: compose service `grafana`, container `infra-grafana`, image [grafana/grafana image declaration](../../../infra/06-observability/docker-compose.yml), volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
-- **Agents**: Operators, SREs, AI agents following repo-local governance
 - **Environments**: local, development, homelab operations
 
 ## Controls

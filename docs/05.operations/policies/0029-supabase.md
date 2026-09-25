@@ -1,10 +1,10 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -28,7 +28,6 @@ created: "2026-05-17"
 - **Configs**: `infra/04-data/operational/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config --quiet
 - **Networks**: `supabase_net`
 - **Ports**: Kong `8000`/`8443`, analytics `4000`, Postgres `5432`, pooler `6543` as declared through compose host-port variables
-- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or Supabase runtime boundaries
 
 ## Controls
 

@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0025"
 parent_ids:
@@ -61,31 +61,7 @@ Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비�
 
 ### Step-by-step Instructions
 
-1. 서비스 구성을 렌더링한다.
-
-   ```bash
-   docker compose --profile cassandra config --quiet
-   ```
-
-2. Cassandra 서비스가 활성화된 런타임에서 컨테이너 상태를 확인한다.
-
-   ```bash
-   docker compose ps cassandra-node1 cassandra-exporter
-   ```
-
-3. 노드 상태는 `nodetool`로 확인한다.
-
-   ```bash
-   docker exec cassandra-node1 nodetool status
-   ```
-
-4. CQL 점검은 container 내부 secret mount를 사용한다.
-
-   ```bash
-   docker exec cassandra-node1 sh -lc 'cqlsh -u "$CASSANDRA_USER" -p "$(cat /run/secrets/cassandra_password)" -e "SELECT cluster_name, release_version FROM system.local;"'
-   ```
-
-5. 메트릭 연동은 `cassandra-exporter`가 노드 health 이후 시작되는지 확인한다. exporter 포트는 compose의 `${CASSANDRA_EXPORTER_PORT:-8080}` 및 `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}` 기준이다.
+정상 운영 중 점검은 compose profile 렌더링, 컨테이너 상태, `nodetool status`, container 내부 secret mount 기반 read-only CQL 확인, `cassandra-exporter` 기동 순서 확인으로 구성된다. exporter 포트는 compose의 `${CASSANDRA_EXPORTER_PORT:-8080}` 및 `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}` 기준이다. 실행 가능한 명령 순서와 기대 결과는 [Cassandra runbook](../runbooks/0025-cassandra.md#steps)을 따른다.
 
 ### Common Pitfalls
 

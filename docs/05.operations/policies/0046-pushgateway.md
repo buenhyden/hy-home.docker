@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -23,7 +23,6 @@ created: "2026-05-17"
 이 정책은 `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스, 해당 서비스에 메트릭을 push하는 작업, Pushgateway의 stale metric cleanup, 그리고 Prometheus scrape 연동 계약에 적용된다.
 
 - **Systems**: `pushgateway` service/container, image [prom/pushgateway image declaration](../../../infra/06-observability/docker-compose.yml), port `9091`, `/-/ready` healthcheck, `pushgateway.${DEFAULT_URL}` protected Traefik route, Prometheus scrape integration contract
-- **Agents**: Operators, CI/CD jobs, batch scripts, AI agents changing observability documentation
 - **Environments**: `obs` Docker Compose profile in the local/homelab observability tier
 
 ## Controls
