@@ -1,6 +1,12 @@
 x-tier-label: &tier-label
   hy-home.tier: tooling
 
+# Egress for restic-offsite only (ADR-0041). No other service joins it.
+networks:
+  restic_offsite_net:
+    name: restic_offsite_net
+    driver: bridge
+
 services:
   # One-shot Restic client for the two cross-disk repositories. The default
   # command only lists snapshots, so an accidental `up` changes nothing; the
@@ -55,6 +61,14 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      # pgBackRest's encrypted repository goes offsite inside the state set
+      # (ADR-0041); its files are written by rename, so a live read is safe.
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/pgbackrest
+        target: /src/state/pgbackrest
+        read_only: true
+        bind:
+          create_host_path: false
       - type: bind
         source: ../../../secrets
         target: /src/host/secrets
@@ -63,6 +77,60 @@ services:
         source: ../../../.env
         target: /src/host/env/.env
         read_only: true
+    labels:
+      <<: *tier-label
+
+  # Offsite copy of both local repositories into one Cloudflare R2 Restic
+  # repository (ADR-0041). The only backup job with egress; it never sees the
+  # backed-up sources, only the encrypted local repositories, read-only.
+  # The orchestrator runs `copy` daily and `check` weekly; `init` is manual.
+  restic-offsite:
+    profiles:
+      - backup
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: restic/restic:0.19.1
+    container_name: restic-offsite
+    # Root reads the host-user-owned 0700 repository roots; read search only.
+    user: '0:0'
+    cap_add:
+      - DAC_READ_SEARCH
+    networks:
+      - restic_offsite_net
+    mem_limit: 1g
+    entrypoint: ['/bin/sh', '/opt/hyhome/offsite.sh']
+    command: ['snapshots']
+    environment:
+      # Remote (R2) repository password; the local one opens the source.
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_offsite_password
+      RESTIC_FROM_PASSWORD_FILE: /run/secrets/restic_password
+      RESTIC_CACHE_DIR: /tmp/restic-cache
+      AWS_DEFAULT_REGION: auto
+      # Empty until the owner finishes R2 setup; the orchestrator then skips.
+      BACKUP_OFFSITE_R2_ACCOUNT_ID: ${BACKUP_OFFSITE_R2_ACCOUNT_ID:-}
+      BACKUP_OFFSITE_R2_BUCKET: ${BACKUP_OFFSITE_R2_BUCKET:-}
+    secrets:
+      - restic_password
+      - restic_offsite_password
+      - r2_access_key_id
+      - r2_secret_access_key
+    blkio_config:
+      weight: 100
+    volumes:
+      - ./offsite.sh:/opt/hyhome/offsite.sh:ro
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/restic
+        target: /repo/state
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${BACKUP_HOST_REPO_DIR:-/missing-BACKUP_HOST_REPO_DIR}/restic
+        target: /repo/host
+        read_only: true
+        bind:
+          create_host_path: false
     labels:
       <<: *tier-label
 

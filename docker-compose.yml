@@ -317,6 +317,13 @@ secrets:
     file: ./secrets/backup/pgbackrest_cipher_pass.txt
   restic_password:
     file: ./secrets/backup/restic_password.txt
+  # Offsite (Cloudflare R2, ADR-0041): files plus offline custody, never OpenBao.
+  restic_offsite_password:
+    file: ./secrets/backup/restic_offsite_password.txt
+  r2_access_key_id:
+    file: ./secrets/backup/r2_access_key_id.txt
+  r2_secret_access_key:
+    file: ./secrets/backup/r2_secret_access_key.txt
 
 include:
   # Every file below is included unconditionally; Compose profiles decide what
