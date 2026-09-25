@@ -1,8 +1,8 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "specs"
@@ -47,11 +47,22 @@ Read-only investigation of 2026-09-25:
 
 ## Work Log
 
-Pending.
+- 2026-09-25 W12: the retired and entry-closed items were re-checked
+  against the live host and `main`; results are under Verification Evidence.
 
 ## Verification Evidence
 
-Pending.
+W12, retired and entry-closed items (criterion 12):
+
+| Item | Disposition | Reason and evidence |
+| --- | --- | --- |
+| Terrakube Keycloak client and API ForwardAuth removal | Retired until `iac` activation | The decision (dedicated public client `home-terrakube`, drop ForwardAuth, verify audience and RBAC) is recorded in `infra/09-tooling/terrakube/docker-compose.yml` beside the router and in GDE-0079; `iac` is outside HOME |
+| CI alignment follow-ups (remote branch protection, workflow cleanup, pre-commit update ownership, digest maintenance, caching, non-gating workflow retention) | Retired while CI passes steadily | CodeQL 15 of 15 successful on `main`; CI Quality Gates on `main` succeeded on each completed run from `a599a5fca` through `e229ec9d0`, and the others were cancelled by newer pushes. `b8ac86c64` failed only on the end-of-file fixer for `.claude/settings.json`, an owner-held file |
+| SEC-002 | Closed at entry | The OpenBao metrics token that SPEC-0181 rotated (expiry 2026-10-24); `OpenBaoMetricsScrapeFailing` is loaded with health `ok` and state `inactive` |
+| Secret value files at mode 664 | Closed at entry, re-verified | After W2 the new AI-009 file was created at `664`; the owner set it to `640`. Now 102 at `0640`, 4 at `0600`, 1 at `0400` and `rootCA.pem` at `0644`; none at `0664` (only `.gitkeep` placeholders are) |
+| Renovate host units | Closed at entry, re-verified | `hyhome-renovate.service` and `.timer` in `/etc/systemd/system` are regular `0644` files identical to `infra/09-tooling/renovate/systemd/`; the timer is enabled |
+| compose-core-readiness Vault rig | Kept as a generic fixture | Owner decision; its override header states it is a self-contained harness fixture independent of production OpenBao (#264) |
+| Open WebUI vector store | Kept local | `VECTOR_DB` is unset, so Open WebUI uses its local store; the unused `VECTOR_DB_URL` and the docs claiming Qdrant were corrected (#264), and the recreated container has no `VECTOR_DB*` variable |
 
 ## Review Evidence
 
@@ -72,7 +83,8 @@ are applied in the same PR. The owner's approval follows.
 | --- | --- | --- |
 | #261 | SPEC-0182 to review; Plan and three Tasks | merged |
 | #262 | SPEC-0182 Spec and Plan approved; Tasks ready | merged |
-| this PR | SPEC-0182 active; Task 0001 in progress | open |
+| #263 | SPEC-0182 active; Task 0001 in progress | merged |
+| this PR | W12 closures; Task 0003 in progress | open |
 
 ## Rulings
 
