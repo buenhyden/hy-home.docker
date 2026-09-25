@@ -70,9 +70,29 @@ Read-only investigation of 2026-09-25:
   registry`; each adds only its own service, so HOME renders 44 (41 plus the
   three init jobs).
 
+- 2026-09-25 W4: the recreate-on-edit rule went into POL-0006 and
+  `scripts/operations/check-config-mount-hashes.py` reads each single-file
+  mount through `docker exec … cat`. `docker cp` was rejected: the daemon
+  resolves a bind mount to the fresh host file, so it reported every stale
+  mount as a match (on `kafbat-ui` the container still held the old inode,
+  2738 bytes against 2689 on the host). A read-only run found 14 match,
+  4 diff (`kafbat-ui`; `hyhome-seaweedfs.sh` in SeaweedFS master, volume and
+  filer) and Pyroscope unreadable (no shell). With the owner's approval, and
+  16 hours before `hyhome-backup.timer`, the agent recreated `kafbat-ui`,
+  then `seaweedfs-master`, `seaweedfs-volume` and `seaweedfs-filer`, each
+  after the previous was healthy, then `pyroscope`.
+
 ## Verification Evidence
 
-Pending.
+- W4 hash check after the recreates (`--root` the main checkout): match 18,
+  diff 0; Pyroscope unreadable by design, and fresh by construction since it
+  was recreated at 02:30:46Z against a file last changed on 2026-09-16.
+- W4 SeaweedFS: Loki and Tempo each logged one flush error at 02:30:17Z and
+  02:30:22Z while the filer restarted (02:30:15Z); both retried, Tempo
+  reclaimed the block at 02:32:38Z, and neither logged an error after
+  02:31Z. Vacuum is enabled: its disable flag is master memory state and the
+  master was recreated; `hyhome-backup.service` was inactive with its last
+  run successful.
 
 ## Review Evidence
 
@@ -82,7 +102,8 @@ Pending.
 
 | PR | Scope | State |
 | --- | --- | --- |
-| this PR | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | open |
+| #268 | W6 container decisions; HOME adds `tracing profiling obs-gpu registry` | merged |
+| this PR | W4 hash check, recreate-on-edit rule, recreates | open |
 
 ## Rulings
 
