@@ -34,10 +34,11 @@ class FakeDocker:
             return subprocess.CompletedProcess(argv, 0, out, b"")
         if argv[:2] == ["docker", "inspect"]:
             payload = [
-                {"Name": f"/{name}", "Mounts": self.mounts[name]}
-                for name in argv[2:]
+                {"Name": f"/{name}", "Mounts": self.mounts[name]} for name in argv[2:]
             ]
-            return subprocess.CompletedProcess(argv, 0, json.dumps(payload).encode(), b"")
+            return subprocess.CompletedProcess(
+                argv, 0, json.dumps(payload).encode(), b""
+            )
         if argv[:2] == ["docker", "exec"]:
             key = f"{argv[2]}:{argv[4]}"
             if key not in self.files:
@@ -81,8 +82,16 @@ class ConfigMountHashTests(unittest.TestCase):
 
     def test_match_and_diff_report_and_exit_nonzero(self):
         docker = FakeDocker(
-            {"svc-a": [_bind(self.same, "/etc/a.conf"), _bind(self.stale, "/etc/b.conf")]},
-            {"svc-a:/etc/a.conf": b"alpha-config\n", "svc-a:/etc/b.conf": b"old-bytes\n"},
+            {
+                "svc-a": [
+                    _bind(self.same, "/etc/a.conf"),
+                    _bind(self.stale, "/etc/b.conf"),
+                ]
+            },
+            {
+                "svc-a:/etc/a.conf": b"alpha-config\n",
+                "svc-a:/etc/b.conf": b"old-bytes\n",
+            },
         )
         code, out = self._run(docker)
         self.assertEqual(1, code)
@@ -116,7 +125,12 @@ class ConfigMountHashTests(unittest.TestCase):
         code, out = self._run(docker)
         self.assertEqual(0, code)
         self.assertEqual(
-            [], [c for c in docker.calls if c[:2] not in (["docker", "ps"], ["docker", "inspect"])]
+            [],
+            [
+                c
+                for c in docker.calls
+                if c[:2] not in (["docker", "ps"], ["docker", "inspect"])
+            ],
         )
         self.assertNotIn("secrets", out)
 
@@ -147,10 +161,10 @@ class ConfigMountHashTests(unittest.TestCase):
         code, out = self._run(docker, "--helper-image", "alpine:3")
         self.assertEqual(1, code)
         self.assertRegex(out, r"DIFF\s+svc-a\s+/etc/b.conf")
-        helper = [c for c in docker.calls if c[:2] == ["docker", "run"]][0]
+        helper = next(c for c in docker.calls if c[:2] == ["docker", "run"])
         self.assertIn("--rm", helper)
         self.assertIn("alpine:3", helper)
-        self.assertEqual(["--network", "none"], helper[helper.index("--network"):][:2])
+        self.assertEqual(["--network", "none"], helper[helper.index("--network") :][:2])
 
     def test_without_helper_image_no_container_is_started(self):
         docker = FakeDocker({"svc-a": [_bind(self.same, "/etc/a.conf")]}, {})
@@ -160,9 +174,7 @@ class ConfigMountHashTests(unittest.TestCase):
     def test_filters_running_containers_by_compose_project(self):
         docker = FakeDocker({}, {})
         self._run(docker)
-        self.assertIn(
-            "label=com.docker.compose.project=hy-home-infra", docker.calls[0]
-        )
+        self.assertIn("label=com.docker.compose.project=hy-home-infra", docker.calls[0])
 
 
 if __name__ == "__main__":
