@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -32,8 +32,8 @@ completion receipt.
 
 ## Execution Sequence
 
-Run order: W1, W2 (its SeaweedFS S3 recreate batched with W4's SeaweedFS
-recreates), W12, W6, W4, W3, W5, W7, W8, W10, W9, W11. W6 precedes W4 so only
+Run order: W1, W2 (the owner moved its SeaweedFS S3 recreate from the W4
+window into W2 on 2026-09-25), W12, W6, W4, W3, W5, W7, W8, W10, W9, W11. W6 precedes W4 so only
 kept services are recreated; W3 never overlaps W9; W11 follows W10.
 
 Task 0001, repository follow-ups:
@@ -62,8 +62,10 @@ Task 0002, runtime and legacy data:
    new `archive-push` INFO lines, and the CDC connector and task `RUNNING`
    with `hyhome_app_slot` active and `wal_status` not `lost`.
 2. W4: Add the recreate-on-edit rule to the owning operations document and a
-   hash check script (reading shell-less containers with `docker cp`) that
-   every live apply runs; recreate the kept stale services, SeaweedFS in the
+   hash check script (reading through `docker exec`, since `docker cp`
+   resolves a bind mount to the fresh host file and cannot see a stale inode;
+   shell-less containers through an approved helper image) that every live
+   apply runs; recreate the kept stale services, SeaweedFS in the
    order master, volume, filer outside `hyhome-backup.timer`, then check Loki
    and Tempo flush errors and that vacuum is enabled; run the check clean.
 3. W5: Preconditions: the three `hyhome-migration/*.cutover` markers exist and
