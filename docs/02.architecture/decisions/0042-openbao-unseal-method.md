@@ -1,8 +1,8 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "architecture"
@@ -127,22 +127,21 @@ non-goal로 두고 미뤘을 뿐, 결정한 적이 없다.
 
 ## Decision
 
-**Pending owner decision.** owner가 아래에서 하나를 고른다.
+**(e) 연기, (a) 수동 Shamir unseal 유지**(owner 결정, 2026-09-25). owner는 @buenhyden이다.
+아래 trigger 가운데 먼저 오는 것이 생기면 이 결정을 대체하는 새 ADR을 연다.
 
-- (a) 수동 Shamir unseal 유지
-- (b) 다른 기기의 OpenBao/Vault transit auto-unseal
-- (c) cloud KMS auto-unseal (AWS KMS, GCP Cloud KMS, Azure Key Vault 등)
-- (d) 같은 host의 Static Key 또는 PKCS#11 seal
-- (e) 연기: owner와 trigger 또는 날짜를 적는다
+- 계획하지 않은 재부팅이나 정전으로 OpenBao가 owner 부재 중 sealed 상태로 24시간 넘게 머묾.
+- hy-home.k8s나 다른 서비스가 OpenBao를 부팅 직후 필수로 요구하게 됨.
+- ADR-0041에서 클라우드 제공자를 고름(Cloudflare R2가 골라졌으나 R2에는 KMS가 없으므로
+  이 trigger는 KMS를 제공하는 제공자를 고를 때 발동한다).
+- OpenBao 2.7 업그레이드(seal 방식이 plugin으로 바뀌는 시점).
 
-작성자 권고: **(e) 연기, (a) 유지**. owner는 @buenhyden, trigger는 위 목록 가운데 먼저 오는 것.
+근거:
 
 - auto-unseal만으로는 무인 재부팅이 되지 않는다. Agent는 재시작마다 owner가 발급한 1회용
   SecretID가 필요하므로 owner는 어차피 재부팅 절차에 들어간다.
 - 같은 host 키(d)는 보안 이득 없이 키 노출 면만 넓힌다. 다른 기기(b)나 클라우드(c)는 새
   가용성 의존을 만든다. 지금 규모에서 이 비용이 이득보다 크다.
-- 무인 재부팅이 실제 요구가 되면 먼저 Agent 인증 방식(SecretID 전달)을 함께 바꾸는 결정이
-  필요하다. 그때 (c) 또는 (b)를 이 ADR을 대체하는 새 ADR로 다시 연다.
 
 ## Consequences
 
@@ -172,7 +171,6 @@ non-goal로 두고 미뤘을 뿐, 결정한 적이 없다.
 
 ## Follow-up
 
-- owner 결정 뒤 이 ADR을 `accepted`로 올리고 Decision 절을 선택한 옵션으로 다시 적는다.
 - W11 런북은 결정 시점에 실제로 쓰는 unseal 방식을 적는다.
 - 연기라면 owner와 trigger를 Task 0003의 Deferred Items에 적는다.
 

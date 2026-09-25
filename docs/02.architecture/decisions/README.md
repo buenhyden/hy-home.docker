@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -97,11 +97,11 @@ docs/02.architecture/decisions/
   04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 accepted
   decision. ADR-0019를 supersede한다.
 - [`ADR-0041`](./0041-offsite-backup-target.md):
-  같은 host에만 있는 Restic과 pgBackRest 저장소의 offsite 대상을 고르는
-  proposed decision. 옵션 비교와 권고를 담고 owner 결정을 기다린다(SPEC-0182 W10).
+  같은 host에만 있는 Restic과 pgBackRest 저장소의 offsite 대상으로 Cloudflare R2를
+  고른 accepted decision(SPEC-0182 W10).
 - [`ADR-0042`](./0042-openbao-unseal-method.md):
-  OpenBao 수동 Shamir unseal을 유지할지 auto-unseal로 바꿀지 고르는 proposed
-  decision. 옵션 비교와 권고를 담고 owner 결정을 기다린다(SPEC-0182 W10).
+  auto-unseal을 연기하고 수동 Shamir unseal을 유지하는 accepted decision.
+  owner와 재검토 trigger를 담는다(SPEC-0182 W10).
 
 ## How to Work in This Area
 
