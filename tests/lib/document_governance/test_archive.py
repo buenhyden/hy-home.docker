@@ -755,6 +755,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 "0002-operations-catalog-convergence.md",
                 "0003-workspace-governance-simplification.md",
                 "0004-research-package-consolidation.md",
+                "0005-operations-role-layout.md",
             ),
             tuple(path.name for path in inventory.migrations),
         )
