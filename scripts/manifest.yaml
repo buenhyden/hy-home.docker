@@ -549,6 +549,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_compose_core_readiness.py
+- path: scripts/operations/check-config-mount-hashes.py
+  kind: operations
+  authority: docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/catalog/00-workspace/0006-infrastructure-optimization-governance/policy.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_config_mount_hashes.py
 - path: scripts/operations/gen-secrets.sh
   kind: operations
   authority: docs/05.operations/catalog/00-workspace/0009-release-management/runbook.md
