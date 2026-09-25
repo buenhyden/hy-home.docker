@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -49,6 +49,11 @@ Read-only investigation of 2026-09-25:
 
 - 2026-09-25 W12: the retired and entry-closed items were re-checked
   against the live host and `main`; results are under Verification Evidence.
+- 2026-09-25 W10: options memos drafted as proposed ADR-0041 (offsite backup
+  target) and ADR-0042 (OpenBao unseal method), each with the decision
+  pending the owner. Inputs: journal `repository sizes` state 429–777 MiB
+  (5 GiB budget), host 1 MiB; OpenBao `2.6.2` built-in seals per the official
+  2.6.x seal documentation.
 
 ## Verification Evidence
 
@@ -84,7 +89,8 @@ are applied in the same PR. The owner's approval follows.
 | #261 | SPEC-0182 to review; Plan and three Tasks | merged |
 | #262 | SPEC-0182 Spec and Plan approved; Tasks ready | merged |
 | #263 | SPEC-0182 active; Task 0001 in progress | merged |
-| this PR | W12 closures; Task 0003 in progress | open |
+| #269 | W12 closures; Task 0003 in progress | merged |
+| this PR | W10 options memos ADR-0041 and ADR-0042 | open |
 
 ## Rulings
 
