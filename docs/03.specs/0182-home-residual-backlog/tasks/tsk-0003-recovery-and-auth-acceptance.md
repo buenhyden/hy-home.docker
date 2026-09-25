@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -67,6 +67,27 @@ Read-only investigation of 2026-09-25:
   oauth2-proxy's "Found." link page instead of redirecting, because browsers
   ignore `Location` on a 401. Fixed by rewriting 401 to 302 in the
   `sso-errors` middleware (#274).
+- 2026-09-25 W9 after #274: the fix is live (the Traefik file provider reloaded
+  on pull, 15:06Z). No-cookie browser requests to `prometheus`, `alertmanager`
+  and `n8n` now get `302` to Keycloak. `prometheus` `/api/v1/...` still
+  answers `401`; `alloy` with `Accept: application/json` now gets `302` with
+  a redirect page and no upstream content, so it is still refused. The `403`
+  page for a user outside `/admins` is confirmed in the owner row.
+- 2026-09-25 W7 (owner approved): three restore rehearsals ran in isolation
+  14:56–15:14Z and passed; results under Verification Evidence. JupyterLab
+  has no files in its production work directory, so there is no real content
+  to restore; the owner accepted the 2026-09-22 synthetic-notebook rehearsal
+  (RUN-0089) as the W7 evidence. All `w7-` containers, networks, volumes and
+  scratch were removed and verified; production services stayed healthy.
+- 2026-09-25 W10: the owner accepted ADR-0041 (Cloudflare R2) and ADR-0042
+  (auto-unseal deferred, manual Shamir kept) in #276. The R2 implementation
+  (#277) was put on hold by the owner before setup, but an agent merge loop
+  that kept running after it was stopped merged it; #279 reverts it. It is
+  re-landed with the owner's R2 setup.
+- 2026-09-25 W11: the cold start and reboot runbook is RUN-0098 (#278), in the
+  manual-unseal order of ADR-0042. Docker service and socket are enabled and
+  the five `k3d-hyhome-*` containers use `unless-stopped`. The supervised
+  reboot is pending owner.
 
 ## Verification Evidence
 
@@ -99,6 +120,23 @@ so a browser renders the one-link "Found" page instead of redirecting. Access
 is refused either way; the owner confirms the browser experience during the
 logout row.
 
+W7, restore rehearsals (criterion 7), 2026-09-25, each on an `--internal`
+network with no route to production and scratch on the data disk:
+
+| Rehearsal | Window (UTC) | Recovery point | Counts vs production | Elapsed vs POL-0021 | Result |
+| --- | --- | --- | --- | --- | --- |
+| RUN-0021 step 5, PITR from the real pgBackRest repository | 14:56:12–15:04:30 | Set `20260922-073354F_20260924-183526D`, WAL through `000000010000000300000080`, stopped at the target `2026-09-25 14:55:25+00`, new timeline 2 | `mlflow.experiments` 2=2, `mlflow.runs` 2=2, `analytics.hyhome_dbt_connectivity` 1=1, `debezium_heartbeat.heartbeat` 1=1 | about 8m18s against RTO 4h; no loss at the target, inside the 5 min RPO | pass |
+| RUN-0088, MLflow | 15:06:40–15:08:05 | Read-only `pg_dump` of `mlflow` at 15:06:56 | `experiments` 2=2, `runs` 2=2, `metrics` 1=1, `params` 1=1, `tags` 8=8; artifacts 2=2 objects, SHA-256 equal | about 1m25s; no POL-0021 row | pass |
+| RUN-0089, JupyterLab | not run | production work directory empty | none | none | owner accepted the 2026-09-22 synthetic rehearsal |
+| RUN-0036 steps 4–6, CDC | 15:10:45–15:14:02 | Disposable source and slot `w7_hyhome_app_slot`, final `confirmed_flush_lsn` `0/1C47EE0`, `wal_status=reserved` | 3 rows (1 snapshot, 2 streamed); a row written while paused arrived once after resume: no duplicates, no gaps | about 3m17s; no POL-0021 row | pass |
+
+Deviations: MLflow was dumped read-only instead of stopping `mlflow`
+(RUN-0088 step 1), with a local artifact root and the two production objects
+compared by hash. CDC used JSON converters instead of Avro with Schema
+Registry; lifecycle, pause/resume and idempotency do not depend on the
+converter. The live `hyhome-app-postgres` connector and `hyhome_app_slot`
+were not touched.
+
 ## Review Evidence
 
 Two independent read-only reviews ran on 2026-09-25, one on specification,
@@ -121,7 +159,13 @@ are applied in the same PR. The owner's approval follows.
 | #263 | SPEC-0182 active; Task 0001 in progress | merged |
 | #269 | W12 closures; Task 0003 in progress | merged |
 | #272 | W10 options memos ADR-0041 and ADR-0042 | merged |
-| this PR | W9 SSO matrix and no-cookie probes | open |
+| #274 | SSO `401` to `302` rewrite | merged |
+| #275 | W9 SSO matrix and no-cookie probes | merged |
+| #276 | ADR-0041 and ADR-0042 accepted | merged |
+| #277 | R2 offsite copy | merged against the owner's hold |
+| #278 | W11 RUN-0098 cold start and reboot runbook | merged |
+| #279 | Revert #277 until the R2 setup | open |
+| this PR | W7, W9, W10 and W11 records | open |
 
 ## Rulings
 
@@ -129,4 +173,10 @@ See the Plan.
 
 ## Deferred Items
 
-None yet.
+| Item | Owner | Trigger or date |
+| --- | --- | --- |
+| R2 setup (bucket, lock, token, secrets, `init`) and re-landing #277 | @buenhyden | When the owner is ready; RUN-0021 §8 comes back with it |
+| W9 owner rows: user outside `/admins`, logout, role removal, native OIDC signed in | @buenhyden | Before the completion receipt |
+| W11 supervised reboot and the RUN-0098 rehearsal record | @buenhyden | After fresh backups and `restic check` |
+| W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
+| RUN-0021 steps 5–6 put `scratch` in `mktemp -d` on the system disk; RUN-0088 step 1 has no rehearsal path that leaves `mlflow` running | agent | Next RUN-0021 or RUN-0088 edit |
