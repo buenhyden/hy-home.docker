@@ -20,7 +20,7 @@ _ARCHITECTURE_PATH_PATTERN = re.compile(
     r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md"
 )
 _REGISTERED_TOKEN_PATTERN = re.compile(
-    r"\{(?:number|package_number|task_number|subject_number|year):4\}"
+    r"\{(?:number|package_number|task_number|year):4\}"
     r"|\{(?:slug|domain|stage)\}"
 )
 _REGISTERED_STAGES = (
@@ -396,11 +396,6 @@ def _numeric_identity_matches(
     artifact_match = _named_identity_pattern(artifact_pattern).fullmatch(artifact_id)
     if path_match is None or artifact_match is None:
         return False
-    if identity_relation == "subject-member":
-        # Current subject-directory containment owns role membership. Registry
-        # validation establishes each identity shape independently and must
-        # never equate their four-digit numbers.
-        return "subject_number" in path_match.groupdict()
     required = (
         "number"
         if identity_relation == "direct"
@@ -427,7 +422,7 @@ def _numeric_identity_matches(
 
 
 _IDENTITY_TOKEN_PATTERN = re.compile(
-    r"\{(number|package_number|task_number|member_number|subject_number|year):4\}"
+    r"\{(number|package_number|task_number|member_number|year):4\}"
     r"|\{(slug|domain|stage)\}"
 )
 

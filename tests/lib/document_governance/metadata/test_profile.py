@@ -99,7 +99,6 @@ class TemplateRoleInferenceTests(unittest.TestCase):
             "number": "0901",
             "package_number": "0901",
             "task_number": "0001",
-            "subject_number": "0901",
             "year": "2026",
             "member_number": "0001",
             "domain": "00-workspace",
