@@ -1,8 +1,8 @@
 ---
 title: "Offsite Backup Target"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-25"
 layer: "architecture"
@@ -129,22 +129,17 @@ pgBackRest는 `repo2-type=s3`(그리고 `gcs`, `azure`, `sftp`)로 둘째 저장
 
 ## Decision
 
-**Pending owner decision.** owner가 아래에서 하나를 고른다.
+**(b) S3 호환 클라우드, Cloudflare R2**를 쓴다(owner 결정, 2026-09-25).
 
-- (a) 둘째 로컬 디스크 또는 USB 교대
-- (b) S3 호환 클라우드: Backblaze B2, Cloudflare R2, Wasabi, AWS S3 Glacier IR 중 하나
-- (c) 다른 기기로 SFTP 또는 rest-server
-- (d) 연기: owner와 trigger 또는 날짜를 함께 적는다
-
-작성자 권고: **(b) Backblaze B2** (또는 무료 구간을 원하면 Cloudflare R2).
-
-- 5 GiB 상한에서 비용이 월 몇 센트이고, 장소가 분리되며, 무인 timer로 돈다.
-- Restic `copy`로 두 로컬 저장소를 그대로 올린다. pgBackRest는 먼저 원격 Restic에 저장소
-  디렉터리를 싣는 방식(일 단위 원격 RPO, `mng-pg`에 egress와 키 없음)으로 시작하고, 원격에서도
-  WAL 단위 RPO가 필요해지면 `repo2-type=s3`로 옮긴다.
-- 삭제 방어를 위해 bucket에 Object Lock(또는 lifecycle 보존)을 켜고, 이 host의 키에는
-  가능한 한 삭제 권한을 주지 않는다. 원격 `forget-prune`은 별도 키로 수동 승인 절차로 둔다.
-- 새 원격 키는 `secrets/backup/`의 파일과 오프라인 사본으로만 보관하고 OpenBao에는 두지 않는다.
+- 원격 Restic 저장소 하나를 R2 bucket에 두고, 로컬 backup과 `check` 뒤에 `restic copy`로
+  state와 host snapshot을 올린다. 무료 구간(10 GB)과 무료 egress 안에 5 GiB 상한이 들어간다.
+- pgBackRest는 원격 Restic에 저장소 디렉터리를 싣는 방식으로 시작한다(일 단위 원격 RPO,
+  `mng-pg`에 egress와 키 없음). 원격에서도 WAL 단위 RPO가 필요해지면 `repo2-type=s3`로
+  옮기는 새 결정을 연다.
+- bucket에 lock(보존 규칙)을 켜고, 이 host의 token은 해당 bucket 범위로만 준다. 원격
+  `forget-prune`은 별도 수동 절차로 둔다.
+- R2 자격 증명은 `secrets/backup/`의 파일(0600, Docker Secret 주입)과 오프라인 사본으로만
+  보관하고 OpenBao에는 두지 않는다.
 
 ## Consequences
 
@@ -173,8 +168,8 @@ pgBackRest는 `repo2-type=s3`(그리고 `gcs`, `azure`, `sftp`)로 둘째 저장
 
 ## Follow-up
 
-- owner 결정 뒤 이 ADR을 `accepted`로 올리고 Decision 절을 선택한 옵션으로 다시 적는다.
-- 선택한 옵션을 구현하거나, 연기라면 owner와 trigger 또는 날짜를 Task 0003에 적는다.
+- R2 offsite copy를 구현하고 owner가 bucket, token, 첫 `restic init`을 준비한 증거를
+  Task 0003에 적는다.
 - [ADR-0042](0042-openbao-unseal-method.md)에서 cloud KMS를 고르면 같은 제공자 계정을
   쓸지 함께 정한다.
 
