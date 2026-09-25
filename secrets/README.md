@@ -1,10 +1,10 @@
 ---
 title: "Secret Handling Surface"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-25"
 created: "2026-02-23"
 ---
 
@@ -54,7 +54,7 @@ secrets/
 ├── data/                 # OpenSearch, Supabase, AI 도구 관련 secret
 ├── db/                   # PostgreSQL, Valkey, NoSQL 등 DB secret
 ├── observability/        # Grafana와 monitoring stack secret
-├── security/             # OpenBao 서비스 자격 증명과 legacy Vault migration custody
+├── security/             # OpenBao 서비스 자격 증명
 ├── storage/              # SeaweedFS object storage secret
 ├── tools/                # SonarQube 등 선택 도구 secret
 ├── SENSITIVE_ENV_VARS.md.example  # registry 예시
@@ -81,7 +81,7 @@ secrets/
 | Data | `data/` | OpenSearch, Supabase, AI service secret |
 | DB | `db/` | PostgreSQL, Valkey, Cassandra, CouchDB, MongoDB 등 DB secret |
 | Observability | `observability/` | Grafana and monitoring credentials |
-| Security | `security/` | OpenBao and separate legacy Vault secret |
+| Security | `security/` | OpenBao service credentials |
 | Storage | `storage/` | SeaweedFS keys and S3 identities |
 | Tools | `tools/` | SonarQube and optional utility service secret |
 
@@ -112,8 +112,13 @@ remain reserved by history and must not be reused.
 `SEC-001` / `secrets/security/vault_token.txt` left the public schema with the
 Vault source in SPEC-0180 S08. On 2026-09-23 the owner-requested cleanup pruned
 the private `SEC-001` and MinIO `STRG-001`–`STRG-006` rows (the local registry
-backup keeps them) and moved the unused files to the quarantine below; the
-Vault credential revocation and file disposal are still separately approved.
+backup keeps them) and moved the unused files to the quarantine below. On
+2026-09-25 SPEC-0182 W5 disposed of the quarantined MinIO and Vault files in
+`secrets/.retired/2026-09-23/` (the four `storage/minio_*` files,
+`storage/mlflow_s3_password.txt`, `tools/terrakube_minio_secret_key.txt`,
+`security/vault_token.txt` and `security/vault_unseal_keys.legacy.txt`) and
+`secrets/.backup-20260923/`, together with the MinIO data and the Vault tree.
+The legacy Vault root token is moot.
 
 Unused credential files are not deleted in place. They move to
 `secrets/.retired/<date>/<original subdirectory>/` (`0700`, Git-ignored) until
