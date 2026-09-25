@@ -4002,8 +4002,8 @@
     "migration": {
       "prefix": "MIG-",
       "width": 4,
-      "high_water": 4,
-      "next_number": 5,
+      "high_water": 5,
+      "next_number": 6,
       "child_spaces": {}
     },
     "tombstone": {
