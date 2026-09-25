@@ -60,10 +60,9 @@ Expected: exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, 로그에
 (`restart: unless-stopped`)를 상속하므로, Docker daemon이 systemd로 시작하면
 직전에 실행 중이던 컨테이너를 daemon이 각자 자동으로 다시 시작한다.
 
-**owner 확인 필요**: Docker daemon 자체가 호스트 부팅 시 systemd로 자동
-시작하도록 활성화되어 있는지는 이 저장소에서 확인할 수 없다(`docker.socket`을
-`After=`/`Wants=`로 요구하는 것은 `infra/09-tooling/restic/systemd/hyhome-backup.service`
-뿐이고, Docker 자체의 활성화 상태는 host systemd 설정에 있다).
+Docker 자체의 부팅 활성화는 이 저장소가 아니라 host systemd 설정에 있다.
+2026-09-25 host에서 `systemctl is-enabled docker.service docker.socket`은 둘 다
+`enabled`였다. 재부팅 전에 같은 명령으로 다시 확인한다.
 
 Daemon이 개별 컨테이너를 되살리는 방식은 각 서비스의 `depends_on: condition:
 service_healthy`(예: `openbao-agent`가 `openbao`를, `mng-pg-exporter`가
@@ -163,16 +162,17 @@ Expected: 첫 grep이 1 이상, 두 번째가 0. SecretID 전달을 10분 안에
 ### 7. hy-home.k8s(k3d) 컨테이너
 
 k3d 클러스터 노드는 같은 호스트의 Docker 컨테이너(`k3d-hyhome-*`)로 돈다.
-**owner 확인 필요**: 이 저장소에는 k3d 노드 컨테이너의 재부팅 후 자동 시작
-여부(k3d 자체의 컨테이너 재시작 정책, 또는 `k3d cluster start hyhome`을 owner가
-수동으로 실행해야 하는지)를 규정하는 문서나 systemd 단위가 없다. 재부팅 뒤 아래로
-확인한다.
+이 저장소에는 k3d 노드의 시작을 규정하는 문서나 systemd 단위가 없다. 2026-09-25
+host에서 `k3d-hyhome-server-0`, `agent-0`~`agent-2`, `serverlb`의 재시작 정책은
+모두 `unless-stopped`였으므로 Docker daemon이 시작하면 함께 돌아온다. 재부팅 전
+`docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' <name>`으로 다시 확인하고,
+재부팅 뒤 아래로 확인한다.
 
 ```bash
 docker ps --format '{{.Names}} {{.Status}}' | grep '^k3d-hyhome-'
 ```
 
-없으면 owner가 승인된 절차로 클러스터를 시작한다(현재 문서화되지 않음).
+없으면 owner가 `k3d cluster start hyhome`으로 시작한다(hy-home.k8s 저장소 절차를 따른다).
 클러스터가 떠 있으면, [hy-home.k8s 통합 runbook](../../12-infra-net/0096-k8s-integration/runbook.md)의
 읽기 전용 확인을 사용해 External Secrets 동기화를 확인한다. ADR-0042에 따르면
 hy-home.k8s의 External Secrets는 Kubernetes auth로 OpenBao를 읽으므로, 4단계
