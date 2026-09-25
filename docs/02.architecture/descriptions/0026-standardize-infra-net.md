@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.3.2"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-24"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -60,12 +60,11 @@ automatic address pool cannot take one first.
 | `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Stalwart, its config job, Mailpit and SMTP senders | SMTP 25/587 and IMAPS 993 to Stalwart, capture on Mailpit 1025; Stalwart management/JMAP on 8080 is also reachable here without the gateway SSO chain |
 | `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
-| `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
 
 Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the
 project default network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic` and `backup-sqlite-export` keep
-`network_mode: none`; only `restic-offsite` has egress. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP.
+`network_mode: none`. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP.
 
 ## Data Flow
 

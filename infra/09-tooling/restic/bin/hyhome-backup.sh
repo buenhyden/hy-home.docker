@@ -6,8 +6,6 @@
 #      SeaweedFS filer metadata (vacuum paused until the run ends)
 #   4. Restic backup and check of both repositories
 #   5. remove the plaintext exports from staging, on success or failure
-#   6. offsite: restic copy of both repositories to Cloudflare R2 once the
-#      owner has set BACKUP_OFFSITE_R2_* (ADR-0041); weekly remote check
 # Paths come from the rendered Compose model; .env is never sourced.
 set -euo pipefail
 umask 077
@@ -16,7 +14,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 cd "$repo_root"
 compose=(docker compose --profile backup)
 
-rendered="$("${compose[@]}" config --format json restic restic-offsite)"
+rendered="$("${compose[@]}" config --format json restic)"
 mount_source() {
     python3 -c 'import json,sys
 cfg = json.loads(sys.stdin.read())
@@ -87,7 +85,6 @@ cleanup() {
     if [[ "$seaweed_vacuum_paused" == true ]]; then
         printf 'lock\nvolume.vacuum.enable\nunlock\n' | seaweed_shell >/dev/null ||
             echo "SeaweedFS vacuum could not be re-enabled; run volume.vacuum.enable" >&2
-        seaweed_vacuum_paused=false
     fi
     find "$staging" -mindepth 1 -delete
 }
@@ -160,35 +157,15 @@ if ! state_kib="$(size_kib "$state_repo")"; then
     state_kib=$((max_gib * 1024 * 1024))
     status=1
 fi
-restic_ok=true
 if (( state_kib >= max_gib * 1024 * 1024 )); then
     echo "BACKUP_STATE_REPO_DIR uses $((state_kib / 1024)) MiB, at or over the ${max_gib} GiB budget; Restic backup skipped" >&2
     status=1
-    restic_ok=false
 else
-    "${compose[@]}" run --rm --no-deps restic backup || { status=1; restic_ok=false; }
+    "${compose[@]}" run --rm --no-deps restic backup || status=1
 fi
-"${compose[@]}" run --rm --no-deps restic check || { status=1; restic_ok=false; }
+"${compose[@]}" run --rm --no-deps restic check || status=1
 
 # Size trend for capacity review (journal): repositories grow with retained
 # changes only; pgBackRest is bounded by retention, Restic until forget-prune.
 echo "repository sizes: state=$(( $(size_kib "$state_repo") / 1024 ))MiB (budget ${max_gib}GiB) host=$(( $(size_kib "$host_repo/restic") / 1024 ))MiB" || true
-
-# Offsite (ADR-0041). Staging is emptied and vacuum resumed first, so neither
-# waits for the upload. Unconfigured: logged and skipped. Configured: a failed
-# copy or check fails the unit like any other step, local results stay valid.
-cleanup
-offsite_configured="$(python3 -c 'import json,sys
-env = json.loads(sys.stdin.read())["services"]["restic-offsite"]["environment"]
-print("yes" if env.get("BACKUP_OFFSITE_R2_ACCOUNT_ID") and env.get("BACKUP_OFFSITE_R2_BUCKET") else "no")' <<<"$rendered")"
-if [[ "$offsite_configured" != yes ]]; then
-    echo "offsite copy not configured (BACKUP_OFFSITE_R2_*); skipped"
-elif [[ "$restic_ok" == true ]]; then
-    "${compose[@]}" run --rm --no-deps restic-offsite copy || { echo "offsite copy to R2 failed" >&2; status=1; }
-    if [[ "$(date +%u)" == 7 ]]; then
-        "${compose[@]}" run --rm --no-deps restic-offsite check || { echo "offsite check of R2 failed" >&2; status=1; }
-    fi
-else
-    echo "local Restic backup or check failed; offsite copy skipped" >&2
-fi
 exit "$status"

@@ -1,7 +1,6 @@
 #!/bin/sh
 # Restic entrypoint for the two repositories.
-#   state: allowlisted data-disk trees, consistent exports and the pgBackRest
-#          repository                                        -> BACKUP_STATE_REPO_DIR
+#   state: allowlisted data-disk trees and consistent exports -> BACKUP_STATE_REPO_DIR
 #   host:  secrets/ and .env on the system disk              -> BACKUP_HOST_REPO_DIR
 # Usage: backup.sh {snapshots|init|backup|check|forget-prune|cmd <state|host> <restic args...>}
 set -eu
@@ -67,7 +66,6 @@ case "$action" in
             fi
         done
         echo /src/state/exports >>"$list"
-        echo /src/state/pgbackrest >>"$list"
         RESTIC_REPOSITORY="$(repo_for state)" restic backup \
             --host hy-home --tag hyhome-state \
             --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \
