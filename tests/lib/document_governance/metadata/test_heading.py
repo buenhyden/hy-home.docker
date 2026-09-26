@@ -507,11 +507,21 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
         self,
     ) -> None:
         registry = self.profiles["_registry"]
+        generated = "docs/90.references/data/0066-foundation-summary/README.md"
+        # No tracked generator owns a Stage 90 body any more, so the generated
+        # case supplies its own owner map instead of relying on the Registry.
+        profiles = {
+            **self.profiles,
+            "common": {
+                **self.profiles["common"],
+                "generated_outputs": {generated: "scripts/validation/generate-x.py"},
+            },
+        }
         paths = (
             "docs/99.templates/templates/runtime/claude-agent.template.md",
             "docs/03.specs/0001-example/contracts/openapi.yaml",
             "docs/98.archive/retired/03.specs/0001-example/spec.md",
-            "docs/90.references/data/0066-foundation-summary/README.md",
+            generated,
         )
         for relative in paths:
             with self.subTest(path=relative):
@@ -519,7 +529,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                 self.assertIsNotNone(profile_id)
                 values = {}
                 owner = heading_module.registered_generated_owner(
-                    pathlib.Path(relative), self.profiles
+                    pathlib.Path(relative), profiles
                 )
                 if owner is not None:
                     values["generated_by"] = owner
@@ -527,7 +537,7 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                 findings = heading_module.validate_body_contract(
                     record,
                     "# Example\n\n<!-- Author prompt: Example. -->\n{{BODY_TOKEN}}\n",
-                    self.profiles,
+                    profiles,
                     False,
                 )
                 self.assertFalse(
