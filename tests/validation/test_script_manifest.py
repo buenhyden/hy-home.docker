@@ -327,6 +327,25 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(row["path"], row["successor"])
 
+    def test_authority_names_the_script_it_governs(self) -> None:
+        expected = {
+            "scripts/knowledge/report-graphify-health.sh": (
+                "docs/05.operations/runbooks/0004-harness-agent-first-engineering.md"
+            ),
+            "scripts/operations/use-qa-ci-tools.sh": "scripts/README.md",
+            "scripts/validation/run-agent-precommit-all-files.sh": (
+                ".agents/governance/quality-standards.md"
+            ),
+        }
+        rows = {row["path"]: row for row in self.rows}
+        for path, authority in expected.items():
+            with self.subTest(path=path):
+                self.assertEqual(authority, rows[path]["authority"])
+                self.assertIn(
+                    PurePosixPath(path).name,
+                    (ROOT / authority).read_text(encoding="utf-8"),
+                )
+
     def test_operations_implementation_and_gate_use_the_registry_authority(
         self,
     ) -> None:

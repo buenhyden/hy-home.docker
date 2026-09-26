@@ -908,6 +908,19 @@ class DocumentRegistryTests(unittest.TestCase):
             )
         )
 
+    def test_static_generated_outputs_match_the_manifest_owners(self) -> None:
+        from scripts.lib.document_governance.references import (
+            generated_reference_owners,
+        )
+
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            generated_reference_owners(ROOT),
+            registry["common"]["generated_outputs"],
+        )
+
     def test_changed_generated_body_requires_exact_manifest_owner_and_output(
         self,
     ) -> None:

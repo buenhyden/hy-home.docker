@@ -118,7 +118,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/knowledge/report-graphify-health.sh
   kind: generator
-  authority: .github/workflow-contract.yml
+  authority: docs/05.operations/runbooks/0004-harness-agent-first-engineering.md
   lifecycle: active
   mutation: none
   consumers:
@@ -632,7 +632,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
-  authority: .github/workflow-contract.yml
+  authority: scripts/README.md
   lifecycle: active
   mutation: none
   consumers:
@@ -711,7 +711,7 @@ files:
   kind: validator
   authority: docs/99.templates/registry.json
   lifecycle: active
-  mutation: check-write
+  mutation: none
   consumers:
   - .github/workflow-contract.yml
   disposition: retain
@@ -844,7 +844,7 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
-  authority: .github/workflow-contract.yml
+  authority: .agents/governance/quality-standards.md
   lifecycle: active
   mutation: check-write
   consumers:
@@ -870,7 +870,7 @@ files:
   kind: runner
   authority: .github/workflow-contract.yml
   lifecycle: active
-  mutation: none
+  mutation: check-write
   consumers:
   - .github/workflow-contract.yml
   disposition: retain
