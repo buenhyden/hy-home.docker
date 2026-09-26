@@ -1,6 +1,6 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
@@ -109,8 +109,9 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 4. hardening script의 stale Airflow ForwardAuth assertion 수정.
 5. Kafbat/workflow 문서의 stale SSO 문구 수정.
 6. provider update 시 permission repair를 release checklist에 포함.
-7. 노출된 live token/session: owner가 유지로 결정했다(2026-09-27). 폐기
-   절차는 `RUN-0014`와 `RUN-0050`에 있다.
+7. 노출된 live token/session 폐기: 2026-09-27 완료. Keycloak `home-airflow`
+   session은 0건이었고, `airflow_api_jwt_secret`을 교체해 기존 Airflow JWT를
+   무효화했다. 상세는 [postmortem](postmortem.md)에 있다.
 
 ## Traceability
 
