@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "specs"
 artifact_id: "SPEC-0183-TSK-0001"
 parent_ids:
@@ -130,6 +130,18 @@ and record every document's disposition here.
   Admin REST API reference. None of them was run. The postmortem moved from
   `draft` to `review`; `published` needs a separate change, because the
   lifecycle allows only `draft` to `review` to `published`.
+- W16 (owner follow-up, 2026-09-27): #285 and #286 merged, and the six
+  merged remote branches were deleted. The owner reversed the keep decision
+  and chose two revocation steps. Keycloak reported `0` online and `0`
+  offline sessions for `home-airflow`, so nothing was deleted. With no
+  running or queued Airflow task, `airflow_api_jwt_secret` was replaced at
+  2026-09-27T07:58:02+09:00 (same 128-character hex shape and `0640` mode,
+  value never printed) and the five Airflow services were recreated with
+  `--no-deps`. All five are healthy and read the new file; through Traefik
+  `/api/v2/monitor/health` returned `200` and an unauthenticated
+  `/api/v2/dags` `401`; a JWT signed with another key fails validation with
+  `InvalidSignatureError`. `airflow.<domain>` does not resolve on this host,
+  so the probes pinned the Traefik address.
 
 ## Verification Evidence
 
