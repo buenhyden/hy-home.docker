@@ -1043,6 +1043,68 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     self.checker._python_proves_use(source, "scripts/example.py")
                 )
 
+    def test_reference_evidence_accepts_launcher_shapes_and_rejects_collisions(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "scripts/validation/run.py",
+                "from runner import main\n",
+                "scripts/validation/runner.py",
+                True,
+            ),
+            (
+                "scripts/validation/run.py",
+                "import runner\n",
+                "scripts/validation/runner.py",
+                True,
+            ),
+            (
+                "scripts/other/run.py",
+                "from runner import main\n",
+                "scripts/validation/runner.py",
+                False,
+            ),
+            (
+                "scripts/validation/check.sh",
+                "python3 - <<'PY'\nfrom scripts.lib.gate.contract import load\nPY\n",
+                "scripts/lib/gate/contract.py",
+                True,
+            ),
+            (
+                "scripts/validation/check.sh",
+                "# from scripts.lib.gate.contract import load\n",
+                "scripts/lib/gate/contract.py",
+                False,
+            ),
+            (
+                "scripts/validation/check.sh",
+                "python3 -c 'import scripts.lib.gate.contract_extra'\n",
+                "scripts/lib/gate/contract.py",
+                False,
+            ),
+            (
+                ".codex/hooks.json",
+                '{"command": "bash \\"${ROOT:-.}/scripts/hooks/hook.sh\\" Start"}',
+                "scripts/hooks/hook.sh",
+                True,
+            ),
+            (
+                ".codex/hooks.json",
+                '{"command": "bash foo/scripts/hooks/hook.sh"}',
+                "scripts/hooks/hook.sh",
+                False,
+            ),
+        )
+        for reference, text, target, expected in cases:
+            with self.subTest(reference=reference, text=text):
+                self.assertEqual(
+                    expected,
+                    self.checker._reference_proves_use(
+                        reference, text, target, is_test=False
+                    ),
+                )
+
     def test_python_semantic_evidence_rejects_ambiguous_path_reassignment(self) -> None:
         source = (
             "import subprocess\n"

@@ -917,11 +917,33 @@ def _machine_config_proves_use(
             active.remove(identity)
     if parent not in _MACHINE_REFERENCE_KEYS or not isinstance(document, str):
         return False
+    # `}/` admits a path joined to a `${ROOT:-...}` expansion.
     return bool(
         re.search(
-            rf"(?<![A-Za-z0-9_./-]){re.escape(target)}(?![A-Za-z0-9_./-])",
+            rf"(?:(?<![A-Za-z0-9_./-])|(?<=\}}/)){re.escape(target)}(?![A-Za-z0-9_./-])",
             document,
         )
+    )
+
+
+def _sibling_import_proves_use(reference: str, text: str, target: str) -> bool:
+    """Accept a bare import of a module that sits beside the importing script."""
+
+    target_path = PurePosixPath(target)
+    if PurePosixPath(reference).parent != target_path.parent:
+        return False
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return False
+    stem = target_path.stem
+    return any(
+        (isinstance(node, ast.ImportFrom) and node.level == 0 and node.module == stem)
+        or (
+            isinstance(node, ast.Import)
+            and any(alias.name == stem for alias in node.names)
+        )
+        for node in ast.walk(tree)
     )
 
 
@@ -930,10 +952,15 @@ def _reference_proves_use(
 ) -> bool:
     basename = PurePosixPath(target).name
     if reference.endswith(".py"):
-        return _python_proves_use(text, target)
+        return _python_proves_use(text, target) or _sibling_import_proves_use(
+            reference, text, target
+        )
     if reference.endswith(".sh"):
+        module = PurePosixPath(target).with_suffix("").as_posix().replace("/", ".")
+        module_use = re.compile(rf"(?<![\w.]){re.escape(module)}(?![\w.])")
         return any(
-            (target in line or basename in line) and not line.lstrip().startswith("#")
+            (target in line or basename in line or module_use.search(line))
+            and not line.lstrip().startswith("#")
             for line in text.splitlines()
         )
     if is_test:
