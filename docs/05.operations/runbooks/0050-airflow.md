@@ -1,6 +1,6 @@
 ---
 title: "Airflow Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -42,6 +42,10 @@ created: "2026-05-17"
 - [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
 - [ ] 현재 실행 환경이 `dedicated-valkey` profile을 선택했는지 식별했는가?
 - [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
+- [ ] `apache-airflow-providers-keycloak` 버전이 바뀌었다면
+  [Authorization bootstrap](../guides/0079-application-auth-integration.md#authorization-bootstrap)의
+  `create-permissions`를 다시 실행하고, 로그인한 사용자로 Pools, DAGs, Assets,
+  HITL 화면이 `403` 없이 열리는지 확인했는가? (inc-2026-0002)
 
 ### Steps
 

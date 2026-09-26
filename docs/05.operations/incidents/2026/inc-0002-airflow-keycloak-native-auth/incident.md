@@ -1,16 +1,17 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/incident"
-status: "mitigated"
+status: "resolved"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "inc-2026-0002"
 parent_ids:
 - "RUN-0050"
 created: "2026-09-18"
 occurred_at: "2026-09-18T15:43:32+09:00"
+resolved_at: "2026-09-26T22:03:08+09:00"
 ---
 
 # Airflow Keycloak Native Authentication Migration Incident
@@ -23,8 +24,9 @@ Manager로 전환하는 과정에서 Keycloak Authorization bootstrap, provider 
 permission strategy, OAuth state/cookie, resource-level authorization 문제를
 순차적으로 확인했다.
 
-현재 login과 일부 API는 정상화되었고 Pool/DAG/Asset resource 403의 최종
-authorization 검증이 남아 있다.
+2026-09-26 owner의 로그인 세션에서 Pool/DAG/Asset/HITL이 모두 `200`으로
+확인되어 resolved로 닫는다. 어느 조치가 마지막 `403`을 해소했는지와 그 시각은
+기록되어 있지 않다.
 
 ## Impact
 
@@ -65,6 +67,14 @@ authorization 검증이 남아 있다.
 13. 새 login token/cookie 발급 확인.
 14. `/ui/auth/me`, `/ui/auth/menus`, plugins/importErrors 200.
 15. Pool/DAG/Asset 403은 resource authorization 문제로 분리.
+16. 2026-09-26: 읽기 전용 점검에서 Airflow/Keycloak 컨테이너 healthy, provider
+    0.9.0, auth manager `KeycloakAuthManager`를 확인했다. 인증된 접근 기록은
+    없었다.
+17. 2026-09-26T22:02:37+09:00–22:03:08+09:00: owner가 Admin으로 로그인해
+    DAGs, Pools, Assets, DAG run/HITL 화면을 열었다. Traefik access log에서
+    요청 111건 중 `200` 107건, `303` 1건, `307` 2건, `401` 1건(로그인 전
+    `/ui/config`), `403` 0건. `/api/v2/pools`, `/ui/dags`,
+    `/api/v2/assets`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`가 `200`.
 
 ## Mitigation
 
@@ -79,21 +89,17 @@ authorization 검증이 남아 있다.
 
 ## Current Status
 
-정상:
+Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
+(2026-09-26, Traefik access log, 경로와 상태 코드만 기록):
 
-- `/`
-- `/ui/config`
-- `/ui/auth/me`
-- `/ui/auth/menus`
-- `/api/v2/plugins`
-- `/api/v2/importErrors`
-
-추가 검증:
-
+- `/`, `/ui/config`, `/ui/auth/me`, `/ui/auth/menus`
+- `/api/v2/plugins`, `/api/v2/importErrors`
 - `/api/v2/pools`
-- `/ui/dags`
-- `/api/v2/assets/events`
-- DAG run/HITL
+- `/ui/dags`, `/api/v2/dags/{dag}`
+- `/api/v2/assets`, `/api/v2/dags/{dag}/assets/{asset}`
+- `/api/v2/dags/{dag}/dagRuns`, `/api/v2/dags/{dag}/dagRuns/{run}/hitlDetails`
+
+후속 조치의 상태는 [postmortem](postmortem.md)이 추적한다.
 
 ## Corrective Actions
 
@@ -112,6 +118,7 @@ authorization 검증이 남아 있다.
 - `POL-0079`
 - `GDE-0079`
 - `ADR-0038`
+- [Postmortem](postmortem.md)
 
 ## Communications
 

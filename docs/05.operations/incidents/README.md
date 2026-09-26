@@ -1,6 +1,6 @@
 ---
 title: "05.operations/incidents"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -64,7 +64,7 @@ service names, environment variables는 원형을 유지합니다.
 
 | Incident | 상태 | 발생 | Postmortem |
 | --- | --- | --- | --- |
-| [inc-2026-0002 Airflow Keycloak native authentication](2026/inc-0002-airflow-keycloak-native-auth/incident.md) | `mitigated` | 2026-09-18 | 없음. `resolved` 전환과 원인 분석은 해결 증거가 확보된 뒤 같은 묶음에 기록한다. |
+| [inc-2026-0002 Airflow Keycloak native authentication](2026/inc-0002-airflow-keycloak-native-auth/incident.md) | `resolved` (2026-09-26) | 2026-09-18 | [draft](2026/inc-0002-airflow-keycloak-native-auth/postmortem.md) |
 
 ### Templates
 
