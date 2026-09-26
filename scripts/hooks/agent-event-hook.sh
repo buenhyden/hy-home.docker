@@ -265,7 +265,7 @@ PY
 }
 
 post_tool_use() {
-  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/hooks/post-tool-validate.sh
+  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/hooks/post-tool-validate.sh --write
 }
 
 session_end() {
