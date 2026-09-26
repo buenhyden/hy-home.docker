@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -180,14 +180,16 @@ Prometheus evaluates rules on the configured `evaluation_interval` and dispatche
 Machine clients that cannot pass SSO, such as the hy-home.k8s cluster, use the
 Prometheus HTTP API through Traefik at `https://prometheus.${DEFAULT_URL}/api/v1/`:
 Alloy remote write to `/api/v1/write` and Kiali queries to
-`/api/v1/query*`. The `prometheus-api` router admits only `/api/v1/`, and
-`prometheus-api-auth` checks Basic Auth against `INFRA-007`, which
+`/api/v1/query*`. The `prometheus-api` router admits only `/api/v1/` requests
+that carry a Basic `Authorization` header, and `prometheus-api-auth` checks Basic Auth against `INFRA-007`, which
 `gen-secrets.sh` derives from `PROMETHEUS_API_USERNAME` (`OBS-012`) and
 `secrets/observability/prometheus_api_password.txt` (`OBS-013`). The client
 needs that username and password, the Prometheus host name resolved to the
 Traefik bind address, and trust in the gateway certificate. Give cluster series
-a distinguishing external label such as `cluster`. The UI stays behind SSO, and
-no Prometheus host port is published. hy-home.k8s reads the credential from
+a distinguishing external label such as `cluster`. The UI stays behind SSO,
+and so do the UI's own `/api/v1/` calls, which carry the SSO cookie and no
+Basic header; a signed-in browser is therefore not asked for a second login.
+No Prometheus host port is published. hy-home.k8s reads the credential from
 OpenBao `secret/platform/prometheus-api` through External Secrets, so a
 password rotation also updates that entry; the
 [integration runbook](../runbooks/0096-k8s-integration.md#rotating-the-prometheus-api-credential)
