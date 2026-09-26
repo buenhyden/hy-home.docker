@@ -84,6 +84,7 @@ files:
   - .claude/hooks/session-start.sh
   - .claude/hooks/stop.sh
   - .claude/hooks/user-prompt-submit.sh
+  - .codex/hooks.json
   - docs/05.operations/guides/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
@@ -483,6 +484,7 @@ files:
   mutation: none
   consumers:
   - scripts/validation/check-github-workflow-contract.py
+  - scripts/validation/check-storybook-contract.sh
   - tests/lib/gate/test_github_workflow_contract.py
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
@@ -832,6 +834,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
+  - scripts/validation/run-ci-gate.py
   - tests/validation/test_ci_gate_execution_context.py
   - tests/validation/test_ci_gate_model.py
   - tests/validation/test_ci_gate_plan.py
