@@ -69,6 +69,20 @@ and record every document's disposition here.
 - W8: Removed the `subject-member` identity relation, addressed review
   findings, and verified each commit in isolation and the final tree with
   the full gate.
+- W9 (owner follow-up): Applied five of the six deferred documentation
+  items: POL-0004 links its `.agents` owners, RUN-0004 drops the delegation
+  rules, RUN-0061 owns the approved k6 live run, POL-0006 drops its dated audit
+  snapshots, and GDE-0079 holds the full twelve-command static check that
+  POL-0079 now links. Fourteen documents lost the retired subject-folder
+  wording in their Traceability line.
+- W10 (owner follow-up): Applied the script decisions the owner delegated.
+  `post-tool-validate.sh` and `sync-tech-stack-versions.sh` became check-only
+  unless `--write` is given, and their callers (the post-edit hook, Renovate
+  and its command allowlist) pass `--write`. Three manifest rows moved to the
+  file that governs them, two mutation labels were corrected, the stale
+  Registry `generated_outputs` entry was emptied, and the evidence detector
+  learned three launcher shapes so their consumers are declared. Each change
+  had a failing test first.
 
 ## Verification Evidence
 
@@ -415,8 +429,12 @@ pushed.
 | `3c97d57ae` | W7 | docs(archive): Record the operations role layout route as MIG-0005 |
 | `1a89f8af4` | W8 | fix(governance): Address the SPEC-0183 review findings |
 | `464b3c509` | W6 | docs(task): Record the SPEC-0183 W6 dispositions in the ledger |
-
-This Task's evidence commit follows these ten.
+| `48f4ef93c` | W8 | docs(task): Record the SPEC-0183 verification evidence |
+| `f87ed3de8` | W9 | docs(operations): Route the remaining mixed content to its owning role |
+| `0bc87bd9c` | W10 | chore(scripts): Correct manifest labels, authorities, and generated outputs |
+| `90cb54611` | W10 | fix(hooks): Make post-tool validation check-only unless --write is given |
+| `cacd80ce2` | W10 | fix(scripts): Make the tech-stack sync check-only unless --write is given |
+| `179e8212e` | W10 | fix(scripts): Recognize three launcher shapes as manifest consumer evidence |
 
 ## Rulings
 
@@ -424,33 +442,40 @@ This Task's evidence commit follows these ten.
   and the Retention Catalog rows keep the catalog paths they record.
 - Stage 90 evidence keeps catalog paths in its dated observations; only its
   link targets follow the move.
+- `metadata/reference.py` keeps its write path: it writes only with an
+  explicit `--output PATH` and prints to standard output otherwise.
+- `metadata_validator.py` is retained: `check-document-metadata.py` and
+  `metadata_contract.py` import it, and a registered suite tests it.
+- The manifest roots stay `evals/` and `scripts/`. `.claude/hooks` files are
+  renderer outputs checked for drift by `provider_surface_renderer.py`, and
+  the two `.agents/skills/*/scripts` files are owned by their `SKILL.md`.
 - `inc-2026-0002` stays `mitigated`: no resolution evidence exists in the
   repository, so no postmortem is written and no closure is recorded.
 
 ## Deferred Items
 
-Each item needs an owner decision or access this session did not have.
+Each item needs an owner decision, another workspace, or access this session
+did not have.
 
-- Scripts whose default run writes: `sync-tech-stack-versions.sh` under
-  check-write, `post-tool-validate.sh`, `check-document-corpus-lifecycle.py`
-  check-write, and the writing path of `metadata/reference.py`.
-  `run-ci-precommit.sh` is labelled non-mutating while its hooks fix files.
-- The Registry `generated_outputs` entry for the corpus lifecycle check is
-  stale, and the `metadata_validator.py` facade has no remaining need that
-  this session proved.
-- Manifest authority disagrees with its consumers for
-  `use-qa-ci-tools.sh`, `run-agent-precommit-all-files.sh`, and
-  `report-graphify-health.sh`. The evidence detector cannot recognise three
-  consumers, so they stay undeclared. `.claude/hooks` and
-  `.agents/skills/*/scripts` sit outside the manifest roots.
-- Documentation: the `POL-0004` agent rule has no `.agents` owner yet;
-  `RUN-0004` still carries delegation rules; the `GDE-0061` live-run step
-  waits for `RUN-0061` to own the command; the `POL-0006` backlog and audit
-  sections, the `GDE-0079` dated results, and the `POL-0079` twelve-command
-  sequence belong to other roles.
-- `inc-2026-0002` stays `mitigated`. Resolution needs a live authenticated
-  check of pools, DAGs, assets, and HITL, and the follow-up has no assigned
-  owner.
+- `GDE-0079` keeps its dated `Result` column. Moving results into the SPEC-0182
+  Task 0003 would edit a file that the separate `docs/spec-0182-closeout-1`
+  branch also edits.
+- That branch (`ea9794ddd`) still edits two Runbooks at their retired
+  `catalog/` paths. Whichever of the two branches merges second must rebase
+  those edits onto `runbooks/0021-backup-and-restore.md` and
+  `runbooks/0088-mlflow.md`.
+- Twenty other Runbooks keep an `### Agent Operations (If Applicable)`
+  subsection. The `POL-0006` backlog stays in place because
+  `links.py` validates its Operations and Runbook link pairs; moving it needs a
+  validator change and an owner for backlogs.
+- Renovate reads `renovate.json` before `renovate.json5`, and the contract test
+  reads only `renovate.json5`. Both were updated; the duplicate needs an owner.
+- After merge, the host checkout must be updated so the mounted Renovate
+  `config.js` allowlist accepts `--write`; until then Renovate artifact updates
+  fail closed.
+- `inc-2026-0002` stays `mitigated`. Resolution needs an authenticated
+  request to Pool, DAG, Asset, and HITL; the read-only check found healthy
+  containers and provider 0.9.0 but no authenticated access record.
 - Host systemd units and the running Prometheus keep the old
   `Documentation=` and `runbook_url` values until the units are reinstalled
   and Prometheus is reloaded. Neither was done; both need approval.
