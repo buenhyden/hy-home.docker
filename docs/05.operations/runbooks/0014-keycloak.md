@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -33,6 +33,7 @@ created: "2026-05-17"
 - 관리자/DB 비밀 회전 직후 로그인 실패
 - OAuth2 Proxy 또는 native OIDC client의 `invalid_redirect_uri`, issuer mismatch, JWKS fetch 실패
 - logout 후 즉시 재로그인되는 세션 경계 문제
+- token, session, client secret 노출 후 폐기가 필요할 때
 
 ## Procedure
 
@@ -70,7 +71,39 @@ created: "2026-05-17"
 7. 로그아웃 경계 확인
    - Keycloak은 OIDC logout endpoint를 제공하지만, OAuth2 Proxy `/oauth2/sign_out`만 호출하면 provider session은 남을 수 있다.
    - Keycloak SSO까지 끝내야 하는 UX라면 OAuth2 Proxy runbook의 provider end-session redirect 조건과 whitelist를 함께 확인한다.
-8. 사후 검증
+8. 노출된 token/session 폐기
+   - 무엇이 노출됐는지 먼저 나눈다. Keycloak SSO session과 그에 묶인
+     refresh token, 이미 발급된 access token, client secret은 여기서 다룬다.
+     Airflow 자체 JWT는 [RUN-0050](0050-airflow.md#시나리오-4-노출된-airflow-tokensession-폐기),
+     OAuth2 Proxy cookie와 session store는
+     [GDE-0015](../guides/0015-oauth2-proxy.md)가 다룬다.
+   - 한 사용자의 session: Admin Console `Users` → 사용자 → `Sessions`에서
+     sign out하거나 `POST /admin/realms/hy-home.realm/users/{user-id}/logout`을
+     호출한다. session 하나만 끝내려면
+     `DELETE /admin/realms/hy-home.realm/sessions/{session}`을 쓰고, offline
+     session이면 `?isOffline=true`를 붙인다.
+   - realm 전체: Admin Console `Sessions`의 `Sign out all active sessions` 또는
+     `POST /admin/realms/hy-home.realm/logout-all`. 모든 사용자가 다시
+     로그인해야 한다.
+   - refresh token 하나: 그 token을 가진 client가
+     `POST /realms/hy-home.realm/protocol/openid-connect/revoke`(RFC 7009)를
+     호출한다.
+   - session이 끝나면 거기에 묶인 refresh token으로는 갱신할 수 없다. 이미
+     발급된 access token은 서명만 검증하는 쪽에서 realm의 access token
+     수명이 끝날 때까지 유효할 수 있다. client `Advanced` 탭 `Revocation`의
+     `Set to now`로 not-before를 올리고 `Push`
+     (`POST /admin/realms/hy-home.realm/clients/{client-uuid}/push-revocation`)
+     하면 admin URL이 설정된 client만 통보받는다. admin URL이 없는 client는
+     만료를 기다리거나 앱 쪽 session을 따로 폐기한다.
+   - client secret 노출: client `Credentials` 탭의 `Regenerate` 또는
+     `POST /admin/realms/hy-home.realm/clients/{client-uuid}/client-secret`으로
+     새 secret을 만든다. 새 값은 출력하지 않고 해당 secret 파일(예:
+     `secrets/auth/airflow_client_secret.txt`)을 기존 소유자와 mode로
+     교체한 뒤, 그 secret을 읽는 서비스만 재생성한다. 파일을 교체하기 전까지
+     서비스는 로그인 code를 token으로 교환하지 못한다.
+   - Admin REST 호출에 쓰는 admin token도 출력하거나 기록하지 않는다.
+     증거는 HTTP 상태 코드, 시각, 남은 session 수만 남긴다.
+9. 사후 검증
    - readiness 재확인
    - OAuth2 Proxy login/logout 플로우와 해당 native OIDC client login을 각각 별도 증거로 기록한다.
 
@@ -128,6 +161,8 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Official Keycloak OIDC application guide](https://www.keycloak.org/securing-apps/oidc-layers)
 - [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
 - [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
+- [Official Keycloak server administration guide](https://www.keycloak.org/docs/latest/server_admin/index.html)
+- [Official Keycloak Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
 
 - Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
 

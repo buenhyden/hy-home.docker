@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 artifact_id: "inc-2026-0002"
 parent_ids:
@@ -109,7 +109,8 @@ Resolved. 로그인한 Admin 세션에서 다음 경로가 모두 `200`이다
 4. hardening script의 stale Airflow ForwardAuth assertion 수정.
 5. Kafbat/workflow 문서의 stale SSO 문구 수정.
 6. provider update 시 permission repair를 release checklist에 포함.
-7. 노출된 live token/session 폐기.
+7. 노출된 live token/session: owner가 유지로 결정했다(2026-09-27). 폐기
+   절차는 `RUN-0014`와 `RUN-0050`에 있다.
 
 ## Traceability
 
