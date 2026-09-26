@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -67,11 +67,13 @@ config, and alert-rule surfaces.
     scrape target.
   - Prometheus route must keep
     `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
-  - The `prometheus-api` route admits only `/api/v1/` on the Prometheus host,
-    behind `prometheus-api-auth@file` (Basic Auth from `INFRA-007`, derived
+  - The `prometheus-api` route admits only `/api/v1/` requests that carry a
+    Basic `Authorization` header on the Prometheus host, behind
+    `prometheus-api-auth@file` (Basic Auth from `INFRA-007`, derived
     from `OBS-012`/`OBS-013`). It serves machine clients that cannot pass SSO,
     such as the hy-home.k8s cluster's remote write and Kiali queries. The UI
-    and every other path stay behind SSO, and the admin API stays disabled.
+    and every other path, including the UI's own `/api/v1/` calls, stay behind
+    SSO, and the admin API stays disabled.
     `OBS-013`, `INFRA-007` and OpenBao `secret/platform/prometheus-api` rotate
     together; a stale OpenBao entry turns the cluster's remote write into
     `401`.
@@ -95,7 +97,8 @@ config, and alert-rule surfaces.
     `alert_rules`
   - Recording secret values, bearer tokens, or rendered secret content in
     documentation or evidence
-  - Widening the `prometheus-api` rule beyond `/api/v1/`, enabling
+  - Widening the `prometheus-api` rule beyond Basic-authenticated
+    `/api/v1/` requests, enabling
     `--web.enable-admin-api` while that route exists, or publishing an
     unauthenticated Prometheus host port
   - Declaring retention behavior that is not backed by compose/config and the
