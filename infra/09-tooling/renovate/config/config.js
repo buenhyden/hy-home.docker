@@ -9,7 +9,7 @@ module.exports = {
     onboarding: false,
 
     allowedCommands: [
-        '^bash scripts/operations/sync-tech-stack-versions\\.sh$',
+        '^bash scripts/operations/sync-tech-stack-versions\\.sh --write$',
     ],
 
     allowScripts: false,

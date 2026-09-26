@@ -49,7 +49,7 @@
 
   "postUpgradeTasks": {
     "commands": [
-      "bash scripts/operations/sync-tech-stack-versions.sh"
+      "bash scripts/operations/sync-tech-stack-versions.sh --write"
     ],
     "fileFilters": [
       "infra/tech-stack.versions.json"

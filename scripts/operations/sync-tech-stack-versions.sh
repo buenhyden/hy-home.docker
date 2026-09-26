@@ -7,8 +7,9 @@
 # image, source-file and local/custom classifications are regenerated.
 #
 # Modes:
-#   (default)    Apply tag updates in place (write mode).
+#   (default)    Same as --check.
 #   --check      Report drift and exit 1 if the registry is out of sync; no write.
+#   --write      Apply tag updates in place.
 #   --dry-run    Print planned component/image changes only; no write.
 #
 # This is the public tech-stack drift gate. It reads checked-in defaults with a
@@ -18,17 +19,17 @@
 set -euo pipefail
 
 if (( $# > 1 )); then
-  echo "Usage: $0 [--check | --dry-run]" >&2
+  echo "Usage: $0 [--check | --dry-run | --write]" >&2
   exit 2
 fi
 
-MODE="write"
+MODE="check"
 case "${1:-}" in
---check) MODE="check" ;;
+"" | --check) MODE="check" ;;
 --dry-run) MODE="dry-run" ;;
-"") MODE="write" ;;
+--write) MODE="write" ;;
 *)
-  echo "Usage: $0 [--check | --dry-run]" >&2
+  echo "Usage: $0 [--check | --dry-run | --write]" >&2
   exit 2
   ;;
 esac
@@ -432,7 +433,7 @@ def main():
         f"repositories={len(target_repositories)}"
     )
     if mode == "check":
-        print("FAIL: tech-stack registry is out of sync; run scripts/operations/sync-tech-stack-versions.sh", file=sys.stderr)
+        print("FAIL: tech-stack registry is out of sync; run scripts/operations/sync-tech-stack-versions.sh --write", file=sys.stderr)
         return 1
     if mode == "write":
         atomic_write(path, raw, updated)

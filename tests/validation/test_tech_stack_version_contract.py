@@ -196,11 +196,11 @@ def updater_contract_findings(
     if global_config.get("allowScripts") is not False:
         findings.append("Renovate scripts must remain disabled")
     if global_config.get("allowedCommands") != [
-        r"^bash scripts/operations/sync-tech-stack-versions\.sh$"
+        r"^bash scripts/operations/sync-tech-stack-versions\.sh --write$"
     ]:
         findings.append("Renovate command allowlist is unsafe")
     if renovate.get("postUpgradeTasks") != {
-        "commands": ["bash scripts/operations/sync-tech-stack-versions.sh"],
+        "commands": ["bash scripts/operations/sync-tech-stack-versions.sh --write"],
         "fileFilters": ["infra/tech-stack.versions.json"],
         "executionMode": "branch",
     }:
@@ -930,7 +930,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
 
     def assert_rejected_without_write(self, expected: str) -> None:
         before = self.registry.read_bytes()
-        for mode in ((), ("--check",), ("--dry-run",)):
+        for mode in ((), ("--write",), ("--check",), ("--dry-run",)):
             with self.subTest(mode=mode):
                 result = self.run_sync(*mode)
                 self.assertNotEqual(0, result.returncode, result.stdout)
@@ -964,7 +964,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertIn("out of sync", check.stderr)
         self.assertEqual(before, self.registry.read_bytes())
 
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         body = json.loads(self.registry.read_text())
         added_entry = next(
@@ -979,7 +979,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertEqual(0, self.run_sync("--check").returncode)
 
     def test_hyphenated_compose_filename_is_in_source_universe(self) -> None:
-        baseline = self.run_sync()
+        baseline = self.run_sync("--write")
         self.assertEqual(0, baseline.returncode, baseline.stderr)
         added = self.root / "infra/example/docker-compose-dev.yml"
         added.write_text("services:\n  new:\n    image: example/new:1\n")
@@ -994,7 +994,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertIn("out of sync", check.stderr)
         self.assertEqual(before, self.registry.read_bytes())
 
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         body = json.loads(self.registry.read_text())
         added_entry = next(
@@ -1006,7 +1006,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         )
 
     def test_standard_compose_filename_is_in_source_universe(self) -> None:
-        baseline = self.run_sync()
+        baseline = self.run_sync("--write")
         self.assertEqual(0, baseline.returncode, baseline.stderr)
         added = self.root / "infra/example/compose.yaml"
         added.write_text("services:\n  new:\n    image: example/standard:1\n")
@@ -1021,7 +1021,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertIn("out of sync", check.stderr)
         self.assertEqual(before, self.registry.read_bytes())
 
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         body = json.loads(self.registry.read_text())
         added_entry = next(
@@ -1049,14 +1049,14 @@ class TechStackSynchronizationTests(unittest.TestCase):
         check = self.run_sync("--check")
         self.assertEqual(1, check.returncode)
         self.assertEqual(before, self.registry.read_bytes())
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         self.assertEqual([], json.loads(self.registry.read_text())["entries"])
         self.assertEqual(0, self.run_sync("--check").returncode)
 
     def test_local_custom_repository_is_explicitly_classified(self) -> None:
         self.compose.write_text("services:\n  app:\n    image: hy-home/app:2-local\n")
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         entry = json.loads(self.registry.read_text())["entries"][0]
         self.assertEqual("local-custom", entry["classification"])
@@ -1071,7 +1071,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
             cwd=self.root,
             check=True,
         )
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         entry = json.loads(self.registry.read_text())["entries"][0]
         self.assertEqual(["example/app:2", "example/app:3"], entry["images"])
@@ -1094,7 +1094,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
             "services:\n  app:\n    image: example/app:1\n"
             "  second:\n    image: example/app:2\n"
         )
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         entry = json.loads(self.registry.read_text())["entries"][0]
         self.assertEqual(["example/app:1", "example/app:2"], entry["images"])
@@ -1114,7 +1114,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
             "x-decoy:\n  image: example/app:9\n"
             "services:\n  app: {image: 'example/app:2'}\n"
         )
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn('"example/app:2"', self.registry.read_text())
 
@@ -1124,7 +1124,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
             "  reset:\n    image: !reset example/app:9\n"
             "    ports: !reset []\n"
         )
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn('"example/app:2"', self.registry.read_text())
 
@@ -1155,21 +1155,21 @@ class TechStackSynchronizationTests(unittest.TestCase):
             with self.subTest(old=old):
                 self.write_registry(old)
                 self.compose.write_text(f"services:\n  app:\n    image: {new}\n")
-                result = self.run_sync()
+                result = self.run_sync("--write")
                 self.assertEqual(0, result.returncode, result.stderr)
                 images = json.loads(self.registry.read_text())["entries"][0]["images"]
                 self.assertEqual([new], images)
 
     def test_dry_run_and_check_never_write_and_write_preserves_format(self) -> None:
         before = self.registry.read_bytes()
-        for mode, code in (("--dry-run", 0), ("--check", 1)):
+        for mode, code in (((), 1), (("--dry-run",), 0), (("--check",), 1)):
             with self.subTest(mode=mode):
-                result = self.run_sync(mode)
+                result = self.run_sync(*mode)
                 self.assertEqual(code, result.returncode, result.stderr)
                 self.assertEqual(before, self.registry.read_bytes())
         self.registry.chmod(0o640)
         with self.registry.open("rb") as original:
-            result = self.run_sync()
+            result = self.run_sync("--write")
             self.assertEqual(0, result.returncode, result.stderr)
             self.assertEqual(before, original.read(), "write must replace atomically")
         self.assertEqual(
@@ -1195,7 +1195,12 @@ class TechStackSynchronizationTests(unittest.TestCase):
 
     def test_argument_validation_rejects_extra_arguments(self) -> None:
         before = self.registry.read_bytes()
-        for arguments in (("--bad",), ("--check", "extra"), ("--dry-run", "--check")):
+        for arguments in (
+            ("--bad",),
+            ("--check", "extra"),
+            ("--dry-run", "--check"),
+            ("--write", "--check"),
+        ):
             with self.subTest(arguments=arguments):
                 result = self.run_sync(*arguments)
                 self.assertEqual(2, result.returncode)
@@ -1205,14 +1210,14 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.compose.write_text(
             "services:\n  app:\n    image: ${IMAGE:-example/app:2}\n"
         )
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn('"example/app:2"', self.registry.read_text())
 
     def test_write_preserves_registry_line_endings(self) -> None:
         before = self.registry.read_bytes().replace(b"\n", b"\r\n")
         self.registry.write_bytes(before)
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(
             before.replace(b"example/app:1", b"example/app:2"),
@@ -1224,7 +1229,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
             "x-default: &base\n  image: example/app:9\n"
             "services:\n  app:\n    <<: *base\n    image: example/app:2\n"
         )
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn('"example/app:2"', self.registry.read_text())
 
@@ -1292,7 +1297,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.write_registry()
         body = json.loads(self.registry.read_text())
         self.registry.write_text(json.dumps({**body, "description": "example/app:1"}))
-        result = self.run_sync()
+        result = self.run_sync("--write")
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(
             "example/app:1",
@@ -1310,7 +1315,7 @@ class TechStackSynchronizationTests(unittest.TestCase):
         check = self.run_sync("--check")
         self.assertEqual(1, check.returncode)
         self.assertEqual(before, self.registry.read_bytes())
-        write = self.run_sync()
+        write = self.run_sync("--write")
         self.assertEqual(0, write.returncode, write.stderr)
         self.assertEqual(
             ["infra/example/docker-compose.yml"],
