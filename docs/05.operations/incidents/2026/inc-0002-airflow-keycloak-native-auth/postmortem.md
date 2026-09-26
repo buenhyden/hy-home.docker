@@ -1,8 +1,8 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Postmortem"
-version: "0.2.0"
+version: "1.0.0"
 type: "operation/postmortem"
-status: "review"
+status: "published"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "operations"
@@ -10,6 +10,7 @@ artifact_id: "inc-2026-0002-PM"
 parent_ids:
 - "inc-2026-0002"
 created: "2026-09-26"
+reviewed_at: "2026-09-27"
 ---
 
 # Airflow Keycloak Native Authentication Migration Postmortem

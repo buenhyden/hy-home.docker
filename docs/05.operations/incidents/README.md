@@ -64,7 +64,7 @@ service names, environment variables는 원형을 유지합니다.
 
 | Incident | 상태 | 발생 | Postmortem |
 | --- | --- | --- | --- |
-| [inc-2026-0002 Airflow Keycloak native authentication](2026/inc-0002-airflow-keycloak-native-auth/incident.md) | `resolved` (2026-09-26) | 2026-09-18 | [review](2026/inc-0002-airflow-keycloak-native-auth/postmortem.md) |
+| [inc-2026-0002 Airflow Keycloak native authentication](2026/inc-0002-airflow-keycloak-native-auth/incident.md) | `resolved` (2026-09-26) | 2026-09-18 | [published](2026/inc-0002-airflow-keycloak-native-auth/postmortem.md) |
 
 ### Templates
 
