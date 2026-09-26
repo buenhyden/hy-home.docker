@@ -391,7 +391,7 @@ bash scripts/operations/sync-tech-stack-versions.sh --check
 bash scripts/operations/sync-tech-stack-versions.sh --dry-run
 
 # Re-point the tech-stack registry to declared compose tags
-bash scripts/operations/sync-tech-stack-versions.sh
+bash scripts/operations/sync-tech-stack-versions.sh --write
 
 
 
