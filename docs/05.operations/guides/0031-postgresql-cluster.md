@@ -80,9 +80,9 @@ created: "2026-05-10"
    | Read | `pg-router` | `${POSTGRES_READ_PORT:-15433}` | Patroni replica backends |
    | Stats | `pg-haproxy.${DEFAULT_URL}` | `${HAPROXY_PORT:-7000}` via Traefik | HAProxy stats route |
 
-5. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
+2. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
 
-6. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `patroni_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
+3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `patroni_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
 
 ### Common Pitfalls
 
