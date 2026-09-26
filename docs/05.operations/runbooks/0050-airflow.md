@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -34,6 +34,7 @@ created: "2026-05-17"
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
 - 워커(Worker) 프로세스가 비정상 종료되거나 리소스 부족으로 경고가 발생할 때.
 - Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
+- Airflow token 또는 session이 노출되어 폐기해야 할 때.
 
 ## Procedure
 
@@ -92,6 +93,32 @@ created: "2026-05-17"
      --password "$AIRFLOW_NEW_PASSWORD"
    unset AIRFLOW_NEW_PASSWORD
    ```
+
+##### 시나리오 4: 노출된 Airflow token/session 폐기
+
+Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
+`airflow_api_jwt_secret`으로 서명)와 Keycloak access/refresh/id token cookie를
+함께 쓴다. 아래 동작은 설치된 Airflow 3.3.1과 keycloak provider 0.9.0의
+코드에서 확인했다. Keycloak session과 client secret은
+[RUN-0014](0014-keycloak.md)의 "노출된 token/session 폐기" 단계가 다룬다.
+
+1. 노출된 브라우저 session에 접근할 수 있으면 UI에서 Logout한다.
+   `/api/v2/auth/logout`이 현재 Airflow JWT의 `jti`를 `revoked_token` table에
+   기록한 뒤 Keycloak end-session으로 보내고, callback이 token cookie를 지운다.
+   이 JWT는 만료 전이라도 거부된다.
+2. token 사본이 따로 노출됐으면 로그아웃만으로는 부족하다. Airflow JWT는
+   `[api_auth] jwt_expiration_time`(기본 86400초, 이 저장소는 값을 바꾸지
+   않음)까지 유효하다. 모두 끊으려면 `airflow_api_jwt_secret`을 교체한다.
+   - 실행 중인 task를 먼저 멈추거나 끝낸다. task execution token도 같은
+     key로 서명되므로, 교체하면 실행 중인 task의 API 호출이 실패한다.
+   - `secrets/automation/airflow_api_jwt_secret.txt`를 값 출력 없이 새 난수로
+     교체하고 기존 소유자와 mode(`0640`)를 유지한다.
+   - 이 secret을 읽는 `airflow-apiserver`, `airflow-scheduler`,
+     `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`를 함께
+     재생성한다. 파일을 바꾸기만 해서는 실행 중인 컨테이너에 반영되지 않는다.
+   - 모든 사용자와 API client가 다시 로그인해야 한다.
+3. 확인: 기존 cookie의 요청이 `401`을 받고, 새로 로그인하면 DAGs, Pools,
+   Assets, HITL이 `403` 없이 열린다. 증거는 경로와 상태 코드만 남긴다.
 
 ### Verification Steps
 
