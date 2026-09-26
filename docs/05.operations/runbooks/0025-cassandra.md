@@ -1,6 +1,6 @@
 ---
 title: "Cassandra Health and Recovery Triage Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -103,13 +103,6 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 4. `schema.cql`로 application schema를 먼저 생성한 뒤, upstream 문서에 따라 `sstableloader` 또는 올바른 table directory에 배치 후 `nodetool refresh`로 SSTable을 적재한다. system/local topology files를 source에서 복사하지 않는다.
 5. `nodetool status`, keyspace/table 목록, schema agreement, representative partition reads와 expected row/count invariants를 확인한다. auth/role 복구가 범위에 포함되면 별도 보호된 role evidence로 검증한다.
 6. 하나라도 실패하면 target을 데이터 원본으로 승격하지 않고 폐기한다. 성공 evidence에는 backup-id, release, schema hash, 검증 query와 결과 요약을 남긴다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 

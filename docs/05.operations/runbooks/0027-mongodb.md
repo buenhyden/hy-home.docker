@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set Triage Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -104,13 +104,6 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 4. production과 network/volumes를 공유하지 않는 빈 compatible `MyReplicaSet` target을 별도 test credentials/keyfile로 준비하고 primary가 안정된 뒤 restore한다.
 5. authenticated `mongorestore --oplogReplay`로 dump를 적재한다. target이 비어 있지 않거나 tool/server compatibility가 맞지 않으면 중단한다.
 6. replica health, database/collection/index 목록, users/roles scope, representative reads, document-count invariants와 application smoke query를 검증한다. 불일치가 있으면 승격하지 않고 target을 폐기한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 

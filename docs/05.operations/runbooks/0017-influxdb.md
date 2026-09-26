@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0017"
 parent_ids:
@@ -87,13 +87,6 @@ This procedure is documented from upstream guidance and **has not been executed 
 4. Start only the isolated target. Confirm readiness, enumerate expected databases/tables, compare representative time ranges and row counts, test an authenticated query with a separately supplied credential, and retain logs plus checksum evidence.
 5. On any catalog/WAL error or validation mismatch, stop the target, discard the failed isolated target, and retry from an untouched recovery copy. Do not repair or replace the live volume in place.
 6. Cutover, restart, retention changes, or deletion require a separate approval naming the target and rollback window. Until a rehearsal records success, restoration remains unverified.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: stop if command output exposes secret values.
-- **Eval Re-run**: rerun documentation validation after docs-only changes.
 
 ## Evidence
 

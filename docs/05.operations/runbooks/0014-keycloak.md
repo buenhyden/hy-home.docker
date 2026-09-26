@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -96,14 +96,6 @@ created: "2026-05-17"
       대표 native OIDC client를 확인하고 기존 token/session을 재사용하지 않는다.
 - [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
       기존 환경을 변경하지 않은 채 database owner에게 인계한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- **Trace Capture**: Keycloak 로그 + CI job 로그
 
 ## Evidence
 

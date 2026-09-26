@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -111,14 +111,6 @@ created: "2026-05-17"
 - Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow, or operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
 - Runtime restart는 affected service의 documented runbook을 따른다.
 - Route/middleware policy, resource cap, secret reference, workflow gate, or runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: 관측성 자동화 변경 작업 일시 중지(승인 필요)
-- **Eval Re-run**: `check-all-hardening.sh 06-observability`, `check-template-security-baseline`, `python3 scripts/validation/check-document-links.py --mode all`
-- **Trace Capture**: CI logs + compose config output + health 상태
 
 ### Planned isolated recovery rehearsal
 

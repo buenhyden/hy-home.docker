@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-21"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0080"
 parent_ids:
@@ -64,13 +64,6 @@ Collect safe evidence and define a repeatable recovery test that preserves names
 ### Safe Rollback or Recovery Procedure
 
 Documentation changes revert through the scoped diff. A failed rehearsal rolls back by discarding only the isolated target and its dedicated volume; the source and protected export remain unchanged.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop inspection if credentials or raw data appear.
-- **Eval Re-run**: Run `python3 scripts/validation/check-document-links.py --mode all`.
 
 ## Evidence
 
