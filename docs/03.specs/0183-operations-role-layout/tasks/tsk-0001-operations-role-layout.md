@@ -89,6 +89,22 @@ and record every document's disposition here.
   inference procedures. The first full gate after the rebase failed one
   `test_heading` case that took its generated-body owner from the Registry
   entry W10 emptied; the test now supplies its own owner map.
+- W12 (owner follow-up after #282 merged): Removed the duplicate
+  `renovate.json`, whose content equalled `renovate.json5` but which Renovate
+  read first. Moved the SSO matrix results out of GDE-0079 into the SPEC-0182
+  Task 0003, which already held every result except the native OIDC per-app
+  details. Reviewed the POL-0006 backlog and kept it (see Rulings). With owner
+  approval, reloaded Prometheus so its loaded rules carry the new
+  `runbook_url` paths.
+- W13 (owner follow-up): The owner verified Airflow in an Admin session, and
+  inc-2026-0002 moved to `resolved` with a draft postmortem; RUN-0050 now
+  re-runs Keycloak permissions when the provider version changes. The owner
+  also reported that the Prometheus UI asked for a second, Basic Auth login
+  after SSO: the `prometheus-api` router matched every `/api/v1/` request,
+  including the UI's own. The route now also requires a Basic `Authorization`
+  header, so the UI stays on the SSO router while machine clients keep Basic
+  Auth. The hardening assertion was tightened first and failed before the
+  label changed.
 
 ## Verification Evidence
 
@@ -402,8 +418,26 @@ first run with two executable-mode tests
 checked out under umask 002, making both group-writable, while the branch
 diff for both files is empty and the main checkout holds them without group
 write. After `chmod g-w` in the scratch worktree only, the rerun exited 0:
-16 suites, 1500 tests, 23 skipped, 23 min 26 s. Static and local results
-only; no remote CI ran and nothing was pushed.
+16 suites, 1500 tests, 23 skipped, 23 min 26 s.
+
+After the rebase onto #281, the full gate on `a97d384c1` exited 0 (16 suites,
+1504 tests, 23 skipped). Hosted CI on PR #282: `CI Quality Gates` run
+36239741178 failed at head `a97d384c1` because markdownlint renumbered the
+GDE-0027 and GDE-0031 steps that W6 left numbered 5 and 6; run 36241400132
+passed at head `d42ee4b14` (`validation-changed` pass, `validation-full`
+skipped by the pull-request trigger; CodeQL, GitGuardian, and triage pass).
+The owner merged #282 by rebase at 2026-09-26T12:31:22Z.
+
+Live follow-up, 2026-09-26: Prometheus `/-/reload` returned
+`reloadConfigSuccess: true` at 12:55:00Z. Before it, 49 loaded rules linked
+the removed `catalog/` paths; after it, all 48 loaded `runbook_url` values
+name `runbooks/` paths. Alertmanager renders the annotation only and holds no
+path, so it was not reloaded. The four installed systemd units differ from
+the repository only in `Documentation=`. The Renovate job mounts
+`infra/09-tooling/renovate/config/config.js` from this checkout, whose
+allowlist already names `--write`, and `main` at `5fcd9774d` configures the
+same command, so no allowlist gap remains. `hy-home.k8s` at `9f922463` names
+no `05.operations/catalog` path in tracked, modified, or untracked files.
 
 ## Review Evidence
 
@@ -463,32 +497,23 @@ the commits as they were before the rebase.
 - The manifest roots stay `evals/` and `scripts/`. `.claude/hooks` files are
   renderer outputs checked for drift by `provider_surface_renderer.py`, and
   the two `.agents/skills/*/scripts` files are owned by their `SKILL.md`.
-- `inc-2026-0002` stays `mitigated`: no resolution evidence exists in the
-  repository, so no postmortem is written and no closure is recorded.
+- The POL-0006 tier catalog stays in POL-0006. The Policy records itself as
+  the single canonical owner of the optimization catalog and the umbrella
+  priority plan; the catalog lists the candidates its Priority Model ranks,
+  and `links.py` checks every Guide and Runbook pair in it. Moving it would
+  reverse that consolidation without a better owner.
+- `inc-2026-0002` is `resolved` on owner evidence: an Admin session at
+  2026-09-26T22:02:37+09:00–22:03:08+09:00 made 111 Airflow requests with no
+  `403`, and Pools, DAGs, Assets, and HITL returned `200` (Traefik paths and
+  status codes only). Which step cleared the last `403` is not recorded, and
+  the postmortem says so.
 
 ## Deferred Items
 
-Each item needs an owner decision, another workspace, or access this session
-did not have.
+Live steps that need the owner, because they need `sudo` or recreate a
+running container:
 
-- `GDE-0079` keeps its dated `Result` column. Moving results into the SPEC-0182
-  Task 0003 would edit an in-progress SPEC-0182 Task that this package does
-  not own.
-- The `POL-0006` backlog stays in place because
-  `links.py` validates its Operations and Runbook link pairs; moving it needs a
-  validator change and an owner for backlogs.
-- Renovate reads `renovate.json` before `renovate.json5`, and the contract test
-  reads only `renovate.json5`. Both were updated; the duplicate needs an owner.
-- After merge, the host checkout must be updated so the mounted Renovate
-  `config.js` allowlist accepts `--write`; until then Renovate artifact updates
-  fail closed.
-- `inc-2026-0002` stays `mitigated`. Resolution needs an authenticated
-  request to Pool, DAG, Asset, and HITL; the read-only check found healthy
-  containers and provider 0.9.0 but no authenticated access record.
-- Host systemd units and the running Prometheus keep the old
-  `Documentation=` and `runbook_url` values until the units are reinstalled
-  and Prometheus is reloaded. Neither was done; both need approval.
-- Other repositories: `hy-home.k8s` at `698745e6` names no catalog route (its
-  11 uncommitted files were not read). `hy-home.secrets` could not be read
-  (permission denied), so its links are unverified. MIG-0005 is the route
-  record for both owners.
+- Recreate `prometheus` so Traefik reads the new `prometheus-api` rule;
+  `validate-docker-compose.sh` was not run in this session.
+- Reinstall the four systemd units so `Documentation=` names the new paths.
+- Scan `hy-home.secrets` (root-owned) for `05.operations/catalog` paths.
