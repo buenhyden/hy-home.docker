@@ -236,6 +236,13 @@ def updater_contract_findings(
 
 
 class UpdaterOwnershipContractTests(unittest.TestCase):
+    def test_renovate_reads_the_tested_repository_config(self) -> None:
+        # Renovate takes the first of its config file names that exists and
+        # tries renovate.json before renovate.json5, so a second copy would
+        # silently replace the file these contracts check.
+        self.assertTrue(RENOVATE_CONFIG.is_file())
+        self.assertFalse((ROOT / "renovate.json").exists())
+
     @staticmethod
     def load_contracts() -> tuple[
         dict[str, object], dict[str, object], dict[str, object]
