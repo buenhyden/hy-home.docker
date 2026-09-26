@@ -1,10 +1,10 @@
 ---
 title: "Developer Environment Operations"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0002"
 parent_ids: []
@@ -138,7 +138,7 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Traceability
 
-- Subject peers: none — `00-workspace/0002-developer-environment` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0002`.
 
 ## Related Documents
 

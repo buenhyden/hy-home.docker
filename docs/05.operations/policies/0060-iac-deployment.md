@@ -1,6 +1,6 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -52,7 +52,7 @@ Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [migrat
 ## Traceability
 
 - Declared parent: [Tooling Tier Architecture Description](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: none — `09-tooling/0060-iac-deployment` holds this document alone.
+- Subject peers: none — no Guide or Runbook shares number `0060`.
 
 ## Related Documents
 

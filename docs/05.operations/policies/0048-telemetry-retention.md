@@ -1,6 +1,6 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -85,7 +85,7 @@ backup 책임 경계를 다룬다.
 ## Traceability
 
 - Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — `06-observability/0048-telemetry-retention` holds this document alone.
+- Subject peers: none — no Guide or Runbook shares number `0048`.
 
 ## Related Documents
 

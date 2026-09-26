@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -64,7 +64,7 @@ its owner cannot drift that way.
 | Source-label prevention | Active runtime/governance files must not reference external harness source labels. |
 | Graph context health | Graphify is a navigation aid only when health is clean; contaminated output remains advisory and must be corroborated against tracked source and canonical docs. |
 | Infra validation scope | HAFE completion may rely on default/core Compose and supported hardening tiers; non-included profiles such as `10-communication` require separate infra remediation. |
-| AI Agent limits | Agents must start with non-mutating discovery, must not invent untracked roles, must document gaps, and must report Graphify as advisory context only. |
+| AI Agent limits | Owned by the [Agentic Engineering Policy](../../../.agents/governance/agentic.md#execution-rules) and, for Graphify, [Environment Constraints](../../../.agents/governance/environment-constraints.md#4-graphify). |
 
 ## Exceptions
 

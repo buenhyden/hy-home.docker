@@ -1,10 +1,10 @@
 ---
 title: "New Service Onboarding Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
@@ -80,7 +80,7 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 
 - Declared parent: [Release Management Runbook](../runbooks/0009-release-management.md) (`RUN-0009`)
 - Governing authority: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
-- Subject peers: none — `00-workspace/0008-new-service-onboarding` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0008`.
 
 ## Related Documents
 

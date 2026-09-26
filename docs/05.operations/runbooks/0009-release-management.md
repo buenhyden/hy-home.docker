@@ -1,6 +1,6 @@
 ---
 title: "Release Management Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -220,7 +220,7 @@ created: "2026-06-04"
 
 - Current policy: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md), including external-release-evidence ownership.
 - Historical implementation evidence only: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). This completed record is not current execution authority.
-- Subject peers: none — `00-workspace/0009-release-management` holds this document alone.
+- Subject peers: none — no Guide or Policy shares number `0009`.
 
 ## Related Documents
 

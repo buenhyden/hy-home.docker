@@ -1,10 +1,10 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.0.0"
+version: "3.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0003"
 parent_ids: []
@@ -56,7 +56,7 @@ bash scripts/operations/gen-secrets.sh --dry-run
 
 ## Traceability
 
-- Subject peers: none — `00-workspace/0003-env-key-comparison` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0003`.
 
 ## Related Documents
 

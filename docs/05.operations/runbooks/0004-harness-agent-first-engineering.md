@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -114,13 +114,6 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - For runtime catalog drift, regenerate provider projections from the canonical canonical agent governance roles, skills, and provider registry.
 - For Compose validation failures, inspect the changed Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` files before editing unrelated files.
 - For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
-
-### Agent Operations (If Applicable)
-
-- Use the active runtime's delegated-agent facility only when the user explicitly requests delegation.
-- Pass a primary scope path explicitly to delegated agents.
-- Record durable repository guidance in its owning policy, design, runbook, or Task.
-- Do not delete `_workspace/` artifacts without approval.
 
 ### Related Operational Documents
 

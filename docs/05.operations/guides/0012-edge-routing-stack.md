@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0012"
 parent_ids: []
@@ -95,7 +95,7 @@ Runtime recovery is handled by [Traefik runbook](../runbooks/0013-traefik.md) an
 ## Traceability
 
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: none — `01-gateway/0012-edge-routing-stack` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0012`.
 
 ## Related Documents
 

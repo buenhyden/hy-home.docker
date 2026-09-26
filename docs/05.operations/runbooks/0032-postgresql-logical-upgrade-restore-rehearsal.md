@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0032"
 parent_ids: []
@@ -72,7 +72,7 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 ## Traceability
 
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — `04-data/0032-postgresql-logical-upgrade-restore-rehearsal` holds this document alone.
+- Subject peers: none — no Guide or Policy shares number `0032`.
 
 ## Related Documents
 

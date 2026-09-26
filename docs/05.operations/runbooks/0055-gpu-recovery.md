@@ -1,10 +1,10 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0055"
 parent_ids: []
@@ -127,7 +127,7 @@ Stop and escalate to the owning operator when host `nvidia-smi` fails, NVIDIA Co
 ## Traceability
 
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0055-gpu-recovery` holds this document alone.
+- Subject peers: none — no Guide or Policy shares number `0055`.
 
 ## Related Documents
 
