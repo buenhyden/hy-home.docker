@@ -353,8 +353,8 @@ incident packet check.
 | 3 | W4 | met: the operations check reports no index membership finding for the three indexes | Stage 05 README and role indexes |
 | 4 | W3, W4 | met: RED 69 of 86 on the catalog validator; `check-operations-catalog.py` PASS | `scripts/lib/document_governance/operations_catalog.py` |
 | 5 | W4, W6 | met: `check-document-links.py --mode all` PASS; remaining mentions classified in Rulings | Stage 05 and active consumers |
-| 6 | W5 | met: commits `887a19f76` and `9591a6e03` | `scripts/README.md`, incidents README |
-| 7 | W7 | met: commit `3c97d57ae` | MIG-0005 |
+| 6 | W5 | met: commits `372bbcf62` and `6ea2d9bc6` | `scripts/README.md`, incidents README |
+| 7 | W7 | met: commit `6f4efaedd` | MIG-0005 |
 | 8 | W8 | met with a recorded exception; see Gate Results | this Task |
 
 ### Gate Results
@@ -408,33 +408,37 @@ matrix, the repository map, the `ops-runbook-agent` skill, and
 unused `_has_symlink_component` in `operations_catalog.py`; sibling binding
 that depended on set iteration order; a missing sibling reported at an
 invented file path; and a move baseline that accepted a reused identifier
-under any slug. Commit `1a89f8af4` corrects each one, restricts the baseline
+under any slug. Commit `819938777` corrects each one, restricts the baseline
 to the kept or domain-prefixed slug, and adds Registry tests for it.
 The review is an agent review, not an owner approval.
 
 ## Commit Ledger
 
-Local branch `refactor/operations-role-layout` on baseline `0deb430ea`; not
-pushed.
+Branch `refactor/operations-role-layout`, first built on `0deb430ea` and then
+rebased, with owner approval, onto `origin/main` at `af61cab27` (#281). Rename
+detection carried #281's edits to the retired `catalog/` paths of RUN-0021 and
+RUN-0088 onto `runbooks/0021-backup-and-restore.md` and
+`runbooks/0088-mlflow.md` without conflict. The per-commit Gate Results name
+the commits as they were before the rebase.
 
-| Commit | Work unit | Subject |
-| --- | --- | --- |
-| `572616b48` | W2 | docs(specs): Add SPEC-0183 and ADR-0043 for operations role layout |
-| `887a19f76` | W5 | docs(scripts): Drop the missing LLM Wiki generator from the scripts README |
-| `0a2e9cf16` | W3, W4 | refactor(docs): Move Stage 05 operations from catalog to role directories |
-| `9591a6e03` | W5 | docs(operations): List the current incident in the incidents README |
-| `b6b038d04` | W6 | docs(operations): Keep each Operations role to the content it owns |
-| `8ade3f32f` | W8 | refactor(governance): Remove the subject-member identity relation |
-| `d01b7f441` | W6 | chore(scripts): Declare the proven consumers of five manifest rows |
-| `3c97d57ae` | W7 | docs(archive): Record the operations role layout route as MIG-0005 |
-| `1a89f8af4` | W8 | fix(governance): Address the SPEC-0183 review findings |
-| `464b3c509` | W6 | docs(task): Record the SPEC-0183 W6 dispositions in the ledger |
-| `48f4ef93c` | W8 | docs(task): Record the SPEC-0183 verification evidence |
-| `f87ed3de8` | W9 | docs(operations): Route the remaining mixed content to its owning role |
-| `0bc87bd9c` | W10 | chore(scripts): Correct manifest labels, authorities, and generated outputs |
-| `90cb54611` | W10 | fix(hooks): Make post-tool validation check-only unless --write is given |
-| `cacd80ce2` | W10 | fix(scripts): Make the tech-stack sync check-only unless --write is given |
-| `179e8212e` | W10 | fix(scripts): Recognize three launcher shapes as manifest consumer evidence |
+| Commit | Before rebase | Work unit | Subject |
+| --- | --- | --- | --- |
+| `7c1666f61` | `572616b48` | W2 | docs(specs): Add SPEC-0183 and ADR-0043 for operations role layout |
+| `372bbcf62` | `887a19f76` | W5 | docs(scripts): Drop the missing LLM Wiki generator from the scripts README |
+| `ae3d21af7` | `0a2e9cf16` | W3, W4 | refactor(docs): Move Stage 05 operations from catalog to role directories |
+| `6ea2d9bc6` | `9591a6e03` | W5 | docs(operations): List the current incident in the incidents README |
+| `f2983b9c4` | `b6b038d04` | W6 | docs(operations): Keep each Operations role to the content it owns |
+| `9ae25732a` | `8ade3f32f` | W8 | refactor(governance): Remove the subject-member identity relation |
+| `db4f9a22b` | `d01b7f441` | W6 | chore(scripts): Declare the proven consumers of five manifest rows |
+| `6f4efaedd` | `3c97d57ae` | W7 | docs(archive): Record the operations role layout route as MIG-0005 |
+| `819938777` | `1a89f8af4` | W8 | fix(governance): Address the SPEC-0183 review findings |
+| `b26460e1e` | `464b3c509` | W6 | docs(task): Record the SPEC-0183 W6 dispositions in the ledger |
+| `78c242d82` | `48f4ef93c` | W8 | docs(task): Record the SPEC-0183 verification evidence |
+| `7a6d2705c` | `f87ed3de8` | W9 | docs(operations): Route the remaining mixed content to its owning role |
+| `85668437d` | `0bc87bd9c` | W10 | chore(scripts): Correct manifest labels, authorities, and generated outputs |
+| `bf7b6df7b` | `90cb54611` | W10 | fix(hooks): Make post-tool validation check-only unless --write is given |
+| `ba8837376` | `cacd80ce2` | W10 | fix(scripts): Make the tech-stack sync check-only unless --write is given |
+| `01cb27f3a` | `179e8212e` | W10 | fix(scripts): Recognize three launcher shapes as manifest consumer evidence |
 
 ## Rulings
 
@@ -458,12 +462,8 @@ Each item needs an owner decision, another workspace, or access this session
 did not have.
 
 - `GDE-0079` keeps its dated `Result` column. Moving results into the SPEC-0182
-  Task 0003 would edit a file that the separate `docs/spec-0182-closeout-1`
-  branch also edits.
-- That branch (`ea9794ddd`) still edits two Runbooks at their retired
-  `catalog/` paths. Whichever of the two branches merges second must rebase
-  those edits onto `runbooks/0021-backup-and-restore.md` and
-  `runbooks/0088-mlflow.md`.
+  Task 0003 would edit an in-progress SPEC-0182 Task that this package does
+  not own.
 - Twenty other Runbooks keep an `### Agent Operations (If Applicable)`
   subsection. The `POL-0006` backlog stays in place because
   `links.py` validates its Operations and Runbook link pairs; moving it needs a
