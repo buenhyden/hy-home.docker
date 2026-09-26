@@ -83,6 +83,12 @@ and record every document's disposition here.
   Registry `generated_outputs` entry was emptied, and the evidence detector
   learned three launcher shapes so their consumers are declared. Each change
   had a failing test first.
+- W11 (owner follow-up): Removed the `### Agent Operations (If Applicable)`
+  subsection from 18 Runbooks whose items were all N/A or restated their
+  Verification checks; RUN-0055 to RUN-0058 keep theirs as real model and
+  inference procedures. The first full gate after the rebase failed one
+  `test_heading` case that took its generated-body owner from the Registry
+  entry W10 emptied; the test now supplies its own owner map.
 
 ## Verification Evidence
 
@@ -439,6 +445,10 @@ the commits as they were before the rebase.
 | `bf7b6df7b` | `90cb54611` | W10 | fix(hooks): Make post-tool validation check-only unless --write is given |
 | `ba8837376` | `cacd80ce2` | W10 | fix(scripts): Make the tech-stack sync check-only unless --write is given |
 | `01cb27f3a` | `179e8212e` | W10 | fix(scripts): Recognize three launcher shapes as manifest consumer evidence |
+| `d935608d8` | `e99f06223` | W10 | docs(task): Record the SPEC-0183 W9 and W10 owner follow-ups |
+| `157b32887` | — | W10 | docs(task): Record the SPEC-0183 rebase onto #281 in the ledger |
+| `286eb2885` | — | W11 | test(governance): Supply the generated-body owner inside the heading test |
+| `fea69d8a3` | — | W11 | docs(operations): Drop filler Agent Operations subsections from 18 Runbooks |
 
 ## Rulings
 
@@ -464,8 +474,7 @@ did not have.
 - `GDE-0079` keeps its dated `Result` column. Moving results into the SPEC-0182
   Task 0003 would edit an in-progress SPEC-0182 Task that this package does
   not own.
-- Twenty other Runbooks keep an `### Agent Operations (If Applicable)`
-  subsection. The `POL-0006` backlog stays in place because
+- The `POL-0006` backlog stays in place because
   `links.py` validates its Operations and Runbook link pairs; moving it needs a
   validator change and an owner for backlogs.
 - Renovate reads `renovate.json` before `renovate.json5`, and the contract test
