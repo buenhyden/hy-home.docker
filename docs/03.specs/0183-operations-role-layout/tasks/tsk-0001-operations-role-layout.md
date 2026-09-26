@@ -105,6 +105,20 @@ and record every document's disposition here.
   header, so the UI stays on the SSO router while machine clients keep Basic
   Auth. The hardening assertion was tightened first and failed before the
   label changed.
+- W14 (owner live steps after #283 merged): The owner recreated `prometheus`
+  with `docker compose --profile obs up -d prometheus` from the repository
+  root; the container came up healthy with the `HeaderRegexp` rule. An
+  unauthenticated `/api/v1/query` request got `302` to Keycloak, and one
+  carrying a dummy Basic header got `401` with `Basic realm="traefik"`; no
+  signed-in browser session was tested. A first attempt with only
+  `-f infra/06-observability/docker-compose.yml` ran as a separate project,
+  failed on the container name, and left an empty
+  `06-observability_prometheus-data` volume, which the owner removed. The
+  owner reinstalled the four systemd units; each now matches its repository
+  file byte for byte and names `runbooks/0021-backup-and-restore.md` or
+  `guides/0083-renovate.md`. `sudo grep -rl '05.operations/catalog'` over
+  `hy-home.secrets` exited `1` after `sudo -v` succeeded: no file names a
+  catalog path.
 
 ## Verification Evidence
 
@@ -484,6 +498,18 @@ the commits as they were before the rebase.
 | `286eb2885` | — | W11 | test(governance): Supply the generated-body owner inside the heading test |
 | `fea69d8a3` | — | W11 | docs(operations): Drop filler Agent Operations subsections from 18 Runbooks |
 
+The W12 and W13 commits merged through #283 on 2026-09-26T14:38:46Z after
+hosted run `36247831376` (CI Quality Gates) passed on head `eeaaa09ea`; the
+rebase merge gave them new SHAs on `main`.
+
+| Commit on `main` | PR head | Work unit | Subject |
+| --- | --- | --- | --- |
+| `3bd34ca9d` | `9052ce3ad` | W12 | fix(deps): Remove the duplicate renovate.json so renovate.json5 is read |
+| `146723f2d` | `a8b599fcd` | W12 | docs(auth): Keep SSO matrix results in the SPEC-0182 Task, not GDE-0079 |
+| `4f305f24a` | `0277374d2` | W13 | fix(observability): Keep the Prometheus UI API calls on the SSO router |
+| `e39ef731a` | `4696354d0` | W13 | docs(incident): Resolve inc-2026-0002 on owner-verified Airflow access |
+| `660e8e4d8` | `eeaaa09ea` | W13 | docs(task): Record the SPEC-0183 W12 and W13 owner follow-ups |
+
 ## Rulings
 
 - Stage 98 frozen bodies, sealed Tombstones, Migrations MIG-0001 to MIG-0004,
@@ -510,10 +536,7 @@ the commits as they were before the rebase.
 
 ## Deferred Items
 
-Live steps that need the owner, because they need `sudo` or recreate a
-running container:
-
-- Recreate `prometheus` so Traefik reads the new `prometheus-api` rule;
-  `validate-docker-compose.sh` was not run in this session.
-- Reinstall the four systemd units so `Documentation=` names the new paths.
-- Scan `hy-home.secrets` (root-owned) for `05.operations/catalog` paths.
+None. The three owner live steps are recorded in W14. The `inc-2026-0002`
+postmortem stays `draft` until the owner decides its open corrective action
+on revoking exposed tokens and sessions; that decision belongs to the
+incident package, not this Task.
