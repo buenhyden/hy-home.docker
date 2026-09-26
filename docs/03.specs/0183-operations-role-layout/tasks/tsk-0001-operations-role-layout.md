@@ -49,6 +49,26 @@ and record every document's disposition here.
   directory, and one number that differs from its subject folder
   (`POL-0052` in `0051-airflow-dag-lifecycle`).
 - W2: Added this package and ADR-0043.
+- W3: Wrote the role-first regression tests before changing the validator.
+  Against the catalog validator they failed as expected: 86 tests, 13
+  failures and 56 errors, each on a role-first path or a retired catalog path.
+- W4: Moved the 225 role documents with `git mv`, deleted the catalog README
+  and the 13 domain READMEs, generated the three role indexes, and changed the
+  Registry (`direct` identity, role READMEs, no `operations-domain-readme`),
+  the operations validator, the metadata move baseline, and the consumers of
+  the old route. The seven `optimization-hardening` subjects took a domain
+  prefix; `POL-0052` took its own number.
+- W5: Replaced the missing LLM Wiki generator claim in `scripts/README.md` and
+  the dated absence note in the incidents README.
+- W6: Applied the role-boundary corrections recorded per row in the ledger
+  below. The drift audit of the network, OpenBao, and CouchDB subjects found
+  no confirmed drift; `NODENAME=couchdb-1.infra_net` and `lab_net.aliases`
+  were not changed. Five manifest rows gained consumers that the manifest
+  evidence detector proves; three unproven additions were reverted.
+- W7: Added MIG-0005 and advanced the `migration` identity space.
+- W8: Removed the `subject-member` identity relation, addressed review
+  findings, and verified each commit in isolation and the final tree with
+  the full gate.
 
 ## Verification Evidence
 
@@ -314,22 +334,89 @@ incident packet check.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W4 | pending | Stage 99 Registry |
-| 2 | W4 | pending | Stage 05 role directories |
-| 3 | W4 | pending | Stage 05 README and role indexes |
-| 4 | W3, W4 | pending | `scripts/lib/document_governance/operations_catalog.py` |
-| 5 | W4, W6 | pending | Stage 05 and active consumers |
-| 6 | W5 | pending | `scripts/README.md`, incidents README |
-| 7 | W7 | pending | MIG-0005 |
-| 8 | W8 | pending | this Task |
+| 1 | W4 | met: Registry tests pass in the full gate; no `operations-domain-readme` or `subject-member` remains outside rejection tests | Stage 99 Registry |
+| 2 | W4 | met: 225 moves, identifiers unchanged; catalog tree and 14 READMEs deleted | Stage 05 role directories |
+| 3 | W4 | met: the operations check reports no index membership finding for the three indexes | Stage 05 README and role indexes |
+| 4 | W3, W4 | met: RED 69 of 86 on the catalog validator; `check-operations-catalog.py` PASS | `scripts/lib/document_governance/operations_catalog.py` |
+| 5 | W4, W6 | met: `check-document-links.py --mode all` PASS; remaining mentions classified in Rulings | Stage 05 and active consumers |
+| 6 | W5 | met: commits `887a19f76` and `9591a6e03` | `scripts/README.md`, incidents README |
+| 7 | W7 | met: commit `3c97d57ae` | MIG-0005 |
+| 8 | W8 | met with a recorded exception; see Gate Results | this Task |
+
+### Gate Results
+
+Each commit was checked in a scratch worktree staged against the baseline
+(`reset --soft 0deb430ea`), as a pull request would be: metadata
+`--mode check-changed` with `TEMPLATE_GATE_BASE` set to the baseline, the
+operations check, `check-document-links.py --mode all`, and
+`run-ci-gate.py --profile changed`.
+
+| Commit | Metadata selected / exit | Operations | Links | Changed gate |
+| --- | --- | --- | --- | --- |
+| `572616b48` | 6 / 0 | 0 | 0 | 1: identity high-water only |
+| `887a19f76` | 6 / 0 | 0 | 0 | 1: identity high-water only |
+| `0a2e9cf16` | 344 / 0 | 0 | 0 | 1: identity high-water only |
+| `9591a6e03` | 345 / 0 | 0 | 0 | 1: identity high-water only |
+| `b6b038d04` | 345 / 0 | 0 | 0 | 1: identity high-water only |
+| `8ade3f32f` | 345 / 0 | 0 | 0 | 1: identity high-water only |
+| `d01b7f441` | 345 / 0 | 0 | 0 | 1: identity high-water only |
+| `3c97d57ae` | 346 / 0 | 0 | 0 | 1: two executable-mode tests only; 0 after scratch `chmod g-w` |
+| `1a89f8af4` | 347 / 0 | 0 | 0 | 0 |
+| `464b3c509` | 347 / 0 | 0 | 0 | 0 |
+
+The one failure before `3c97d57ae` is
+`test_registry_high_water_is_not_below_repository_history`
+(`identity_spaces.migration high_water=4 observed=5`). The test scans
+`--all` refs, so it sees MIG-0005 from the later commit on the same branch.
+It is an isolation artifact of checking an older commit while a newer ref
+exists, not a defect in that commit, and it cannot occur on the branch tip.
+From `3c97d57ae` on the test passes. At `3c97d57ae` the changed gate first
+selected the two executable-mode tests described below and failed them for
+the same scratch-worktree reason; with `chmod g-w` applied in the scratch
+worktree only, both modules passed at that commit (`Ran 19 tests`, `OK`).
+
+Full gate: `run-ci-gate.py --profile full` on `464b3c509` exited 1 on its
+first run with two executable-mode tests
+(`infra/06-observability/gatus/docker-entrypoint.sh`,
+`infra/08-ai/open-webui/docker-entrypoint.sh`): the scratch worktree was
+checked out under umask 002, making both group-writable, while the branch
+diff for both files is empty and the main checkout holds them without group
+write. After `chmod g-w` in the scratch worktree only, the rerun exited 0:
+16 suites, 1500 tests, 23 skipped, 23 min 26 s. Static and local results
+only; no remote CI ran and nothing was pushed.
 
 ## Review Evidence
 
-Pending.
+A read-only review of the branch diff found active surfaces that still named
+the retired catalog (`git-workflow`, `github-governance`, the stage authoring
+matrix, the repository map, the `ops-runbook-agent` skill, and
+`examples/README.md`); dead catalog code in `metadata/profile.py` and the
+unused `_has_symlink_component` in `operations_catalog.py`; sibling binding
+that depended on set iteration order; a missing sibling reported at an
+invented file path; and a move baseline that accepted a reused identifier
+under any slug. Commit `1a89f8af4` corrects each one, restricts the baseline
+to the kept or domain-prefixed slug, and adds Registry tests for it.
+The review is an agent review, not an owner approval.
 
 ## Commit Ledger
 
-Pending.
+Local branch `refactor/operations-role-layout` on baseline `0deb430ea`; not
+pushed.
+
+| Commit | Work unit | Subject |
+| --- | --- | --- |
+| `572616b48` | W2 | docs(specs): Add SPEC-0183 and ADR-0043 for operations role layout |
+| `887a19f76` | W5 | docs(scripts): Drop the missing LLM Wiki generator from the scripts README |
+| `0a2e9cf16` | W3, W4 | refactor(docs): Move Stage 05 operations from catalog to role directories |
+| `9591a6e03` | W5 | docs(operations): List the current incident in the incidents README |
+| `b6b038d04` | W6 | docs(operations): Keep each Operations role to the content it owns |
+| `8ade3f32f` | W8 | refactor(governance): Remove the subject-member identity relation |
+| `d01b7f441` | W6 | chore(scripts): Declare the proven consumers of five manifest rows |
+| `3c97d57ae` | W7 | docs(archive): Record the operations role layout route as MIG-0005 |
+| `1a89f8af4` | W8 | fix(governance): Address the SPEC-0183 review findings |
+| `464b3c509` | W6 | docs(task): Record the SPEC-0183 W6 dispositions in the ledger |
+
+This Task's evidence commit follows these ten.
 
 ## Rulings
 
@@ -342,4 +429,32 @@ Pending.
 
 ## Deferred Items
 
-Pending.
+Each item needs an owner decision or access this session did not have.
+
+- Scripts whose default run writes: `sync-tech-stack-versions.sh` under
+  check-write, `post-tool-validate.sh`, `check-document-corpus-lifecycle.py`
+  check-write, and the writing path of `metadata/reference.py`.
+  `run-ci-precommit.sh` is labelled non-mutating while its hooks fix files.
+- The Registry `generated_outputs` entry for the corpus lifecycle check is
+  stale, and the `metadata_validator.py` facade has no remaining need that
+  this session proved.
+- Manifest authority disagrees with its consumers for
+  `use-qa-ci-tools.sh`, `run-agent-precommit-all-files.sh`, and
+  `report-graphify-health.sh`. The evidence detector cannot recognise three
+  consumers, so they stay undeclared. `.claude/hooks` and
+  `.agents/skills/*/scripts` sit outside the manifest roots.
+- Documentation: the `POL-0004` agent rule has no `.agents` owner yet;
+  `RUN-0004` still carries delegation rules; the `GDE-0061` live-run step
+  waits for `RUN-0061` to own the command; the `POL-0006` backlog and audit
+  sections, the `GDE-0079` dated results, and the `POL-0079` twelve-command
+  sequence belong to other roles.
+- `inc-2026-0002` stays `mitigated`. Resolution needs a live authenticated
+  check of pools, DAGs, assets, and HITL, and the follow-up has no assigned
+  owner.
+- Host systemd units and the running Prometheus keep the old
+  `Documentation=` and `runbook_url` values until the units are reinstalled
+  and Prometheus is reloaded. Neither was done; both need approval.
+- Other repositories: `hy-home.k8s` at `698745e6` names no catalog route (its
+  11 uncommitted files were not read). `hy-home.secrets` could not be read
+  (permission denied), so its links are unverified. MIG-0005 is the route
+  record for both owners.
