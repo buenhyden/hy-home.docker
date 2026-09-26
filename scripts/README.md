@@ -214,9 +214,10 @@ private, offline scan cache.
 
 `scripts/hooks/post-tool-validate.sh` is a hook payload consumer. With no JSON
 payload or no changed paths, it exits successfully without running validators.
-Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
-validation; check-only mode disables whitespace writes while preserving diff,
-syntax, lint, and repo checks. The whitespace normalizer is the hook's only
+It is non-mutating by default: diff, syntax, lint, and repo checks run without
+writes. `--write` enables the whitespace normalizer, which the runtime post-edit
+hook in `agent-event-hook.sh` passes; `POST_TOOL_VALIDATE_CHECK_ONLY=1` forces
+check-only mode even with `--write`. The whitespace normalizer is the hook's only
 mutation, and it reads the registered mutator boundary from
 `.pre-commit-config.yaml` so a frozen archive payload keeps its bytes.
 The hook preserves its caller's prepared tool search order and does not source
@@ -365,11 +366,11 @@ python3 scripts/operations/provider_surface_renderer.py --write
 # Dispatch a provider-neutral PreToolUse hook event
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
-# Run provider-neutral post-edit validation from a file-edit hook payload
+# Run provider-neutral post-edit validation without formatting writes (default)
 printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
-# Run provider-neutral post-edit validation without formatting writes
-printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
+# Run it as the post-edit hook does, normalizing whitespace in the changed file
+printf '{"tool_input":{"file_path":".agents/governance/task-checklists.md"}}' | bash scripts/hooks/post-tool-validate.sh --write
 
 # Enforce all tier hardening baselines
 ./scripts/hardening/check-all-hardening.sh

@@ -2,21 +2,26 @@
 # post-tool-validate.sh — provider-neutral post-edit repository validation.
 set -euo pipefail
 
-check_only=0
+check_only=1
 while [[ "$#" -gt 0 ]]; do
   case "$1" in
   --check)
     check_only=1
     ;;
+  --write)
+    check_only=0
+    ;;
   -h | --help)
     cat <<'EOF'
-Usage: post-tool-validate.sh [--check]
+Usage: post-tool-validate.sh [--check | --write]
 
-Consumes a hook JSON payload on stdin and validates changed files.
+Consumes a hook JSON payload on stdin and validates changed files. The default
+is non-mutating validation: diff, syntax, lint, and repo checks only.
 
 Options:
-  --check   Run non-mutating validation only. This disables whitespace writes
-            while preserving diff, syntax, lint, and repo checks.
+  --check   Non-mutating validation (the default).
+  --write   Also normalize trailing whitespace and final newlines in the
+            changed files. The runtime post-edit hook passes this.
 EOF
     exit 0
     ;;

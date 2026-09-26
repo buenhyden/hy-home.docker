@@ -468,7 +468,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     observed = outside
                 before = observed.read_bytes()
                 result = subprocess.run(
-                    ["bash", str(POST_TOOL)],
+                    ["bash", str(POST_TOOL), "--write"],
                     cwd=ROOT,
                     input=json.dumps({"tool_input": {"file_path": supplied}}),
                     capture_output=True,
@@ -482,7 +482,16 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertNotEqual(0, result.returncode, result.stdout + result.stderr)
                 self.assertEqual(before, observed.read_bytes())
 
-    def test_post_tool_check_mode_is_non_mutating_and_runs_bounded_checks(self) -> None:
+    def test_post_tool_default_and_check_mode_are_non_mutating(self) -> None:
+        for flags in ([], ["--check"]):
+            with self.subTest(flags=flags):
+                self._assert_post_tool_is_non_mutating(flags)
+
+    def test_agent_event_hook_requests_post_tool_writes_explicitly(self) -> None:
+        text = (ROOT / "scripts/hooks/agent-event-hook.sh").read_text()
+        self.assertIn("bash scripts/hooks/post-tool-validate.sh --write", text)
+
+    def _assert_post_tool_is_non_mutating(self, flags: list[str]) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repo = pathlib.Path(directory)
             subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
@@ -507,7 +516,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             shell.write_text("#!/bin/sh\necho ok   \n", encoding="utf-8")
             before = shell.read_bytes()
             result = subprocess.run(
-                ["bash", str(POST_TOOL), "--check"],
+                ["bash", str(POST_TOOL), *flags],
                 cwd=repo,
                 input=json.dumps({"tool_input": {"file_path": "scripts/example.sh"}}),
                 capture_output=True,
@@ -804,13 +813,9 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
         relative: str,
         *,
         path_prefix: str = "",
-        check_mode: bool = False,
     ) -> subprocess.CompletedProcess[str]:
-        command = ["bash", str(POST_TOOL)]
-        if check_mode:
-            command.append("--check")
         return subprocess.run(
-            command,
+            ["bash", str(POST_TOOL), "--write"],
             cwd=repo,
             input=json.dumps({"tool_input": {"file_path": relative}}),
             capture_output=True,
