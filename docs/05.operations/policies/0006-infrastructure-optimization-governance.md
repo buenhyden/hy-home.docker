@@ -1,6 +1,6 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -31,7 +31,7 @@ created: "2026-06-04"
 - **Required**:
   - 모든 장기 실행 서비스에 `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용
   - 민감정보는 환경변수 직접 주입 대신 Docker Secrets 또는 현재 HOME secret authority인 OpenBao 경유 주입을 기본 정책으로 적용
-  - 서비스별 운영 문서(`05.operations`)와 실행 절차(`05.operations`)를 상호 링크로 동기화
+  - 서비스별 운영 문서(`docs/05.operations/guides/`)와 실행 절차(`docs/05.operations/runbooks/`)를 상호 링크로 동기화
 - **Allowed**:
   - 서비스 성격(상태저장/배치/실험성)에 따른 예외 설정
   - 티어별 확장(예: AI 게이트웨이, 메시징 DLQ, 관측성 장기보관 스토리지)
@@ -238,51 +238,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - 운영 갭 점검(예시):
   - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
 - 문서 추적성 점검:
-  - 서비스별 `infra/*/README.md` ↔ `docs/05.operations/*` ↔ `docs/05.operations/*` 상호 링크 확인
-
-### Baseline Audit Snapshot (2026-03-27)
-
-- 조사 대상 Compose 서비스: **39**
-- 갭 집계(서비스 단위):
-  - `healthcheck` 미구성: **6/39**
-  - `restart` 미구성: **21/39**
-  - `no-new-privileges` 미구성: **37/39**
-  - 자원 제한(`cpus`/`memory`) 미구성: **37/39**
-  - `secrets` 미구성: **16/39**
-- 추가 관찰:
-  - workflow tier의 미구현 서비스 문서는 active operations chain에서 제거하고 archive ledger로만 추적한다.
-
-### Common Template Coverage Snapshot (2026-03-28)
-
-- 기준 템플릿: [infra/common-optimizations.yml](../../../infra/common-optimizations.yml)
-- 템플릿 기준선:
-  - 보안: `no-new-privileges`, `cap_drop: [ALL]` (`x-security-base`)
-  - 재시작: `restart: unless-stopped` (`x-restart-default`)
-  - 자원 상한: `x-resource-low/med/high/db` (`cpus`, `mem_limit`)
-- 적용 커버리지:
-  - 서비스 디렉터리 기준: **39/39 (100%)**
-  - Compose 파일 기준: **43/43 (100%)**
-- 미적용 서비스(서비스 기준): **없음 (0건)**
-- 보조 Compose 적용 상태(서비스 수 미산입):
-  - opensearch cluster 노드는 [opensearch compose](../../../infra/04-data/analytics/opensearch/docker-compose.yml)의 `opensearch-cluster` profile로 통합됨: **적용 완료**
-- 의도된 템플릿 예외:
-  - SSoT: [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)
-  - 운영 정책: [common-optimizations-template-exceptions.md](0001-common-optimizations-template-exceptions.md)
-
-### Quick Win Enforcement Snapshot (2026-03-28)
-
-- 기준: `PLN-QW-001 ~ PLN-QW-005`
-- 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
-- 통합 Compose 기준 결과(`total services=19`):
-  - `restart` 누락: `0`
-  - `healthcheck` 누락: `0` (예외 반영 후)
-  - `no-new-privileges` 누락: `0`
-  - `cpus`/`mem_limit` 누락: `0`
-  - `secrets` 누락: `0` (예외 반영 후)
-- 승인 예외:
-  - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init` (one-shot init job)
-  - `secrets`: `etcd-1`, `etcd-2`, `etcd-3` (auth-disabled cluster bootstrap mode)
-  - 상세 정의: [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)
+  - 서비스별 `infra/*/README.md` ↔ `docs/05.operations/guides/` ↔ `docs/05.operations/runbooks/` 상호 링크 확인
 
 ## Review Cadence
 
@@ -291,7 +247,7 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 ## Traceability
 
-- Subject peers: none — `00-workspace/0006-infrastructure-optimization-governance` holds this document alone.
+- Subject peers: none — no Guide or Runbook shares number `0006`.
 
 ## Related Documents
 

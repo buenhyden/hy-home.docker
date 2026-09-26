@@ -1,10 +1,10 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0059"
 parent_ids: []
@@ -70,7 +70,7 @@ created: "2026-03-25"
 ## Traceability
 
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: none — `08-ai/0059-rag-workflow` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0059`.
 
 ## Related Documents
 

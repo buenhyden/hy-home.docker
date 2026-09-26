@@ -1,6 +1,6 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ created: "2026-06-04"
 
 ## Traceability
 
-- Subject peers: none — `00-workspace/0001-common-optimizations-template-exceptions` holds this document alone.
+- Subject peers: none — no Guide or Runbook shares number `0001`.
 
 ## Related Documents
 

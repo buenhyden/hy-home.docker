@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.6.2"
+version: "0.6.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -473,12 +473,16 @@ need a signed-in browser or Keycloak admin access.
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=availability bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES=ai bash scripts/validation/validate-docker-compose.sh
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
 bash scripts/hardening/check-all-hardening.sh 02-auth
 bash scripts/hardening/check-all-hardening.sh 03-security
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/hardening/check-all-hardening.sh 07-workflow
+bash scripts/hardening/check-all-hardening.sh 06-observability
+bash scripts/hardening/check-all-hardening.sh 08-ai
 ```
 
 Airflow:

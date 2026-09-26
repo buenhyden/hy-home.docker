@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -75,21 +75,8 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 
 ## Verification
 
-```bash
-HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
-HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
-HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
-HYHOME_COMPOSE_PROFILES=availability bash scripts/validation/validate-docker-compose.sh
-HYHOME_COMPOSE_PROFILES=ai bash scripts/validation/validate-docker-compose.sh
-HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
-
-bash scripts/hardening/check-all-hardening.sh 02-auth
-bash scripts/hardening/check-all-hardening.sh 03-security
-bash scripts/hardening/check-all-hardening.sh 05-messaging
-bash scripts/hardening/check-all-hardening.sh 07-workflow
-bash scripts/hardening/check-all-hardening.sh 06-observability
-bash scripts/hardening/check-all-hardening.sh 08-ai
-```
+정적 검증: [GDE-0079](../guides/0079-application-auth-integration.md#서비스별-정적-검증)의
+profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 추가 검증:
 

@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.2.0"
+version: "3.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "GDE-0010"
 parent_ids: []
@@ -62,7 +62,7 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 
 ## Traceability
 
-- Subject peers: none — `00-workspace/0010-sensitive-env-vars-comparison` holds this document alone.
+- Subject peers: none — no Policy or Runbook shares number `0010`.
 
 ## Related Documents
 
