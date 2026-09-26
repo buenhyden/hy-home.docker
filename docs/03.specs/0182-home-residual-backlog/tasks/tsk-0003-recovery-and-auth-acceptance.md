@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -113,7 +113,7 @@ containers (the file provider declares no routers). 19 live routers carry
 | --- | --- | --- |
 | GET `/` without a cookie | `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static` (`/favicon.ico`), `schema-registry`, `tempo` | pass: all `401` with `Location` to the Keycloak authorization endpoint of `hy-home.realm`, `client_id=home-proxy-client`, callback `https://auth.hy.home.arpa/oauth2/callback`, S256; no upstream content |
 | API client without credentials | `alloy` with `Accept: application/json`, `prometheus` `/api/v1/status/buildinfo` | pass: `401` |
-| Native OIDC without a session | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | pass: each API path refuses (`401`, OpenBao `403`) and each login path reaches Keycloak or the app login page; details in GDE-0079 |
+| Native OIDC without a session | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | pass: each API path refuses (`401`, OpenBao `403`) and each login path reaches Keycloak or the app login page. Open WebUI `/` 200 (app shell), `/api/models` 401, `/oauth/oidc/login` 302 to Keycloak; Grafana `/` 302 `/login`, 307 `/login/generic_oauth`, 302 to Keycloak, `/api/search` 401; Airflow `/` 200 (app shell), `/api/v2/dags` 401, `/auth/login` 307 to Keycloak; Gatus `/` 200 (app shell), `/api/v1/endpoints/statuses` 401, `/oidc/login` 302 to Keycloak; Kafbat `/` and `/api/clusters` 302 to `/oauth2/authorization/keycloak`, then 302 to Keycloak; Dozzle `/` 307 `/login` (200), `/api/events/stream` 401; OpenBao `/` 307 `/ui/`, `/v1/sys/mounts` 403. `superset` is not running |
 
 Finding: the SSO chain answers `401` with a `Location` header, not `302`,
 so a browser renders the one-link "Found" page instead of redirecting. Access
