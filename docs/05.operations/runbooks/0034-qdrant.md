@@ -1,6 +1,6 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -105,13 +105,6 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 4. collection snapshot recovery API 또는 full-storage startup recovery 중 snapshot type에 맞는 upstream procedure 하나만 사용한다. `force`는 target collision이 명시적으로 검토된 경우에만 별도 승인한다.
 5. `/readyz`, collection status/config, aliases, point counts와 representative search invariants를 검증한다. version, checksum 또는 count mismatch면 승격하지 않는다.
 6. 실패하면 target을 폐기한다. production route switch, API key 교체, collection deletion과 volume replacement는 별도 승인 사항이다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop file or log inspection if application data or credentials appear in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 

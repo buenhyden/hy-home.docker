@@ -1,6 +1,6 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -103,13 +103,6 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 4. production network/volumes를 공유하지 않는 호환 버전의 빈 3-node target을 준비한다. 별도 test admin/cookie를 사용하고 동일한 node count/shard assumptions를 명시한다.
 5. file restore에서는 upstream 순서대로 index files를 database files보다 먼저 배치하고, config/metadata/data ownership을 검증한 뒤 target만 시작한다. replication path에서는 security objects와 system database scope를 별도로 확인한다.
 6. `/_up`, `/_membership`, `/_all_dbs`, shard maps, per-database document counts, representative reads, `_security`, replication scheduler를 검증한다. 불일치가 있으면 target을 승격하지 않고 폐기한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 

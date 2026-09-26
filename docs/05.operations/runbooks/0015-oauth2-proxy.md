@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -110,14 +110,6 @@ created: "2026-05-17"
   - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
 - [ ] `docker compose --profile auth up -d oauth2-proxy`
 - [ ] `/ping` + 로그인 시나리오 재검증
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- **Trace Capture**: oauth2-proxy/keycloak 로그 + CI job 로그
 
 ## Evidence
 

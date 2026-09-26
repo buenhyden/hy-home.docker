@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -93,13 +93,6 @@ This procedure is documented from upstream guidance and **was not executed in th
 5. Verify green/yellow cluster health as appropriate, shard allocation, expected index/document counts, representative searches, Dashboards connectivity, TLS, roles, and absence of unexpected write aliases.
 6. If restore or security validation fails, stop and discard only the isolated volumes, then retry from the unchanged snapshot. Do not reroute shards or overwrite active indices to force recovery.
 7. Cutover, alias mutation, snapshot deletion, or active-cluster restore requires separate approval. Restore remains unverified until a rehearsal records success.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: stop if secret values appear in output.
-- **Eval Re-run**: rerun docs validation after docs-only changes.
 
 ## Evidence
 

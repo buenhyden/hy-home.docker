@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -77,13 +77,6 @@ created: "2026-05-17"
 1. load generator를 중단한 상태로 유지한다.
 2. target service recovery는 해당 target의 runbook으로 전환한다.
 3. 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 수행한다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`
 
 ## Evidence
 

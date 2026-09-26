@@ -1,10 +1,10 @@
 ---
 title: "09-Tooling Optimization Hardening Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -89,13 +89,6 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 1. 문서-only 회귀는 직전 diff 단위로 되돌리거나 current-truth 문서로 정정한다.
 2. compose/script 회귀는 affected file만 최소 복구하고 hardening check를 재실행한다.
 3. runtime 재시작은 이 런북 범위를 벗어나며 대상 service runbook과 사용자 승인을 따른다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: tooling 자동 변경 파이프라인 일시 중지에는 승인 필요.
-- **Eval Re-run**: `check-all-hardening.sh 09-tooling`, `run-ci-gate.py`, `check-document-links.py --mode alignment`
 
 ## Evidence
 

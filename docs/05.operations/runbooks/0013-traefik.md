@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -78,14 +78,6 @@ created: "2026-05-17"
 - [ ] 직전 정상 커밋으로 `infra/01-gateway/traefik/*` 복원
 - [ ] runtime restart/reload가 승인되면 root compose context에서 Traefik 단위로만 수행
 - [ ] 롤백 후 `check-all-hardening.sh 01-gateway` 재실행
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- **Trace Capture**: Traefik logs + CI job logs
 
 ## Evidence
 

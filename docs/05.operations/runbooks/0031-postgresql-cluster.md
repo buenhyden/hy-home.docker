@@ -1,6 +1,6 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -112,13 +112,6 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 4. globals/roles를 먼저 복원하고 databases, extensions/schema/data, ownership/ACLs 순으로 적재한다. 자세한 명령과 acceptance evidence는 `RUN-0032`를 따른다.
 5. `patronictl list`, write/read routing through `pg-router`, roles/ACLs, extensions, schemas, sequences, row-count invariants와 representative transactions를 검증한다.
 6. 실패하면 target을 승격하지 않고 폐기한다. production cutover, route change, secret rotation과 DCS mutation은 별도 승인 사항이다.
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
-- **Eval Re-run**: Re-run `python3 scripts/validation/check-document-links.py --mode all` after documentation changes.
 
 ## Evidence
 

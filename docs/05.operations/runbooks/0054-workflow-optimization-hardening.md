@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-26"
 layer: "operations"
 artifact_id: "RUN-0054"
 parent_ids:
@@ -85,17 +85,6 @@ created: "2026-05-17"
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
-
-### Agent Operations (If Applicable)
-
-- **Prompt Rollback**: N/A
-- **Model Fallback**: N/A
-- **Tool Disable / Revoke**: workflow 자동 변경 파이프라인 일시 중지(승인 필요)
-- **Eval Re-run**:
-  - `check-all-hardening.sh 07-workflow`
-  - `check-template-security-baseline`
-  - `python3 scripts/validation/check-document-links.py --mode all`
-- **Trace Capture**: CI logs + compose config + health 상태
 
 ## Evidence
 
