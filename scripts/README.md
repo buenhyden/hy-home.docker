@@ -414,6 +414,10 @@ repository update. A retained check-write generator registers a safe argv
 runtime` scripts are Operations entrypoints;
 they are not run during document migration and require a current Runbook plus
 the declared test evidence before explicit invocation.
+The two all-files pre-commit runners are `check-write` because their fixer
+hooks rewrite files; `run-ci-precommit.sh` runs only in the disposable GitHub
+Actions checkout and `run-agent-precommit-all-files.sh` only in an isolated
+linked worktree.
 
 Transition rows require a non-retain disposition, a distinct tracked successor,
 and a nonblank `removal_condition`; active rows omit `removal_condition`.

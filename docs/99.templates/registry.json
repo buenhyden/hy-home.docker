@@ -96,9 +96,7 @@
       "skills",
       "tools"
     ],
-    "generated_outputs": {
-      "docs/90.references/data/0066-foundation-summary/README.md": "scripts/validation/check-document-corpus-lifecycle.py"
-    },
+    "generated_outputs": {},
     "globally_forbidden": [
       "document_type",
       "template_type",

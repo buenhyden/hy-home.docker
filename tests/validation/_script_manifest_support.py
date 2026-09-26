@@ -53,10 +53,10 @@ MUTATION_OVERRIDES = {
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
     "scripts/security/seed-grype-db-cache.sh": "runtime",
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
-    "scripts/validation/check-document-corpus-lifecycle.py": "check-write",
     "scripts/validation/check-document-metadata.py": "check-write",
     "scripts/operations/rehearse-postgres-logical-upgrade.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
+    "scripts/validation/run-ci-precommit.sh": "check-write",
     "scripts/operations/check-compose-core-readiness.sh": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
