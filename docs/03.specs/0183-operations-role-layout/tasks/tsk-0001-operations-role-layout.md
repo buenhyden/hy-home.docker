@@ -119,6 +119,17 @@ and record every document's disposition here.
   `guides/0083-renovate.md`. `sudo grep -rl '05.operations/catalog'` over
   `hy-home.secrets` exited `1` after `sudo -v` succeeded: no file names a
   catalog path.
+- W15 (owner follow-up, 2026-09-27): The owner confirmed in a browser that
+  Prometheus no longer asks for its own login after SSO. The owner decided to
+  keep the exposed `inc-2026-0002` tokens and sessions rather than revoke
+  them; nothing was revoked. RUN-0014 step 8 and RUN-0050 scenario 4 now
+  record how to revoke Keycloak sessions, refresh tokens, and client secrets,
+  and Airflow JWTs. The Airflow steps rest on the installed Airflow 3.3.1 and
+  keycloak provider 0.9.0 code (`revoked_token` on logout; one `jwt_secret`
+  also signs task execution tokens); the Keycloak steps rest on the Keycloak
+  Admin REST API reference. None of them was run. The postmortem moved from
+  `draft` to `review`; `published` needs a separate change, because the
+  lifecycle allows only `draft` to `review` to `published`.
 
 ## Verification Evidence
 
@@ -536,7 +547,6 @@ rebase merge gave them new SHAs on `main`.
 
 ## Deferred Items
 
-None. The three owner live steps are recorded in W14. The `inc-2026-0002`
-postmortem stays `draft` until the owner decides its open corrective action
-on revoking exposed tokens and sessions; that decision belongs to the
-incident package, not this Task.
+None. The three owner live steps are recorded in W14, and the owner's
+token and session decision in W15. Publishing the `inc-2026-0002`
+postmortem belongs to the incident package, not this Task.

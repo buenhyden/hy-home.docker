@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Postmortem"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/postmortem"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 artifact_id: "inc-2026-0002-PM"
 parent_ids:
@@ -77,7 +77,7 @@ access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie�
 | hardening의 stale Airflow ForwardAuth assertion 수정 | @buenhyden | 완료 | `check-all-hardening.sh` | Airflow double-auth middleware를 금지하는 `check_not_contains` 존재 |
 | Kafbat/workflow 문서의 stale SSO 문구 수정 | @buenhyden | 완료 | GDE-0036, Airflow README | 두 문서가 native OIDC와 ForwardAuth 미적용을 기술 |
 | provider 변경 시 permission 재적용을 checklist에 포함 | @buenhyden | 완료 (2026-09-26) | RUN-0050 Checklist | provider 변경 시 `create-permissions`와 Pool/DAG/Asset/HITL 확인 항목 존재 |
-| 노출된 live token/session 폐기 | @buenhyden | 미정 | inc-2026-0002 | 이 세션에서 확인하지 못함; owner 확인 필요 |
+| 노출된 live token/session 처리 | @buenhyden | 결정 (2026-09-27) | RUN-0014, RUN-0050 | owner가 폐기하지 않고 유지하기로 결정했다. 폐기는 수행하지 않았고, 필요할 때의 절차는 RUN-0014 8단계와 RUN-0050 시나리오 4에 있다 |
 
 ## Learning
 
