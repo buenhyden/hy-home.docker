@@ -1,44 +1,44 @@
 ---
 title: "Laboratory Open Notebook"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-05-09"
 ---
 
 # Laboratory Open Notebook
 
-> Local knowledge notebook and SurrealDB-backed laboratory service.
+> 로컬 지식 노트북이자 SurrealDB 기반 laboratory 서비스입니다.
 
 ## Overview
 
-Open Notebook provides an admin/laboratory notebook interface for local knowledge workflows. The stack runs the `open_notebook` application and a dedicated `surrealdb` database backend for persistence, both interconnected via `ai_net`.
+Open Notebook은 로컬 지식 워크플로우를 위한 admin/laboratory 노트북 인터페이스를 제공합니다. 이 스택은 `open_notebook` 애플리케이션과 영속화 전용 `surrealdb` 데이터베이스 백엔드를 함께 실행하며 둘은 `ai_net`으로 상호 연결됩니다.
 
-Lifecycle: **OPTIONAL**. Root Compose includes this definition; explicit profiles (`notebook`, `surrealdb`) control activation.
+Lifecycle: **OPTIONAL**. 루트 Compose가 이 정의를 include하며 명시적 프로필(`notebook`, `surrealdb`)이 활성화를 제어합니다.
 
 ## Audience
 
-- **Operators**: Managing local laboratory services, data persistence, and credential custody.
-- **Developers**: Testing notebook-driven AI or knowledge workflows.
-- **AI Agents**: Discovering service boundaries, secrets, and validation paths.
+- **Operators**: 로컬 laboratory 서비스, 데이터 영속화, 자격 증명 관리.
+- **Developers**: 노트북 기반 AI 또는 지식 워크플로우 테스트.
+- **AI Agents**: 서비스 경계, 시크릿, 검증 경로 파악.
 
 ## Scope
 
 ### In Scope
 
-- Docker Compose definitions for `open_notebook` and `surrealdb`.
-- Local persistent volumes under `${DEFAULT_MANAGEMENT_DIR}` (`open-notebook-data` and `surrealdb-data`).
-- Gateway exposure for Open Notebook through Traefik routing, the admin IP allowlist, and the application password.
-- Docker secret consumption for notebook password, encryption key, and database credentials.
-- Multi-stage build context for custom SurrealDB runtime (`surrealdb/Dockerfile`).
+- `open_notebook`과 `surrealdb`의 Docker Compose 정의.
+- `${DEFAULT_MANAGEMENT_DIR}` 하위의 로컬 영속 볼륨(`open-notebook-data`, `surrealdb-data`).
+- Traefik 라우팅, admin IP allowlist, 애플리케이션 비밀번호를 통한 Open Notebook의 게이트웨이 노출.
+- 노트북 비밀번호, 암호화 키, 데이터베이스 자격 증명용 Docker Secret 사용.
+- 커스텀 SurrealDB 런타임용 다단계 빌드 컨텍스트(`surrealdb/Dockerfile`).
 
 ### Out of Scope
 
-- Production notebook promotion policy.
-- User content governance inside notebook data.
-- External model provider credentials or private notebook exports.
+- 프로덕션 노트북 승격 정책.
+- 노트북 데이터 내부의 사용자 콘텐츠 거버넌스.
+- 외부 모델 provider 자격 증명이나 비공개 노트북 내보내기.
 
 ## Structure
 
@@ -61,36 +61,36 @@ open-notebook/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Laboratory Open Notebook service leaf in `11-laboratory`; services: `open_notebook`, `surrealdb`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
+| Purpose | `11-laboratory`의 Laboratory Open Notebook 서비스 leaf; 서비스: `open_notebook`, `surrealdb`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` 경로로 루트 include가 활성화됨 |
 | Config files | `docker-compose.yml`, `surrealdb/Dockerfile`, `surrealdb/docker-entrypoint.sh` |
-| Config values | env keys: `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `OLLAMA_API_BASE`; profiles: `notebook`, `surrealdb` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
+| Config values | 환경 변수 키: `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `OLLAMA_API_BASE`; 프로필: `notebook`, `surrealdb` |
+| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` 경로로 루트 include가 활성화됨 |
 | Networks | `ai_net`, `edge_net` |
 | Volumes | `open-notebook-data:/app/data`, `surrealdb-data:/mydata` |
-| Ports | Loopback-only API port `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik targets web internal `${OPEN_NOTEBOOK_WEB_URL:-8502}` via `expose`; SurrealDB internal port `8000` via `expose` |
+| Ports | Loopback 전용 API 포트 `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055`; Traefik은 `expose`를 통한 내부 web 포트 `${OPEN_NOTEBOOK_WEB_URL:-8502}`을 대상으로 함; SurrealDB 내부 포트 `8000`은 `expose`로 노출 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
-| Secret refs | names: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; mounts: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
-| Healthcheck | Compose healthcheck declared for `surrealdb` and `open_notebook` |
+| Secret refs | 이름: `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key`; 마운트: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password`, `/run/secrets/open_notebook_encryption_key` |
+| Healthcheck | `surrealdb`와 `open_notebook`에 Compose 헬스체크가 선언되어 있음 |
 | Operations | Guide (`docs/05.operations/guides/0073-open-notebook.md`), Policy (`docs/05.operations/policies/0073-open-notebook.md`), Runbook (`docs/05.operations/runbooks/0073-open-notebook.md`) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `notebook` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `11-laboratory` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `notebook` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
+| Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## How to Work in This Area
 
-1. Validate the root-active laboratory profile with `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`.
-2. Start only when the `notebook` profile is intentionally selected; `admin` no longer selects Open Notebook or SurrealDB.
-3. Access the Open Notebook UI at `https://open-notebook.${DEFAULT_URL}` from the permitted CIDR range and sign in with the Open Notebook password; the route intentionally has no shared SSO middleware. The API host port answers on loopback only.
-4. Keep floating image usage reviewed through `infra/image-tag-policy.exceptions.json`.
-5. Keep credentials in Docker secrets and environment variables; do not commit plaintext values.
+1. `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 laboratory 프로필을 검증합니다.
+2. `notebook` 프로필이 의도적으로 선택된 경우에만 시작합니다. `admin`은 더 이상 Open Notebook이나 SurrealDB를 선택하지 않습니다.
+3. 허용된 CIDR 범위에서 `https://open-notebook.${DEFAULT_URL}`로 Open Notebook UI에 접속해 Open Notebook 비밀번호로 로그인합니다. 이 라우트는 의도적으로 공유 SSO 미들웨어를 사용하지 않습니다. API 호스트 포트는 loopback에서만 응답합니다.
+4. floating 이미지 사용은 `infra/image-tag-policy.exceptions.json`을 통해 계속 검토합니다.
+5. 자격 증명은 Docker Secret과 환경 변수에 유지하고 평문 값을 커밋하지 않습니다.
 
 ## Tech Stack
 
-Runtime image pins are declared in [Compose](docker-compose.yml) and referenced Dockerfiles. The [version registry](../../tech-stack.versions.json) is a derived Compose image projection.
+런타임 이미지 고정 값은 [Compose](docker-compose.yml)와 참조된 Dockerfile에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
 
 | Component | Image / Source | Purpose |
 | --- | --- | --- |
-| `open_notebook` | [declared runtime image](../../tech-stack.versions.json) | Notebook UI and API runtime |
-| `surrealdb` | [Dockerfile](surrealdb/Dockerfile) | Local metadata and notebook persistence (pinned to SurrealDB v2 for Open Notebook compatibility) |
+| `open_notebook` | [declared runtime image](../../tech-stack.versions.json) | 노트북 UI 및 API 런타임 |
+| `surrealdb` | [Dockerfile](surrealdb/Dockerfile) | 로컬 메타데이터 및 노트북 영속화(Open Notebook 호환을 위해 SurrealDB v2에 고정) |
 
 ## Configuration
 
@@ -99,55 +99,55 @@ Runtime image pins are declared in [Compose](docker-compose.yml) and referenced 
 | Service | Profiles | Networks | `ai_net`, `edge_net` | Volumes | Secrets |
 | --- | --- | --- | --- | --- | --- |
 | `open_notebook` | `notebook` | `ai_net`, `edge_net` | `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open-notebook-data:/app/data` | `surreal_db_password`, `open_notebook_password`, `open_notebook_encryption_key` |
-| `surrealdb` | `notebook`, `surrealdb` | `ai_net` | None (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
+| `surrealdb` | `notebook`, `surrealdb` | `ai_net` | 없음 (`expose: 8000`) | `surrealdb-data:/mydata` | `surreal_db_password` |
 
 ### Environment Variables
 
 | Variable | Required | Service | Description |
 | --- | :---: | --- | --- |
-| `SURREALDB_USERNAME` | Yes | `open_notebook`, `surrealdb` | Database username for SurrealDB |
-| `SURREALDB_NAMESPACE` | Yes | `open_notebook` | Namespace used by Open Notebook |
-| `SURREALDB_DATABASE` | Yes | `open_notebook` | Database name within namespace |
-| `DEFAULT_URL` | Yes | `open_notebook` | Base domain for Traefik routing |
-| `DEFAULT_MANAGEMENT_DIR` | Yes | Global | Base host directory for persistent bind mounts |
-| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | Loopback host port for API (default: 5055) |
-| `OPEN_NOTEBOOK_WEB_URL` | No | `open_notebook` | Web UI internal port (default: 8502) |
-| `LAB_ALLOWED_CIDRS` | No | Traefik | IP allowlist for admin endpoints |
+| `SURREALDB_USERNAME` | Yes | `open_notebook`, `surrealdb` | SurrealDB용 데이터베이스 사용자명 |
+| `SURREALDB_NAMESPACE` | Yes | `open_notebook` | Open Notebook이 사용하는 네임스페이스 |
+| `SURREALDB_DATABASE` | Yes | `open_notebook` | 네임스페이스 내 데이터베이스명 |
+| `DEFAULT_URL` | Yes | `open_notebook` | Traefik 라우팅용 기본 도메인 |
+| `DEFAULT_MANAGEMENT_DIR` | Yes | Global | 영속 바인드 마운트용 기본 호스트 디렉터리 |
+| `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | API용 loopback 호스트 포트 (기본값: 5055) |
+| `OPEN_NOTEBOOK_WEB_URL` | No | `open_notebook` | Web UI 내부 포트 (기본값: 8502) |
+| `LAB_ALLOWED_CIDRS` | No | Traefik | admin 엔드포인트용 IP allowlist |
 
 ### Traefik Routing
 
-Open Notebook routes via Traefik on `websecure` with `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, and `large-body@file`. Shared SSO is intentionally absent (owner decision, commit `b90b74837`); access control is the CIDR allowlist plus the Open Notebook password.
+Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, `large-body@file`을 사용해 `websecure`에서 Traefik으로 라우팅됩니다. 공유 SSO는 의도적으로 없으며(소유자 결정, 커밋 `b90b74837`) 접근은 CIDR allowlist와 Open Notebook 비밀번호로 제어합니다.
 
 ### Database Compatibility
 
-Open Notebook upstream only supports SurrealDB v2. SurrealDB v3 is incompatible and not supported. The local build context in [Dockerfile](surrealdb/Dockerfile) fixes the base image to `surrealdb/surrealdb:v2`. Upgrading SurrealDB beyond v2 is prohibited until upstream Open Notebook explicitly adds support.
+Open Notebook 업스트림은 SurrealDB v2만 지원합니다. SurrealDB v3은 호환되지 않으며 지원되지 않습니다. [Dockerfile](surrealdb/Dockerfile)의 로컬 빌드 컨텍스트는 기준 이미지를 `surrealdb/surrealdb:v2`로 고정합니다. 업스트림 Open Notebook이 명시적으로 지원을 추가하기 전까지는 SurrealDB를 v2보다 상위 버전으로 업그레이드할 수 없습니다.
 
 ### Secret Management
 
-- `surreal_db_password`: Used by SurrealDB for root authentication and by Open Notebook to establish database connection.
-- `open_notebook_password`: Password used for application-level access control.
-- `open_notebook_encryption_key`: Used by Open Notebook to encrypt and decrypt model API keys. Losing this key renders stored credentials unrecoverable.
+- `surreal_db_password`: SurrealDB의 root 인증과 Open Notebook의 데이터베이스 연결 수립에 사용됩니다.
+- `open_notebook_password`: 애플리케이션 수준 접근 제어에 사용되는 비밀번호입니다.
+- `open_notebook_encryption_key`: Open Notebook이 모델 API 키를 암호화·복호화하는 데 사용합니다. 이 키를 잃으면 저장된 자격 증명을 복구할 수 없습니다.
 
 ## Image Tag Review
 
-- `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses [declared runtime image](../../tech-stack.versions.json), which is a latest-like tag.
-- The tag is registered in `infra/image-tag-policy.exceptions.json` for monthly Laboratory Operator review; keep it unchanged unless a later approved pass pins a stable tag or removes the exception.
+- `infra/11-laboratory/open-notebook/docker-compose.yml`은 현재 [declared runtime image](../../tech-stack.versions.json)를 사용합니다. latest에 가까운 태그입니다.
+- 이 태그는 `infra/image-tag-policy.exceptions.json`에 등록되어 매월 Laboratory Operator가 검토합니다. 이후 승인된 작업이 안정 태그를 고정하거나 예외를 제거하지 않는 한 그대로 유지합니다.
 
 ## Validation
 
-- Run `bash scripts/hardening/check-all-hardening.sh 11-laboratory` after any Compose or config reference changes.
-- Run `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh` for root-active laboratory profile validation.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Confirm persistence by checking `docker logs --tail=200 open-notebook` after config changes.
-- Verify SurrealDB readiness via healthcheck endpoint `http://127.0.0.1:8000`.
+- Compose 또는 설정 참조를 변경한 후에는 `bash scripts/hardening/check-all-hardening.sh 11-laboratory`를 실행합니다.
+- 루트에서 활성화되는 laboratory 프로필을 검증하려면 `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
+- 설정 변경 후 `docker logs --tail=200 open-notebook`을 확인해 영속화를 검증합니다.
+- 헬스체크 엔드포인트 `http://127.0.0.1:8000`으로 SurrealDB 준비 상태를 확인합니다.
 
 ## Troubleshooting
 
-- Start with the hardening check to confirm Open Notebook, SurrealDB, network, and secret references.
-- Check Open Notebook and SurrealDB logs before changing API URL, encryption, or database settings.
-- **SurrealDB Version Compatibility**: Open Notebook requires SurrealDB v2. Using SurrealDB v3 causes protocol and query incompatibilities.
-- **Encryption Key Loss**: Changing or losing `OPEN_NOTEBOOK_ENCRYPTION_KEY` renders existing encrypted provider API keys unreadable. Retain key custody separate from database backups.
-- **Database Dependency**: Open Notebook waits for SurrealDB to pass its healthcheck (`ws://surrealdb:8000/rpc`). Inspect SurrealDB container logs if Open Notebook fails to start.
+- Open Notebook, SurrealDB, 네트워크, 시크릿 참조를 확인하려면 하드닝 점검부터 시작합니다.
+- API URL, 암호화, 데이터베이스 설정을 변경하기 전에 Open Notebook과 SurrealDB 로그를 확인합니다.
+- **SurrealDB Version Compatibility**: Open Notebook은 SurrealDB v2가 필요합니다. SurrealDB v3을 사용하면 프로토콜과 쿼리 비호환성이 발생합니다.
+- **Encryption Key Loss**: `OPEN_NOTEBOOK_ENCRYPTION_KEY`를 변경하거나 잃으면 기존에 암호화된 provider API 키를 읽을 수 없게 됩니다. 키는 데이터베이스 백업과 별도로 보관합니다.
+- **Database Dependency**: Open Notebook은 SurrealDB의 헬스체크(`ws://surrealdb:8000/rpc`)를 통과할 때까지 대기합니다. Open Notebook이 시작에 실패하면 SurrealDB 컨테이너 로그를 확인합니다.
 
 ## Related Documents
 
@@ -161,4 +161,4 @@ Open Notebook upstream only supports SurrealDB v2. SurrealDB v3 is incompatible 
 - [Documentation index](../../../docs/README.md)
 - [Infrastructure index](../../README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.

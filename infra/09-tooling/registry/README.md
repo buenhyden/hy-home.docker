@@ -1,23 +1,23 @@
 ---
 title: "Docker Registry"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-03-19"
 ---
 
 <!-- [ID:09-tooling:registry] -->
 # Docker Registry
 
-> On-demand OPTIONAL OCI image store; the host endpoint is loopback-only unauthenticated HTTP.
+> 온디맨드 **OPTIONAL** OCI 이미지 저장소이며 호스트 엔드포인트는 loopback 전용 인증되지 않은 HTTP입니다.
 
 ## Overview
 
 이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 같은 network의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
 
-The `registry` service is an on-demand local OCI store for non-sensitive artifacts. Its host endpoint is bound to `127.0.0.1` and is unauthenticated HTTP; containers on the same network can also reach it without authentication. Do not store proprietary or sensitive images, or expose the endpoint beyond the approved trusted network, until TLS and access control are implemented and tested.
+`registry` 서비스는 민감하지 않은 아티팩트를 위한 온디맨드 로컬 OCI 저장소입니다. 호스트 엔드포인트는 `127.0.0.1`에 바인딩되어 있으며 인증 없는 HTTP입니다. 같은 네트워크의 컨테이너도 인증 없이 접근할 수 있습니다. TLS와 접근 제어가 구현되고 테스트되기 전까지는 독점적이거나 민감한 이미지를 저장하지 말고 승인된 신뢰 네트워크 밖으로 엔드포인트를 노출하지 않습니다.
 
 ## Audience
 
@@ -31,15 +31,15 @@ The `registry` service is an on-demand local OCI store for non-sensitive artifac
 
 ### In Scope
 
-- Docker Registry v2 core service.
-- Local image persistence and distribution.
-- Basic health monitoring.
+- Docker Registry v2 핵심 서비스.
+- 로컬 이미지 영속화 및 배포.
+- 기본적인 헬스 모니터링.
 
 ### Out of Scope
 
-- TLS, authentication, and access control (not implemented in the tracked service).
-- High Availability (HA) persistence (currently single-node binding).
-- Image security scanning (handled by SonarQube or Trivy separately).
+- TLS, 인증, 접근 제어 (추적 중인 서비스에는 구현되어 있지 않음).
+- 고가용성(HA) 영속화 (현재는 단일 노드 바인딩).
+- 이미지 보안 스캔 (SonarQube나 Trivy에서 별도로 처리).
 
 ## Structure
 
@@ -53,8 +53,8 @@ registry/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | Registry v2 | Image Distribution |
-| **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback-only host publication |
+| **Service** | Registry v2 | 이미지 배포 |
+| **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback 전용 호스트 게시 |
 | **Storage** | Bind Mount | `${DEFAULT_REGISTRY_DIR}` |
 
 ## Configuration
@@ -63,27 +63,27 @@ registry/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `REGISTRY_PORT` | No | Loopback host port (default: 5000); the container always listens on 5000. |
-| `DEFAULT_REGISTRY_DIR` | Yes | Local path for image persistence. |
+| `REGISTRY_PORT` | No | Loopback 호스트 포트(기본값: 5000); 컨테이너는 항상 5000에서 수신합니다. |
+| `DEFAULT_REGISTRY_DIR` | Yes | 이미지 영속화를 위한 로컬 경로. |
 
 ## Available Scripts
 
-Run these read-only checks from the repository root. Starting or changing Registry requires runtime approval.
+저장소 루트에서 다음 읽기 전용 확인 명령을 실행합니다. Registry를 시작하거나 변경하려면 런타임 승인이 필요합니다.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile registry config --services` | Confirm the selected root-project services. |
-| `docker compose --profile registry logs --tail=200 registry` | Inspect an approved running Registry service. |
+| `docker compose --profile registry config --services` | 선택된 root-project 서비스를 확인합니다. |
+| `docker compose --profile registry logs --tail=200 registry` | 승인된 실행 중인 Registry 서비스를 점검합니다. |
 
 ## Validation
 
-- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect the registry.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before marking registry documentation ready.
+- Registry에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 09-tooling`을 실행합니다.
+- Registry 문서를 준비 완료로 표시하기 전에 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
 ## Troubleshooting
 
-- Start with the hardening check to confirm registry network, volume, and label references stay declared.
-- Check registry logs and the linked runbook before changing storage or access settings.
+- registry 네트워크, 볼륨, 레이블 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
+- 저장소나 접근 설정을 변경하기 전에 registry 로그와 연결된 런북을 확인합니다.
 
 ## Related Documents
 
@@ -98,19 +98,19 @@ Run these read-only checks from the repository root. Starting or changing Regist
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Docker Registry service leaf in `09-tooling`; services: `registry`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Purpose | `09-tooling`의 Docker Registry 서비스 leaf; 서비스: `registry`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `tooling`, `registry` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Config values | 프로필: `tooling`, `registry` |
+| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | project default |
 | Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
 | Ports | `127.0.0.1:${REGISTRY_PORT:-5000}:5000` |
 | Labels | `hy-home.tier` |
-| Secret refs | Not declared |
-| Healthcheck | Compose healthcheck declared for `registry` |
+| Secret refs | 선언되지 않음 |
+| Healthcheck | `registry`에 Compose 헬스체크가 선언되어 있음 |
 | Operations | Guide (`docs/05.operations/guides/0065-registry.md`), Policy (`docs/05.operations/policies/0065-registry.md`), Runbook (`docs/05.operations/runbooks/0065-registry.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
+| Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## How to Work in This Area
 
@@ -119,5 +119,5 @@ Run these read-only checks from the repository root. Starting or changing Regist
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-Runtime image and profile authority is [docker-compose.yml](docker-compose.yml);
-the [derived Compose image projection](../../tech-stack.versions.json) is drift evidence.
+런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.

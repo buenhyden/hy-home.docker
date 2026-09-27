@@ -1,34 +1,34 @@
 ---
 title: "AI Crawl4AI Crawler"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-09-21"
 ---
 
 # AI Crawl4AI Crawler
 
-> Token-protected web crawler that renders pages with Chromium and returns LLM-ready Markdown.
+> 토큰으로 보호되는 웹 크롤러로, Chromium으로 페이지를 렌더링하고 LLM에 바로 사용 가능한 Markdown을 반환합니다.
 
 ## Overview
 
-Crawl4AI fetches arbitrary URLs on request, so it can be abused for server-side
-request forgery (SSRF). It is therefore isolated on its own `crawl4ai_net`
-egress network and never joins another repository network. Its intended consumer is Open
-Notebook's remote-crawler setting, which is currently commented out; no service
-consumes it today. Lifecycle: **OPTIONAL**, selected only by `crawl4ai`.
+Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 위조(SSRF)에
+악용될 수 있습니다. 따라서 전용 `crawl4ai_net` 이그레스 네트워크에 격리되어
+있으며 다른 저장소 네트워크에는 절대 참여하지 않습니다. 의도된 소비자는
+Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 오늘
+시점에는 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다.
 
 ## Audience
 
-- **Operators** deciding whether to enable the crawler and connect a consumer.
-- **AI agents** changing this package under the owning Guide, Policy and Runbook.
+- **Operators**: 크롤러를 활성화하고 소비자를 연결할지 결정합니다.
+- **AI agents**: 소유 Guide, Policy, Runbook 아래에서 이 패키지를 변경합니다.
 
 ## Scope
 
-- **Included**: pinned upstream image, token handling, network isolation, resource limits.
-- **Excluded**: LLM provider keys (the former tracked `.llm.env` was removed), consumer wiring.
+- **Included**: 고정된 업스트림 이미지, 토큰 처리, 네트워크 격리, 리소스 제한.
+- **Excluded**: LLM provider 키(이전에 추적되던 `.llm.env`는 제거됨), 소비자 연결.
 
 ## Structure
 
@@ -42,21 +42,21 @@ consumes it today. Lifecycle: **OPTIONAL**, selected only by `crawl4ai`.
 
 | Component | Source | Purpose |
 | --- | --- | --- |
-| `crawl4ai` | Upstream image declared in [Compose](docker-compose.yml) | Crawl API with headless Chromium |
+| `crawl4ai` | [Compose](docker-compose.yml)에 선언된 업스트림 이미지 | 헤드리스 Chromium을 사용한 크롤링 API |
 
-Runtime pins are owned by the Compose declaration; the
-[derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose 선언이 소유하고
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
 ## Configuration
 
 | Field | Value |
 | --- | --- |
-| Profile | `crawl4ai` only; not selected by `ai`, `notebook` or HOME |
-| Network / port | `crawl4ai_net` only; internal `11235` via `expose`; no host port, no Traefik route |
-| Authentication | Secret `crawl4ai_api_token` (AI-006) exported as `CRAWL4AI_API_TOKEN`; upstream then requires `Authorization: Bearer` on every endpoint except `GET /health` |
-| Hardening | `template-infra-high`, `cap_drop: ALL`, `no-new-privileges`, read-only root with tmpfs work paths, `mem_limit: 4g`, `pids_limit: 512`, private `shm_size` |
-| Persistence | None; outputs and caches are tmpfs |
-| Health | `GET /health` (unauthenticated by design); proves the API answers, not browser rendering |
+| Profile | `crawl4ai`만 해당; `ai`, `notebook`, HOME에서는 선택되지 않음 |
+| Network / port | `crawl4ai_net`만 해당; 내부 `11235`를 `expose`로 노출; 호스트 포트 없음, Traefik 라우트 없음 |
+| Authentication | 시크릿 `crawl4ai_api_token`(AI-006)이 `CRAWL4AI_API_TOKEN`으로 내보내짐; 이후 업스트림은 `GET /health`를 제외한 모든 엔드포인트에서 `Authorization: Bearer`를 요구함 |
+| Hardening | `template-infra-high`, `cap_drop: ALL`, `no-new-privileges`, tmpfs 작업 경로를 사용하는 읽기 전용 루트, `mem_limit: 4g`, `pids_limit: 512`, 전용 `shm_size` |
+| Persistence | 없음; 출력과 캐시는 tmpfs |
+| Health | `GET /health` (설계상 인증 없음); API 응답 여부만 증명하며 브라우저 렌더링을 증명하지는 않음 |
 
 ## Validation
 
@@ -65,10 +65,10 @@ Runtime pins are owned by the Compose declaration; the
 
 ## How to Work in This Area
 
-1. Create `secrets/tools/crawl4ai_api_token.txt` through the registered secret workflow.
-2. Start only with an approved target: `docker compose --profile crawl4ai up -d crawl4ai`.
-3. To connect Open Notebook, add `crawl4ai_net` to that service and set `CRAWL4AI_API_URL` and the
-   token in one reviewed change; do not add the crawler to another repository network.
+1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai_api_token.txt`를 생성합니다.
+2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai`.
+3. Open Notebook을 연결하려면 해당 서비스에 `crawl4ai_net`을 추가하고 `CRAWL4AI_API_URL`과
+   토큰을 하나의 검토된 변경으로 설정합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
 
 ## Related Documents
 

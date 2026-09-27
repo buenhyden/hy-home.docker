@@ -1,22 +1,22 @@
 ---
 title: "Pact Broker"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-09-23"
 ---
 
 <!-- [ID:09-tooling:pact-broker] -->
 # Pact Broker
 
-> On-demand OPTIONAL contract broker; basic auth on a loopback-only port, data in a feature-owned `mng-pg` database.
+> 온디맨드 **OPTIONAL** 계약 브로커이며 loopback 전용 포트에 basic auth를 사용하고 데이터는 기능 소유 `mng-pg` 데이터베이스에 저장합니다.
 
 ## Overview
 
 Pact Broker는 consumer가 게시한 pact와 provider 검증 결과를 저장하는
-**OPTIONAL** 계약 저장소입니다. `contract-testing` profile로만 선택되며,
+**OPTIONAL** 계약 저장소입니다. `contract-testing` profile로만 선택되며
 `pact-broker-db-provision`이 `mng-pg`에 전용 role·database를 만든 뒤 broker가
 기동합니다. 컨테이너 자체는 디스크 상태가 없습니다.
 
@@ -32,14 +32,14 @@ Pact Broker는 consumer가 게시한 pact와 provider 검증 결과를 저장하
 
 ### In Scope
 
-- Pact Broker server, its feature-owned database provisioning and basic auth.
-- Loopback host publication for pact publishing and verification clients.
+- Pact Broker 서버, 기능 전용 데이터베이스 프로비저닝, basic auth.
+- pact 게시 및 검증 클라이언트를 위한 loopback 호스트 게시.
 
 ### Out of Scope
 
-- Traefik route, TLS and single sign-on (not implemented; exposure is loopback-only).
-- HTTP stubbing, which belongs to WireMock.
-- Running consumer or provider tests.
+- Traefik route, TLS, SSO (구현되어 있지 않음; 노출은 loopback 전용).
+- WireMock이 담당하는 HTTP 스터빙.
+- consumer나 provider 테스트 실행.
 
 ## Structure
 
@@ -55,10 +55,10 @@ pact-broker/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | Pact Broker 2 (`pactfoundation/pact-broker` 3.x image) | Contract store |
-| **Database** | `mng-pg` | `PACT_BROKER_DB_NAME` owned by `PACT_BROKER_DB_USER` |
-| **Port** | `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}` → `9292` | Loopback-only host publication |
-| **Auth** | Basic auth | Only `/diagnostic/status/heartbeat` is public |
+| **Service** | Pact Broker 2 (`pactfoundation/pact-broker` 3.x image) | 계약 저장소 |
+| **Database** | `mng-pg` | `PACT_BROKER_DB_NAME`을 `PACT_BROKER_DB_USER`가 소유 |
+| **Port** | `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}` → `9292` | Loopback 전용 호스트 게시 |
+| **Auth** | Basic auth | `/diagnostic/status/heartbeat`만 공개됨 |
 
 ## Configuration
 
@@ -66,32 +66,32 @@ pact-broker/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `PACT_BROKER_HOST_PORT` | No | Loopback host port (default: 19292). |
-| `PACT_BROKER_DB_USER` | No | Feature-owned database role (default: `pact_broker`). |
-| `PACT_BROKER_DB_NAME` | No | Feature-owned database (default: `pact_broker`). |
-| `PACT_BROKER_BASIC_AUTH_USERNAME` | No | Basic auth user for the UI and API (default: `pact`). |
+| `PACT_BROKER_HOST_PORT` | No | Loopback 호스트 포트(기본값: 19292). |
+| `PACT_BROKER_DB_USER` | No | 기능 전용 데이터베이스 역할(기본값: `pact_broker`). |
+| `PACT_BROKER_DB_NAME` | No | 기능 전용 데이터베이스(기본값: `pact_broker`). |
+| `PACT_BROKER_BASIC_AUTH_USERNAME` | No | UI와 API용 basic auth 사용자(기본값: `pact`). |
 
 ### Secrets
 
 | Secret | Registry | Consumers |
 | :--- | :--- | :--- |
 | `pact_broker_db_password` | PG-026 | `pact-broker-db-provision`, `pact-broker` |
-| `pact_broker_basic_auth_password` | AUTO-018 | `pact-broker`, publishing and verifying clients |
+| `pact_broker_basic_auth_password` | AUTO-018 | `pact-broker`, 게시 및 검증 클라이언트 |
 
-The provisioning job also reads `mng_postgres_password`. The image reads
-credentials only from the environment, so the service entrypoint exports both
-passwords from Docker secrets into the broker process; none is declared in
-Compose `environment`.
+프로비저닝 작업은 `mng_postgres_password`도 읽습니다. 이미지는 환경 변수에서만
+자격 증명을 읽으므로, 서비스 엔트리포인트가 Docker secrets에서 두 비밀번호를
+broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것도 선언되어
+있지 않습니다.
 
 ## Available Scripts
 
-Run these read-only checks from the repository root. Starting the service
-requires runtime approval.
+저장소 루트에서 다음 읽기 전용 확인 명령을 실행합니다. 서비스를 시작하려면
+런타임 승인이 필요합니다.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile contract-testing config --services` | Confirm the selected root-project services. |
-| `docker compose --profile contract-testing logs --tail=100 pact-broker` | Inspect an approved running service. |
+| `docker compose --profile contract-testing config --services` | 선택된 root-project 서비스를 확인합니다. |
+| `docker compose --profile contract-testing logs --tail=100 pact-broker` | 승인된 실행 중인 서비스를 점검합니다. |
 
 ## Validation
 
@@ -101,8 +101,8 @@ requires runtime approval.
 
 ## Troubleshooting
 
-- Provisioning exit `64` or `3` and broker exit `64` are explained in the runbook.
-- A 401 means the client's username or password differs from the configured pair.
+- 프로비저닝 종료 코드 `64` 또는 `3`과 broker 종료 코드 `64`는 런북에 설명되어 있습니다.
+- 401은 클라이언트의 사용자명이나 비밀번호가 설정된 값과 다르다는 뜻입니다.
 
 ## Related Documents
 
@@ -117,19 +117,19 @@ requires runtime approval.
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Pact Broker service leaf in `09-tooling`; services: `pact-broker-db-provision`, `pact-broker`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/pact-broker/docker-compose.yml` |
+| Purpose | `09-tooling`의 Pact Broker 서비스 leaf; 서비스: `pact-broker-db-provision`, `pact-broker`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/pact-broker/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml`, `provisioning/mng-pg.sql` |
-| Config values | profiles: `contract-testing` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/pact-broker/docker-compose.yml` |
+| Config values | 프로필: `contract-testing` |
+| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/pact-broker/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `mng_data_net` |
-| Volumes | provisioning runner and SQL, read-only |
+| Volumes | 프로비저닝 러너와 SQL, 읽기 전용 |
 | Ports | `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}:9292` |
 | Labels | `hy-home.tier` |
-| Secret refs | `pact_broker_db_password`, `pact_broker_basic_auth_password`, `mng_postgres_password` (provisioning) |
-| Healthcheck | Compose healthcheck declared for `pact-broker` (`/diagnostic/status/heartbeat`) |
+| Secret refs | `pact_broker_db_password`, `pact_broker_basic_auth_password`, `mng_postgres_password` (프로비저닝) |
+| Healthcheck | `pact-broker`에 Compose 헬스체크가 선언되어 있음 (`/diagnostic/status/heartbeat`) |
 | Operations | Guide (`docs/05.operations/guides/0093-pact-broker.md`), Policy (`docs/05.operations/policies/0093-pact-broker.md`), Runbook (`docs/05.operations/runbooks/0093-pact-broker.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Inspect the heartbeat, then provisioning and broker logs, then the linked runbook. |
+| Troubleshooting | heartbeat를 먼저 확인한 뒤 프로비저닝과 broker 로그, 연결된 런북 순서로 확인합니다. |
 
 ## How to Work in This Area
 
@@ -137,5 +137,5 @@ requires runtime approval.
 2. 권한을 넓히는 SQL 변경은 policy의 거절 조건을 먼저 확인한다.
 3. pact에는 합성 예시만 쓴다. 실제 payload·token·개인정보를 게시하지 않는다.
 
-Runtime image and profile authority is [docker-compose.yml](docker-compose.yml);
-the [derived Compose image projection](../../tech-stack.versions.json) is drift evidence.
+런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.

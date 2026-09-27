@@ -1,24 +1,24 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 # Airflow (07-workflow)
 
-> Apache Airflow + CeleryExecutor + Native Keycloak Auth Manager.
+> Apache Airflow + CeleryExecutor + 네이티브 Keycloak Auth Manager입니다.
 
 ## Overview
 
-Airflow는 `hy-home.docker`의 code-first workflow orchestration engine이다.
-Compose 파일 하나에서 core services와 optional dedicated Valkey를 구성한다.
+Airflow는 `hy-home.docker`의 code-first 워크플로우 오케스트레이션 엔진입니다.
+Compose 파일 하나에서 핵심 서비스와 선택적인 전용 Valkey를 구성합니다.
 
-UI/API authentication은 OAuth2 Proxy ForwardAuth가 아니라
-`KeycloakAuthManager`를 통해 Keycloak에 직접 연결한다.
+UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
+`KeycloakAuthManager`를 통해 Keycloak에 직접 연결합니다.
 
 ## Audience
 
@@ -41,8 +41,8 @@ UI/API authentication은 OAuth2 Proxy ForwardAuth가 아니라
 
 ### Out of Scope
 
-- individual DAG business logic
-- external source infra
+- 개별 DAG 비즈니스 로직
+- 외부 소스 인프라
 
 ## Structure
 
@@ -58,8 +58,8 @@ airflow/
 
 - base: [Dockerfile declaration](Dockerfile)
 - image: [declared runtime image](../../tech-stack.versions.json)
-- Python: 3.13
-- provider: `apache-airflow-providers-keycloak`, pinned in [Dockerfile](Dockerfile)
+- Python 버전: [Dockerfile](Dockerfile)의 `PYTHON_VERSION` 인자로 선언됨
+- provider: `apache-airflow-providers-keycloak`, [Dockerfile](Dockerfile)에 고정됨
 - auth manager:
   `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`
 - client: `home-airflow`
@@ -67,12 +67,12 @@ airflow/
 - client secret: Docker Secret
 - Airflow internal JWT secret: Docker Secret
 - API base URL: `https://airflow.${DEFAULT_URL}`
-- local CA: certifi + mounted mkcert root
+- local CA: certifi + 마운트된 mkcert root
 - API server: `--proxy-headers`
-- trusted proxy: `10.250.1.2` (`edge_net`)
+- trusted proxy: [docker-compose.yml](docker-compose.yml)의 `FORWARDED_ALLOW_IPS`에 선언됨 (`edge_net`)
 - Airflow route:
   `traefik.http.routers.airflow.middlewares: gateway-standard-chain@file`
-- OAuth2 Proxy ForwardAuth: **not applied to Airflow**
+- OAuth2 Proxy ForwardAuth: **Airflow에는 적용되지 않음**
 
 ### Token Boundary
 
@@ -86,7 +86,7 @@ Airflow internal JWT:
 - application session/API
 - `airflow_api_jwt_secret`
 
-두 token은 별개다.
+두 토큰은 별개입니다.
 
 ## Service Readiness
 
@@ -115,7 +115,7 @@ SuperAdmin
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
 ```
 
-After provider 0.9.0 upgrade on an existing non-team setup: <!-- runtime-version-exception: migration — permission migration is required when crossing this provider boundary -->
+기존 non-team 구성에서 provider 0.9.0으로 업그레이드한 이후: <!-- runtime-version-exception: migration — permission migration is required when crossing this provider boundary -->
 
 ```bash
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
@@ -136,9 +136,9 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-per
 | --- | --- | --- |
 | Airflow | Apache Airflow | declared version |
 | Keycloak Provider | apache-airflow-providers-keycloak | declared version |
-| Executor | CeleryExecutor | distributed |
-| Broker | Valkey | shared/dedicated |
-| DB | PostgreSQL | management DB |
+| Executor | CeleryExecutor | 분산 실행 |
+| Broker | Valkey | 공유/전용 |
+| DB | PostgreSQL | 관리용 DB |
 
 ## Available Scripts
 
@@ -151,20 +151,20 @@ docker compose exec airflow-apiserver airflow dags list
 
 ## Troubleshooting
 
-- config PermissionError -> shared volume owner/runtime UID
-- DB migration -> same image `airflow db migrate`
-- JWT alg/format -> ForwardAuth token collision 확인
-- `invalid_scope` -> Keycloak Authorization bootstrap
-- role 404 -> required realm roles
-- callback 403 -> `_oauth_state`
-- Pool/DAG/Asset only 403 -> resource authorization
+- config PermissionError -> 공유 볼륨 소유자/런타임 UID 확인
+- DB migration -> 동일 이미지에서 `airflow db migrate` 실행
+- JWT alg/format -> ForwardAuth 토큰 충돌 확인
+- `invalid_scope` -> Keycloak Authorization bootstrap 확인
+- role 404 -> 필수 realm role 확인
+- callback 403 -> `_oauth_state` 확인
+- Pool/DAG/Asset only 403 -> 리소스 authorization 확인
 
 ### Convergence contract
 
-- Airflow core/Flower/StatsD services are **HOME** on `workflow`/`workflow-airflow`; Airflow Valkey and its exporter are **OPTIONAL** on `dedicated-valkey`.
+- Airflow core/Flower/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**이며 Airflow Valkey와 그 exporter는 `dedicated-valkey`에서 **OPTIONAL**입니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer flower airflow-statsd-exporter`.
-- `dedicated-valkey` only starts the pair; actual selection requires matching `AIRFLOW_VALKEY_HOST` and `AIRFLOW_VALKEY_SECRET`.
-- Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/0050-airflow.md`; IDs `GDE-0050`, `POL-0050`, `RUN-0050`. Its isolated restore is planned and unexecuted.
+- `dedicated-valkey`는 해당 쌍만 시작합니다. 실제로 선택하려면 `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`을 함께 일치시켜야 합니다.
+- 안정적인 진입점: [docs/README.md](../../../docs/README.md). 정확한 Stage 05 경로: `docs/05.operations/guides/0050-airflow.md`; ID: `GDE-0050`, `POL-0050`, `RUN-0050`. 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다.
 
 ## Related Documents
 
@@ -175,4 +175,4 @@ docker compose exec airflow-apiserver airflow dags list
 - **Auth Integration**: `docs/05.operations/guides/0079-application-auth-integration.md`
 - **Incident**: `docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md`
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
