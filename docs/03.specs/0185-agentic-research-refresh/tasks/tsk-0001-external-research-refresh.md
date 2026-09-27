@@ -1,8 +1,8 @@
 ---
 title: "External Research Refresh"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "specs"
@@ -78,11 +78,44 @@ APPLICABLE to this documentation task or explicitly outside authorization.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1, W3, W6 | PASS; protected metadata, historical bodies and tables preserved | RES-0002 |
-| 2 | W2, W3, W4, W5 | PASS; A–L ownership and 156 traced claims reviewed | RES-0002 members |
-| 3 | W2, W3, W4, W5, W6 | PASS; 100 future rows with analytical scopes and approval boundaries | RES-0002-m0015 |
-| 4 | W6 | PASS; stable 28-path gate exit 0 and independent approval | RES-0002 and this Task |
-| 5 | W6 | PASS; five preceding logical commits and this final integration commit | Local branch and this Task |
+| 1 | W1 | PASS: Existing paths, identities, original body lines and all 11 service-history tables preserved | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 2 | W2 | PASS: Provider/instruction/model/harness research reviewed; instruction authoring distinctions added | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 2 | W3 | PASS: Compose/wiki/memory/service principles sourced without new internal assessment | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 2 | W4 | PASS: Documentation/SDLC/operations/tracker questions sourced and scoped | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 2 | W5 | PASS: CI/QA/security/verification claims sourced and independently reviewed | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 3 | W6 | PASS: All 100 future-check rows provide eleven fields, analytical axes and unassessed status | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 4 | W6 | PASS: Registered baseline-snapshot gate and affected follow-up checks passed; independent reviews approved | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 5 | W6 | PASS: Six original logical local commits plus 9a63d651a preserve reviewed research without remote mutation | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+
+### Promotion
+
+The durable output is non-normative external research in RES-0002 at
+`docs/90.references/research/0002-agentic-engineering-research-pack/README.md`
+and its existing 21 members. No normative requirement, architecture or operating
+rule was adopted, so no Stage 01/02/05 promotion is required. This Task owns only
+execution evidence. Completion preserves the whole package under Stage 98 and
+updates the Stage 03 index plus the direct RES-0002 README/m0015/m0019/m0020
+consumers in the same change. Frozen package bodies and original outbound link
+text will remain unchanged; the Retention Catalog names their source commit.
+
+### Completion follow-through
+
+The user approved the reported research result and then explicitly instructed
+completion according to the original attachment. The first six commits completed
+the research but left package lifecycle and temporary validation artifacts open.
+This is a correction of that incomplete closeout, not a new implementation audit.
+Independent attachment-to-result review identified two narrow content gaps:
+instruction/policy/role/procedure/tool/style authoring examples and explicit
+level/concern axes in several future rows. Commit `9a63d651a` fixes both in five
+existing members. Independent follow-up review APPROVE; metadata selected 5,
+violations 0; links 960 documents / 9,904 links, failures 0; all exits 0.
+
+The previously displayed acceptance table was readable but not terminal-machine
+valid: grouped W values, `PASS;` and plain owner IDs did not meet the completion
+receipt contract. The table above now uses single W values, `PASS: ` and direct
+owner links. The actual prior outcomes have not been upgraded or invented.
+The owner approval and independent reviews support the registered lifecycle
+edges; status changes do not grant remote or runtime authority.
 
 ### Final-snapshot verification
 
@@ -181,9 +214,9 @@ were included in their final review.
 
 ## Commit Ledger
 
-The 27 non-Task file SHA256 values match the passing full-gate snapshot after
-normal commits. Their sorted JSON mapping hashes to
-`5dcf0c7fd2cdd07e0819fda6ed59e8ad9461cc5a9c39692036181cbf03a0d57a`; this digest is reproducible from the final tree after excluding
+At the initial six-commit result `570e4ef43`, the 27 non-Task file SHA256 values
+matched the passing full-gate snapshot after normal commits. Their sorted JSON mapping hashes to
+`5dcf0c7fd2cdd07e0819fda6ed59e8ad9461cc5a9c39692036181cbf03a0d57a`; this historical digest is reproducible from that initial tree after excluding
 this Task from the 28 baseline-to-final changed paths.
 
 | Local commit | Concern / Plan unit |
@@ -229,8 +262,9 @@ commits remain available; no push, PR, merge, tag, release or worktree removal.
 
 - New package/allocation explicitly authorized by the owner; no other protected
   configuration change authorized. Newly introduced Spec/Plan/Task metadata
-  retains the Registry-required initial draft state; the explicit owner execution
-  authorization is recorded separately, without inventing historical approval dates.
+  initially retained the Registry-required draft state. Subsequent owner result
+  approval and completion instruction now drive the registered forward edges;
+  no historical approval date is invented.
 - Scope describes future surfaces as candidates, never claims they exist based
   on this run. Approval, validation and historical observation dates are distinct.
 
