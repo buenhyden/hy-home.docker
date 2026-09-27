@@ -280,7 +280,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "Architecture Description, Architecture Decision",
                 "Guide, Policy, Runbook, Incident, Postmortem",
                 "Research, Audit, Data",
-                "| Archive | `archive/` | Migration, Tombstone |",
+                "| [archive/](./archive/) | Migration, Tombstone |",
             ),
         }
         for relative_path, literal_inventories in catalogs.items():

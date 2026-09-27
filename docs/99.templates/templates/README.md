@@ -1,10 +1,10 @@
 ---
 title: "Template Catalog"
-version: "2.0.3"
+version: "3.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "templates"
 ---
 
@@ -12,11 +12,12 @@ layer: "templates"
 
 ## Overview
 
-This directory holds every copyable source registered by
-[`../registry.json`](../registry.json). It is the only navigation surface for
-templates; category directories carry no README of their own. Contract
-explanations live in the [Stage 99 README](../README.md), and the rules a
-finished document must satisfy live with its owning stage.
+이 디렉터리는 [`../registry.json`](../registry.json)이 등록한 복사용 원본을
+담습니다. 문서 type과 template 원본의 정확한 대응은 Registry의
+`template_roles`만 소유합니다. 이 README는 category 디렉터리로 가는 길만
+안내하고 개별 template 파일은 목록으로 옮겨 적지 않습니다. 계약 설명은
+[Stage 99 README](../README.md)에, 완성된 문서가 지켜야 할 규칙은 각 문서를
+소유한 stage에 있습니다.
 
 ## Audience
 
@@ -26,81 +27,42 @@ finished document must satisfy live with its owning stage.
 
 ## Scope
 
-| Category | Directory | Registered roles |
-| :--- | :--- | :--- |
-| Governance | `governance/` | Contract, Control, Rule, Provider, Role, Skill, Knowledge, Prompt |
-| Runtime | `runtime/` | Claude agent projection, Codex agent projection |
-| Requirements | `requirements/` | Requirement Package |
-| Architecture | `architecture/` | Architecture Description, Architecture Decision |
-| Specs | `specs/` | Spec, Plan, Task, and `contracts/` Data Model, OpenAPI, GraphQL, Proto |
-| Operations | `operations/` | Guide, Policy, Runbook, Incident, Postmortem |
-| References | `references/` | Research, Audit, Data — one pack form and one reference form each |
-| Archive | `archive/` | Migration, Tombstone |
-| Common | `common/` | Stage, domain, and package README forms |
+- 포함: Registry `template_roles`가 가리키는 template 원본.
+- 제외: 완성된 문서, 과거 template, category별 README. 과거 template은 Git
+  history로만 복구하며 현재 작성에 복사하지 않습니다.
 
 ## Structure
 
-| Registered type | Source |
+| Category | 등록된 역할 |
 | :--- | :--- |
-| `governance/sdlc` | [governance/contract.template.md](./governance/contract.template.md) |
-| `governance/policy` | [governance/control.template.md](./governance/control.template.md) |
-| `governance/hook-policy` | [governance/rule.template.md](./governance/rule.template.md) |
-| `governance/provider` | [governance/provider.template.md](./governance/provider.template.md) |
-| `governance/role` | [governance/role.template.md](./governance/role.template.md) |
-| `governance/skill` | [governance/skill.template.md](./governance/skill.template.md) |
-| `governance/knowledge` | [governance/knowledge.template.md](./governance/knowledge.template.md) |
-| `governance/prompt` | [governance/prompt.template.md](./governance/prompt.template.md) |
-| `governance/claude-agent` | [runtime/claude-agent.template.md](./runtime/claude-agent.template.md) |
-| `governance/codex-agent` | [runtime/codex-agent.template.toml](./runtime/codex-agent.template.toml) |
-| `sdlc/requirement` | [requirements/requirement-package.template.md](./requirements/requirement-package.template.md) |
-| `sdlc/architecture-description` | [architecture/description.template.md](./architecture/description.template.md) |
-| `sdlc/architecture-decision` | [architecture/decision.template.md](./architecture/decision.template.md) |
-| `sdlc/spec` | [specs/spec.template.md](./specs/spec.template.md) |
-| `sdlc/plan` | [specs/plan.template.md](./specs/plan.template.md) |
-| `sdlc/task` | [specs/task.template.md](./specs/task.template.md) |
-| `sdlc/data-model` | [specs/contracts/data-model.template.md](./specs/contracts/data-model.template.md) |
-| `sdlc/openapi` | [specs/contracts/openapi.template.yaml](./specs/contracts/openapi.template.yaml) |
-| `sdlc/graphql` | [specs/contracts/schema.template.graphql](./specs/contracts/schema.template.graphql) |
-| `sdlc/proto` | [specs/contracts/service.template.proto](./specs/contracts/service.template.proto) |
-| `reference/category-readme` | [common/readme-category.template.md](./common/readme-category.template.md) |
-| `common/documentation-readme` | [common/readme-documentation.template.md](./common/readme-documentation.template.md) |
-| `common/repository-readme` | [common/readme-repository.template.md](./common/readme-repository.template.md) |
-| `common/package-readme` | [common/readme-package.template.md](./common/readme-package.template.md) |
-| `common/runtime-governance-readme` | [common/readme-runtime-governance.template.md](./common/readme-runtime-governance.template.md) |
-| `operation/guide` | [operations/guide.template.md](./operations/guide.template.md) |
-| `operation/policy` | [operations/policy.template.md](./operations/policy.template.md) |
-| `operation/runbook` | [operations/runbook.template.md](./operations/runbook.template.md) |
-| `operation/incident` | [operations/incident.template.md](./operations/incident.template.md) |
-| `operation/postmortem` | [operations/postmortem.template.md](./operations/postmortem.template.md) |
-| `reference/research-pack` | [references/research-pack.template.md](./references/research-pack.template.md) |
-| `reference/research` | [references/research.template.md](./references/research.template.md) |
-| `reference/audit-pack` | [references/audit-pack.template.md](./references/audit-pack.template.md) |
-| `reference/audit` | [references/audit.template.md](./references/audit.template.md) |
-| `reference/data-pack` | [references/data-pack.template.md](./references/data-pack.template.md) |
-| `reference/data` | [references/data.template.md](./references/data.template.md) |
-| `archive/migration` | [archive/migration.template.md](./archive/migration.template.md) |
-| `archive/tombstone` | [archive/tombstone.template.md](./archive/tombstone.template.md) |
-| `common/readme` | [common/readme-stage.template.md](./common/readme-stage.template.md) |
-
-Replaced sources are recoverable through Git history.
+| [governance/](./governance/) | Contract, Control, Rule, Provider, Role, Skill, Knowledge, Prompt |
+| [runtime/](./runtime/) | Claude agent projection, Codex agent projection |
+| [requirements/](./requirements/) | Requirement Package |
+| [architecture/](./architecture/) | Architecture Description, Architecture Decision |
+| [specs/](./specs/) | Spec, Plan, Task, 그리고 `contracts/`의 Data Model, OpenAPI, GraphQL, Proto |
+| [operations/](./operations/) | Guide, Policy, Runbook, Incident, Postmortem |
+| [references/](./references/) | Research, Audit, Data의 pack 양식과 reference 양식 |
+| [archive/](./archive/) | Migration, Tombstone |
+| [common/](./common/) | Stage, domain, package README 양식 |
 
 ## How to Work in This Area
 
-1. Resolve the role in [`../registry.json`](../registry.json) and copy its
-   registered `source`.
-2. Replace every Markdown `{{UPPER_SNAKE_CASE}}` placeholder and remove its
-   template-only HTML authoring prompt. Native machine contract sources use
-   `__UPPER_SNAKE__` tokens instead.
-3. Keep the declared `type`; allocate an identity above the persisted
-   high-water mark where the profile declares one.
-4. Select applicable checks through the canonical agent governance
-   [verification matrix](../../../.agents/governance/quality-standards.md#5-change-type-verification-matrix).
-   Inspect the selected gate with `--explain` before execution; record an unsafe
-   or unavailable leaf as DEFER with its exact reason. A full or all-files run
-   still follows the Task scope and controlled-wrapper approval boundary.
-
-Do not select a template by scanning directories, and do not copy a historical
-template out of Git into current authoring.
+1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾고
+   등록된 `source`를 복사합니다. 디렉터리를 훑어서 template을 고르지
+   않습니다.
+2. Markdown의 모든 `{{UPPER_SNAKE_CASE}}` 자리 표시자를 채우고 template
+   전용 HTML 작성 안내 주석을 지웁니다. 기계용 contract 원본은
+   `__UPPER_SNAKE__` token을 씁니다.
+3. 본문은 작성 안내 주석이 지정한 언어로 씁니다. 언어는 Registry profile의
+   `language`가 소유합니다.
+4. 선언된 `type`을 유지하고 profile이 식별자를 선언하면 저장된 high-water
+   mark보다 큰 번호를 할당합니다.
+5. 적용할 검사는 공통 agent governance의
+   [verification matrix](../../../.agents/governance/quality-standards.md#5-change-type-verification-matrix)로
+   고릅니다. 실행 전에 `--explain`으로 선택된 gate를 확인하고, 안전하지
+   않거나 쓸 수 없는 leaf는 정확한 이유와 함께 DEFER로 기록합니다. full
+   또는 all-files 실행도 Task 범위와 controlled-wrapper 승인 경계를
+   따릅니다.
 
 ## Related Documents
 
