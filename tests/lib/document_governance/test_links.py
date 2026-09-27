@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from typing import ClassVar
 from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -1448,7 +1449,7 @@ class LinkSelectionScopeTests(unittest.TestCase):
 class NavigationModeTests(unittest.TestCase):
     """SPEC-0184 rules 1-3: a folder router links only its direct children."""
 
-    ROUTER_TREE = {
+    ROUTER_TREE: ClassVar[dict[str, str]] = {
         "docs/x/a/README.md": "# A\n",
         "docs/x/a/spec.md": "# Spec\n",
         "docs/x/a/plan.md": "# Plan\n",
@@ -1521,6 +1522,64 @@ class NavigationModeTests(unittest.TestCase):
 
     def test_placeholder_only_directory_is_a_router_child(self) -> None:
         self.assertEqual(set(), self._codes("# X\n\n[c](c/)\n"))
+
+
+class LanguageModeTests(unittest.TestCase):
+    """SPEC-0184 rule 4: every README reads in its declared language."""
+
+    KOREAN = (
+        "# X\n\n## Overview\n\n이 디렉터리는 요구사항 문서를 모아 두는 공간이며, "
+        "각 문서의 목적과 작성 방법을 한국어로 안내합니다.\n"
+    )
+    ENGLISH = (
+        "# X\n\n## Overview\n\nThis directory collects requirement documents "
+        "and explains the purpose and authoring flow of each one.\n"
+    )
+
+    def _codes(self, files: dict[str, str]) -> dict[str, set[str]]:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_language,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            findings = check_language(
+                build_document_graph([root / name for name in files], repo_root=root)
+            )
+        result: dict[str, set[str]] = {}
+        for finding in findings:
+            result.setdefault(finding.path, set()).add(finding.code)
+        return result
+
+    def test_english_readme_fails_and_korean_readme_passes(self) -> None:
+        self.assertEqual(
+            {"docs/01.requirements/README.md": {"document-language-mismatch"}},
+            self._codes({"docs/01.requirements/README.md": self.ENGLISH}),
+        )
+        self.assertEqual(
+            {}, self._codes({"docs/01.requirements/README.md": self.KOREAN})
+        )
+
+    def test_frozen_and_generated_readmes_are_not_judged(self) -> None:
+        self.assertEqual(
+            {},
+            self._codes(
+                {
+                    "docs/98.archive/retired/05.operations/x/README.md": self.ENGLISH,
+                    ".claude/README.md": self.ENGLISH,
+                }
+            ),
+        )
+
+    def test_non_readme_documents_are_left_to_the_changed_body_check(self) -> None:
+        self.assertEqual(
+            {}, self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH})
+        )
 
 
 if __name__ == "__main__":

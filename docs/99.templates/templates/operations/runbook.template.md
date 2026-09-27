@@ -12,6 +12,7 @@ created: "{{CREATED}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+<!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}
 

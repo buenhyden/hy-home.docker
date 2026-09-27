@@ -14,6 +14,7 @@ created: "{{CREATED}}"
 <!-- Author prompt: Service Guides add optional `implementation_services` frontmatter as a mapping from each repo-relative active Compose path to its nonempty list of owned service names; workspace and process Guides omit it. -->
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+<!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}
 

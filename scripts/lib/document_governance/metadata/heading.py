@@ -20,6 +20,7 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.frontmatter import (
     safe_load_unique as _safe_load_unique,
 )
+from scripts.lib.document_governance.language import language_mismatch
 from scripts.lib.document_governance.metadata.profile import (
     CREDENTIAL_KEY_NAME,
     MACHINE_EXAMPLE_VALUE,
@@ -1293,6 +1294,17 @@ def validate_body_contract(
             section_findings.extend(
                 _registered_section_findings(record, text, profile, changed_boundary)
             )
+            declared = profile.get("language")
+            # The message carries no ratio: it is the deficit identity, so an
+            # edit to a body already in the wrong language is not "introduced".
+            if isinstance(declared, str) and language_mismatch(text, declared):
+                section_findings.append(
+                    _finding(
+                        record,
+                        "document-language-mismatch",
+                        f"prose does not read as the declared language {declared}",
+                    )
+                )
             # A profile that also registers a template used to be exempt here
             # and checked only through its template role, which runs on changed
             # paths alone. That left the declared sections of every SDLC target

@@ -2386,18 +2386,37 @@ class DocumentRegistryTests(unittest.TestCase):
 class ProfileLanguageTests(unittest.TestCase):
     """SPEC-0184 rule 4: every prose profile declares its language."""
 
-    README_KO = {
-        "readme", "documentation-readme", "repository-readme", "package-readme",
-        "reference-category-readme", "research", "audit", "data",
-        "governance-provider-index", "governance-knowledge-index",
-        "governance-prompt-index",
-    }
-    OPERATIONS_KO = {"guide", "policy", "runbook", "incident", "postmortem"}
-    UNJUDGED = {
-        "runtime-governance-readme", "template-source", "generated", "unsupported",
-        "runtime-projection-claude", "runtime-projection-codex", "openapi-contract",
-        "graphql-contract", "proto-contract", "migration", "tombstone",
-    }
+    README_KO = frozenset(
+        {
+            "readme",
+            "documentation-readme",
+            "repository-readme",
+            "package-readme",
+            "reference-category-readme",
+            "research",
+            "audit",
+            "data",
+            "governance-provider-index",
+            "governance-knowledge-index",
+            "governance-prompt-index",
+        }
+    )
+    OPERATIONS_KO = frozenset({"guide", "policy", "runbook", "incident", "postmortem"})
+    UNJUDGED = frozenset(
+        {
+            "runtime-governance-readme",
+            "template-source",
+            "generated",
+            "unsupported",
+            "runtime-projection-claude",
+            "runtime-projection-codex",
+            "openapi-contract",
+            "graphql-contract",
+            "proto-contract",
+            "migration",
+            "tombstone",
+        }
+    )
 
     def test_schema_rejects_an_undeclared_language(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
@@ -2412,7 +2431,9 @@ class ProfileLanguageTests(unittest.TestCase):
             declared = profile.get("language")
             if profile_id in self.README_KO | self.OPERATIONS_KO:
                 expected = "ko"
-            elif profile_id in self.UNJUDGED or profile_id.startswith("archive-record-"):
+            elif profile_id in self.UNJUDGED or profile_id.startswith(
+                "archive-record-"
+            ):
                 expected = None
             else:
                 expected = "en"

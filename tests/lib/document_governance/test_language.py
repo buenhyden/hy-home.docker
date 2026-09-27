@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from typing import ClassVar
 
 from scripts.lib.document_governance.language import (
     hangul_ratio,
@@ -51,11 +52,76 @@ class LanguageJudgeTests(unittest.TestCase):
         self.assertIsNone(language_mismatch("# Title\n\nShort.\n", "ko"))
 
     def test_identifier_only_table_is_ignored(self) -> None:
-        table = (
-            "| ID | Path |\n| --- | --- |\n"
-            + "".join(f"| GDE-{n:04d} | `guides/{n:04d}-x.md` |\n" for n in range(40))
+        table = "| ID | Path |\n| --- | --- |\n" + "".join(
+            f"| GDE-{n:04d} | `guides/{n:04d}-x.md` |\n" for n in range(40)
         )
         self.assertIsNone(language_mismatch(KOREAN + table, "ko"))
+
+
+class TemplateLanguageProjectionTests(unittest.TestCase):
+    """SPEC-0184 rule 8: a filled template reads in its profile's language."""
+
+    SAMPLES: ClassVar[dict[str, str]] = {
+        "ko": "이 문단은 템플릿을 채운 예시이며, 설명 문장은 모두 한국어로 씁니다. ",
+        "en": "This paragraph fills the template, and every sentence is English prose. ",
+    }
+
+    def test_filled_templates_pass_in_their_language_and_fail_in_the_other(
+        self,
+    ) -> None:
+        import pathlib
+        import re
+
+        from scripts.lib.document_governance.registry import load_registry
+
+        root = pathlib.Path(__file__).resolve().parents[3]
+        registry = load_registry()
+        checked = 0
+        for role_id, role in registry.template_roles.items():
+            languages = {
+                registry.profiles[profile_id].get("language")
+                for profile_id in role.get("profiles", ())
+                if profile_id in registry.profiles
+            }
+            declared = languages.pop() if len(languages) == 1 else None
+            source = role.get("source")
+            if declared is None or not str(source).endswith(".md"):
+                continue
+            text = (root / str(source)).read_text(encoding="utf-8")
+            other = "en" if declared == "ko" else "ko"
+            for language, expect_pass in ((declared, True), (other, False)):
+                filled = re.sub(r"\{\{[A-Z0-9_]+\}\}", self.SAMPLES[language] * 3, text)
+                with self.subTest(role=role_id, language=language):
+                    reason = language_mismatch(filled, declared)
+                    self.assertEqual(expect_pass, reason is None, reason)
+            checked += 1
+        self.assertGreater(checked, 10)
+
+    def test_every_language_template_tells_its_author_the_language(self) -> None:
+        import pathlib
+
+        from scripts.lib.document_governance.registry import load_registry
+
+        root = pathlib.Path(__file__).resolve().parents[3]
+        registry = load_registry()
+        words = {
+            "ko": "Write body prose in Korean",
+            "en": "Write body prose in English",
+        }
+        for role_id, role in registry.template_roles.items():
+            languages = {
+                registry.profiles[profile_id].get("language")
+                for profile_id in role.get("profiles", ())
+                if profile_id in registry.profiles
+            }
+            declared = languages.pop() if len(languages) == 1 else None
+            source = str(role.get("source"))
+            if declared is None or not source.endswith(".md"):
+                continue
+            with self.subTest(role=role_id):
+                self.assertIn(
+                    words[declared], (root / source).read_text(encoding="utf-8")
+                )
 
 
 if __name__ == "__main__":

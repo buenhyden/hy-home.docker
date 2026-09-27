@@ -15,6 +15,7 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
+from scripts.lib.document_governance.language import language_mismatch
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
@@ -23,6 +24,8 @@ from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
     admitted_preserved_dispositions,
     archive_disposition_model,
+    classify_path,
+    load_registry,
 )
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
@@ -850,9 +853,7 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
     """
 
     tracked = _tracked_files(graph.repo_root)
-    tracked_directories = {
-        str(pathlib.PurePosixPath(path).parent) for path in tracked
-    }
+    tracked_directories = {str(pathlib.PurePosixPath(path).parent) for path in tracked}
     tracked_directories |= {
         parent.as_posix()
         for path in tracked
@@ -924,6 +925,32 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
                         f"folder router tree names a file inside a child: {name}",
                     )
                 )
+    return sorted(set(findings))
+
+
+def check_language(graph: DocumentGraph) -> list[LinkFinding]:
+    """Hold every README to the language its Registry profile declares.
+
+    READMEs are judged across the whole corpus. Other documents are judged by
+    the metadata body contract when they change, until the corpus migration
+    (SPEC-0184 P2) lets this mode take them all. A profile with no declared
+    language, such as a Stage 98 record or a generated adapter, is not judged.
+    """
+
+    registry = load_registry()
+    findings: list[LinkFinding] = list(graph.input_findings)
+    for node in graph.nodes:
+        if node.path.name != "README.md":
+            continue
+        profile_id = classify_path(node.path.as_posix(), registry)
+        declared = registry.profiles.get(profile_id or "", {}).get("language")
+        if not isinstance(declared, str):
+            continue
+        reason = language_mismatch(node.text, declared)
+        if reason is not None:
+            findings.append(
+                LinkFinding(node.path.as_posix(), "document-language-mismatch", reason)
+            )
     return sorted(set(findings))
 
 
