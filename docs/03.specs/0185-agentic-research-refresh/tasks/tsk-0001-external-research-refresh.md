@@ -1,6 +1,6 @@
 ---
 title: "External Research Refresh"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -84,8 +84,8 @@ APPLICABLE to this documentation task or explicitly outside authorization.
 | 2 | W4 | PASS: Documentation/SDLC/operations/tracker questions sourced and scoped | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
 | 2 | W5 | PASS: CI/QA/security/verification claims sourced and independently reviewed | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
 | 3 | W6 | PASS: All 100 future-check rows provide eleven fields, analytical axes and unassessed status | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
-| 4 | W6 | PASS: Registered baseline-snapshot gate and affected follow-up checks passed; independent reviews approved | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
-| 5 | W6 | PASS: Six original logical local commits plus 9a63d651a preserve reviewed research without remote mutation | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 4 | W6 | PASS: Registered baseline and completion rehearsal gates plus affected follow-up checks passed; independent reviews approved | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
+| 5 | W6 | PASS: Reviewed research and lifecycle commits preserve the result locally; complete preservation rehearsal approved without remote mutation | [RES-0002](../../../90.references/research/0002-agentic-engineering-research-pack/README.md) |
 
 ### Promotion
 
@@ -121,7 +121,35 @@ First lifecycle edge (Spec review / Plan approved / Task ready): metadata
 selected 4, violations 0; corpus lifecycle and archive recovery violations 0;
 independent package review APPROVE including in-memory terminal receipt check.
 Second edge (Spec approved): metadata selected 2, violations 0; corpus lifecycle
-and archive recovery violations 0. All commands exited 0; no transition override.
+and archive recovery violations 0. Third edge (Spec/Plan active, Task in-progress):
+metadata selected 4, violations 0; corpus lifecycle and archive recovery violations
+0. All commands exited 0; no transition override. Commits `503f0aa92`,
+`421dce56a`, and `b0e146105` preserve these registered transitions.
+
+Completion rehearsal uses an independent local clone of this branch at
+`b0e146105f1585f95ab7a6d24dd9d71338da4915`. Twelve staged paths represent three
+old package members, three preserved members, two indexes and four consumers.
+Independent archive-diff review APPROVE: exact three-member set and Git modes,
+staged/working bytes, whole-body identity and only permitted lifecycle metadata
+differences; registered catalog identity check and completed receipt check found
+no violations. Catalog Source is the reachable source HEAD, Names is RES-0002,
+all criteria and W1–W6 are covered, and the Registry is unchanged. The full
+registered gate result follows; review did not claim its outcome.
+
+Completion rehearsal gate: PASS, exit 0. Before execution, `--profile changed
+--explain` selected document-contract, document-graph, document-lifecycle and
+repository-integrity. The exact 12 completion paths stayed staged and no worker
+modified the validation clone during the run. Metadata: selected 445, violations
+0, no transition override. Links: 960 documents / 9,912 links, failures 0.
+Corpus lifecycle and archive recovery: violations 0. Document-contract regression:
+492 tests passed in 408.563s; selected repository-integrity leaves also passed.
+This proves the staged completion candidate, not remote CI or runtime acceptance.
+
+After this observed PASS, only Task result/cleanup evidence is finalized in the
+active package. The actual preservation move will use this final evidence commit
+as Source. Its body identity, terminal receipt, changed metadata, corpus lifecycle
+and links are rechecked against that immediate source; no contract implementation,
+research claim or enforcement configuration changes after the rehearsal.
 
 ### Final-snapshot verification
 
@@ -232,7 +260,7 @@ this Task from the 28 baseline-to-final changed paths.
 | `43a1d125d06f93ccf0324fa95d5700ca89bae8fb` | Documentation and SDLC / W4 |
 | `a7dbf69c07d9f48f8704cf9eedd5615c28d4b2bc` | Compose and service research / W3 |
 | `25c8e5c6326a6e915bacff14b190a9895e6450ca` | Agent/provider and memory research / W2–W3 |
-| This commit: `docs(research): Integrate coverage navigation and validation evidence` | README/index/scope/history and final evidence / W6 |
+| `570e4ef43eba31ee0cc7216397ad342d0363561a` | README/index/scope/history and final evidence / W6 |
 
 Commit partition selected by actual new-anchor dependencies:
 
@@ -258,11 +286,23 @@ No repository scratch file or second progress ledger remains. Unknown-ownership
 `/tmp/research-refresh-*` files were not removed. No bulk folder deletion, Git
 clean, reset, stash, history rewrite or user-file cleanup was performed.
 
-The exact validation clone `/tmp/hyhome-research-validation` and isolated pinned
-Commitizen cache `/tmp/research-commitizen-cache` remain as reproducible local
-validation/tool artifacts. They are outside the tracked deliverable, not another
-research pack or progress authority. The managed worktree and six local logical
-commits remain available; no push, PR, merge, tag, release or worktree removal.
+The initial closeout retained `/tmp/hyhome-research-validation` and
+`/tmp/research-commitizen-cache`; that retention left the original scratch-cleanup
+requirement unfinished. During the owner-approved completion follow-through,
+their exact ownership and independent Git object store were verified. A reviewed
+inventory listed 3,294 files/symlinks in these two task-owned roots. After proving
+the inventory unchanged, each listed entry was unlinked and only then were empty
+directories removed. No recursive tree-delete command, shared Git object store,
+unrelated path or managed worktree was touched. Their result evidence is retained
+in this Task and the implementation commits, not in another progress ledger.
+The final completion-validation fixture was likewise reviewed after its gate
+finished: expected source HEAD, independent Git store and an unchanged exact
+inventory of 1,741 file/symlink entries. Those entries, its inventory and its QA
+log were removed after their results were recorded above; only then were empty
+directories removed. All three task-created validation/cache roots are absent.
+The managed implementation worktree, local commits and unknown-ownership files
+remain untouched. No permanent scratch ledger or untracked repository artifact
+is part of this deliverable.
 
 ## Rulings
 
