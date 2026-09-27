@@ -190,7 +190,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.79.2
+    image: supabase/storage-api:v1.79.4
     restart: unless-stopped
     read_only: false
     volumes:
