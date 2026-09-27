@@ -1,6 +1,6 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -29,6 +29,37 @@ This member owns instruction discovery and bounded exploratory coding. Original 
 
 **C-m0001-03 — interpretation.** A shared filename does not establish identical discovery, precedence or enforcement. A common map can point to the approved task, scope, durable owner and acceptance evidence; provider adapters must retain native loading and trust behavior. [m0012](m0012-provider-implementation-comparison.md#native-capability-matrix) owns permissions, sandbox, skills, hooks and session differences. Repeating a control in prose is not evidence that it is enforced.
 
+### Instruction authoring distinctions
+
+**C-m0001-03 — non-normative authoring interpretation.** The following separates
+intent from enforcement using the loading/context limits of C-m0001-01–02. It is
+a proposed authoring convention, not a new provider feature or repository policy.
+
+| Kind | What it owns | Scoped example and validation boundary |
+| --- | --- | --- |
+| Instruction | Context-specific direction for the current work | Name the task, allowed paths, source owners and completion check; verify the applicable text actually loads. |
+| Policy | Durable obligations, exceptions and decision authority | Link the approved security or coding owner and its scope; identify the enforcing validator/permission separately. Prose alone cannot grant or enforce access. |
+| Role | Responsibility, permitted scope and handoff | Say who authors, who reviews and which decisions require another owner; a role name does not create tools or permissions. |
+| Procedure | Ordered steps, inputs, failure handling and evidence | Link one reusable skill/runbook; state prerequisites, stop conditions, recovery and output evidence instead of copying its steps into every adapter. |
+| Tool | A concrete operation exposed by an execution surface | Name the available interface, allowed inputs/side effects and failure contract; check actual availability and authorization rather than assuming them from instructions. |
+| Output style | Reader, language, detail and presentation preferences | For a technical reviewer, request a concise explanation plus check results; for an operator, request numbered actions and stop conditions. Style cannot override scope, uncertainty or required evidence. |
+
+For a **hypothetical package**, specify the language/framework and permitted
+version range by linking its manifest/lockfile owner; do not duplicate mutable
+pins in every instruction. Scope coding rules to that package and link its
+formatter/linter/test owner, naming the check that would demonstrate compliance.
+State explanation language, audience and desired detail separately from those
+coding constraints. These are examples of how to write an instruction, not claims
+about this repository's stack or installed tools.
+
+When sources conflict, identify their authority, applicable path/task and native
+loading order; retain provider-specific exceptions in the adapter. Resolve an
+ambiguous controlling rule with its owner before dependent work. A separately
+authorized fixture should vary launch directory, nested instructions and trust
+state, then compare loaded guidance, effective permissions and output. A drift
+review compares each adapter's references and exceptions with the canonical
+owner; file copying or symlinking alone proves neither loading nor equivalence.
+
 ### Conditional guidance for exploration
 
 **C-m0001-04 — recommendation.** A short exploratory prompt suits a disposable sketch or reversible edit with observable acceptance. Before promotion, put intended behavior, constraints, allowed paths, a stop condition and a concrete check in the existing workflow. A natural-language attempt limit supplies review guidance, not a process kill switch. Ambiguous, cross-cutting or security-sensitive changes benefit from planning and independent evidence review.
@@ -56,7 +87,7 @@ Candidate surfaces do not assert implementation. These checks require a separate
 
 | Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0001-01–03 / discovery | Repository/directory/session; governance/instruction discovery | If parity is evaluated | AGENTS.md, canonical bootstrap, provider adapters | Which owners load automatically, explicitly or not at all? | Version, launch path, fixture tree and loading trace | Approved disposable nested-directory fixture | Expected precedence/read observed; silent omission fails | Separate runtime authorization; no private/global-state export | rules-engineer / reviewer | Not assessed in this run |
+| C-m0001-01–03 / discovery | Repository/directory/session; governance/instruction discovery | If parity is evaluated | AGENTS.md, canonical bootstrap, provider adapters | Which owners load automatically, explicitly or not at all, and are stack/coding constraints distinct from role/tool authority and output preferences? | Version, launch path, fixture tree, loading trace, canonical owner links and separate coding/style expectations | Approved disposable nested-directory fixture | Expected precedence/read observed; silent omission fails | Separate runtime authorization; no private/global-state export | rules-engineer / reviewer | Not assessed in this run |
 | C-m0001-04 / exploration | Task/Spec; implementation/quality/governance | If a draft is promoted | Existing Spec/Plan/Task and review prompts | Are scope, stop and behavior checks recorded? | Representative draft, check output, independent review | Document review then authorized reversible trial | Promotion requires observable acceptance; self-declaration fails | Implementation/runtime checks separately authorized | planner / code-reviewer | Not assessed in this run |
 
 ## Historical Workspace Observations
