@@ -40,7 +40,7 @@ secrets: !override
 services:
   keycloak:
     profiles: !override [core]
-    image: quay.io/keycloak/keycloak@sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4
+    image: quay.io/keycloak/keycloak@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
     container_name: !reset null
     hostname: !reset null
     restart: "no"
@@ -173,7 +173,7 @@ services:
 
   vault:
     profiles: !override [core]
-    image: hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54
+    image: hashicorp/vault@sha256:47f14a6acb98f48d798a07df7c83f23a6e636e1cf724c5f8ff165cb32667a1e2
     container_name: !reset null
     restart: "no"
     cpus: "0.50"
@@ -215,7 +215,7 @@ services:
 
   vault-agent:
     profiles: !override [core]
-    image: hashicorp/vault@sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54
+    image: hashicorp/vault@sha256:47f14a6acb98f48d798a07df7c83f23a6e636e1cf724c5f8ff165cb32667a1e2
     container_name: !reset null
     restart: "no"
     cpus: "0.25"
