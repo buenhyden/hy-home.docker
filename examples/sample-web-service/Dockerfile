@@ -3,7 +3,7 @@
 # minimal final layer, and an in-image HEALTHCHECK.
 
 # ---- build stage: prepare static assets ----
-FROM alpine:3.21@sha256:ce64758a109eb420d874a118f87920e625e12d3634e03b4a5573fd9f6e5d3507 AS build
+FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS build
 WORKDIR /src
 COPY site/ ./site/
 # Asset build/transform steps belong here. This sample copies static content only.
