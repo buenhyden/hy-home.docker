@@ -60,7 +60,7 @@ Setup observations (not final completion evidence):
 - Metadata check-changed, explicit base
   `f30b168e2fbb0959e4a31749935568fd5b3942f1` and explicit Registry, Stage 03
   index, Spec, Plan, Task paths: PASS, exit 0, selected 4 documents, violations 0.
-- Public gate in progress: metadata check-active selected 445, violations 0;
+- Initial public-gate observations: metadata check-active selected 445, violations 0;
   document links mode all failures 0; lifecycle/archive checks violations 0.
   Public gate exited 1: 492 document contract tests ran in 404.631s,
   with two failures. Identity-history scans all local refs and sees unrelated
@@ -82,7 +82,7 @@ APPLICABLE to this documentation task or explicitly outside authorization.
 | 2 | W2, W3, W4, W5 | PASS; A–L ownership and 156 traced claims reviewed | RES-0002 members |
 | 3 | W2, W3, W4, W5, W6 | PASS; 100 future rows with analytical scopes and approval boundaries | RES-0002-m0015 |
 | 4 | W6 | PASS; stable 28-path gate exit 0 and independent approval | RES-0002 and this Task |
-| 5 | W6 | NOT_RUN; commits pending | Local branch and this Task |
+| 5 | W6 | PASS; five preceding logical commits and this final integration commit | Local branch and this Task |
 
 ### Final-snapshot verification
 
@@ -125,7 +125,13 @@ including the new Spec/Plan/Task, rather than a later clean worktree.
 - Final worktree metadata with explicit baseline and all 28 task paths: PASS,
   exit 0; selected 27 documents, violations 0, transition overrides 0.
   All 27 non-Task file hashes match the passing full-gate snapshot; only this
-  Task's outcome/commit evidence differs. Final diff whitespace check PASS.
+  Task's outcome/commit evidence differs. Final diff whitespace check PASS. After the first five logical commits,
+  worktree links mode all again PASS, exit 0: 960 documents, 9,904 links, zero
+  failures. Final metadata uses all baseline-to-final paths, including commits.
+  The last 27-document rerun caught one Task-only forbidden H2 introduced by
+  the cleanup receipt (FAIL, exit 1). Moving it below Commit Ledger as H3 fixed
+  the contract; the affected Task rerun PASS, exit 0, selected 1, violations 0.
+  The other 26 documents and all research payload hashes were unchanged.
 - No new research member, filename/ID replacement or other-pack edit. The
   sole protected-path delta is owner-approved spec allocation 185/186.
 
@@ -140,7 +146,7 @@ comparison. This proves the local-ref condition, not a final research gate.
 ## Review Evidence
 
 Independent setup review by package_review: no source defects; spec compliance
-and source quality structurally approved. Disposition remains blocked pending
+and source quality structurally approved. Its initial disposition was blocked pending
 registered Registry/schema evidence. Reviewer observed diff whitespace check
 exit 0, and confirmed minimal allocation avoids the independently issued 0184.
 Focused explicit-base metadata then passed; public gate subsequently failed as recorded above. Reviewer follow-up approved
@@ -148,7 +154,7 @@ with follow-up: baseline Registry vs baseline history has no findings; baseline
 vs all refs has ADR43<44 and SPEC183<184; task Registry vs all refs has only
 ADR43<44. The task did not alter ADR allocation. H3 Preservation Declaration
 retains the same 22 protected paths under the existing parser.
-Independent scope/history and README/index review is in progress. A real
+Independent scope/history and README/index review then found a real
 README anchor collision was identified: old quoted headings preceded current
 Sources/Traceability sections. The controller escaped the old heading markers,
 kept legacy-only anchors, and verified exact body reconstruction (exit 0).
@@ -175,6 +181,20 @@ were included in their final review.
 
 ## Commit Ledger
 
+The 27 non-Task file SHA256 values match the passing full-gate snapshot after
+normal commits. Their sorted JSON mapping hashes to
+`5dcf0c7fd2cdd07e0819fda6ed59e8ad9461cc5a9c39692036181cbf03a0d57a`; this digest is reproducible from the final tree after excluding
+this Task from the 28 baseline-to-final changed paths.
+
+| Local commit | Concern / Plan unit |
+| --- | --- |
+| `9f2432766216cd5d0526be338043e71b3bf1d9fb` | Authorized package and minimal allocation / W1 |
+| `bf775e5bdd364f3825c4d3b472e42f6376ab1651` | CI, quality, security, verification / W5 |
+| `43a1d125d06f93ccf0324fa95d5700ca89bae8fb` | Documentation and SDLC / W4 |
+| `a7dbf69c07d9f48f8704cf9eedd5615c28d4b2bc` | Compose and service research / W3 |
+| `25c8e5c6326a6e915bacff14b190a9895e6450ca` | Agent/provider and memory research / W2–W3 |
+| This commit: `docs(research): Integrate coverage navigation and validation evidence` | README/index/scope/history and final evidence / W6 |
+
 Commit partition selected by actual new-anchor dependencies:
 
 1. Register Spec/Plan/Task, Stage 03 index and minimal allocation.
@@ -189,6 +209,21 @@ Commit partition selected by actual new-anchor dependencies:
 All required selected local checks have completed. A direct `cz` invocation
 was unavailable (executable and module absent); the repository-pinned
 Commitizen 4.15.1 was run via an isolated task-owned uv cache. All six draft-message checks PASS, exit 0. Normal automatic commit hooks remain enabled.
+
+### Cleanup and Retention
+
+After integrating author/reviewer receipts and validation results above, removed
+44 explicitly identified task-owned scratch files: authoring/self-check scripts,
+drafts, original backups, review diffs/reports and intermediate QA logs/manifests.
+No repository scratch file or second progress ledger remains. Unknown-ownership
+`/tmp/research-refresh-*` files were not removed. No bulk folder deletion, Git
+clean, reset, stash, history rewrite or user-file cleanup was performed.
+
+The exact validation clone `/tmp/hyhome-research-validation` and isolated pinned
+Commitizen cache `/tmp/research-commitizen-cache` remain as reproducible local
+validation/tool artifacts. They are outside the tracked deliverable, not another
+research pack or progress authority. The managed worktree and six local logical
+commits remain available; no push, PR, merge, tag, release or worktree removal.
 
 ## Rulings
 
