@@ -1,6 +1,6 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -499,11 +499,9 @@ Original observations, source checks, corrections, measurements, access failures
 > Release profile is implied by the old survey.
 >
 
-
 ## Related Documents
 
 - [Research pack](README.md)
-
 
 - [Verification and validation](./m0019-verification-validation.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)

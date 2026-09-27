@@ -1,6 +1,6 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.8.0"
+version: "0.8.1"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -20,7 +20,6 @@ observed_at: "2026-09-20"
 What evidence should govern optional-service selection, capability overlap and operating cost without inventing new local service decisions?
 
 Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
-
 
 ### Selection model and operating principles
 
@@ -116,6 +115,7 @@ product links below keep their original check dates and uncertainty.
 ## Historical workspace observations — not reassessed in this run
 
 ## Question
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Which services in `infra/` should remain available for local Docker use, which
@@ -123,6 +123,7 @@ product links below keep their original check dates and uncertainty.
 > role is unused or duplicated?
 >
 ## Evidence Boundary
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This is non-normative research. Tracked Compose definitions and the observed
@@ -139,6 +140,7 @@ product links below keep their original check dates and uncertainty.
 > be resolved before judging whether CPU, memory or hardening controls exist.
 >
 ## Consolidated Research Ownership
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This member is the single owner for the functional service map: overlap,
@@ -152,6 +154,7 @@ product links below keep their original check dates and uncertainty.
 | [RES-0002-m0020](m0020-workspace-baseline.md) | Current repository counts, evidence classes, and baseline routing | Cite this member for service-role conclusions instead of copying its tables. |
 | [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md) | Dated 2026-09-05 assessment envelope and identity recovery | Historical carrier only; it is not a current service inventory. |
 | [RES-0096](../0096-archive-disposition-consistency/README.md) | Stage 98 archive consistency review | Out of scope for local service classification. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 > No duplicate service-classification member is created. Future service overlap,
@@ -159,6 +162,7 @@ product links below keep their original check dates and uncertainty.
 > member only when the question and evidence model are materially different.
 >
 ## Selection Rules
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > 1. Keep a service when it has a distinct workload contract or is an active
@@ -173,9 +177,11 @@ product links below keep their original check dates and uncertainty.
 >    backup, client compatibility, and recovery evidence are required.
 >
 ## Definitions / Facts
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### 2026-09-18 Local Runtime Reconciliation
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Historical observation only. The later owner clarification makes AI and workflows
@@ -207,6 +213,7 @@ product links below keep their original check dates and uncertainty.
 | Neo4j | Running healthy | Keep optional | Confirm graph datasets and dashboards before removal. |
 | Qdrant | Running healthy | Keep optional | Confirm vector collections and RAG consumers before removal. |
 | Open Notebook, Supabase, PostgreSQL cluster, Terrakube, Syncthing, Registry, SonarQube, k6, Locust | Not observed in the current container listing | Keep as optional profiles | Check application consumers, persistent data, secrets, routes, and Stage 05 ownership individually. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 > No Compose service or Stage 05 document is deleted by this observation. A
@@ -226,9 +233,11 @@ product links below keep their original check dates and uncertainty.
 | Prometheus / Loki / Tempo / InfluxDB | Metrics, logs, traces, and general-purpose time-series analytics | [Prometheus overview](https://prometheus.io/docs/introduction/overview/), [Loki license](https://github.com/grafana/loki/blob/main/LICENSE), [Tempo Compose examples](https://github.com/grafana/tempo/tree/main/example/docker-compose), [InfluxDB Docker Compose](https://docs.influxdata.com/influxdb/v2/install/use-docker-compose/) | Keep the LGTM stack. Make InfluxDB optional; remove only after checking Telegraf, Flux/InfluxQL, dashboards, and retained data. |
 | SonarQube / Terrakube / Syncthing / Registry / k6 / Locust | Distinct code quality, Terraform orchestration, file sync, image registry, and test workloads | [SonarQube image](https://hub.docker.com/_/sonarqube), [Terrakube repository](https://github.com/terrakube-io/terrakube), [Syncthing license](https://github.com/syncthing/syncthing/blob/main/LICENSE), [Distribution Registry](https://distribution.github.io/distribution/) | Keep optional. Remove only unused tooling after checking CI, Terraform state, synchronized paths, image cache, and test scripts. |
 | Open Notebook / Neo4j / Qdrant | Research notebook, graph database, and vector database | [Open Notebook repository](https://github.com/lfnovo/open-notebook), [Neo4j Docker](https://neo4j.com/docs/operations-manual/current/docker/introduction/), [Qdrant quickstart](https://qdrant.tech/documentation/quickstart/) | Qdrant supports HOME AI; Open Notebook and Neo4j remain OPTIONAL. They are not interchangeable. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ## Scope Implications
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > HOME retains Traefik, Keycloak, OAuth2 Proxy, OpenBao, management PostgreSQL and
@@ -245,6 +254,7 @@ product links below keep their original check dates and uncertainty.
 > and replica-set experiments remain LAB unless a named consumer needs them.
 >
 ### Functional overlap decisions
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > These are lifecycle decisions, not assertions that similarly shaped products are
@@ -265,6 +275,7 @@ product links below keep their original check dates and uncertainty.
 | k6 / Locust | [k6](../../../../infra/09-tooling/k6/docker-compose.yml) runs scripted load tests; [Locust](../../../../infra/09-tooling/locust/docker-compose.yml) is a master/worker Python load topology with shared `locust-data`. No target authorization or active test run is proven. | Retain k6, `locust-master` and `locust-worker` DEV only. The worker is corrected from OPTIONAL to DEV because it is one declared topology with the master. Never include them in HOME. | Removal needs absence of scripts/data/CI references. Accidental activation can load HOME targets and consumes a declared combined 3 CPU/1.5 GiB before target cost. |
 | OpenTofu / Terrakube | [OpenTofu](../../../../infra/09-tooling/opentofu/docker-compose.yml) is an operator-run CLI/state tool. [Terrakube](../../../../infra/09-tooling/terrakube/docker-compose.yml) is a three-service orchestration plane using management PostgreSQL, Valkey, MinIO state/output and identity configuration. | Retain OpenTofu and all Terrakube services DEV, on demand; neither is a HOME daemon. Terrakube is not OPTIONAL in the final inventory. | Removal requires state/repository/job inventory and recoverable state encryption keys. Wrong removal loses IaC history/state access; wrong HOME promotion spends up to 4.5 CPU/3.25 GiB and expands Docker-socket exposure. |
 | Mailpit / Stalwart | [Mailpit](../../../../infra/10-communication/mailpit/docker-compose.yml) is DEV SMTP capture with local persisted messages and loopback UI/SMTP. [Stalwart](../../../../infra/10-communication/stalwart/docker-compose.yml) is an OPTIONAL real mail server with mailbox/config/certificate state and public mail ports. | Retain Mailpit DEV and Stalwart OPTIONAL. Neither replaces the other and neither is always on. | Removal needs absence of test mail or mailbox/domain consumers plus data disposition. Confusion between them can either leak test mail externally or discard real mailbox state. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 > Ollama and ComfyUI remain separate owner-required HOME capabilities rather than
@@ -279,6 +290,7 @@ product links below keep their original check dates and uncertainty.
 > activating their retired definitions.
 >
 ### Official framework comparison (2026-09-19)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -296,6 +308,7 @@ product links below keep their original check dates and uncertainty.
 | Image identity | [Renovate Docker](https://docs.renovatebot.com/docker/) | A tag plus digest combines readable intent and immutable content; enable migration only after registry/check support. |
 | Update execution | [Renovate self-hosted config](https://docs.renovatebot.com/self-hosted-configuration/) | Keep admin execution allowlists outside repository rules and restrict post-upgrade commands. |
 | Security cadence | [Dependabot PR optimization](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates) | Version cooldown does not delay security updates; hosted security enablement still needs observed settings. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 > This framework review is not evidence that every retained product's license,
@@ -303,6 +316,7 @@ product links below keep their original check dates and uncertainty.
 > coverage remains an explicit SPEC-0180 acceptance item.
 >
 ### HOME product source coverage (2026-09-19)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The following official pages were visited during this audit. Links to moving
@@ -327,9 +341,11 @@ product links below keep their original check dates and uncertainty.
 | ComfyUI | [Manual install](https://docs.comfy.org/installation/manual_install), [API](https://docs.comfy.org/development/comfyui-server/comms_routes), [security](https://github.com/comfyanonymous/ComfyUI/security/policy) | Preserve workflows, models, outputs and custom-node inventory before updating | [License](https://github.com/comfyanonymous/ComfyUI/blob/master/LICENSE) | Third-party Docker image and custom nodes need separate source trust and compatibility review. |
 | Airflow | [Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html), [security](https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/security/index.html) | [Upgrading](https://airflow.apache.org/docs/apache-airflow/stable/installation/upgrading.html) | [License](https://github.com/apache/airflow/blob/main/LICENSE) | Back up metadata DB and preserve DAGs/plugins/configuration and encryption keys; Compose examples do not prove production readiness. |
 | n8n | [Docker Compose](https://docs.n8n.io/deploy/host-n8n/install-options/install-using-docker-compose.md), [current docs map](https://docs.n8n.io/sitemap.md) | Preserve PostgreSQL state, encryption key and runner configuration; verify the selected release's migration instructions | [License](https://github.com/n8n-io/n8n/blob/master/LICENSE.md) | Current PostgreSQL/worker topology remains HOME; licensing and runner isolation are separate acceptance considerations. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ### Optional and supporting product source coverage (2026-09-19)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > These primary-source checks support retention boundaries, not deployment approval.
@@ -355,9 +371,11 @@ product links below keep their original check dates and uncertainty.
 | Mailpit, Stalwart | [Mailpit options](https://mailpit.axllent.org/docs/configuration/runtime-options/), [Stalwart configuration snapshot](https://www.stalw.art/docs/management/cli/snapshot/) | Mailpit is DEV capture, Stalwart an optional mail server. A Stalwart configuration snapshot does not back up mailbox contents. Mailpit SQLite persistence should not use NFS. |
 | RedisInsight, Open Notebook, Dozzle, Gatus | [RedisInsight Docker](https://redis.io/docs/latest/operate/redisinsight/install/install-on-docker/), [Open Notebook](https://github.com/lfnovo/open-notebook), [Dozzle authentication](https://dozzle.dev/guide/authentication), [Gatus](https://github.com/TwiN/gatus) | Keep privileged inspection behind authentication. Gatus remains HOME availability monitoring; other tools require their named consumer. |
 | Nginx, registry, Vault | [Nginx guide](https://nginx.org/en/docs/beginners_guide.html), [registry deployment](https://distribution.github.io/distribution/about/deploying/), [Vault hardening](https://developer.hashicorp.com/vault/docs/concepts/production-hardening) | Preserve explicit optional/legacy selectors. Vault is migration-only; OpenBao selection does not prove successful secret or storage migration. |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ## Current official evidence refresh (2026-09-20)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > These are dated research inputs, not deployment or recovery acceptance. On
@@ -382,9 +400,11 @@ product links below keep their original check dates and uncertainty.
 | [Compose service inheritance](https://docs.docker.com/reference/compose-file/services/#extends) combines service definitions | Shared `infra/common-optimizations.yml` supplies resource and hardening defaults | Reading only the leaf hides inherited limits; source declarations do not establish measured capacity | Include inherited resources and declared security boundaries | Inventory validator checks the public source projection; CPU/RAM/GPU steady and peak measurements remain open |
 | [Renovate configuration validation](https://docs.renovatebot.com/config-validation/) checks repository and self-hosted configuration | `renovate.json5`, local global config and POL-0086 assign infrastructure updates | Syntax success cannot prove extraction coverage, ownership or safe upgrade | Keep one infrastructure updater owner and review extraction separately | Existing strict-validator route and version-owner tests supply static evidence; no updater job is launched |
 | [GitHub version updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates) and [options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) declare ecosystems/directories/schedules | `.github/dependabot.yml` owns its explicit remaining ecosystems | Overlapping Docker entries or stale directories create drift; security enablement is a hosted setting | Preserve Renovate infrastructure ownership and explicit Dependabot scope | Existing version-governance checks validate overlap/directory inputs; hosted security settings remain separately observed evidence |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ### Retained family decisions and recovery evidence
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The source coverage tables above supply deployment/security/license and
@@ -409,9 +429,11 @@ product links below keep their original check dates and uncertainty.
 | Supabase / SurrealDB / Open Notebook: official self-hosting/security/export references above | OPTIONAL application/research platform components | Application assets and auth state can extend beyond database exports | Retain optional research/application capability pending named demand | Corresponding triplets own state and exposure; source dependencies show wiring only, not current user activity |
 | OpenTofu / Terrakube / Renovate / Registry / SonarQube / k6 / Locust: official state/encryption, deployment, maintenance and testing references above | DEV explicit tooling, OPTIONAL automation/quality/cache workloads | State/key custody and updater execution authority differ; load tests consume HOME resources | Keep opt-in execution and bounded tests, not background HOME demand | Current tooling profiles and triplets own activation/recovery; infrastructure pins remain in Compose/Dockerfiles |
 | Mailpit / Stalwart / RedisInsight / Dozzle: official runtime, snapshot and authentication references above | DEV mail capture; OPTIONAL mail and inspection | Configuration-only mail backup omits messages; inspectors expose sensitive operational surfaces | Retain distinct explicit uses behind their declared auth/network boundaries | Current loopback/auth declarations and triplets own exposure; actual mailbox/inspection need and recovery remain unverified |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ### Final service lifecycle judgment ledger (R, 2026-09-20)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This ledger finalizes the authored Consumer, Backup and Disposition judgments in
@@ -576,6 +598,7 @@ product links below keep their original check dates and uncertainty.
 > backup execution remain outside this research decision.
 >
 ## Required Follow-up Before Deletion
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Confirm the service is absent from application configuration, scripts, and
@@ -588,6 +611,7 @@ product links below keep their original check dates and uncertainty.
 > - Render the root Compose model and run the scoped infrastructure validator.
 >
 ## Sources
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > External sources above were checked on 2026-09-18 against official project
@@ -597,6 +621,7 @@ product links below keep their original check dates and uncertainty.
 > listing observed on the same date.
 >
 ## Current source service inventory (2026-09-20)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Current source baseline: `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` plus
@@ -781,10 +806,12 @@ product links below keep their original check dates and uncertainty.
 | 11-laboratory | mlflow | infra/11-laboratory/mlflow/docker-compose.yml | mlflow-db-provision | ["data-science","mlops"] | OPTIONAL | Provisioning job consumed by `mlflow`; declared reverse edges=mlflow | {"mng-pg":{"condition":"service_healthy"},"mng-pg-init":{"condition":"service_completed_successfully"}} | {"mng_data_net":{}} | {"exposed":[],"published":[]} | {"mounts":["../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro","./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro"],"volume_sources":{}} | ["MLFLOW_DB_NAME","MLFLOW_DB_USER","PGDATABASE","PGHOST","PGPORT","PGUSER","PROVISION_ADMIN_PASSWORD_FILE","PROVISION_IDENTIFIERS","PROVISION_SECRETS","PROVISION_SQL"] | ["mlflow_db_password","mng_postgres_password"] | {"cpus":"0.50","mem_limit":"256m"} | leaf={"authentication_env_keys":[],"router_middlewares":{}}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-job-low"}; runtime unverified; [Policy](../../../05.operations/policies/0088-mlflow.md) | Back up the `MLFLOW_DB_NAME` database and the `mlflow-artifacts` bucket together; [recovery scope](../../../05.operations/runbooks/0088-mlflow.md); restore unverified | [guide](../../../05.operations/guides/0088-mlflow.md); [policy](../../../05.operations/policies/0088-mlflow.md); [runbook](../../../05.operations/runbooks/0088-mlflow.md) | [infra/11-laboratory/mlflow/docker-compose.yml](../../../../infra/11-laboratory/mlflow/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in `mlops`/`data-science`; feature-owned DB and bucket provisioning; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
 | 11-laboratory | jupyterlab | infra/11-laboratory/jupyterlab/docker-compose.yml | jupyterlab | ["data-science"] | OPTIONAL | Single operator notebook workspace under `data-science`; declared reverse edges=none | {"mlflow":{"condition":"service_healthy","required":false}} | {"ai_net":{},"edge_net":{}} | {"exposed":["${JUPYTER_PORT:-8888}"],"published":[]} | {"mounts":[{"bind":{"create_host_path":false},"source":"${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work","target":"/home/jovyan/work","type":"bind"}],"volume_sources":{}} | ["JUPYTER_PORT","MLFLOW_TRACKING_URI"] | ["jupyter_token"] | {"cpus":"2.00","mem_limit":"2g"} | leaf={"authentication_env_keys":[],"router_middlewares":{"traefik.http.routers.jupyter.middlewares":"gateway-standard-chain@file,sso-errors@file,sso-auth@file"}}; inherited-defaults={"cap_drop":["ALL"],"read_only":false,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-stateful-high"}; runtime unverified; [Policy](../../../05.operations/policies/0089-jupyterlab.md) | Back up `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work` as user data; [recovery scope](../../../05.operations/runbooks/0089-jupyterlab.md); restore unverified | [guide](../../../05.operations/guides/0089-jupyterlab.md); [policy](../../../05.operations/policies/0089-jupyterlab.md); [runbook](../../../05.operations/runbooks/0089-jupyterlab.md) | [infra/11-laboratory/jupyterlab/docker-compose.yml](../../../../infra/11-laboratory/jupyterlab/docker-compose.yml); [infra/11-laboratory/jupyterlab/Dockerfile](../../../../infra/11-laboratory/jupyterlab/Dockerfile) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in single-user `data-science` workspace with mandatory token; JupyterHub not adopted; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
 | 05-messaging | kafka | infra/05-messaging/kafka/docker-compose.yml | debezium-db-provision | ["cdc"] | OPTIONAL | Provisioning job for the Debezium PostgreSQL connector under `cdc`; declared reverse edges=none | {"mng-pg":{"condition":"service_healthy"},"mng-pg-init":{"condition":"service_completed_successfully"}} | {"mng_data_net":{}} | {"exposed":[],"published":[]} | {"mounts":["../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro","./connect/debezium/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro"],"volume_sources":{}} | ["DEBEZIUM_DB_NAME","DEBEZIUM_DB_USER","DEBEZIUM_HEARTBEAT_SCHEMA","DEBEZIUM_PUBLICATION","DEBEZIUM_SCHEMA","DEBEZIUM_SOURCE_OWNER","PGDATABASE","PGHOST","PGPORT","PGUSER","PROVISION_ADMIN_PASSWORD_FILE","PROVISION_IDENTIFIERS","PROVISION_SECRETS","PROVISION_SQL"] | ["debezium_postgres_password","mng_postgres_password"] | {"cpus":"0.50","mem_limit":"256m"} | leaf={"authentication_env_keys":[],"router_middlewares":{}}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-job-low"}; runtime unverified; [Policy](../../../05.operations/policies/0036-kafka.md) | No data; publication and role are re-created idempotently; replication slot is connector recovery state | [guide](../../../05.operations/guides/0036-kafka.md); [policy](../../../05.operations/policies/0036-kafka.md); [runbook](../../../05.operations/runbooks/0036-kafka.md) | [infra/05-messaging/kafka/docker-compose.yml](../../../../infra/05-messaging/kafka/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in `cdc` source provisioning split from `mng-pg-init`; connector registration separately approved; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
+
 > Historical evidence (not current authority; source: Git history):
 > <!-- current-service-inventory:end -->
 >
 ## Dated Service Disposition Inventory
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This 2026-09-19 snapshot was derived from root Compose rendered with the public
@@ -944,9 +971,11 @@ product links below keep their original check dates and uncertainty.
 | vault | MIGRATE | infra/03-security/vault/docker-compose.yml | legacy-vault | hashicorp/vault:2.1.1 | none | vault-agent | infra_net, k3d-hyhome | internal only | vault-data:/vault/data, /home/hyunyoun/data/hy-home.docker/infra/03-security/vault/config/vault.hcl:/vault/config/vault.hcl | SKIP_CHOWN, SKIP_SETCAP, VAULT_ADDR, VAULT_API_ADDR, VAULT_CLUSTER_ADDR | none | declared | CPU 1; RAM 536870912 bytes | Legacy export/rollback only |
 | vault-agent | MIGRATE | infra/03-security/vault/docker-compose.yml | legacy-vault | hashicorp/vault:2.1.1 | vault | operator/application; no declared reverse dependency | infra_net | internal only | /home/hyunyoun/data/hy-home.docker/infra/03-security/vault/config/vault-agent.hcl:/vault/config/vault-agent.hcl, /home/hyunyoun/data/hy-home.docker/infra/03-security/vault/config/templates:/vault/config/templates, vault-agent-data:/vault/agent, vault-agent-out:/vault/out | SKIP_CHOWN, SKIP_SETCAP, VAULT_ADDR | none | declared | CPU 1; RAM 536870912 bytes | Legacy export/rollback only |
 | vector | OPTIONAL | infra/04-data/operational/supabase/docker-compose.yml | supabase | timberio/vector:0.58.0-alpine | none | db | infra_net | internal only | /home/hyunyoun/storage/volumes/data/supabase/logs/vector.yml:/etc/vector/vector.yml, /var/run/docker.sock:/var/run/docker.sock | none | none | declared | CPU 1; RAM 536870912 bytes | Needs a named workload before always-on activation |
+
 > Historical evidence (not current authority; source: Git history):
 >
 ## 2026-09-19 Implementation Findings and Source Checks
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - OpenBao Agent configuration and persistent output paths were inconsistent;

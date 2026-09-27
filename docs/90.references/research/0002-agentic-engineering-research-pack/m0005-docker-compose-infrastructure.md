@@ -1,6 +1,6 @@
 ---
 title: "Reference: Docker Compose and Infrastructure"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -185,6 +185,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 ## Overview
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Docker Compose defines an application model from services, networks, volumes,
@@ -203,6 +204,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > entries before profile selection.
 >
 ## Purpose
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Satisfy REQ-07 and REQ-08 with a current, reproducible comparison of Compose
@@ -212,6 +214,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > remote dependencies as separate evidence states.
 >
 ## Repository Role
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This Stage 90 reference is advisory analysis. It does not change Compose,
@@ -222,6 +225,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > require a separate Stage 03/04 chain.
 >
 ## Research Ownership
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This member is the canonical owner for Compose topology, include/profile
@@ -231,9 +235,11 @@ adoption. Historical measurements below are not new acceptance evidence.
 > question is consolidated in [RES-0002-m0021](m0021-local-docker-service-consolidation.md).
 >
 ## Scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### In scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Root and `infra/**/docker-compose*.yml` / `.yaml` declarations, includes,
@@ -247,6 +253,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 >   for all fourteen normative scopes.
 >
 ### Out of scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - `docker compose` or Docker execution, including rendered configuration,
@@ -259,9 +266,11 @@ adoption. Historical measurements below are not new acceptance evidence.
 >   generated output.
 >
 ## Definitions / Facts
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### Evidence and topology model
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - **Compose file:** root `docker-compose.yml` or one tracked infra file whose
@@ -279,6 +288,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 >   because it may have an operational explanation.
 >
 ### Re-measured Compose and infrastructure census
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The canonical coverage `--check` passed and its `--dry-run` output was parsed
@@ -303,6 +313,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | Root secret identifiers                  |                        70 | Identifiers and paths only; values were not read.                                      |
 >
 ### Inventory is not one deployable topology
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The 168 rows span alternatives. The root includes 17 files and 60 uniquely
@@ -318,6 +329,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > Compose runtime defect, and is outside Task 8 ownership.
 >
 ### Networks and port exposure
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The root declares ordinary bridge `infra_net` plus three external networks;
@@ -342,6 +354,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > exception.
 >
 ### Volumes, backup, restore, and rollback
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The 47 variants declare 102 top-level volumes, and 129 service entries mount a
@@ -360,6 +373,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > external state, or secret rotation.
 >
 ### Hardening and shared templates
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > `bash scripts/hardening/check-all-hardening.sh` passed all eleven tier checks.
@@ -377,6 +391,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > Compose review rather than isolated file reasoning.
 >
 ### Images, pins, and exceptions
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The tech-stack provenance `--check` passed. Its `--dry-run` reports 18 curated
@@ -413,6 +428,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > freshness check.
 >
 ### Resource limits and restart-policy census
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > A direct `rg` scan for `deploy:`, `mem_limit:`, and `cpus:` across all 47
@@ -453,6 +469,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > exception registry accounting for every `'no'` case this re-scan found.
 >
 ### Include and extends are two distinct composition mechanisms
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The root `docker-compose.yml` uses the top-level `include` element (17 active
@@ -494,6 +511,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > is the Docker Engine/Compose CLI release, not a spec version tag.
 >
 ### Compose validator mechanism and today's re-execution
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > [`scripts/validation/validate-docker-compose.sh`](../../../../scripts/validation/validate-docker-compose.sh)
@@ -547,6 +565,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > proof that any container starts, listens, or stays healthy.
 >
 ### Gateway latency SLO and observability
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The infra scope states gateway `LATENCY_SLO < 200ms`. An exact tracked search
@@ -562,6 +581,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > Missing measured implementation, not a performance claim.
 >
 ### Validation and operations evidence ladder
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Evidence layer               | State at 2026-08-14                                                                                                                       | Limit                                                                                                                                        |
@@ -575,6 +595,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | Backup/restore/SLO/rollback  | `UNVERIFIED`                                                                                                                              | No operator exercise or telemetry observed.                                                                                                  |
 >
 ### Operational concerns Compose does not solve, and their ownership
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Compose (root or infra-level) declares desired state; it does not itself
@@ -604,6 +625,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > this leaf can name the absence but cannot supply that inventory itself.
 >
 ### Current gaps and ownership
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Gap                                         | State                                                                                                          | Canonical owner / next evidence                                                                               |
@@ -617,6 +639,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | Runtime prerequisites and recovery          | Partially `UNVERIFIED` — preflight now proves the bind-mount/network prerequisites are unmet in this workspace | Operator-approved directory/network provisioning, then health, dependency, and recovery procedure evidence.   |
 >
 ### Carried source-evidence claims
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Source-evidence claims carried forward from the superseded 2026-07-05
@@ -626,6 +649,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > - **Rendering a resolved configuration is not a confinement boundary.** The vendor trust-model page names the inheritance directive alongside includes as a transitive-privilege path, states that rendering a resolved configuration offers no confinement guarantee, and warns that file-reference fields surface file contents in that output before any container starts. Resolved-config review must not be treated as a safety guarantee, which matters directly against this workspace's large inheritance surface. **Source named 2026-08-19** after a seat found the page registered in the retiring leaf but nowhere in this one, leaving the rule unrecoverable after deletion: the page is `https://docs.docker.com/compose/trust-model/`, and the mechanisms it names are `extends`, `include`, and the resolved output of `docker compose config`.
 >
 ### Investigation sequence
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > First identify the root or child Compose file and the named service, network,
@@ -642,6 +666,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > that a secret exists, was mounted, or was withheld from logs.
 >
 ### Infrastructure change surfaces
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Subitem | Supported mechanism or local fact | Exact local investigation target | Adoption condition | Verification limit |
@@ -654,6 +679,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | IaC change control | A Compose edit is a tracked configuration change requiring reviewed scope and evidence. | changed Compose path, Task 0004, and relevant owner document | Bind change, reviewer, target, and rollback criteria before any execution authority. | Version control and review records do not prove deployed state. |
 >
 ## Scope Implications
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Scope          | Infrastructure implication                                                                                                                                   |
@@ -674,6 +700,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | `security`     | Review transitive Compose trust, privileges, published ports, external networks, secret grants, images, and registered exceptions without reading values.    |
 >
 ## Sources
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -698,6 +725,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | Direct `rg` re-scan of `infra/**/docker-compose*.yml` for `image:`, `restart:`, `deploy:`, `mem_limit:`, `cpus:`, `healthcheck:`                | 2026-08-14                | Workspace tracked                 | 137 image declarations / 82 distinct, 0 literal `:latest`, 1 untagged (registered); restart values limited to `unless-stopped` (45) and `'no'` (13); only 2 files declare `deploy.resources`.                                                                                             |
 >
 ## Scope Application
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -712,6 +740,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | security | applies | Secret references and exposure paths are reviewed without accessing secret values. | Inspect only declaration paths and ownership. | A reference does not prove secure storage, injection, or redaction. |
 >
 ## 2026-09-05 Revalidation
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -733,6 +762,7 @@ adoption. Historical measurements below are not new acceptance evidence.
 > [secrets](https://docs.docker.com/reference/compose-file/secrets/).
 >
 ## Maintenance
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Re-run both canonical `--check` and `--dry-run` generators, the exact tracked

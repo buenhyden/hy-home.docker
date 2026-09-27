@@ -1,6 +1,6 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -180,7 +180,8 @@ reassessing apparently conflicting remote states observed at different times.
 > acceptance evidence. Source links now navigate to current owners; the
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
-> <a id="overview"></a>
+> <div id="overview"></div>
+>
 > ## Overview
 >
 > **Historical baseline notice.** The counts and remote-state conclusion in this
@@ -212,7 +213,8 @@ reassessing apparently conflicting remote states observed at different times.
 > itself load-bearing evidence, not a gap by omission — see "Reusable
 > workflows, OIDC, and `continue-on-error`" below.
 >
-> <a id="purpose"></a>
+> <div id="purpose"></div>
+>
 > ## Purpose
 >
 > Support REQ-24 and REQ-25 by documenting the exact automation topology,
@@ -220,7 +222,8 @@ reassessing apparently conflicting remote states observed at different times.
 > delivery boundary without reducing a multi-leaf job to a false one-job/
 > one-command rule or presenting continuous integration as continuous delivery.
 >
-> <a id="repository-role"></a>
+> <div id="repository-role"></div>
+>
 > ## Repository Role
 >
 > This Stage 90 reference is advisory analysis. The tracked workflow registry,
@@ -229,10 +232,12 @@ reassessing apparently conflicting remote states observed at different times.
 > changes those owners nor authorizes dispatch, push, promotion, deployment,
 > ruleset, environment, secret, release, or rollback actions.
 >
-> <a id="scope"></a>
+> <div id="scope"></div>
+>
 > ## Scope
 >
-> <a id="in-scope"></a>
+> <div id="in-scope"></div>
+>
 > ### In scope
 >
 > - The seven tracked workflows, twenty-three jobs, typed gate DAG, registered
@@ -244,7 +249,8 @@ reassessing apparently conflicting remote states observed at different times.
 > - CI/CD, promotion, deployment, artifact, attestation, and rollback gaps.
 > - Adoption rules, evidence limitations, owners, and all fourteen scopes.
 >
-> <a id="out-of-scope"></a>
+> <div id="out-of-scope"></div>
+>
 > ### Out of scope
 >
 > - Running a local QA profile beyond list mode or dispatching any workflow.
@@ -255,10 +261,12 @@ reassessing apparently conflicting remote states observed at different times.
 > - Treating the stale Graphify report or the 2026-07-26 public snapshot as
 >   current control-plane truth.
 >
-> <a id="definitions--facts"></a>
+> <div id="definitions--facts"></div>
+>
 > ## Definitions / Facts
 >
-> <a id="evidence-layers"></a>
+> <div id="evidence-layers"></div>
+>
 > ### Evidence layers
 >
 > | Layer                   | What Task 7 can establish                                                                                            | What remains outside the evidence                                                                                                              |
@@ -271,7 +279,8 @@ reassessing apparently conflicting remote states observed at different times.
 > The Graphify report was built from `f8a72211` and is stale. It was used only as
 > navigation; every fact below was re-derived from tracked owners.
 >
-> <a id="measured-typed-topology"></a>
+> <div id="measured-typed-topology"></div>
+>
 > ### Measured typed topology
 >
 > | Registry surface           | Count | Derivation and interpretation                                                                              |
@@ -288,7 +297,8 @@ reassessing apparently conflicting remote states observed at different times.
 > `PASS: GitHub workflow contract (workflows=7, jobs=23, actions=8)`. This proves
 > the static contract at the observed worktree only.
 >
-> <a id="gate-node-schema"></a>
+> <div id="gate-node-schema"></div>
+>
 > ### Gate node schema
 >
 > Each of the 80 `gate_nodes` records is a typed object, not a bare string.
@@ -327,7 +337,8 @@ reassessing apparently conflicting remote states observed at different times.
 > prove each expands into the ordered executable set claimed above without
 > duplicating or omitting a leaf.
 >
-> <a id="workflow-and-job-inventory"></a>
+> <div id="workflow-and-job-inventory"></div>
+>
 > ### Workflow and job inventory
 >
 > | Workflow                        | Trigger                                    | Jobs | Class and mutation boundary                                                                                              |
@@ -345,7 +356,8 @@ reassessing apparently conflicting remote states observed at different times.
 > obsolete in-flight run, not a retry policy. Every registered job has a timeout
 > of 5, 10, 15, or 20 minutes.
 >
-> <a id="ordered-expansion-is-the-executable-contract"></a>
+> <div id="ordered-expansion-is-the-executable-contract"></div>
+>
 > ### Ordered expansion is the executable contract
 >
 > The 16 required-quality jobs are roots into a DAG, not sixteen shell commands.
@@ -373,7 +385,8 @@ reassessing apparently conflicting remote states observed at different times.
 > therefore fans out across independent jobs; ordering exists inside each job's
 > root expansion, not as a repository-wide staged pipeline.
 >
-> <a id="local-profiles"></a>
+> <div id="local-profiles"></div>
+>
 > ### Local profiles
 >
 > | Profile               | Registered roots |  Ordered executable expansion | Evidence boundary                                                            |
@@ -389,7 +402,8 @@ reassessing apparently conflicting remote states observed at different times.
 > branch enforcement, and the separately controlled Agent all-files pre-commit
 > route remain outside local execution claims.
 >
-> <a id="promotion-path-local-check-to-required-remote-check"></a>
+> <div id="promotion-path-local-check-to-required-remote-check"></div>
+>
 > ### Promotion path: local check to required remote check
 >
 > > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
@@ -440,7 +454,8 @@ reassessing apparently conflicting remote states observed at different times.
 > appearing in `main-protection.md` is therefore necessary but not sufficient
 > evidence that GitHub will actually block a merge without it.
 >
-> <a id="reusable-workflows-oidc-and-continue-on-error-absent-not-merely-unverified"></a>
+> <div id="reusable-workflows-oidc-and-continue-on-error-absent-not-merely-unverified"></div>
+>
 > ### Reusable workflows, OIDC, and `continue-on-error`: absent, not merely unverified
 >
 > Three GitHub Actions capabilities relevant to pipeline maturity are entirely
@@ -482,7 +497,8 @@ reassessing apparently conflicting remote states observed at different times.
 > guidance, and any shared step logic extracted for a second workflow or
 > repository would need `workflow_call` rather than copy-paste duplication.
 >
-> <a id="action-permission-and-secret-boundaries"></a>
+> <div id="action-permission-and-secret-boundaries"></div>
+>
 > ### Action, permission, and secret boundaries
 >
 > The registry records eight external Actions with pinned manifest URLs,
@@ -497,7 +513,8 @@ reassessing apparently conflicting remote states observed at different times.
 > declared in the seven workflow files. Whether any repository/environment
 > secret exists remotely is `UNVERIFIED` and was not queried.
 >
-> <a id="failure-propagation-retry-and-observation"></a>
+> <div id="failure-propagation-retry-and-observation"></div>
+>
 > ### Failure propagation, retry, and observation
 >
 > - The typed runner executes the unique ordered expansion and returns on the
@@ -513,7 +530,8 @@ reassessing apparently conflicting remote states observed at different times.
 >   explicitly marks its root cause and control-plane verification unverified;
 >   it cannot establish current state.
 >
-> <a id="ci-is-implemented-cd-is-not-established"></a>
+> <div id="ci-is-implemented-cd-is-not-established"></div>
+>
 > ### CI is implemented; CD is not established
 >
 > No tracked workflow declares `environment:`, deployment jobs, artifact upload
@@ -528,7 +546,8 @@ reassessing apparently conflicting remote states observed at different times.
 > capabilities is tracked as adopted delivery behavior here, and current remote
 > environment/deployment state is `UNVERIFIED`.
 >
-> <a id="adoption-rules-gaps-and-follow-up-route"></a>
+> <div id="adoption-rules-gaps-and-follow-up-route"></div>
+>
 > ### Adoption rules, gaps, and follow-up route
 >
 > 1. Extend the typed registry, workflow YAML, desired required-check proposal,
@@ -546,7 +565,8 @@ reassessing apparently conflicting remote states observed at different times.
 > 6. Remote readback or mutation requires separate user approval for the named
 >    repository and surface. This reference supplies no such authority.
 >
-> <a id="evidence-ladder-and-adoption-mechanics"></a>
+> <div id="evidence-ladder-and-adoption-mechanics"></div>
+>
 > ### Evidence ladder and adoption mechanics
 >
 > Use the narrowest accurate state: **configured** for tracked YAML or a gate
@@ -578,7 +598,8 @@ reassessing apparently conflicting remote states observed at different times.
 > | Reuse and OIDC | Reusable workflow and OIDC mechanisms need job-level use and explicit `id-token: write`. | `.github/workflows/*.yml` | Neither mechanism is declared by the measured workflow set. |
 > | Local / PR / push separation | Hooks are local; CI Quality declares `pull_request` and `push` on `main`; changelog checking is tag-triggered. | `.pre-commit-config.yaml`, `ci-quality.yml`, `generate-changelog.yml` | Definitions do not show which path ran or whether a PR was merged. |
 >
-> <a id="scope-implications"></a>
+> <div id="scope-implications"></div>
+>
 > ## Scope Implications
 >
 > | Scope          | Automation implication                                                                                                                                                       |
@@ -598,7 +619,8 @@ reassessing apparently conflicting remote states observed at different times.
 > | `qa`           | QA maps changed surfaces to ordered local and CI gates and records skips; current remote check conclusions remain unverified.                                                |
 > | `security`     | Enforce least privilege, SHA pins, secret-safe output, dependency/workflow scanning, and explicit promotion approvals without treating scanner success as complete security. |
 >
-> <a id="sources"></a>
+> <div id="sources"></div>
+>
 > ## Sources
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -625,7 +647,8 @@ reassessing apparently conflicting remote states observed at different times.
 > | Public control-plane snapshot (retired DATA-0071)                                                         | 2026-08-08                         | Historical retained observation        | Dated 2026-07-26; current rules, failure cause, and remote enforcement remain `UNVERIFIED`.                                                                                                                                                 |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                                  | 2026-08-08                         | Workspace tracked stale/advisory       | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                          |
 >
-> <a id="scope-application"></a>
+> <div id="scope-application"></div>
+>
 > ## Scope Application
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -639,7 +662,8 @@ reassessing apparently conflicting remote states observed at different times.
 > | qa | applies | Select a named CI gate for the stated oracle. | Inspect gate contract and result. | CI configuration alone is not a pass. |
 > | security | applies | Review actions, permissions, secrets, provenance, and approvals. | Inspect pinned action and permission declarations. | OIDC, attestations, and protection remain unobserved. |
 >
-> <a id="2026-09-05-revalidation"></a>
+> <div id="2026-09-05-revalidation"></div>
+>
 > ## 2026-09-05 Revalidation
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -659,7 +683,8 @@ reassessing apparently conflicting remote states observed at different times.
 > Official basis:
 > [GitHub ruleset checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 >
-> <a id="current-interpretation-2026-09-08"></a>
+> <div id="current-interpretation-2026-09-08"></div>
+>
 > ### Current interpretation (2026-09-08)
 >
 > The [workflow contract](../../../../.github/workflow-contract.yml) retains two
@@ -675,7 +700,8 @@ reassessing apparently conflicting remote states observed at different times.
 > owns the actual current remote observations and local verification. The dated
 > inventories and 2026-09-05 result above remain historical observations.
 >
-> <a id="maintenance"></a>
+> <div id="maintenance"></div>
+>
 > ## Maintenance
 >
 > Re-run the focused workflow contract checker and re-derive kind, root, profile,

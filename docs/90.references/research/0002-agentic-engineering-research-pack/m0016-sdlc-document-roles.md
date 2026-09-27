@@ -1,6 +1,6 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.2.1"
+version: "1.2.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -563,11 +563,9 @@ Original observations, source checks, corrections, measurements, access failures
 > first.
 >
 
-
 ## Related Documents
 
 - [Research pack](README.md)
-
 
 - [Verification and validation](./m0019-verification-validation.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)

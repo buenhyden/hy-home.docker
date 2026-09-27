@@ -1,6 +1,6 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.3.1"
+version: "1.3.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -151,7 +151,8 @@ and relevant primary-standard status before adopting a normative policy.
 > acceptance evidence. Source links now navigate to current owners; the
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
-> <a id="overview"></a>
+> <div id="overview"></div>
+>
 > ## Overview
 >
 > Verification and validation are related but non-interchangeable decision
@@ -166,7 +167,8 @@ and relevant primary-standard status before adopting a normative policy.
 > creates neither a release gate nor authority to accept defects or residual
 > risk. A local green check is not, by itself, product validation or acceptance.
 >
-> <a id="purpose"></a>
+> <div id="purpose"></div>
+>
 > ## Purpose
 >
 > Satisfy REQ-36 by defining a source-backed V&V system that covers planning,
@@ -181,7 +183,8 @@ and relevant primary-standard status before adopting a normative policy.
 > substitution "tests or CI passed, therefore the product was validated and
 > accepted."
 >
-> <a id="repository-role"></a>
+> <div id="repository-role"></div>
+>
 > ## Repository Role
 >
 > This leaf owns the cross-system V&V model, evidence trace, and evidence-state
@@ -196,10 +199,12 @@ and relevant primary-standard status before adopting a normative policy.
 > observation of the named target and time. This leaf does not adopt policy,
 > certify security, accept a provider, mutate remote state, or observe runtime.
 >
-> <a id="scope"></a>
+> <div id="scope"></div>
+>
 > ## Scope
 >
-> <a id="in-scope"></a>
+> <div id="in-scope"></div>
+>
 > ### In scope
 >
 > - Systems, software, documentation, configuration, testware, generated
@@ -212,7 +217,8 @@ and relevant primary-standard status before adopting a normative policy.
 > - All fourteen normative workspace scopes, including explicit current
 >   not-applicable and `UNVERIFIED` boundaries.
 >
-> <a id="out-of-scope"></a>
+> <div id="out-of-scope"></div>
+>
 > ### Out of scope
 >
 > - Clause-level IEEE or ISO requirements not exposed by the public official
@@ -223,10 +229,12 @@ and relevant primary-standard status before adopting a normative policy.
 > - Implementing a gap, approving a release, accepting residual risk, or changing
 >   policy, workflow, runtime, provider, lifecycle, or remote configuration.
 >
-> <a id="definitions--facts"></a>
+> <div id="definitions--facts"></div>
+>
 > ## Definitions / Facts
 >
-> <a id="terminology-and-non-substitution-rules"></a>
+> <div id="terminology-and-non-substitution-rules"></div>
+>
 > ### Terminology and non-substitution rules
 >
 > - **Verification**: evidence that a named artifact or activity output conforms
@@ -256,7 +264,8 @@ and relevant primary-standard status before adopting a normative policy.
 > Ordinary CI contract checks are verification gates unless an approved scenario,
 > representative context, oracle, and acceptance authority establish more.
 >
-> <a id="vv-planning-and-decision-model"></a>
+> <div id="vv-planning-and-decision-model"></div>
+>
 > ### V&V planning and decision model
 >
 > A V&V plan identifies the item and immutable candidate, the requirement or
@@ -268,7 +277,8 @@ and relevant primary-standard status before adopting a normative policy.
 > representative data, environment fidelity, or an oracle is missing, the
 > relevant result is `UNVERIFIED`; a convenient substitute is not acceptable.
 >
-> <a id="evidence-trace"></a>
+> <div id="evidence-trace"></div>
+>
 > ### Evidence trace
 >
 > The minimum evidence chain is:
@@ -288,7 +298,8 @@ and relevant primary-standard status before adopting a normative policy.
 > requirement IDs, candidate identity, exact commands, results, defect decisions,
 > review ranges, and runtime observations provide the decision trace.
 >
-> <a id="methods-and-coverage"></a>
+> <div id="methods-and-coverage"></div>
+>
 > ### Methods and coverage
 >
 > Static verification includes requirements/design/traceability inspection,
@@ -304,7 +315,8 @@ and relevant primary-standard status before adopting a normative policy.
 > relative to the approved requirements, risks, environments, and exclusions; a
 > test count or percentage alone does not establish sufficiency.
 >
-> <a id="risk-based-depth-and-independence"></a>
+> <div id="risk-based-depth-and-independence"></div>
+>
 > ### Risk-based depth and independence
 >
 > Independence is graded rather than binary. Higher-consequence changes require
@@ -317,7 +329,8 @@ and relevant primary-standard status before adopting a normative policy.
 > workspace does not claim a level: the licensed criteria were not accessed and
 > no local contract adopts one.
 >
-> <a id="environments-data-and-oracles"></a>
+> <div id="environments-data-and-oracles"></div>
+>
 > ### Environments, data, and oracles
 >
 > Evidence records the candidate revision, tool/dependency versions, relevant
@@ -330,7 +343,8 @@ and relevant primary-standard status before adopting a normative policy.
 > An environment mismatch narrows the claim; local results do not automatically
 > transfer to hosted CI, a provider runtime, a Compose deployment, or production.
 >
-> <a id="entry-success-and-completion-criteria"></a>
+> <div id="entry-success-and-completion-criteria"></div>
+>
 > ### Entry, success, and completion criteria
 >
 > Entry/readiness requires a baselined target, identifiable candidate, prepared
@@ -344,7 +358,8 @@ and relevant primary-standard status before adopting a normative policy.
 > explicit, and monitoring/revalidation triggers to be assigned. A partial pass
 > cannot silently satisfy the completion criteria.
 >
-> <a id="defect-disposition-and-residual-risk"></a>
+> <div id="defect-disposition-and-residual-risk"></div>
+>
 > ### Defect disposition and residual risk
 >
 > Classify whether a finding belongs to the product/artifact, test or procedure,
@@ -356,7 +371,8 @@ and relevant primary-standard status before adopting a normative policy.
 > trigger, and the named authority accepting the residual risk. The author of
 > this Stage 90 leaf cannot grant that acceptance.
 >
-> <a id="workspace-owner-and-evidence-table"></a>
+> <div id="workspace-owner-and-evidence-table"></div>
+>
 > ### Workspace owner and evidence table
 >
 > Counts below were remeasured from the Task 9a base and candidate on 2026-08-09;
@@ -387,7 +403,8 @@ and relevant primary-standard status before adopting a normative policy.
 > | Python validation tests                                                  | `tests/validation`; typed adapters                                                                         | exact selected `unittest` modules                                                                                                 | 26 test files; focused 1/1 and full module 4/4 passed after the intended RED                                                                                        | Both/gap                        | Selected tests only; shared Python lint/type/coverage remains incomplete                | Not full test discovery or product validation                                                                |
 > | Independent review                                                       | active Task and immutable committed ranges                                                                 | exact-range specification and quality reviews                                                                                     | Prerequisite `ac51a532` reviews Approved C0/I0/M0; implementation reviews pending                                                                                   | Validation of evidence adequacy | Review independence is enforced per logical commit                                      | Does not validate an unobserved product or runtime outcome                                                   |
 >
-> <a id="who-performs-verification-vs-validation-in-this-workspace"></a>
+> <div id="who-performs-verification-vs-validation-in-this-workspace"></div>
+>
 > ### Who performs verification vs. validation in this workspace
 >
 > The abstract distinction only earns its keep if it is bound to named
@@ -433,7 +450,8 @@ and relevant primary-standard status before adopting a normative policy.
 >   determination belongs to the reader, consistent with the non-substitution
 >   rule stated above.
 >
-> <a id="evidence-state-vocabulary"></a>
+> <div id="evidence-state-vocabulary"></div>
+>
 > ### Evidence-state vocabulary
 >
 > Use these states without collapsing them into one automatic ladder:
@@ -453,7 +471,8 @@ and relevant primary-standard status before adopting a normative policy.
 > A hosted job can exist without remote enforcement; a local pass can occur
 > without hosted execution; reviewed evidence can remain runtime-unobserved.
 >
-> <a id="release-acceptance-and-decision-authority"></a>
+> <div id="release-acceptance-and-decision-authority"></div>
+>
 > ### Release acceptance and decision authority
 >
 > Green CI is necessary only where an approved contract makes it necessary and
@@ -465,7 +484,8 @@ and relevant primary-standard status before adopting a normative policy.
 > `UNVERIFIED`. A Stage 90 statement, successful generator, tracked Release
 > template, tag, or local check cannot supply the missing authority.
 >
-> <a id="monitoring-and-revalidation"></a>
+> <div id="monitoring-and-revalidation"></div>
+>
 > ### Monitoring and revalidation
 >
 > Revalidate when requirements, design, dependencies, runtime, environment,
@@ -478,7 +498,8 @@ and relevant primary-standard status before adopting a normative policy.
 > owner, response, and retention. Tracked observability configuration is not a
 > runtime observation.
 >
-> <a id="do-not-infer"></a>
+> <div id="do-not-infer"></div>
+>
 > ### Do not infer
 >
 > - No provider behavior, entitlement, model availability, hook interception, or
@@ -494,7 +515,8 @@ and relevant primary-standard status before adopting a normative policy.
 > - No generated artifact is fresh unless its named canonical `--check` ran
 >   against the recorded candidate path set.
 >
-> <a id="lifecycle-evidence-and-independence"></a>
+> <div id="lifecycle-evidence-and-independence"></div>
+>
 > ### Lifecycle evidence and independence
 >
 > The minimum chain is expectation or requirement → identified candidate → method
@@ -516,7 +538,8 @@ and relevant primary-standard status before adopting a normative policy.
 > acceptance. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`; this
 > leaf does not alter either ADR evidence state.
 >
-> <a id="scope-implications"></a>
+> <div id="scope-implications"></div>
+>
 > ## Scope Implications
 >
 > | Scope          | Status                      | Required V&V emphasis                                                                                                                                                            |
@@ -536,7 +559,8 @@ and relevant primary-standard status before adopting a normative policy.
 > | `qa`           | Direct                      | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision.                                    |
 > | `security`     | Direct                      | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation. |
 >
-> <a id="sources"></a>
+> <div id="sources"></div>
+>
 > ## Sources
 >
 > All required official routes were reopened at `2026-08-09T12:37:24Z`. Public
@@ -562,7 +586,8 @@ and relevant primary-standard status before adopting a normative policy.
 > not cited as current authority. NASA-STD-8739.8 Revision A (2020) is
 > superseded by Revision B and is not cited as current NASA policy.
 >
-> <a id="scope-application"></a>
+> <div id="scope-application"></div>
+>
 > ## Scope Application
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -576,7 +601,8 @@ and relevant primary-standard status before adopting a normative policy.
 > | qa | applies | Use risk-based methods and preserve oracle/defect evidence. | Inspect test/review results and disposition. | Tests alone do not accept residual risk. |
 > | security | applies | Include threat, control, scan, exception, and acceptance evidence. | Inspect security owner decision. | Scanner output is not certification. |
 >
-> <a id="2026-09-05-revalidation"></a>
+> <div id="2026-09-05-revalidation"></div>
+>
 > ## 2026-09-05 Revalidation
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -596,7 +622,8 @@ and relevant primary-standard status before adopting a normative policy.
 > observer, command or evidence, date, and residual risk owner. Official basis:
 > [ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en).
 >
-> <a id="2026-09-05-reproduction-environment-revalidation"></a>
+> <div id="2026-09-05-reproduction-environment-revalidation"></div>
+>
 > ## 2026-09-05 Reproduction-Environment Revalidation
 >
 > Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. Three commits
@@ -648,7 +675,8 @@ and relevant primary-standard status before adopting a normative policy.
 > on this finding requires a separate Requirement-to-Task chain; Stage 90 states
 > the observation and does not own the identity or gate contract.
 >
-> <a id="maintenance"></a>
+> <div id="maintenance"></div>
+>
 > ## Maintenance
 >
 > Reopen mutable official routes and remeasure tracked owners whenever sources,

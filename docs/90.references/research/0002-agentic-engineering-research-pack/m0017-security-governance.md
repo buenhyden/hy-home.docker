@@ -1,6 +1,6 @@
 ---
 title: "Reference: Security Governance and Secure Delivery"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -197,7 +197,8 @@ authority.
 > acceptance evidence. Source links now navigate to current owners; the
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
-> <a id="overview"></a>
+> <div id="overview"></div>
+>
 > ## Overview
 >
 > Security in this workspace is a chain of governance, approval boundaries,
@@ -214,14 +215,16 @@ authority.
 > live branch protection, production signing/provenance, runtime container
 > posture, secret rotation, or incident-target performance.
 >
-> <a id="purpose"></a>
+> <div id="purpose"></div>
+>
 > ## Purpose
 >
 > Satisfy REQ-27 by mapping secure-SDLC, approval, secrets, workflow, container,
 > supply-chain, incident, and provider/model controls to exact tracked evidence,
 > verification limits, gaps, remediation ownership, and all fourteen scopes.
 >
-> <a id="repository-role"></a>
+> <div id="repository-role"></div>
+>
 > ## Repository Role
 >
 > This Stage 90 reference is advisory analysis. It neither changes security
@@ -230,10 +233,12 @@ authority.
 > lives in canonical agent governance; implementation and test owners live in tracked scripts,
 > workflows, and Specs; live response and recovery evidence belongs in Stage 05.
 >
-> <a id="scope"></a>
+> <div id="scope"></div>
+>
 > ## Scope
 >
-> <a id="in-scope"></a>
+> <div id="in-scope"></div>
+>
 > ### In scope
 >
 > - Security trust boundaries, least privilege, approvals, secret handling,
@@ -245,7 +250,8 @@ authority.
 > - Findings versus registered exceptions, policy conflict versus actual secret
 >   exposure, implementation depth, and all fourteen scope implications.
 >
-> <a id="out-of-scope"></a>
+> <div id="out-of-scope"></div>
+>
 > ### Out of scope
 >
 > - Secret values, `.env` values, private keys, tokens, certificate bodies, raw
@@ -255,10 +261,12 @@ authority.
 > - Repairing or regenerating the security-readiness artifact, changing policy,
 >   or promoting sample-service rehearsal controls into release claims.
 >
-> <a id="definitions--facts"></a>
+> <div id="definitions--facts"></div>
+>
 > ## Definitions / Facts
 >
-> <a id="evidence-states-and-threat-boundary"></a>
+> <div id="evidence-states-and-threat-boundary"></div>
+>
 > ### Evidence states and threat boundary
 >
 > - **Implemented:** a current tracked owner and reachable enforcement path are
@@ -277,7 +285,8 @@ authority.
 > and secret grants; artifact build/sign/verify paths; provider/model changes;
 > and incident/disclosure sinks. No external system or secret value was probed.
 >
-> <a id="security-control-map"></a>
+> <div id="security-control-map"></div>
+>
 > ### Security control map
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -294,7 +303,8 @@ authority.
 > | Incident response                   | Disclosure targets, security scope, incident/runbook ownership, and Stage 05 routes exist.                                                                                                                                                 | Partially Implemented; no exercise, live incident, or objective-attainment evidence.                         | Human incident commander / operations.                        |
 > | Provider/model change               | Typed model registry, exact-target approval, coupled adapter/generator/validator rules, and Task evidence are required.                                                                                                                    | Implemented governance; entitlement and live behavior unverified.                                            | Stage 00 model/provider owner and user approval.              |
 >
-> <a id="secret-policy-conflict-is-not-secret-exposure"></a>
+> <div id="secret-policy-conflict-is-not-secret-exposure"></div>
+>
 > ### Secret-policy conflict is not secret exposure
 >
 > `approval-boundaries.md` says secret value files are read-forbidden. The
@@ -311,7 +321,8 @@ authority.
 > Stage 00/security change that names both owners and preserves redaction,
 > validation, and recovery obligations.
 >
-> <a id="hardening-exceptions-versus-violations"></a>
+> <div id="hardening-exceptions-versus-violations"></div>
+>
 > ### Hardening exceptions versus violations
 >
 > The tracked template exception registry contains no
@@ -328,7 +339,8 @@ authority.
 > must either document a narrow protocol/localhost/gateway exception or remediate
 > the selected topology.
 >
-> <a id="security-readiness-predecessor-and-typed-registry-defect-resolved-since-task-8"></a>
+> <div id="security-readiness-predecessor-and-typed-registry-defect-resolved-since-task-8"></div>
+>
 > ### Security-readiness predecessor and typed-registry defect (resolved since Task 8)
 >
 > At Task 8 baseline `910ce5f`, the canonical readiness `--check` exited 1
@@ -361,7 +373,8 @@ authority.
 > vulnerability assessment or security certification, and it does not observe
 > whether Task 10 as a whole has been separately closed.
 >
-> <a id="re-verification-at-current-head-2026-08-14"></a>
+> <div id="re-verification-at-current-head-2026-08-14"></div>
+>
 > ### Re-verification at current HEAD (2026-08-14)
 >
 > **Counts re-measured 2026-08-29.** The reading rule below is unchanged and still
@@ -430,7 +443,8 @@ authority.
 > > local, tracked branch-protection _intent_ exists; live GitHub enforcement of
 > > that intent is not observable from this workspace and is not asserted here.
 >
-> <a id="secure-sdlc-and-supply-chain-interpretation"></a>
+> <div id="secure-sdlc-and-supply-chain-interpretation"></div>
+>
 > ### Secure SDLC and supply-chain interpretation
 >
 > NIST SSDF 1.1 supplies high-level practices to prepare the organization,
@@ -452,7 +466,8 @@ authority.
 > verified. Conclusions use that exact revision, not mutable `main` as fixed
 > evidence.
 >
-> <a id="image-signing-and-build-provenance-mechanisms-versus-current-state"></a>
+> <div id="image-signing-and-build-provenance-mechanisms-versus-current-state"></div>
+>
 > ### Image signing and build-provenance mechanisms versus current state
 >
 > The brief axis for this leaf names "container image signing and provenance"
@@ -504,7 +519,8 @@ authority.
 > predecessor's classification (`SBOM/scan/sign/Scorecard capability`:
 > Partially Implemented, local and sample-scoped).
 >
-> <a id="cicd-pipeline-risk-mapping-owasp-top-10-cicd-security-risks"></a>
+> <div id="cicd-pipeline-risk-mapping-owasp-top-10-cicd-security-risks"></div>
+>
 > ### CI/CD pipeline risk mapping (OWASP Top 10 CI/CD Security Risks)
 >
 > OWASP's Top 10 CI/CD Security Risks project (`owasp.org/www-project-top-10-ci-cd-security-risks/`,
@@ -533,7 +549,8 @@ authority.
 > (none do) versus partial (most: 1, 2, 5, 7, 8, 10) versus substantially closed
 > for the registered scope (4, 6) versus an explicit named gap (3, 9).
 >
-> <a id="severity-ranked-findings"></a>
+> <div id="severity-ranked-findings"></div>
+>
 > ### Severity-ranked findings
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -549,7 +566,8 @@ authority.
 > No Critical finding is established by the authorized static evidence. That is
 > not a statement that no Critical runtime vulnerability exists.
 >
-> <a id="layered-adoption-model"></a>
+> <div id="layered-adoption-model"></div>
+>
 > ### Layered adoption model
 >
 > SSDF supplies prepare/protect/produce/respond practice framing; CSF supplies
@@ -590,7 +608,8 @@ authority.
 > observation was retained for this draft; any OCI-specific proposition is
 > `UNVERIFIED` until separately sourced and reviewed.
 >
-> <a id="scope-implications"></a>
+> <div id="scope-implications"></div>
+>
 > ## Scope Implications
 >
 > | Scope          | Security implication                                                                                                                         |
@@ -610,7 +629,8 @@ authority.
 > | `qa`           | Keep secret, workflow, dependency, container, supply-chain, runtime, and remote tests separate; record exact scope and skipped checks.       |
 > | `security`     | Rank reachability and impact, preserve stricter secret boundaries, review exceptions, and require remediation/residual-risk ownership.       |
 >
-> <a id="sources"></a>
+> <div id="sources"></div>
+>
 > ## Sources
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -643,7 +663,8 @@ authority.
 > | `generate-security-automation-readiness.sh`                                                                                                          | 2026-08-14 (was 2026-08-11) | Workspace tracked/executed read-only | Re-executed at HEAD `ece3eda9`: `--check` PASS (fresh, exit 0); `--dry-run` still 11/1/1 over 7 workflows/37 scripts/54 reachable typed gates, unchanged from the 2026-08-11 re-verification; no `.github` or generator-script commit occurred in between.                                    |
 > | [Sample-service supply-chain rehearsal script](../../../../scripts/security/verify-sample-service-supply-chain.sh) and [cosign offline config](../../../../infra/supply-chain.cosign-offline-signing-config.json) | 2026-08-14                  | Workspace tracked                    | Read in full (not executed); digest-pinned `alpine:3.21` and `nginxinc/nginx-unprivileged` build/runtime materials confirmed; four execution modes (`--fixture-only`, `--preflight`, `--advisory`, `--scorecard-advisory`) read directly, none invoked.                                       |
 >
-> <a id="scope-application"></a>
+> <div id="scope-application"></div>
+>
 > ## Scope Application
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -657,7 +678,8 @@ authority.
 > | qa | applies | A security check states its threat class, target, oracle, and result. | Record exact scanner/test evidence. | Configured scanning is not a clean result. |
 > | security | applies | A risk acceptance names asset, control, residual risk, owner, and review date. | Inspect signed or approved decision evidence. | No acceptance, compliance, or certification is claimed. |
 >
-> <a id="2026-09-05-revalidation"></a>
+> <div id="2026-09-05-revalidation"></div>
+>
 > ## 2026-09-05 Revalidation
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -681,7 +703,8 @@ authority.
 > [NIST SSDF](https://csrc.nist.gov/pubs/sp/800/218/final), and
 > [SLSA 1.2](https://slsa.dev/spec/v1.2/).
 >
-> <a id="maintenance"></a>
+> <div id="maintenance"></div>
+>
 > ## Maintenance
 >
 > Reopen every mutable external source and re-resolve the exact Scorecard commit

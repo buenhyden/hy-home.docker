@@ -1,6 +1,6 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.3.0"
+version: "1.3.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -162,7 +162,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > acceptance evidence. Source links now navigate to current owners; the
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
-> <a id="overview"></a>
+> <div id="overview"></div>
+>
 > ## Overview
 >
 > The workspace has substantial but deliberately uneven QA coverage. Tracked
@@ -191,7 +192,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > can no longer stand in for "this specific gate ran and its result is
 > remotely required."
 >
-> <a id="purpose"></a>
+> <div id="purpose"></div>
+>
 > ## Purpose
 >
 > Satisfy REQ-24 through REQ-26 by making each QA capability, applicability
@@ -200,7 +202,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > tests, and CI pass” from masking a formatting, type, coverage, E2E, security,
 > or remote-enforcement gap.
 >
-> <a id="repository-role"></a>
+> <div id="repository-role"></div>
+>
 > ## Repository Role
 >
 > This Stage 90 reference is advisory analysis. It does not add or weaken a gate,
@@ -210,10 +213,12 @@ exactly as dated in the preserved quotation; they are not new findings.
 > tests, workflow contract, workflow YAML, canonical agent governance governance, and separately
 > observed remote state.
 >
-> <a id="scope"></a>
+> <div id="scope"></div>
+>
 > ## Scope
 >
-> <a id="in-scope"></a>
+> <div id="in-scope"></div>
+>
 > ### In scope
 >
 > - Formatting, lint, syntax, type, unit, integration/component, E2E, coverage,
@@ -225,7 +230,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > - Gaps, risks, adoption rules, owners, and implications for all fourteen
 >   workspace scopes.
 >
-> <a id="out-of-scope"></a>
+> <div id="out-of-scope"></div>
+>
 > ### Out of scope
 >
 > - Running the 34-leaf local profile or controlled all-files pre-commit route.
@@ -236,10 +242,12 @@ exactly as dated in the preserved quotation; they are not new findings.
 > - Claiming product, runtime, accessibility, security, or deployment quality
 >   from static configuration alone.
 >
-> <a id="definitions--facts"></a>
+> <div id="definitions--facts"></div>
+>
 > ## Definitions / Facts
 >
-> <a id="capability-model"></a>
+> <div id="capability-model"></div>
+>
 > ### Capability model
 >
 > | Capability                 | Question answered                                                                         | It does not answer                                               |
@@ -254,7 +262,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | Coverage                   | Which measured code dimensions were exercised under one configured test run?              | Test quality, missing requirements, or another language/project. |
 > | Security check             | Does one scanner or deterministic control find its targeted class?                        | Absence of all vulnerabilities or safe deployment.               |
 >
-> <a id="current-capability-matrix"></a>
+> <div id="current-capability-matrix"></div>
+>
 > ### Current capability matrix
 >
 > | Capability                        | Tracked owner and invocation                                                                                                                              | Local path                                                                              | Declared CI path                                                | Current state and limit                                                                                                                                  |
@@ -281,7 +290,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | Configuration/security            | Compose validation, hardening, template/QuickWin, Gitleaks, Hadolint, npm audit, supply-chain fixture/policy checks, Zizmor SARIF                         | Mixed: pre-commit, typed profiles, focused scripts                                      | Dedicated jobs; Zizmor/SARIF is GitHub-only                     | **Partial by class.** Each result covers only its declared target and environment.                                                                       |
 > | Grammar/prose style               | No tracked owner: `rg -i "vale\|proselint\|write-good\|languagetool"` across tracked config, workflow, and pre-commit files returns no tool configuration | None                                                                                    | None                                                            | **Missing entirely.** Markdown lint is structural; there is no spelling, grammar, terminology-consistency, or prose-style gate for any tracked document. |
 >
-> <a id="five-state-gate-disposition"></a>
+> <div id="five-state-gate-disposition"></div>
+>
 > ### Five-state gate disposition
 >
 > Naming a capability "implemented" collapses five genuinely different claims
@@ -321,7 +331,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > configuration read as if it were today's execution would misstate the
 > evidence class.
 >
-> <a id="pre-commit-is-filtered-orchestration-not-universal-coverage"></a>
+> <div id="pre-commit-is-filtered-orchestration-not-universal-coverage"></div>
+>
 > ### Pre-commit is filtered orchestration, not universal coverage
 >
 > `.pre-commit-config.yaml` registers 24 hook IDs: 17 use the default
@@ -355,7 +366,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > the html5lib gap documented below — orchestrator-version parity does not
 > imply validation-dependency parity.
 >
-> <a id="test-and-coverage-depth"></a>
+> <div id="test-and-coverage-depth"></div>
+>
 > ### Test and coverage depth
 >
 > The Python corpus contains 22 `unittest` modules and two shell regression
@@ -370,7 +382,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > branches, functions, and lines. No repository-wide coverage aggregation or
 > Python coverage threshold is tracked.
 >
-> <a id="failure-propagation-retries-and-skipped-checks"></a>
+> <div id="failure-propagation-retries-and-skipped-checks"></div>
+>
 > ### Failure propagation, retries, and skipped checks
 >
 > - The typed runner verifies the plan, executes unique leaves in order, and
@@ -387,7 +400,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > - Local passes do not replace GitHub-only SARIF or applied required checks;
 >   workflow YAML does not prove either ran remotely.
 >
-> <a id="reading-the-repository-contract-checks-failure-count"></a>
+> <div id="reading-the-repository-contract-checks-failure-count"></div>
+>
 > ### Reading the repository contract check's failure count
 >
 > The repository contract check prints `failures=<n>`, and that number counts
@@ -399,7 +413,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > output body. Verified 2026-08-19 against the script, which increments its
 > counter once per failing subject and echoes that counter at the end.
 >
-> <a id="evidence-and-enforcement-states"></a>
+> <div id="evidence-and-enforcement-states"></div>
+>
 > ### Evidence and enforcement states
 >
 > | State                 | Task 7 result                                                                                                                                                                                        |
@@ -410,7 +425,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | Remote CI/rulesets    | Current run results, required-check conclusions, branch protection, and rulesets are **UNVERIFIED**.                                                                                                 |
 > | CD/runtime            | Environments, secrets, deployment, promotion, rollback, and production quality are **UNVERIFIED**; no tracked CD job exists.                                                                         |
 >
-> <a id="html5lib-gap-re-verified-by-direct-execution"></a>
+> <div id="html5lib-gap-re-verified-by-direct-execution"></div>
+>
 > ### html5lib gap, re-verified by direct execution
 >
 > Prior Task evidence (recorded in project Memory) reports the repository
@@ -448,7 +464,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > `html5lib` into the default interpreter or removes the dependency, and this
 > leaf does not adopt either fix.
 >
-> <a id="gaps-risks-and-follow-up-route"></a>
+> <div id="gaps-risks-and-follow-up-route"></div>
+>
 > ### Gaps, risks, and follow-up route
 >
 > - **Formatting gap:** Prettier configuration can be mistaken for enforcement.
@@ -483,7 +500,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 >   and change canonical configs/scripts/tests together; Stage 90 cannot adopt a
 >   tool or weaken a gate.
 >
-> <a id="qa-taxonomy-and-adoption-mechanics"></a>
+> <div id="qa-taxonomy-and-adoption-mechanics"></div>
+>
 > ### QA taxonomy and adoption mechanics
 >
 > Formatting answers whether a tool can normalize layout; linting applies
@@ -515,7 +533,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | Security | Gitleaks, Hadolint, dependency, Compose, hardening, and Zizmor routes cover named classes. | `.pre-commit-config.yaml`, `ci-quality.yml` | A scanner/configuration is not a clean security certification. |
 > | Independent review | Task review records require evidence-range review after author checks. | `tasks/tsk-0004-canonical-research-refresh.md` | Review does not replace an unexecuted oracle or acceptance authority. |
 >
-> <a id="scope-implications"></a>
+> <div id="scope-implications"></div>
+>
 > ## Scope Implications
 >
 > | Scope          | Quality implication                                                                                                                                       |
@@ -535,7 +554,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | `qa`           | Maintain the capability matrix, applicability/skip rationale, failure attribution, flake policy, local/CI split, and exact evidence records.              |
 > | `security`     | Keep Gitleaks, Hadolint, npm audit, hardening, supply-chain checks, and Zizmor distinct; no single pass proves secure delivery.                           |
 >
-> <a id="sources"></a>
+> <div id="sources"></div>
+>
 > ## Sources
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -561,7 +581,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | [GitHub governance](../../../../.agents/governance/github-governance.md)                                                              | 2026-08-08                                          | Workspace tracked policy          | Local/CI/remote split, controlled wrapper boundary, and change-type evidence matrix.                                                                                                                               |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                               | 2026-08-08                                          | Workspace tracked stale/advisory  | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                 |
 >
-> <a id="scope-application"></a>
+> <div id="scope-application"></div>
+>
 > ## Scope Application
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -575,7 +596,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > | qa | applies | Preserve the taxonomy from formatter through independent review. | Map each result to its actual oracle. | Coverage is not validation. |
 > | security | applies | Use the relevant scanner/control and security review. | Record target, version, result, and disposition. | A named scanner is not an absence-of-vulnerabilities claim. |
 >
-> <a id="2026-09-05-revalidation"></a>
+> <div id="2026-09-05-revalidation"></div>
+>
 > ## 2026-09-05 Revalidation
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -594,7 +616,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > Recommendation: add a new gate only with a named owner, deterministic input,
 > failure semantics, false-positive policy, and exact public-suite route.
 >
-> <a id="2026-09-05-gate-verdict-reproduction-revalidation"></a>
+> <div id="2026-09-05-gate-verdict-reproduction-revalidation"></div>
+>
 > ## 2026-09-05 Gate Verdict Reproduction Revalidation
 >
 > Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. The full profile
@@ -625,7 +648,8 @@ exactly as dated in the preserved quotation; they are not new findings.
 > verdict, and keep committed-baseline runs separate from working-tree runs in
 > any completion evidence.
 >
-> <a id="maintenance"></a>
+> <div id="maintenance"></div>
+>
 > ## Maintenance
 >
 > Re-measure the hook inventory, test files, project scripts, coverage thresholds,

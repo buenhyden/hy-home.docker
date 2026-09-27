@@ -1,6 +1,6 @@
 ---
 title: "Reference: Documentation Architecture and Diataxis Reader Modes"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -511,11 +511,9 @@ Original observations, source checks, corrections, measurements, access failures
 > persists, and always record the actual HTTP outcome observed at fetch time.
 >
 
-
 ## Related Documents
 
 - [Research pack](README.md)
-
 
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
 - [SDLC document roles](./m0016-sdlc-document-roles.md)

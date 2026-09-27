@@ -1,6 +1,6 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -22,7 +22,6 @@ review_cycle: "on-source-change"
 How can an agent maintain useful, attributable knowledge without turning a generated wiki into repository authority?
 
 Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
-
 
 ### Original proposal and distinct surfaces
 
@@ -113,6 +112,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 ## Overview
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The workspace LLM Wiki is a repo-local, on-demand navigation system. A thin
@@ -134,6 +134,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > authorized to execute them.
 >
 ## Purpose
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Satisfy REQ-23 by tracing LLM-facing discovery, local generation, safety
@@ -142,6 +143,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > repository contract result with byte-exact generator freshness.
 >
 ## Repository Role
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This Stage 90 reference describes the system but owns none of its operational
@@ -152,9 +154,11 @@ source permissions, provider retrieval behavior or ownership changes.
 > generated evidence sets.
 >
 ## Scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### In scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Root `llms.txt`, root `AGENTS.md`, root and registered README discovery.
@@ -166,6 +170,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > - Freshness evidence, gaps, limits, owners, and fourteen-scope implications.
 >
 ### Out of scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Regenerating or editing either generated output.
@@ -177,9 +182,11 @@ source permissions, provider retrieval behavior or ownership changes.
 >   ignored volumes, dependency trees, runtime state, or remote enforcement.
 >
 ## Definitions / Facts
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### LLM-facing convention boundary
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -215,6 +222,7 @@ source permissions, provider retrieval behavior or ownership changes.
 >   shim regardless of upstream adoption scale.
 >
 ### Recorded navigation architecture
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -236,6 +244,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > evidence for current byte-exact freshness.
 >
 ### Generator comparison
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -256,6 +265,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > > generator owner, not authorization to widen the allowlist.
 >
 ### Safety and metadata layers
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > 1. **Path selection safety:** both generators use the same allowlist/exclusion
@@ -292,6 +302,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > ```
 >
 ### Named freshness baseline
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Command                                                        | Historical Task 6 result                                    | Later Task-ledger result                                                                       | Interpretation and owner                                                                                                                                                          |
@@ -301,6 +312,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > | `bash scripts/validation/check-repo-contracts.sh`              | Aggregate validation is run separately for authored leaves. | Aggregate validation is run separately for authored leaves.                                    | May expose reference/profile or LLM literal/safety findings, but cannot change either freshness result because it does not execute the named checks.                              |
 >
 ### Implementation status, gaps, and risks
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - **Implemented:** thin authored entrypoint, human README registrations,
@@ -335,6 +347,7 @@ source permissions, provider retrieval behavior or ownership changes.
 >   provider state, or external model interaction was read for this analysis.
 >
 ### Carried source-evidence claims
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - **Registration literals are enforced across five index READMEs.** The
@@ -355,6 +368,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > - **A cited vendor guide path redirects and serves no content.** The `developers.openai.com` guide path for `AGENTS.md` returns an HTTP 308 redirect and serves nothing directly, so its redirect target on `learn.chatgpt.com` must be cited instead. Both hosts are named here because the rule is unactionable without them. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
 >
 ## Scope Implications
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -376,6 +390,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > | `security`     | Secret contents, volumes, dependencies, minified outputs, raw logs, and Graphify evidence are excluded; only `secrets/README.md` is admitted as policy context.   |
 >
 ## Sources
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Source                                                                                                                        | Accessed   | Class                            | Verification state                                                                                                                                                    |
@@ -399,6 +414,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
 >
 ## Scope Application
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -413,6 +429,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > | security | applies | Retain safe-path exclusions. | Inspect tracked exclusions. | No security testing. |
 >
 ## 2026-09-05 Revalidation
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -432,6 +449,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > never hand-edit generated outputs or treat graph ranking as canonical truth.
 >
 ## Maintenance
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Run both named `--check` commands after applicable tracked path or route changes

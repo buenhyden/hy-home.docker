@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.4.1"
+version: "2.4.2"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -239,7 +239,8 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 >    lifecycle checks, then the canonical full gate. Keep local, Hosted,
 >    provider, runtime, and remote results in separate evidence rows.
 >
-> <a id="existing-artifact-decision-record"></a>
+> <div id="existing-artifact-decision-record"></div>
+>
 > \### Existing Artifact Decision Record
 >
 > | Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
@@ -250,7 +251,8 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 > | RES-0085 | Current `main` baseline | Its question duplicated the current-baseline purpose already owned by m0020 | Consolidate current ownership into m0020; preserve RES-0085 as dated recovery evidence in `review` | RES-0002-m0020 and RES-0085 evidence |
 > | New RES-0096 candidate | Same question set | Would duplicate existing owners and observation cycle | Do not create | None |
 >
-> <a id="2026-09-05-baseline-71da6654-decision-record"></a>
+> <div id="2026-09-05-baseline-71da6654-decision-record"></div>
+>
 > \### 2026-09-05 Baseline 71da6654 Decision Record
 >
 > This pass re-observed the same question set at
@@ -280,7 +282,8 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 >
 > \## Findings
 >
-> <a id="member-navigation"></a>
+> <div id="member-navigation"></div>
+>
 > \### Member Navigation
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -308,7 +311,8 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 > | Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
 > | Local Docker service consolidation | [m0021](m0021-local-docker-service-consolidation.md) | Which local services are open source, overlapping, or safe removal candidates? | Current Compose/runtime inventory and official project sources compared; removal decisions remain user- and data-dependent | Local-executed, External-source-reviewed | High |
 >
-> <a id="complete-requested-category-routing"></a>
+> <div id="complete-requested-category-routing"></div>
+>
 > \### Complete Requested Category Routing
 >
 > | Requested category | Owning member | Current status | Evidence depth | Principal gap |

@@ -1,6 +1,6 @@
 ---
 title: "Reference: Agent Memory Hierarchy and Lifecycle"
-version: "1.2.0"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -22,7 +22,6 @@ review_cycle: "on-source-change"
 How should short-term, long-term and domain memory preserve evidence, scope and deletion semantics across agent work?
 
 Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
-
 
 ### Memory is several independent design choices
 
@@ -140,6 +139,7 @@ memory-write/retrieval architecture changes.
 > original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
 >
 ## Overview
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The workspace has one bounded current-state handoff, eight durable advisory
@@ -170,6 +170,7 @@ memory-write/retrieval architecture changes.
 > architecture for comparison.
 >
 ## Purpose
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Satisfy REQ-30 by covering short-term, long-term, and domain memory plus
@@ -177,6 +178,7 @@ memory-write/retrieval architecture changes.
 > privacy, size/freshness, and provider-native boundaries.
 >
 ## Repository Role
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
@@ -191,9 +193,11 @@ memory-write/retrieval architecture changes.
 > This historical research does not authorize local or provider-global memory work.
 >
 ## Scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### In scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Tracked memory files, their metadata/size, retrieval routes, and validators.
@@ -201,6 +205,7 @@ memory-write/retrieval architecture changes.
 > - Public Claude and Codex memory/configuration capability boundaries.
 >
 ### Out of scope
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > - Raw conversations, logs, shell history, ignored/private files, provider-global memory, or credentials.
@@ -208,9 +213,11 @@ memory-write/retrieval architecture changes.
 > - Claiming provider-native generation/retrieval happened in this workspace.
 >
 ## Definitions / Facts
+>
 > Historical evidence (not current authority; source: Git history):
 >
 ### Safe tracked measurement
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The exact tracked measurement was:
@@ -253,6 +260,7 @@ memory-write/retrieval architecture changes.
 > existing file.
 >
 ### Historical current-memory validator bounds and patterns
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > **Superseded implementation notice (2026-09-05).** This section preserves the
@@ -305,6 +313,7 @@ memory-write/retrieval architecture changes.
 > the 8 durable notes and the historical file have no automated check.
 >
 ### Full lifecycle matrix
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Lifecycle concern | Required meaning                                                        | Tracked implementation                                                                                                 | Status / gap                                                                       |
@@ -323,6 +332,7 @@ memory-write/retrieval architecture changes.
 > | Freshness         | Show that a fact still matches live tracked state                       | Current Task active/draft, commit ancestor, timestamp; notes rely on manual verification metadata                      | Implemented for current; partial/missing for durable and historical tiers.         |
 >
 ### Provider-native boundaries
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -342,6 +352,7 @@ memory-write/retrieval architecture changes.
 > for generation/consolidation, not a repository retention policy.
 >
 ### Claude Code subagent memory (exact mechanics, 2026-08-14 reopen)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The 2026-08-14 reopen of the Claude Code subagents reference resolves a
@@ -380,6 +391,7 @@ memory-write/retrieval architecture changes.
 > > it, which is named as a gap below.
 >
 ### Codex `memories.*` exact configuration fields (2026-08-14 reopen)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The 2026-08-14 reopen of the Codex configuration reference resolves the
@@ -406,6 +418,7 @@ memory-write/retrieval architecture changes.
 > running against this workspace, unobserved by any tracked file.
 >
 ### External research on agent memory architecture (comparative, not adopted)
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > A 2026-08-14 survey of current academic work on LLM agent memory (External
@@ -425,6 +438,7 @@ memory-write/retrieval architecture changes.
 > names the comparison for a future Stage 03 decision.
 >
 ### Required future lifecycle contract
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > A future Stage 03 memory-governance specification should define a typed domain
@@ -449,6 +463,7 @@ memory-write/retrieval architecture changes.
 > caught by any tracked validator, only by human review at note-creation time.
 >
 ### Provider mechanics and local hierarchy
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > The 2026-08-14 retained Claude observation documents three subagent-memory
@@ -471,6 +486,7 @@ memory-write/retrieval architecture changes.
 > expiry review, and deletion proof; it is explicitly not an executed workflow.
 >
 ### Proposed domain partition and lifecycle boundary
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > This is ADVISORY design, not an adopted memory policy. The time axis answers
@@ -496,6 +512,7 @@ memory-write/retrieval architecture changes.
 > before this process can be treated as an operating control.
 >
 ## Scope Implications
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Scope          | Application and disposition                                                                                                                                                                                                                                                                                                  |
@@ -516,6 +533,7 @@ memory-write/retrieval architecture changes.
 > | `security`     | Own privacy classification, redaction, deletion proof, provider-memory boundaries, and prompt-injection resistance; the 7-category forbidden-material regex set (see "Current-memory validator" above) is the only automated enforcement, and it covers `current.md` only, not durable notes or subagent-memory directories. |
 >
 ## Sources
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > <!-- Historical evidence table (not current authority; source: Git history). -->
@@ -538,6 +556,7 @@ memory-write/retrieval architecture changes.
 > | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
 >
 ## Scope Application
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
@@ -552,6 +571,7 @@ memory-write/retrieval architecture changes.
 > | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
 >
 ## 2026-09-05 Revalidation
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -573,6 +593,7 @@ memory-write/retrieval architecture changes.
 > [subagent memory](https://code.claude.com/docs/en/sub-agents).
 >
 ## Maintenance
+>
 > Historical evidence (not current authority; source: Git history):
 >
 > Rerun the tracked `wc` derivation and inspect only safe metadata when Memory

@@ -1,6 +1,6 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.2.1"
+version: "1.2.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -545,11 +545,9 @@ Original observations, source checks, corrections, measurements, access failures
 > would understate real upstream drift.
 >
 
-
 ## Related Documents
 
 - [Research pack](README.md)
-
 
 - [Verification and validation](./m0019-verification-validation.md)
 - [SDLC document roles](./m0016-sdlc-document-roles.md)
