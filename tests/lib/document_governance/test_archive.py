@@ -117,6 +117,7 @@ class MigrationStateTests(unittest.TestCase):
         ]
         current = [
             "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             "docs/98.archive/tombstones/03.specs/0001-test.md",
             "docs/98.archive/migrations/0004-new-migration.md",
             "docs/03.specs/0172-document-contract-convergence/spec.md",
@@ -746,7 +747,11 @@ class ArchiveMinimizationTests(unittest.TestCase):
         # it, so the required roots are a subset and the whole is bounded by
         # the registered set.
         required = {"README.md", "migrations", "tombstones"}
-        allowed = required | set(self.archive.PRESERVED_DISPOSITIONS)
+        allowed = (
+            required
+            | {"retention-catalog.md"}
+            | set(self.archive.PRESERVED_DISPOSITIONS)
+        )
         self.assertLessEqual(required, set(inventory.root_entries))
         self.assertLessEqual(set(inventory.root_entries), allowed)
         self.assertEqual(
@@ -1360,7 +1365,7 @@ class RetentionCatalogTests(unittest.TestCase):
     ) -> None:
         table = "\n".join([header, "| --- | --- | --- | --- |", *rows])
         self._write(
-            "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             f"# Archive\n\n## Retention Catalog\n\n{table}\n\n"
             "## Related Documents\n\n- Index\n",
         )
@@ -1492,6 +1497,25 @@ class RetentionCatalogTests(unittest.TestCase):
             },
         )
 
+    def test_a_row_the_base_kept_in_the_stage_readme_is_not_compared(self) -> None:
+        """SPEC-0184 W6: a base that predates the catalog record is still a base."""
+
+        catalog = self.root / "docs/98.archive/retention-catalog.md"
+        text = catalog.read_text(encoding="utf-8")
+        catalog.unlink()
+        self._write("docs/98.archive/README.md", text)
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "catalog in readme")
+        legacy_base = _fixture_git(self.root, "rev-parse", "HEAD")
+        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", text)
+        body = self.root / "docs/98.archive/retired/01.requirements/0002-withdrawn.md"
+        body.write_text("# Withdrawn\n\nAdded after preservation.\n", encoding="utf-8")
+        self.assertEqual(
+            (),
+            tuple(self.archive.validate_catalog_identity(self.root, legacy_base)),
+        )
+
     def test_a_row_present_at_the_base_is_not_compared(self) -> None:
         """Behavior Contract 9: the comparison is not retroactive."""
 
@@ -1502,7 +1526,24 @@ class RetentionCatalogTests(unittest.TestCase):
     def test_the_section_and_header_are_required(self) -> None:
         self.readme(self.rows(), header="| Record | Class | Source |")
         self.assertIn("catalog-header-invalid", self.codes())
-        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", "# Retention Catalog\n")
+        self.assertIn("catalog-missing", self.codes())
+
+    def test_a_catalog_left_in_the_stage_readme_is_not_read(self) -> None:
+        """SPEC-0184 rule 5: the README routes; the record holds the rows."""
+
+        table = "\n".join(
+            [
+                "| Record | Class | Names | Source |",
+                "| --- | --- | --- | --- |",
+                *self.rows(),
+            ]
+        )
+        self._write(
+            "docs/98.archive/README.md",
+            f"# Archive\n\n## Retention Catalog\n\n{table}\n",
+        )
+        (self.root / "docs/98.archive/retention-catalog.md").unlink()
         self.assertIn("catalog-missing", self.codes())
 
     def test_one_row_per_unit(self) -> None:
@@ -1567,7 +1608,7 @@ class RetentionCatalogTests(unittest.TestCase):
         )
 
     def test_retention_rules_are_inert_at_transition(self) -> None:
-        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", "# Retention Catalog\n")
         self._write("docs/98.archive/retired/05.operations/0006-gone.md", "# Gone\n")
         self.assertTrue(self.archive.validate_retention(self.root, self.base))
         self._write_model("transition")
@@ -1761,8 +1802,9 @@ class WithdrawalRecordTests(unittest.TestCase):
             f"| `{record}` | retired | Withdrawn. | `x:docs/{record}` |\n"
             for record in records
         )
+        self.write("docs/98.archive/README.md", "# Archive\n")
         self.write(
-            "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             "# Archive\n\n## Retention Catalog\n\n"
             "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n" + rows,
         )

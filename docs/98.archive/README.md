@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.4.4"
+version: "2.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 layer: "archive"
 ---
 
@@ -57,11 +57,14 @@ Promotion 선언을 통해, `resolved`는 교정 작업 owner를 통해 그렇�
 
 어느 family의 Stage 98 기록도 두 번째 복구 원장을 담지 않습니다. redirect, path
 ledger, 자체 설계한 본문 digest, branch SHA, recovery commit이 그것입니다.
-catalog의 Retention Envelope가 source Git object를 한 번 이름으로 가지며, frozen
-내용의 복구는 일반 Git history가 담당합니다.
+[Retention Catalog](retention-catalog.md)의 Retention Envelope가 source Git
+object를 한 번 이름으로 가지며, frozen 내용의 복구는 일반 Git history가
+담당합니다.
 
-`README.md`는 이 스테이지에서 유일하게 현재 유효한 문서이며 보존 기록이
-아닙니다.
+이 스테이지에서 현재 유효한 문서는 이 `README.md`와
+[`retention-catalog.md`](retention-catalog.md) 둘뿐이며, 둘 다 보존 기록이
+아닙니다. README는 탐색만 맡고, 보존 단위의 행은 Retention Catalog 기록이
+소유합니다.
 
 ### 외부 참조 경계
 
@@ -91,50 +94,12 @@ Git-history-only로 등록된 profile은 없습니다. 그런 profile이 등록�
 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과 Migration은
 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지 않습니다.
 
-## Retention Catalog
-
-보존 단위 하나가 한 행입니다. 단위는 Spec package 디렉터리, Incident bundle
-디렉터리, 또는 단독 문서입니다. `Record`는 `docs/98.archive/` 아래 단위 경로이며
-package와 bundle은 `/`로 끝납니다. `Class`는 처분 디렉터리이고, `Names`는 그
-class가 이름으로 가져야 하는 값이며, `Source`는 이 모델이 허용하는 유일한 source
-Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질 수 없으므로 source가
-존재하던 base commit을 적습니다.
-
-| Record | Class | Names | Source |
-| --- | --- | --- | --- |
-| `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
-| `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
-| `superseded/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` | superseded | ADR-0036 | `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0:docs/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` |
-| `superseded/02.architecture/decisions/0015-analytics-engine-selection.md` | superseded | ADR-0039 | `6179418507afedbcb631dbef07d7ed7cb854f2ab:docs/02.architecture/decisions/0015-analytics-engine-selection.md` |
-| `superseded/02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md` | superseded | ADR-0040 | `6179418507afedbcb631dbef07d7ed7cb854f2ab:docs/02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md` |
-| `completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/` | completed | ADR-0036 | `3c5db48cbae8edfccfa1b0a56ad9421e6b1ccafd:docs/03.specs/0178-archive-occupancy-citation-and-frozen-identity` |
-| `completed/03.specs/0180-home-dev-convergence/` | completed | AD-0031 | `2a90260a6f9083993b2e61dee20a49e7b8bd858b:docs/03.specs/0180-home-dev-convergence` |
-| `completed/03.specs/0181-home-residual-operations/` | completed | AD-0031 | `98efce81b9481fd7f6a01c92b643b3f336679574:docs/03.specs/0181-home-residual-operations` |
-| `superseded/90.references/research/0081-roadmap/README.md` | superseded | RES-0002 | `bb43abb5e0894f45d1179a60770d489a0da41e7c:docs/90.references/research/0081-roadmap/README.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/guide.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/policy.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/guide.md` | superseded | GDE-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/guide.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/policy.md` | superseded | POL-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/policy.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | RUN-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/runbook.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/guide.md` | superseded | GDE-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/guide.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0018-ksqldb/guide.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/policy.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0020-starrocks/guide.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/policy.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/runbook.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/policy.md` | superseded | POL-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/policy.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/runbook.md` | superseded | RUN-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/runbook.md` |
-
-이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
-유지합니다. 소급 적재는 하지 않습니다.
-
 ## Structure
 
 ```text
 98.archive/
 ├── README.md
+├── retention-catalog.md
 ├── completed/
 │   └── <original-stage>/<원래 경로 그대로>
 ├── superseded/

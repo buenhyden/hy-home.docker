@@ -1193,7 +1193,9 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
 
 
 _ARCHIVE_PREFIX = "docs/98.archive/"
-_ARCHIVE_INDEX = "docs/98.archive/README.md"
+# The catalog is its own record so the Stage 98 README can stay a router
+# (SPEC-0184 rule 5); its header and rows are unchanged by the move.
+_CATALOG_RECORD = "docs/98.archive/retention-catalog.md"
 _CATALOG_SECTION = re.compile(r"(?ms)^## Retention Catalog[ \t]*\n(.*?)(?=^## |\Z)")
 _CATALOG_HEADER = ("Record", "Class", "Names", "Source")
 _CATALOG_SEPARATOR = re.compile(r"(?:\|:?-{3,}:?){4}\|")
@@ -1327,7 +1329,7 @@ def _catalog_rows(
 ) -> tuple[tuple[RetentionCatalogRow, ...], list[ArchiveFinding]]:
     section = _CATALOG_SECTION.search(text)
     if section is None:
-        return (), [ArchiveFinding("catalog-missing", _ARCHIVE_INDEX)]
+        return (), [ArchiveFinding("catalog-missing", _CATALOG_RECORD)]
     lines = [
         line.strip()
         for line in section.group(1).splitlines()
@@ -1338,13 +1340,13 @@ def _catalog_rows(
         or _catalog_cells(lines[0]) != _CATALOG_HEADER
         or _CATALOG_SEPARATOR.fullmatch(re.sub(r"\s", "", lines[1])) is None
     ):
-        return (), [ArchiveFinding("catalog-header-invalid", _ARCHIVE_INDEX)]
+        return (), [ArchiveFinding("catalog-header-invalid", _CATALOG_RECORD)]
     rows: list[RetentionCatalogRow] = []
     findings: list[ArchiveFinding] = []
     for line in lines[2:]:
         cells = _catalog_cells(line)
         if len(cells) != len(_CATALOG_HEADER):
-            findings.append(ArchiveFinding("catalog-row-malformed", _ARCHIVE_INDEX))
+            findings.append(ArchiveFinding("catalog-row-malformed", _CATALOG_RECORD))
             continue
         rows.append(RetentionCatalogRow(*cells))
     return tuple(rows), findings
@@ -1357,7 +1359,7 @@ def _code_span(value: str) -> str | None:
 
 def _catalog_index_text(root: pathlib.Path) -> str | None:
     try:
-        return _decode_document(root / _ARCHIVE_INDEX)
+        return _decode_document(root / _CATALOG_RECORD)
     except ValueError:
         return None
 
@@ -1389,18 +1391,18 @@ def _catalog_source_findings(
 
 
 def validate_retention_catalog(root: pathlib.Path) -> tuple[ArchiveFinding, ...]:
-    """Validate every Retention Catalog row in the Stage 98 index."""
+    """Validate every Retention Catalog row in the Stage 98 catalog record."""
 
     root = pathlib.Path(root)
     text = _catalog_index_text(root)
     if text is None:
-        return (ArchiveFinding("catalog-missing", _ARCHIVE_INDEX),)
+        return (ArchiveFinding("catalog-missing", _CATALOG_RECORD),)
     rows, findings = _catalog_rows(text)
     seen: set[str] = set()
     for row in rows:
         record = _code_span(row.record)
         if record is None or _safe_path(record.rstrip("/")) is None:
-            findings.append(ArchiveFinding("catalog-record-invalid", _ARCHIVE_INDEX))
+            findings.append(ArchiveFinding("catalog-record-invalid", _CATALOG_RECORD))
             continue
         path = f"{_ARCHIVE_PREFIX}{record}"
         if record in seen:
@@ -1467,7 +1469,7 @@ def validate_catalog_coverage(
         root, ["ls-tree", "-r", "-z", "--name-only", base, "--", "docs/98.archive"]
     )
     if listed.returncode:
-        return (ArchiveFinding("catalog-base-unreadable", _ARCHIVE_INDEX),)
+        return (ArchiveFinding("catalog-base-unreadable", _CATALOG_RECORD),)
     at_base = set(listed.stdout.decode("utf-8", "replace").split("\0"))
     recorded = retention_catalog_records(root)
     findings: list[ArchiveFinding] = []
@@ -1567,7 +1569,12 @@ def validate_catalog_identity(
     if text is None:
         return ()
     rows, _ = _catalog_rows(text)
-    at_base = _run_git(root, ["show", f"{base}:{_ARCHIVE_INDEX}"])
+    at_base = _run_git(root, ["show", f"{base}:{_CATALOG_RECORD}"])
+    if at_base.returncode:
+        # ponytail: a base older than the catalog record kept its rows in the
+        # Stage 98 README. Remove this read once no supported base predates
+        # SPEC-0184 (owner: its P3 cleanup package).
+        at_base = _run_git(root, ["show", f"{base}:docs/98.archive/README.md"])
     base_records: frozenset[str] = frozenset()
     if not at_base.returncode:
         base_rows, _ = _catalog_rows(at_base.stdout.decode("utf-8", "replace"))
@@ -1651,7 +1658,11 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         # it, so each is optional; nothing outside this set may appear.
         required_entries = {"README.md", "migrations", "tombstones"}
         model = archive_disposition_model(pathlib.Path(archive_root).parent.parent)
-        allowed_entries = required_entries | set(admitted_preserved_dispositions(model))
+        allowed_entries = (
+            required_entries
+            | {"retention-catalog.md"}
+            | set(admitted_preserved_dispositions(model))
+        )
         if not required_entries <= set(entries) or not set(entries) <= allowed_entries:
             raise ValueError(
                 "Stage 98 root must contain README.md, migrations/, tombstones/, "

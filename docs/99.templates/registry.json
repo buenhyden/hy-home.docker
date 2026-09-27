@@ -1324,6 +1324,33 @@
       }
     },
     {
+      "id": "archive-retention-catalog",
+      "type": "archive/retention-catalog",
+      "language": "en",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/98.archive/retention-catalog.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [],
+      "required_sections": [
+        "Overview",
+        "Retention Catalog"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "id": "documentation-readme",
       "type": "common/documentation-readme",
       "language": "ko",
@@ -1572,8 +1599,7 @@
         "Related Documents"
       ],
       "optional_sections": [
-        "Audience",
-        "Retention Catalog"
+        "Audience"
       ],
       "lifecycle_id": "living",
       "traceability": {},
@@ -4051,6 +4077,7 @@
   "transitions": {
     "adr": "architecture-decision",
     "architecture-description": "architecture-description",
+    "archive-retention-catalog": "living",
     "audit": "publication",
     "audit-member": "publication",
     "data": "publication",
