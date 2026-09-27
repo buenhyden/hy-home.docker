@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-27"
 ---
 
 # docs
@@ -105,24 +105,9 @@ docs/
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- Agent 전용 문서(`.agents/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
-- `docs/03.specs/**`의 leaf 문서는 영어로 작성합니다. 여기에는 같은 패키지 안의 `plan.md`와 `tasks/**`가 포함됩니다.
-- `docs/05.operations/{guides,policies,runbooks}/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
+- 문서 언어는 [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language)이
+  정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
-
-| Surface | Language Rule |
-| --- | --- |
-| `../.agents/` 및 native `provider.md` | English-only governance, role, skill, and provider contracts |
-| `01.requirements/` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
-| `02.architecture/` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
-| `03.specs/` | English-only technical specifications and contracts |
-| `03.specs/####-<slug>/plan.md` | English-only implementation plans |
-| `03.specs/####-<slug>/tasks/` | English-only task evidence |
-| `05.operations/{guides,policies,runbooks}/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
-| `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
-| `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | retention class의 frozen 원문과 route disposition 기록; 인용 가능성은 처분이 이름으로 가지는 대상에서 도출 |
-| `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract
 
@@ -135,7 +120,7 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 - 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
-- README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
+- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](../.agents/governance/documentation-protocol.md#readme-navigation)을 따릅니다.
 - Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
 - Stage 98에서 직접 링크할 수 있는 것은 index와 `completed/`, `resolved/`
   보존본입니다. `superseded/` 대신 후속을, `retired/`, Tombstone, Migration 대신

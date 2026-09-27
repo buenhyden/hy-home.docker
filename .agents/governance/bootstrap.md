@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 ---
 
 # Agent Bootstrap Policy
@@ -57,7 +57,8 @@ that preserved record is what was removed.
 ## Hard Constraints
 
 - Canonical governance, roles, skills, knowledge, prompts, and native provider
-  sources remain English-only.
+  sources remain English-only, except their `README.md` files, which follow the
+  [documentation protocol](documentation-protocol.md#document-language).
 - Stage documents are read-only unless the request authorizes change.
 - Keep root shims concise.
 - Never write plaintext credentials or secret values.
