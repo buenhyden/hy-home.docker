@@ -1119,6 +1119,31 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("link-target-not-regular", codes)
         self.assertIn("link-target-symlink", codes)
 
+    def test_alignment_accepts_a_folder_route_without_an_index(self) -> None:
+        """SPEC-0184 rule 1: a child folder with no README is linked as a folder."""
+
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/README.md"
+            nested = root / "docs/lakehouse/spark/docker-compose.yml"
+            nested.parent.mkdir(parents=True)
+            nested.write_text("services: {}\n", encoding="utf-8")
+            source.write_text(
+                "[lakehouse](./lakehouse/)\n[anchor](./lakehouse/#x)\n",
+                encoding="utf-8",
+            )
+            graph = build_document_graph([source], repo_root=root)
+            findings = check_alignment(graph)
+        self.assertEqual(
+            {("docs/README.md:2", "missing-link-anchor")},
+            {(finding.path, finding.code) for finding in findings},
+        )
+
     def test_alignment_rejects_target_symlink_ancestors(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,

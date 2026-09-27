@@ -571,6 +571,11 @@ def _regular_target(
                 and index_status.st_size <= _MAX_ANCHOR_BYTES
             ):
                 return index, None
+        # A folder with no Markdown index is still a route when it holds
+        # content: a router links such a child as the folder itself
+        # (SPEC-0184 rule 1). It has no headings, so a fragment cannot match.
+        if any(path.iterdir()):
+            return path, None
         return None, "link-target-not-regular"
     if not path.is_file():
         return None, "link-target-not-regular"
@@ -590,6 +595,8 @@ def _target_headings(
     path, code = _regular_target(graph, target)
     if path is None:
         return None, code
+    if path.is_dir():
+        return (), None
     try:
         return _headings(path.read_text(encoding="utf-8")), None
     except UnicodeError:
